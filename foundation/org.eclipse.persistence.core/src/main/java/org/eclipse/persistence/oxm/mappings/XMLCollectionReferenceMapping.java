@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,21 +14,12 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.oxm.mappings;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.StringTokenizer;
-import java.util.Vector;
-
-import javax.xml.namespace.QName;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.DescriptorException;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
-import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.identitymaps.CacheId;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.oxm.Reference;
@@ -52,17 +43,24 @@ import org.eclipse.persistence.oxm.record.DOMRecord;
 import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
 
+import javax.xml.namespace.QName;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.StringTokenizer;
+import java.util.Vector;
+
 /**
  * TopLink OXM version of a 1-M mapping.  A list of source-target key field
  * associations is used to link the source xpaths to their related target
  * xpaths, and hence their primary key (unique identifier) values used when
  * (un)marshalling.
- *
+ * <p>
  * It is important to note that each target xpath is assumed to be set as a primary
  * key field on the target (reference) class descriptor - this is necessary in order
  * to locate the correct target object instance in the session cache when resolving
  * mapping references.
- *
+ * <p>
  * The usesSingleNode flag should be set to true if the keys are to be written out in space-separated
  * lists.
  *
@@ -85,7 +83,7 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
      */
     public XMLCollectionReferenceMapping() {
         sourceToTargetKeyFieldAssociations = new HashMap<>();
-        sourceToTargetKeys = new NonSynchronizedVector<>();
+        sourceToTargetKeys = new ArrayList();
         this.containerPolicy = ContainerPolicy.buildDefaultPolicy();
         this.usesSingleNode = false;
     }
@@ -141,7 +139,7 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
         Object primaryKey = objectBuilder.extractPrimaryKeyFromObject(targetObject, session);
         XMLField tgtXMLField = (XMLField) getSourceToTargetKeyFieldAssociations().get(xmlFld);
         int idx = 0;
-        if(!(null == referenceClass || ClassConstants.OBJECT == referenceClass)) {
+        if(!(null == referenceClass || CoreClassConstants.OBJECT == referenceClass)) {
             idx = descriptor.getPrimaryKeyFields().indexOf(tgtXMLField);
             if (idx == -1) {
                 return null;
@@ -183,7 +181,7 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
             resolver.addReference(reference);
         }
         CacheId primaryKeys;
-        if(null == referenceClass || ClassConstants.OBJECT == referenceClass) {
+        if(null == referenceClass || CoreClassConstants.OBJECT == referenceClass) {
             HashMap primaryKeyMap = reference.getPrimaryKeyMap();
             CacheId pks = (CacheId) primaryKeyMap.get(null);
             if (pks == null){
@@ -348,8 +346,8 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
     public void setContainerPolicy(ContainerPolicy containerPolicy) {
         // set reference class here if necessary
         this.containerPolicy = containerPolicy;
-        if (this.containerPolicy instanceof MapContainerPolicy) {
-            ((MapContainerPolicy) this.containerPolicy).setElementClass(getReferenceClass());
+        if (this.containerPolicy instanceof MapContainerPolicy mapContainerPolicy) {
+            mapContainerPolicy.setElementClass(getReferenceClass());
         }
     }
 
@@ -473,7 +471,7 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
                         }
                     }
                 }
-                if (stringValueBuilder.length() > 0) {
+                if (!stringValueBuilder.isEmpty()) {
                     row.put(xmlField, stringValueBuilder.toString());
                 }
             } else {

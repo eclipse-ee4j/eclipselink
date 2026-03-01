@@ -1,0 +1,69 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[ADVANCEDCONCEPTS008]]
+=== Generating Java Classes from an XML Schema
+
+Use the JAXB Compiler to generate Java classes from an XML schema. The
+generated classes will contain JAXB annotations that represent the XML
+binding metadata.
+
+==== Running the JAXB Compiler
+
+Use the *.sh* or *.cmd* file to run the JAXB Compiler:
+
+`<ECLIPSELINK_HOME>/eclipselink/bin/jaxb-compiler.sh <source-file.xsd> [-options]`
+
+or
+
+`<ECLIPSELINK_HOME>\eclipselink\bin\jaxb-compiler.cmd <source-file.xsd> [-options]`
+
+The JAXB Compiler supports the following options:
+
+|===
+|*Option* |*Description*
+|`-nv` |Do not perform _strict_ validation of the input schemas.
+
+|`-extension` |Allow vender-specific extensions; do not strictly follow
+the Compatibility Rules in Appendix E.2 of the JAXB specification
+
+|`-b <file/directory>` a|
+Specify the external binding files to process.
+
+*Note*: Each file must use its own `-b` flag.
+
+|`-d <directory>` |Specify the output directory for the generated files.
+
+|`-p <package>` |Specify the target package.
+
+|`-classpath <arg>` |Specify where to find user class files.
+
+|`-verbose` |Enable additional compiler output, such as informational
+messages.
+
+|`-quiet` |Disable compiler output.
+
+|`-version` |Display the compiler version.
+|===
+
+For example:
+
+`jaxb-compiler.sh -d jaxb-compiler-output config/Customer.xsd`
+
+To display a complete list of compiler options, use:
+
+`jaxb-compiler.sh -help`

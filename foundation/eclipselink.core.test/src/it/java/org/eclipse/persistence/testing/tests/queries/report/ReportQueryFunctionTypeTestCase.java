@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,19 +14,18 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.queries.report;
 
-import java.math.BigDecimal;
-import java.util.Vector;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReportQuery;
 import org.eclipse.persistence.queries.ReportQueryResult;
-
 import org.eclipse.persistence.testing.framework.AutoVerifyTestCase;
 import org.eclipse.persistence.testing.framework.TestErrorException;
 import org.eclipse.persistence.testing.framework.TestWarningException;
 import org.eclipse.persistence.testing.models.employee.domain.Employee;
+
+import java.math.BigDecimal;
+import java.util.Vector;
 
 /**
  * This test assumes the following to be true of the
@@ -105,7 +104,7 @@ public class ReportQueryFunctionTypeTestCase extends AutoVerifyTestCase {
         if (results.isEmpty()) {
             throw new TestErrorException("No results were returned from the report query.");
         } else {
-            ReportQueryResult result = results.firstElement();
+            ReportQueryResult result = results.get(0);
             Object value;
             // Types are not as expected for Derby.
             if (getSession().getDatasourcePlatform().isDerby()) {

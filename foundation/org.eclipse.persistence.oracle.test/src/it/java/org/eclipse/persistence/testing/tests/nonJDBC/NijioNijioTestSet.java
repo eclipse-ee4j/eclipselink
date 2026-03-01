@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,18 +16,20 @@ package org.eclipse.persistence.testing.tests.nonJDBC;
 import java.io.FileInputStream;
 import java.io.StringReader;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
-import java.util.Vector;
 import org.w3c.dom.Document;
 
 // JUnit imports
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 // EclipseLink imports
-import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.sessions.factories.ObjectPersistenceWorkbenchXMLProject;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLMarshaller;
@@ -38,7 +40,6 @@ import org.eclipse.persistence.queries.DataReadQuery;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.Project;
-import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.factories.XMLProjectReader;
 
 // Domain imports
@@ -197,7 +198,7 @@ public class NijioNijioTestSet {
         s.dontLogMessages();
         s.login();
         Object o = null;
-        Vector queryArgs = new NonSynchronizedVector();
+        List<Object> queryArgs = new ArrayList<>();
         queryArgs.add(107);
         queryArgs.add(108);
         queryArgs.add(1);
@@ -212,12 +213,12 @@ public class NijioNijioTestSet {
           msg = e.getMessage();
         }
         assertTrue("invocation NijioNijio failed: " + msg, worked);
-        Vector results = (Vector)o;
+        List<?> results = (List<?>) o;
         DatabaseRecord record = (DatabaseRecord)results.get(0);
         BigDecimal y = (BigDecimal)record.get("Y");
-        assertTrue("wrong y value", y.intValue() == 158);
+        assertEquals("wrong y value", 158, y.intValue());
         String aa = (String)record.get("AA");
-        assertTrue("wrong aa value", aa.equals("MERVISH"));
+        assertEquals("wrong aa value", "MERVISH", aa);
         s.logout();
     }
 }

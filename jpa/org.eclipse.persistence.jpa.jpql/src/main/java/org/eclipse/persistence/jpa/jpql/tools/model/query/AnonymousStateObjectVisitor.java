@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -12,7 +12,8 @@
 
 // Contributors:
 //     Oracle - initial API and implementation
-//
+//     06/02/2023: Radek Felcman
+//       - Issue 1885: Implement new JPQLGrammar for upcoming Jakarta Persistence 3.2
 package org.eclipse.persistence.jpa.jpql.tools.model.query;
 
 /**
@@ -102,6 +103,11 @@ public abstract class AnonymousStateObjectVisitor implements StateObjectVisitor 
 
     @Override
     public void visit(ConcatExpressionStateObject stateObject) {
+        visit((StateObject) stateObject);
+    }
+
+    @Override
+    public void visit(ConcatPipesExpressionStateObject stateObject) {
         visit((StateObject) stateObject);
     }
 
@@ -201,6 +207,11 @@ public abstract class AnonymousStateObjectVisitor implements StateObjectVisitor 
     }
 
     @Override
+    public void visit(IdExpressionStateObject stateObject) {
+        visit((StateObject) stateObject);
+    }
+
+    @Override
     public void visit(IndexExpressionStateObject stateObject) {
         visit((StateObject) stateObject);
     }
@@ -232,6 +243,11 @@ public abstract class AnonymousStateObjectVisitor implements StateObjectVisitor 
 
     @Override
     public void visit(KeywordExpressionStateObject stateObject) {
+        visit((StateObject) stateObject);
+    }
+
+    @Override
+    public void visit(LeftExpressionStateObject stateObject) {
         visit((StateObject) stateObject);
     }
 
@@ -321,7 +337,17 @@ public abstract class AnonymousStateObjectVisitor implements StateObjectVisitor 
     }
 
     @Override
+    public void visit(ReplaceExpressionStateObject stateObject) {
+        visit((StateObject) stateObject);
+    }
+
+    @Override
     public void visit(ResultVariableStateObject stateObject) {
+        visit((StateObject) stateObject);
+    }
+
+    @Override
+    public void visit(RightExpressionStateObject stateObject) {
         visit((StateObject) stateObject);
     }
 
@@ -440,6 +466,11 @@ public abstract class AnonymousStateObjectVisitor implements StateObjectVisitor 
 
     @Override
     public void visit(ValueExpressionStateObject stateObject) {
+        visit((StateObject) stateObject);
+    }
+
+    @Override
+    public void visit(VersionExpressionStateObject stateObject) {
         visit((StateObject) stateObject);
     }
 

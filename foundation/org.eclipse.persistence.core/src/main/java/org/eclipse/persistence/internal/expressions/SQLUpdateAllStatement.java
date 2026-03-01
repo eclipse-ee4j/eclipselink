@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -15,30 +15,36 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.expressions;
 
-import java.io.*;
-import java.util.HashMap;
-import java.util.Iterator;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
-import java.util.Collection;
+import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.queries.SQLCall;
+
+import java.io.CharArrayWriter;
+import java.io.IOException;
+import java.io.Writer;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * @author Guy Pelletier
  * @since TOPLink/Java 1.0
  */
 public class SQLUpdateAllStatement extends SQLModifyStatement {
-    protected HashMap m_updateClauses;
-    protected HashMap databaseFieldsToTableAliases;
+    protected Map<DatabaseField, Object> m_updateClauses;
+    protected Map<DatabaseField, String> databaseFieldsToTableAliases;
 
     protected SQLCall selectCallForExist;
     protected String tableAliasInSelectCallForExist;
-    protected Collection primaryKeyFields;
+    protected Collection<DatabaseField> primaryKeyFields;
     protected boolean shouldExtractWhereClauseFromSelectCallForExist;
+
+    public SQLUpdateAllStatement() {
+    }
 
     public void setSelectCallForExist(SQLCall selectCallForExist) {
         this.selectCallForExist = selectCallForExist;
@@ -52,22 +58,22 @@ public class SQLUpdateAllStatement extends SQLModifyStatement {
     public String getTableAliasInSelectCallForExist() {
         return tableAliasInSelectCallForExist;
     }
-    public void setPrimaryKeyFieldsForAutoJoin(Collection primaryKeyFields) {
+    public void setPrimaryKeyFieldsForAutoJoin(Collection<DatabaseField> primaryKeyFields) {
         this.primaryKeyFields = primaryKeyFields;
     }
-    public Collection getPrimaryKeyFieldsForAutoJoin() {
+    public Collection<DatabaseField> getPrimaryKeyFieldsForAutoJoin() {
         return primaryKeyFields;
     }
-    public void setUpdateClauses(HashMap updateClauses) {
+    public void setUpdateClauses(Map<DatabaseField, Object> updateClauses) {
         m_updateClauses = updateClauses;
     }
-    public HashMap getUpdateClauses() {
+    public Map<DatabaseField, Object> getUpdateClauses() {
         return m_updateClauses;
     }
-    public void setDatabaseFieldsToTableAliases(HashMap databaseFieldsToTableAliases) {
+    public void setDatabaseFieldsToTableAliases(Map<DatabaseField, String> databaseFieldsToTableAliases) {
         this.databaseFieldsToTableAliases = databaseFieldsToTableAliases;
     }
-    public HashMap getDatabaseFieldsToTableAliases() {
+    public Map<DatabaseField, String> getDatabaseFieldsToTableAliases() {
         return databaseFieldsToTableAliases;
     }
     public void setShouldExtractWhereClauseFromSelectCallForExist(boolean shouldExtractWhereClauseFromSelectCallForExist) {
@@ -148,7 +154,7 @@ public class SQLUpdateAllStatement extends SQLModifyStatement {
             // SET CLAUSE //
             writer.write(" SET ");
 
-            Iterator i = m_updateClauses.keySet().iterator();
+            Iterator<DatabaseField> i = m_updateClauses.keySet().iterator();
             boolean commaNeeded = false;
 
             while (i.hasNext()) {
@@ -156,17 +162,17 @@ public class SQLUpdateAllStatement extends SQLModifyStatement {
                     writer.write(", ");
                 }
 
-                DatabaseField field = (DatabaseField)i.next();
+                DatabaseField field = i.next();
                 Object value = m_updateClauses.get(field);
 
                 writer.write(field.getNameDelimited(session.getPlatform()));
                 writer.write(" = ");
-                if(value instanceof Expression) {
-                    printer.printExpression((Expression)value);
+                if(value instanceof Expression expression) {
+                    printer.printExpression(expression);
                 } else {
                     // must be SQLCall
                     SQLCall selCall = (SQLCall)value;
-                    String tableAlias = (String)getDatabaseFieldsToTableAliases().get(field);
+                    String tableAlias = getDatabaseFieldsToTableAliases().get(field);
                     // should be SQLCall select
                     writer.write("(");
                     writeSelect(writer, selCall, tableAlias, call, session.getPlatform());
@@ -193,11 +199,11 @@ public class SQLUpdateAllStatement extends SQLModifyStatement {
         String str = selectCall.getSQLString();
         writer.write(str);
 
-        boolean hasWhereClause = str.toUpperCase().indexOf(" WHERE ") >= 0;
+        boolean hasWhereClause = str.toUpperCase().contains(" WHERE ");
 
         // Auto join
         // Example: AND t0.EMP_ID = EMP_ID
-        Iterator it = getPrimaryKeyFieldsForAutoJoin().iterator();
+        Iterator<DatabaseField> it = getPrimaryKeyFieldsForAutoJoin().iterator();
         while(it.hasNext()) {
             if(!hasWhereClause) {
             // there is no where clause - should print WHERE
@@ -206,7 +212,7 @@ public class SQLUpdateAllStatement extends SQLModifyStatement {
             } else {
                 writer.write(" AND ");
             }
-            String fieldName = ((DatabaseField)it.next()).getNameDelimited(platform);
+            String fieldName = it.next().getNameDelimited(platform);
             if(tableAliasInSelectCall != null) {
                 writer.write(tableAliasInSelectCall);
                 writer.write('.');

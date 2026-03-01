@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -60,9 +60,8 @@ public class CollectedEntity {
 
     @Override
     public boolean equals(final Object object) {
-      if (object instanceof CollectedEntity) {
-        final CollectedEntity that = (CollectedEntity) object;
-        return this.label.equals(that.label)
+      if (object instanceof CollectedEntity that) {
+          return this.label.equals(that.label)
             && this.content.equals(that.content);
       }
       return false;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,16 +25,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.Vector;
 
 import javax.xml.namespace.QName;
+
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.sdo.helper.AttributeMimeTypePolicy;
 import org.eclipse.persistence.sdo.helper.InstanceClassConverter;
 import org.eclipse.persistence.sdo.helper.ListWrapper;
 import org.eclipse.persistence.sdo.helper.SDOMethodAttributeAccessor;
 import org.eclipse.persistence.sdo.helper.SDOXSDHelper;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.exceptions.SDOException;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.mappings.DatabaseMapping;
@@ -237,7 +237,7 @@ public class SDOProperty implements Property, Serializable {
     }
 
     public boolean hasAliasNames() {
-        return aliasNames != null && aliasNames.size() > 0;
+        return aliasNames != null && !aliasNames.isEmpty();
     }
 
     /**
@@ -480,7 +480,7 @@ public class SDOProperty implements Property, Serializable {
         // Set fields even though defaults are set
         //aNullPolicy.setMarshalNullRepresentation(XMLNullRepresentationType.EMPTY_NODE);
         // Parameter type is always String
-        ((IsSetNullPolicy)aNullPolicy).setIsSetParameterTypes(new Class<?>[] { ClassConstants.STRING });
+        ((IsSetNullPolicy)aNullPolicy).setIsSetParameterTypes(new Class<?>[] { CoreClassConstants.STRING });
         ((IsSetNullPolicy)aNullPolicy).setIsSetParameters(new Object[] { propertyName });
         aMapping.setNullPolicy(aNullPolicy);
         return aNullPolicy;
@@ -653,7 +653,7 @@ public class SDOProperty implements Property, Serializable {
                     //iterate over the mappings and find the correct place to insert this mapping relative to the
                     //indecies of the others.
                     SDOType containingType = getContainingType();
-                    Vector<DatabaseMapping> mappings = containingType.getXmlDescriptor().getMappings();
+                    List<DatabaseMapping> mappings = containingType.getXmlDescriptor().getMappings();
                     boolean added = false;
                     for(int i = 0; i < mappings.size(); i++) {
                         DatabaseMapping next = mappings.get(i);
@@ -969,27 +969,27 @@ public class SDOProperty implements Property, Serializable {
             Class<?> instanceClass = getType().getInstanceClass();
             String instanceClassName = getType().getInstanceClassName();
             if (((instanceClassName != null) && instanceClassName.equals("jakarta.activation.DataHandler")) ||//
-                    (instanceClass == ClassConstants.ABYTE) ||//
-                    (instanceClass == ClassConstants.APBYTE) ||//
-                    (instanceClass == ClassConstants.BYTE) ||//
-                    (instanceClass == ClassConstants.PBYTE) ||//
-                    (instanceClass == ClassConstants.CHAR) ||//
-                    (instanceClass == ClassConstants.PCHAR) ||//
-                    (instanceClass == ClassConstants.DOUBLE) ||//
-                    (instanceClass == ClassConstants.PDOUBLE) ||//
-                    (instanceClass == ClassConstants.FLOAT) ||//
-                    (instanceClass == ClassConstants.PFLOAT) ||//
-                    (instanceClass == ClassConstants.LONG) ||//
-                    (instanceClass == ClassConstants.PLONG) ||//
-                    (instanceClass == ClassConstants.SHORT) ||//
-                    (instanceClass == ClassConstants.PSHORT) ||//
-                    (instanceClass == ClassConstants.INTEGER) ||//
-                    (instanceClass == ClassConstants.PINT) ||//
-                    (instanceClass == ClassConstants.BIGDECIMAL) ||//
-                    (instanceClass == ClassConstants.BIGINTEGER) ||//
-                    (instanceClass == ClassConstants.STRING) ||//
-                    (instanceClass == ClassConstants.UTILDATE) ||//
-                    (instanceClass == ClassConstants.CALENDAR) ||//
+                    (instanceClass == CoreClassConstants.ABYTE) ||//
+                    (instanceClass == CoreClassConstants.APBYTE) ||//
+                    (instanceClass == CoreClassConstants.BYTE) ||//
+                    (instanceClass == CoreClassConstants.PBYTE) ||//
+                    (instanceClass == CoreClassConstants.CHAR) ||//
+                    (instanceClass == CoreClassConstants.PCHAR) ||//
+                    (instanceClass == CoreClassConstants.DOUBLE) ||//
+                    (instanceClass == CoreClassConstants.PDOUBLE) ||//
+                    (instanceClass == CoreClassConstants.FLOAT) ||//
+                    (instanceClass == CoreClassConstants.PFLOAT) ||//
+                    (instanceClass == CoreClassConstants.LONG) ||//
+                    (instanceClass == CoreClassConstants.PLONG) ||//
+                    (instanceClass == CoreClassConstants.SHORT) ||//
+                    (instanceClass == CoreClassConstants.PSHORT) ||//
+                    (instanceClass == CoreClassConstants.INTEGER) ||//
+                    (instanceClass == CoreClassConstants.PINT) ||//
+                    (instanceClass == CoreClassConstants.BIGDECIMAL) ||//
+                    (instanceClass == CoreClassConstants.BIGINTEGER) ||//
+                    (instanceClass == CoreClassConstants.STRING) ||//
+                    (instanceClass == CoreClassConstants.UTILDATE) ||//
+                    (instanceClass == CoreClassConstants.CALENDAR) ||//
                     (instanceClass == ClassConstants.TIME) ||//
                     (instanceClass == ClassConstants.SQLDATE) ||//
                     (instanceClass == ClassConstants.TIMESTAMP)) {
@@ -1073,7 +1073,7 @@ public class SDOProperty implements Property, Serializable {
       */
     public Map getPropertyValues() {
         if (propertyValues == null) {
-            propertyValues = new HashMap<Property, Object>(1);
+            propertyValues = new HashMap<>(1);
             if(null != isElement) {
                 propertyValues.put(SDOConstants.XMLELEMENT_PROPERTY, isElement);
             }
@@ -1091,18 +1091,17 @@ public class SDOProperty implements Property, Serializable {
         } else {
             if(null == propertyValues) {
                 if(null != isElement) {
-                    propertyValues = new HashMap<Property, Object>(2);
+                    propertyValues = new HashMap<>(2);
                     propertyValues.put(SDOConstants.XMLELEMENT_PROPERTY, isElement);
                 } else {
-                    propertyValues = new HashMap<Property, Object>(1);
+                    propertyValues = new HashMap<>(1);
                 }
             }
             propertyValues.put(property, value);
             if(SDOConstants.SDOXML_URL.equals(((SDOProperty) property).getUri()) && SDOConstants.SDOXML_DATATYPE.equals(property.getName()) && value instanceof Type) {
                 setType((Type)value);
             }
-            if(SDOConstants.ORACLE_SDO_URL.equals(((SDOProperty) property).getUri()) && SDOConstants.XML_SCHEMA_TYPE_NAME.equals(property.getName()) && value instanceof Type) {
-                Type schemaType = (Type)value;
+            if(SDOConstants.ORACLE_SDO_URL.equals(((SDOProperty) property).getUri()) && SDOConstants.XML_SCHEMA_TYPE_NAME.equals(property.getName()) && value instanceof Type schemaType) {
                 QName schemaTypeQName = new QName(schemaType.getURI(), schemaType.getName());
                 setXsdType(schemaTypeQName);
             }

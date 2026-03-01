@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,15 +23,15 @@ import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 public class ListToStringAdapter extends XmlAdapter<java.lang.String, List<String>> {
     @Override
     public String marshal(List<String> value) {
-        String string = "";
+        StringBuilder string = new StringBuilder();
         for(int i = 0; i < value.size(); i++) {
             String next = value.get(i);
-            string += next;
+            string.append(next);
             if(i + 1 < value.size()) {
-                string +=",";
+                string.append(",");
             }
         }
-        return string;
+        return string.toString();
     }
 
     @Override

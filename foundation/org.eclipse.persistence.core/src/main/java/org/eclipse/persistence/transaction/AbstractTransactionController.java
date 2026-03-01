@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,17 +14,8 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.transaction;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.ExceptionHandler;
-import org.eclipse.persistence.exceptions.TransactionException;
 import org.eclipse.persistence.internal.sequencing.SequencingCallback;
 import org.eclipse.persistence.internal.sequencing.SequencingCallbackFactory;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -34,6 +25,13 @@ import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.ExternalTransactionController;
 import org.eclipse.persistence.sessions.broker.SessionBroker;
+
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * <p>
@@ -63,22 +61,25 @@ public abstract class AbstractTransactionController implements ExternalTransacti
     /** PERF: Cache the active uow in a thread local. */
     protected ThreadLocal<UnitOfWorkImpl> activeUnitOfWorkThreadLocal;
 
-    /** Table of external transaction object keys and sequencing listeners values. */
-    /** Non-null only in case sequencing callbacks are used: numSessionsRequiringSequencingCallback {@literal >} 0 */
+    /** Table of external transaction object keys and sequencing listeners values.
+     *  Non-null only in case sequencing callbacks are used: numSessionsRequiringSequencingCallback {@literal >} 0
+     */
     protected ConcurrentMap<Object, AbstractSynchronizationListener> sequencingListeners;
 
-    /** Table of external transaction object keys and listeners that are currently in beforeCompletion. */
-    /** Request for a new sequencing callback may be triggered by beforeCompletion of existing listener - */
-    /** in this case avoid creating yet another listener for sequencing but rather use the listener */
-    /** that has initiated the request */
-    /** Non-null only in case sequencing callbacks are used: numSessionsRequiringSequencingCallback {@literal >} 0 */
+    /** Table of external transaction object keys and listeners that are currently in beforeCompletion.
+     * Request for a new sequencing callback may be triggered by beforeCompletion of existing listener -
+     * in this case avoid creating yet another listener for sequencing but rather use the listener
+     * that has initiated the request
+     * Non-null only in case sequencing callbacks are used: numSessionsRequiringSequencingCallback {@literal >} 0
+     */
     protected ConcurrentMap<Object, AbstractSynchronizationListener> currentlyProcessedListeners;
 
-    /** Indicates how many sessions require sequencing callbacks: */
-    /** 0 - sequencing callbacks not used; */
-    /** 1 - the session is DatabaseSession or ServerSession and requires sequencing callbacks, */
-    /** or the session is a session broker with only one member requiring sequencing callbacks. */
-    /** more - the session is a session broker with several members requiring sequencing callbacks. */
+    /** Indicates how many sessions require sequencing callbacks:
+     * 0 - sequencing callbacks not used;
+     * 1 - the session is DatabaseSession or ServerSession and requires sequencing callbacks,
+     * or the session is a session broker with only one member requiring sequencing callbacks.
+     * more - the session is a session broker with several members requiring sequencing callbacks.
+     */
     protected int numSessionsRequiringSequencingCallback;
 
     /** Allow exception in before/after completion to be wrapped. */
@@ -488,7 +489,7 @@ public abstract class AbstractTransactionController implements ExternalTransacti
      * 2. in the very end of connecting sequencing or adding descriptors to sequencing,
      * after it's determined whether sequencing callbacks (and therefore listeners)
      * will be required.
-     *
+     * <p>
      * In SessionBroker case each member's sequencing may call this method.
      * Note that the number of sessions requiring callbacks may never decrease,
      * therefore if isSequencingCallbackRequired method has returned true once,

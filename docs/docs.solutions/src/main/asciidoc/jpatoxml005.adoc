@@ -1,0 +1,359 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[JPA2XML005]]
+=== Using XPath Predicates for Mapping
+
+This section demonstrates how the EclipseLink MOXy API uses XPath
+predicates to define an expression that specifiers the XML element's
+name. An XPath predicate is an expression that defines a specific
+object-to-XML mapping. As shown in previous examples, by default, JAXB
+will use the Java field name as the XML element name.
+
+This section contains the following subsections:
+
+* link:#BEIHJHCJ[Understanding XPath Predicates]
+* link:#BEIIBJHE[Mapping Based on Position]
+* link:#BEIJIHCI[Mapping Based on an Attribute Value]
+* link:#BEIDJHFD["Self" Mappings]
+
+[[BEIHJHCJ]]
+
+==== Understanding XPath Predicates
+
+As described above, an XPath predicate is an expression that defines a
+specific object-to-XML mapping when standard annotations
+
+re not sufficient. For example, the following snippet of XML shows a
+`<data>` element with two `<node>` sub-elements. If you wanted to create
+this mapping in a Java object, you would need to specify an XPath
+predicate for each `<node>` sub-element; for example, `Node[2]` in the
+following Java:
+
+[source,oac_no_warn]
+----
+   <java-attributes>
+      <xml-element java-attribute="node" xml-path="node[1]/ABC"/>
+      <xml-element java-attribute="node" xml-path="node[2]/DEF"/>
+   </java-attributes>
+----
+
+would match the second occurrence of the node element (`"DEF"`) in the
+following XML:
+
+[source,oac_no_warn]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<data>
+   <node>ABC</node>
+   <node>DEF</node>
+</data>
+----
+
+Thus, by using the XPath predicate, you can use the same attribute name
+for a different attribute value.
+
+[[BEIIBJHE]]
+
+==== Mapping Based on Position
+
+This mapping technique is described in
+xref:{relativedir}/jpatoxml003.adoc#BEIDCEHD[Mapping Values to a Text Node by
+Position].
+
+[[BEIJIHCI]]
+
+==== Mapping Based on an Attribute Value
+
+Beginning with EclipseLink MOXy 2.3, you can also map to an XML element
+based on an Attribute value. In this exercise, you will annotate the JPA
+entity to render the XML document shown in link:#BEIIBGBB[Example
+15-21]. Note that all of the XML elements are named node but are
+differentiated by the value of their name attribute.
+
+[[BEIIBGBB]]
+
+*_Example 15-21_*
+
+[source,oac_no_warn]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<node>
+   <node name="first-name">Bob</node>
+   <node name="last-name">Smith</node>
+   <node name="address">
+      <node name="street">123 A Street</node>
+   </node>
+   <node name="phone-number" type="work">555-1111</node>
+   <node name="phone-number" type="cell">555-2222</node>
+</node>
+----
+
+To attain this mapping, you need to declare three classes, `Name`,
+`Address`, and `PhoneNumber` and then use an XPath in the form of
+__`element-name`__`[@`__`attribute-name``='``value`__`']` to map each
+Java field.
+
+[[BEIEIFGA]]
+
+===== Task 1: Create the Customer Entity
+
+To create the `Customer` class entity:
+
+. Import the necessary JPA packages by adding the following code:
++
+[source,oac_no_warn]
+----
+import jakarta.xml.bind.annotation.*;
+ 
+import org.eclipse.persistence.oxm.annotations.XmlPath;
+ 
+----
+. Declare the `Customer` class and use the `@XmlRootElement` annotation
+to make it the root element. Set the XML accessor type to `FIELD`:
++
+[source,oac_no_warn]
+----
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
+public class Customer {
+----
+. Declare local to the `Customer` class these properties:
+* `firstName` (String type)
+* `lastName` (String)
+* `Address` (Address)
++
+For each property, set the Xpath predicate by preceding the property
+declaration with the annotation
+`@XmlPath(`__`element-name`__`[@`__`attribute-name`__`='`__`value``'])`__;
+for example, for `firstName`, you would set the XPath predicate with
+this statement:
++
+[source,oac_no_warn]
+----
+@XmlPath("node[@name='first-name']/text()")
+----
+. Also local to the `Customer` class, declare the `phoneNumber` property
+as a `List<PhoneNumber>` type and assign it the value
+`new ArrayList<PhoneNumber>()`.
+
+The `Customer` class should look like the snippet in
+link:#BEIHAHJF[Example 15-22].
+
+[[BEIHAHJF]]
+
+*_Example 15-22 Customer Object Mapping to an Attribute Value_*
+
+[source,oac_no_warn]
+----
+package example;
+ 
+import jakarta.xml.bind.annotation.*;
+ 
+import org.eclipse.persistence.oxm.annotations.XmlPath;
+ 
+@XmlRootElement(name="node")
+@XmlAccessorType(XmlAccessType.FIELD)
+public class Customer {
+ 
+    @XmlPath("node[@name='first-name']/text()")
+    private String firstName;
+ 
+    @XmlPath("node[@name='last-name']/text()")
+    private String lastName;
+ 
+    @XmlPath("node[@name='address']")
+    private Address address;
+ 
+    @XmlPath("node[@name='phone-number']")
+    private List<PhoneNumber> phoneNumbers = new ArrayList<PhoneNumber>();
+ 
+    ...
+}
+----
+
+===== Task 2: Create the Address Entity
+
+To create the `Address` class, do the following:
+
+. Import the necessary JPA packages by adding the following code:
++
+[source,oac_no_warn]
+----
+import jakarta.xml.bind.annotation.*;
+ 
+import org.eclipse.persistence.oxm.annotations.XmlPath;
+ 
+----
+. Declare the `Address` class and set the XML accessor type to `FIELD`:
++
+[source,oac_no_warn]
+----
+@XmlAccessorType(XmlAccessType.FIELD)
+public class Address {
+----
++
+This instance does not require the `@XmlRootElement` annotation as in
+the previous Tasks because the `Address` class is root not a root
+element in the XML document.
+. Declare local to the `Address` class the `String` property `street`.
+Set the XPath predicate by preceding the property declaration with the
+annotation `@XmlPath("node[@name='street']/text()")`.
+
+The `Address` class should look like link:#BEIHAIHA[Example 15-23].
+
+[[BEIHAIHA]]
+
+*_Example 15-23 Address Object Mapping to an Attribute Value_*
+
+[source,oac_no_warn]
+----
+package example;
+ 
+import jakarta.xml.bind.annotation.*;
+ 
+import org.eclipse.persistence.oxm.annotations.XmlPath;
+ 
+@XmlAccessorType(XmlAccessType.FIELD)
+public class Address {
+ 
+    @XmlPath("node[@name='street']/text()")
+    private String street;
+ 
+    ...
+}
+----
+
+===== Task 3: Create the PhoneNumber Entity
+
+To create the `PhoneNumber` entity:
+
+. Import the necessary JPA packages by adding the following code:
++
+[source,oac_no_warn]
+----
+import jakarta.xml.bind.annotation.*;
+ 
+import org.eclipse.persistence.oxm.annotations.XmlPath;
+ 
+----
+. Declare the `PhoneNumber` class and use the `@XmlRootElement`
+annotation to make it the root element. Set the XML accessor type to
+`FIELD`:
++
+[source,oac_no_warn]
+----
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
+public class Customer {
+----
+. Create the type and string properties and define their mapping as
+attributes under the PhoneNumber root element by using the
+`@XmlAttribute`. annotation.
++
+[source,oac_no_warn]
+----
+    @XmlAttribute
+    private String type;
+ 
+    @XmlValue
+    private String number;
+----
+
+The `PhoneNumber` object should look like link:#BEIDDBJA[Example 15-24].
+
+[[BEIDDBJA]]
+
+*_Example 15-24 PhoneNumber Object Mapping to an Attribute Value_*
+
+[source,oac_no_warn]
+----
+package example;
+ 
+import jakarta.xml.bind.annotation.*;
+ 
+@XmlAccessorType(XmlAccessType.FIELD)
+public class PhoneNumber {
+ 
+    @XmlAttribute
+    private String type;
+ 
+    @XmlValue
+    private String number;
+ 
+    ...
+}
+----
+
+[[BEIDJHFD]]
+
+==== "Self" Mappings
+
+A "self" mapping occurs on one-to-one mappings when you set the target
+object's XPath to "." (dot) so the data from the target object appears
+inside the source object's XML element. This exercise uses the example
+in link:#BEIJIHCI[Mapping Based on an Attribute Value] to map the
+Address information to appear directly under the customer element and
+not wrapped in its own element.
+
+To create the self mapping:
+
+. Repeat Tasks 1 and 2 in link:#BEIEIFGA[Task 1: Create the Customer
+Entity].
+. Declare local to the `Customer` class these properties:
+* `firstName` (String type)
+* `lastName` (String)
+* `Address` (Address)
+. For the `firstName` and `lastName` properties, set the XmlPath
+annotation by preceding the property declaration with the annotation
+`@XmlPath(`__`element-name`__`[@`__`attribute-name`__`='`__`value``'])`__;
+for example, for `firstName`, you would set the XPath predicate with
+this statement:
++
+[source,oac_no_warn]
+----
+@XmlPath("node[@name='first-name']/text()")
+----
+. For the `address` property, set `@XmlPath` to "." (dot):
++
+[source,oac_no_warn]
+----
+    @XmlPath(".")
+    private Address address;
+----
+. Also local to the `Customer` class, declare the `phoneNumber` property
+as a `List<PhoneNumber>` type and assign it the value
+`new ArrayList<PhoneNumber>()`.
+
+The rendered XML for the Customer entity would look like
+link:#BEICAHDH[Example 15-25].
+
+[[BEICAHDH]]
+
+*_Example 15-25 XML Node with Self-Mapped Address Element_*
+
+[source,oac_no_warn]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<node>
+   <node name="first-name">Bob</node>
+   <node name="last-name">Smith</node>
+   <node name="street">123 A Street</node>
+   <node name="phone-number" type="work">555-1111</node>
+   <node name="phone-number" type="cell">555-2222</node>
+</node>
+----

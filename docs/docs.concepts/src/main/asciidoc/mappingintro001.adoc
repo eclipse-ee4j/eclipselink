@@ -1,0 +1,319 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[MAPPINGINTRO001]]
+=== Common Mapping Concepts
+
+This section describes concepts for relational and nonrelational
+mappings that are unique to EclipseLink:
+
+* link:#CHDEDGDF[Mapping Architecture]
+* link:#CHDGGFCH[Mapping Examples]
+* link:#CHDJJHJD[Mapping Converters]
+** link:#BABHCBJA[Serialized Object Converter]
+** link:#BABEHFGH[Type Conversion Converter]
+** link:#BABBCAIH[Object Type Converter]
+
+[[CHDEDGDF]][[OTLCG92097]]
+
+==== Mapping Architecture
+
+To define a mapping, you draw upon the following components:
+
+* The data representation specific to the data source (such as a
+relational database table or schema-defined XML element) in which you
+store the object's data.
+* A descriptor for a particular object class.
+* An object class to map.
+
+NOTE: A mapping is the same regardless of whether your project is persistent
+or nonpersistent.
+
+For an example of a typical EclipseLink mapping, see
+link:#CHDGGFCH[Mapping Examples].
+
+The type of data source you define in your project determines the type
+of mappings you can use and how you configure them. In a persistent
+project, you use mappings to persist to a data source. In a
+nonpersistent project, you use mappings simply to transform between the
+object format and some other data representation (such as XML).
+
+A descriptor represents a particular domain object: it describes the
+object's class. A descriptor also owns the mappings: one mapping for
+each of the class data members that you intend to persist or transform
+in memory. For more information about descriptors, see
+link:descriptors.htm#CHECEAAE[Chapter 5, "Understanding Descriptors"].
+
+[[CHDGGFCH]][[OTLCG92098]]
+
+==== Mapping Examples
+
+Although EclipseLink supports more complex mappings, most EclipseLink
+classes map to a single database table or XML element that defines the
+type of information available in the class. Each object instance of a
+given class maps to a single row comprising the object's attributes,
+plus an identifier (the primary key) that uniquely identifies the
+object.
+
+link:#CHDHADEG[Figure 6-1] illustrates the simplest database mapping
+case in which:
+
+* *Table_X* in the database represents *Class_X*.
+* *Object_X1* and *Object_X2* are instances of *Class_X*.
+* Individual rows in *Table_X* represent *Object_X1* and *Object_X2*, as
+well as any other instances of *Class_X*.
+
+[[CHDHADEG]][[OTLCG92099]]
+
+*_Figure 6-1 How Classes and Objects Map to a Database Table_*
+
+image:{imagesrelativedir}/example_map1.png[Description of Figure 6-1 follows,title="Description of Figure 6-1 follows"] +
+xref:{imagestextrelativedir}/example_map1.adoc[Description of "Figure 6-1 How Classes and Objects Map to a Database Table"] +
+
+EclipseLink provides you with the tools to build these mappings, from
+the simple mappings illustrated in link:#CHDHADEG[Figure 6-1], to
+complex mappings.
+
+For an additional example of a relational mapping, see
+link:#i1025794[Figure 6-2, "Serialized Object Converter (relational)"].
+
+[[CHDJJHJD]][[OTLCG92121]]
+
+==== Mapping Converters
+
+If existing EclipseLink mappings do not meet your needs, you can create
+custom mappings using mapping extensions. These extensions include the
+following:
+
+* link:#BABHCBJA[Serialized Object Converter]
+* link:#BABEHFGH[Type Conversion Converter]
+* link:#BABBCAIH[Object Type Converter]
+
+NOTE: Except for simple type translation, you can use the mapping converters
+and transformers regardless of whether your data source is relational or
+nonrelational. Simple type translation is applicable only to XML
+projects.
+
+[[BABHCBJA]][[OTLCG00042]]
+
+===== Serialized Object Converter
+
+The serialized object converter can be used with direct and direct
+collection mappings, allowing you to map complex objects into binary
+fields through Java object serialization. Serialized objects are
+normally stored in `RAW` or Binary Large Object (`BLOB)` fields in the
+database, or `HEX` or `BASE64` elements in an XML document.
+
+link:#i1025794[Figure 6-2] shows an example of a direct-to-field
+mappings that uses a serialized object converter. The attribute
+`jobDescription` contains a formatted text document that is stored in
+the `JOB_DESC` field of the database.
+
+[[i1025794]][[OTLCG92122]]
+
+*_Figure 6-2 Serialized Object Converter (relational)_*
+
+image:{imagesrelativedir}/serobjfg.png[Description of Figure 6-2 follows,title="Description of Figure 6-2 follows"] +
+xref:{imagestextrelativedir}/serobjfg.adoc[Description of "Figure 6-2 Serialized Object Converter (relational)"] +
+
+link:#CEGGDDEC[Figure 6-3] demonstrates an example of a nonrelational
+mapping that uses a serialized object converter. The attribute
+`jobDescription` contains a formatted text document that EclipseLink
+stores in the `JOB DESCRIPTION` element of an XML schema.
+
+[[CEGGDDEC]][[OTLCG92123]]
+
+*_Figure 6-3 Serialized Object Converter (nonrelational)_*
+
+image:{imagesrelativedir}/otlcg_dt_002.png[Description of Figure 6-3 follows,title="Description of Figure 6-3 follows"] +
+xref:{imagestextrelativedir}/otlcg_dt_002.adoc[Description of "Figure 6-3 Serialized Object Converter (nonrelational)"] +
+
+The serialized object converter relies on the Java serializer. Before
+you map a domain object with the serialized object converter, ensure
+that the domain object implements the `java.io.Serializable` interface
+(or inherits that implementation) and marks all nonserializable fields
+transient.
+
+[[BABEHFGH]][[OTLCG00043]]
+
+===== Type Conversion Converter
+
+The type conversion converter can be used with direct and direct
+collection mappings, allowing you to map complex objects into binary
+fields. For example, a `Number` in the data source can be mapped to a
+`String` in Java, or a `java.util.Date` in Java can be mapped to a
+`java.sql.Date` in the data source.
+
+link:#i1054818[Figure 6-4] illustrates a type conversion mapping
+(relational). Because the `java.util.Date` class is stored by default as
+a `Timestamp` in the database, it must first be converted to an explicit
+database type such as `java.sql.Date` (required only for DB2–most other
+databases have a single date data type that can store any date or time).
+
+[[i1054818]][[OTLCG92124]]
+
+*_Figure 6-4 Type Conversion Mapping (relational)_*
+
+image:{imagesrelativedir}/tcmapfig.png[Description of Figure 6-4 follows,title="Description of Figure 6-4 follows"] +
+xref:{imagestextrelativedir}/tcmapfig.adoc[Description of "Figure 6-4 Type Conversion Mapping (relational) "] +
+
+link:#CHDBJHEI[Figure 6-5] illustrates a type conversion mapping
+(nonrelational). `java.util.Date` object is mapped to a String in a XML
+schema.
+
+[[CHDBJHEI]][[OTLCG92125]]
+
+*_Figure 6-5 Type Conversion Mapping (nonrelational)_*
+
+image:{imagesrelativedir}/tcmapxml.png[Description of Figure 6-5 follows,title="Description of Figure 6-5 follows"] +
+xref:{imagestextrelativedir}/tcmapxml.adoc[Description of "Figure 6-5 Type Conversion Mapping (nonrelational)"] +
+
+You can use a type conversion converter to specify the specific database
+type when that type must be handled specially for the database. This
+includes support for the special Oracle JDBC binding options required
+for `NCHAR`, `NVARCHAR2`, and `NCLOB` fields as well as the special
+Oracle Thin JDBC insert and update requirements for handling `BLOB` and
+`CLOB` fields greater than 5K.
+
+EclipseLink uses the `NCharacter`, `NClob` and `NString` types in the
+`org.eclipse.persistence.platform.database.oracle` package as the
+converter data type to support the `NCHAR`, `NCLOB` and `NVARCHAR2`
+types. EclipseLink uses the `java.sql.Blob` and `Clob` types as the
+converter data type to support `BLOB` and `CLOB` values greater than 5K.
+
+You can configure a type conversion converter to map a data source time
+type (such as `TIMESTAMP`) to a `java.lang.String` provided that the
+String value conforms to the following formats:
+
+* `YYYY/MM/DD HH:MM:SS`
+* `YY/MM/DD HH:MM:SS`
+* `YYYY-MM-DD HH:MM:SS`
+* `YY-MM-DD HH:MM:SS`
+
+For more complex `String` to `TIMESTAMP` type conversion, consider a
+transformation mapping (see link:#CHDDBJJJ[Transformation Mapping]).
+
+You can also use the `@TypeConverter` annotation to modify data values
+during the reading and writing of a mapped attribute. Each
+`TypeConverter` must be uniquely named and can be defined at the class,
+field, and property level, and can be specified within an `Entity`,
+`MappedSuperclass` and `Embeddable` class. A `TypeConverter` is always
+specified by using an `@Convert` annotation.
+
+You can place a `@TypeConverter` on a `Basic`, `BasicMap`, or
+`BasicCollection` mapping. For more information on these annotations,
+see _Jakarta Persistence API (JPA) Extensions Reference for
+EclipseLink_.
+
+[[BABBCAIH]][[OTLCG00044]]
+
+===== Object Type Converter
+
+The object type converter can be used with direct and direct collection
+mappings allowing you to match a fixed number of values to Java objects.
+Use this converter when the values in the schema differ from those in
+Java.
+
+link:#CHDJBFJH[Figure 6-6] illustrates an object type conversion between
+the `Employee` attribute `gender` and the XML element `gender`. If the
+value of the Java object attribute is `Female`, EclipseLink stores it in
+the XML element as `F`.
+
+[[CHDJBFJH]][[OTLCG92126]]
+
+*_Figure 6-6 Object Type XML Converter_*
+
+image:{imagesrelativedir}/obxmlfig.png[Description of Figure 6-6 follows,title="Description of Figure 6-6 follows"] +
+xref:{imagestextrelativedir}/obxmlfig.adoc[Description of "Figure 6-6 Object Type XML Converter"] +
+
+You can also perform object type transformations by using the
+`@ObjectTypeConverter` annotation. This annotation specifies an
+`org.eclipse.persistence.mappings.converters.ObjectTypeConverter` that
+converts a fixed number of database data value(s) to Java object
+value(s) during the reading and writing of a mapped attribute. For this
+annotation you must provide values for the array of conversion values by
+using the `@ConversionValue` annotation. For more information, see the
+descriptions of `@ObjectTypeConverter` and `@ConversionValue` in
+_Jakarta Persistence API (JPA) Extensions Reference for EclipseLink_.
+
+[[CHDDBJJJ]][[OTLCG00040]]
+
+==== Transformation Mapping
+
+In some special circumstances, existing mapping types and their default
+Java to data source type handling may be insufficient. In these special
+cases, you can consider using a transformation mapping to perform
+specialized translations between how a value is represented in Java and
+in the data source.
+
+TIP: Because of the complexity of transformation mappings, it is often easier
+to perform the transformation with a converter or getter and setter
+methods of a direct-to-field mapping.
+
+link:#i1054846[Figure 6-7] illustrates a transformation mapping. The
+values from the `B_DATE` and `B_TIME` fields are used to create a
+`java.util.Date` to be stored in the `birthDate` attribute.
+
+[[i1054846]][[OTLCG92423]]
+
+*_Figure 6-7 Transformation Mappings_*
+
+image:{imagesrelativedir}/trmapfig.png[Description of Figure 6-7 follows,title="Description of Figure 6-7 follows"] +
+xref:{imagestextrelativedir}/trmapfig.adoc[Description of "Figure 6-7 Transformation Mappings"] +
+
+A transformation mapping is made up of the following two components:
+
+* attribute transformer: performs the object attribute transformation at
+read time
+* field transformer: performs the object attribute-to-field
+transformation at write time
+
+You can implement a transformer as either a separate class or as a
+method on your domain object.
+
+Often, a transformation mapping is appropriate when values from multiple
+fields are used to create an object. This type of mapping requires that
+you provide an _attribute transformation_ that is invoked when reading
+the object from the database. This must have at least one parameter that
+is an instance of `Record`. In your attribute transformation, you can
+use `Record` method `get` to retrieve the value in a specific column.
+Your attribute transformation can optionally specify a second parameter,
+an instance of `Session`. The `Session` performs queries on the database
+to get additional values needed in the transformation. The
+transformation should _return_ the value to be stored in the attribute.
+
+Transformation mappings also require a _field transformation_ for each
+field, to be written to the database when the object is saved. The
+transformation returns the value to be stored in that field.
+
+Within your implementation of the attribute and field transformation,
+you can take whatever actions are necessary to transform your
+application data to suit your data source, and vise versa.
+
+You can perform transformation mappings between database columns and
+attribute values by using the `@Transformation` annotation. Use this
+annotation with the `@WriteTransformer` and `@ReadTransformer`
+annotations. The `@WriteTransformer` annotation is used to transform a
+single attribute value to a single database column value. For this
+annotation you have the option of providing an implementation of the
+`FieldTransformer` interface. For the `@ReadTransformer` annotation, you
+must provide an implementation of the
+`org.eclipse.persistence.mappings.transformers.AttributeTransformer`
+interface. For more information on these annotations, see the
+descriptions of the `@Transformation`, `@ReadTransformer`, and
+`@WriteTransformer` in _Jakarta Persistence API (JPA) Extensions
+Reference for EclipseLink_.

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,12 +14,8 @@
 //     Oracle - initial API and implementation from Oracle TopLink
  package org.eclipse.persistence.mappings.structures;
 
-import java.util.Enumeration;
-import java.util.List;
-import java.util.Vector;
-
-import org.eclipse.persistence.eis.EISCollectionChangeRecord;
-import org.eclipse.persistence.eis.EISOrderedCollectionChangeRecord;
+import org.eclipse.persistence.internal.sessions.EISCollectionChangeRecord;
+import org.eclipse.persistence.internal.sessions.EISOrderedCollectionChangeRecord;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.ChangeRecord;
@@ -27,6 +23,10 @@ import org.eclipse.persistence.internal.sessions.MergeManager;
 import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.mappings.DatabaseMapping;
+
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
 
 /**
  * Helper class to consolidate all the heinous comparing
@@ -168,13 +168,13 @@ public class ArrayCollectionMappingHelper {
         EISOrderedCollectionChangeRecord changeRecord = new EISOrderedCollectionChangeRecord(owner, getAttributeName(), this.getDatabaseMapping());
 
         for (int i = 0; i < cloneVector.size(); i++) {
-            Object cloneElement = cloneVector.elementAt(i);
+            Object cloneElement = cloneVector.get(i);
             boolean found = false;
             for (int j = 0; j < backupVector.size(); j++) {
-                if (this.compareElementsForChange(cloneElement, backupVector.elementAt(j), session)) {
+                if (this.compareElementsForChange(cloneElement, backupVector.get(j), session)) {
                     // the clone element was found in the backup collection
                     found = true;
-                    backupVector.setElementAt(XXX, j);// clear out the matching backup element
+                    backupVector.set(j, XXX);// clear out the matching backup element
 
                     changeRecord.addMovedChangeSet(this.buildChangeSet(cloneElement, owner, session), j, i);
                     break;// matching backup element found - skip the rest of them
@@ -187,7 +187,7 @@ public class ArrayCollectionMappingHelper {
         }
 
         for (int i = 0; i < backupVector.size(); i++) {
-            Object backupElement = backupVector.elementAt(i);
+            Object backupElement = backupVector.get(i);
             if (backupElement != XXX) {
                 // the backup element was not in the clone collection, so it must have been removed
                 changeRecord.addRemovedChangeSet(this.buildChangeSet(backupElement, owner, session), i);
@@ -217,10 +217,10 @@ public class ArrayCollectionMappingHelper {
 
             boolean found = false;
             for (int i = 0; i < backupVector.size(); i++) {
-                if (this.compareElementsForChange(cloneElement, backupVector.elementAt(i), session)) {
+                if (this.compareElementsForChange(cloneElement, backupVector.get(i), session)) {
                     // the clone element was found in the backup collection
                     found = true;
-                    backupVector.setElementAt(XXX, i);// clear out the matching backup element
+                    backupVector.set(i, XXX);// clear out the matching backup element
                     if (this.mapKeyHasChanged(cloneElement, session)) {
                         changeRecord.addChangedMapKeyChangeSet(this.buildChangeSet(cloneElement, owner, session));
                     }
@@ -234,7 +234,7 @@ public class ArrayCollectionMappingHelper {
         }
 
         for (int i = 0; i < backupVector.size(); i++) {
-            Object backupElement = backupVector.elementAt(i);
+            Object backupElement = backupVector.get(i);
             if (backupElement != XXX) {
                 // the backup element was not in the clone collection, so it must have been removed
                 changeRecord.addRemovedChangeSet(this.buildChangeSet(backupElement, owner, session));
@@ -311,9 +311,9 @@ public class ArrayCollectionMappingHelper {
 
             boolean found = false;
             for (int i = 0; i < vector2.size(); i++) {
-                if (this.compareElements(element1, vector2.elementAt(i), session)) {
+                if (this.compareElements(element1, vector2.get(i), session)) {
                     found = true;
-                    vector2.setElementAt(XXX, i);// clear out the matching element
+                    vector2.set(i, XXX);// clear out the matching element
                     break;// matching element found - skip the rest of them
                 }
             }
@@ -323,8 +323,8 @@ public class ArrayCollectionMappingHelper {
         }
 
         // look for elements that were not in collection1
-        for (Enumeration stream = vector2.elements(); stream.hasMoreElements();) {
-            if (stream.nextElement() != XXX) {
+        for (Iterator iterator = vector2.iterator(); iterator.hasNext();) {
+            if (iterator.next() != XXX) {
                 return false;
             }
         }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,17 +14,17 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.platform.xml;
 
-import java.io.File;
-import java.io.InputStream;
-import java.io.Reader;
-import java.net.URL;
-import javax.xml.transform.Source;
-import javax.xml.validation.Schema;
-
 import org.w3c.dom.Document;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
+
+import javax.xml.transform.Source;
+import javax.xml.validation.Schema;
+import java.io.File;
+import java.io.InputStream;
+import java.io.Reader;
+import java.net.URL;
 
 public interface XMLParser {
     int NONVALIDATING = 0;

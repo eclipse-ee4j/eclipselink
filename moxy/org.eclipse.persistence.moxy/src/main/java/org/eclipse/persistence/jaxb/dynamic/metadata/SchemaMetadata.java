@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,20 +14,18 @@
 //     Blaise Doughan - 2.2 - initial implementation
 package org.eclipse.persistence.jaxb.dynamic.metadata;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
+import com.sun.codemodel.ClassType;
+import com.sun.codemodel.JAnnotationStringValue;
+import com.sun.codemodel.JCodeModel;
+import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JPackage;
+import com.sun.tools.xjc.Plugin;
+import com.sun.tools.xjc.api.ErrorListener;
+import com.sun.tools.xjc.api.S2JJAXBModel;
+import com.sun.tools.xjc.api.SchemaCompiler;
+import com.sun.tools.xjc.api.XJC;
 import jakarta.xml.bind.JAXBException;
-import javax.xml.transform.Source;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.stream.StreamResult;
-
+import jakarta.xml.bind.annotation.XmlEnumValue;
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContextFactory;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
@@ -45,20 +43,23 @@ import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXParseException;
 
-import com.sun.codemodel.ClassType;
-import com.sun.codemodel.JCodeModel;
-import com.sun.codemodel.JDefinedClass;
-import com.sun.codemodel.JEnumConstant;
-import com.sun.codemodel.JPackage;
-import com.sun.tools.xjc.Plugin;
-import com.sun.tools.xjc.api.ErrorListener;
-import com.sun.tools.xjc.api.S2JJAXBModel;
-import com.sun.tools.xjc.api.SchemaCompiler;
-import com.sun.tools.xjc.api.XJC;
+import javax.xml.transform.Source;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.stream.StreamResult;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class SchemaMetadata extends Metadata {
 
     private static final String DEFAULT_SYSTEM_ID = "sysid";
+    private static final String XML_ENUM_VALUE_VALUE = "value";
 
     private SchemaCompiler schemaCompiler;
 
@@ -86,7 +87,7 @@ public class SchemaMetadata extends Metadata {
                 }
             }
         } catch (ClassCastException cce) {
-            throw new JAXBException(org.eclipse.persistence.exceptions.JAXBException.xjbNotSource());
+            throw new JAXBException(org.eclipse.persistence.jaxb.JAXBException.xjbNotSource());
         }
 
 
@@ -115,14 +116,13 @@ public class SchemaMetadata extends Metadata {
             schemaCompiler.parseSchema(schemaInputSource);
         } catch (XMLPlatformException xpe) {
             // This will occur when trying to refreshMetadata from a closed stream (non-XML Node metadata)
-            if (xpe.getCause() instanceof TransformerException) {
-                TransformerException te = (TransformerException) xpe.getCause();
+            if (xpe.getCause() instanceof TransformerException te) {
                 if (te.getCause() instanceof IOException) {
-                    throw org.eclipse.persistence.exceptions.JAXBException.cannotRefreshMetadata();
+                    throw org.eclipse.persistence.jaxb.JAXBException.cannotRefreshMetadata();
                 }
             }
         } catch (Exception e) {
-            throw new JAXBException(org.eclipse.persistence.exceptions.JAXBException.errorCreatingDynamicJAXBContext(e));
+            throw new JAXBException(org.eclipse.persistence.jaxb.JAXBException.errorCreatingDynamicJAXBContext(e));
         }
     }
 
@@ -135,7 +135,7 @@ public class SchemaMetadata extends Metadata {
         } else if (node.getNodeType() == Node.ELEMENT_NODE) {
             element = (Element) node;
         } else {
-            throw new JAXBException(org.eclipse.persistence.exceptions.JAXBException.cannotInitializeFromNode());
+            throw new JAXBException(org.eclipse.persistence.jaxb.JAXBException.cannotInitializeFromNode());
         }
 
         // Use XJC API to parse the schema and generate its JCodeModel
@@ -150,7 +150,7 @@ public class SchemaMetadata extends Metadata {
         S2JJAXBModel model = schemaCompiler.bind();
 
         if (model == null) {
-            throw new JAXBException(org.eclipse.persistence.exceptions.JAXBException.xjcBindingError());
+            throw new JAXBException(org.eclipse.persistence.jaxb.JAXBException.xjcBindingError());
         }
 
         JCodeModel codeModel = model.generateCode(new Plugin[0], null);
@@ -217,16 +217,31 @@ public class SchemaMetadata extends Metadata {
                 // If this is an enum, trigger a dynamic class generation, because we won't
                 // be creating a descriptor for it
                 if (definedClass.getClassType().equals(ClassType.ENUM)) {
-                    Map<String, JEnumConstant> enumConstants = definedClass.enumConstants();
-                    Object[] enumValues = enumConstants.keySet().toArray();
-                    dynamicClassLoader.addEnum(definedClass.fullName(), enumValues);
+                    dynamicClassLoader.addEnum(definedClass.fullName(), getEnumValues(definedClass));
                 }
             }
 
             return elinkClasses;
         } catch (Exception e) {
-            throw new JAXBException(org.eclipse.persistence.exceptions.JAXBException.errorCreatingDynamicJAXBContext(e));
+            throw new JAXBException(org.eclipse.persistence.jaxb.JAXBException.errorCreatingDynamicJAXBContext(e));
         }
+    }
+
+    private Map<String, String> getEnumValues(JDefinedClass definedClass) {
+        return definedClass.enumConstants()
+                .entrySet()
+                .stream()
+                .collect(Collectors.toMap(Map.Entry::getKey, entry ->
+                        entry.getValue()
+                                .annotations()
+                                .stream()
+                                .filter(annotation -> XmlEnumValue.class.getName().equals(annotation.getAnnotationClass().binaryName()))
+                                .map(annotation -> annotation.getAnnotationMembers().get(XML_ENUM_VALUE_VALUE))
+                                .filter(value -> value instanceof JAnnotationStringValue)
+                                .map(Object::toString)
+                                .findFirst()
+                                .orElse(entry.getKey()))
+                );
     }
 
     private static InputSource createInputSourceFromSource(Source aSource) {
@@ -245,22 +260,22 @@ public class SchemaMetadata extends Metadata {
 
         @Override
         public void error(SAXParseException arg0) {
-            throw org.eclipse.persistence.exceptions.JAXBException.errorCreatingDynamicJAXBContext(arg0);
+            throw org.eclipse.persistence.jaxb.JAXBException.errorCreatingDynamicJAXBContext(arg0);
         }
 
         @Override
         public void fatalError(SAXParseException arg0) {
-            throw org.eclipse.persistence.exceptions.JAXBException.errorCreatingDynamicJAXBContext(arg0);
+            throw org.eclipse.persistence.jaxb.JAXBException.errorCreatingDynamicJAXBContext(arg0);
         }
 
         @Override
         public void info(SAXParseException arg0) {
-            throw org.eclipse.persistence.exceptions.JAXBException.errorCreatingDynamicJAXBContext(arg0);
+            throw org.eclipse.persistence.jaxb.JAXBException.errorCreatingDynamicJAXBContext(arg0);
         }
 
         @Override
         public void warning(SAXParseException arg0) {
-            throw org.eclipse.persistence.exceptions.JAXBException.errorCreatingDynamicJAXBContext(arg0);
+            throw org.eclipse.persistence.jaxb.JAXBException.errorCreatingDynamicJAXBContext(arg0);
         }
 
     }

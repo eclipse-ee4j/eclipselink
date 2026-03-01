@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2015 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -19,7 +19,7 @@ package org.eclipse.persistence.jpa.test.ddl;
 import java.util.Properties;
 import jakarta.persistence.Persistence;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
-import org.eclipse.persistence.exceptions.EntityManagerSetupException;
+import org.eclipse.persistence.jpa.exceptions.EntityManagerSetupException;
 import org.eclipse.persistence.jpa.test.framework.EmfRunner;
 import org.junit.Assert;
 import org.junit.Test;

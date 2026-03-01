@@ -1,0 +1,166 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[DATA_ACCESS008]]
+=== About Tenant Isolation
+
+EclipseLink offers considerable flexibility in how you can design and
+implement features for isolating tenants. Possibilities include the
+following:
+
+*Application Isolation options*
+
+* Separate container/server
+* Separate application within the same container/server
+* Separate entity manager factory and shared cache within the same
+application
+* Shared entity manager factory with tenant isolation per entity manager
+
+*Data isolation options*
+
+* Separate database
+* Separate schema/tablespace
+* Separate tables
+* Shared table with row isolation
+* Query filtering
+* Oracle Virtual Private Database (VPD)
+
+EclipseLink includes the following options for providing multi-tenancy
+in the data source:
+
+* *Single-table multi-tenancy* allows tenants to share tables. Each
+tenant has its own rows, identified by discriminator columns, and those
+rows are invisible to other tenants. See link:#BEIBAJBE[Single Table
+Multi-Tenancy.]
+* With *table-per-tenant* multi-tenancy, each tenant has its own table
+or tables, identified by table tenant discriminators, and those tables
+are invisible to other users. See link:#BEIHJCBG[Table-Per-Tenant
+Multi-Tenancy.]
+* With (*VDP*) multi-tenancy, tenants use a VDP database, which provides
+the functionality to support multiple tenants sharing the same table.
+See link:#BEIJCDEA[VPD Multi-Tenancy.]
+
+[[BEIBAJBE]]
+
+==== Single Table Multi-Tenancy
+
+With single-table multi-tenancy, any table (`Table` or `SecondaryTable`)
+to which an entity or mapped superclass maps can include rows for
+multiple tenants. Access to tenant-specific rows is restricted to the
+specified tenant.
+
+Tenant-specific rows are associated with the tenant by using one or more
+tenant discriminator columns. Discriminator columns are used with
+application context values to limit what a persistence context can
+access.
+
+The results of queries on the mapped tables are limited to the tenant
+discriminator value(s) provided as property values. This applies to all
+insert, update, and delete operations on the table. When multi-tenant
+metadata is applied at the mapped superclass level, it is applied to all
+subentities unless they specify their own multi-tenant metadata.
+
+[[BEIHJCBG]]
+
+==== Table-Per-Tenant Multi-Tenancy
+
+Table-per-tenant multi-tenancy allows multiple tenants of an application
+to isolate their data in one or more tenant-specific tables. Multiple
+tenants' tables can be in a shared schema, identified using a prefix or
+suffix naming pattern; or they can be in separate, tenant-specific
+schemas. Table-per-tenant entities can be mixed with other multi-tenant
+type entities within the same persistence unit.
+
+The table-per-tenant multi-tenant type is used in conjunction with:
+
+* A tenant table discriminator that specifies the type of discriminator
+(schema or name with prefix or suffix)
+* A tenant ID to identify the user (configured per entity manager or at
+the entity manager factory, if isolating the table-per-tenant per
+persistence unit.)
+
+A single application instance with a shared `EntityManagerFactory` for a
+persistence unit can be responsible for handling requests from multiple
+tenants.
+
+Alternatively, separate `EntityManagerFactory` instances can be used for
+each tenant. (This is required when using extensions per tenant.) In
+this case, tenant-specific schema and table names are defined in an
+`eclipselink-orm.xml` configuration file. A `MetadataSource` must be
+registered with a persistence unit. The `MetadataSource` is used to
+support additional persistence unit metadata provided from outside the
+application. See also `metadata-source` in _Jakarta Persistence API
+(JPA) Extensions Reference for EclipseLink_.
+
+The table-per-tenant multi-tenant type enables individual tenant
+table(s) to be used at the entity level. A tenant context property must
+be provided on each entity manager after a transaction has started.
+
+* The table(s) (`Table` and `SecondaryTable`) for the entity are
+individual tenant tables based on the tenant context. Relationships
+within an entity that uses a join or a collection table are also assumed
+to exist within the table-per-tenant context.
+* Multi-tenant metadata can only be applied at the root level of the
+inheritance hierarchy when using a `SINGLE_TABLE` or `JOINED`
+inheritance strategy. Multi-tenant metadata can be specified in a
+`TABLE_PER_CLASS` inheritance hierarchy.
+
+For information on constructing table-per-tenant multi-tenancy, see
+"Using Table-Per-Tenant Multi-Tenancy" in _Solutions Guide for
+EclipseLink_.
+
+[[BEIJCDEA]]
+
+==== VPD Multi-Tenancy
+
+A Virtual Private Database (VPD) uses security controls to restrict
+access to database objects based on various parameters.
+
+For example, the Oracle Virtual Private Database supports security
+policies that control database access at the row and column level.
+Oracle VPD adds a dynamic `WHERE` clause to SQL statements issued
+against the table, view, or synonym to which the security policy was
+applied.
+
+Oracle Virtual Private Database enforces security directly on the
+database tables, views, or synonyms. Because security policies are
+attached directly to these database objects, and the policies are
+automatically applied whenever a user accesses data, there is no way to
+bypass security.
+
+When a user directly or indirectly accesses a table, view, or synonym
+that is protected with an Oracle Virtual Private Database policy, Oracle
+Database dynamically modifies the SQL statement of the user. This
+modification creates a `WHERE` condition (called a predicate) returned
+by a function implementing the security policy. Oracle Virtual Private
+Database modifies the statement dynamically, transparently to the user,
+using any condition that can be expressed in or returned by a function.
+Oracle Virtual Private Database policies can be applied to `SELECT`,
+`INSERT`, `UPDATE`, `INDEX`, and `DELETE` statements.
+
+When using EclipseLink VPD Multitenancy, the database handles the tenant
+filtering on all `SELECT`, `INSERT`, `UPDATE`, `INDEX` and `DELETE`
+queries.
+
+To use EclipseLink VPD multi-tenancy, you must first configure VPD in
+the database and then specify multi-tenancy on the entity or mapped
+superclass using `@Multitenant` and `@TenantDiscriminatorColumn`
+annotations.
+
+For more information on constructing VPD Multi-Tenancy, see
+"link:olinkTLADG501[Using VPD Multi-Tenancy]" in _Solutions Guide for
+EclipseLink_.

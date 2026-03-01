@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,17 +15,7 @@
 package org.eclipse.persistence.eis;
 
 // javase imports
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
 
-// Java extension imports
-import javax.xml.namespace.QName;
-
-// EclipseLink imports
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.eis.interactions.XMLInteraction;
 import org.eclipse.persistence.eis.mappings.EISCompositeCollectionMapping;
@@ -64,6 +54,14 @@ import org.eclipse.persistence.queries.Call;
 import org.eclipse.persistence.queries.ModifyQuery;
 import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.sessions.DatasourceLogin;
+
+import javax.xml.namespace.QName;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 
 /**
  * INTERNAL:
@@ -525,7 +523,7 @@ public class EISObjectPersistenceXMLProject extends NamespaceResolvableProject {
                 @Override
                 public Object getAttributeValueFromObject(Object object) {
                     IndirectionPolicy policy = ((ForeignReferenceMapping)object).getIndirectionPolicy();
-                    if (policy instanceof NoIndirectionPolicy) {
+                    if (!policy.usesIndirection()) {
                         return null;
                     }
                     return policy;

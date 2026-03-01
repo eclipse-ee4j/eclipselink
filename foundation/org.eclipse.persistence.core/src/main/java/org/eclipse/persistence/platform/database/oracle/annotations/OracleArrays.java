@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,7 +21,8 @@ import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * An OracleArrays annotation allows the definition of multiple VARRAY types.
+ * An OracleArrays annotation allows the definition of multiple
+ * {@linkplain OracleArray}s.
  *
  * @see OracleArray
  * @author David McCann
@@ -31,7 +32,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 public @interface OracleArrays {
     /**
-     * (Required) An array of Oracle VARRAY types.
+     * An array of OracleArray annotations.
      */
     OracleArray[] value();
 }

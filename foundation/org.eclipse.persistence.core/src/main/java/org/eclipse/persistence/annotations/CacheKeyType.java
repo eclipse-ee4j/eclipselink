@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,27 +14,27 @@
 //     James Sutherland - allow for zero ids
 package org.eclipse.persistence.annotations;
 
-import org.eclipse.persistence.descriptors.ClassDescriptor;
-
 /**
  * Configures what type of Id value is used to store the object in the cache.
  * This can either be the basic Id value for simple singleton Ids,
  * or an optimized CacheId type.
  *
  * @see PrimaryKey#cacheKeyType()
- * @see ClassDescriptor#setCacheKeyType(CacheKeyType)
+ * @see org.eclipse.persistence.descriptors.ClassDescriptor#setCacheKeyType(CacheKeyType)
  * @author James Sutherland
  * @since EclipseLink 2.1
  */
 public enum CacheKeyType {
     /**
      * This can only be used for simple singleton Ids, such as long/int/String.
+     * <p>
      * This is the default for simple singleton Ids.
      */
     ID_VALUE,
 
     /**
      * Optimized cache key type that allows composite and complex values.
+     * <p>
      * This is the default for composite or complex Ids.
      */
     CACHE_ID,

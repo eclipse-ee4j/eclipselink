@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,12 +14,17 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.customsqlstoredprocedures;
 
-import java.util.Vector;
-import java.math.BigDecimal;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.testing.framework.*;
+import org.eclipse.persistence.queries.ReadAllQuery;
+import org.eclipse.persistence.queries.SQLCall;
+import org.eclipse.persistence.queries.StoredProcedureCall;
+import org.eclipse.persistence.testing.framework.TestCase;
+import org.eclipse.persistence.testing.framework.TestErrorException;
+import org.eclipse.persistence.testing.framework.TestWarningException;
 import org.eclipse.persistence.testing.models.employee.domain.Employee;
+
+import java.math.BigDecimal;
+import java.util.Vector;
 
 public class StoredProcWithOutputParamsAndResultSetTest extends TestCase {
     boolean useCustomSQL;
@@ -95,9 +100,9 @@ public class StoredProcWithOutputParamsAndResultSetTest extends TestCase {
         getSession().removeQuery("dblogin");
         getSession().addQuery("dblogin", readQuery);
         Vector args = new Vector(2);
-        args.addElement(1);
+        args.add(1);
         if (useCustomSQL && useInOut) {
-            args.addElement(0L);
+            args.add(0L);
         }
         try {
             Vector vResult = (Vector)getSession().executeQuery("dblogin", args);

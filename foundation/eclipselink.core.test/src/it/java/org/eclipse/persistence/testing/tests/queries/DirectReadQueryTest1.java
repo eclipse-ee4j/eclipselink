@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,9 +14,13 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.queries;
 
-import java.util.*;
-import org.eclipse.persistence.testing.framework.*;
-import org.eclipse.persistence.queries.*;
+import org.eclipse.persistence.queries.CursoredStream;
+import org.eclipse.persistence.queries.DirectReadQuery;
+import org.eclipse.persistence.queries.ValueReadQuery;
+import org.eclipse.persistence.testing.framework.TestCase;
+import org.eclipse.persistence.testing.framework.TestErrorException;
+
+import java.util.Stack;
 
 /**
  * Test direct read queries with various container policies.
@@ -55,7 +59,7 @@ public class DirectReadQueryTest1 extends TestCase {
     while (stream.hasMoreElements()) {
         count++;
         String lastName = (String) stream.nextElement();
-        if (lastName.length() == 0) {
+        if (lastName.isEmpty()) {
             throw new TestErrorException("missing data");
         }
     }
@@ -72,7 +76,7 @@ public class DirectReadQueryTest1 extends TestCase {
         stack = (Stack)getSession().executeQuery(query);
         // if we get here, we must not have generated a ClassCastException
         String lastName = (String)stack.peek();
-        if (lastName.length() == 0) {
+        if (lastName.isEmpty()) {
             throw new TestErrorException("missing data");
         }
     }

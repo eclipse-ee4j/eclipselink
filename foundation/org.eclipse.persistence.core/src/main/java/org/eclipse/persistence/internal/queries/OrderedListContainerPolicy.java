@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,17 +16,14 @@
 //       - 237545: List attribute types on OneToMany using @OrderBy does not work with attribute change tracking
 package org.eclipse.persistence.internal.queries;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Collections;
-import java.util.IdentityHashMap;
-import java.util.ListIterator;
+import org.eclipse.persistence.annotations.OrderCorrectionType;
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.changetracking.CollectionChangeEvent;
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.indirection.IndirectCollection;
+import org.eclipse.persistence.indirection.IndirectList;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
 import org.eclipse.persistence.internal.helper.ConversionManager;
@@ -35,19 +32,14 @@ import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.IndexedObject;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.ChangeRecord;
+import org.eclipse.persistence.internal.sessions.CollectionChangeRecord;
 import org.eclipse.persistence.internal.sessions.MergeManager;
 import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.internal.sessions.OrderedChangeObject;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet;
-import org.eclipse.persistence.internal.sessions.CollectionChangeRecord;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
-import org.eclipse.persistence.annotations.OrderCorrectionType;
-import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.descriptors.changetracking.CollectionChangeEvent;
-import org.eclipse.persistence.indirection.IndirectCollection;
-import org.eclipse.persistence.indirection.IndirectList;
 import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
@@ -55,6 +47,15 @@ import org.eclipse.persistence.queries.DataReadQuery;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReadQuery;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.IdentityHashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
 
 /**
  * <p><b>Purpose</b>: A OrderedListContainerPolicy is ContainerPolicy whose
@@ -228,12 +229,8 @@ public class OrderedListContainerPolicy extends ListContainerPolicy {
             } else {
                 ((List)container).add(index, object);
             }
-        } catch (ClassCastException ex1) {
+        } catch (ClassCastException | UnsupportedOperationException | IllegalArgumentException ex1) {
             throw QueryException.cannotAddElement(object, container, ex1);
-        } catch (IllegalArgumentException ex2) {
-            throw QueryException.cannotAddElement(object, container, ex2);
-        } catch (UnsupportedOperationException ex3) {
-            throw QueryException.cannotAddElement(object, container, ex3);
         }
     }
 
@@ -370,13 +367,13 @@ public class OrderedListContainerPolicy extends ListContainerPolicy {
      * Each element of the indexedObjects is a pair of the order index and the corresponding object.
      * The goal of the method is to return back the list of objects (not indexed objects!) in the correct order.
      * The objects should not be altered.
-     *
+     * <p>
      * The default implementation of the method sorts indexedObjects according to their indexes (null less than any non-null).
      * For example:
      *   indexedObjects = {{2, objectA}, {5, ObjectB}}  returns {objectA, objectB};
      *   indexedObjects = {{2, objectA}, {-1, ObjectB}}  returns {objectB, objectA};
      *   indexedObjects = {{2, objectA}, {null, ObjectB}}  returns {objectB, objectA};
-     *
+     * <p>
      * This method could be overridden by the user.
      */
     public List correctOrderList(List<IndexedObject> indexedObjects) {
@@ -625,11 +622,7 @@ public class OrderedListContainerPolicy extends ListContainerPolicy {
     protected void removeFromAtIndex(int index, Object container) {
         try {
             ((List) container).remove(index);
-        } catch (ClassCastException ex1) {
-            throw QueryException.cannotRemoveFromContainer(index, container, this);
-        } catch (IllegalArgumentException ex2) {
-            throw QueryException.cannotRemoveFromContainer(index, container, this);
-        } catch (UnsupportedOperationException ex3) {
+        } catch (ClassCastException | UnsupportedOperationException | IllegalArgumentException ex1) {
             throw QueryException.cannotRemoveFromContainer(index, container, this);
         }
     }
@@ -715,7 +708,6 @@ public class OrderedListContainerPolicy extends ListContainerPolicy {
             if (changeObject.getChangeSet() == sourceSet){
                 changeObject.setChangeSet(((UnitOfWorkChangeSet)unitOfWork.getUnitOfWorkChangeSet()).findOrCreateLocalObjectChangeSet(target, mapping.getReferenceDescriptor(), unitOfWork.isCloneNewObject(target)));
             }
-            return;
         }
     }
 

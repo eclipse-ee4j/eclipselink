@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,12 +17,12 @@ package org.eclipse.persistence.testing.oxm.mappings.keybased;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import org.eclipse.persistence.testing.oxm.mappings.keybased.singletarget.SingleTargetTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.keybased.multipletargets.MultipleTargetTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.keybased.norefclass.NoRefClassTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.keybased.norefclass.ObjectRefClassTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.keybased.norefclass.SingleAttributeTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.keybased.norefclass.SingleElementTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.keybased.singletarget.SingleTargetTestCases;
 
 public class KeyBasedMappingTestSuite extends TestCase {
     public static Test suite() {

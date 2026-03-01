@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,11 +14,11 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.security;
 
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
-
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.helper.ConversionManager;
+
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
 
 /**
  * Holder of a SecurableObject. Securable objects should not be held onto
@@ -27,9 +27,6 @@ import org.eclipse.persistence.internal.helper.ConversionManager;
  * @author Guy Pelletier
  */
 public class SecurableObjectHolder {
-
-    /** The JCE encryption class name */
-    private final static String JCE_ENCRYPTION_CLASS_NAME = "org.eclipse.persistence.internal.security.JCEEncryptor";
 
     /** The encryption class name **/
     private String m_securableClassName;
@@ -73,28 +70,29 @@ public class SecurableObjectHolder {
      */
     private void initSecurableObject() {
         boolean initPassThroughEncryptor = false;
-
-        if (m_securableClassName == null) {
-            // Since we are defaulting, hence, assuming they can initialize the JCE
-            // libraries, if the init fails, this flag tells us to assume no encryption.
-            // However, if the JCE init does work, the JCEEncryptor will need to
-            // determine that a password was not encrypted by it, therefore, assume
-            // clear text. See JCEEncryptor.
-            initPassThroughEncryptor = true;
-            m_securableClassName = JCE_ENCRYPTION_CLASS_NAME;
-        }
-
         try {
+            if (m_securableClassName == null || JCEEncryptor.class.getName().equals(m_securableClassName)) {
+                // Since we are defaulting, hence, assuming they can initialize the JCE
+                // libraries, if the init fails, this flag tells us to assume no encryption.
+                // However, if the JCE init does work, the JCEEncryptor will need to
+                // determine that a password was not encrypted by it, therefore, assume
+                // clear text. See JCEEncryptor.
+                initPassThroughEncryptor = m_securableClassName == null;
+                m_securableObject = new JCEEncryptor();
+                return;
+            }
+
             ConversionManager cm = ConversionManager.getDefaultManager();
-            Class<?> securableClass = cm.convertObject(m_securableClassName, Class.class);
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+            @SuppressWarnings({"unchecked"})
+            Class<? extends Securable> securableClass = cm.convertObject(m_securableClassName, Class.class);
+            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                 try {
-                    m_securableObject = (Securable)AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(securableClass));
+                    m_securableObject = AccessController.doPrivileged(new PrivilegedNewInstanceFromClass<>(securableClass));
                 } catch (PrivilegedActionException exception) {
                     throw exception.getException();
                 }
             } else {
-                m_securableObject = (Securable)PrivilegedAccessHelper.newInstanceFromClass(securableClass);
+                m_securableObject = PrivilegedAccessHelper.newInstanceFromClass(securableClass);
             }
         } catch (Throwable e) {
             if (initPassThroughEncryptor) {// default failed, so perform no encryption.
@@ -112,7 +110,7 @@ public class SecurableObjectHolder {
      * At runtime, no encryption will be made and the passwords will be assummed to
      * be clear text.
      */
-    private static final class PassThroughEncryptor implements Securable {
+    private static final class PassThroughEncryptor implements org.eclipse.persistence.security.Securable {
         @Override
         public String encryptPassword(String pswd) {
             return pswd;

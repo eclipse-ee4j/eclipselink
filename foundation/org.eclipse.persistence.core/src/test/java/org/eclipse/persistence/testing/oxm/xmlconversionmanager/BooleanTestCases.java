@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,12 +33,12 @@ public class BooleanTestCases extends OXTestCase {
 
     public void testConvertEmptyStringTo_boolean() {
         boolean test = xmlConversionManager.convertObject(XMLConstants.EMPTY_STRING, boolean.class);
-        assertEquals(false, test);
+        assertFalse(test);
     }
 
     public void testConvertEmptyStringTo_Boolean() {
         Boolean test = xmlConversionManager.convertObject(XMLConstants.EMPTY_STRING, Boolean.class);
-        assertEquals(false, test.booleanValue());
+        assertFalse(test);
     }
 
 }

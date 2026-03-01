@@ -1,0 +1,206 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[GENERAL004]]
+=== Key Components
+
+link:#CHDGIFIA[Figure 1-1] illustrates the components contained by
+EclipseLink. The following sections describe the components.
+
+[[CHDGIFIA]][[OTLCG115]]
+
+*_Figure 1-1 EclipseLink Components_*
+
+image:{imagesrelativedir}/otlcg_jd_002_eclipselink.png[This figure is described in the text.,title="This figure is described in the text."] +
+xref:{imagestextrelativedir}/otlcg_jd_002_eclipselink.adoc[Description of "Figure 1-1 EclipseLink Components"]
+
+[[OTLCG116]]
+
+[[sthref8]]
+
+==== EclipseLink Core and API
+
+The EclipseLink Core provides the runtime component. Access to the
+runtime can be obtained directly through the EclipseLink API. The
+runtime environment is not a separate or external process—it is embedded
+within the application. Application calls invoke EclipseLink to provide
+persistence behavior. This function enables transactional and
+thread-safe access to shared database connections and cached objects.
+
+The EclipseLink API provides the reference implementation for JPA 2.0
+(JSR-338). The `org.eclipse.persistence.*` classes encapsulate the
+EclipseLink API and provide extensions beyond the specification. These
+extensions include EclipseLink-specific properties and annotations. For
+more information on the API, properties and extensions, see _Jakarta
+Persistence API (JPA) Extensions Reference for EclipseLink_.
+
+The JAXB APIs are included in Java SE 6. In the `eclipselink.jar` file,
+the `org.eclipse.persistence.jaxb.*` classes encapsulate the EclipseLink
+support for JAXB.
+
+[[OTLCG117]]
+
+[[sthref9]]
+
+==== Object-Relational (JPA 2.2) Component
+
+JPA simplifies Java persistence. It provides an object-relational
+mapping approach that lets you declaratively define how to map Java
+objects to relational database tables in a standard, portable way. JPA
+works both inside a Jakarta EE application server and outside an EJB
+container in a Java Standard Edition (Java SE) application. The main
+features included in the 2.2 JPA update are:
+
+* Expanded object/relational mapping functionality
+** Support for collections of embedded objects
+** Multiple levels of embedded objects
+** Ordered lists
+** Combinations of access types
+* A criteria query API
+* Standardization of query "hints"
+* Standardization of additional metadata to support DDL generation
+* Support for validation
+
+[[CIHGBECC]]
+
+==== JAXB Component
+
+JAXB is a Java API that allows a Java program to access an XML document
+by presenting that document to the program in a Java format. This
+process, called binding, represents information in an XML document as an
+object in computer memory. In this way, applications can access the data
+in the XML from the object rather than using the Domain Object Model
+(DOM) or the Streaming API for XML (SAX) to retrieve the data from a
+direct representation of the XML itself. Usually, an XML binding is used
+with JPA entities to create a data access service by leveraging a JAX-WS
+or JAX-RS implementation. Both of these Web Service standards use JAXB
+as the default binding layer. This service provides a means to access
+data exposed by JPA across computers, where the client computer might or
+might not be using Java.
+
+JAXB uses an extended set of annotations to define the binding rules for
+Java-to-XML mapping. These annotations are subclasses of the
+`jakarta.xml.bind.`__`*`__ packages in the EclipseLink API. For more
+information about these annotations, see _Java API Reference for
+EclipseLink_.
+
+For more information about JAXB, see "Java Architecture for XML Binding
+(JAXB)" at:
+
+`http://www.eclipse.org/eclipselink/moxy.php`
+
+[[CIHJDGEC]][[OTLCG118]]
+
+==== MOXy Component
+
+_MOXy_ (also known as Object-XML) is the EclipseLink JAXB
+implementation. This component enables you to bind Java classes to XML
+schemas. MOXy implements JAXB which lets you provide mapping information
+through annotations. Support for storing the mappings in XML format is
+provided by MOXy. The many advanced mappings that are available enable
+you to handle complex XML structures without having to mirror the schema
+in your Java class model.
+
+The objects produced by the EclipseLink JAXB compiler are Java POJO
+models. They are generated with the necessary annotations required by
+the JAXB specification. The JAXB runtime API can be used to marshal and
+unmarshal objects.
+
+When using MOXy as the JAXB provider, no metadata is required to convert
+your existing object model to XML. You can supply metadata (using
+annotations or XML) only when you must fine-tune the XML representation
+of the model.
+
+Using EclipseLink MOXy, you can manipulate XML in the following ways:
+
+* Generate a Java Model from an XML schema
+* Specify the EclipseLink MOXy JAXB runtime
+* Use JAXB to manipulate XML
+* Generate an XML schema from a Java model
+
+For more information on MOXy and these use cases, see _Developing JAXB
+Applications EclipseLink MOXy_.
+
+EclipseLink provides maximum flexibility with the ability to control how
+your object model is mapped to an XML schema. There are many advantages
+to having control over your own object model:
+
+* You can design the domain classes specifically for your application
+using the appropriate patterns and practices.
+* You can use XPath-based mapping. This prevents the need for having a
+1-to-1 relationship between classes and XML schema types. For more
+information, see _Developing JAXB Applications EclipseLink MOXy_.
+* You can instantiate objects in a way that is appropriate to your
+application.
+* You can control your own class path dependencies. Most JAXB
+implementations put vendor specific code in the generated classes that
+add class path dependencies to your application.
+
+One of the key advantages of EclipseLink is that the mapping information
+can be stored externally and does not require any changes to the Java
+classes or XML schema. This means that you can map your domain objects
+to more than one schema, or if your schema changes, you can update the
+mapping metadata instead of modifying your domain classes. This is also
+useful when mapping third-party classes, because you might not have
+access to the source to add annotations.
+
+[[OTLCG119]]
+
+[[sthref10]]
+
+==== SDO Component
+
+The Service Data Objects (SDO) component provides the reference
+implementation of Service Data Objects version 2.1.1. The reference
+implementation is described in http://jcp.org/en/home/index[JSR-235].
+The SDO implementation incorporates the reference implementation and
+provides additional features primarily used for converting Java objects
+to XML, and for building and using data object models that can be
+incorporated into service architectures.
+
+SDO provides you with the following capabilities:
+
+* Use of the SDO APIs
+* Conversion an XML Schema
+* Customization of your XSD for SDO usage
+* Use of dynamic data objects to manipulate XML
+* Use of static data objects
+** Run the SDO compiler—generate type safe data objects
+** Use type safe data objects to manipulate XML
+
+For more information, see "Getting Started with EclipseLink SDO" in the
+EclipseLink documentation:
+
+`http://www.eclipse.org/eclipselink/moxy.php`
+
+[[CHDIGIDF]][[OTLCG120]]
+
+==== Database Web Services Component
+
+Database Web Services (DBWS) enables simple and efficient access to
+relational database artifacts by using a web service. It provides
+Jakarta EE-compliant client-neutral access to the database without
+having to write Java code. DBWS extends EclipseLink's core capabilities
+while using existing ORM and OXM components.
+
+DBWS has a runtime provider component that takes a service descriptor
+(along with related deployment artifacts) and realizes it as a JAX-WS
+2.0 Web service. The runtime provider uses EclipseLink to bridge between
+the database and the XML SOAP Messages used by web service clients. For
+information on DBWS architecture, see _Developing Persistence
+Architectures Using EclipseLink Database Web Services Developer's
+Guide_.

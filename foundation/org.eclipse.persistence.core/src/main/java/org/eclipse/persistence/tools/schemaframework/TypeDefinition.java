@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,9 +14,12 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.tools.schemaframework;
 
-import java.util.*;
-import java.io.*;
-import org.eclipse.persistence.exceptions.*;
+import java.io.IOException;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 /**
@@ -28,38 +31,34 @@ public class TypeDefinition extends DatabaseObjectDefinition {
     protected List<FieldDefinition> fields;
 
     public TypeDefinition() {
-        this.fields = new Vector<>();
+        this.fields = new ArrayList<>();
     }
 
     /**
-     * PUBLIC:
      * Add the field to the type, default sizes are used.
-     * @param type is the Java class type coresponding to the database type.
+     * @param type is the Java class type corresponding to the database type.
      */
     public void addField(String fieldName, Class<?> type) {
         this.addField(new FieldDefinition(fieldName, type));
     }
 
     /**
-     * PUBLIC:
      * Add the field to the type.
-     * @param type is the Java class type coresponding to the database type.
+     * @param type is the Java class type corresponding to the database type.
      */
     public void addField(String fieldName, Class<?> type, int fieldSize) {
         this.addField(new FieldDefinition(fieldName, type, fieldSize));
     }
 
     /**
-     * PUBLIC:
      * Add the field to the type.
-     * @param type is the Java class type coresponding to the database type.
+     * @param type is the Java class type corresponding to the database type.
      */
     public void addField(String fieldName, Class<?> type, int fieldSize, int fieldSubSize) {
         this.addField(new FieldDefinition(fieldName, type, fieldSize, fieldSubSize));
     }
 
     /**
-     * PUBLIC:
      * Add the field to the type to a nested type.
      * @param typeName is the name of the nested type.
      */
@@ -68,7 +67,6 @@ public class TypeDefinition extends DatabaseObjectDefinition {
     }
 
     /**
-     * PUBLIC:
      * Add the field to the type.
      */
     public void addField(FieldDefinition field) {
@@ -80,6 +78,7 @@ public class TypeDefinition extends DatabaseObjectDefinition {
      * Return the create type statement.
      */
     @Override
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public Writer buildCreationWriter(AbstractSession session, Writer writer) throws ValidationException {
         try {
             writer.write("CREATE TYPE " + getFullName() + " AS OBJECT (");
@@ -103,6 +102,7 @@ public class TypeDefinition extends DatabaseObjectDefinition {
      * Return the drop type statement.
      */
     @Override
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public Writer buildDeletionWriter(AbstractSession session, Writer writer) throws ValidationException {
         try {
             writer.write("DROP TYPE " + getFullName());

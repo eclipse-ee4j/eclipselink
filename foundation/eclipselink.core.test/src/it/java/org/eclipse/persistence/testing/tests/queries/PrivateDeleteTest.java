@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,10 +14,13 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.queries;
 
-import org.eclipse.persistence.testing.framework.*;
-import org.eclipse.persistence.testing.models.employee.domain.*;
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.expressions.*;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.queries.DeleteObjectQuery;
+import org.eclipse.persistence.testing.framework.TestCase;
+import org.eclipse.persistence.testing.framework.TestErrorException;
+import org.eclipse.persistence.testing.models.employee.domain.Address;
+import org.eclipse.persistence.testing.models.employee.domain.Employee;
 
 /**
  * Tests cascaded delete. cascadePrivateParts is used.
@@ -53,7 +56,7 @@ public class PrivateDeleteTest extends TestCase {
         m_nAddressId = m_employeeFromDatabase.getAddress().getId();
 
         /** Save the managed employee's ID */
-        m_nManagedEmployeeID = ((Employee)m_employeeFromDatabase.getManagedEmployees().elementAt(0)).getId();
+        m_nManagedEmployeeID = ((Employee)m_employeeFromDatabase.getManagedEmployees().get(0)).getId();
 
         // Must drop references first to appease constraints.
         getSession().executeNonSelectingCall(new org.eclipse.persistence.queries.SQLCall("update PROJECT set LEADER_ID = null where LEADER_ID = " + m_employeeFromDatabase.getId()));

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,14 +14,23 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.returning;
 
-import java.util.*;
-
-import org.eclipse.persistence.tools.schemaframework.*;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.InsertObjectQuery;
+import org.eclipse.persistence.queries.StoredProcedureCall;
+import org.eclipse.persistence.queries.UpdateObjectQuery;
+import org.eclipse.persistence.sessions.Project;
+import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
+import org.eclipse.persistence.tools.schemaframework.SchemaManager;
+import org.eclipse.persistence.tools.schemaframework.StoredProcedureDefinition;
+import org.eclipse.persistence.tools.schemaframework.StoredProcedureGenerator;
+
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 
 /**
  * This stored procedure generator is meant to generate INSERT and UPDATE
@@ -89,7 +98,7 @@ public class StoredProcedureGeneratorForAdapter extends StoredProcedureGenerator
             if (!desc.getQueryManager().hasUpdateQuery()) {
                 UpdateObjectQuery updateQuery = new UpdateObjectQuery();
                 updateQuery.setModifyRow(desc.getObjectBuilder().buildTemplateUpdateRow(getSession()));
-                if (updateQuery.getModifyRow().size() > 0) {
+                if (!updateQuery.getModifyRow().isEmpty()) {
                     desc.getQueryManager().setUpdateQuery(updateQuery);
                 }
             }
@@ -245,15 +254,16 @@ public class StoredProcedureGeneratorForAdapter extends StoredProcedureGenerator
             nLastIndex = originalClassName.lastIndexOf('.', nLastIndex - 1);
         }
         if (nLastIndex < 0 || nLastIndex == originalClassName.length() - 1) {
-            return new String(originalClassName);
+            return originalClassName;
         } else {
             return originalClassName.substring(nLastIndex + 1);
         }
     }
 
+    @Override
     protected StoredProcedureDefinition generateObjectStoredProcedure(DatabaseQuery query, List<DatabaseField> fields, String namePrefix) {
         String namePrefixToUse = namePrefix;
-        String className = Helper.getShortClassName(query.getDescriptor().getJavaClass());
+        String className = query.getDescriptor().getJavaClass().getSimpleName();
         if (useTableNames) {
             String tableName = query.getDescriptor().getTableName();
             if (!compareNames(className, tableName)) {

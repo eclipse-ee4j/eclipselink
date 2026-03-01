@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,18 +14,14 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.oxm.mappings;
 
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
-import java.util.Vector;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
 import org.eclipse.persistence.internal.descriptors.InstanceVariableAttributeAccessor;
-import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.oxm.XMLChoiceFieldToClassAssociation;
@@ -49,6 +45,10 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.mappings.foundation.AbstractCompositeObjectMapping;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
+import org.eclipse.persistence.oxm.XMLField;
+import org.eclipse.persistence.oxm.XMLMarshaller;
+import org.eclipse.persistence.oxm.XMLRoot;
+import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.oxm.mappings.converters.XMLConverter;
 import org.eclipse.persistence.oxm.mappings.converters.XMLRootConverter;
 import org.eclipse.persistence.oxm.record.XMLRecord;
@@ -56,21 +56,18 @@ import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.remote.DistributedSession;
-import org.eclipse.persistence.oxm.XMLField;
-import org.eclipse.persistence.oxm.XMLMarshaller;
-import org.eclipse.persistence.oxm.XMLRoot;
-import org.eclipse.persistence.oxm.XMLUnmarshaller;
 
+import javax.xml.namespace.QName;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.Set;
-
-import javax.xml.namespace.QName;
 
 /**
  * PUBLIC:
@@ -329,13 +326,13 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
     }
 
     @Override
-    public Vector<DatabaseField> getFields() {
+    public List<DatabaseField> getFields() {
         return this.collectFields();
     }
 
     @Override
-    protected Vector<DatabaseField> collectFields() {
-        Vector<DatabaseField> fields = new Vector<>(getFieldToClassMappings().keySet());
+    protected List<DatabaseField> collectFields() {
+        List<DatabaseField> fields = new ArrayList<>(getFieldToClassMappings().keySet());
         return fields;
     }
 
@@ -367,9 +364,7 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
         XMLField field = new XMLField(srcXpath);
         XMLField tgtField = new XMLField(tgtXpath);
         this.fieldToClassNameMappings.put(field, elementTypeName);
-        if(classNameToFieldMappings.get(elementTypeName) == null) {
-            classNameToFieldMappings.put(elementTypeName, field);
-        }
+        classNameToFieldMappings.putIfAbsent(elementTypeName, field);
         addChoiceElementMapping(field, elementTypeName, tgtField);
     }
     public void addChoiceElement(String xpath, String elementTypeName) {
@@ -379,18 +374,14 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
     public void addChoiceElement(XMLField xmlField, Class<?> elementType) {
         getFieldToClassMappings().put(xmlField, elementType);
         this.fieldToClassNameMappings.put(xmlField, elementType.getName());
-        if (classToFieldMappings.get(elementType) == null) {
-            classToFieldMappings.put(elementType, xmlField);
-        }
+        classToFieldMappings.putIfAbsent(elementType, xmlField);
         addChoiceElementMapping(xmlField, elementType);
     }
 
     public void addChoiceElement(XMLField sourceField, Class<?> elementType, XMLField targetField) {
         getFieldToClassMappings().put(sourceField, elementType);
         this.fieldToClassNameMappings.put(sourceField, elementType.getName());
-        if (classToFieldMappings.get(elementType) == null) {
-            classToFieldMappings.put(elementType, sourceField);
-        }
+        classToFieldMappings.putIfAbsent(elementType, sourceField);
         addChoiceElementMapping(sourceField, elementType, targetField);
     }
 
@@ -404,9 +395,7 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
             getFieldToClassMappings().put(sourceField, elementType);
             this.fieldToClassNameMappings.put(sourceField, elementType.getName());
         }
-        if (getClassToSourceFieldsMappings().get(elementType) == null) {
-            getClassToSourceFieldsMappings().put(elementType, srcFields);
-        }
+        getClassToSourceFieldsMappings().putIfAbsent(elementType, srcFields);
         addChoiceElementMapping(srcFields, elementType, tgtFields);
     }
 
@@ -415,9 +404,7 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
         for(XMLField sourceField:srcFields) {
             this.fieldToClassNameMappings.put(sourceField, elementTypeName);
         }
-        if (getClassNameToSourceFieldsMappings().get(elementTypeName) == null) {
-            getClassNameToSourceFieldsMappings().put(elementTypeName, srcFields);
-        }
+        getClassNameToSourceFieldsMappings().putIfAbsent(elementTypeName, srcFields);
         addChoiceElementMapping(srcFields, elementTypeName, tgtFields);
     }
 
@@ -425,9 +412,7 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
     @Override
     public void addChoiceElement(XMLField field, String elementTypeName) {
         this.fieldToClassNameMappings.put(field, elementTypeName);
-        if(this.classNameToFieldMappings.get(elementTypeName) == null) {
-            this.classNameToFieldMappings.put(elementTypeName, field);
-        }
+        this.classNameToFieldMappings.putIfAbsent(elementTypeName, field);
         addChoiceElementMapping(field, elementTypeName);
     }
 
@@ -523,9 +508,7 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
             XMLMapping mapping = this.choiceElementMappings.get(entry.getKey());
             mapping.convertClassNamesToClasses(classLoader);
 
-            if (fieldToClassMappings.get(entry.getKey()) == null) {
-                fieldToClassMappings.put(entry.getKey(), elementType);
-            }
+            fieldToClassMappings.putIfAbsent(entry.getKey(), elementType);
         }
         for(Entry<String, XMLField> next: this.classNameToFieldMappings.entrySet()) {
             String className = next.getKey();
@@ -609,9 +592,7 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
                 } catch (ClassNotFoundException exc) {
                     throw ValidationException.classNotFoundWhileConvertingClassNames(className, exc);
                 }
-                if(this.choiceElementMappingsByClass.get(elementType) == null) {
-                    this.choiceElementMappingsByClass.put(elementType, next.getValue());
-                }
+                this.choiceElementMappingsByClass.computeIfAbsent(elementType, k -> next.getValue());
                 next.getValue().convertClassNamesToClasses(classLoader);
             }
         }
@@ -650,7 +631,7 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
     @Override
     public ArrayList getChoiceFieldToClassAssociations() {
         ArrayList associations = new ArrayList();
-        if(this.fieldToClassNameMappings.size() > 0) {
+        if(!this.fieldToClassNameMappings.isEmpty()) {
             Set<Entry<XMLField, String>> entries = fieldToClassNameMappings.entrySet();
             Iterator<Entry<XMLField, String>> iter = entries.iterator();
             while(iter.hasNext()){
@@ -666,7 +647,7 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
 
 
     public void setChoiceFieldToClassAssociations(ArrayList associations) {
-        if(associations.size() > 0) {
+        if(!associations.isEmpty()) {
             for(Object next:associations) {
                 XMLChoiceFieldToClassAssociation<Converter, XMLField> association = (XMLChoiceFieldToClassAssociation<Converter, XMLField>)next;
                 this.addChoiceElement(association.getXmlField(), association.getClassName());
@@ -682,12 +663,8 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
              xmlMapping.setAttributeAccessor(temporaryAccessor);
              xmlMapping.setAttributeClassificationName(className);
              xmlMapping.setField(xmlField);
-             if(this.choiceElementMappings.get(xmlField) == null) {
-                 this.choiceElementMappings.put(xmlField, xmlMapping);
-             }
-             if(this.choiceElementMappingsByClassName.get(className) == null) {
-                 this.choiceElementMappingsByClassName.put(className, xmlMapping);
-             }
+             this.choiceElementMappings.putIfAbsent(xmlField, xmlMapping);
+             this.choiceElementMappingsByClassName.putIfAbsent(className, xmlMapping);
          } else {
              if(isBinaryType(className)) {
                  XMLBinaryDataMapping xmlMapping = new XMLBinaryDataMapping();
@@ -695,12 +672,8 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
                  Class<Object> theClass = XMLConversionManager.getDefaultXMLManager().convertClassNameToClass(className);
                  xmlMapping.setAttributeClassification(theClass);
                  xmlMapping.setAttributeAccessor(temporaryAccessor);
-                 if(this.choiceElementMappings.get(xmlField) == null) {
-                     this.choiceElementMappings.put(xmlField, xmlMapping);
-                 }
-                 if(this.choiceElementMappingsByClass.get(theClass) == null) {
-                     this.choiceElementMappingsByClass.put(theClass, xmlMapping);
-                 }
+                 this.choiceElementMappings.putIfAbsent(xmlField, xmlMapping);
+                 this.choiceElementMappingsByClass.putIfAbsent(theClass, xmlMapping);
              } else {
                  XMLCompositeObjectMapping xmlMapping = new XMLCompositeObjectMapping();
                  xmlMapping.setAttributeAccessor(temporaryAccessor);
@@ -708,12 +681,8 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
                      xmlMapping.setReferenceClassName(className);
                  }
                  xmlMapping.setField(xmlField);
-                 if(this.choiceElementMappings.get(xmlField) == null) {
-                     this.choiceElementMappings.put(xmlField, xmlMapping);
-                 }
-                 if(this.choiceElementMappingsByClassName.get(className) == null) {
-                     this.choiceElementMappingsByClassName.put(className, xmlMapping);
-                 }
+                 this.choiceElementMappings.putIfAbsent(xmlField, xmlMapping);
+                 this.choiceElementMappingsByClassName.putIfAbsent(className, xmlMapping);
              }
          }
     }
@@ -738,7 +707,7 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
             } else {
                 XMLCompositeObjectMapping xmlMapping = new XMLCompositeObjectMapping();
                 xmlMapping.setAttributeAccessor(temporaryAccessor);
-                if(!theClass.equals(ClassConstants.OBJECT)){
+                if(!theClass.equals(CoreClassConstants.OBJECT)){
                     xmlMapping.setReferenceClass(theClass);
                 }
                 xmlMapping.setField(xmlField);

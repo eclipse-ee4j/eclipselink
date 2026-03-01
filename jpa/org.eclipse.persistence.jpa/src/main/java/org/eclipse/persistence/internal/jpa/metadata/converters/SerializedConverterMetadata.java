@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,7 +26,7 @@ import org.eclipse.persistence.mappings.converters.SerializedObjectConverter;
 /**
  * INTERNAL:
  * Abstract metadata serializer.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -39,7 +39,8 @@ import org.eclipse.persistence.mappings.converters.SerializedObjectConverter;
  * @since EclipseLink 2.6
  */
 public class SerializedConverterMetadata extends AbstractConverterMetadata {
-    private String m_className;
+    private MetadataClass m_serializerClass;
+    private String m_serializerClassName;
     private String m_serializerPackage;
 
     /**
@@ -57,7 +58,8 @@ public class SerializedConverterMetadata extends AbstractConverterMetadata {
     public SerializedConverterMetadata(MetadataAnnotation serializer, MetadataAccessor accessor) {
         super(serializer, accessor);
 
-        m_className = serializer.getAttributeString("serializerClass");
+        // default to JavaSerializer
+        m_serializerClass = getMetadataClass(serializer.getAttributeString("serializerClass"));
         m_serializerPackage = serializer.getAttributeString("serializerPackage");
     }
 
@@ -74,10 +76,12 @@ public class SerializedConverterMetadata extends AbstractConverterMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (super.equals(objectToCompare) && objectToCompare instanceof SerializedConverterMetadata) {
-            SerializedConverterMetadata serializer = (SerializedConverterMetadata) objectToCompare;
+        if (super.equals(objectToCompare) && objectToCompare instanceof SerializedConverterMetadata serializer) {
 
-            if (!valuesMatch(m_className, serializer.getClassName())) {
+            if (!valuesMatch(m_serializerClass, serializer.getSerializerClass())) {
+                return false;
+            }
+            if (!valuesMatch(m_serializerClassName, serializer.getClassName())) {
                 return false;
             }
             if (!valuesMatch(m_serializerPackage, serializer.getSerializerPackage())) {
@@ -93,7 +97,8 @@ public class SerializedConverterMetadata extends AbstractConverterMetadata {
     @Override
     public int hashCode() {
         int result = super.hashCode();
-        result = 31 * result + (m_className != null ? m_className.hashCode() : 0);
+        result = 31 * result + (m_serializerClass != null ? m_serializerClass.hashCode() : 0);
+        result = 31 * result + (m_serializerClassName != null ? m_serializerClassName.hashCode() : 0);
         result = 31 * result + (m_serializerPackage != null ? m_serializerPackage.hashCode() : 0);
         return result;
     }
@@ -102,8 +107,16 @@ public class SerializedConverterMetadata extends AbstractConverterMetadata {
      * INTERNAL:
      * Used for OX mapping.
      */
+    public MetadataClass getSerializerClass() {
+        return m_serializerClass;
+    }
+
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public String getClassName() {
-        return m_className;
+        return m_serializerClassName;
     }
 
     /**
@@ -121,7 +134,7 @@ public class SerializedConverterMetadata extends AbstractConverterMetadata {
     public void initXMLObject(MetadataAccessibleObject accessibleObject, XMLEntityMappings entityMappings) {
         super.initXMLObject(accessibleObject, entityMappings);
 
-        m_className = initXMLClassName(m_className).getName();
+        m_serializerClass = initXMLClassName(m_serializerClassName);
     }
 
     /**
@@ -131,12 +144,12 @@ public class SerializedConverterMetadata extends AbstractConverterMetadata {
     @Override
     public void process(DatabaseMapping mapping, MappingAccessor accessor, MetadataClass referenceClass, boolean isForMapKey) {
         SerializedObjectConverter converter = null;
-        if ((m_className == null) || (m_className.length() == 0)) {
+        if ((m_serializerClass == null) || (m_serializerClass.isVoid())) {
             converter = new SerializedObjectConverter(mapping);
         } else {
-            converter = new SerializedObjectConverter(mapping, getClassName());
+            converter = new SerializedObjectConverter(mapping, getSerializerClass().getName());
         }
-        if ((m_serializerPackage != null) && (m_serializerPackage.length() > 0)) {
+        if ((m_serializerPackage != null) && (!m_serializerPackage.isEmpty())) {
             converter.setSerializerPackage(m_serializerPackage);
         } else {
             // Default package to target classes package.
@@ -149,8 +162,16 @@ public class SerializedConverterMetadata extends AbstractConverterMetadata {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public void setClassName(String className) {
-        m_className = className;
+    public void setSerializerClass(MetadataClass serializerClass) {
+        m_serializerClass = serializerClass;
+    }
+
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setClassName(String serializerClassName) {
+        m_serializerClassName = serializerClassName;
     }
 
     /**

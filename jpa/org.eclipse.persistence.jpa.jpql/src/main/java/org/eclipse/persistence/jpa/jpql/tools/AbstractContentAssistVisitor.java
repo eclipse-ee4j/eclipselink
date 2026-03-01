@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2006, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,6 +18,8 @@
 //     04/21/2022: Tomas Kraus
 //       - Issue 1474: Update JPQL Grammar for Jakarta Persistence 2.2, 3.0 and 3.1
 //       - Issue 317: Implement LOCAL DATE, LOCAL TIME and LOCAL DATETIME.
+//     06/02/2023: Radek Felcman
+//       - Issue 1885: Implement new JPQLGrammar for upcoming Jakarta Persistence 3.2
 package org.eclipse.persistence.jpa.jpql.tools;
 
 import java.util.ArrayList;
@@ -63,6 +66,7 @@ import org.eclipse.persistence.jpa.jpql.parser.BadExpression;
 import org.eclipse.persistence.jpa.jpql.parser.BetweenExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CaseExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CaseOperandBNF;
+import org.eclipse.persistence.jpa.jpql.parser.CastExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CoalesceExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CollectionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CollectionMemberDeclaration;
@@ -73,10 +77,12 @@ import org.eclipse.persistence.jpa.jpql.parser.ComparisonExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ComparisonExpressionFactory;
 import org.eclipse.persistence.jpa.jpql.parser.CompoundExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ConcatExpression;
+import org.eclipse.persistence.jpa.jpql.parser.ConcatPipesExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ConditionalExpressionBNF;
 import org.eclipse.persistence.jpa.jpql.parser.ConstructorExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ConstructorItemBNF;
 import org.eclipse.persistence.jpa.jpql.parser.CountFunction;
+import org.eclipse.persistence.jpa.jpql.parser.DatabaseType;
 import org.eclipse.persistence.jpa.jpql.parser.DateTime;
 import org.eclipse.persistence.jpa.jpql.parser.DeleteClause;
 import org.eclipse.persistence.jpa.jpql.parser.DeleteStatement;
@@ -93,6 +99,7 @@ import org.eclipse.persistence.jpa.jpql.parser.FunctionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.GroupByClause;
 import org.eclipse.persistence.jpa.jpql.parser.GroupByItemBNF;
 import org.eclipse.persistence.jpa.jpql.parser.HavingClause;
+import org.eclipse.persistence.jpa.jpql.parser.IdExpression;
 import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariable;
 import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariableDeclaration;
 import org.eclipse.persistence.jpa.jpql.parser.IdentifierRole;
@@ -104,10 +111,12 @@ import org.eclipse.persistence.jpa.jpql.parser.InternalBetweenExpressionBNF;
 import org.eclipse.persistence.jpa.jpql.parser.InternalJoinBNF;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLExpression;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
+import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar3_2;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLQueryBNF;
 import org.eclipse.persistence.jpa.jpql.parser.Join;
 import org.eclipse.persistence.jpa.jpql.parser.KeyExpression;
 import org.eclipse.persistence.jpa.jpql.parser.KeywordExpression;
+import org.eclipse.persistence.jpa.jpql.parser.LeftExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LengthExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LikeExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LocalDateTime;
@@ -137,7 +146,9 @@ import org.eclipse.persistence.jpa.jpql.parser.OrderByItemBNF;
 import org.eclipse.persistence.jpa.jpql.parser.QueryPosition;
 import org.eclipse.persistence.jpa.jpql.parser.RangeVariableDeclaration;
 import org.eclipse.persistence.jpa.jpql.parser.RangeVariableDeclarationBNF;
+import org.eclipse.persistence.jpa.jpql.parser.ReplaceExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ResultVariable;
+import org.eclipse.persistence.jpa.jpql.parser.RightExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ScalarExpressionBNF;
 import org.eclipse.persistence.jpa.jpql.parser.SelectClause;
 import org.eclipse.persistence.jpa.jpql.parser.SelectStatement;
@@ -147,6 +158,8 @@ import org.eclipse.persistence.jpa.jpql.parser.SimpleSelectStatement;
 import org.eclipse.persistence.jpa.jpql.parser.SizeExpression;
 import org.eclipse.persistence.jpa.jpql.parser.SqrtExpression;
 import org.eclipse.persistence.jpa.jpql.parser.StateFieldPathExpression;
+import org.eclipse.persistence.jpa.jpql.parser.StringExpression;
+import org.eclipse.persistence.jpa.jpql.parser.StringExpressionFactory;
 import org.eclipse.persistence.jpa.jpql.parser.StringLiteral;
 import org.eclipse.persistence.jpa.jpql.parser.StringPrimaryBNF;
 import org.eclipse.persistence.jpa.jpql.parser.SubExpression;
@@ -158,11 +171,13 @@ import org.eclipse.persistence.jpa.jpql.parser.TreatExpression;
 import org.eclipse.persistence.jpa.jpql.parser.TrimExpression;
 import org.eclipse.persistence.jpa.jpql.parser.TypeExpression;
 import org.eclipse.persistence.jpa.jpql.parser.UnknownExpression;
+import org.eclipse.persistence.jpa.jpql.parser.UnionClause;
 import org.eclipse.persistence.jpa.jpql.parser.UpdateClause;
 import org.eclipse.persistence.jpa.jpql.parser.UpdateItem;
 import org.eclipse.persistence.jpa.jpql.parser.UpdateStatement;
 import org.eclipse.persistence.jpa.jpql.parser.UpperExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ValueExpression;
+import org.eclipse.persistence.jpa.jpql.parser.VersionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.WhenClause;
 import org.eclipse.persistence.jpa.jpql.parser.WhereClause;
 import org.eclipse.persistence.jpa.jpql.tools.ContentAssistProposals.ClassType;
@@ -253,7 +268,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
     /**
      * This {@link Filter} is used to say the {@link Expression} is invalid without doing anything.
      */
-    protected static final Filter<Expression> INVALID_IDENTIFIER_FILTER = new Filter<Expression>() {
+    protected static final Filter<Expression> INVALID_IDENTIFIER_FILTER = new Filter<>() {
         @Override
         public boolean accept(Expression expression) {
             return false;
@@ -268,7 +283,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
     /**
      * This {@link Filter} is used to say the {@link Expression} is valid without doing anything.
      */
-    protected static final Filter<Expression> VALID_IDENTIFIER_FILTER = new Filter<Expression>() {
+    protected static final Filter<Expression> VALID_IDENTIFIER_FILTER = new Filter<>() {
         @Override
         public boolean accept(Expression expression) {
             return true;
@@ -331,8 +346,20 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
      * word has to be an empty string.
      */
     protected void addArithmeticIdentifiers() {
-        if (word.length() == 0) {
+        if (word.isEmpty()) {
             addExpressionFactoryIdentifiers(ArithmeticExpressionFactory.ID);
+        }
+    }
+
+    /**
+     * Adds the JPQL identifiers which correspond to the String operators as valid proposals. The
+     * word has to be an empty string.
+     */
+    protected void addStringIdentifiers() {
+        if (this.queryContext.getGrammar() instanceof JPQLGrammar3_2) {
+            if (word.isEmpty()) {
+                addExpressionFactoryIdentifiers(StringExpressionFactory.ID);
+            }
         }
     }
 
@@ -384,7 +411,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
      */
     protected void addComparisonIdentifiers(Expression expression) {
 
-        if (word.length() == 0) {
+        if (word.isEmpty()) {
 
             for (String identifier : getExpressionFactory(ComparisonExpressionFactory.ID).identifiers()) {
                 Filter<Expression> filter = getFilter(identifier);
@@ -413,7 +440,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
     protected void addCompositeIdentifier(String identifier, int offset) {
 
         // No need to check by fragmenting the composite identifier
-        if ((word.length() == 0) && (offset == -1)) {
+        if ((word.isEmpty()) && (offset == -1)) {
             addIdentifier(identifier);
         }
         else if (isValidVersion(identifier)) {
@@ -439,7 +466,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 
                     char character = wordParser.character(position - fragment.length() - 1);
 
-                    if (Character.isWhitespace(character)) {
+                    if (ExpressionTools.isWhiteSpace(character)) {
                         proposals.addIdentifier(identifier);
                         break;
                     }
@@ -845,6 +872,17 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
         return isAppendable(expression, AppendableType.LOGICAL);
     }
 
+    /**
+     * Determines whether the given {@link Expression} can be followed by an String operator.
+     *
+     * @param expression The {@link Expression} that found left of the cursor, which determines if
+     * the String operators are appendable or not
+     * @return <code>true</code> if the operators are appendable; <code>false</code> otherwise
+     */
+    protected boolean areStringSymbolsAppendable(Expression expression) {
+        return isAppendable(expression, AppendableType.STRING);
+    }
+
     protected abstract AcceptableTypeVisitor buildAcceptableTypeVisitor();
 
     protected AppendableExpressionVisitor buildAppendableExpressionVisitor() {
@@ -852,7 +890,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
     }
 
     protected Filter<Expression> buildCollectionCompoundTypeFilter() {
-        return new Filter<Expression>() {
+        return new Filter<>() {
             @Override
             public boolean accept(Expression expression) {
                 IType type = queryContext.getType(expression);
@@ -1059,7 +1097,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
     }
 
     protected Filter<Expression> buildNonCollectionCompoundTypeFilter() {
-        return new Filter<Expression>() {
+        return new Filter<>() {
             @Override
             public boolean accept(Expression expression) {
                 IType type = queryContext.getType(expression);
@@ -2302,7 +2340,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
     protected boolean isValidProposal(String proposal, String word) {
 
         // There is no word to match the first letters
-        if (word.length() == 0) {
+        if (word.isEmpty()) {
             return true;
         }
 
@@ -2625,6 +2663,51 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
     }
 
     @Override
+    public void visit(CastExpression expression) {
+        super.visit(expression);
+        int position = queryPosition.getPosition(expression) - corrections.peek();
+        String identifier = expression.getIdentifier();
+
+        // Within CAST
+        if (isPositionWithin(position, identifier)) {
+            addIdentifier(identifier);
+            addIdentificationVariables();
+            addFunctionIdentifiers(expression.getParent().findQueryBNF(expression));
+        }
+        // After "CAST("
+        else if (expression.hasLeftParenthesis()) {
+            int length = identifier.length() + 1 /* '(' */;
+
+            // Right after "CAST("
+            if (position == length) {
+                addIdentificationVariables();
+                addFunctionIdentifiers(expression.getEncapsulatedExpressionQueryBNFId());
+            }
+            else if (expression.hasExpression()) {
+                Expression scalarExpression = expression.getExpression();
+
+                if (isComplete(scalarExpression)) {
+                    length += scalarExpression.getLength();
+
+                    if (expression.hasSpaceAfterExpression()) {
+                        length++;
+
+                        // Right before "AS" or database type
+                        if (position == length) {
+                            addAggregateIdentifiers(expression.getEncapsulatedExpressionQueryBNFId());
+                            proposals.addIdentifier(AS);
+                        }
+                        // Within "AS"
+                        else if (isPositionWithin(position, length, AS)) {
+                            proposals.addIdentifier(AS);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
     public void visit(CoalesceExpression expression) {
         super.visit(expression);
 
@@ -2802,6 +2885,12 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
     }
 
     @Override
+    public void visit(ConcatPipesExpression expression) {
+        super.visit(expression);
+        visitStringExpression(expression);
+    }
+
+    @Override
     public void visit(ConstructorExpression expression) {
         super.visit(expression);
         int position = queryPosition.getPosition(expression) - corrections.peek();
@@ -2840,6 +2929,12 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
     public void visit(CountFunction expression) {
         super.visit(expression);
         visitAggregateFunction(expression);
+    }
+
+    @Override
+    public void visit(DatabaseType expression) {
+        super.visit(expression);
+        // Nothing to do, this is database specific
     }
 
     @Override
@@ -2992,6 +3087,12 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
     }
 
     @Override
+    public void visit(IdExpression expression) {
+        super.visit(expression);
+        visitSingleEncapsulatedExpression(expression, IdentificationVariableType.ALL);
+    }
+
+    @Override
     public void visit(IndexExpression expression) {
         super.visit(expression);
         visitSingleEncapsulatedExpression(expression, IdentificationVariableType.ALL);
@@ -3072,37 +3173,37 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
             if (position == length) {
 
                 // Only add some JOIN identifiers if the actual identifier is shorter or incomplete
-                if (identifier == LEFT) {
-                    addIdentifier(LEFT_JOIN);
-                    addIdentifier(LEFT_OUTER_JOIN);
+                switch (identifier) {
+                    case LEFT -> {
+                        addIdentifier(LEFT_JOIN);
+                        addIdentifier(LEFT_OUTER_JOIN);
 
-                    if (isJoinFetchIdentifiable() ||
-                        !expression.hasAs() && !expression.hasIdentificationVariable()) {
+                        if (isJoinFetchIdentifiable() ||
+                                !expression.hasAs() && !expression.hasIdentificationVariable()) {
 
-                        addIdentifier(LEFT_JOIN_FETCH);
-                        addIdentifier(LEFT_OUTER_JOIN_FETCH);
+                            addIdentifier(LEFT_JOIN_FETCH);
+                            addIdentifier(LEFT_OUTER_JOIN_FETCH);
+                        }
                     }
-                }
-                else if (identifier == INNER) {
-                    addIdentifier(INNER_JOIN);
+                    case INNER -> {
+                        addIdentifier(INNER_JOIN);
 
-                    if (isJoinFetchIdentifiable() ||
-                        !expression.hasAs() && !expression.hasIdentificationVariable()) {
+                        if (isJoinFetchIdentifiable() ||
+                                !expression.hasAs() && !expression.hasIdentificationVariable()) {
 
-                        addIdentifier(INNER_JOIN_FETCH);
+                            addIdentifier(INNER_JOIN_FETCH);
+                        }
                     }
-                }
-                else if (identifier.equals("LEFT_OUTER")) {
-                    addIdentifier(LEFT_OUTER_JOIN);
+                    case "LEFT_OUTER" -> {
+                        addIdentifier(LEFT_OUTER_JOIN);
 
-                    if (isJoinFetchIdentifiable() ||
-                        !expression.hasAs() && !expression.hasIdentificationVariable()) {
+                        if (isJoinFetchIdentifiable() ||
+                                !expression.hasAs() && !expression.hasIdentificationVariable()) {
 
-                        addIdentifier(LEFT_OUTER_JOIN_FETCH);
+                            addIdentifier(LEFT_OUTER_JOIN_FETCH);
+                        }
                     }
-                }
-                else {
-                    addLeftIdentificationVariables(expression);
+                    default -> addLeftIdentificationVariables(expression);
                 }
             }
 
@@ -3184,6 +3285,12 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
             addIdentificationVariables();
             addFunctionIdentifiers(expression.getParent().findQueryBNF(expression));
         }
+    }
+
+    @Override
+    public void visit(LeftExpression expression) {
+        super.visit(expression);
+        visitCollectionExpression(expression, LEFT, getDoubleEncapsulatedCollectionHelper());
     }
 
     @Override
@@ -3476,6 +3583,12 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
     }
 
     @Override
+    public void visit(ReplaceExpression expression) {
+        super.visit(expression);
+        visitCollectionExpression(expression, REPLACE, getTripleEncapsulatedCollectionHelper());
+    }
+
+    @Override
     public void visit(ResultVariable expression) {
         super.visit(expression);
         int position = queryPosition.getPosition(expression) - corrections.peek();
@@ -3509,6 +3622,12 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
         else if (expression.hasAs() && isPositionWithin(position, AS)) {
             addFunctionIdentifiers(expression);
         }
+    }
+
+    @Override
+    public void visit(RightExpression expression) {
+        super.visit(expression);
+        visitCollectionExpression(expression, RIGHT, getDoubleEncapsulatedCollectionHelper());
     }
 
     @Override
@@ -3793,6 +3912,58 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
     }
 
     @Override
+    public void visit(UnionClause expression) {
+        super.visit(expression);
+        int position = queryPosition.getPosition(expression) - corrections.peek();
+        String identifier = expression.getIdentifier();
+
+        // Within <identifier>
+        if (isPositionWithin(position, identifier)) {
+            proposals.addIdentifier(EXCEPT);
+            proposals.addIdentifier(INTERSECT);
+            proposals.addIdentifier(UNION);
+        }
+        // After "<identifier> "
+        else if (expression.hasSpaceAfterIdentifier()) {
+            int length = identifier.length() + SPACE_LENGTH;
+
+            // Right after "<identifier> "
+            if (position == length) {
+                proposals.addIdentifier(ALL);
+
+                if (!expression.hasAll()) {
+                    addIdentifier(SELECT);
+                }
+            }
+            // Within "ALL"
+            else if (isPositionWithin(position, length, ALL)) {
+                addIdentifier(ALL);
+            }
+            else {
+                if ((position == length) && !expression.hasAll()) {
+                    proposals.addIdentifier(SELECT);
+                }
+                else {
+
+                    if (expression.hasAll()) {
+                        length += 3 /* ALL */;
+                    }
+
+                    // After "ALL "
+                    if (expression.hasSpaceAfterAll()) {
+                        length += SPACE_LENGTH;
+
+                        // Right after "ALL "
+                        if (position == length) {
+                            proposals.addIdentifier(SELECT);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
     public void visit(UnknownExpression expression) {
         super.visit(expression);
         visitInvalidExpression(expression);
@@ -3941,6 +4112,12 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
     public void visit(ValueExpression expression) {
         super.visit(expression);
         visitSingleEncapsulatedExpression(expression, IdentificationVariableType.LEFT_COLLECTION);
+    }
+
+    @Override
+    public void visit(VersionExpression expression) {
+        super.visit(expression);
+        visitSingleEncapsulatedExpression(expression, IdentificationVariableType.ALL);
     }
 
     @Override
@@ -4109,7 +4286,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
         }
 
         int position = queryPosition.getPosition(expression) - corrections.peek();
-        boolean hasIdentifier = (identifier.length() > 0);
+        boolean hasIdentifier = (!identifier.isEmpty());
         boolean virtualSpace = hasVirtualSpace();
 
         // Within the identifier
@@ -4321,7 +4498,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 
         if (!isLocked(expression)) {
             int position = queryPosition.getPosition(expression) - corrections.peek();
-            boolean virtualSpace = (position == 1) && (word.length() == 0);
+            boolean virtualSpace = (position == 1) && (word.isEmpty());
 
             // 1. Within the first word of the invalid fragment
             // 2. Or after the ending whitespace
@@ -4699,6 +4876,36 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
     }
 
     /**
+     * Visits the given {@link StringExpression} and attempts to find valid proposals.
+     *
+     * @param expression The {@link StringExpression} to inspect
+     */
+    protected void visitStringExpression(StringExpression expression) {
+
+        int position = queryPosition.getPosition(expression) - corrections.peek();
+        int length = 0;
+
+        if (expression.hasLeftExpression()) {
+            length += expression.getLeftExpression().getLength() + SPACE_LENGTH;
+        }
+
+        // Within the string operator
+        if (isPositionWithin(position, length, CONCAT_PIPES)) {
+            addAggregateIdentifiers(expression.getQueryBNF());
+        }
+        // After the string operator, with or without the space
+        else if (expression.hasSpaceAfterIdentifier()) {
+            length += 2;
+
+            // Right after the space
+            if (position == length) {
+                addIdentificationVariables();
+                addFunctionIdentifiers(expression.getRightExpressionQueryBNFId());
+            }
+        }
+    }
+
+    /**
      * Visits the given {@link AbstractPathExpression} and attempts to find valid proposals that is
      * not provided by the default implementation. Subclasses can add additional proposals that is
      * outside of the scope of generic JPA metadata.
@@ -4777,7 +4984,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
                 index = (-index / 10) - 1;
             }
 
-            // The only thing that is appendable is an arithmetic operator
+            // The only thing that is appendable is an arithmetic or String operator
             // Example: "SELECT e FROM Employee e WHERE e.name|"
             // Example: "SELECT e FROM Employee e WHERE I|"
             if ((index == 0) && !virtualSpace) {
@@ -4786,6 +4993,10 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 
                 if (visitor.areArithmeticSymbolsAppendable(child)) {
                     visitor.addArithmeticIdentifiers();
+                }
+
+                if (visitor.areStringSymbolsAppendable(child)) {
+                    visitor.addStringIdentifiers();
                 }
             }
             else {
@@ -4809,6 +5020,10 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 
                     if (visitor.areArithmeticSymbolsAppendable(child)) {
                         visitor.addArithmeticIdentifiers();
+                    }
+
+                    if (visitor.areStringSymbolsAppendable(child)) {
+                        visitor.addStringIdentifiers();
                     }
 
                     if (visitor.areComparisonSymbolsAppendable(child)) {
@@ -5098,7 +5313,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
                                        boolean hasComma,
                                        boolean virtualSpace) {
 
-            // The only thing that is appendable is an arithmetic operator
+            // The only thing that is appendable is arithmetic or String operator
             // Example: "SELECT e.name|"
             // Example: "SELECT e|"
             if (queryBNF(expression, index).handleAggregate()) {
@@ -5107,6 +5322,10 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 
                 if (visitor.areArithmeticSymbolsAppendable(child)) {
                     visitor.addArithmeticIdentifiers();
+                }
+
+                if (visitor.areStringSymbolsAppendable(child)) {
+                    visitor.addStringIdentifiers();
                 }
             }
         }
@@ -5436,6 +5655,12 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
         }
 
         @Override
+        public void visit(CastExpression expression) {
+            appendable = !conditionalExpression &&
+                    expression.hasRightParenthesis();
+        }
+
+        @Override
         public void visit(CoalesceExpression expression) {
             appendable = !conditionalExpression &&
                       expression.hasRightParenthesis();
@@ -5536,6 +5761,13 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
         }
 
         @Override
+        public void visit(ConcatPipesExpression expression) {
+            if (expression.hasRightExpression()) {
+                expression.getRightExpression().accept(this);
+            }
+        }
+
+        @Override
         public void visit(ConstructorExpression expression) {
             appendable = !conditionalExpression &&
                       expression.hasRightParenthesis();
@@ -5545,6 +5777,11 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
         public void visit(CountFunction expression) {
             appendable = !conditionalExpression &&
                       expression.hasRightParenthesis();
+        }
+
+        @Override
+        public void visit(DatabaseType expression) {
+            // Always complete since it's a single word
         }
 
         @Override
@@ -5743,6 +5980,12 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
         }
 
         @Override
+        public void visit(IdExpression expression) {
+            appendable = !conditionalExpression &&
+                    expression.hasRightParenthesis();
+        }
+
+        @Override
         public void visit(IndexExpression expression) {
             appendable = !conditionalExpression &&
                       expression.hasRightParenthesis();
@@ -5794,6 +6037,12 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
             appendable = !conditionalExpression &&
                       (appendableType == AppendableType.LOGICAL ||
                        appendableType == AppendableType.COMPLETE);
+        }
+
+        @Override
+        public void visit(LeftExpression expression) {
+            appendable = !conditionalExpression &&
+                    expression.hasRightParenthesis();
         }
 
         @Override
@@ -5970,11 +6219,23 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
         }
 
         @Override
+        public void visit(ReplaceExpression expression) {
+            appendable = !conditionalExpression &&
+                    expression.hasRightParenthesis();
+        }
+
+        @Override
         public void visit(ResultVariable expression) {
             // The result variable is parsed without AS
             appendable = !expression.hasAs() &&
                          !expression.hasSpaceAfterAs() &&
                           expression.hasResultVariable();
+        }
+
+        @Override
+        public void visit(RightExpression expression) {
+            appendable = !conditionalExpression &&
+                    expression.hasRightParenthesis();
         }
 
         @Override
@@ -6123,6 +6384,11 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
                             appendable = visitor.queryContext.getTypeHelper().isBooleanType(type);
                             break;
                         }
+                        case STRING: {
+                            // e.name (String) can be followed by ||
+                            appendable = visitor.queryContext.getTypeHelper().isStringType(type);
+                            break;
+                        }
                     }
                 }
             }
@@ -6231,6 +6497,12 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
         }
 
         @Override
+        public void visit(VersionExpression expression) {
+            appendable = !conditionalExpression &&
+                    expression.hasRightParenthesis();
+        }
+
+        @Override
         public void visit(WhenClause expression) {
             if (expression.hasWhenExpression()) {
                 conditionalExpression = true;
@@ -6253,7 +6525,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
     /**
      * This is used to determine how {@link AppendableExpressionVisitor} should perform the check.
      */
-    protected static enum AppendableType {
+    protected enum AppendableType {
 
         /**
          * Determines whether the arithmetic operators (+, -, *, /) can be appended as valid proposals.
@@ -6288,6 +6560,11 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
          * can be appended as valid proposals.
          */
         LOGICAL,
+
+        /**
+         * Determines whether the String operators (||) can be appended as valid proposals.
+         */
+        STRING,
 
         /**
          * Determines whether the JPQL identifiers identifying a subquery (eg: <code><b>SELECT</b></code>)
@@ -6457,7 +6734,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
                                        boolean hasComma,
                                        boolean virtualSpace) {
 
-            // The only thing that is appendable is an arithmetic operator
+            // The only thing that is appendable is arithmetic or String operator
             // Example: "SELECT e.name|"
             // Example: "SELECT e|"
             if (queryBNF(expression, index).handleAggregate()) {
@@ -6469,11 +6746,19 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
                     if (visitor.areArithmeticSymbolsAppendable(child)) {
                         visitor.addArithmeticIdentifiers();
                     }
+
+                    if (visitor.areStringSymbolsAppendable(child)) {
+                        visitor.addStringIdentifiers();
+                    }
                 }
                 else {
 
                     if (visitor.areArithmeticSymbolsAppendable(child)) {
                         visitor.addArithmeticIdentifiers();
+                    }
+
+                    if (visitor.areStringSymbolsAppendable(child)) {
+                        visitor.addStringIdentifiers();
                     }
 
                     if (visitor.areComparisonSymbolsAppendable(child)) {
@@ -6592,11 +6877,19 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
                     if (visitor.areArithmeticSymbolsAppendable(child)) {
                         visitor.addArithmeticIdentifiers();
                     }
+
+                    if (visitor.areStringSymbolsAppendable(child)) {
+                        visitor.addStringIdentifiers();
+                    }
                 }
                 else {
 
                     if (visitor.areArithmeticSymbolsAppendable(child)) {
                         visitor.addArithmeticIdentifiers();
+                    }
+
+                    if (visitor.areStringSymbolsAppendable(child)) {
+                        visitor.addStringIdentifiers();
                     }
 
                     if (visitor.areComparisonSymbolsAppendable(child)) {
@@ -6889,11 +7182,19 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
                     if (visitor.areArithmeticSymbolsAppendable(child)) {
                         visitor.addArithmeticIdentifiers();
                     }
+
+                    if (visitor.areStringSymbolsAppendable(child)) {
+                        visitor.addStringIdentifiers();
+                    }
                 }
                 else {
 
                     if (visitor.areArithmeticSymbolsAppendable(child)) {
                         visitor.addArithmeticIdentifiers();
+                    }
+
+                    if (visitor.areStringSymbolsAppendable(child)) {
+                        visitor.addStringIdentifiers();
                     }
 
                     if (visitor.areComparisonSymbolsAppendable(child)) {
@@ -7233,6 +7534,28 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
         }
 
         @Override
+        public void visit(CastExpression expression) {
+
+            if (badExpression) {
+                return;
+            }
+
+            if (expression.hasScalarExpression() &&
+                    !expression.hasAs() &&
+                    !expression.hasDatabaseType() &&
+                    !expression.hasRightParenthesis()) {
+
+                expression.getExpression().accept(this);
+            }
+
+            if (queryPosition.getExpression() == null) {
+                queryPosition.setExpression(expression);
+            }
+
+            queryPosition.addPosition(expression, expression.getLength() - correction);
+        }
+
+        @Override
         public void visit(CoalesceExpression expression) {
             visitAbstractSingleEncapsulatedExpression(expression);
         }
@@ -7372,6 +7695,11 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
         }
 
         @Override
+        public void visit(ConcatPipesExpression expression) {
+            visitCompoundExpression(expression);
+        }
+
+        @Override
         public void visit(ConstructorExpression expression) {
 
             if (badExpression) {
@@ -7400,6 +7728,11 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
         @Override
         public void visit(CountFunction expression) {
             visitAbstractSingleEncapsulatedExpression(expression);
+        }
+
+        @Override
+        public void visit(DatabaseType expression) {
+            visitAbstractDoubleEncapsulatedExpression(expression);
         }
 
         @Override
@@ -7581,6 +7914,11 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
         }
 
         @Override
+        public void visit(IdExpression expression) {
+            visitAbstractSingleEncapsulatedExpression(expression);
+        }
+
+        @Override
         public void visit(IndexExpression expression) {
             visitAbstractSingleEncapsulatedExpression(expression);
         }
@@ -7691,6 +8029,11 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
                 queryPosition.setExpression(expression);
                 queryPosition.addPosition(expression, positionWithinInvalidExpression);
             }
+        }
+
+        @Override
+        public void visit(LeftExpression expression) {
+            visitAbstractDoubleEncapsulatedExpression(expression);
         }
 
         @Override
@@ -7979,6 +8322,11 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
         }
 
         @Override
+        public void visit(ReplaceExpression expression) {
+            visitAbstractTripleEncapsulatedExpression(expression);
+        }
+
+        @Override
         public void visit(ResultVariable expression) {
 
             if (badExpression) {
@@ -8009,6 +8357,11 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 
                 queryPosition.addPosition(expression, expression.getLength() - correction);
             }
+        }
+
+        @Override
+        public void visit(RightExpression expression) {
+            visitAbstractDoubleEncapsulatedExpression(expression);
         }
 
         @Override
@@ -8248,6 +8601,24 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
         }
 
         @Override
+        public void visit(UnionClause expression) {
+
+            if (badExpression) {
+                return;
+            }
+
+            if (expression.hasQuery()) {
+                expression.getQuery().accept(this);
+            }
+
+            if (queryPosition.getExpression() == null) {
+                queryPosition.setExpression(expression);
+            }
+
+            queryPosition.addPosition(expression, expression.getLength() - correction);
+        }
+
+        @Override
         public void visit(UnknownExpression expression) {
             // Nothing to do, this is the expression that needs
             // to be handled by the valid portion of the JPQL query
@@ -8332,6 +8703,11 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 
         @Override
         public void visit(ValueExpression expression) {
+            visitAbstractSingleEncapsulatedExpression(expression);
+        }
+
+        @Override
+        public void visit(VersionExpression expression) {
             visitAbstractSingleEncapsulatedExpression(expression);
         }
 
@@ -8710,14 +9086,14 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
         }
 
         protected Filter<IMapping> buildFilter(String suffix) {
-            if (suffix.length() == 0) {
+            if (suffix.isEmpty()) {
                 return filter;
             }
             return new AndFilter<>(filter, buildMappingNameFilter(suffix));
         }
 
         protected Filter<IMapping> buildMappingNameFilter(final String suffix) {
-            return new Filter<IMapping>() {
+            return new Filter<>() {
                 @Override
                 public boolean accept(IMapping mapping) {
                     return mapping.getName().startsWith(suffix);
@@ -9245,7 +9621,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
     /**
      * The various ways of retrieving identification variables from the declaration expression.
      */
-    protected static enum IdentificationVariableType {
+    protected enum IdentificationVariableType {
 
         /**
          * Retrieves all the identification variables declared in the declaration portion of the
@@ -9860,6 +10236,11 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
             //          2. Could become 'e.employees IS NOT NULL'
             //          3. Could become e.address.zipcode = 27519
             filter = NullFilter.instance();
+        }
+
+        @Override
+        public void visit(ReplaceExpression expression) {
+            filter = visitor.getMappingPropertyFilter();
         }
 
         @Override
@@ -10481,11 +10862,19 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
                     if (visitor.areArithmeticSymbolsAppendable(child)) {
                         visitor.addArithmeticIdentifiers();
                     }
+
+                    if (visitor.areStringSymbolsAppendable(child)) {
+                        visitor.addStringIdentifiers();
+                    }
                 }
                 else {
 
                     if (visitor.areArithmeticSymbolsAppendable(child)) {
                         visitor.addArithmeticIdentifiers();
+                    }
+
+                    if (visitor.areStringSymbolsAppendable(child)) {
+                        visitor.addStringIdentifiers();
                     }
 
                     if (visitor.areComparisonSymbolsAppendable(child)) {

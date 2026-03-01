@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,9 +40,7 @@ public class Employee {
                 if(this.getFirstName() == null) {
                     return false;
                 }
-                if(!this.getFirstName().equals(employee.getFirstName())) {
-                    return false;
-                }
+                return this.getFirstName().equals(employee.getFirstName());
               }
             return true;
         } catch (ClassCastException e) {
@@ -51,7 +49,7 @@ public class Employee {
     }
 
     public String toString() {
-        StringBuffer aBuffer = new StringBuffer();
+        StringBuilder aBuffer = new StringBuilder();
         aBuffer.append("Employee(id=");
         aBuffer.append(getID());
         aBuffer.append(", numericNoNullValue=");

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -53,7 +53,6 @@ import jakarta.xml.ws.Provider;
 import jakarta.xml.ws.Service;
 import jakarta.xml.ws.ServiceMode;
 import jakarta.xml.ws.WebServiceContext;
-import jakarta.xml.ws.WebServiceFeature;
 import jakarta.xml.ws.WebServiceProvider;
 import jakarta.xml.ws.soap.MTOMFeature;
 import jakarta.xml.ws.soap.SOAPBinding;
@@ -139,12 +138,13 @@ import static dbws.testing.DBWSTestSuite.runDdl;
 public class SOAP12TestSuite extends ProviderHelper implements Provider<SOAPMessage> {
 
     static final String CREATE_SOAP12_TABLE =
-        "CREATE TABLE IF NOT EXISTS soap12 (" +
-            "\nID DECIMAL(7,0) NOT NULL," +
-            "\nDESCRIPT VARCHAR(80)," +
-            "\nSTUFF MEDIUMBLOB," +
-            "\nPRIMARY KEY (ID)" +
-        "\n)";
+            """
+                    CREATE TABLE IF NOT EXISTS soap12 (
+                    ID DECIMAL(7,0) NOT NULL,
+                    DESCRIPT VARCHAR(80),
+                    STUFF MEDIUMBLOB,
+                    PRIMARY KEY (ID)
+                    )""";
     static final String DROP_SOAP12_TABLE =
         "DROP TABLE soap12";
 
@@ -512,7 +512,7 @@ public class SOAP12TestSuite extends ProviderHelper implements Provider<SOAPMess
             DataHandler dh = aPart.getDataHandler();
             InputStream inputStream = dh.getInputStream();
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            byte buf[] = new byte[1024];
+            byte[] buf = new byte[1024];
             int len;
             while ((len = inputStream.read(buf)) > 0) {
                 baos.write(buf, 0, len);
@@ -543,7 +543,7 @@ public class SOAP12TestSuite extends ProviderHelper implements Provider<SOAPMess
                 DataHandler dh = aPart.getDataHandler();
                 InputStream inputStream = dh.getInputStream();
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                byte buf[] = new byte[4096];
+                byte[] buf = new byte[4096];
                 int len;
                 while ((len = inputStream.read(buf)) > 0) {
                     baos.write(buf, 0, len);

@@ -1,0 +1,246 @@
+*TOC*
+Special:Whatlinkshere_UserGuide_JPA_Using_the_Canonical_Model_Generator_(ELUG)[Related
+Topics]
+
+== Canonical Model Generation
+
+With the new Criteria API from the JPA 2.0 spec, EclipseLink can now
+produce static
+
+http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api[metamodel]
+classes that correspond to the entities, mapped superclasses, and
+embeddable classes in the persistence unit. A static metamodel class
+models the persistent state and relationships of the corresponding
+managed class.
+
+For portability, EclipseLink generates this canonical metamodel as
+defined in section 6.2.1.1 of the specification. EclipseLink generates
+the static metamodel classes by using the the annotation processor tool
+(APT) in conjunction with its existing metadata processing of
+annotations.
+
+For more information on APT, see:
+http://java.sun.com/j2se/1.5.0/docs/guide/apt/GettingStarted.html
+
+=== Metadata Processing
+
+The annotation processor tool directly ties into the regular deployment
+metadata processing. Which means before generating the metamodel
+classes, persistence units are processed as they normally would be
+according to the spec giving you the following behavior: *Persistence
+unit property processing
+
+* XML mapping file merging and override
+* Full annotation and xml processing of Entities, Embeddables and
+MappedSuperclasses.
+* Full support of EclipseLink extensions, including annotations and
+eclipelink-orm.xml
+
+=== Configuring and using within Eclipse Galileo
+
+Use the following procedure to configure the metamodel generation within
+the Eclipse IDE.
+
+[arabic]
+. Select your project in the *Package Explorer* and select *Project* >
+*Properties*. The Properties dialog appears.
+. Select *Java Compiler* and ensure you are using JDK 1.6 (or higher).
+. Expand the *Java Compiler* element and select *Annotation Processing*.
+. In the Annotation Processing area, enable the *Enable annotation
+processing* option.
+. In the *Generated source directory* field, enter the directory in
+which to generate the metamodel classes.
+. By default, *Processor options* are not needed. However, EclipseLink
+provides you with custom generation options if you would like to
+configure you metamodel classes differently then defined in the spec.
+See the EclipseLink custom processor options section below for supported
+processor options.
+. Expand the *Annotation Processing* element and select *Factory Path*.
+. Click *Add External JARs* and add the following libraries (JARs).
+Refer to the the link:#library_names[1.2.0 RC4 Library names] for
+details.
+
+* {blank}
+** The EclipseLink JAR (eclipselik.jar)
+** The Java persistence 2.0 preview JAR
+** A JAR that contains the enabling services file that specifies the
+name of the annotation processor tool.
+
+http://www.eclipse.org/downloads/download.php?file=/rt/eclipselink/releases/static/eclipselink-jpa-modelgen.jar[Service
+Jar]
+
+[width="100%",cols="<100%",]
+|===
+|*Note:* The annotation processor _does not_ log to the *Console*
+window. Instead, messages are logged to the *Error Log* window. To
+display this window, select *Window > Show View > Error Log* from the
+Eclipse menu.
+|===
+
+=== Configuring and using within ANT/javac
+
+Use the following procedure to configure the metamodel generation within
+ANT/javac:
+
+[arabic]
+. Add *modelgen jar* to the javac classpath.
+. Use the `+-processor+` option on javac command line.
+. In the following examples, options are specified with using *-A* (for
+example,
+`+javac -Aeclipselink.persistencexml=META-INF/sub/persistence.xml+`)
+
+==== ANT example
+
+[source,xml]
+----
+    <target name="model-compile" description="compile models that need canonical processing">
+        <javac
+            srcdir="${SRC_PATH}"
+            destdir="${DEST_PATH}"
+            debug="${javac.debug}"
+            debuglevel="${javac.debuglevel}"
+            optimize="${javac.optimize}"
+            source="${javac.version}"
+            target="${javac.version}"
+            deprecation="${javac.deprecation}" failonerror="true">
+            <include name="${MODEL_PATH}/**/*.java"/>
+            <compilerarg value="-Aeclipselink.persistencexml=${PERSISTENCE_XML_PATH}" compiler="javac1.6"/>
+            <classpath refid="${COMPILE_PATH_REF}"/>
+        </javac>
+    </target>
+----
+
+[#processor_options]##
+
+=== EclipseLink custom processor options
+
+The following table describes the EclipseLink custom options:
+
+Option
+
+Description
+
+*eclipselink.persistencexml*
+
+The full resource name in which to look for the persistence XML files.
+If not specified the default `+META-INF/persistence.xml+` will be used.
+
+*eclipselink.persistenceunits*
+
+A comma deliminated list of persistence unit names that will be used
+when generating the canonical model. By default all persistence units
+available in all persistence XML files will be used. Note: When
+specifying multiple persistence units you cannot include a persistence
+unit with a comma ( , ) in its name.
+
+*eclipselink.canonicalmodel.prefix*
+
+The prefix that will be added to the start of the class name of any
+generated canonical model class. By default the prefix is not used.
+
+*eclipselink.canonicalmodel.suffix*
+
+The suffix that will be added to the end of the class name of any
+generated canonical model class. The default suffix value is _ (an
+underscore). If specified, this property value must be a non-empty
+string that contains valid characters for use in a Java class name.
+
+*eclipselink.canonicalmodel.subpackage*
+
+A sub-package name that can be used to have the canonical model
+generator generate its classes in a sub-package of the package where the
+corresponding entity class is located. By default the canonical model
+classes are generated into the same package as the entity classes.
+
+[#library_names]##
+
+=== EclipseLink 1.2.0 RC4 Library names
+
+Currently the target release of EclipseLink 1.2.0 is RC4 which uses the
+following jar files names in the ZIP installer. Please note that the ZIP
+installer is the only distribution of EclipseLink including the modelgen
+JAR file.
+
+* Services file (enables the processor):
+http://www.eclipse.org/downloads/download.php?file=/rt/eclipselink/releases/static/eclipselink-jpa-modelgen.jar[Service
+Jar]
+*_\eclipselink\jlib\jpa\eclipselink-jpa-modelgen_1.2.0.v20091016-r5565.jar_*
+
+* javax.persistence library:
+*_\eclipselink\jlib\jpa\javax.persistence_2.0_preview.jar_*
+
+* EclipseLink jar: *_\eclipselink\jlib\eclipselink.jar_*
+
+=== Troubleshooting
+
+After following the configuration steps above if no classes are
+generated, check the following:
+
+===== Do you have a persistence XML file?
+
+Verify that you have a Persistence XML file. By default, the file is
+located in `+META-INF/persistence.xml+`.
+
+If you name your persistence XML differently, or place it in a different
+directory, you must use the *eclipselink.persistencexml* processor
+option. See link:#processor_options[EclipseLink Custom Processor
+Options] for more information.
+
+===== Are you using an extended EclipseLink ORM mapping file?
+
+If you use an extended EclipseLink ORM mapping file that is not listed
+in your Persistence XML file, EclipseLink will not automatically
+discover the mapping file (similar to the `+orm.xml+` file). You must
+explicitly specify the mapping file:
+
+[source,xml]
+----
+<mapping-file>
+  ...
+    eclipselink-orm.xml
+  ...
+</mapping-file>
+----
+
+Note: Future versions of EclipseLink will include the ability to
+automatically discover the eclipselink-orm.xml file for the metamodel
+class generation. In a regular deployment scenario the eclipselink-orm
+discovery still applies.
+
+===== Are XML changes not being reflected in the generated model classes?
+
+After making an XML change within Eclipse, the the generated model
+classes are not updated to reflect the change. Unlike changes to the
+model class, XML changes _are not_ automatically reflected, since the
+annotation processor is not aware of these changes.
+
+To reflect XML changes in your generated metamodel classes, clean the
+project. Select *Project > Clean…* from the Eclipse menu.
+
+If you have made extensive XML changes (including the removal of mapping
+files or deletion of entities), you must restart the annotation
+processor tool:
+
+[arabic]
+. Select *Project > Properties* from the Eclipse menu.
+. Expand *Java Compiler* element and select *Annotation Processing*.
+. In the Annotation Processing area of the Properties window, deselect
+the *Enable annotation processing* option.
+. Click *OK*. A window appears, indicating that you have changed the
+annotation processing settings and Eclipse must rebuild the project.
+. Click *Yes*.
+. After Eclipse rebuilds the project, return to the Annotations
+Processing area of the Properties page, and enable the *Enable
+annotation processing* option.
+. Click *OK*. Again, a window appears, indicating that you have changed
+the annotation processing settings and Eclipse must rebuild the project.
+. Click *Yes*. Eclipse rebuilds the project. The generated model classes
+now reflect your latest XML changes.
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Release_1.2[Category: Release 1.2] Category:_JPA[Category:
+JPA]

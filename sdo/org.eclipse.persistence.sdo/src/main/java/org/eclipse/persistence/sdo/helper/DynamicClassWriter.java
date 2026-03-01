@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,14 +27,14 @@ import org.eclipse.persistence.sdo.SDODataObject;
 import org.eclipse.persistence.sdo.SDOProperty;
 import org.eclipse.persistence.sdo.SDOType;
 import org.eclipse.persistence.sdo.helper.extension.SDOUtil;
-import org.eclipse.persistence.internal.libraries.asm.ClassWriter;
-import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
-import org.eclipse.persistence.internal.libraries.asm.Opcodes;
-import org.eclipse.persistence.internal.libraries.asm.Type;
+import org.eclipse.persistence.asm.ASMFactory;
+import org.eclipse.persistence.asm.ClassWriter;
+import org.eclipse.persistence.asm.MethodVisitor;
+import org.eclipse.persistence.asm.Opcodes;
+import org.eclipse.persistence.asm.Type;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 
 import commonj.sdo.helper.HelperContext;
-import org.eclipse.persistence.internal.libraries.asm.EclipseLinkASMClassWriter;
 
 /*
  * Dynamically generate the implementation class for the SDO type.  If the type has an instance
@@ -70,9 +70,7 @@ public class DynamicClassWriter {
                 Field parentEndPropertyIndexField = PrivilegedAccessHelper.getField(parentClass, END_PROPERTY_INDEX, true);
                 Integer parentEndPropertyIndex = PrivilegedAccessHelper.getValueFromField(parentEndPropertyIndexField, parentClass);
                 startPropertyIndex = parentEndPropertyIndex + 1;
-            } catch (NoSuchFieldException e) {
-                startPropertyIndex = 0;
-            } catch (IllegalAccessException e) {
+            } catch (NoSuchFieldException | IllegalAccessException e) {
                 startPropertyIndex = 0;
             }
         } else {
@@ -106,7 +104,7 @@ public class DynamicClassWriter {
      * class is created dynamically from them.
      */
     public byte[] createClass() {
-        EclipseLinkASMClassWriter cw = new EclipseLinkASMClassWriter();
+        ClassWriter cw = ASMFactory.createClassWriter();
 
         if (null == type.getInstanceClass()) {
             cw.visit(Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER, typeImplClassDescriptor, null, Type.getType(parentClass).getInternalName(), null);
@@ -130,7 +128,7 @@ public class DynamicClassWriter {
     }
 
     private void addPropertyIndices(ClassWriter cw) {
-        cw.visitField(Opcodes.ACC_PUBLIC + Opcodes.ACC_FINAL + Opcodes.ACC_STATIC, START_PROPERTY_INDEX, "I", null, startPropertyIndex).visitEnd();
+        cw.visitField(Opcodes.ACC_PUBLIC + Opcodes.ACC_FINAL+ Opcodes.ACC_STATIC, START_PROPERTY_INDEX, "I", null, startPropertyIndex).visitEnd();
         int declaredPropsSize = type.getDeclaredProperties().size();
 
         Integer endPropertyIndex;
@@ -139,7 +137,7 @@ public class DynamicClassWriter {
         } else {
             endPropertyIndex = startPropertyIndex - 1;
         }
-        cw.visitField(Opcodes.ACC_PUBLIC + Opcodes.ACC_FINAL + Opcodes.ACC_STATIC, END_PROPERTY_INDEX, "I", null, endPropertyIndex).visitEnd();
+        cw.visitField(Opcodes.ACC_PUBLIC + Opcodes.ACC_FINAL+ Opcodes.ACC_STATIC, END_PROPERTY_INDEX, "I", null, endPropertyIndex).visitEnd();
     }
 
     private void addConstructors(ClassWriter cw) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,13 +20,8 @@
 //       - 463726: Added DatabaseSession null check
 package org.eclipse.persistence.platform.server.glassfish;
 
-import java.lang.reflect.Method;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
-import java.sql.Connection;
-
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.logging.JavaLog;
+import org.eclipse.persistence.logging.jul.JavaLog;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.platform.server.JMXEnabledPlatform;
 import org.eclipse.persistence.platform.server.JMXServerPlatformBase;
@@ -37,19 +32,24 @@ import org.eclipse.persistence.sessions.ExternalTransactionController;
 import org.eclipse.persistence.transaction.glassfish.GlassfishTransactionController;
 import org.eclipse.persistence.transaction.glassfish.GlassfishTransactionController11;
 
+import java.lang.reflect.Method;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
+import java.sql.Connection;
+
 /**
  * PUBLIC:
- *
+ * <p>
  * This is the concrete subclass responsible for representing Glassfish server behavior.
- *
+ * <p>
  * This platform overrides:
- *
+ * <p>
  * getExternalTransactionControllerClass(): to use an Glassfish controller class
  *
  */
 public class GlassfishPlatform extends JMXServerPlatformBase implements JMXEnabledPlatform {
 
-    /**
+    /*
      * The following constants and attributes are used to determine the module and application name
      * to satisfy the requirements for 248746 where we provide an identifier pair for JMX sessions.
      * Each application can have several modules.
@@ -57,11 +57,11 @@ public class GlassfishPlatform extends JMXServerPlatformBase implements JMXEnabl
      * 2) Module name - the ejb or war jar name (there is a 1-many relationship for module:session(s))
      */
     static {
-        /** Override by subclass: Search String in application server ClassLoader for the application:persistence_unit name */
+        /* Override by subclass: Search String in application server ClassLoader for the application:persistence_unit name */
         APP_SERVER_CLASSLOADER_APPLICATION_PU_SEARCH_STRING_PREFIX = "URLEntry : file:/";
-        /** Override by subclass: Search String in application server session for ejb modules */
+        /* Override by subclass: Search String in application server session for ejb modules */
         APP_SERVER_CLASSLOADER_MODULE_EJB_SEARCH_STRING_PREFIX = "_jar/";
-        /** Override by subclass: Search String in application server session for war modules */
+        /* Override by subclass: Search String in application server session for war modules */
         APP_SERVER_CLASSLOADER_MODULE_WAR_SEARCH_STRING_PREFIX = "_war/";
         APP_SERVER_CLASSLOADER_APPLICATION_PU_SEARCH_STRING_POSTFIX = "]";
         APP_SERVER_CLASSLOADER_MODULE_EJB_WAR_SEARCH_STRING_POSTFIX = "postfix,match~not;required^";
@@ -160,7 +160,7 @@ public class GlassfishPlatform extends JMXServerPlatformBase implements JMXEnabl
      * prepareServerSpecificServicesMBean(): Server specific implementation of the
      * creation and deployment of the JMX MBean to provide runtime services for the
      * databaseSession.
-     *
+     * <p>
      * Default is to do nothing.
      * Implementing platform classes must override this function and supply
      * the server specific MBean instance for later registration by calling it in the constructor.

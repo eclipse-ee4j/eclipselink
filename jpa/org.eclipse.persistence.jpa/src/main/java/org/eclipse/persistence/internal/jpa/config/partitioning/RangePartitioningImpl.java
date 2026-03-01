@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,7 +18,6 @@ import java.util.ArrayList;
 
 import org.eclipse.persistence.internal.jpa.config.MetadataImpl;
 import org.eclipse.persistence.internal.jpa.config.columns.ColumnImpl;
-import org.eclipse.persistence.internal.jpa.metadata.partitioning.RangePartitionMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.partitioning.RangePartitioningMetadata;
 import org.eclipse.persistence.jpa.config.Column;
 import org.eclipse.persistence.jpa.config.RangePartition;
@@ -35,7 +34,7 @@ public class RangePartitioningImpl extends MetadataImpl<RangePartitioningMetadat
     public RangePartitioningImpl() {
         super(new RangePartitioningMetadata());
 
-        getMetadata().setPartitions(new ArrayList<RangePartitionMetadata>());
+        getMetadata().setPartitions(new ArrayList<>());
     }
 
     @Override

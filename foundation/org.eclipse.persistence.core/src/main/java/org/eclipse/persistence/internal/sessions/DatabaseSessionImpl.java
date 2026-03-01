@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2015, 2022 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,21 +33,8 @@
 //       - 532160 : Add support for non-extension OracleXPlatform classes
 package org.eclipse.persistence.internal.sessions;
 
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
-
 import org.eclipse.persistence.config.PersistenceUnitProperties;
-import org.eclipse.persistence.config.PropertiesUtils;
+import org.eclipse.persistence.internal.helper.PropertiesUtils;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.partitioning.PartitioningPolicy;
 import org.eclipse.persistence.exceptions.DatabaseException;
@@ -78,6 +65,18 @@ import org.eclipse.persistence.sessions.DatasourceLogin;
 import org.eclipse.persistence.sessions.Login;
 import org.eclipse.persistence.sessions.SessionProfiler;
 import org.eclipse.persistence.tools.tuning.SessionTuner;
+
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 
 /**
  * Implementation of org.eclipse.persistence.sessions.DatabaseSession
@@ -266,15 +265,15 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
             platformName = DBPlatformHelper.getDBPlatform(vendorName, minorVersion, majorVersion, getSessionLog());
             getLogin().setPlatformClassName(platformName);
         } catch (EclipseLinkException classNotFound) {
-            if (platformName != null && platformName.indexOf("Oracle") != -1) {
+            if (platformName != null && platformName.contains("Oracle")) {
                 try {
                     // If we are running against Oracle, it is possible that we are
-                    // running in an environment where the extension OracleXPlatform classes can 
+                    // running in an environment where the extension OracleXPlatform classes can
                     // not be loaded. Try using the core OracleXPlatform classes
                     platformName = DBPlatformHelper.getDBPlatform("core."+ vendorName, minorVersion, majorVersion, getSessionLog());
                     getLogin().setPlatformClassName(platformName);
                 } catch (EclipseLinkException oracleClassNotFound) {
-                    // If we still cannot classload a matching OracleXPlatform class, 
+                    // If we still cannot classload a matching OracleXPlatform class,
                     // fallback on the base OraclePlatform class
                     getLogin().setPlatformClassName(OraclePlatform.class.getName());
                 }
@@ -473,16 +472,16 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
     /**
      * PUBLIC:
      * Answer the server platform to handle server specific behavior for WLS, Oc4j, etc.
-     *
+     * <p>
      * If the user wants a different external transaction controller class or
      * to provide some different behavior than the provided ServerPlatform(s), we recommend
      * subclassing org.eclipse.persistence.platform.server.ServerPlatformBase (or a subclass),
      * and overriding:
-     *
+     * <p>
      * ServerPlatformBase.getExternalTransactionControllerClass()
      * ServerPlatformBase.registerMBean()
      * ServerPlatformBase.unregisterMBean()
-     *
+     * <p>
      * for the desired behavior.
      *
      * @see org.eclipse.persistence.platform.server.ServerPlatformBase
@@ -495,18 +494,18 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
     /**
      * PUBLIC:
      * Set the server platform to handle server specific behavior for WLS, Oc4j, etc
-     *
+     * <p>
      * This is not permitted after the session is logged in.
-     *
+     * <p>
      * If the user wants a different external transaction controller class or
      * to provide some different behavior than the provided ServerPlatform(s), we recommend
      * subclassing org.eclipse.persistence.platform.server.ServerPlatformBase (or a subclass),
      * and overriding:
-     *
+     * <p>
      * ServerPlatformBase.getExternalTransactionControllerClass()
      * ServerPlatformBase.registerMBean()
      * ServerPlatformBase.unregisterMBean()
-     *
+     * <p>
      * for the desired behavior.
      *
      * @see org.eclipse.persistence.platform.server.ServerPlatformBase
@@ -890,7 +889,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
             if (!Boolean.parseBoolean(value)) {
                 for (String property : getMultitenantContextProperties()) {
                     if (! getProperties().containsKey(property)) {
-                        throw ValidationException.multitenantContextPropertyForNonSharedEMFNotSpecified(property);
+                        throw ValidationException.multitenantContextPropertyForNonSharedEMFNotSpecified(property, PersistenceUnitProperties.MULTITENANT_SHARED_EMF);
                     }
                 }
 
@@ -1063,8 +1062,8 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
      * the object has been updated or deleted by another user since it was last read.
      */
     public void writeAllObjects(Vector domainObjects) throws DatabaseException, OptimisticLockException {
-        for (Enumeration objectsEnum = domainObjects.elements(); objectsEnum.hasMoreElements();) {
-            writeObject(objectsEnum.nextElement());
+        for (Iterator iterator = domainObjects.iterator(); iterator.hasNext();) {
+            writeObject(iterator.next());
         }
     }
 

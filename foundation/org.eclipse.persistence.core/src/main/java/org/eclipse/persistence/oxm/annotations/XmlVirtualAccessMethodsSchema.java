@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,8 +21,8 @@ public enum XmlVirtualAccessMethodsSchema {
     NODES,
 
     /**
-     * An XML {@literal <any>} element will be written to the schema to represent all
-     * of the defined virtual properties.
+     * An XML {@literal <any>} element will be written to the schema
+     * to represent all the defined virtual properties.
      */
     ANY;
 

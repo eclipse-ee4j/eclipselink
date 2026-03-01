@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -142,7 +142,7 @@ public class CciJMSConnectionSpec implements ConnectionSpec {
     * @return true if the username property is non-null and has a length greater than 0
     */
     public boolean hasUsername() {
-        return (username != null) && (username.length() > 0);
+        return (username != null) && (!username.isEmpty());
     }
 
     /**
@@ -151,7 +151,7 @@ public class CciJMSConnectionSpec implements ConnectionSpec {
      * @return true if a JNDI lookup name has been set, false otherwise.
      */
     public boolean hasConnectionFactoryURL() {
-        return (connectionFactoryURL != null) && (connectionFactoryURL.length() > 0);
+        return (connectionFactoryURL != null) && (!connectionFactoryURL.isEmpty());
     }
 
     /**

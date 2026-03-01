@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -45,7 +45,7 @@ public class PersistenceUnitImpl implements PersistenceUnit {
 
     private SEPersistenceUnitInfo puInfo;
 
-    private List<Mappings> mappings = new ArrayList<Mappings>();
+    private List<Mappings> mappings = new ArrayList<>();
 
     public PersistenceUnitImpl(String name, ClassLoader cl) {
         puInfo = new SEPersistenceUnitInfo();
@@ -56,11 +56,7 @@ public class PersistenceUnitImpl implements PersistenceUnit {
         URL puURL = PersistenceUnitImpl.class.getClassLoader().getResource(persistenceFactoryResource);
         try{
             puURL = PersistenceUnitProcessor.computePURootURL(puURL, persistenceFactoryResource);
-        } catch (URISyntaxException e){
-            e.printStackTrace();
-        } catch (IOException e){
-            e.printStackTrace();
-        } catch (ValidationException e) {
+        } catch (URISyntaxException | ValidationException | IOException e){
             e.printStackTrace();
         }
 

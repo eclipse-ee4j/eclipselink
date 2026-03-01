@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,15 +14,17 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.sessions;
 
-import java.util.*;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.internal.descriptors.PersistenceEntity;
-import org.eclipse.persistence.internal.identitymaps.*;
-import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.queries.*;
+import org.eclipse.persistence.internal.identitymaps.CacheKey;
+import org.eclipse.persistence.internal.identitymaps.IdentityMapManager;
+import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.sessions.DataRecord;
+
+import java.util.List;
+import java.util.Vector;
 
 /**
  * INTERNAL:
@@ -171,7 +173,8 @@ public class UnitOfWorkIdentityMapAccessor extends IdentityMapAccessor {
         // in which GC could remove the object and we would end up with a null pointer
         // as well we must inspect the cacheKey without locking on it.
         if ((cacheKey != null) && (shouldReturnInvalidatedObjects || !descriptor.getCacheInvalidationPolicy().isInvalidated(cacheKey))) {
-            synchronized (cacheKey) {
+            cacheKey.getInstanceLock().lock();
+            try {
                 //if the object in the cachekey is null but the key is acquired then
                 //someone must be rebuilding it or creating a new one.  Sleep until
                 // it's finished. A plain wait here would be more efficient but we may not
@@ -184,6 +187,8 @@ public class UnitOfWorkIdentityMapAccessor extends IdentityMapAccessor {
                     }
                 } catch (InterruptedException ex) {
                 }
+            } finally {
+                cacheKey.getInstanceLock().unlock();
             }
 
             // check for inheritance.
@@ -216,7 +221,7 @@ public class UnitOfWorkIdentityMapAccessor extends IdentityMapAccessor {
      * Get the cached results associated with a query.  Results are cached by the
      * values of the parameters to the query so different parameters will have
      * different cached results.
-     *
+     * <p>
      * results are only cached in the parent session for UnitOfWorks
      */
     @Override
@@ -229,7 +234,7 @@ public class UnitOfWorkIdentityMapAccessor extends IdentityMapAccessor {
      *  Set the results for a query.
      *  Query results are cached based on the parameter values provided to the query
      *  different parameter values access different caches.
-     *
+     * <p>
      *  Results are only cached in the parent session for UnitOfWorks
      */
     @Override

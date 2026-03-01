@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,13 +15,6 @@
 //       - TODO Bug#: Bug Description
 package org.eclipse.persistence.internal.expressions;
 
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.Vector;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.expressions.Expression;
@@ -31,6 +24,13 @@ import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
+
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * @author cdelahun
@@ -126,24 +126,19 @@ public class ClassTypeExpression extends DataExpression {
 
             // If from an anyof the object will be a collection of values,
             // A new vector must union the object values and the values extracted from it.
-            if (object instanceof Vector) {
-                Vector comparisonVector = new Vector(((Vector)object).size() + 2);
-                for (Enumeration valuesToIterate = ((Vector)object).elements();
-                         valuesToIterate.hasMoreElements();) {
-                    Object vectorObject = valuesToIterate.nextElement();
+            if (object instanceof List<?> v) {
+                List<Object> comparisonVector = new ArrayList<>(v.size() + 2);
+                for (Object vectorObject : v) {
                     if (vectorObject == null) {
-                        comparisonVector.addElement(null);
+                        comparisonVector.add(null);
                     } else {
                         Object valueOrValues = typeValueFromObject(vectorObject, session);
 
                         // If a collection of values were extracted union them.
-                        if (valueOrValues instanceof Vector) {
-                            for (Enumeration nestedValuesToIterate = ((Vector)valueOrValues).elements();
-                                     nestedValuesToIterate.hasMoreElements();) {
-                                comparisonVector.addElement(nestedValuesToIterate.nextElement());
-                            }
+                        if (valueOrValues instanceof List<?> vv) {
+                            comparisonVector.addAll(vv);
                         } else {
-                            comparisonVector.addElement(valueOrValues);
+                            comparisonVector.add(valueOrValues);
                         }
                     }
                 }
@@ -191,32 +186,31 @@ public class ClassTypeExpression extends DataExpression {
             return null;
         }
 
-        if (objectValue instanceof Collection) {
-                // This can actually be a collection for IN within expressions... however it would be better for expressions to handle this.
-                Collection values = (Collection)objectValue;
-                Vector fieldValues = new Vector(values.size());
-                for (Iterator iterator = values.iterator(); iterator.hasNext();) {
-                    Object value = iterator.next();
-                    if (!(value instanceof Expression)){
-                        value = getFieldValue(value, session);
-                    }
-                    fieldValues.add(value);
+        if (objectValue instanceof Collection<?> values) {
+            // This can actually be a collection for IN within expressions... however it would be better for expressions to handle this.
+            List<Object> fieldValues = new ArrayList<>(values.size());
+            for (Iterator<?> iterator = values.iterator(); iterator.hasNext();) {
+                Object value = iterator.next();
+                if (!(value instanceof Expression)){
+                    value = getFieldValue(value, session);
                 }
-                return fieldValues;
+                fieldValues.add(value);
+            }
+            return fieldValues;
         } else {
-            if (! (objectValue instanceof Class) ){
+            if (! (objectValue instanceof Class<?> cls) ){
                 throw QueryException.invalidTypeExpression(objectValue.getClass().toString());
             }
 
-            ClassDescriptor descriptor = session.getDescriptor((Class)objectValue);
+            ClassDescriptor descriptor = session.getDescriptor(cls);
             if (descriptor == null){
                 throw QueryException.invalidTypeExpression(objectValue.getClass().toString());
             }
 
             if (descriptor.hasInheritance() && !descriptor.getInheritancePolicy().shouldUseClassNameAsIndicator()){
-                return descriptor.getInheritancePolicy().getClassIndicatorMapping().get(objectValue);
+                return descriptor.getInheritancePolicy().getClassIndicatorMapping().get(cls);
             } else {
-                return ((Class)objectValue).getName();
+                return cls.getName();
             }
         }
     }
@@ -267,7 +261,7 @@ public class ClassTypeExpression extends DataExpression {
      * additional expressions to normalizer both times, and the foreign key join
      * replaces the equal expression.
      */
-    public Expression normalize(ExpressionNormalizer normalizer, Vector foreignKeyJoinPointer) {
+    public Expression normalize(ExpressionNormalizer normalizer, List<?> foreignKeyJoinPointer) {
         if (hasBeenNormalized()) {
             return this;
         }
@@ -318,11 +312,11 @@ public class ClassTypeExpression extends DataExpression {
      * Return all the fields
      */
     @Override
-    public Vector getFields() {
-        Vector result = new Vector(1);
+    public List<DatabaseField> getFields() {
+        List<DatabaseField> result = new ArrayList<>(1);
         DatabaseField field = getField();
         if (field != null) {
-            result.addElement(field);
+            result.add(field);
         }
         return result;
     }

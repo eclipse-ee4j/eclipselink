@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,23 +14,22 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.tools.profiler;
 
-import java.io.IOException;
-import java.io.Serializable;
-import java.io.Writer;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
-
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.localization.ToStringLocalization;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.sessions.DataRecord;
 import org.eclipse.persistence.sessions.SessionProfilerAdapter;
+
+import java.io.IOException;
+import java.io.Serializable;
+import java.io.Writer;
+import java.util.Collection;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 
 /**
  * <p><b>Purpose</b>: A tool used to provide high level performance profiling information.
@@ -211,7 +210,7 @@ public class PerformanceProfiler extends SessionProfilerAdapter implements Seria
     /**
      * PUBLIC:
      * Set whether after each query execution the profile result should be logged.
-     * By default this is false.
+     * By default, this is false.
      */
     public void dontLogProfile() {
         setShouldLogProfile(false);
@@ -245,19 +244,14 @@ public class PerformanceProfiler extends SessionProfilerAdapter implements Seria
                 Writer writer = getSession().getLog();
                 try {
                     profile.write(writer, this);
-                    writer.write(Helper.cr());
+                    writer.write(System.lineSeparator());
                     writer.flush();
                 } catch (IOException ioe) {
                 }
             }
         }
 
-        Long totalTime = getOperationTimings().get(operationName);
-        if (totalTime == null) {
-            getOperationTimings().put(operationName, time);
-        } else {
-            getOperationTimings().put(operationName, totalTime + time);
-        }
+        getOperationTimings().merge(operationName, time, Long::sum);
     }
 
     /**
@@ -279,9 +273,7 @@ public class PerformanceProfiler extends SessionProfilerAdapter implements Seria
 
     protected Map<String, Long> getOperationStartTimes() {
         Integer threadId = Thread.currentThread().hashCode();
-        if (getOperationStartTimesByThread().get(threadId) == null) {
-            getOperationStartTimesByThread().put(threadId, new Hashtable<>(10));
-        }
+        getOperationStartTimesByThread().computeIfAbsent(threadId, k -> new Hashtable<>(10));
         return getOperationStartTimesByThread().get(threadId);
     }
 
@@ -291,9 +283,7 @@ public class PerformanceProfiler extends SessionProfilerAdapter implements Seria
 
     protected Map<String, Long> getOperationTimings() {
         Integer threadId = Thread.currentThread().hashCode();
-        if (getOperationTimingsByThread().get(threadId) == null) {
-            getOperationTimingsByThread().put(threadId, new Hashtable<>(10));
-        }
+        getOperationTimingsByThread().computeIfAbsent(threadId, k -> new Hashtable<>(10));
         return getOperationTimingsByThread().get(threadId);
     }
 
@@ -319,7 +309,7 @@ public class PerformanceProfiler extends SessionProfilerAdapter implements Seria
     /**
      * PUBLIC:
      * Set whether after each query execution the profile result should be logged.
-     * By default this is true.
+     * By default, this is true.
      */
     public void logProfile() {
         setShouldLogProfile(true);
@@ -333,7 +323,7 @@ public class PerformanceProfiler extends SessionProfilerAdapter implements Seria
         Writer writer = getSession().getLog();
         try {
             writer.write(buildProfileSummary().toString());
-            writer.write(Helper.cr());
+            writer.write(System.lineSeparator());
         } catch (IOException ioe) {
         }
     }
@@ -345,12 +335,12 @@ public class PerformanceProfiler extends SessionProfilerAdapter implements Seria
     public void logProfileSummaryByClass() {
         Hashtable<Class<?>, Profile> summaries = buildProfileSummaryByClass();
 
-        for (Enumeration<Class<?>> classes = summaries.keys(); classes.hasMoreElements();) {
-            Class<?> domainClass = classes.nextElement();
+        for (Iterator<Class<?>> iterator = summaries.keySet().iterator(); iterator.hasNext();) {
+            Class<?> domainClass = iterator.next();
             Writer writer = getSession().getLog();
             try {
                 writer.write(summaries.get(domainClass).toString());
-                writer.write(Helper.cr());
+                writer.write(System.lineSeparator());
             } catch (IOException ioe) {
             }
         }
@@ -363,12 +353,12 @@ public class PerformanceProfiler extends SessionProfilerAdapter implements Seria
     public void logProfileSummaryByQuery() {
         Hashtable<Class<?>, Profile> summaries = buildProfileSummaryByQuery();
 
-        for (Enumeration<Class<?>> classes = summaries.keys(); classes.hasMoreElements();) {
-            Class<?> queryType = classes.nextElement();
+        for (Iterator<Class<?>> iterator = summaries.keySet().iterator(); iterator.hasNext();) {
+            Class<?> queryType = iterator.next();
             Writer writer = getSession().getLog();
             try {
                 writer.write(summaries.get(queryType).toString());
-                writer.write(Helper.cr());
+                writer.write(System.lineSeparator());
             } catch (IOException ioe) {
             }
         }
@@ -378,7 +368,7 @@ public class PerformanceProfiler extends SessionProfilerAdapter implements Seria
      * INTERNAL:
      * Finish a profile operation if profiling.
      * This assumes the start operation proceeds on the stack.
-     * The session must be passed to allow units of work etc. to share their parents profiler.
+     * The session must be passed to allow units of work etc. to share their parents' profiler.
      *
      * @return the execution result of the query.
      */
@@ -396,7 +386,7 @@ public class PerformanceProfiler extends SessionProfilerAdapter implements Seria
         try {
             if (shouldLogProfile()) {
                 writeNestingTabs(writer);
-                writer.write(ToStringLocalization.buildMessage("begin_profile_of", null) + "{" + query + Helper.cr());
+                writer.write(ToStringLocalization.buildMessage("begin_profile_of", null) + "{" + query + System.lineSeparator());
                 writer.flush();
             }
 
@@ -426,8 +416,8 @@ public class PerformanceProfiler extends SessionProfilerAdapter implements Seria
 
                 profile.setTotalTime((endTime - startTime) - (getProfileTime() - nestedProfileStartTime));// Remove the profile time from the total time.;);
                 profile.setLocalTime(profile.getTotalTime() - (getNestTime() - startNestTime));
-                if (result instanceof Collection) {
-                    profile.setNumberOfInstancesEffected(((Collection)result).size());
+                if (result instanceof Collection<?> col) {
+                    profile.setNumberOfInstancesEffected(col.size());
                 } else {
                     profile.setNumberOfInstancesEffected(1);
                 }
@@ -439,10 +429,10 @@ public class PerformanceProfiler extends SessionProfilerAdapter implements Seria
                     long totalTimeIncludingProfiling = profileEndTime - profileStartTime;// Try to remove the profiling time from the total time.
                     profile.setProfileTime(totalTimeIncludingProfiling - profile.getTotalTime());
                     profile.write(writer, this);
-                    writer.write(Helper.cr());
+                    writer.write(System.lineSeparator());
                     writeNestingTabs(writer);
                     writer.write("}" + ToStringLocalization.buildMessage("end_profile", null));
-                    writer.write(Helper.cr());
+                    writer.write(System.lineSeparator());
                     writer.flush();
                 }
 
@@ -514,7 +504,7 @@ public class PerformanceProfiler extends SessionProfilerAdapter implements Seria
     /**
      * PUBLIC:
      * Set whether after each query execution the profile result should be logged.
-     * By default this is true.
+     * By default, this is true.
      */
     public void setShouldLogProfile(boolean shouldLogProfile) {
         this.shouldLogProfile = shouldLogProfile;

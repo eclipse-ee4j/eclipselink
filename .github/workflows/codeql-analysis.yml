@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2021, 2022 Contributors to the Eclipse Foundation
+# Copyright (c) 2021, 2025 Contributors to the Eclipse Foundation
 #
 # This program and the accompanying materials are made available under the
 # terms of the Eclipse Public License v. 2.0 which is available at
@@ -41,12 +41,18 @@ jobs:
         # https://docs.github.com/en/github/finding-security-vulnerabilities-and-errors-in-your-code/configuring-code-scanning#overriding-automatic-language-detection
 
     steps:
+    - name: Set up JDK
+      uses: actions/setup-java@v5
+      with:
+        distribution: 'zulu'
+        java-version: 21
+
     - name: Checkout repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v6
 
     # Initializes the CodeQL tools for scanning.
     - name: Initialize CodeQL
-      uses: github/codeql-action/init@v2
+      uses: github/codeql-action/init@v4
       with:
         languages: ${{ matrix.language }}
 #        config-file: ./.github/codeql/codeql-config.yml
@@ -68,7 +74,8 @@ jobs:
     #    uses a compiled language
 
     - run: |
+        mvn -B clean install -pl :org.eclipse.persistence.project,:org.eclipse.persistence.jpa.jpql,:org.eclipse.persistence.core,:org.eclipse.persistence.json,:org.eclipse.persistence.oracle,:org.eclipse.persistence.core.test.framework,:org.eclipse.persistence.core.test -DskipTests
         mvn -B clean compile -Ddeploy=true -Dnotests=true -Pstaging
 
     - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v2
+      uses: github/codeql-action/analyze@v4

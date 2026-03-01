@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,8 +14,10 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.multipletable;
 
-import java.util.*;
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * TopLink generated Project class.
@@ -63,8 +65,8 @@ public class ProjectProject extends org.eclipse.persistence.sessions.Project {
 
         // SECTION: DESCRIPTOR
         descriptor.setJavaClass(org.eclipse.persistence.testing.models.multipletable.Budget.class);
-        Vector vector = new Vector();
-        vector.addElement("BUDGET");
+        List<String> vector = new ArrayList<>();
+        vector.add("BUDGET");
         descriptor.setTableNames(vector);
         descriptor.addPrimaryKeyFieldName("BUDGET.ID");
 
@@ -114,8 +116,8 @@ public class ProjectProject extends org.eclipse.persistence.sessions.Project {
 
         // SECTION: DESCRIPTOR
         descriptor.setJavaClass(org.eclipse.persistence.testing.models.multipletable.BusinessProject.class);
-        Vector vector = new Vector();
-        vector.addElement("PROJ");
+        List<String> vector = new ArrayList<>();
+        vector.add("PROJ");
         descriptor.setTableNames(vector);
         descriptor.addPrimaryKeyFieldName("PROJ.PROJ_ID");
 
@@ -171,8 +173,8 @@ public class ProjectProject extends org.eclipse.persistence.sessions.Project {
         // SECTION: DESCRIPTOR
         descriptor.setJavaClass(org.eclipse.persistence.testing.models.multipletable.LargeBusinessProject.class);
         descriptor.getInheritancePolicy().setParentClass(org.eclipse.persistence.testing.models.multipletable.BusinessProject.class);
-        Vector vector = new Vector();
-        vector.addElement("LPROJ");
+        List<String> vector = new ArrayList<>();
+        vector.add("LPROJ");
         descriptor.setTableNames(vector);
         descriptor.addPrimaryKeyFieldName("LPROJ.PROJ_ID");
 

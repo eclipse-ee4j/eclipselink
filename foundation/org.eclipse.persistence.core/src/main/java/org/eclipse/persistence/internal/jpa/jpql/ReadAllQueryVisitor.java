@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,15 +15,16 @@
 //
 package org.eclipse.persistence.internal.jpa.jpql;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.jpa.jpql.parser.CollectionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkAnonymousExpressionVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.HierarchicalQueryClause;
 import org.eclipse.persistence.jpa.jpql.parser.OrderSiblingsByClause;
 import org.eclipse.persistence.queries.ReadAllQuery;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * This visitor is responsible to populate a {@link ReadAllQuery}.

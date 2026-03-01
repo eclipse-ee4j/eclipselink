@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -21,7 +21,7 @@ import java.util.Map;
 import jakarta.persistence.EntityManagerFactory;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
-import org.eclipse.persistence.exceptions.PersistenceUnitLoadingException;
+import org.eclipse.persistence.jpa.exceptions.PersistenceUnitLoadingException;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider;
 import org.eclipse.persistence.internal.jpa.EntityManagerSetupImpl;
@@ -55,7 +55,7 @@ public class RuntimeFactory {
         SEPersistenceUnitInfo puInfo = (SEPersistenceUnitInfo) pu.getPersistenceUnitInfo();
 
         JPAInitializer initializer = new PersistenceProvider().getInitializer(name, null);
-        Map<String, Object> props = new HashMap<String, Object>();
+        Map<String, Object> props = new HashMap<>();
 
         String uniqueName = initializer.createUniquePersistenceUnitName(puInfo);
         String sessionName = EntityManagerSetupImpl.getOrBuildSessionName(props, puInfo, uniqueName);

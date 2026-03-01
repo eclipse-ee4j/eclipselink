@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,7 +14,7 @@ package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.unm
 
 import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 
-import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.unmappable.package2.Unmappable;;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.unmappable.package2.Unmappable;
 
 public class UnmappableAdapter extends XmlAdapter<String, Unmappable> {
 

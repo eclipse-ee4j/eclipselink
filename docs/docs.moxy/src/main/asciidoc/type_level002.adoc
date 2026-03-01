@@ -1,0 +1,236 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[TYPELEVEL002]]
+=== Setting Up Namespace Information
+
+Most XML documents are qualified with a namespace. You can
+namespace-qualify elements of your Java class at the following levels:
+
+* link:#BABJBJJH[Qualifying at the Package Level]
+* link:#BABJBFHD[Qualifying at the Type Level]
+* link:#BABFDCJH[Qualifying at the Field/Property Level]
+
+In most cases, package-level annotation is sufficient. You can use the
+other levels to customize your document. Use the `@XmlSchema` annotation
+to specify the namespace.
+
+[[BABJBJJH]]
+
+==== Qualifying at the Package Level
+
+Use the `@XmlSchema` annotation on the package to set a default
+namespace and specify that all elements in the package are qualified
+with the namespace. This information is specified in a special Java
+source file, `package-info.java`.
+
+[[CIHBHJDB]]
+
+*_Example 3-6 Using Annotations_*
+
+[source,oac_no_warn]
+----
+@XmlSchema(
+   namespace="http://www.example.org/package",
+   elementFormDefault=XmlNsForm.QUALIFIED)
+package example;
+ 
+import jakarta.xml.bind.annotation.XmlNsForm;
+import jakarta.xml.bind.annotation.XmlSchema;
+ 
+----
+
+This can be defined in EclipseLink XML Bindings as follows:
+
+[[CIHIHBGE]]
+
+*_Example 3-7 Using OXM Metadata_*
+
+[source,oac_no_warn]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<xml-bindings xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm">
+    <xml-schema
+        element-form-default="QUALIFIED"
+        namespace="http://www.example.org/package">
+    </xml-schema>
+ 
+    <java-types>
+        <java-type name="Customer">
+        ...
+ 
+</xml-bindings>
+ 
+----
+
+Using a simple *Customer* class, link:#CIHBHJDB[Example 3-6] and
+link:#CIHIHBGE[Example 3-7] will produce the following XML:
+
+[source,oac_no_warn]
+----
+<customer xmlns="http://www.example.org/package">
+   <name>Jane Doe</name>
+   <account>36328721</account>
+</customer>
+ 
+----
+
+All elements are qualified with the *http://www.example.org/package*
+namespace.
+
+[[BABJBFHD]]
+
+==== Qualifying at the Type Level
+
+Type level annotations will override the package level namespace.
+
+[[sthref60]]
+
+*_Example 3-8 Using Annotations_*
+
+[source,oac_no_warn]
+----
+package example;
+ 
+@XmlRootElement
+@XmlType(namespace="http://www.example.org/type")
+public class Customer {
+   private String name;
+ 
+   private String account;
+ 
+   ...
+}
+ 
+----
+
+This can be defined in EclipseLink XML Bindings as follows:
+
+[[sthref61]]
+
+*_Example 3-9 Using XML Bindings File_*
+
+[source,oac_no_warn]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<xml-bindings xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm">
+    <xml-schema
+        element-form-default="QUALIFIED"
+        namespace="http://www.example.org/package">
+    </xml-schema>
+ 
+    <java-types>
+        <java-type name="Customer">
+            <xml-type namespace="http://www.example.org/type" />
+            <java-attributes>
+                <xml-element java-attribute="name" />
+                <xml-element java-attribute="account" />
+            </java-attributes>
+        </java-type>
+    </java-types>
+</xml-bindings>
+ 
+----
+
+This will produce the following XML:
+
+[source,oac_no_warn]
+----
+<custom xmlns="http://www.example.org/package" xmlns:ns0="http://www.example.org/type">
+   <ns0:name>Bob</ns0:name>
+   <ns0:account>1928712</ns0:account>
+</custom>
+ 
+----
+
+Elements inside the *Customer* type are qualified with the
+*http://www.example.org/type* namespace.
+
+[[BABFDCJH]]
+
+==== Qualifying at the Field/Property Level
+
+You can override the package or type namespaces at the property/field
+level. All attribute and element annotations accept the *namespace*
+parameter.
+
+[[sthref62]]
+
+*_Example 3-10 Overriding the Namespace_*
+
+[source,oac_no_warn]
+----
+package example;
+ 
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(namespace="http://www.example.org/type")
+public class Customer {
+   private String name;
+ 
+   @XmlElement(namespace="http://www.example.org/property")
+   private String account;
+ 
+   ...
+}
+ 
+----
+
+This can be defined in EclipseLink XML Bindings as follows:
+
+[[sthref63]]
+
+*_Example 3-11 Sample Bindings File_*
+
+[source,oac_no_warn]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<xml-bindings xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm">
+    <xml-schema
+        element-form-default="QUALIFIED"
+        namespace="http://www.example.org/package">
+    </xml-schema>
+ 
+    <java-types>
+        <java-type name="Customer">
+            <xml-type namespace="http://www.example.org/type" />
+            <java-attributes>
+                <xml-element java-attribute="name" />
+                <xml-element java-attribute="account" namespace="http://www.example.org/property" />
+            </java-attributes>
+        </java-type>
+    </java-types>
+</xml-bindings>
+ 
+----
+
+This will produce the following XML:
+
+[source,oac_no_warn]
+----
+<custom xmlns="http://www.example.org/package" xmlns:ns1="http://www.example.org/property"
+   xmlns:ns0="http://www.example.org/type">
+   <ns0:name>Bob</ns0:name>
+   <ns1:account>1928712</ns1:account>
+</custom>
+ 
+----
+
+Only the *account* element is qualified with the
+*http://www.example.org/property* namespace.
+
+'''''

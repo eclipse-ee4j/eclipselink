@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,16 +14,8 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.sessionsxml;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.util.Vector;
-
-import org.eclipse.persistence.oxm.XMLContext;
-import org.eclipse.persistence.oxm.XMLUnmarshaller;
-import org.eclipse.persistence.testing.framework.AutoVerifyTestCase;
-import org.eclipse.persistence.testing.framework.TestErrorException;
-import org.eclipse.persistence.internal.sessions.factories.*;
+import org.eclipse.persistence.internal.sessions.factories.XMLSessionConfigProject_11_1_1;
+import org.eclipse.persistence.internal.sessions.factories.XMLSessionConfigWriter;
 import org.eclipse.persistence.internal.sessions.factories.model.SessionConfigs;
 import org.eclipse.persistence.internal.sessions.factories.model.log.DefaultSessionLogConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.login.DatabaseLoginConfig;
@@ -39,6 +31,16 @@ import org.eclipse.persistence.internal.sessions.factories.model.session.Databas
 import org.eclipse.persistence.internal.sessions.factories.model.session.ServerSessionConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.transport.JMSTopicTransportManagerConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.transport.naming.JNDINamingServiceConfig;
+import org.eclipse.persistence.oxm.XMLContext;
+import org.eclipse.persistence.oxm.XMLUnmarshaller;
+import org.eclipse.persistence.testing.framework.AutoVerifyTestCase;
+import org.eclipse.persistence.testing.framework.TestErrorException;
+
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.util.List;
+import java.util.Vector;
 
 /**
  * Tests the OX writing portion of the XMLSessionConfig model.
@@ -189,7 +191,7 @@ public class SessionsXMLSchemaWriteTest extends AutoVerifyTestCase {
             XMLContext context = new XMLContext(new XMLSessionConfigProject_11_1_1());
             XMLUnmarshaller unmarshaller = context.createUnmarshaller();
             SessionConfigs eclipseLinkSessions = (SessionConfigs)unmarshaller.unmarshal(reader);
-            m_session = (DatabaseSessionConfig)eclipseLinkSessions.getSessionConfigs().firstElement();
+            m_session = (DatabaseSessionConfig)eclipseLinkSessions.getSessionConfigs().get(0);
         } catch (Exception exception) {
             m_session = null;
         }
@@ -235,8 +237,7 @@ public class SessionsXMLSchemaWriteTest extends AutoVerifyTestCase {
 
 
         // Log config
-        if (m_session.getLogConfig() instanceof DefaultSessionLogConfig) {
-            DefaultSessionLogConfig logConfig = (DefaultSessionLogConfig)m_session.getLogConfig();
+        if (m_session.getLogConfig() instanceof DefaultSessionLogConfig logConfig) {
             check("LogLevel", logConfig.getLogLevel(), "severe");
             check("Filename", logConfig.getFilename(), "logfile");
         } else {
@@ -244,8 +245,7 @@ public class SessionsXMLSchemaWriteTest extends AutoVerifyTestCase {
         }
 
         // Login
-        if (m_session.getLoginConfig() instanceof DatabaseLoginConfig) {
-            DatabaseLoginConfig loginConfig = (DatabaseLoginConfig)m_session.getLoginConfig();
+        if (m_session.getLoginConfig() instanceof DatabaseLoginConfig loginConfig) {
             checkBoolean("BatchWriting", loginConfig.getBatchWriting(), true);
             checkBoolean("BindAllParameters", loginConfig.getBindAllParameters(), true);
             checkBoolean("ByteArrayBinding", loginConfig.getByteArrayBinding(), false);
@@ -284,9 +284,8 @@ public class SessionsXMLSchemaWriteTest extends AutoVerifyTestCase {
             // Channel
             check("Channel", rcmConfig.getChannel(), "new_channel");
 
-            if (rcmConfig.getTransportManagerConfig() instanceof JMSTopicTransportManagerConfig) {
+            if (rcmConfig.getTransportManagerConfig() instanceof JMSTopicTransportManagerConfig transportConfig) {
                 // Transport manager
-                JMSTopicTransportManagerConfig transportConfig = (JMSTopicTransportManagerConfig)rcmConfig.getTransportManagerConfig();
                 check("OnConnectionError", transportConfig.getOnConnectionError(), "KeepConnection");
                 check("TopicHostURL", transportConfig.getTopicHostURL(), "ormi://jms_topic_host");
                 check("TopicConnectionFactoryName", transportConfig.getTopicConnectionFactoryName(), "test-topic-connection-factory-name");
@@ -304,18 +303,18 @@ public class SessionsXMLSchemaWriteTest extends AutoVerifyTestCase {
                     check("InitialContextFactoryName", namingConfig.getInitialContextFactoryName(), "new_initial_context_factory_name");
 
                     // Properties
-                    Vector propertyConfigs = namingConfig.getPropertyConfigs();
+                    List<PropertyConfig> propertyConfigs = namingConfig.getPropertyConfigs();
 
                     if (propertyConfigs == null) {
                         throw new TestErrorException("PropertyConfigs were null");
                     } else if (propertyConfigs.size() != 2) {
                         throw new TestErrorException("PropertyConfigs were not the correct size");
                     } else {
-                        PropertyConfig one = (PropertyConfig)propertyConfigs.firstElement();
+                        PropertyConfig one = propertyConfigs.get(0);
                         check("Property name", one.getName(), "name1");
                         check("Property value", one.getValue(), "value1");
 
-                        PropertyConfig two = (PropertyConfig)propertyConfigs.lastElement();
+                        PropertyConfig two = propertyConfigs.get(1);
                         check("Property name", two.getName(), "name2");
                         check("Property value", two.getValue(), "value2");
                     }

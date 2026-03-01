@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import junit.framework.TestCase;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDOProperty;
@@ -234,7 +233,7 @@ public class SDODataObjectGetFloatByPositionalPathTest extends SDODataObjectGetB
     public void testGetFloatFromBytes() {
         SDOProperty prop = dataObject_c.getInstanceProperty(PROPERTY_NAME_C);
         prop.setType(SDOConstants.SDO_BYTES);
-        dataObject_c.set(prop, new String("eee").getBytes());
+        dataObject_c.set(prop, "eee".getBytes());
 
         try {
             dataObject_a.getFloat(propertyPath_a_b_c);

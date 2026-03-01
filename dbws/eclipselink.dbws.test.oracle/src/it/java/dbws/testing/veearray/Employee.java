@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,10 +16,8 @@
 package dbws.testing.veearray;
 
 // javase imports
+import java.util.ArrayList;
 import java.util.Collection;
-
-// EclipseLin imports
-import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 
 public class Employee {
 
@@ -27,17 +25,16 @@ public class Employee {
     public String firstName;
     public String lastName;
     @SuppressWarnings({ "rawtypes" })
-    public Collection phones = new NonSynchronizedVector();
+    public Collection phones = new ArrayList();
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("[");
-        sb.append(id);
-        sb.append("] ");
-        sb.append(firstName);
-        sb.append(" ");
-        sb.append(lastName);
-        return sb.toString();
+        String sb = "[" +
+                id +
+                "] " +
+                firstName +
+                " " +
+                lastName;
+        return sb;
     }
 }

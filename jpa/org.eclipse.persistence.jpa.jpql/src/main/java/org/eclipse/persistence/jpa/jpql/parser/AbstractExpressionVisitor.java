@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,6 +15,8 @@
 //     04/21/2022: Tomas Kraus
 //       - Issue 1474: Update JPQL Grammar for Jakarta Persistence 2.2, 3.0 and 3.1
 //       - Issue 317: Implement LOCAL DATE, LOCAL TIME and LOCAL DATETIME.
+//     06/02/2023: Radek Felcman
+//       - Issue 1885: Implement new JPQLGrammar for upcoming Jakarta Persistence 3.2
 package org.eclipse.persistence.jpa.jpql.parser;
 
 /**
@@ -77,6 +79,10 @@ public abstract class AbstractExpressionVisitor implements ExpressionVisitor {
     }
 
     @Override
+    public void visit(CastExpression expression) {
+    }
+
+    @Override
     public void visit(CoalesceExpression expression) {
     }
 
@@ -105,11 +111,19 @@ public abstract class AbstractExpressionVisitor implements ExpressionVisitor {
     }
 
     @Override
+    public void visit(ConcatPipesExpression expression) {
+    }
+
+    @Override
     public void visit(ConstructorExpression expression) {
     }
 
     @Override
     public void visit(CountFunction expression) {
+    }
+
+    @Override
+    public void visit(DatabaseType expression) {
     }
 
     @Override
@@ -169,6 +183,10 @@ public abstract class AbstractExpressionVisitor implements ExpressionVisitor {
     }
 
     @Override
+    public void visit(IdExpression expression) {
+    }
+
+    @Override
     public void visit(IndexExpression expression) {
     }
 
@@ -194,6 +212,10 @@ public abstract class AbstractExpressionVisitor implements ExpressionVisitor {
 
     @Override
     public void visit(KeywordExpression expression) {
+    }
+
+    @Override
+    public void visit(LeftExpression expression) {
     }
 
     @Override
@@ -309,7 +331,15 @@ public abstract class AbstractExpressionVisitor implements ExpressionVisitor {
     }
 
     @Override
+    public void visit(ReplaceExpression expression) {
+    }
+
+    @Override
     public void visit(ResultVariable expression) {
+    }
+
+    @Override
+    public void visit(RightExpression expression) {
     }
 
     @Override
@@ -398,6 +428,14 @@ public abstract class AbstractExpressionVisitor implements ExpressionVisitor {
 
     @Override
     public void visit(ValueExpression expression) {
+    }
+
+    @Override
+    public void visit(VersionExpression expression) {
+    }
+
+    @Override
+    public void visit(UnionClause expression) {
     }
 
     @Override

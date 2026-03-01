@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,10 +26,6 @@ import junit.framework.TestCase;
 
 import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
 import org.eclipse.persistence.platform.xml.XMLPlatformException;
-import org.eclipse.persistence.testing.jaxb.xmlmarshaller.CustomErrorValidationEventHandler;
-import org.eclipse.persistence.testing.jaxb.xmlmarshaller.CustomFatalErrorValidationEventHandler;
-import org.eclipse.persistence.testing.jaxb.xmlmarshaller.EmployeeInvalidTypeProject;
-import org.eclipse.persistence.testing.jaxb.xmlmarshaller.JAXBSAXTestSuite;
 
 public class UnmarshallValidationTestCases extends TestCase {
 

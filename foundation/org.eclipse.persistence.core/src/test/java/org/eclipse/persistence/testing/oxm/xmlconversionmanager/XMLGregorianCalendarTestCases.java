@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,29 +14,22 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.oxm.xmlconversionmanager;
 
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.StringReader;
-import java.util.Calendar;
-import java.util.TimeZone;
+import org.eclipse.persistence.internal.oxm.XMLConversionManager;
+import org.eclipse.persistence.oxm.XMLConstants;
+import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
+import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.Duration;
 import javax.xml.datatype.XMLGregorianCalendar;
-
-import org.eclipse.persistence.Version;
-import org.eclipse.persistence.internal.helper.ClassConstants;
-import org.eclipse.persistence.internal.helper.JavaPlatform;
-import org.eclipse.persistence.internal.oxm.XMLConversionManager;
-import org.eclipse.persistence.oxm.XMLConstants;
-import org.eclipse.persistence.oxm.XMLContext;
-import org.eclipse.persistence.testing.oxm.OXTestCase;
-import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
-import org.w3c.dom.Document;
-import org.xml.sax.InputSource;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.io.StringReader;
+import java.util.Calendar;
+import java.util.TimeZone;
 
 public class XMLGregorianCalendarTestCases extends XMLMappingTestCases {
 

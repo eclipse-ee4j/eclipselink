@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,12 +14,16 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.optimization.queryandsqlcounting.querycache;
 
-import java.util.*;
-import org.eclipse.persistence.testing.framework.*;
-import org.eclipse.persistence.testing.models.employee.domain.*;
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.expressions.*;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.queries.ReadAllQuery;
+import org.eclipse.persistence.testing.framework.AutoVerifyTestCase;
+import org.eclipse.persistence.testing.framework.TestErrorException;
+import org.eclipse.persistence.testing.models.employee.domain.Employee;
 import org.eclipse.persistence.testing.tests.optimization.queryandsqlcounting.QuerySQLTracker;
+
+import java.util.Iterator;
+import java.util.Vector;
 
 /**
  * Ensure running cached queries with different parameterized results will cache both results.
@@ -39,9 +43,9 @@ public class QueryCacheParameterizedResultsTest extends AutoVerifyTestCase {
     public QueryCacheParameterizedResultsTest() {
         setDescription("Ensure a query with multiple cached results based on parameters works.");
         args1 = new Vector();
-        args1.addElement("Bob");
+        args1.add("Bob");
         args2 = new Vector();
-        args2.addElement("Jill");
+        args2.add("Jill");
     }
 
     public ReadAllQuery getReadAllQuery() {

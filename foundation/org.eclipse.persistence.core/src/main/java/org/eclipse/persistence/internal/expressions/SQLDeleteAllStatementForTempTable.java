@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,14 +14,14 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.expressions;
 
-import java.io.*;
-import java.util.List;
-import java.util.Vector;
-import java.util.Collection;
-
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+
+import java.io.IOException;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Andrei Ilitchev
@@ -30,6 +30,9 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 public class SQLDeleteAllStatementForTempTable extends SQLModifyAllStatementForTempTable {
     protected DatabaseTable targetTable;
     protected List<DatabaseField> targetPrimaryKeyFields;
+
+    public SQLDeleteAllStatementForTempTable() {
+    }
 
     public void setTargetTable(DatabaseTable targetTable) {
         this.targetTable = targetTable;
@@ -45,8 +48,8 @@ public class SQLDeleteAllStatementForTempTable extends SQLModifyAllStatementForT
     }
 
     @Override
-    protected Collection getUsedFields() {
-        return new Vector(getPrimaryKeyFields());
+    protected List<DatabaseField> getUsedFields() {
+        return new ArrayList<>(getPrimaryKeyFields());
     }
 
     @Override

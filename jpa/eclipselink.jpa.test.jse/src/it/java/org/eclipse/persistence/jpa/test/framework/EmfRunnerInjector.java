@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2014, 2021 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2014, 2021 IBM Corporation. All rights reserved.
+ * Copyright (c) 2014, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -47,7 +47,7 @@ public class EmfRunnerInjector {
     private final Map<String, EntityManagerFactory> _emfs;
 
     public EmfRunnerInjector() {
-        _emfs = new HashMap<String, EntityManagerFactory>();
+        _emfs = new HashMap<>();
     }
 
     public void close() {
@@ -72,8 +72,8 @@ public class EmfRunnerInjector {
 
         Class<?> cls = testInstance.getClass();
         // Check for duplicate injected EMFs
-        Set<EntityManagerFactory> injectedEmfs = new HashSet<EntityManagerFactory>();
-        Set<Field> injectedSqlListeneFields = new HashSet<Field>();
+        Set<EntityManagerFactory> injectedEmfs = new HashSet<>();
+        Set<Field> injectedSqlListeneFields = new HashSet<>();
 
         // PU name -> Field
         Map<String, Field> annotatedSqlListenerFields = getSqlListenerFieldMap(cls);
@@ -131,7 +131,7 @@ public class EmfRunnerInjector {
 
     private void validateSQLListenerAnnotations(Map<String, Field> sqlListeners, Set<Field> injectedSqlListeners) {
         boolean die = false;
-        List<Field> uninjectedSqlFields = new ArrayList<Field>();
+        List<Field> uninjectedSqlFields = new ArrayList<>();
         for (Entry<String, Field> entry : sqlListeners.entrySet()) {
             String puName = entry.getKey();
             Field annotatedField = entry.getValue();
@@ -148,7 +148,7 @@ public class EmfRunnerInjector {
     }
 
     private Map<String, Field> getSqlListenerFieldMap(Class<?> cls) {
-        Map<String, Field> res = new HashMap<String, Field>();
+        Map<String, Field> res = new HashMap<>();
         for (Field field : cls.getDeclaredFields()) {
             SQLListener listener = field.getAnnotation(SQLListener.class);
             if (listener != null) {
@@ -168,7 +168,7 @@ public class EmfRunnerInjector {
     }
 
     private Map<String, Field> getSqlCallListenerFieldMap(Class<?> cls) {
-        Map<String, Field> res = new HashMap<String, Field>();
+        Map<String, Field> res = new HashMap<>();
         for (Field field : cls.getDeclaredFields()) {
             SQLCallListener listener = field.getAnnotation(SQLCallListener.class);
             if (listener != null) {
@@ -197,7 +197,7 @@ public class EmfRunnerInjector {
         }
 
         List<String> mappingFiles = Arrays.asList(anno.mappingFiles());
-        List<String> classes = new ArrayList<String>();
+        List<String> classes = new ArrayList<>();
         Properties persistenceProperties = new Properties();
 
         for (Class<?> cls : anno.classes()) {
@@ -256,7 +256,7 @@ public class EmfRunnerInjector {
         private List<String> _sql;
 
         SqlCollector() {
-            _sql = new ArrayList<String>();
+            _sql = new ArrayList<>();
         }
 
         @Override
@@ -279,7 +279,7 @@ public class EmfRunnerInjector {
         private List<String> _sql;
 
         SqlCallCollector() {
-            _sql = new ArrayList<String>();
+            _sql = new ArrayList<>();
         }
 
         @Override

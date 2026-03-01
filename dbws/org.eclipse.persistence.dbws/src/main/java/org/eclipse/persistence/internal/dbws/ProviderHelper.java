@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -64,8 +64,8 @@ import jakarta.xml.ws.soap.SOAPFaultException;
 
 import org.eclipse.persistence.dbws.DBWSModelProject;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.exceptions.DBWSException;
-import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.dbws.DBWSException;
+import org.eclipse.persistence.oxm.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.schema.SchemaModelProject;
 import org.eclipse.persistence.internal.oxm.schema.model.ComplexType;
@@ -306,9 +306,8 @@ public class ProviderHelper extends XRServiceFactory {
                    *   have to get the element name from the schema context for the object
                    */
                   Object o = i.next();
-                  if (o instanceof Element) {
-                    Element e = (Element)o;
-                    String key = e.getLocalName();
+                  if (o instanceof Element e) {
+                      String key = e.getLocalName();
                     if ("theInstance".equals(key)) {
                         NodeList nl = e.getChildNodes();
                         for (int j = 0; j < nl.getLength(); j++) {
@@ -479,7 +478,7 @@ public class ProviderHelper extends XRServiceFactory {
         try {
             XMLContext xmlContext = dbwsAdapter.getXMLContext();
             XMLUnmarshaller unmarshaller = xmlContext.createUnmarshaller();
-            if (attachments != null && attachments.size() > 0) {
+            if (attachments != null && !attachments.isEmpty()) {
                 unmarshaller.setAttachmentUnmarshaller(new XMLAttachmentUnmarshaller() {
                     Map<String,DataHandler> attachments;
                     public XMLAttachmentUnmarshaller setAttachments(Map<String, DataHandler> attachments) {

@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2022 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,30 +32,9 @@ package org.eclipse.persistence.internal.databaseaccess;
 
 // javase imports
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringWriter;
-import java.math.BigDecimal;
-import java.sql.CallableStatement;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.SQLWarning;
-import java.sql.Statement;
-import java.sql.Types;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
-
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.Helper;
@@ -75,6 +54,28 @@ import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.sessions.Login;
 import org.eclipse.persistence.sessions.SessionProfiler;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringWriter;
+import java.math.BigDecimal;
+import java.sql.CallableStatement;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.SQLWarning;
+import java.sql.Statement;
+import java.sql.Types;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 
 import static org.eclipse.persistence.internal.helper.DatabaseField.NULL_SQL_TYPE;
 
@@ -263,7 +264,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
             // Log connection information.
             if (session.shouldLog(SessionLog.CONFIG, SessionLog.CONNECTION)) {// Avoid printing if no logging required.
                 DatabaseMetaData metaData = getConnectionMetaData();
-                Object[] args = { metaData.getURL(), metaData.getUserName(), metaData.getDatabaseProductName(), metaData.getDatabaseProductVersion(), metaData.getDriverName(), metaData.getDriverVersion(), Helper.cr() + "\t" };
+                Object[] args = { metaData.getURL(), metaData.getUserName(), metaData.getDatabaseProductName(), metaData.getDatabaseProductVersion(), metaData.getDriverName(), metaData.getDriverVersion(), System.lineSeparator() + "\t" };
                 session.log(SessionLog.CONFIG, SessionLog.CONNECTION, "connected_user_database_driver", args, this);
             }
         } catch (Exception exception) {
@@ -1058,7 +1059,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
         DatabasePlatform platform = getPlatform();
         boolean optimizeData = platform.shouldOptimizeDataConversion();
         for (int index = 0; index < size; index++) {
-            DatabaseField field = fields.elementAt(index);
+            DatabaseField field = fields.get(index);
             // Field can be null for fetch groups.
             if (field != null) {
                 values.add(getObject(resultSet, field, metaData, index + 1, platform, optimizeData, session));
@@ -1193,7 +1194,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
             ResultSetMetaData metaData = resultSet.getMetaData();
 
             while (resultSet.next()) {
-                result.addElement(fetchRow(fields, resultSet, metaData, session));
+                result.add(fetchRow(fields, resultSet, metaData, session));
             }
             resultSet.close();
         } catch (SQLException sqlException) {
@@ -1229,7 +1230,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
             ResultSetMetaData metaData = resultSet.getMetaData();
 
             while (resultSet.next()) {
-                result.addElement(fetchRow(fields, resultSet, metaData, session));
+                result.add(fetchRow(fields, resultSet, metaData, session));
             }
             resultSet.close();
         } catch (SQLException sqlException) {
@@ -1283,7 +1284,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
             // This is as required by JDBC spec to access metadata for queries using column aliases.
             // Reconsider whether to migrate this change to other versions of Eclipselink with older native query support
             String columnName = metaData.getColumnLabel(index + 1);
-            if ((columnName == null) || columnName.equals("")) {
+            if ((columnName == null) || columnName.isEmpty()) {
                 columnName = "C" + (index + 1);// Some column may be unnamed.
             }
             DatabaseField column = new DatabaseField(columnName);
@@ -1292,7 +1293,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
             if (getPlatform().shouldForceFieldNamesToUpperCase()) {
                 column.useUpperCaseForComparisons(true);
             }
-            columnNames.addElement(column);
+            columnNames.add(column);
         }
         return columnNames;
     }
@@ -1380,12 +1381,12 @@ public class DatabaseAccessor extends DatasourceAccessor {
                     } else if (isBlob(type)) {
                         // EL Bug 294578 - Store previous value of BLOB so that temporary objects can be freed after conversion
                         Object originalValue = value;
-                        value = platform.convertObject(value, ClassConstants.APBYTE);
+                        value = platform.convertObject(value, CoreClassConstants.APBYTE);
                         platform.freeTemporaryObject(originalValue);
                     } else if (isClob(type)) {
                         // EL Bug 294578 - Store previous value of CLOB so that temporary objects can be freed after conversion
                         Object originalValue = value;
-                        value = platform.convertObject(value, ClassConstants.STRING);
+                        value = platform.convertObject(value, CoreClassConstants.STRING);
                         platform.freeTemporaryObject(originalValue);
                     } else if (isArray(type)){
                         //Bug6068155 convert early if type is Array and Structs.
@@ -1452,50 +1453,51 @@ public class DatabaseAccessor extends DatasourceAccessor {
         boolean isPrimitive = false;
 
         // Optimize numeric values to avoid conversion into big-dec and back to primitives.
-        if ((fieldType == ClassConstants.PLONG) || (fieldType == ClassConstants.LONG)) {
+        if ((fieldType == CoreClassConstants.PLONG) || (fieldType == CoreClassConstants.LONG)) {
             value = resultSet.getLong(columnNumber);
             isPrimitive = (Long) value == 0L;
-        } else if ((fieldType == ClassConstants.INTEGER) || (fieldType == ClassConstants.PINT)) {
+        } else if ((fieldType == CoreClassConstants.INTEGER) || (fieldType == CoreClassConstants.PINT)) {
             value = resultSet.getInt(columnNumber);
             isPrimitive = (Integer) value == 0;
-        } else if ((fieldType == ClassConstants.FLOAT) || (fieldType == ClassConstants.PFLOAT)) {
+        } else if ((fieldType == CoreClassConstants.FLOAT) || (fieldType == CoreClassConstants.PFLOAT)) {
             value = resultSet.getFloat(columnNumber);
             isPrimitive = (Float) value == 0f;
-        } else if ((fieldType == ClassConstants.DOUBLE) || (fieldType == ClassConstants.PDOUBLE)) {
+        } else if ((fieldType == CoreClassConstants.DOUBLE) || (fieldType == CoreClassConstants.PDOUBLE)) {
             value = resultSet.getDouble(columnNumber);
             isPrimitive = (Double) value == 0d;
-        } else if ((fieldType == ClassConstants.SHORT) || (fieldType == ClassConstants.PSHORT)) {
+        } else if ((fieldType == CoreClassConstants.SHORT) || (fieldType == CoreClassConstants.PSHORT)) {
             value = resultSet.getShort(columnNumber);
             isPrimitive = (Short) value == 0;
         // Sometimes field type is just Number and it's child type is stored as field.typeName
-        } else if (fieldType == ClassConstants.NUMBER) {
-            switch(field.typeName) {
-                case "java.lang.Byte":
+        } else if (fieldType == CoreClassConstants.NUMBER) {
+            isPrimitive = switch (field.typeName) {
+                case "java.lang.Byte" -> {
                     value = resultSet.getByte(columnNumber);
-                    isPrimitive = (Byte) value == 0;
-                    break;
-                case "java.lang.Short":
+                    yield (Byte) value == 0;
+                }
+                case "java.lang.Short" -> {
                     value = resultSet.getShort(columnNumber);
-                    isPrimitive = (Short) value == 0;
-                    break;
-                case "java.lang.Integer":
+                    yield (Short) value == 0;
+                }
+                case "java.lang.Integer" -> {
                     value = resultSet.getInt(columnNumber);
-                    isPrimitive = (Integer) value == 0;
-                    break;
-                case "java.lang.Long":
+                    yield (Integer) value == 0;
+                }
+                case "java.lang.Long" -> {
                     value = resultSet.getLong(columnNumber);
-                    isPrimitive = (Long) value == 0L;
-                    break;
-                case "java.lang.Float":
+                    yield (Long) value == 0L;
+                }
+                case "java.lang.Float" -> {
                     value = resultSet.getFloat(columnNumber);
-                    isPrimitive = (Float) value == 0f;
-                    break;
-                case "java.lang.Double":
+                    yield (Float) value == 0f;
+                }
+                case "java.lang.Double" -> {
                     value = resultSet.getDouble(columnNumber);
-                    isPrimitive = (Double) value == 0f;
-                    break;
-            }
-        } else if ((fieldType == ClassConstants.BOOLEAN) || (fieldType == ClassConstants.PBOOLEAN))  {
+                    yield (Double) value == 0f;
+                }
+                default -> isPrimitive;
+            };
+        } else if ((fieldType == CoreClassConstants.BOOLEAN) || (fieldType == CoreClassConstants.PBOOLEAN))  {
             value = resultSet.getBoolean(columnNumber);
             isPrimitive = !((Boolean) value);
         } else if ((type == Types.TIME) || (type == Types.DATE) || (type == Types.TIMESTAMP)) {
@@ -1534,13 +1536,11 @@ public class DatabaseAccessor extends DatasourceAccessor {
                             : platform.getConversionManager().getDefaultNullValue(ClassConstants.TIME_ODATETIME);
                 }
             }
-        } else if (fieldType == ClassConstants.BIGDECIMAL) {
+        } else if (fieldType == CoreClassConstants.BIGDECIMAL) {
             value = resultSet.getBigDecimal(columnNumber);
-        } else if (fieldType == ClassConstants.BIGINTEGER) {
+        } else if (fieldType == CoreClassConstants.BIGINTEGER) {
             value = resultSet.getBigDecimal(columnNumber);
             if (value != null) return ((BigDecimal)value).toBigInteger();
-        } else if (fieldType == ClassConstants.BIGDECIMAL) {
-            value = resultSet.getBigDecimal(columnNumber);
         }
 
         // PERF: Only check for null for primitives.
@@ -1613,7 +1613,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
             ResultSetMetaData metaData = resultSet.getMetaData();
 
             while (resultSet.next()) {
-                result.addElement(fetchRow(fields, resultSet, metaData, session));
+                result.add(fetchRow(fields, resultSet, metaData, session));
             }
             resultSet.close();
         } catch (SQLException sqlException) {
@@ -1649,7 +1649,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
             ResultSetMetaData metaData = resultSet.getMetaData();
 
             while (resultSet.next()) {
-                result.addElement(fetchRow(fields, resultSet, metaData, session));
+                result.add(fetchRow(fields, resultSet, metaData, session));
             }
             resultSet.close();
         } catch (SQLException sqlException) {
@@ -1954,30 +1954,30 @@ public class DatabaseAccessor extends DatasourceAccessor {
         Vector<DatabaseField> sortedFields = new Vector<>(columnNames.size());
         @SuppressWarnings({"unchecked"})
         Vector<DatabaseField> eligableFields = (Vector<DatabaseField>)fields.clone();// Must clone to allow removing to support the same field twice.
-        Enumeration<DatabaseField> columnNamesEnum = columnNames.elements();
+        Iterator<DatabaseField> iterator1 = columnNames.iterator();
         boolean valueFound;
         DatabaseField field;
         DatabaseField column;//DatabaseField from the columnNames vector
-        while (columnNamesEnum.hasMoreElements()) {
+        while (iterator1.hasNext()) {
             field = null;
             valueFound = false;
-            column = columnNamesEnum.nextElement();
-            Enumeration<DatabaseField> fieldEnum = eligableFields.elements();
-            while (fieldEnum.hasMoreElements()) {
-                field = fieldEnum.nextElement();
+            column = iterator1.next();
+            Iterator<DatabaseField> iterator = eligableFields.iterator();
+            while (iterator.hasNext()) {
+                field = iterator.next();
                 if(field != null && field.equals(column)){
                     valueFound = true;
-                    sortedFields.addElement(field);
+                    sortedFields.add(field);
                     break;
                 }
             }
 
             if (valueFound) {
                 // The eligible fields must be maintained as two field can have the same name, but different tables.
-                eligableFields.removeElement(field);
+                eligableFields.remove(field);
             } else {
                 // Need to add a place holder in case the column is not in the fields vector
-                sortedFields.addElement(new DatabaseField());
+                sortedFields.add(new DatabaseField());
             }
         }
         return sortedFields;

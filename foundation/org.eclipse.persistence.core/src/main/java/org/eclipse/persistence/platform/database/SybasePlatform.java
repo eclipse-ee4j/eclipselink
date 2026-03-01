@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2022 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,9 +25,24 @@
 //       - 462511 : Update to SybasePlatform to support pessimistic locking
 package org.eclipse.persistence.platform.database;
 
+import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.expressions.ExpressionOperator;
+import org.eclipse.persistence.internal.expressions.FunctionExpression;
+import org.eclipse.persistence.internal.expressions.RelationExpression;
+import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.queries.SQLCall;
+import org.eclipse.persistence.queries.ValueReadQuery;
+import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
+
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -37,22 +52,11 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Hashtable;
+import java.util.HexFormat;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 import java.util.regex.Pattern;
-
-import org.eclipse.persistence.exceptions.ValidationException;
-import org.eclipse.persistence.expressions.ExpressionOperator;
-import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
-import org.eclipse.persistence.internal.expressions.RelationExpression;
-import org.eclipse.persistence.internal.helper.ClassConstants;
-import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.internal.helper.DatabaseTable;
-import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.queries.ValueReadQuery;
 
 /**
  *    <p><b>Purpose</b>: Provides Sybase ASE specific behavior.
@@ -63,7 +67,7 @@ import org.eclipse.persistence.queries.ValueReadQuery;
  *
  * @since TOPLink/Java 1.0
  */
-public class SybasePlatform extends org.eclipse.persistence.platform.database.DatabasePlatform {
+public class SybasePlatform extends DatabasePlatform {
     // An array could be used here with the type being the index, but upon looking at the source some types are
     // assigned negative values, making them unusable as indexes without guessing at modifying them.
     // this attribute is used for registering output params in stored procedure calls.  JConnect 5.5 requires
@@ -73,7 +77,7 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
     public SybasePlatform(){
         super();
         this.pingSQL = "SELECT 1";
-        this.storedProcedureTerminationToken = "\ngo";
+        setStoredProcedureTerminationToken("\ngo");
     }
 
     @Override
@@ -144,7 +148,7 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
     protected void appendByteArray(byte[] bytes, Writer writer) throws IOException {
         if (usesNativeSQL() && (!usesByteArrayBinding())) {
             writer.write("0x");
-            Helper.writeHexString(bytes, writer);
+            writer.write(HexFormat.of().formatHex(bytes));
         } else {
             super.appendByteArray(bytes, writer);
         }
@@ -239,37 +243,37 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
     }
 
     @Override
-    protected Hashtable<Class<?>, FieldTypeDefinition> buildFieldTypes() {
-        Hashtable<Class<?>, FieldTypeDefinition> fieldTypeMapping = new Hashtable<>();
-        fieldTypeMapping.put(Boolean.class, new FieldTypeDefinition("BIT default 0", false, false));
+    protected Map<Class<?>, FieldDefinition.DatabaseType> buildDatabaseTypes() {
+        Map<Class<?>, FieldDefinition.DatabaseType> fieldTypeMapping = new HashMap<>();
+        fieldTypeMapping.put(Boolean.class, new FieldDefinition.DatabaseType("BIT default 0", false, false));
 
-        fieldTypeMapping.put(Integer.class, new FieldTypeDefinition("INTEGER", false));
-        fieldTypeMapping.put(Long.class, new FieldTypeDefinition("NUMERIC", 19));
-        fieldTypeMapping.put(Float.class, new FieldTypeDefinition("FLOAT(16)", false));
-        fieldTypeMapping.put(Double.class, new FieldTypeDefinition("FLOAT(32)", false));
-        fieldTypeMapping.put(Short.class, new FieldTypeDefinition("SMALLINT", false));
-        fieldTypeMapping.put(Byte.class, new FieldTypeDefinition("SMALLINT", false));
-        fieldTypeMapping.put(java.math.BigInteger.class, new FieldTypeDefinition("NUMERIC", 38));
-        fieldTypeMapping.put(java.math.BigDecimal.class, new FieldTypeDefinition("NUMERIC", 38).setLimits(38, -19, 19));
-        fieldTypeMapping.put(Number.class, new FieldTypeDefinition("NUMERIC", 38).setLimits(38, -19, 19));
+        fieldTypeMapping.put(Integer.class, new FieldDefinition.DatabaseType("INTEGER", false));
+        fieldTypeMapping.put(Long.class, TYPE_NUMERIC.ofSize(19));
+        fieldTypeMapping.put(Float.class, new FieldDefinition.DatabaseType("FLOAT(16)", false));
+        fieldTypeMapping.put(Double.class, new FieldDefinition.DatabaseType("FLOAT(32)", false));
+        fieldTypeMapping.put(Short.class, new FieldDefinition.DatabaseType("SMALLINT", false));
+        fieldTypeMapping.put(Byte.class, new FieldDefinition.DatabaseType("SMALLINT", false));
+        fieldTypeMapping.put(BigInteger.class, TYPE_NUMERIC.ofSize(38));
+        fieldTypeMapping.put(BigDecimal.class, new FieldDefinition.DatabaseType("NUMERIC", 38, 0, 38, -19, 19));
+        fieldTypeMapping.put(Number.class, new FieldDefinition.DatabaseType("NUMERIC", 38, 0, 38, -19, 19));
 
         if(getUseNationalCharacterVaryingTypeForString()){
             // http://infocenter.sybase.com/help/index.jsp?topic=/com.sybase.infocenter.dc36271.1570/html/blocks/CIHJCBJF.htm
-            fieldTypeMapping.put(String.class, new FieldTypeDefinition("UNIVARCHAR", DEFAULT_VARCHAR_SIZE));
+            fieldTypeMapping.put(String.class, new FieldDefinition.DatabaseType("UNIVARCHAR", DEFAULT_VARCHAR_SIZE));
         } else {
-            fieldTypeMapping.put(String.class, new FieldTypeDefinition("VARCHAR", DEFAULT_VARCHAR_SIZE));
+            fieldTypeMapping.put(String.class, new FieldDefinition.DatabaseType("VARCHAR", DEFAULT_VARCHAR_SIZE));
         }
-        fieldTypeMapping.put(Character.class, new FieldTypeDefinition("CHAR", 1));
-        fieldTypeMapping.put(Byte[].class, new FieldTypeDefinition("IMAGE", false));
-        fieldTypeMapping.put(Character[].class, new FieldTypeDefinition("TEXT", false));
-        fieldTypeMapping.put(byte[].class, new FieldTypeDefinition("IMAGE", false));
-        fieldTypeMapping.put(char[].class, new FieldTypeDefinition("TEXT", false));
-        fieldTypeMapping.put(java.sql.Blob.class, new FieldTypeDefinition("IMAGE", false));
-        fieldTypeMapping.put(java.sql.Clob.class, new FieldTypeDefinition("TEXT", false));
+        fieldTypeMapping.put(Character.class, new FieldDefinition.DatabaseType("CHAR", 1));
+        fieldTypeMapping.put(Byte[].class, new FieldDefinition.DatabaseType("IMAGE", false));
+        fieldTypeMapping.put(Character[].class, new FieldDefinition.DatabaseType("TEXT", false));
+        fieldTypeMapping.put(byte[].class, new FieldDefinition.DatabaseType("IMAGE", false));
+        fieldTypeMapping.put(char[].class, new FieldDefinition.DatabaseType("TEXT", false));
+        fieldTypeMapping.put(java.sql.Blob.class, new FieldDefinition.DatabaseType("IMAGE", false));
+        fieldTypeMapping.put(java.sql.Clob.class, new FieldDefinition.DatabaseType("TEXT", false));
 
-        fieldTypeMapping.put(java.sql.Date.class, new FieldTypeDefinition("DATETIME", false));
-        fieldTypeMapping.put(java.sql.Time.class, new FieldTypeDefinition("DATETIME", false));
-        fieldTypeMapping.put(java.sql.Timestamp.class, new FieldTypeDefinition("DATETIME", false));
+        fieldTypeMapping.put(java.sql.Date.class, new FieldDefinition.DatabaseType("DATETIME", false));
+        fieldTypeMapping.put(java.sql.Time.class, new FieldDefinition.DatabaseType("DATETIME", false));
+        fieldTypeMapping.put(java.sql.Timestamp.class, new FieldDefinition.DatabaseType("DATETIME", false));
 
         return fieldTypeMapping;
     }
@@ -376,7 +380,7 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
                 query = query + " AND table_owner = " + creator;
             }
         }
-        return session.executeSelectingCall(new org.eclipse.persistence.queries.SQLCall(query));
+        return session.executeSelectingCall(new SQLCall(query));
     }
 
     /* This method is used to print the output parameter token when stored
@@ -498,7 +502,7 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
         v.add(" % ");
         result.printsAs(v);
         result.bePostfix();
-        result.setNodeClass(org.eclipse.persistence.internal.expressions.FunctionExpression.class);
+        result.setNodeClass(FunctionExpression.class);
         return result;
     }
 
@@ -794,8 +798,8 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
      * <p><b>NOTE</b>: BigInteger {@literal &} BigDecimal maximums are dependent upon their precision {@literal &} Scale
      */
     @Override
-    public Hashtable<Class<? extends Number>, ? super Number> maximumNumericValues() {
-        Hashtable<Class<? extends Number>, Number> values = new Hashtable<>();
+    public Map<Class<? extends Number>, ? super Number> maximumNumericValues() {
+        Map<Class<? extends Number>, Number> values = new HashMap<>();
 
         values.put(Integer.class, Integer.MAX_VALUE);
         values.put(Long.class, Long.MAX_VALUE);
@@ -803,8 +807,8 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
         values.put(Short.class, Short.MAX_VALUE);
         values.put(Byte.class, Byte.MAX_VALUE);
         values.put(Float.class, Float.MAX_VALUE);
-        values.put(java.math.BigInteger.class, new java.math.BigInteger("99999999999999999999999999999999999999"));
-        values.put(java.math.BigDecimal.class, new java.math.BigDecimal("9999999999999999999.9999999999999999999"));
+        values.put(BigInteger.class, new BigInteger("99999999999999999999999999999999999999"));
+        values.put(BigDecimal.class, new BigDecimal("9999999999999999999.9999999999999999999"));
         return values;
     }
 
@@ -814,8 +818,8 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
      * <p><b>NOTE</b>: BigInteger {@literal &} BigDecimal minimums are dependent upon their precision {@literal &} Scale
      */
     @Override
-    public Hashtable<Class<? extends Number>, ? super Number> minimumNumericValues() {
-        Hashtable<Class<? extends Number>, Number> values = new Hashtable<>();
+    public Map<Class<? extends Number>, ? super Number> minimumNumericValues() {
+        Map<Class<? extends Number>, Number> values = new HashMap<>();
 
         values.put(Integer.class, Integer.MIN_VALUE);
         values.put(Long.class, Long.MIN_VALUE);
@@ -823,8 +827,8 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
         values.put(Short.class, Short.MIN_VALUE);
         values.put(Byte.class, Byte.MIN_VALUE);
         values.put(Float.class, Float.MIN_VALUE);
-        values.put(java.math.BigInteger.class, new java.math.BigInteger("-99999999999999999999999999999999999999"));
-        values.put(java.math.BigDecimal.class, new java.math.BigDecimal("-9999999999999999999.9999999999999999999"));
+        values.put(BigInteger.class, new BigInteger("-99999999999999999999999999999999999999"));
+        values.put(BigDecimal.class, new BigDecimal("-9999999999999999999.9999999999999999999"));
         return values;
     }
 

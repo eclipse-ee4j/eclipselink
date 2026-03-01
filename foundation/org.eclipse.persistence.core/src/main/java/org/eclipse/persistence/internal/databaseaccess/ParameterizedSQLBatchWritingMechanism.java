@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -15,19 +15,22 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.databaseaccess;
 
-import java.io.StringWriter;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.eclipse.persistence.descriptors.DescriptorQueryManager;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.OptimisticLockException;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.queries.ModifyQuery;
+import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.DeleteObjectQuery;
+import org.eclipse.persistence.queries.UpdateObjectQuery;
 import org.eclipse.persistence.sessions.SessionProfiler;
+
+import java.io.StringWriter;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * INTERNAL:
@@ -144,7 +147,7 @@ public class ParameterizedSQLBatchWritingMechanism extends BatchWritingMechanism
      * INTERNAL:
      * This method is added to execute and clear the batched statements on the cloned batch mechanism which
      * is created in executeBatchedStatements(session).
-     *
+     * <p>
      * Introduced in fix for bug#419326.
      */
     private void executeBatch(AbstractSession session) {
@@ -155,7 +158,14 @@ public class ParameterizedSQLBatchWritingMechanism extends BatchWritingMechanism
                 Object rowCount = this.databaseAccessor.basicExecuteCall(this.previousCall, null, session, false);
                 if (this.previousCall.hasOptimisticLock() && rowCount instanceof Integer) {
                     if ((Integer)rowCount != 1) {
-                        throw OptimisticLockException.batchStatementExecutionFailure();
+                        Object object = null;
+                        DatabaseQuery query = this.previousCall.getQuery();
+                        if (query.isUpdateObjectQuery()) {
+                            object = ((UpdateObjectQuery) query).getObject();
+                        } else if (query.isDeleteObjectQuery()) {
+                            object = ((DeleteObjectQuery) query).getObject();
+                        }
+                        throw OptimisticLockException.batchStatementExecutionFailureWithParametersList(object, parameters, query.getSQLString());
                     }
                 }
             } finally {
@@ -186,7 +196,21 @@ public class ParameterizedSQLBatchWritingMechanism extends BatchWritingMechanism
             this.databaseAccessor.writeStatementsCount++;
 
             if (this.previousCall.hasOptimisticLock() && (this.executionCount != this.statementCount)) {
-                throw OptimisticLockException.batchStatementExecutionFailure();
+                int[] rowCounts = this.databaseAccessor.getPlatform().getExecuteBatchRowCounts();
+                List<List> failureParametersList = new ArrayList();
+                for (int i = 0; i < rowCounts.length; i++) {
+                    if (rowCounts[i] != 1 ) {
+                        failureParametersList.add(parameters.get(i));
+                    }
+                }
+                Object object = null;
+                DatabaseQuery query = this.previousCall.getQuery();
+                if (query.isUpdateObjectQuery()) {
+                    object = ((UpdateObjectQuery) query).getObject();
+                } else if (query.isDeleteObjectQuery()) {
+                    object = ((DeleteObjectQuery) query).getObject();
+                }
+                throw OptimisticLockException.batchStatementExecutionFailureWithParametersList(object, failureParametersList, query.getSQLString());
             }
         } finally {
             // Reset the batched sql string

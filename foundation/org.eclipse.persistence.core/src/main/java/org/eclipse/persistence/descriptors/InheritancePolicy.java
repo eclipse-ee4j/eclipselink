@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,18 +22,6 @@
 //       - 371950: Metadata caching
 package org.eclipse.persistence.descriptors;
 
-import java.io.Serializable;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.IdentityHashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Vector;
-
 import org.eclipse.persistence.core.descriptors.CoreInheritancePolicy;
 import org.eclipse.persistence.descriptors.invalidation.CacheInvalidationPolicy;
 import org.eclipse.persistence.exceptions.DatabaseException;
@@ -42,9 +30,9 @@ import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
 import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
-import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
@@ -59,6 +47,18 @@ import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.sessions.remote.DistributedSession;
+
+import java.io.Serializable;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.IdentityHashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Vector;
 
 /**
  * <p><b>Purpose</b>: Allows customization of an object's inheritance.
@@ -88,7 +88,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
     protected transient Expression onlyInstancesExpression;
     protected transient Expression withAllSubclassesExpression;
     // null if there are no childrenTables, otherwise all tables for reference class plus childrenTables
-    protected transient Vector<DatabaseTable> allTables;
+    protected transient List<DatabaseTable> allTables;
     // all tables for all subclasses (subclasses of subclasses included), should be in sync with childrenTablesJoinExpressions.
     protected transient List<DatabaseTable> childrenTables;
     // join expression for each child table, keyed by the table, should be in sync with childrenTables.
@@ -160,7 +160,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
            // childrenTables should've been null, too
             this.childrenTables = new ArrayList<>();
            // allTables should've been null, too
-            this.allTables = new Vector<>(getDescriptor().getTables());
+            this.allTables = new ArrayList<>(getDescriptor().getTables());
         }
         // Avoid duplicates as two independent subclasses may have the same table.
         if (!this.childrenTables.contains(table)) {
@@ -264,14 +264,14 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
      * INTERNAL:
      * Recursively adds fields to all the parents
      */
-    protected void addFieldsToParent(Vector fields) {
+    protected void addFieldsToParent(List<DatabaseField> fields) {
         if (isChildDescriptor()) {
             if (getParentDescriptor().isInvalid()) {
                 return;
             }
             ClassDescriptor parentDescriptor = getParentDescriptor();
             if (parentDescriptor.getInheritancePolicy().shouldReadSubclasses()) {
-                Helper.addAllUniqueToVector(parentDescriptor.getAllFields(), fields);
+                Helper.addAllUniqueToList(parentDescriptor.getAllFields(), fields);
             }
             parentDescriptor.getInheritancePolicy().addFieldsToParent(fields);
         }
@@ -289,7 +289,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
         selectStatement.addTable(classIndicatorField.getTable());
         selectStatement.addField(getClassIndicatorField());
         // 2612538 - the default size of Map (32) is appropriate
-        Map clonedExpressions = new IdentityHashMap();
+        Map<Expression, Expression> clonedExpressions = new IdentityHashMap<>();
         selectStatement.setWhereClause(((ExpressionQueryMechanism)query.getQueryMechanism()).buildBaseSelectionCriteria(false, clonedExpressions));
         appendWithAllSubclassesExpression(selectStatement);
         selectStatement.setTranslationRow(query.getTranslationRow());
@@ -312,7 +312,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
         if (getWithAllSubclassesExpression() != null) {
             // For Flashback: Must always rebuild with simple expression on right.
             if (selectStatement.getWhereClause() == null) {
-                selectStatement.setWhereClause((Expression)getWithAllSubclassesExpression().clone());
+                selectStatement.setWhereClause(getWithAllSubclassesExpression().clone());
             } else {
                 selectStatement.setWhereClause(selectStatement.getWhereClause().and(getWithAllSubclassesExpression()));
             }
@@ -336,7 +336,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
 
         // Case, normal read for branch inheritance class that reads subclasses all in its own table(s).
         if (getWithAllSubclassesExpression() != null) {
-            Expression branchIndicator = (Expression)getWithAllSubclassesExpression().clone();
+            Expression branchIndicator = getWithAllSubclassesExpression().clone();
             if (branchIndicator != null) {
                 selectStatement.setWhereClause(branchIndicator.and(selectStatement.getWhereClause()));
             }
@@ -393,9 +393,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
                 if (concreteClass == null) {
                     throw DescriptorException.missingClassForIndicatorFieldValue(classFieldValue, getDescriptor());
                 }
-            } catch (ClassNotFoundException e) {
-                throw DescriptorException.missingClassForIndicatorFieldValue(classFieldValue, getDescriptor());
-            } catch (ClassCastException e) {
+            } catch (ClassNotFoundException | ClassCastException e) {
                 throw DescriptorException.missingClassForIndicatorFieldValue(classFieldValue, getDescriptor());
             }
         }
@@ -409,18 +407,15 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
      */
     @Override
     public Object clone() {
-        InheritancePolicy clone = null;
-
         try {
-            clone = (InheritancePolicy)super.clone();
+            InheritancePolicy clone = (InheritancePolicy)super.clone();
             if (hasClassIndicator()) {
                 clone.setClassIndicatorField(clone.getClassIndicatorField().clone());
             }
+            return clone;
         } catch (Exception exception) {
             throw new InternalError("clone failed");
         }
-
-        return clone;
     }
 
     /**
@@ -555,7 +550,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
      * INTERNAL:
      * all tables for reference class plus childrenTables
      */
-    public Vector<DatabaseTable> getAllTables() {
+    public List<DatabaseTable> getAllTables() {
         if (allTables == null) {
             return this.getDescriptor().getTables();
         } else {
@@ -675,7 +670,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
                 className = ((Class<?>)className).getName();
             }
             Object value = valuesEnum.next();
-            associations.addElement(new TypedAssociation(className, value));
+            associations.add(new TypedAssociation(className, value));
         }
 
         return associations;
@@ -773,7 +768,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
      * Determines whether the descriptors using this inheritance policy
      * should be used as descriptors for subclasses of the classes they
      * describe if those subclasses do not have their own descriptor
-     *
+     * <p>
      * e.g. If Employee.class has a descriptor and EmployeeSubClass does
      * not have a descriptor, if describesNonPersistenceSubclasses is true
      * Employee's descriptor will be used as the descriptor for Employee
@@ -960,14 +955,14 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
         }
 
         if (isChildDescriptor()) {
-            getDescriptor().setMappings(Helper.concatenateVectors(getParentDescriptor().getMappings(), getDescriptor().getMappings()));
+            getDescriptor().setMappings(Helper.concatenateLists(getParentDescriptor().getMappings(), getDescriptor().getMappings()));
             getDescriptor().setQueryKeys(Helper.concatenateMaps(getParentDescriptor().getQueryKeys(), getDescriptor().getQueryKeys()));
             addFieldsToParent(getDescriptor().getFields());
             // Parents fields must be first for indexing to work.
-            Vector parentsFields = (Vector)getParentDescriptor().getFields().clone();
+            List<DatabaseField> parentsFields = (List<DatabaseField>) ((ArrayList<DatabaseField>) (getParentDescriptor().getFields())).clone();
 
             //bug fix on Oracle duplicate field SQL using "order by"
-            Helper.addAllUniqueToVector(parentsFields, getDescriptor().getFields());
+            Helper.addAllUniqueToList(parentsFields, getDescriptor().getFields());
             getDescriptor().setFields(parentsFields);
 
             if (getClassIndicatorValue() != null) {
@@ -1022,7 +1017,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
         initializeWithAllSubclassesExpression();
         if (hasView()) {
             // Set the table qualifier on the inheritance view.
-            if ((session.getDatasourcePlatform().getTableQualifier().length() != 0) && (getReadAllSubclassesView().getTableQualifier().length() == 0)) {
+            if ((!session.getDatasourcePlatform().getTableQualifier().isEmpty()) && (getReadAllSubclassesView().getTableQualifier().isEmpty())) {
                 getReadAllSubclassesView().setTableQualifier(session.getDatasourcePlatform().getTableQualifier());
             }
         }
@@ -1232,7 +1227,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
                 setClassIndicatorField(getDescriptor().buildField(getClassIndicatorField()));
                 // Determine and set the class indicator classification.
                 if (shouldUseClassNameAsIndicator()) {
-                    getClassIndicatorField().setType(ClassConstants.STRING);
+                    getClassIndicatorField().setType(CoreClassConstants.STRING);
                 } else if (!getClassIndicatorMapping().isEmpty()) {
                     Class<?> type = null;
                     Iterator fieldValuesEnum = getClassIndicatorMapping().values().iterator();
@@ -1244,7 +1239,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
                     }
                     getClassIndicatorField().setType(type);
                 }
-                getDescriptor().getFields().addElement(getClassIndicatorField());
+                getDescriptor().getFields().add(getClassIndicatorField());
             }
         }
     }
@@ -1273,14 +1268,14 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
             }
         }
 
-        Vector tempChildren = new Vector(getChildDescriptors().size());
+        List<ClassDescriptor> tempChildren = new ArrayList<>(getChildDescriptors().size());
         for (ClassDescriptor childDescriptor : getChildDescriptors()) {
             if (session.hasCorrespondingDescriptor(childDescriptor)) {
-                tempChildren.addElement(session.getDescriptor(childDescriptor.getJavaClass()));
+                tempChildren.add(session.getDescriptor(childDescriptor.getJavaClass()));
             } else {
                 session.privilegedAddDescriptor(childDescriptor);
                 childDescriptor.remoteInitialization(session);
-                tempChildren.addElement(childDescriptor);
+                tempChildren.add(childDescriptor);
             }
         }
         setChildDescriptors(tempChildren);
@@ -1550,7 +1545,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
      * @see #setOnlyInstancesExpression(Expression)
      */
     public void setClassExtractionMethodName(String staticClassClassExtractionMethod) {
-        if ((staticClassClassExtractionMethod == null) || (staticClassClassExtractionMethod.length() == 0)) {
+        if ((staticClassClassExtractionMethod == null) || (staticClassClassExtractionMethod.isEmpty())) {
             return;
         }
         if (!(getClassExtractor() instanceof MethodClassExtractor)) {
@@ -1635,7 +1630,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
      * Determines whether the descriptors using this inheritance policy
      * should be used as descriptors for subclasses of the classes they
      * describe if those subclasses do not have their own descriptor
-     *
+     * <p>
      * e.g. If Employee.class has a descriptor and EmployeeSubClass does
      * not have a descriptor, if describesNonPersistenceSubclasses is true
      * Employee's descriptor will be used as the descriptor for Employee
@@ -1860,7 +1855,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
      */
     @Override
     public String toString() {
-        return Helper.getShortClassName(getClass()) + "(" + getDescriptor() + ")";
+        return getClass().getSimpleName() + "(" + getDescriptor() + ")";
     }
 
     /**
@@ -1870,9 +1865,9 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
      */
     protected void updateTables(){
         // Unique is required because the builder can add the same table many times.
-        Vector<DatabaseTable> childTables = getDescriptor().getTables();
-        Vector<DatabaseTable> parentTables = getParentDescriptor().getTables();
-        Vector<DatabaseTable> uniqueTables = Helper.concatenateUniqueVectors(parentTables, childTables);
+        List<DatabaseTable> childTables = getDescriptor().getTables();
+        List<DatabaseTable> parentTables = getParentDescriptor().getTables();
+        List<DatabaseTable> uniqueTables = Helper.concatenateUniqueLists(parentTables, childTables);
         getDescriptor().setTables(uniqueTables);
 
         // After filtering out any duplicate tables, set the default table

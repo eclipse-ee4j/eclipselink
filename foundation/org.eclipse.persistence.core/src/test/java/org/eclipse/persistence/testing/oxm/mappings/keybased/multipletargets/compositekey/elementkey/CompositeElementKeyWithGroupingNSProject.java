@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,8 +14,6 @@
 //     bdoughan - Oct 22/2009 - 2.0 - Initial implementation
 package org.eclipse.persistence.testing.oxm.mappings.keybased.multipletargets.compositekey.elementkey;
 
-import java.util.ArrayList;
-
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.XMLCollectionReferenceMapping;
@@ -26,6 +24,8 @@ import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.testing.oxm.mappings.keybased.Address;
 import org.eclipse.persistence.testing.oxm.mappings.keybased.Root;
 import org.eclipse.persistence.testing.oxm.mappings.keybased.multipletargets.Employee;
+
+import java.util.ArrayList;
 
 public class CompositeElementKeyWithGroupingNSProject extends Project {
 

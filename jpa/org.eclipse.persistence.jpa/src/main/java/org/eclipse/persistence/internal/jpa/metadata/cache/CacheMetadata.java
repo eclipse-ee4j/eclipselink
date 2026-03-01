@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,7 +23,7 @@ package org.eclipse.persistence.internal.jpa.metadata.cache;
 import org.eclipse.persistence.annotations.CacheCoordinationType;
 import org.eclipse.persistence.annotations.CacheType;
 import org.eclipse.persistence.annotations.DatabaseChangeNotificationType;
-import org.eclipse.persistence.config.CacheIsolationType;
+import org.eclipse.persistence.annotations.CacheIsolationType;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.invalidation.DailyCacheInvalidationPolicy;
 import org.eclipse.persistence.descriptors.invalidation.TimeToLiveCacheInvalidationPolicy;
@@ -36,7 +36,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataC
 
 /**
  * Object to hold onto cache metadata.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -101,8 +101,7 @@ public class CacheMetadata extends ORMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (objectToCompare instanceof CacheMetadata) {
-            CacheMetadata cache = (CacheMetadata) objectToCompare;
+        if (objectToCompare instanceof CacheMetadata cache) {
 
             if (! valuesMatch(m_alwaysRefresh, cache.getAlwaysRefresh())) {
                 return false;
@@ -148,7 +147,8 @@ public class CacheMetadata extends ORMetadata {
 
     @Override
     public int hashCode() {
-        int result = m_alwaysRefresh != null ? m_alwaysRefresh.hashCode() : 0;
+        int result = super.hashCode();
+        result = 31 * result + (m_alwaysRefresh != null ? m_alwaysRefresh.hashCode() : 0);
         result = 31 * result + (m_disableHits != null ? m_disableHits.hashCode() : 0);
         result = 31 * result + (m_isolation != null ? m_isolation.hashCode() : 0);
         result = 31 * result + (m_refreshOnlyIfNewer != null ? m_refreshOnlyIfNewer.hashCode() : 0);

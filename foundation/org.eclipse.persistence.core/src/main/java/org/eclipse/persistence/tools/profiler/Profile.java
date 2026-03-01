@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,10 +14,14 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.tools.profiler;
 
-import java.util.*;
-import java.io.*;
-import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.internal.localization.*;
+import org.eclipse.persistence.internal.localization.ToStringLocalization;
+
+import java.io.IOException;
+import java.io.Serializable;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.util.Hashtable;
+import java.util.Map;
 
 /**
  * <p><b>Purpose</b>: Any information stored for a profile operation.
@@ -157,11 +161,11 @@ public class Profile implements Serializable, Cloneable {
     }
 
     public void write(Writer writer, PerformanceProfiler profiler) {
-        String cr = Helper.cr();
+        String cr = System.lineSeparator();
         try {
             writer.write(ToStringLocalization.buildMessage("profile", null) + "(");
             if (getQueryClass() != null) {
-                writer.write(Helper.getShortClassName(getQueryClass()) + "," + cr);
+                writer.write(getQueryClass().getSimpleName() + "," + cr);
             } else {
                 writer.write(cr);
             }

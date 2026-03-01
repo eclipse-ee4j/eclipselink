@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -44,8 +44,8 @@ public class ClassSignature {
         this.name = name;
         this.interfaces = interfaces;
         this.parentName = parentName;
-        this.methods = new HashMap<String, List<String>>();
-        this.fields = new HashMap<String, String>();
+        this.methods = new HashMap<>();
+        this.fields = new HashMap<>();
     }
 
     public String getName() {
@@ -64,7 +64,7 @@ public class ClassSignature {
         List<String> methodDescs = this.methods.get(name);
 
         if (methodDescs == null) {
-            methodDescs = new ArrayList<String>();
+            methodDescs = new ArrayList<>();
             this.methods.put(name, methodDescs);
         }
         methodDescs.add(desc);
@@ -105,7 +105,7 @@ public class ClassSignature {
         return false;
     }
 
-    public static String newline = System.getProperty("line.separator");
+    public static String newline = System.lineSeparator();
 
     public void compare(ClassSignature targetSig, Writer writer, ExcludePatterns excludes, boolean printAlternatives) throws IOException {
 

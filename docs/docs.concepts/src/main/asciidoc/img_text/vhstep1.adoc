@@ -1,0 +1,4 @@
+:nofooter:
+This illustration shows how the Employee object is being read from the
+database. The Address object is not read and will not be created unless
+it is accessed.

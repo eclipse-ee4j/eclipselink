@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,14 +14,18 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.sessions;
 
-import java.util.*;
-import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.exceptions.ConcurrencyException;
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.exceptions.EclipseLinkException;
+import org.eclipse.persistence.exceptions.OptimisticLockException;
 import org.eclipse.persistence.platform.database.events.DatabaseEventListener;
 import org.eclipse.persistence.platform.server.ServerPlatform;
 import org.eclipse.persistence.sequencing.Sequence;
 import org.eclipse.persistence.sequencing.SequencingControl;
 import org.eclipse.persistence.sessions.coordination.CommandManager;
+
+import java.util.Collection;
 
 /**
  * <p>
@@ -147,18 +151,18 @@ public interface DatabaseSession extends Session {
     /**
      * PUBLIC:
      * Set the server platform defining server-specific behavior for the receiver (Oc4j, WLS, ... ).
-     *
+     * <p>
      * This is not permitted after the session is logged in.
-     *
+     * <p>
      * If the user wants a different external transaction controller class or
      * to provide some different behavior than the provided ServerPlatform(s), we recommend
      * subclassing org.eclipse.persistence.platform.server.ServerPlatformBase (or a subclass),
      * and overriding:
-     *
+     * <p>
      * ServerPlatformBase.getExternalTransactionControllerClass()
      * ServerPlatformBase.registerMBean()
      * ServerPlatformBase.unregisterMBean()
-     *
+     * <p>
      * for the desired behavior.
      *
      * @see org.eclipse.persistence.platform.server.ServerPlatformBase
@@ -168,16 +172,16 @@ public interface DatabaseSession extends Session {
     /**
      * PUBLIC:
      * Answer the server platform defining server-specific behavior for the receiver (Oc4j, WLS, ...).
-     *
+     * <p>
       * If the user wants a different external transaction controller class or
      * to provide some different behavior than the provided ServerPlatform(s), we recommend
      * subclassing org.eclipse.persistence.platform.server.ServerPlatformBase (or a subclass),
      * and overriding:
-     *
+     * <p>
      * ServerPlatformBase.getExternalTransactionControllerClass()
      * ServerPlatformBase.registerMBean()
      * ServerPlatformBase.unregisterMBean()
-     *
+     * <p>
      * for the desired behavior.
      *
      * @see org.eclipse.persistence.platform.server.ServerPlatformBase

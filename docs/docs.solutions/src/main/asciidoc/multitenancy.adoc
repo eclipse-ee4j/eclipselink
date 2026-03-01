@@ -1,0 +1,66 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[MULTITENANCY]]
+== Tenant Isolation Using EclipseLink
+
+With EclipseLink, you can develop a single application and then deploy
+it for different clients, or "tenants," with varying degrees of
+application and data isolation and of tenant-specific functionality. For
+example, a large company may develop a single payroll application to be
+used by multiple divisions. Each division has access to its own data and
+to shared data, but they cannot see any other division's data.
+
+This chapter includes the following sections:
+
+* xref:{relativedir}/multitenancy001.adoc#MULTITENANCY001[Introduction to the Solution]
+* xref:{relativedir}/multitenancy002.adoc#MULTITENANCY002[Using Single-Table Multi-Tenancy]
+* xref:{relativedir}/multitenancy003.adoc#MULTITENANCY003[Using Table-Per-Tenant Multi-Tenancy]
+* xref:{relativedir}/multitenancy004.adoc#MULTITENANCY004[Using VPD Multi-Tenancy]
+* xref:{relativedir}/multitenancy005.adoc#MULTITENANCY005[Additional Resources]
+
+*Use Case*
+
+Multiple application clients must share data sources, with private
+access to their data, for example in a Software as a Service (SaaS)
+environment.
+
+*Solution*
+
+Decide on a strategy for tenant isolation; then use EclipseLink's tenant
+isolation features to implement the strategy.
+
+*Components*
+
+* EclipseLink 2.4 or later.
+* A compliant Java Database Connectivity (JDBC) database, such as Oracle
+Database, Oracle Express, or MySQL.
+
+//Introduction to the Solution
+include::{rootdir}/multitenancy001.adoc[]
+
+//Using Single-Table Multi-Tenancy
+include::{rootdir}/multitenancy002.adoc[]
+
+//Using Table-Per-Tenant Multi-Tenancy
+include::{rootdir}/multitenancy003.adoc[]
+
+//Using VPD Multi-Tenancy
+include::{rootdir}/multitenancy004.adoc[]
+
+//Additional Resources
+include::{rootdir}/multitenancy005.adoc[]

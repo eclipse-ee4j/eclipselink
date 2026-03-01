@@ -1,0 +1,118 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[SHAREDREFERENCERELATIONS005]]
+=== Mapping Bidirectional Relationships
+
+In order to map bidirectional relationships in EclipseLink MOXy, the
+back-pointer must be annotated as an `@XmlInverseReference`. Without
+this annotation, the cyclic relationship will result in an infinite loop
+during marshalling.
+
+`@XmlInverseReferences` must specify the `mappedBy` attribute, which
+indicates the property on the opposite side of the relationship.
+
+In link:#BABHGBAG[Example 7-11], an `Employee` has a collection of
+`PhoneNumbers`, and each `PhoneNumber` has a back-pointer back to its
+`Employee`:
+
+[[sthref135]]
+
+*_Example 7-10 Using the @XMlInverseReference Annotation_*
+
+[source,oac_no_warn]
+----
+@XmlAccessorType(XmlAccessType.FIELD)
+public class Employee {
+   private String name;
+   private List<PhoneNumber> phones = new ArrayList<PhoneNumber>();
+   ...
+}
+ 
+@XmlAccessorType(XmlAccessType.FIELD)
+public class PhoneNumber {
+   private String number;
+   @XmlInverseReference(mappedBy="phones")
+   private Employee employee;
+   ...
+}
+ 
+----
+
+link:#BABHGBAG[Example 7-11] shows how to define this mapping in
+EclipseLink's OXM metadata format:
+
+[[BABHGBAG]]
+
+*_Example 7-11 Sample XML Mapping_*
+
+[source,oac_no_warn]
+----
+...
+<java-type name="Employee">
+   <java-attributes>
+      <xml-element java-attribute="name" type="java.lang.String"/>
+      <xml-element java-attribute="phones" type="PhoneNumber" container-type="java.util.ArrayList"/>
+   </java-attributes>
+</java-type>
+ 
+<java-type name="PhoneNumber">
+   <java-attributes>
+      <xml-element java-attribute="number" type="java.lang.String"/>
+      <xml-inverse-reference java-attribute="employee" type="Employee" mapped-by="phones" />
+   </java-attributes>
+</java-type>
+...
+ 
+In addition, when using @XmlInverseReference, it is not necessary to explicitly set the back-pointer in your Java code; EclipseLink will do this for you automatically:
+----
+
+[source,oac_no_warn]
+----
+Employee emp = new Employee();
+emp.setName("Bob Smith");
+ 
+PhoneNumber p = new PhoneNumber();
+p.setNumber("555-1212");
+ 
+emp.getPhones().add(p);
+ 
+// Not Necessary
+// p.setEmployee(emp);
+ 
+----
+
+`@XmlInverseReference` back-pointers can be used with the following
+types of mappings:
+
+* One-To-One Relationships (see
+xref:{relativedir}/privately_owned_relations001.adoc#PRIVATELYOWNEDRELATIONS001["Mapping Privately Owned One-to-One Relationships"])
+* One-To-Many Relationships (see
+xref:{relativedir}/privately_owned_relations002.adoc#PRIVATELYOWNEDRELATIONS002["Mapping Privately Owned One-to-Many Relationships"])
+* Single Key Relationships (see
+xref:{relativedir}/shared_reference_relations002.adoc#SHAREDREFERENCERELATIONS002["Mapping Single Key Relationships"])
+* Composite Key Relationships (see
+xref:{relativedir}/shared_reference_relations004.adoc#SHAREDREFERENCERELATIONS004["Mapping Composite Key Relationships"])
+
+`@XmlInverseReference` can be particularly useful when mapping JPA entities to XML (see xref:{relativedir}/runtime003.adoc#RUNTIME003["Using XML Bindings"])
+
+==== See also
+
+For more information, see:
+
+* Binding JPA Relationships to XML +
+`http://wiki.eclipse.org/EclipseLink/Examples/MOXy/JPA/Relationships`

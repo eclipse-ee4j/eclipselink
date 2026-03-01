@@ -1,0 +1,2194 @@
+image:Elug_draft_icon.png[Image:Elug draft
+icon.png,title="Image:Elug draft icon.png"] *For the latest EclipseLink
+documentation, please see
+http://www.eclipse.org/eclipselink/documentation/*
+
+'''''
+
+*TOC*
+Special:Whatlinkshere_Introduction_to_EclipseLink_Queries_(ELUG)[Related
+Topics]
+
+EclipseLink enables you to create, read, update, and delete persistent
+objects or data using queries in both Java EE and non-Java EE
+applications for both relational and nonrelational data sources.
+
+== Query Types
+
+This table lists the query types that you can build in EclipseLink.
+
+[#Table 104-1]##
+
+Query Type
+
+Description
+
+EclipseLink Workbench
+
+Java
+
+Session Queries
+
+A query implicitly constructed and executed by a Session based on input
+parameters used to perform the most common data source actions on
+objects.
+
+Database Queries
+
+A query also known as a query object query. An instance of DatabaseQuery
+that you create and then execute to perform any data source action on
+either objects or data. You can further refine a DatabaseQuery by also
+creating and configuring its Call (see Call Queries).
+
+Named Queries
+
+An instance of DatabaseQuery stored by name in a Session or a
+descriptor’s DescriptorQueryManager where it is constructed and prepared
+once. Such a query can then be repeatedly executed by name.
+
+Call Queries
+
+An instance of Call that you create and then either execute directly,
+using a special Session API to perform limited data source actions on
+data only, or execute indirectly in the context of a DatabaseQuery.
+EclipseLink supports Call instances for custom SQL, stored procedures,
+and EIS interactions.
+
+Redirect Queries
+
+An instance of MethodBasedQueryRedirector (taking the name of a static
+method and the Class in which it is defined as parameters) set on a
+named query. When the query is executed, the static method is invoked.
+
+Historical Queries
+
+Any query executed in the context of a historical session using the
+time-aware features of the EclipseLink Expression framework.
+
+Interface and Inheritance Queries
+
+Any query that references an interface type or super and subclasses of
+an inheritance hierarchy.
+
+Descriptor Query Manager Queries
+
+The DescriptorQueryManager defines a default DatabaseQuery for each
+basic data source operation (create, read, update, and delete), and
+provides an API with which you can customize either the DatabaseQuery or
+its Call.
+
+For more information, see the following:
+
+* link:Using%20Basic%20Query%20API%20(ELUG)[Using Basic Query API]
+* link:Using%20Advanced%20Query%20API%20(ELUG)[Using Advanced Query API]
+* link:#Query_Concepts[Query Concepts]
+
+== Query Concepts
+
+In general, querying a data source means performing an action on or
+interacting with the contents of the data source. To do this, you must
+be able to perform the following:
+
+* Define an action in a syntax native to the data source being queried
+* Apply the action in a controlled fashion
+* Manage the results returned by the action (if any)
+
+Specific to EclipseLink, you must also consider how the query affects
+the EclipseLink cache. For more information, see
+link:#Queries_and_the_Cache[Queries and the Cache].
+
+This section introduces the following query concepts unique to
+EclipseLink:
+
+* link:#Call[Call]
+* link:#DatabaseQuery[DatabaseQuery]
+* link:#Data-Level_and_Object-Level_Queries[Data-Level and Object-Level
+Queries]
+* link:#Summary_Queries[Summary Queries]
+* link:#Descriptor_Query_Manager[Descriptor Query Manager]
+* link:#EclipseLink_Expressions[EclipseLink Expressions]
+* link:#Query_Keys[Query Keys]
+* link:#Query_Languages[Query Languages]
+
+=== Call
+
+In EclipseLink, the `+Call+` object encapsulates an operation or action
+on a data source. EclipseLink provides a variety of `+Call+` types such
+as structured query language (SQL), Enterprise Java Beans Query Language
+(EJB QL), Java Persistence Query Language (JP QL), Extensible Markup
+Language (XML), and enterprise information system (EIS).
+
+You can execute a `+Call+` directly or in the context of a
+`+DatabaseQuery+`.
+
+=== DatabaseQuery
+
+A `+DatabaseQuery+` object is an abstraction that associates additional
+customization and optimization options with the action encapsulated by a
+`+Call+`. By separating these options from the `+Call+`, EclipseLink can
+provide sophisticated query capabilities across all `+Call+` types.
+
+For more information, see link:#Database_Queries[Database Queries].
+
+=== Data-Level and Object-Level Queries
+
+In EclipseLink, queries can be defined for objects or data, as follows:
+
+* *Object-level* queries (see link:#Object-Level_Read_Query[Object-Level
+Read Query] and link:#Object-Level_Modify_Query[Object-Level Modify
+Query]) are object-specific and return data as objects in your domain
+model. They are the preferred type of query for mapped data. By far,
+object-level `+DatabaseQuery+` queries are the most common query used in
+EclipseLink.
+* *Data-level* queries (see link:#Data-Level_Read_Query[Data-Level Read
+Query] and link:#Data-Level_Modify_Query[Data-Level Modify Query]) are
+used to query database tables directly, and are an appropriate way to
+work with unmapped data.
+
+=== Summary Queries
+
+While data-level queries return raw data and object-level queries return
+objects in your domain model, summary queries return data about objects.
+EclipseLink provides link:#Partial_Object_Queries[Partial Object
+Queries] to return a set of objects with only specific attributes
+populated, and link:#Report_Query[Report Queries] to return summarized
+(or rolled-up) data for specific attributes of a set of objects.
+
+=== Descriptor Query Manager
+
+In addition to storing named queries applicable to a particular class
+(see link:#Named_Queries[Named Queries]), you can also use the
+`+DescriptorQueryManager+` to override the default action that
+EclipseLink defines for common data source operations. For more
+information, see link:#Descriptor_Query_Manager_Queries[Descriptor Query
+Manager Queries].
+
+=== EclipseLink Expressions
+
+EclipseLink expressions let you specify query search criteria based on
+your domain object model. When you execute the query, EclipseLink
+translates these search criteria into the appropriate query language for
+your platform.
+
+EclipseLink provides the following two public classes to support
+expressions:
+
+* The `+Expression+` class represents an expression that can be anything
+from a simple constant to a complex clause with boolean logic. You can
+manipulate, group, and integrate expressions.
+* The `+ExpressionBuilder+` class is the factory for constructing new
+expressions.
+
+You can specify a selection criterion as an `+Expression+` with
+`+DatabaseQuery+` method `+setSelectionCriteria+` (see
+link:#Database_Queries[Database Queries]), and in a finder that takes an
+`+Expression+` (see link:#Expression_Finders[Expression Finders]).
+
+For more information about using EclipseLink expressions, see
+link:Introduction%20to%20EclipseLink%20Expressions%20(ELUG)[Introduction
+to EclipseLink Expressions].
+
+=== Query Keys
+
+A query key is a schema-independent alias for a database field name.
+Using a query key, you can refer to a field using a schema-independent
+alias. In relational projects only, EclipseLink automatically creates
+query keys for all mapped attributes. The name of the query key is the
+name of the class attribute specified in your object model.
+
+You can configure query keys in a
+link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Query_Keys[class
+descriptor] or
+link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Interface_Query_Keys[interface
+descriptor].
+
+You can use query keys
+link:Introduction%20to%20EclipseLink%20Expressions%20(ELUG)#Query_Keys_and_Expressions[in
+expressions] and to query
+link:Using%20Advanced%20Query%20API%20(ELUG)#Using_Queries_on_Variable_One-to-One_Mappings[variable
+one-to-one mappings].
+
+=== Query Languages
+
+Using EclipseLink, you can express a query using any of the following
+query languages:
+
+* link:#SQL_Queries[SQL Queries]
+* link:#JP_QL_Queries[JP QL Queries]
+* link:#XML_Queries[XML Queries]
+* link:#EIS_Interactions[EIS Interactions]
+* link:#Query-by-Example[Query-by-Example]
+* link:Introduction%20to%20EclipseLink%20Expressions%20(ELUG)[Expressions]
+
+In most cases, you can compose a query directly in a given query
+language or, preferably, you can construct a `+DatabaseQuery+` with an
+appropriate `+Call+` and specify selection criteria using an EclipseLink
+`+Expression+`. Although composing a query directly in SQL appears to be
+the simplest approach (and for simple operations or operations on
+unmapped data, it is), using the `+DatabaseQuery+` approach offers the
+compelling advantage of confining your query to your domain object model
+and avoiding dependence on data source schema implementation details.
+
+We recommend that you compose your queries using JP QL or
+`+Expression+`.
+
+==== SQL Queries
+
+SQL is the most common query language for applications that use a
+relational database data source.
+
+You can execute custom SQL directly using `+Session+` methods
+`+executeSelectingCall+` and `+executeNonSelectingCall+`, or you can
+construct a `+DatabaseQuery+` with an appropriate `+Call+`.
+
+EclipseLink provides a variety of link:#SQL_Calls[SQL `+Call+` objects]
+for use with stored procedures and, with Oracle Databases, stored
+functions.
+
+EclipseLink also supports PL/SQL call for Oracle stored procedures with
+PL/SQL data types. For more information, see
+link:Using%20Basic%20Query%20API%20(ELUG)#Using%20a%20StoredProcedureCall[Using
+a StoredProcedureCall].
+
+==== JP QL Queries
+
+See
+link:Developing%20Applications%20Using%20EclipseLink%20JPA%20(ELUG)[What
+You May Need to Know About Querying with Java Persistence Query
+Language] for more information.
+
+==== XML Queries
+
+You can use EclipseLink XML to query XML data stored in an Oracle
+Database XMLType field. For more information, see
+link:Introduction%20to%20Relational%20Mappings%20(ELUG)#CHDFIFEF[Direct-to-XMLType
+Mapping] and
+link:Introduction%20to%20EclipseLink%20Expressions%20(ELUG)#CJADHIHG[XMLType
+Functions].
+
+==== EIS Interactions
+
+When you execute an EclipseLink query using an
+link:#Enterprise_Information_System_(EIS)_Interactions[EIS `+Call+`],
+EclipseLink converts your selection criteria into an XML format
+appropriate for your JCA adapter.
+
+If supported by your JCA adapter, you can use the XQuery language by
+executing an link:#XQueryInteraction[XQueryInteraction] either directly
+or in the context of a `+DatabaseQuery+`.
+
+==== Query-by-Example
+
+Query-by-example is a simple and intuitive way to express a query. To
+specify a query-by-example, provide a sample instance of the persistent
+object to query, and set appropriate values on only the data members on
+which you wish to query.
+
+You can use a constructor with a reference class argument to create a
+sample instance or example object. Alternatively, you can use a
+combination of any other type of constructor and a `+setReferenceClass+`
+method of your query object. If you fail to specify the reference class,
+a `+QueryException+` will be thrown.
+
+Query-by-example lets you query for an object based on any attribute
+that uses a direct mapping or a one-to-one relationship (including those
+with nesting).
+
+[width="100%",cols="<100%",]
+|===
+|*Note*: Query-by-example does not support any other relationship
+mapping types.
+|===
+
+Set only the attributes on which you base the query; set all other
+attributes to `+null+`. By default, EclipseLink ignores attributes in
+the sample instance that contain `+null+`, zero (0), empty strings, and
+`+FALSE+`. You can modify this list of values (and define other query by
+example options) by specifying
+link:Using%20Basic%20Query%20API%20(ELUG)#Defining_a_QueryByExamplePolicy[a
+`+QueryByExamplePolicy+`].
+
+Query-by-example uses the `+AND+` operator to tie the attribute
+comparisons together. By default, attribute values in the sample
+instance are compared against corresponding values of candidate objects
+using `+EQUALS+` operator. You can modify this behaviour using the
+`+QueryByExamplePolicy+`.
+
+Both `+ReadAllQuery+` and `+ReadObjectQuery+` provide a
+`+setExampleObject+` method and `+setQueryByExamplePolicy+` method that
+you can use to specify selection criteria based on an example object
+instance.
+
+For more information and examples, see
+link:Using%20Basic%20Query%20API%20(ELUG)#Reading_Objects_Using_Query-By-Example[Reading
+Objects Using Query-By-Example].
+
+== Building Queries
+
+You can build queries using Workbench or Java, using the EclipseLink
+API.
+
+Some queries are implicitly constructed for you based on passed in
+arguments and executed in one step (for example, session queries, as
+described in link:#Session_Queries[Session Queries]) and others you
+explicitly create, configure, and then execute (for example,
+link:#Database_Queries[Database Queries]).
+
+For more information, see the following:
+
+* link:Using%20Basic%20Query%20API%20(ELUG)[Using Basic Query API]
+* link:Using%20Advanced%20Query%20API%20(ELUG)[Using Advanced Query API]
+
+== Executing Queries
+
+In EclipseLink, you execute most queries using the `+Session+` API
+summarized in the link:#Table_104-2[Session Methods for Executing a
+Query] table.
+
+[#Table 104-2]## *_Session Methods for Executing a Query_*
+
+Query Type
+
+Session Method
+
+Advantages and Disadvantages
+
+Session Queries
+
+readObjectreadAllObjects writeObject writeAllObjects deleteObject
+deleteAllObjects insertObject updateObject
+
+Advantages: the most convenient way to perform common data source
+operations on objects.
+
+Disadvantages: less control over query execution and results; less
+efficient for frequently executed queries.
+
+Database Queries Named Queries Redirect Queries
+
+executeQuery
+
+Advantages: greatest configuration and execution flexibility; can take
+advantage of named queries for efficiency.
+
+Disadvantages: you must explicitly create and configure DatabaseQuery
+and possibly Call objects.
+
+Call Queries
+
+executeSelectingCall executeNonSelectingCall
+
+Advantages: convenient way to directly apply an action to unmapped data.
+
+Disadvantages: least control over query execution and results; your
+application must do more work to handle raw data results.
+
+Note: We recommend that you perform all data source operations using a
+unit of work: doing so is the most efficient way to manage transactions,
+concurrency, and referential constraints. For more information, see
+Introduction to EclipseLink Transactions.
+
+Alternatively, you can execute queries outside of a unit of work using a
+session API directly, but doing so places greater responsibility on your
+application to manage transactions, concurrency, and referential
+constraints.
+
+EclipseLink executes `+DescriptorQueryManager+` queries when you execute
+a session query. For more information, see
+link:#Descriptor_Query_Manager_Queries[Descriptor Query Manager
+Queries].
+
+[width="100%",cols="<100%",]
+|===
+|*WARNING:* Allowing an unverified SQL string to be passed into methods
+(for example:
+`+setSQLString(String sql), readAllObjects(Class class, String sql)+`
+methods) makes your application vulnerable to SQL injection attacks.
+|===
+
+For more information, see the following:
+
+* link:Using%20Basic%20Query%20API%20(ELUG)[Using Basic Query API]
+* link:Using%20Advanced%20Query%20API%20(ELUG)[Using Advanced Query API]
+
+== Handling Query Results
+
+EclipseLink queries generally return Java objects as their result set.
+EclipseLink queries can return any of the following:
+
+* Entire objects, with all attributes populated and the object reflected
+in the cache.
+* link:#Collection_Query_Results[Collections of objects].
+* Partial objects, with only the attributes you specify populated and
+without the object reflected in the cache (see
+link:#Report_Query_Results[Report Query Results]).
+* link:#Stream_and_Cursor_Query_Results[Streams of objects].
+* Collections of records.
+* Report summaries.
+
+=== Collection Query Results
+
+A collection is a group of Java objects contained by an instance of
+`+Collection+` or `+Map+`
+
+By default, queries that return more than one object return their
+results in a `+Vector+`.
+
+You can configure EclipseLink to return query results in any concrete
+instance of `+Collection+` or `+Map+`.
+
+Collection results are supported by all EclipseLink query types.
+
+For information and examples on how to configure and handle collection
+query results, see link:Using%20Basic%20Query%20API%20(ELUG)[Handling
+Collection Query Results].
+
+=== Report Query Results
+
+A `+ReportQuery+` (a type of partial object query) returns summary data
+for selected objects using the database reporting functions and features
+supported by your platform. Although the report query returns data (not
+objects), it does enable you to query the returned data and specify it
+at the object level.
+
+By default, a `+ReportQuery+` returns a collection (see
+link:#Collection_Query_Results[Collection Query Results]) of
+`+ReportQueryResult+` objects, one collection per database row returned.
+You can use the `+ReportQuery+` API to configure how a `+ReportQuery+`
+returns its results. For more information see
+link:Using%20Basic%20Query%20API%20(ELUG)[Handling Report Query
+Results].
+
+For more information, see the following:
+
+* link:#Report_Query[Report Query]
+* link:Using%20Basic%20Query%20API%20(ELUG)#Handling_Report_Query_Results[Handling
+Report Query Results]
+* link:#Partial_Object_Queries[Partial Object Queries].
+
+=== Stream and Cursor Query Results
+
+A stream is a view of a collection, which can be a file, a device, or a
+`+Vector+`. A stream provides access to the collection, one element at a
+time in sequence. This makes it possible to implement stream classes in
+which the stream does not contain all the objects of a collection at the
+same time.
+
+Large result sets can be resource-intensive to collect and process. To
+improve performance and give the client more control over the returned
+results, configure EclipseLink queries to use a cursor or stream.
+
+Cursors & streams are supported by all subclasses of `+DataReadQuery+`
+and `+ReadAllQuery+`.
+
+For more information, see
+link:Using%20Advanced%20Query%20API%20(ELUG)#Handling_Cursor_and_Stream_Query_Results[Handling
+Cursor and Stream Query Results].
+
+== Session Queries
+
+Sessions provide query methods that lets you perform the object
+operations listed in the following table.
+
+[#Table 104-3]## *_Session Object Query Summary_*
+
+Session Type
+
+Create
+
+Read
+
+Update
+
+Delete
+
+UnitOfWork
+
+registerObject
+
+readObject readAllObjects
+
+NA
+
+deleteObject deleteAllObjects
+
+Server
+
+NA
+
+NA
+
+NA
+
+NA
+
+ClientSession
+
+NA
+
+readObject readAllObjects
+
+NA
+
+NA
+
+DatabaseSession
+
+insertObject
+
+readObject readAllObjects
+
+updateObject writeObject writeAllObjects
+
+deleteObject deleteAllObjects
+
+[width="100%",cols="<100%",]
+|===
+|*Note*: We recommend that you perform all data source operations using
+a unit of work: doing so is the most efficient way to manage
+transactions, concurrency, and referential constraints. For more
+information, see
+link:Introduction%20to%20EclipseLink%20Transactions_(ELUG)[Introduction
+to EclipseLink Transactions].
+|===
+
+These methods implicitly construct and execute a `+DatabaseQuery+` based
+on any of the following input parameters and return `+Object+` or
+`+Object+` collection:
+
+* Reference `+Class+` (the `+Class+` of objects that the query accesses)
+* Reference `+Class+` and `+Call+`
+* Reference `+Class+` and `+Expression+`
+* Example object with primary key set
+
+These methods are a convenient way to perform the most common data
+source operations on objects.
+
+[width="100%",cols="<100%",]
+|===
+|*WARNING:* Allowing an unverified SQL string to be passed into these
+methods makes your application vulnerable to SQL injection attacks.
+|===
+
+To access all configurable options to further refine and optimize a
+query, consider using a corresponding `+DatabaseQuery+` directly. For
+more information, see link:#Database_Queries[Database Queries].
+
+For more information, see
+link:Using%20Basic%20Query%20API%20(ELUG)#Using_Session_Queries[Using
+Session Queries].
+
+=== Read-Object Session Queries
+
+Read-object queries return the first instance of an `+Object+` that
+matches the specified selection criteria, and read-all object queries
+return all such instances.
+
+You can also pass in a domain `+Object+` with its primary key set and
+EclipseLink will construct and execute a read-object query to select
+that object. This is one form of
+link:#Query-by-Example[Query-by-Example].
+
+For more information, see link:Using%20Basic%20Query%20API%20(ELUG)[How
+to Read Objects with a Session Query].
+
+=== Create, Update, and Delete Object Session Queries
+
+We recommend that you create and update objects using a unit of work:
+doing so is the most efficient way to manage transactions, concurrency,
+and referential constraints. For more information, see
+link:Introduction_to_EclipseLink_Transactions_(ELUG)[Introduction to
+EclipseLink Transactions].
+
+However, you can also create and update objects using a session query.
+These session queries are a convenient way to modify objects directly on
+the database when you manage simple, nonbusiness object data that has no
+relationships (for example, user preferences).
+
+If you know an object is new, you can use an `+insertObject+` method to
+avoid having EclipseLink perform an existence check. If you do not know
+if an object is new, use the `+updateObject+`, `+writeObject+`, or
+`+writeAllObject+` methods: EclipseLink performs an existence check if
+necessary.
+
+When you execute a write session query, it writes both the object and
+its privately owned parts to the database. To manage this behavior, use
+a corresponding `+DatabaseQuery+` (see
+link:#Object-Level_Modify_Queries_and_Privately_Owned_Parts[Object-Level
+Modify Queries and Privately Owned Parts]).
+
+Using the `+Session+` method `+deleteObject+`, you can delete a specific
+object. Using the Session method `+deleteAllObjects+`, you can delete a
+collection of objects. Each specified object and all its privately owned
+parts are deleted. In the case of `+deleteAllObjects+`, all deletions
+are performed within a single transaction.
+
+For more information, see link:Using%20Basic%20Query%20API%20(ELUG)[How
+to Create&#44; Update&#44; and Delete Objects with a Session Query].
+
+== Database Queries
+
+All session types provide an `+executeQuery+` method that takes any of
+the following types of `+DatabaseQuery+`:
+
+* link:#Object-Level_Read_Query[Object-Level Read Query]
+* link:#Data-Level_Read_Query[Data-Level Read Query]
+* link:#Object-Level_Modify_Query[Object-Level Modify Query]
+* link:#Data-Level_Modify_Query[Data-Level Modify Query]
+* link:#Report_Query[Report Query]
+
+Using `+DatabaseQuery+` method `+setCall+`, you can define your own
+`+Call+` to accommodate a variety of data source options such as SQL
+(including stored procedures and stored functions), EJB QL queries, and
+EIS interactions. For more information, see link:#Call_Queries[Call
+Queries].
+
+Using `+DatabaseQuery+` method `+setSelectionCriteria+`, you can specify
+your selection criteria using an EclipseLink `+Expression+`. For more
+information, see link:#EclipseLink_Expressions[EclipseLink Expressions].
+
+For more information, see
+link:Using%20Basic%20Query%20API%20(ELUG)#Using_DatabaseQuery_Queries[Using
+DatabaseQuery Queries].
+
+=== Object-Level Read Query
+
+Using an `+ObjectLevelReadQuery+`, you can query your data source and
+return `+Object+` instances that match the specified selection criteria.
+This section describes the following:
+
+* link:#ReadObjectQuery[ReadObjectQuery]
+* link:#ReadAllQuery[ReadAllQuery]
+* link:#Partial_Object_Queries[Partial Object Queries]
+* link:#Read-Only_Query[Read-Only Query]
+* link:#Join_Reading_and_Object-Level_Read_Queries[Join Reading and
+Object-Level Read Queries]
+* link:#Fetch_Groups_and_Object-Level_Read_Queries[Fetch Groups and
+Object-Level Read Queries]
+
+For more information, see
+link:Using%20Basic%20Query%20API%20(ELUG)#How_to_Read_Objects_Using_a_DatabaseQuery[How
+to Read Objects Using a DatabaseQuery].
+
+==== ReadObjectQuery
+
+Using a `+ReadObjectQuery+`, you can query your data source and return
+the first object that matches the specified selection criteria.
+
+==== ReadAllQuery
+
+Using a `+ReadAllQuery+`, you can query your data source and return a
+`+Collection+` of all the objects that match the specified selection
+criteria.
+
+==== Partial Object Queries
+
+By default, an `+ObjectLevelReadQuery+` returns all attributes of the
+objects read.
+
+If you require only certain attributes from selected objects, you can
+create a partial object query by using `+ObjectLevelReadQuery+` method
+`+addPartialAttributes+`. Using this method, you can improve query
+performance by making EclipseLink return objects with only specified
+attributes populated.
+
+Applications frequently use partial object queries to compile a list for
+further selection. For example, a query to find the names and addresses
+of all employees over the age of 40 returns a list of data (the names
+and addresses) that partially represents objects (the employees). A
+common next step is to present this list so the user can select the
+required object or objects from the list. Later retrieval of a complete
+object is simplified because EclipseLink always includes the primary key
+attribute (even if you do not add it as a partial attribute.
+
+Consider the following when you use partial object queries:
+
+* You cannot edit or cache partial objects.
+* Unspecified attributes will be left `+null+`.
+* You cannot have two partial attributes of the same type.
+* You cannot add a partial attribute which is of the same type as the
+class being queried.
+
+If you require only summary information for certain attributes from
+selected objects, it is more efficient to use a
+link:#Report_Query[Report Query].
+
+For more information, see
+link:Using%20Basic%20Query%20API%20(ELUG)#Reading_Objects_Using_Partial_Object_Queries[Reading
+Objects Using Partial Object Queries].
+
+==== Read-Only Query
+
+In cases where you know that data is read-only, you can improve
+performance by specifying a query as read-only: this tells EclipseLink
+that any object returned by the query is immutable.
+
+For more information, see the following:
+
+* link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Read-Only_Descriptors[Configuring
+Read-Only Descriptors]
+* link:Using%20Advanced%20Query%20API%20(ELUG)#Using_Read-Only_Queries[Using
+Read-Only Queries]
+* link:Optimizing%20the%20EclipseLink%20Application%20(ELUG)#How_to_Use_Read-Only_Queries_for_Optimization[How
+to Use Read-Only Queries for Optimization]
+
+==== Join Reading and Object-Level Read Queries
+
+Join reading is a query optimization feature that allows a single query
+for a class to return the data to build the instances of that class and
+its related objects. Use this feature to improve query performance by
+reducing database access. By default, relationships are not join-read:
+each relationship is fetched separately when accessed if you are using
+indirection (lazy loading) or as a separate database query if you are
+not using indirection. For more information, see
+link:Introduction%20to%20Mappings%20(ELUG)[Indirection (Lazy Loading)].
+
+You can use join reading with `+ReadObjectQuery+` and `+ReadAllQuery+`
+to join the mapped relationships that the link:#Table_104-4[Join Reading
+by Mapping Type] table lists. Join reading is not currently supported
+for any other relationship mappings.
+
+[#Table 104-4]## *_Join Reading by Mapping Type_*
+
+Query
+
+Mapping Type
+
+ReadObjectQuery
+
+One-to-One Mapping
+
+One-to-Many Mapping
+
+ReadAllQuery
+
+Many-to-Many Mapping
+
+Direct Collection Mapping
+
+Direct Map Mapping
+
+Aggregate Collection Mapping
+
+Join reading can specify multiple and nested relationships to be joined.
+Nested joins are expressed through using expressions (see
+link:Introduction%20to%20EclipseLink%20Expressions%20(ELUG)[Expressions
+for Joining and Complex Relationships]).
+
+Outer joins can also be used with join reading through using the
+expression outer join API. If an outer join is not used, objects with
+missing one-to-one relationships or empty one-to-many relationships will
+be filtered from the result set. You can also configure an object-level
+read query to allow inherited subclasses to be outer-joined to avoid the
+cost of a single query per class. You can also specify inner or outer
+joins using the `+useInnerJoinFetch+` or `+useOuterJoinFetch+` method of
+any of the mappings listed in the link:#Table_104-4[Join Reading by
+Mapping Type] table.
+
+You can use join reading with custom SQL or stored procedures, but the
+query must ensure that all of the required data to build all of the
+join-read objects is returned. If the result set includes the same
+tables or fields, they must be returned in the same table order as
+EclipseLink would have generated.
+
+For more information, see
+link:Using%20Basic%20Query%20API%20(ELUG)[Using Join Reading with
+ObjectLevelReadQuery].
+
+===== Avoiding Join-Reading Duplicate Data
+
+Join reading can result in returning duplicate data if a one-to-many or
+a shared one-to-one relationship is joined. Although EclipseLink
+correctly filters the duplicate results from the object result, the
+duplicate data still must be fetched from the database and can degrade
+performance, especially if multiple one-to-many relationships are
+joined. In general, batch reading can be used as a better alternative to
+join reading, as it does not require fetching duplicate data.
+
+We recommend that you use one-to-many joining with caution, because it
+does not scale well in many situations.
+
+Because the main cost of a `+ReadObjectQuery+` is SQL execution, the
+performance of a one-to-many join in this case is usually better than a
+query without joining.
+
+However, because the main cost of a `+ReadAllObjectQuery+` is
+row-fetching, which the duplicate data of a join increases, the
+performance of a one-to-many join in this case is less efficient than
+batch reading in many scenarios (even though one-to-many joining is more
+efficient than reading the objects one-by-one).
+
+This is mainly due to the fact that a one-to-many join reads in
+duplicate data: the data for each source object will be duplicated for
+each target object. Depending on the size of the one-to-many
+relationship and the size of the source object’s row, this can become
+very inefficient, especially if the source object has a Large Object
+(LOB).
+
+If you use multiple or nested one-to-many joins in the same query, the
+problem is compounded: the source object’s row is duplicated _n*m_
+times, and each target object _n_ and _m_ times respectively. This can
+become a major performance issue.
+
+To handle empty collections, you must use outer joins, so the queries
+can easily become very database intensive. Batch reading has the
+advantage of only returning the required data, and does not require
+outer joins.
+
+We recommend that you use batch reading to optimize querying
+relationships in read-all applications.
+
+For more information, see the following:
+
+* link:Optimizing%20the%20EclipseLink%20Application%20(ELUG)[How to Use
+Batch and Join Reading for Optimization]
+* link:Optimizing%20the%20EclipseLink%20Application%20(ELUG)[Reading
+Case 2: Batch Reading Objects]
+
+==== Fetch Groups and Object-Level Read Queries
+
+You can use a fetch group with a `+ReadObjectQuery+` or
+`+ReadAllQuery+`. When you execute the query, EclipseLink retrieves only
+the attributes in the fetch group. EclipseLink automatically executes a
+query to fetch all the attributes excluded from this subset when and if
+you call a getter method on any one of the excluded attributes.
+
+For more information, see the following:
+
+* link:Introduction%20to%20Descriptors%20(ELUG)[Fetch Groups]
+* link:Using%20Advanced%20Query%20API%20(ELUG)[Using Queries with Fetch
+Groups]
+
+=== Data-Level Read Query
+
+Using a `+DataLevelReadQuery+`, you can query your data source and
+return `+Object+` instances that match the specified selection criteria.
+This section describes the following:
+
+* link:#DataReadQuery[DataReadQuery]
+* link:#DirectReadQuery[DirectReadQuery]
+* link:#ValueReadQuery[ValueReadQuery]
+
+For more information, see link:Using%20Basic%20Query%20API%20(ELUG)[How
+to Read Data with a DatabaseQuery].
+
+[width="100%",cols="<100%",]
+|===
+|*WARNING:* Allowing an unverified SQL string to be passed into
+constructors of such objects as `+DataReadQuery+`, `+DirectReadQuery+`
+and `+ValueReadQuery+` makes your application vulnerable to SQL
+injection attacks.
+|===
+
+==== DataReadQuery
+
+Use a `+DataReadQuery+` to execute a selecting SQL string that returns a
+`+Collection+` of the `+Record+` objects representing the result set.
+
+==== DirectReadQuery
+
+Use a `+DirectReadQuery+` to read a single column of data (that is, one
+field) that returns a `+Collection+` of values representing the result
+set.
+
+==== ValueReadQuery
+
+Use a `+ValueReadQuery+` to read a single data value (that is, one
+field). A single data value is returned, or null if no rows are
+returned.
+
+=== Object-Level Modify Query
+
+With an `+ObjectLevelModifyQuery+`, you can query your data source to
+create, update, and delete objects, using the following:
+
+* link:#WriteObjectQuery[WriteObjectQuery]
+* link:#UpdateObjectQuery[UpdateObjectQuery]
+* link:#InsertObjectQuery[InsertObjectQuery]
+* link:#DeleteObjectQuery[DeleteObjectQuery]
+* link:#UpdateAllQuery[UpdateAllQuery]
+* link:#DeleteAllQuery[DeleteAllQuery]
+* link:#Object-Level_Modify_Queries_and_Privately_Owned_Parts[Object-Level
+Modify Queries and Privately Owned Parts]
+
+For more information, see link:Using%20Basic%20Query%20API%20(ELUG)[How
+to Create&#44; Update&#44; and Delete Objects with a DatabaseQuery].
+
+[width="100%",cols="<100%",]
+|===
+|*Note:* We recommend that you create and update objects using an
+EclipseLink `+UnitOfWork+`: doing so is the most efficient way to manage
+transactions, concurrency, and referential constraints. For more
+information, see
+link:Introduction%20to%20EclipseLink%20Transactions_(ELUG)[Introduction
+to EclipseLink Transactions].
+|===
+
+==== WriteObjectQuery
+
+If you do not know whether or not an object is new, use a
+`+WriteObjectQuery+`: EclipseLink performs an existence check if
+necessary to determine whether to perform an insert or an update.
+
+If you do know whether or not an object exists, you can avoid the
+existence check by using an link:#UpdateObjectQuery[UpdateObjectQuery]
+or link:#InsertObjectQuery[InsertObjectQuery].
+
+==== UpdateObjectQuery
+
+If you know that the object you want to modify exists, use an
+`+UpdateObjectQuery+` to avoid having EclipseLink perform an existence
+check.
+
+==== InsertObjectQuery
+
+If you know an object is new, you can use an `+InsertObjectQuery+` to
+avoid having EclipseLink perform an existence check.
+
+==== DeleteObjectQuery
+
+To delete a specific object, construct a `+DeleteObjectQuery+` with a
+single specific object as an argument.
+
+==== UpdateAllQuery
+
+The `+UpdateAllQuery+` allows you to take an expression and update a set
+of objects (at the object level) without loading the objects into
+memory. You can updated to either a specific or relative value. For
+example, you can set the value to 5 or to increase by 5 percent.
+
+For more information, see link:Using%20Basic%20Query%20API%20(ELUG)[How
+to Create&#44; Update&#44; and Delete Objects with a DatabaseQuery].
+
+==== DeleteAllQuery
+
+To delete multiple objects, construct a `+DeleteAllQuery+` and use its
+`+setObjects+` method to configure the collection of specific objects to
+delete. Use the `+DeleteAllQuery+` method `+setReferenceClass+` to
+configure the reference class of the objects to delete. Each specified
+object is deleted, but its privately owned parts are not.
+
+In the case of a `+DeleteAllQuery+`, all deletions are performed within
+a single transaction.
+
+For more information, see
+link:Using%20Basic%20Query%20API%20(ELUG)[Using DeleteAll Queries].
+
+==== Object-Level Modify Queries and Privately Owned Parts
+
+When you execute a create or update object `+DatabaseQuery+`, it writes
+both the object and its privately owned parts to the database by
+default. To create a query that does not update privately owned parts,
+use the `+DatabaseQuery+` method `+dontCascadeParts+`. Use this method
+to do the following:
+
+* Increase performance when you know that only the object’s direct
+attributes have changed.
+* Manually resolve referential integrity dependencies when you write
+large groups of new, independent objects.
+
+[width="100%",cols="<100%",]
+|===
+|*Note*: Because the unit of work resolves referential integrity
+internally, this method is not required if you use the unit of work to
+write to the data source. For more information, see
+link:Introduction%20to%20EclipseLink%20Transactions_(ELUG)[Introduction
+to EclipseLink Transactions].
+|===
+
+=== Data-Level Modify Query
+
+Using a `+DataModifyQuery+`, you can query your data source to execute a
+nonselecting SQL statement. It is equivalent to `+Session+` method
+`+executeNonSelectingCall+`.
+
+For more information, see link:Using%20Basic%20Query%20API%20(ELUG)[How
+to Update Data with a DatabaseQuery].
+
+=== Report Query
+
+If you want to summarize (or roll up) certain attributes of a set of
+objects, you can use a `+ReportQuery+`.
+
+A `+ReportQuery+` returns summary data from a set of objects and their
+related objects. That is, it returns data about objects. It can also
+return multiple objects. A `+ReportQuery+` lets you you query and
+specify the data at the object level. To build a report query, you
+specify the search criteria, the data you require about the objects, and
+how that data should be summarized.
+
+For example, you can create a report query to compute the average age of
+all employees in your company. The report query is not interested in the
+specific objects (the employees), but rather, summary information about
+them (their average age).
+
+A `+ReportQuery+` lets you do the following:
+
+* Specify a subset of the object’s attributes and its related object’s
+attributes, which allows you to query for lightweight information.
+* Build complex object-level expressions for the selection criteria and
+ordering criteria.
+* Use data source aggregation functions (supported by your platform),
+such as `+SUM+`, `+MIN+`, `+MAX+`, `+AVG+`, and `+COUNT+`.
+* Use expressions to group data.
+* Request primary key attributes with each `+ReportQueryResult+`. This
+makes it easy to request the real object from a lightweight result.
+
+A `+ReportQuery+` is the most efficient form of
+link:#Partial_Object_Queries[Partial Object Queries], because it takes
+advantage of the reporting capabilities of your data source (if
+available). We recommend that you use `+ReportQuery+` to do partial
+object queries.
+
+The `+ReportQuery+` API returns a collection of `+ReportQueryResult+`
+objects, similar in structure and behavior to a `+Record+` or a `+Map+`.
+For more information, see link:#Report_Query_Results[Report Query
+Results].
+
+For more information, see the following:
+
+* link:Optimizing%20the%20EclipseLink%20Application%20(ELUG)[Reading
+Case 1: Displaying Names in a List]
+* link:Using%20Basic%20Query%20API%20(ELUG)[Reading Objects Using Report
+Queries]
+* link:Configuring%20a%20Descriptor%20(ELUG)[Configuring Named Queries
+at the Descriptor Level]
+
+== Named Queries
+
+When you use a session query method like `+readAllObjects+` (see
+link:#Session_Queries[Session Queries]), EclipseLink creates a
+corresponding `+ReadAllQuery+`, which builds other objects it needs to
+perform its task. When EclipseLink finishes execution of the
+`+readAllObjects+` method, these objects are discarded. Each time you
+call this session method, EclipseLink creates these related objects
+again, uses them once, and then discards them.
+
+Alternatively, you can create a `+DatabaseQuery+` (see
+link:#Database_Queries[Database Queries]) and store it by name at the
+descriptor-level (see
+link:Configuring%20a%20Descriptor%20(ELUG)[Configuring Named Queries at
+the Descriptor Level]) or session-level (see
+link:Configuring%20a%20Session%20(ELUG)[Configuring Named Queries at the
+Session Level]).
+
+EclipseLink prepares a named query once, and it (and all its associated
+supporting objects) can be efficiently reused thereafter making a named
+query well suited for frequently executed operations.
+
+Using the `+Session+` API (see
+link:Using%20Basic%20Query%20API%20(ELUG)[Using Named Queries]), you can
+execute these queries by name, passing in any required arguments.
+
+*When to Use Named Queries*
+
+For a reasonably complex query that you execute frequently, you should
+consider making the query a named query.
+
+If a query is global to a project,
+link:Configuring%20a%20Session%20(ELUG)#Configuring_Named_Queries_at_the_Session_Level[configure
+the named query at the session level].
+
+If a query is global to a `+Class+`,
+link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Named_Queries_at_the_Descriptor_Level[configure
+the named query at the descriptor level]. For more information about
+descriptor level query configuration, see
+link:#Descriptor_Query_Manager_Queries[Descriptor Query Manager
+Queries].
+
+For a very complex query, you can delegate query execution to your own
+static method using a special form of a named query called a
+link:#Redirect_Queries[Redirect Query].
+
+*When Not to Use Named Queries*
+
+Rarely used queries may be more efficient when built on an as-needed
+basis. If you seldom use a given query, it may not be worthwhile to
+build and store that query when you invoke a session.
+
+== Call Queries
+
+All session types provide `+executeSelectingCall+` and
+`+executeNonSelectingCall+` methods that take any of the following
+`+Call+` types:
+
+* link:#SQL_Calls[SQL Calls]
+* link:#Enterprise_Information_System_(EIS)_Interactions[EIS
+Interactions]
+
+You can also execute a `+Call+` in the context of a `+DatabaseQuery+`.
+For more information on `+DatabaseQuery+`, see
+link:#Database_Queries[Database Queries].
+
+[width="100%",cols="<100%",]
+|===
+|*WARNING:* Allowing an unverified SQL string to be passed into methods
+(for example: `+executeSelectingCall(String sql)+` method) makes your
+application vulnerable to SQL injection attacks.
+|===
+
+=== SQL Calls
+
+SQL calls access fields in a relational database. EclipseLink supports
+the following SQL calls:
+
+* link:##SQLCall[SQLCall]
+* link:#StoredProcedureCall[StoredProcedureCall]
+* link:#StoredFunctionCall[StoredFunctionCall]
+
+Using the `+Call+` API (or SQL string conventions), you can specify
+input, output, and input-output parameters and assign values for input
+and input/output parameters.
+
+Using a descriptor `+ReturningPolicy+`, you can control whether or not
+EclipseLink writes a parameter out, retrieves a value generated by the
+database, or both. For more information, see
+link:Configuring%20a%20Descriptor%20(ELUG)[Configuring Returning
+Policy].
+
+==== SQLCall
+
+Using a `+SQLCall+`, you can specify any arbitrary SQL statement and
+execute it on a data source.
+
+[width="100%",cols="<100%",]
+|===
+|*WARNING:* Allowing an unverified SQL string to be passed into methods
+makes your application vulnerable to SQL injection attacks.
+|===
+
+For more information, see
+link:Using%20Basic%20Query%20API%20(ELUG)#Using_a_SQLCall[Using a
+SQLCall].
+
+==== StoredProcedureCall
+
+A stored procedure is composed of one or more procedural language
+statements, such as Procedural Language/Structured Query Language
+(PLSQL), stored by name in the database. Most relational databases
+support stored procedures.
+
+You invoke a stored procedure to execute logic and access data from the
+data source.
+
+Using a `+StoredProcedureCall+`, you can detect execution errors,
+specify input parameters, output parameters, and input/output
+parameters. However, stored procedures do not provide a return value.
+
+For more information, see
+link:Using%20Basic%20Query%20API%20(ELUG)#Using_a_StoredProcedureCall[Using
+a StoredProcedureCall].
+
+==== StoredFunctionCall
+
+A stored function is an Oracle Database feature that provides all the
+functionality of a stored procedure as well as the ability to return a
+value.
+
+Using a `+StoredFunctionCall+`, you can specify all the features of a
+`+StoredProcedureCall+` as well as the field name of the return value.
+
+For more information, see
+link:Using%20Basic%20Query%20API%20(ELUG)#Using_a_StoredFunctionCall[Using
+a StoredFunctionCall].
+
+=== Enterprise Information System (EIS) Interactions
+
+To invoke a query through a Java EE Connector Architecture (JCA) adapter
+to a remote EIS, you use an `+EISInteraction+`, an instance of `+Call+`.
+EclipseLink supports the following `+EISInteraction+` types:
+
+* link:#IndexedInteraction[IndexedInteraction]
+* link:#MappedInteraction[MappedInteraction]
+* link:#XMLInteraction[XMLInteraction]
+* link:#XQueryInteraction[XQueryInteraction]
+* link:#QueryStringInteraction[QueryStringInteraction]
+
+In each of these interactions, you specify a functional interface
+(similar to a stored procedure) that identifies the function to invoke
+on the EIS. This functional interface contains the following:
+
+* the function name;
+* the record name (if different than the function name);
+* a list of input arguments;
+* a list of output arguments.
+
+For more information, see the following:
+
+* link:Introduction%20to%20EIS%20Projects%20(ELUG)#Introduction_to_EIS_Projects[Introduction
+to EIS Projects]
+* link:Using%20Basic%20Query%20API%20(ELUG)#Using_EIS_Interactions[Using
+EIS Interactions]
+
+==== IndexedInteraction
+
+In an `+IndexedInteraction+`, you exchange data with the EIS using
+indexed records. The order of the specification of the arguments must
+match the order of the values defined in the indexed record.
+
+==== MappedInteraction
+
+In a `+MappedInteraction+`, you exchange data with the EIS using mapped
+records. The arguments you specify map by name to fields in the mapped
+record.
+
+==== XMLInteraction
+
+An `+XMLInteraction+` is a `+MappedInteraction+` that maps data to an
+XML record. For an `+XMLInteraction+`, you may also provide an optional
+root element name.
+
+==== XQueryInteraction
+
+If your JCA adapter supports the XQuery dynamic query language, you can
+use an `+XQueryInteraction+`, which is an `+XMLInteraction+` that lets
+you specify your XQuery string.
+
+==== QueryStringInteraction
+
+If your JCA adapter supports a query string based dynamic query
+language, you can use a `+QueryStringInteraction+`, which is a
+`+MappedInteraction+` that lets you specify the dynamic query string.
+
+== Redirect Queries
+
+To accommodate complex query logic, you can implement a *redirect
+query*: a named query that delegates query execution control to your
+application. For more information, see link:#Named_Queries[Named
+Queries].
+
+Redirect queries lets you define the query implementation in code as a
+static method. When you invoke the query, the call redirects to the
+specified static method. Redirect queries accept any arbitrary
+parameters passed into them packaged in a `+Vector+`.
+
+Although most EclipseLink queries search for objects directly, a
+redirect query generally invokes a method that exists on another class
+and waits for the results. Redirect queries let you build and use
+complex operations, including operations that might not otherwise be
+possible within the query framework.
+
+By delegating query invocation to a method you provide, redirect queries
+let you dynamically make decisions about how a query should be executed
+based on argument values.
+
+Using a redirect query, you can do the following:
+
+* Dynamically configure the query options based on the arguments (for
+example, ordering and query optimization).
+* Dynamically define the selection criteria based on the arguments.
+* Pass query-by-example objects or expressions as the arguments.
+* Post-process the query results.
+* Perform multiple queries or special operations.
+
+If you execute the query on a `+UnitOfWork+`, the results register with
+that instance of `+UnitOfWork+`, so any objects you attempt to retrieve
+with the invoke method must come from the `+Session+` cache.
+
+To create a redirect query, you implement the `+QueryRedirector+`
+interface and set your implementation on a named query.
+
+We recommend that you take advantage of the
+`+MethodBasedQueryRedirector+`, an instance of `+QueryRedirector+` that
+EclipseLink provides. It takes the name of a static method and the
+`+Class+` in which it is defined as parameters. When you set a
+`+MethodBasedQueryRedirector+` on a named query, whenever
+`+invokeQuery+` method is called on this instance, EclipseLink uses
+reflection to invoke your static method instead.
+
+The advantages of using a `+MethodBasedQueryRedirector+` are as follows:
+
+* You can specify the static method and its `+Class+` dynamically.
+* The class that provides the static method does not need to implement
+`+QueryRedirector+`.
+* Your static method can have any name.
+* You can restrict the parameters to your static method to only a
+`+Session+` and a `+Vector+` of arguments.
+
+For more information, see
+link:Using%20Advanced%20Query%20API%20(ELUG)#Using_Redirect_Queries[Using
+Redirect Queries].
+
+== Historical Queries
+
+By default, a session represents a view of the most current version of
+objects and when you execute a query in that session, it returns the
+most current version of selected objects.
+
+If your data source maintains past or historical versions of objects,
+you can configure EclipseLink to access this historical data (see
+link:Introduction%20to%20EclipseLink%20Sessions%20(ELUG)[Historical
+Sessions]).
+
+Once you configure EclipseLink to take advantage of this historical
+data, you can access historical versions using the historical queries
+that the following table summarizes.
+
+[width="100%",cols="<100%",]
+|===
+|*Note:* Flashback queries do not support view selects. This means you
+cannot use a flashback query on objects with an inheritance policy for
+read-all-subclasses views. For more information, see
+link:Introduction%20to%20Descriptors%20(ELUG)#Descriptors_and_Inheritance[Descriptors
+and Inheritance].
+|===
+
+[#Table 104-5]##
+
+Historical Query Type
+
+Session
+
+Cache
+
+Must set maintainCache to false?
+
+Query both current and historical versions?
+
+Using an ObjectLevelReadQuery with an AsOfClause
+
+Regular1
+
+Global
+
+Read-only
+
+Contains current versions
+
+Yes
+
+No
+
+Using an ObjectLevelReadQuery with Expression Operator asOf
+
+Regular1
+
+Global
+
+Read and write
+
+Contains current versions
+
+No
+
+Yes
+
+Using an ObjectLevelReadQuery in a Historical Session
+
+Historical2
+
+Isolated
+
+Read-only
+
+Contains static snapshot as of specified time
+
+No
+
+No
+
+1A server or database session based on an `+OraclePlatform+` for an
+Oracle9i (or later) or based on an EclipseLink `+HistoryPolicy+`. 2A
+session returned by a server or database session based on an
+`+OraclePlatform+` or EclipseLink `+HistoryPolicy+` using the
+`+acquireHistoricalSession+` method passing in an `+AsOfClause+`.
+
+=== Using an ObjectLevelReadQuery with an AsOfClause
+
+You can query historical versions of objects using an
+`+ObjectLevelReadQuery+` configured with an `+AsOfClause+` (set by
+`+ObjectLevelReadQuery+` method `+setAsOfClause+`) that specifies a
+point in time that applies to every `+Expression+` used in the query.
+
+This type of historical query lets you query a static snapshot of object
+versions as of the specified time.
+
+[width="100%",cols="<100%",]
+|===
+|*Note*: To prevent corrupting the global shared cache with old versions
+of objects, you must set `+ObjectLevelReadQuery+` method
+`+maintainCache+` to `+false+` in this historical query. If you do not,
+EclipseLink will throw an exception when you execute the query.
+|===
+
+For more information and examples of using an `+ObjectLevelReadQuery+`
+with an `+AsOfClause+`, see
+link:Using%20Advanced%20Query%20API%20(ELUG)#Using_Historical_Queries[Using
+Historical Queries].
+
+=== Using an ObjectLevelReadQuery with Expression Operator asOf
+
+You can query historical versions of objects using an
+`+ObjectLevelReadQuery+` (such as `+ReadObjectQuery+` or
+`+ReadAllQuery+`) containing one or more expressions that use
+`+Expression+` operator `+asOf+` to specify a point in time on an
+`+Expression+`-by-`+Expression+` basis.
+
+This type of historical query lets you combine both current and
+historical versions of objects in the same query.
+
+If you configure the `+ObjectLevelReadQuery+` with an `+AsOfClause+`,
+that point in time overrides the point in time specified in any
+`+Expression+` in the query (see
+link:#Using_an_ObjectLevelReadQuery_with_an_AsOfClause[Using an
+ObjectLevelReadQuery with an AsOfClause]).
+
+For more information and examples of using an `+ObjectLevelReadQuery+`
+with `+Expression+` operator `+asOf+`, see
+link:Using%20Advanced%20Query%20API%20(ELUG)#Using_Historical_Queries[Using
+Historical Queries].
+
+=== Using an ObjectLevelReadQuery in a Historical Session
+
+Given a session that maintains historical versions of objects (based on
+an appropriate `+OraclePlatform+` or EclipseLink `+HistoryPolicy+`), you
+can use `+Session+` method `+acquireHistoricalSession+` passing in an
+`+AsOfClause+` that specifies a point in time that applies to all
+queries and expressions.
+
+This method returns a lightweight, read-only snapshot of object versions
+as of the specified time. The cache used in this type of session is
+isolated from the global shared cache. You do not need to set
+`+ObjectLevelReadQuery+` method `+maintainCache+` to `+false+` in this
+case.
+
+For more information and examples of using an `+ObjectLevelReadQuery+`
+with a historical session, see
+link:Using%20Advanced%20Query%20API%20(ELUG)[Using Historical Queries].
+
+== Interface and Inheritance Queries
+
+When you define an interface descriptor (see
+link:Creating%20a%20Relational%20Descriptor%20(ELUG)[Creating Relational
+Interface Descriptors]), you can perform queries on interfaces and
+inheritance hierarchies.
+
+For more information, see the following:
+
+* link:Using%20Advanced%20Query%20API%20(ELUG)[Querying on Interfaces]
+* link:Using%20Advanced%20Query%20API%20(ELUG)[Querying on an
+Inheritance Hierarchy]
+
+== Oracle Extensions
+
+When you use EclipseLink with an Oracle Database, you can make use of
+the following Oracle-specific query features from within your
+EclipseLink applications:
+
+* link:#Hints[Hints]
+* link:#Hierarchical_Queries[Hierarchical Queries]
+* link:#Flashback_Queries[Flashback Queries]
+* link:#Stored_Functions[Stored Functions]
+
+=== Hints
+
+Oracle lets you specify SQL query additions called hints that can
+influence how the database server SQL optimizer works. This lets you
+influence decisions usually reserved for the optimizer. You use hints to
+specify things such as join order for a join statement, or the
+optimization approach for a SQL call.
+
+You specify hints using the `+DatabaseQuery+` method `+setHintString+`.
+
+For more information, see the following:
+
+* link:#Database_Queries[Database Queries]
+* link:Using%20Advanced%20Query%20API%20(ELUG)#How_to_Use_Oracle_Hints[How
+to Use Oracle Hints]
+* Your database _Performance Tuning Guide and Reference_.
+
+=== Hierarchical Queries
+
+Oracle Database Hierarchical Queries mechanism lets you select database
+rows based on hierarchical order. For example, you can design a query
+that reads the row of a given employee, followed by the rows of people
+the employee manages, followed by their managed employees, and so on.
+
+You specify a hierarchical query clause using `+DatabaseQuery+` subclass
+`+ReadAllQuery+` method `+setHierarchicalQueryClause+`. For more
+information on `+DatabaseQuery+` queries, see
+link:#Database_Queries[Database Queries].
+
+For more information on configuring a `+ReadAllQuery+` with an Oracle
+hierarchical query clause, see
+link:Using%20Advanced%20Query%20API%20(ELUG)#How_to_Use_Hierarchical_Queries[How
+to Use Hierarchical Queries].
+
+=== Flashback Queries
+
+When using EclipseLink with Oracle9i (or later), you can acquire a
+special historical session where all objects are read as of a past time,
+and then you can express read queries depending on how your objects are
+changing over time.
+
+For more information, see link:#Historical_Queries[Historical Queries].
+
+=== Stored Functions
+
+A stored function is an Oracle Database mechanism that provides all the
+capabilities of a stored procedure in addition to returning a value.
+
+For more information, see link:#StoredFunctionCall[StoredFunctionCall].
+
+== Descriptor Query Manager Queries
+
+Each `+Descriptor+` owns an instance of `+DescriptorQueryManager+` that
+you can use for the following:
+
+* Configuring named queries (see
+link:#How_to_Configure_Named_Queries[How to Configure Named Queries])
+* Configuring default query implementation (see
+link:#How_to_Configure_Default_Query_Implementations[How to Configure
+Default Query Implementations])
+* Configuring additional join expressions (see
+link:#How_to_Configure_Additional_Join_Expressions[How to Configure
+Additional Join Expressions])
+
+=== How to Configure Named Queries
+
+The `+DescriptorQueryManager+` provides API for storing and retrieving
+frequently used queries by name.
+
+For more information, see link:#Named_Queries[Named Queries].
+
+=== How to Configure Default Query Implementations
+
+The `+DescriptorQueryManager+` of each `+Descriptor+` lets you customize
+the query implementation that EclipseLink uses for the following data
+source operations:
+
+* insert object
+* update object
+* read object
+* read all objects
+* delete object
+
+For example, if you need to insert an object using a stored procedure,
+you can override the default `+SQLCall+` used by the
+`+DescriptorQueryManager+` insert object query.
+
+Whenever you execute a query on a given `+Class+`, EclipseLink consults
+the `+DescriptorQueryManager+` to determine how to perform the given
+data source operation.
+
+You can use this capability for a variety of purposes such as to extend
+EclipseLink behavior, access nonrelational data, or use stored
+procedures or customized SQL calls.
+
+[width="100%",cols="<100%",]
+|===
+|*WARNING:* Allowing an unverified SQL string to be passed into methods
+makes your application vulnerable to SQL injection attacks.
+|===
+
+For information and examples on customizing these default query
+implementations, see the following:
+
+* link:Configuring%20a%20Relational%20Descriptor%20(ELUG)[Configuring
+Custom SQL Queries for Basic Persistence Operations]
+* link:Configuring%20an%20EIS%20Descriptor%20(ELUG)[Configuring Custom
+EIS Interactions for Basic Persistence Operations]
+
+=== How to Configure Additional Join Expressions
+
+You can configure the `+DescriptorQueryManager+` to automatically append
+an expression to every query it performs on a class. For example, you
+can add an expression that filters the data source for the valid
+instances of a given class.
+
+For more information, see
+link:Using%20Advanced%20Query%20API%20(ELUG)[Appending Additional Join
+Expressions].
+
+== Queries and the Cache
+
+When you execute a query, EclipseLink retrieves the information from
+either the database or the EclipseLink session cache. You can configure
+the way queries use the EclipseLink cache to optimize performance.
+
+EclipseLink maintains a client-side cache to reduce the number of read
+operations required from the database. EclipseLink caches objects
+written to and read from the database to maintain object identity. The
+sequence in which a query checks the cache and database affects query
+performance. By default, primary key queries check the cache before
+accessing the database, and all queries check the cache before
+rebuilding an object from its row.
+
+[width="100%",cols="<100%",]
+|===
+|*Note:* You can override the default behavior in the caching policy
+configuration information in the EclipseLink descriptor. For more
+information, see link:Introduction%20to%20Cache%20(ELUG)[Explicit Query
+Refreshes].
+|===
+
+This section illustrates ways to manipulate the relationship between
+query and cache, and explains the following:
+
+* link:#How_to_Configure_the_Cache[How to Configure the Cache]
+* link:#How_to_Use_In-Memory_Queries[How to Use In-Memory Queries]
+* link:#Primary_Key_Queries_and_the_Cache[Primary Key Queries and the
+Cache]
+* link:#How_to_Disable_the_Identity_Map_Cache_Update_During_a_Read_Query[How
+to Disable the Identity Map Cache Update During a Read Query]
+* link:#How_to_Refresh_the_Cache[How to Refresh the Cache]
+* link:#How_to_Cache_Query_Results_in_the_Session_Cache[How to Cache
+Query Results in the Session Cache]
+* link:#How_to_Cache_Query_Results_in_the_Query_Cache[How to Cache Query
+Results in the Query Cache]
+
+=== How to Configure the Cache
+
+The cache in an EclipseLink application holds objects that have already
+been read from or written to the database. Use of the cache in an
+EclipseLink application reduces the number of accesses to the database.
+Because accessing the database consumes time and resources, an effective
+caching strategy is important to the efficiency of your application.
+
+For more information about configuring and using the cache, see
+link:Introduction%20to%20Cache%20(ELUG)[Introduction to Cache].
+
+=== How to Use In-Memory Queries
+
+An in-memory query is a query that is run against the shared session
+cache. Careful configuration of in-memory querying improves performance,
+but not all queries benefit from in-memory querying. For example,
+queries for individual objects based on primary keys generally see
+performance gains from in-memory querying; queries not based on primary
+keys are less likely to benefit.By default, queries that look for a
+single object based on primary keys attempt to retrieve the required
+object from the cache first, and then to search the database if the
+object is not in the cache. All other query types search the database
+first, by default. You can specify whether a given query runs against
+the in-memory cache, the database, or both. In-memory querying lets you
+perform queries on the cache rather than the database.
+
+[width="100%",cols="<100%",]
+|===
+|*Note:* You cannot expect an ordered result from an in-memory query as
+ordering is not supported for these queries.
+|===
+
+In-memory querying supports the following relationships:
+
+* One-to-one
+* One-to-many
+* Many-to-many
+* Aggregate collection
+* Direct collection
+
+[width="100%",cols="<100%",]
+|===
+|*Note:* By default, the relationships themselves must be in memory for
+in-memory traversal to work. Ensure that you trigger all value holders
+to enable in-memory querying to work across relationships.
+|===
+
+This section describes the following:
+
+* link:#Configuring_Cache_Usage_for_In-Memory_Queries[Configuring Cache
+Usage for In-Memory Queries]
+* link:#Expression_Options_for_In-Memory_Queries[Expression Options for
+In-Memory Queries]
+* link:#Handling_Exceptions_Resulting_from_In-Memory_Queries[Handling
+Exceptions Resulting from In-Memory Queries]
+
+==== Configuring Cache Usage for In-Memory Queries
+
+You can configure in-memory query cache usage at the query level using
+`+ReadObjectQuery+` and `+ReadAllQuery+` methods:
+
+* `+checkCacheByPrimaryKey+`: The default setting; if a read-object
+query contains an expression that compares at least the primary key, you
+can obtain a cache hit if you process the expression against the objects
+in memory.
+* `+checkCacheByExactPrimaryKey+`: If a read-object query contains an
+expression where the primary key is the only comparison, you can obtain
+a cache hit if you process the expression against the object in memory.
+* `+checkCacheThenDatabase+`: You can configure any read-object query to
+check the cache completely before you resort to accessing the database.
+* `+checkCacheOnly+`: You can configure any read-all query to check only
+the parent session cache (not the unit of work cache) and return the
+result from the parent session cache without accessing the database.
+* `+conformResultsInUnitOfWork+`: You can configure any read-object or
+read-all query within the context of a unit of work to conform the
+results with the changes to the object made within that unit of work.
+This includes new objects, deleted objects and changed objects. For more
+information and limitations on conforming, see
+link:Using%20Advanced%20Unit%20of%20Work%20API%20(ELUG)[Using Conforming
+Queries and Descriptors].
+
+Alternatively, you can configure cache usage using the
+`+ObjectLevelReadQuery+` method `+setCacheUsage+`, passing in the
+appropriate `+ObjectLevelReadQuery+` field: `+CheckCacheByPrimaryKey+`,
+`+CheckCacheByExactPrimaryKey+`, `+CheckCacheThenDatabase+`,
+`+CheckCacheOnly+`, `+ConformResultsInUnitOfWork+`, or
+`+DoNotCheckCache+`.
+
+==== Expression Options for In-Memory Queries
+
+You can use a subset of `+Expression+` (see the
+link:#Table_104-6[Expressions Operator Support for In-Memory Queries]
+table) and `+ExpressionMath+` (see the link:#Table_104-7[ExpressionMath
+Operator Support for In-Memory Queries] table) methods with in-memory
+queries. For more information about these options, see
+link:Introduction%20to%20EclipseLink%20Expressions%20(ELUG)[Introduction
+to EclipseLink Expressions].
+
+[#Table 104-6]## *_Expressions Operator Support for In-Memory Queries_*
+
+Expressions Operator
+
+In-Memory Query Support
+
+addMonths
+
+and
+
+anyof1
+
+anyofAllowingNone1
+
+asciiValue
+
+between
+
+concat
+
+currentDate
+
+dateToString
+
+decode
+
+equal
+
+get1
+
+getAllowingNull1
+
+getFunction
+
+greaterThan
+
+greaterThanEqual
+
+hexToRaw
+
+ifNull
+
+in
+
+isNull
+
+lastDay
+
+leftPad
+
+leftTrim
+
+length
+
+lessThan
+
+lessThanEqual
+
+like
+
+monthsBetween
+
+newTime
+
+nextDay
+
+notBetween
+
+notIn
+
+notNull
+
+or
+
+ref
+
+replace
+
+rightPad
+
+rightTrim
+
+subQuery
+
+substring
+
+toCharacter
+
+toDate
+
+toLowerCase
+
+toNumber
+
+toUpperCase
+
+toUpperCasedWords
+
+translate
+
+trim
+
+truncateDate
+
+1For more information, see
+link:#Join_Reading_and_Object-Level_Read_Queries[Join Reading and
+Object-Level Read Queries].
+
+[#Table 104-7]## *_ExpressionMath Operator Support for In-Memory
+Queries_*
+
+ExpressionMath Operator
+
+In-Memory Query Support
+
+abs
+
+acos
+
+add
+
+asin
+
+atan
+
+atan2
+
+ceil
+
+chr
+
+cos
+
+cosh
+
+exp
+
+floor
+
+ln
+
+log
+
+max
+
+min
+
+mod
+
+none
+
+power
+
+round
+
+sign
+
+sin
+
+sinh
+
+sqrt
+
+subtract
+
+tan
+
+tanh
+
+trunc
+
+==== Handling Exceptions Resulting from In-Memory Queries
+
+In-memory queries may fail for several reasons, the most common of which
+are the following:
+
+* The query expression is too complex to execute in memory.
+* There are untriggered value holders in which indirection (lazy
+loading) is used. All object models that use indirection must first
+trigger value holders before they conform on the relevant objects.
+
+EclipseLink provides a mechanism to handle indirection exceptions. To
+specify how the application must handle these exceptions, use the
+following `+InMemoryQueryIndirectionPolicy+` methods:
+
+* `+throwIndirectionException+`: The default setting; it is the only
+setting that throws indirection exceptions.
+* `+triggerIndirection+`: Triggers all valueholders to eliminate the
+problem.
+* `+ignoreIndirectionExceptionReturnConformed+`: Returns conforming if
+an untriggered value holder is encountered. That is, results from the
+database are expected to conform, and an untriggered value holder is
+taken to mean that the underlying attribute has not changed.
+* `+ignoreIndirectionExceptionReturnNotConformed+`: Returns not
+conforming if an untriggered value holder is encountered.
+
+[width="100%",cols="<100%",]
+|===
+|*Note*: When you build new applications, consider throwing all conform
+exceptions. This provides more detailed feedback for unsuccessful
+in-memory queries. For more information, see
+link:Using%20Advanced%20Unit%20of%20Work%20API%20(ELUG)[Handling
+Exceptions During Conforming].
+|===
+
+=== Primary Key Queries and the Cache
+
+When a query searches for a single object by a primary key, EclipseLink
+extracts the primary key from the query and attempts to return the
+object from the cache without accessing the database. If the object is
+not in the cache, the query executes against the database, builds the
+resulting object(s), and places it in the identity map.
+
+If the query is based on a nonprimary key selection criteria or is a
+read-all query, the query executes against the database (unless you are
+using `+ReadObjectQuery+` or `+ReadAllQuery+` method
+`+checkCacheOnly+`). The query matches primary keys from the result set
+to objects in the cache, and returns the cached objects, if any, in the
+result set.
+
+If an object is not in the cache, EclipseLink builds the object. If the
+query is a refreshing query, EclipseLink updates the contents of any
+objects with the results from the query. Use "`equals`" on the object
+identity to properly configure and use an identity map.
+
+Clients can refresh objects when they want to ensure that they have the
+latest data at a particular time.
+
+*Traversing Relationships with Compound Primary Keys*
+
+When getting objects by using compound primary keys to traverse
+relationships, you must create use query keys (see
+link:Introduction%20to%20EclipseLink%20Expressions%20(ELUG)[Query Keys
+and Expressions]). By adding a query key for each mapped attribute in a
+class with a complex primary key, EclipseLink can use the primary key on
+the cache.
+
+Consider the class `+MyClass+` with two attributes: `+A+` and `+B+`.
+Both `+A+` and `+B+` are mapped as 1:1 mappings to the database and
+designated primary keys.
+
+You should create a query key for each attribute (such as
+`+MyQueryKeyA+` and `+MyQueryKeyB+`) that will map the attributes of the
+primary key of MyClass _without_ going through the other classes. You
+can then use the query key to find the object in the cache and query the
+object’s primary key:
+
+`+builder.get("MyQueryKeyA").equal(new Long("123456"));+`
+
+=== How to Disable the Identity Map Cache Update During a Read Query
+
+To disable the identity map cache update, which is normally performed by
+a read query, call the `+dontMaintainCache+` method. This improves the
+query performance when you read objects that are not needed later by the
+application and can avoid exceptions during partial object queries (see
+link:Using%20Basic%20Query%20API%20(ELUG)[Reading Objects Using Partial
+Object Queries]).
+
+This example demonstrates how code reads `+Employee+` objects from the
+database and writes the information to a file.
+
+[#Example 104-1]## *_Disabling the Identity Map Cache Update_*
+
+*`+//\'\' \'\'Reads\'\' \'\'objects\'\' \'\'from\'\' \'\'the\'\' \'\'employee\'\' \'\'table\'\' \'\'and\'\' \'\'writes\'\' \'\'them\'\' \'\'to\'\' \'\'an\'\' \'\'employee\'\' \'\'file+`*`+ +`
+`+void writeEmployeeTableToFile(String filename, Session session) {+`
+`+    Vector employeeObjects;+`
+`+    +`*`+//\'\' \'\'Create\'\' \'\'ReadAllQuery\'\' \'\'and\'\' \'\'set\'\' \'\'Employee\'\' \'\'as\'\' \'\'its\'\' \'\'reference\'\' \'\'class+`*
+`+    ReadAllQuery query = new ReadAllQuery(Employee.class);+`
+`+    ExpressionBuilder builder = query.getExpressionBuilder();+`
+`+    query.setSelectionCriteria(builder.get("id").greaterThan(100)); +`
+`+    query.dontMaintainCache();+`
+`+    Vector employees = (Vector) session.executeQuery(query);+`
+`+    +`*`+//\'\' \'\'Write\'\' \'\'all\'\' \'\'the\'\' \'\'employee\'\' \'\'data\'\' \'\'to\'\' \'\'a\'\' \'\'file+`*
+`+    Employee.writeToFile(filename, employees);+` `+}+`
+
+=== How to Refresh the Cache
+
+You can refresh objects in the cache to ensure that they are current
+with the database, while preserving object identity. This section
+describes how to use query API to perform the following:
+
+* Configure query refreshing at the descriptor level (see
+link:Configuring%20a%20Descriptor%20(ELUG)[Configuring Cache
+Refreshing]) to apply cache refreshing to all queries of a particular
+object type. Before configuring cache refresh options, consider their
+effect on performance (see
+link:Optimizing%20the%20EclipseLink%20Application%20(ELUG)[Optimizing
+Cache]).
+
+==== Object Refresh
+
+To refresh objects in the cache with the data in the database, call the
+`+Session+` method `+refreshObject+` or the `+ReadObjectQuery+` method
+`+setShouldRefreshIdentityMapResult(true)+`.
+
+==== Cascading Object Refresh
+
+You can control the depth at which a refreshing updates objects and
+their related objects. There are the following three options:
+
+[arabic]
+. `+CascadePrivateParts+`: Default refresh behavior. Refreshes the local
+level object and objects that are referenced in privately owned
+relationships.
+. `+CascadeNone+`: Refreshes only the first level of the object, but
+does not refresh related objects.
+. `+CascadeAll+`: Refreshes the entire object tree, stopping when it
+reaches leaf objects.
+. `+CascadeMapping+`: Refreshes each mapping that is configured to
+cascade refresh
+
+==== Refreshing the Identity Map Cache During a Read Query
+
+Include the `+refreshIdentityMapResult+` method in a query to force
+refreshing of an identity map with the results of the query, as the
+following example shows:
+
+[#Example 104-2]## *_Refreshing the Result of a Query in the Identity
+Map Cache During a Read Query_*
+
+*`+//\'\' \'\'Create\'\' \'\'ReadObjectQuery\'\' \'\'and\'\' \'\'set\'\' \'\'Employee\'\' \'\'as\'\' \'\'its\'\' \'\'reference\'\' \'\'class+`*
+`+ReadObjectQuery query = new ReadObjectQuery(Employee.class);+`
+`+ExpressionBuilder builder = query.getExpressionBuilder();+`
+`+query.setSelectionCriteria(builder.get("lastName").equal("Smith")); +`
+`+query.refreshIdentityMapResult();+`
+`+Employee employee = (Employee) session.executeQuery(query);+`
+
+The `+refreshIdentityMapResult+` method refreshes the object’s
+attributes, but not the attributes of its privately owned parts.
+However, under most circumstances, you should refresh an object’s
+privately owned parts and other related objects to ensure consistency
+with the database.
+
+To refresh privately owned or related parts, use the following methods:
+
+* `+cascadePrivateParts+`: Refreshes all privately owned objects
+* `+cascadeAllParts+`: Refreshes all related objects
+
+[#Example 104-3]## *_Using the cascadePrivateParts Method_*
+
+`+ReadAllQuery query = new ReadAllQuery(Employee.class);+`
+`+query.refreshIdentityMapResult();+` `+query.cascadePrivateParts();+`
+`+Vector employees = (Vector) session.executeQuery(query);+`
+
+[width="100%",cols="<100%",]
+|===
+|*Note*: If the object is in the session cache, you can also use the
+`+refreshObject+` method to refresh an object and its privately owned
+parts.
+|===
+
+=== How to Cache Query Results in the Session Cache
+
+By default, EclipseLink stores query results in the session cache
+enabling EclipseLink to execute the query repeatedly, without accessing
+the database. This is useful when you execute queries that run against
+static data.
+
+By default, a read-all query always goes to the database, as it does not
+know how many objects it is seeking. However if the object already
+exists in the cache, time can be saved by not having to build a new
+object from the row.
+
+For more information, see
+link:Introduction%20to%20Cache%20(ELUG)[Introduction to Cache].
+
+=== How to Cache Query Results in the Query Cache
+
+In addition to EclipseLink’s object cache, EclipseLink also supports a
+query cache. There is the following distinction between the two:
+
+* The _object cache_ indexes objects by their primary key, allowing
+primary key queries to obtain cache hits. By using the object cache,
+queries that access the data source can avoid the cost of building the
+objects and their relationships if the object is already present.
+* The _query cache_ is distinct from the object cache. The query cache
+is indexed by the query and the query parameters–not the object’s
+primary key. This allows for any query executed with the same parameters
+to obtain a query cache hit and return the same result set.
+
+By default, a `+ReadQuery+` does not cache its query result set. You
+can, however, configure the query to cache its result set. This is
+useful for frequently executed queries whose result set infrequently
+changes. The query cache always maintains hard references to the result
+set; the number of results sets for distinct parameters stored in the
+query cache is configurable. The query cache maintains its size number
+of the last executed queries with distinct parameters.
+
+For more information, see
+link:Using%20Advanced%20Query%20API%20(ELUG)[How to Cache Results in a
+ReadQuery].
+
+You can apply a cache invalidation policy to the query’s internal cache
+(see link:Using%20Advanced%20Query%20API%20(ELUG)[How to Configure Cache
+Expiration at the Query Level]). For more information, see
+link:Introduction%20to%20Cache%20(ELUG)[Cache Invalidation].
+
+==== Internal Query Cache Restrictions
+
+EclipseLink does not support the use of the query cache with cursors: if
+you use query caching with cursors, EclipseLink will throw an exception.
+For information on cursor query results, see
+link:#Stream_and_Cursor_Query_Result[Stream and Cursor Query Resultss]
+and link:Using%20Advanced%20Query%20API%20(ELUG)[Handling Cursor and
+Stream Query Results].
+
+== Query API
+
+The following table summarizes the query support provided by each type
+of session. For each session type, it shows the type of query operation
+(create, read, update, delete) that you can perform and whether or not
+you can execute a `+DatabaseQuery+` or `+Call+`. For example, using a
+unit of work, you can use session queries to read and delete; using a
+server session, you can use session queries to create, read, update, and
+delete.
+
+[#Table 104-8]## *_Session Query API Summary_*
+
+Session
+
+Create
+
+Read
+
+Update
+
+Delete
+
+Execute Database Query
+
+Execute Call
+
+Unit of work
+
+Database
+
+Server
+
+Client
+
+This example summarizes the important EclipseLink packages that provide
+query and expression support:
+
+[#Example 104-4]## *_Query and Expression Packages_*
+
+`+org.eclipse.persistence.queries+`
+`+org.eclipse.persistence.expressions+`
+`+org.eclipse.persistence.query.keys+`
+`+org.eclipse.persistence.descriptors.DescriptorQueryManager+`
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Release_1[Category: Release 1] Category:_Concept[Category:
+Concept]

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,12 +14,14 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.queries.optimization;
 
-import java.util.*;
-
-import org.eclipse.persistence.testing.models.employee.domain.*;
-import org.eclipse.persistence.testing.framework.*;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.queries.*;
+import org.eclipse.persistence.queries.ReadAllQuery;
+import org.eclipse.persistence.testing.framework.ReadAllTest;
+import org.eclipse.persistence.testing.framework.TestErrorException;
+import org.eclipse.persistence.testing.models.employee.domain.Employee;
+
+import java.util.Enumeration;
+import java.util.Vector;
 
 /**
  * This class tests the batch reading feature.
@@ -69,7 +71,7 @@ public class ReadAllBatchReadingTest extends ReadAllTest {
         }
         int subset = Math.min(3, normalEmps.size());
         for (int index = 0; index < subset; index++) {
-            Employee nemployee = (Employee)normalEmps.elementAt(index);
+            Employee nemployee = (Employee)normalEmps.get(index);
             Employee bemployee = null;
             if (containerPolicy.isCursorPolicy()) {
                 bemployee = (Employee)enumtr.nextElement();

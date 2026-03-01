@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,10 +14,10 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.multipletable;
 
-import org.eclipse.persistence.testing.framework.*;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.UnitOfWork;
-import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.testing.framework.AutoVerifyTestCase;
+import org.eclipse.persistence.testing.framework.TestErrorException;
 
 /**
  * Tests inserting and reading back an object that uses multiple table foreign
@@ -35,7 +35,7 @@ public class MultipleTableTest extends AutoVerifyTestCase {
 
     public MultipleTableTest(Object testObject) {
         m_testObject = testObject;
-        setName("Multiple table test [" + Helper.getShortClassName(m_testObject) + "]");
+        setName("Multiple table test [" + m_testObject.getClass().getSimpleName() + "]");
     }
 
     @Override

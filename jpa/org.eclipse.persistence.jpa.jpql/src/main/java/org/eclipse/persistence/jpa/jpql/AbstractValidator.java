@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.eclipse.persistence.jpa.jpql.parser.AbstractExpression;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractExpressionVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractTraverseParentVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.AnonymousExpressionVisitor;
@@ -37,6 +36,7 @@ import org.eclipse.persistence.jpa.jpql.parser.ExpressionVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.FromClause;
 import org.eclipse.persistence.jpa.jpql.parser.GroupByClause;
 import org.eclipse.persistence.jpa.jpql.parser.HavingClause;
+import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariable;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLQueryBNF;
 import org.eclipse.persistence.jpa.jpql.parser.NullExpression;
@@ -46,7 +46,9 @@ import org.eclipse.persistence.jpa.jpql.parser.SelectStatement;
 import org.eclipse.persistence.jpa.jpql.parser.SimpleFromClause;
 import org.eclipse.persistence.jpa.jpql.parser.SimpleSelectClause;
 import org.eclipse.persistence.jpa.jpql.parser.SimpleSelectStatement;
+import org.eclipse.persistence.jpa.jpql.parser.StateFieldPathExpression;
 import org.eclipse.persistence.jpa.jpql.parser.SubExpression;
+import org.eclipse.persistence.jpa.jpql.parser.UnionClause;
 import org.eclipse.persistence.jpa.jpql.parser.UnknownExpression;
 import org.eclipse.persistence.jpa.jpql.parser.UpdateClause;
 import org.eclipse.persistence.jpa.jpql.parser.UpdateStatement;
@@ -136,6 +138,7 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
     /**
      * Creates a new <code>AbstractValidator</code>.
      */
+    @SuppressWarnings("this-escape")
     protected AbstractValidator() {
         super();
         initialize();
@@ -237,7 +240,9 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
      *
      * @return A new {@link OwningClauseVisitor}
      */
-    protected abstract OwningClauseVisitor buildOwningClauseVisitor();
+    protected OwningClauseVisitor buildOwningClauseVisitor() {
+        return new OwningClauseVisitor();
+    }
 
     /**
      * Creates the visitor that traverses the parent hierarchy of any {@link Expression} and stops at
@@ -508,6 +513,7 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
      * nested array, the given {@link Expression} is a {@link SubExpression} and its child is a
      * {@link CollectionExpression}.
      *
+     * @param expression The {@link Expression} to check its size
      * @return <code>true</code> if the given {@link Expression} is a nested array; <code>false</code> otherwise
      * @since 2.5
      */
@@ -594,6 +600,8 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
      * will be bypassed.
      *
      * @param expression The {@link Expression} to validate based on the query BNF
+     * @param queryBNF The unique identifier of the {@link JPQLQueryBNF} that looks up 
+     * the {@link JPQLQueryBNFValidator}
      * @return <code>true</code> if the {@link Expression} part is a child of the given query BNF;
      * <code>false</code> otherwise
      */
@@ -690,6 +698,7 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
      * To be a nested array, the given {@link Expression} is a {@link SubExpression} and its child is
      * a {@link CollectionExpression}.
      *
+     * @param expression The {@link Expression} to visit
      * @return The number of items in the array or -1 if the {@link Expression} is not a nested array
      * @since 2.5
      */
@@ -903,8 +912,10 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
         }
 
         /**
-         * Sets
-         *
+         * Sets bypassCompound
+         * 
+         * @param bypassCompound Indicates whether a {@link JPQLQueryBNF} representing a compound
+         * expression should be considered when doing the validation
          */
         public void setBypassCompound(boolean bypassCompound) {
             this.bypassCompound = bypassCompound;
@@ -956,6 +967,19 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
         public void visit(NullExpression expression) {
             // The missing expression is validated by GrammarValidator
             valid = true;
+        }
+
+        @Override
+        public void visit(StateFieldPathExpression expression) {
+            JPQLQueryBNF originQueryBNF = queryBNF;
+            if (Expression.THIS.equalsIgnoreCase(expression.toString()) &&
+                    expression.getParentExpression().isGenerateImplicitThisAlias() &&
+                    expression.getIdentificationVariable() != null &&
+                    ((IdentificationVariable)(expression.getIdentificationVariable())).isVirtual()) {
+                queryBNF = expression.getQueryBNF();
+            }
+            visit((Expression) expression);
+            queryBNF = originQueryBNF;
         }
 
         @Override
@@ -1019,6 +1043,7 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
         public SimpleSelectClause simpleSelectClause;
         public UpdateClause updateClause;
         public WhereClause whereClause;
+        public UnionClause unionClause;
 
         /**
          * Creates a new <code>OwningClauseVisitor</code>.
@@ -1041,6 +1066,7 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
             simpleSelectClause = null;
             updateClause       = null;
             whereClause        = null;
+            unionClause        = null;
         }
 
         @Override
@@ -1092,6 +1118,12 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
         public void visit(WhereClause expression) {
             whereClause = expression;
         }
+
+        @Override
+        public void visit(UnionClause expression) {
+            this.unionClause = expression;
+        }
+
     }
 
     /**

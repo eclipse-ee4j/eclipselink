@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,19 +18,19 @@
 package org.eclipse.persistence.internal.dynamic;
 
 //javase imports
+
+import org.eclipse.persistence.dynamic.DynamicEntity;
+import org.eclipse.persistence.dynamic.DynamicType;
+import org.eclipse.persistence.dynamic.DynamicException;
+import org.eclipse.persistence.internal.dynamic.DynamicEntityImpl.PropertyWrapper;
+import org.eclipse.persistence.mappings.DatabaseMapping;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-//EclipseLink imports
-import org.eclipse.persistence.dynamic.DynamicEntity;
-import org.eclipse.persistence.dynamic.DynamicType;
-import org.eclipse.persistence.exceptions.DynamicException;
-import org.eclipse.persistence.internal.dynamic.DynamicEntityImpl.PropertyWrapper;
-import org.eclipse.persistence.mappings.DatabaseMapping;
-
 /**
- * Information about a property is extracted (thru DynamicType) from the entity's ClassDescriptor
+ * Information about a property is extracted (through DynamicType) from the entity's ClassDescriptor
  * <p>
  * <b><u>Important</u></b> - DynamicPropertiesManager is <b>NOT</b> thread-safe
  * @author mnorman

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -18,7 +18,7 @@
 
 package org.eclipse.persistence.jpa.test.oraclefeatures;
 
-import org.eclipse.persistence.config.SessionCustomizer;
+import org.eclipse.persistence.sessions.SessionCustomizer;
 import org.eclipse.persistence.internal.databaseaccess.Platform;
 import org.eclipse.persistence.platform.database.Oracle8Platform;
 import org.eclipse.persistence.sessions.Session;
@@ -31,7 +31,7 @@ public class OracleLOBLocatorSessionCustomizer implements SessionCustomizer {
     public void customize(Session session) throws Exception {
         session.getEventManager().addListener(new OracleLobSessionEventAdapter());
     }
-    
+
     private class OracleLobSessionEventAdapter extends SessionEventAdapter {
         /**
          * PUBLIC:

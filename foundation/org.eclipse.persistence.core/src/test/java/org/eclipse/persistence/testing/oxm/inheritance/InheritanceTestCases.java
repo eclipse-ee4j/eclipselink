@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,12 +14,15 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.oxm.inheritance;
 
-import java.io.InputStream;
+import org.eclipse.persistence.oxm.XMLContext;
+import org.eclipse.persistence.oxm.XMLMarshaller;
+import org.eclipse.persistence.oxm.XMLUnmarshaller;
+import org.eclipse.persistence.testing.oxm.OXTestCase;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.eclipse.persistence.testing.oxm.OXTestCase;
-import org.eclipse.persistence.oxm.*;
+
+import java.io.InputStream;
 
 /**
  *  @version $Header: InheritanceTestCases.java 30-mar-2005.15:47:58 mmacivor Exp $
@@ -51,7 +54,7 @@ public class InheritanceTestCases extends OXTestCase {
         Element root = (Element)carDocument.getElementsByTagNameNS("mynamespaceuri", "vehicle").item(0);
         Attr elem = root.getAttributeNodeNS("http://www.w3.org/2001/XMLSchema-instance", "type");
         String carType = elem.getNodeValue();
-        assertTrue("The type field was written incorrectly for the subclass", carType.equals("prefix:car-type"));
+        assertEquals("The type field was written incorrectly for the subclass", "prefix:car-type", carType);
 
         Vehicle vehicle = new Vehicle();
         vehicle.model = "Blah Blah";
@@ -71,7 +74,7 @@ public class InheritanceTestCases extends OXTestCase {
 
         InputStream vehicleStream = getClass().getClassLoader().getResourceAsStream("org/eclipse/persistence/testing/oxm/inheritance/vehicle.xml");
         Object vehicle = unmarshaller.unmarshal(vehicleStream);
-        assertTrue("Wrong object returned for superclass", vehicle.getClass().equals(Vehicle.class));
+        assertEquals("Wrong object returned for superclass", vehicle.getClass(), Vehicle.class);
 
     }
 
@@ -82,7 +85,7 @@ public class InheritanceTestCases extends OXTestCase {
 
         InputStream vehicleStream = getClass().getClassLoader().getResourceAsStream("org/eclipse/persistence/testing/oxm/inheritance/vehicle_different_prefix.xml");
         Object vehicle = unmarshaller.unmarshal(vehicleStream);
-        assertTrue("Wrong object returned for superclass", vehicle.getClass().equals(Vehicle.class));
+        assertEquals("Wrong object returned for superclass", vehicle.getClass(), Vehicle.class);
 
     }
 

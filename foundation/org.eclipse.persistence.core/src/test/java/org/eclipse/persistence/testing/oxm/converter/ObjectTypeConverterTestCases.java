@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,14 +14,13 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.oxm.converter;
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import org.w3c.dom.*;
+import org.eclipse.persistence.oxm.XMLContext;
+import org.eclipse.persistence.oxm.XMLMarshaller;
+import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.testing.oxm.OXTestCase;
-import org.eclipse.persistence.oxm.*;
+import org.w3c.dom.Document;
+
+import java.io.InputStream;
 
 /**
  *  @version $Header: ObjectTypeConverterTestCases.java 24-feb-2005.10:42:56 mmacivor Exp $
@@ -48,7 +47,7 @@ public class ObjectTypeConverterTestCases extends OXTestCase {
 
         Document document = marshaller.objectToXML(emp);
         String gender = document.getElementsByTagName("gender").item(0).getFirstChild().getNodeValue();
-        assertTrue("The field was incorrectly converted, expected \"M\" found " + gender, gender.equals("M"));
+        assertEquals("The field was incorrectly converted, expected \"M\" found " + gender, "M", gender);
     }
 
     public void testWriteEmployeeF() throws Exception {
@@ -59,19 +58,19 @@ public class ObjectTypeConverterTestCases extends OXTestCase {
 
         Document document = marshaller.objectToXML(emp);
         String gender = document.getElementsByTagName("gender").item(0).getFirstChild().getNodeValue();
-        assertTrue("The field was incorrectly converted, expected \"F\" found " + gender, gender.equals("F"));
+        assertEquals("The field was incorrectly converted, expected \"F\" found " + gender, "F", gender);
 
     }
 
     public void testReadEmployeeM() throws Exception {
         InputStream in = getClass().getClassLoader().getResourceAsStream("org/eclipse/persistence/testing/oxm/converter/employee_male.xml");
         Employee emp = (Employee)unmarshaller.unmarshal(in);
-        assertTrue("The field was incoreectly converted, expected \"Male\" found " + emp.gender, emp.gender.equals("Male"));
+        assertEquals("The field was incoreectly converted, expected \"Male\" found " + emp.gender, "Male", emp.gender);
     }
 
     public void testReadEmployeeF() throws Exception {
         InputStream in = getClass().getClassLoader().getResourceAsStream("org/eclipse/persistence/testing/oxm/converter/employee_female.xml");
         Employee emp = (Employee)unmarshaller.unmarshal(in);
-        assertTrue("The field was incoreectly converted, expected \"Female\" found " + emp.gender, emp.gender.equals("Female"));
+        assertEquals("The field was incoreectly converted, expected \"Female\" found " + emp.gender, "Female", emp.gender);
     }
 }

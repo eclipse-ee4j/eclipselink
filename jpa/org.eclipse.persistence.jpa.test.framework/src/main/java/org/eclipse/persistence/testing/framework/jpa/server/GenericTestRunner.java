@@ -63,8 +63,7 @@ public class GenericTestRunner implements TestRunner {
         // execute the bare test case
         Throwable result = null;
         try {
-            if (testInstance instanceof JUnitTestCase) {
-                JUnitTestCase jpaTest = (JUnitTestCase) testInstance;
+            if (testInstance instanceof JUnitTestCase jpaTest) {
                 String puName = jpaTest.getPuName();
                 if (puName != null && !"default".equals(puName)) {
                     JEEPlatform.entityManager = lookup("persistence/" + puName + "/entity-manager");

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,8 +22,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
-
-import org.eclipse.persistence.exceptions.ValidationException;
 
 /**
  * <p>Provide common functionalities for serialization of object.
@@ -54,22 +52,12 @@ public class SerializationHelper {
      */
     public static void serialize(Serializable obj, OutputStream outputStream) throws IOException {
         if (outputStream == null) {
-            throw ValidationException.invalidNullMethodArguments();
+            throw new IllegalArgumentException("The outputStream argument cannot be null");
         }
-        ObjectOutputStream outStream = null;
 
-        try {
+        try (ObjectOutputStream outStream = new ObjectOutputStream(outputStream)) {
             // stream closed in the finally
-            outStream = new ObjectOutputStream(outputStream);
             outStream.writeObject(obj);
-        } finally {
-            try {
-                if (outStream != null) {
-                    outStream.close();
-                }
-            } catch (IOException ex) {
-                // ignore;
-            }
         }
     }
 
@@ -95,20 +83,9 @@ public class SerializationHelper {
         if (inputStream == null) {
             throw new IllegalArgumentException("The inputStream argument cannot be null");
         }
-        ObjectInputStream inStream = null;
-        try {
+        try (ObjectInputStream inStream = new ObjectInputStream(inputStream)) {
             // stream closed in the finally
-            inStream = new ObjectInputStream(inputStream);
             return inStream.readObject();
-
-        } finally {
-            try {
-                if (inStream != null) {
-                    inStream.close();
-                }
-            } catch (IOException ex) {
-                // ignore
-            }
         }
     }
 
@@ -120,7 +97,7 @@ public class SerializationHelper {
      */
     public static Object deserialize(byte[] objectBytes) throws IOException, ClassNotFoundException {
         if (objectBytes == null) {
-            throw ValidationException.invalidNullMethodArguments();
+            throw new IllegalArgumentException("The objectBytes argument cannot be null");
         }
         ByteArrayInputStream inStream = new ByteArrayInputStream(objectBytes);
         return deserialize(inStream);

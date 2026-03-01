@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -42,7 +42,7 @@ protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/j
     @XmlAttachmentRef
     public String xmlAttachementRefField;
 
-    public List<DataHandler> listField;;
+    public List<DataHandler> listField;
 
     public ListOfDataHandlerTestCases(String name) throws Exception {
         super(name);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,18 +14,17 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.oxm.mappings.anyobjectandanycollection;
 
-import java.util.Vector;
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.XMLAnyCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLAnyObjectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
-import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.anyobjectandanycollection.objcol.Customer;
-import org.eclipse.persistence.testing.oxm.mappings.anyobjectandanycollection.PhoneNumber;
-import org.eclipse.persistence.testing.oxm.mappings.anyobjectandanycollection.Address;
+
+import java.util.Vector;
 
 /*
  * See B5259059: NPE on anyObject mapping XPath null, anyCollection mapping XPath=filled
@@ -205,6 +204,6 @@ public class AnyObjectAndAnyCollectionUC04NoDefaultRootComplexChildrenTestCases 
     /*
     Exception Description: A descriptor with default root element contact-method was not found in the project
 
-    Local Exception Stack: Exception [TOPLINK-25008] (Oracle TopLink - 10g Release 3 (10.1.3.1.0) (Build 060606)): org.eclipse.persistence.exceptions.XMLMarshalExceptionException Description: A descriptor with default root element contact-method was not found in the project at org.eclipse.persistence.exceptions.XMLMarshalException.noDescriptorWithMatchingRootElement(XMLMarshalException.java:110) at org.eclipse.persistence.oxm.mappings.XMLAnyObjectMapping.getDescriptor(XMLAnyObjectMapping.java:325) at org.eclipse.persistence.oxm.mappings.XMLAnyObjectMapping.buildObjectValuesFromDOMRecord(XMLAnyObjectMapping.java:282) at org.eclipse.persistence.oxm.mappings.XMLAnyObjectMapping.valueFromRow(XMLAnyObjectMapping.java:263) at org.eclipse.persistence.mappings.DatabaseMapping.readFromRowIntoObject(DatabaseMapping.java:1021) at org.eclipse.persistence.internal.descriptors.ObjectBuilder.buildAttributesIntoObject(ObjectBuilder.java:244) at org.eclipse.persistence.internal.oxm.XMLObjectBuilder.buildObject(XMLObjectBuilder.java:136) at org.eclipse.persistence.internal.oxm.record.DOMUnmarshaller.xmlToObject(DOMUnmarshaller.java:287) at org.eclipse.persistence.internal.oxm.record.DOMUnmarshaller.xmlToObject(DOMUnmarshaller.java:267) at org.eclipse.persistence.internal.oxm.record.DOMUnmarshaller.unmarshal(DOMUnmarshaller.java:104) at org.eclipse.persistence.oxm.XMLUnmarshaller.unmarshal(XMLUnmarshaller.java:203) at org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases.testXMLToObjectFromInputStream(Unknown Source)
+    Local Exception Stack: Exception [TOPLINK-25008] (Oracle TopLink - 10g Release 3 (10.1.3.1.0) (Build 060606)): org.eclipse.persistence.exceptions.XMLMarshalExceptionException Description: A descriptor with default root element contact-method was not found in the project at org.eclipse.persistence.oxm.exceptions.XMLMarshalException.noDescriptorWithMatchingRootElement(XMLMarshalException.java:110) at org.eclipse.persistence.oxm.mappings.XMLAnyObjectMapping.getDescriptor(XMLAnyObjectMapping.java:325) at org.eclipse.persistence.oxm.mappings.XMLAnyObjectMapping.buildObjectValuesFromDOMRecord(XMLAnyObjectMapping.java:282) at org.eclipse.persistence.oxm.mappings.XMLAnyObjectMapping.valueFromRow(XMLAnyObjectMapping.java:263) at org.eclipse.persistence.mappings.DatabaseMapping.readFromRowIntoObject(DatabaseMapping.java:1021) at org.eclipse.persistence.internal.descriptors.ObjectBuilder.buildAttributesIntoObject(ObjectBuilder.java:244) at org.eclipse.persistence.internal.oxm.XMLObjectBuilder.buildObject(XMLObjectBuilder.java:136) at org.eclipse.persistence.internal.oxm.record.DOMUnmarshaller.xmlToObject(DOMUnmarshaller.java:287) at org.eclipse.persistence.internal.oxm.record.DOMUnmarshaller.xmlToObject(DOMUnmarshaller.java:267) at org.eclipse.persistence.internal.oxm.record.DOMUnmarshaller.unmarshal(DOMUnmarshaller.java:104) at org.eclipse.persistence.oxm.XMLUnmarshaller.unmarshal(XMLUnmarshaller.java:203) at org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases.testXMLToObjectFromInputStream(Unknown Source)
      */
 }

@@ -1,0 +1,3278 @@
+image:Elug_draft_icon.png[Image:Elug draft
+icon.png,title="Image:Elug draft icon.png"] *For the latest EclipseLink
+documentation, please see
+http://www.eclipse.org/eclipselink/documentation/*
+
+'''''
+
+*TOC*
+Special:Whatlinkshere_Introduction_to_EclipseLink_JPA_(ELUG)[Related
+Topics]
+
+This section introduces EclipseLink implementation of Java Persistence
+API.
+
+As a specification, JPA needs to be implemented by vendors or open
+source projects.
+
+EclipseLink provides a complete, EJB 3.0-compliant JPA implementation.
+It provides complete compliance for all of the mandatory features, many
+of the optional features, and some additional features. The additional
+nonmandatory functionality includes the following:
+
+* object-level cache;
+* distributed cache coordination;
+* extensive performance tuning options;
+* enhanced Oracle Database support;
+* advanced mappings;
+* optimistic and pessimistic locking options;
+* extended annotations and query hints.
+
+EclipseLink offers support for deployment within an EJB 3.0 container.
+This includes Web containers and other non-EJB 3.0 Java EE containers.
+For more information, see
+link:Packaging%20and%20Deploying%20EclipseLink%20JPA%20Applications%20(ELUG)#Deploying_an_EclipseLink_JPA_Application[Deploying
+an EclipseLink JPA Application].
+
+Through its pluggable persistence capabilities EclipseLink can function
+as the persistence provider in a compliant EJB 3.0 container.
+
+For more information, see
+link:Introduction%20to%20EclipseLink%20(ELUG)[Introduction to
+EclipseLink].
+
+You can perform object-relational mapping with EclipseLink JPA by the
+means of doing the following:
+
+* link:#Using_Metadata_Annotations[Using Metadata Annotations]
+* link:#Using_XML[Using XML]
+* link:#Overriding_and_Merging_XML[Overriding and Merging XML]
+* link:#Defaulting_Properties[Defaulting Properties]
+* link:#Configuring_an_Entity[Configuring an Entity]
+* link:#Declaring_Basic_Property_Mappings[Declaring Basic Property
+Mappings]
+* link:#Mapping_Relationships[Mapping Relationships]
+* link:#Mapping_Inheritance[Mapping Inheritance]
+* link:#Using_Embedded_Objects[Using Embedded Objects]
+
+== Using Metadata Annotations
+
+An annotation is a simple, expressive means of decorating Java source
+code with metadata that is compiled into the corresponding Java class
+files for interpretation at run time by a JPA persistence provider to
+manage persistent behavior.
+
+You can use annotations to configure the persistent behavior of your
+entities. For example, to designate a Java class as a JPA entity, use
+the `+@Entity+` annotation (see Section 8.1 "`Entity`" of the
+http://jcp.org/en/jsr/detail?id=220[JPA Specification]) as follows:
+
+[source,java]
+----
+ @Entity
+ public class Employee implements Serializable {
+     ...
+ }
+----
+
+You can apply annotations at three different levels: at the class,
+method, and field levels.
+
+For more information and examples, see the following:
+
+* Chapter 8 "`Metadata annotations`" of the
+http://jcp.org/en/jsr/detail?id=220[JPA Specification]
+* link:Using%20EclipseLink%20JPA%20Extensions%20(ELUG)[Using EclipseLink
+JPA Extensions]
+
+EclipseLink defines a set of proprietary annotations. You can find them
+in the `+org.eclipselink.annotations+` package.
+
+EclipseLink annotations expose some features of EclipseLink that are
+currently not available through the use of JPA metadata.
+
+== Using XML
+
+You can use XML mapping metadata on its own, or in combination with
+annotation metadata, or you can use it to override the annotation
+metadata.
+
+If you choose to include one or more mapping XML files in your
+persistence unit, each file must conform and be valid against the
+`+orm_1_0.xsd+` schema located at
+http://java.sun.com/xml/ns/persistence/orm_1_0.xsd[`+http://java.sun.com/xml/ns/persistence/orm_1_0.xsd+`].
+This schema defines a namespace called
+http://java.sun.com/xml/ns/persistence/orm[`+http://java.sun.com/xml/ns/persistence/orm+`]
+that includes all of the ORM elements that you can use in your mapping
+file.
+
+This example shows a typical XML header for a mapping file:
+
+[#Example 18-1]## *_XML Header for Mapping File_*
+
+[source,xml]
+----
+ <?xml version="1.0" encoding="UTF-8"?>
+ <entity-mappings ns="http://java.sun.com/xml/ns/persistence/orm"
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xdi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm
+                         http://java.sun.com/xml/ns/persistence/orm_1_0.xsd"
+     version="1.0">
+----
+
+The root element of the mapping file is called `+entity-mappings+`. All
+object relational XML metadata is contained within this element. The
+subelements of `+entity-mappings+` can be categorized into four main
+scoping and functional groups: persistence unit defaults, mapping file
+defaults, queries and generators, and managed classes and mappings.
+There is also a special setting that determines whether annotations
+should be considered in the metadata for the persistence unit.
+
+For more information and examples, see Section 10.1 "`XML Overriding
+Rules`" of the http://jcp.org/en/jsr/detail?id=220[JPA Specification].
+
+EclipseLink provides a set of persistence unit properties that you can
+specify in your `+persistence.xml+` file, or in a property map file
+(`+eclipse.persistence.config.PersistenceUnitProperties+`). For more
+information, see
+link:Using%20EclipseLink%20JPA%20Extensions%20(ELUG)#What_You_May_Need_to_Know_About_Using_EclipseLink_JPA_Persistence_Unit_Properties[What
+You May Need to Know About Using EclipseLink JPA Persistence Unit
+Properties].
+
+Similar to EclipseLink annotation extensions, EclipseLink persistence
+unit properties expose some features of EclipseLink that are currently
+not available through the use of JPA metadata.
+
+For more information, see
+link:Using%20EclipseLink%20JPA%20Extensions%20(ELUG)[Using EclipseLink
+JPA Extensions].
+
+== Overriding and Merging XML
+
+You can use EclipseLink’s native metadata xml file, EclipseLink-ORM.XML,
+to override mappings defined in JPA’s configuration file `+orm.xml+` and
+provide EclipseLink with extended ORM features. For more information on
+JPA extensions for mapping, see
+link:Using%20EclipseLink%20JPA%20Extensions%20(ELUG)[Using EclipseLink
+JPA Extensions].
+
+The EclipseLink-ORM.XML file defines the object-relational mapping
+metadata for EclipseLink. It is built from the existing `+orm.xml+` file
+which makes it more intuitive, requires minimum configuration, and easy
+to override. For more information, see Section 10.1 "`XML Overriding
+Rules`" of the http://jcp.org/en/jsr/detail?id=220[JPA Specification].
+
+To override `+orm.xml+` file’s mapping, you must define the
+`+META-INF/eclipselink-orm.xml+` file in the project. When both
+`+orm.xml+` and `+eclipselink-orm.xml+` are specified, the contents of
+`+eclipselink-orm.xml+` override `+orm.xml+` and any other JPA mapping
+file specified in the persistence unit. If there are overlapping
+specifications in multiple ORM files, the files are merged if they are
+no conflicting entities.
+
+*Note:* The order of files defined in `+persistence.xml+` does not
+define the order of their processing. The files are processed, merged
+and overidden as required. For more information, see
+link:#Overriding_and_Merging_Examples[Overriding and Merging Examples].
+
+The EclipseLink-ORM.XML file can be referenced for inclusion in a
+persistence unit’s metadata through any of the following files or
+methods:
+
+[width="100%",cols="42%,58%",options="header",]
+|===
+|File/Method |Description
+|`+META-INF/eclipselink-orm.xml+` |Provides mapping overriding
+capabilities.
+
+|`+META-INF/orm.xml+` |The default ORM file provided with JPA.
+
+|Referenced as persistence unit mapping file in `+persistence.xml+`
+|Does not provide mapping overriding capability, but can be used for
+merging mapping files.
+|===
+
+=== Overriding and Merging Examples
+
+*_Example 1_*
+
+* `+META-INF/orm.xml+` - defines Entity A with the mappings b and c.
+* `+META-INF/eclipselink-orm.xml+` - defines Entity A with the mappings
+for c and d.
+* Result - Entity A will contain the mapping b (from `+orm.xml+`),
+mapping c and d (from `+eclipselink-orm.xml+`)
+
+*_Example 2_*
+
+* `+META-INF/orm.xml+` - defines Entity A with the mappings b and c
+* `+META-INF/some-other-mapping-file.xml+` - defines Entity B with
+mappings a and b
+* `+META-INF/eclipselink-orm.xml+` - defines Entity A with the mappings
+for c and d and Entity B with the mapping b and c
+* Result
+** Entity A will contain the mapping b (from `+orm.xml+`), mapping c and
+d (from `+eclipselink-orm.xml+`)
+** Entity B will contain the mapping a (from
+`+some-other-mapping-file+`), mappings b and c (from
+`+eclipselink-orm.xml+`)
+
+*_Example 3_*
+
+* `+META-INF/orm.xml+` - defines Entity A with the mappings b and c.
+* `+META-INF/eclipse-orm.xml+` - defines Entity A with the mappings c
+and d.
+* `+META-INF/some-other-mapping-file.xml+` - defines Entity A with the
+mapping x.
+* Result - Entity A will contain the mapping b (from `+orm.xml+`),
+mapping c and d (from `+eclipselink-orm.xml+`) and mapping x (from
+some-other-mapping-file)
+
+*_Example 4_*
+
+* `+META-INF/orm.xml+` - defines Entity A with the mappings b and c.
+* `+META-INF/extensions/eclipselink-orm.xml+` - defines defines Entity A
+with the mappings c and d. *Note:* This file is added through a tag in
+the `+persistence.xml+`
+* Result - Exception generated for conficting specifications for mapping
+c.
+
+*_Example 5_*
+
+* `+META-INF/orm.xml+` - defines Entity A with the mappings b and c.
+* `+META-INF/jpa-mapping-file.xml+` - defines Entity A with the mappings
+a and d.
+* `+META-INF/extensions/eclipse-mapping-file.xml+` - defines defines
+Entity A with the mappings c and d.
+* Result - Exception generated for conficting specifications for mapping
+c or d (which ever is processed first).
+
+=== Overriding and Merging Rules
+
+The following sections outlines elements defined in `+orm.xml+` and
+their specific overriding in greater detail.
+
+==== Persistence Unit Metadata
+
+In EclipseLink-ORM.XML, a persistence-unit-metadata specification merges
+or overrides the values of existing persistence-unit-metadata
+specification.
+
+[width="100%",cols="33%,5%,62%",options="header",]
+|===
+|entity-mappings/persistence-unit-metadata |Rule |Description
+|xml-mapping-metadata-complete |Full override |If specified, the
+complete set of mapping metadata for the persistence unit is contained
+in the XML mapping files for the persistence unit.
+
+|persistence-unit-defaults/schema |Full override |If a schema setting
+exists, then the EclipseLink-ORM.XML’s schema setting overrides the
+existing setting, or creates a new schema setting.
+
+|persistence-unit-defaults/catalog |Full override |If a catalog setting
+exists, then the EclipseLink-ORM.XML’s catalog setting overrides the
+existing setting, or creates a new catalog setting
+
+|persistence-unit-defaults/access |Full override |If an access setting
+exists, then the EclipseLink-ORM.XML’s access setting overrides the
+existing setting, or creates a new access setting.
+
+|entity-mappings/persistence-unit-metadata/persistence-unit-defaults/cascade-persist
+|Full override |If a cascade-persist setting exists, then the
+EclipseLink-ORM.XML’s cascade-persist setting overrides the existing
+setting, or creates a new cascade-persist setting.
+
+|entity-mappings/persistence-unit-metadata/persistence-unit-defaults/entity-listeners
+|Merge |If an entity-listeners exists, then the EclipseLink-ORM.XML’s
+entity-listeners will be merged with the list of all entity-listeners
+from the persistence unit.
+|===
+
+==== Entity Mappings
+
+Entities, embeddables and mapped superclasses are defined within
+entity-mappings. EclipseLink-ORM.XML’s entities, embeddables and mapped
+superclasses are added to the persistence unit. The following table
+describes the top-level elements of the entity-mappings sections:
+
+[width="100%",cols="7%,3%,90%",options="header",]
+|===
+|entity-mappings/ |Rule |Description
+|package |None |The package element specifies the package of the classes
+listed within the subelements and attributes of the same mapping file
+only. It is only applicable to those entities that are fully defined
+within the EclipseLink-ORM.XML file, else its usage remains local and is
+same as described in the JPA specification.
+
+|catalog |None |The catalog element applies only to the subelements and
+attributes listed within the EclipseLink-ORM.XML file that are not an
+extension to another mapping file. Otherwise, the use of the catalog
+element within the EclipseLink-ORM.XML file remains local and is same as
+described in the JPA specification.
+
+|schema |None |The schema element applies only to the subelements and
+attributes listed within the EclipseLink-ORM.XML file that are not an
+extension to another mapping file. Otherwise, the use of the schema
+element within the EclipseLink-ORM.XML file remains local and is same as
+described in the JPA specification.
+
+|access |None |The access element applies only to the subelements and
+attributes listed within the EclipseLink-ORM.XML file that are not an
+extension to another mapping file. Otherwise, the use of the access
+element within the EclipseLink-ORM.XML file remains local and is same as
+described in the JPA specification.
+
+|sequence-generator |Full override |A sequence-generator is unique by
+name. The sequence-generator defined in the EclipseLink-ORM.XML will
+override a sequence-generator of the same name defined in another
+mapping file. Outside of the overriding case, an exception is thrown if
+two or more sequence-generators with the same name are defined in one or
+across multiple mapping files.
+
+|table-generator |Full override |A table-generator is unique by name.
+The table-generator defined in the EclipseLink-ORM.XML will override a
+table-generator of the same name defined in another mapping file.
+Outside of the overriding case, an exception is thrown if two or more
+table-generators with the same name are defined in one or across
+multiple mapping files.
+
+|named-query |Full override |A named-query is unique by name. The
+named-query defined in the EclipseLink-ORM.XML will override a
+named-query of the same name defined in other mapping files. Outside of
+the overriding case, an exception is thrown if two or more named-querys
+with the same name are defined in one or across multiple mapping file.
+
+|named-native-query |Full override |A named-native-query is unique by
+name. The named-native-query defined in the EclipseLink-ORM.XML will
+override a named-native-query of the same name defined in other mapping
+files. Outside of the overriding case, an exception is thrown if two or
+more named-native-querys with the same name are defined in one or across
+multiple mapping files.
+
+|sql-result-set-mapping |Full override |A sql-result-set-mapping is
+unique by name. The sql-result-set-mapping defined in the
+EclipseLink-ORM.XML will override a sql-result-set-mapping of the same
+name defined in other mapping files. Outside of the overriding case, an
+exception is thrown if two or more sql-result-set-mapping entities with
+the same name are defined in one or across multiple mapping files.
+|===
+
+==== Mapped Superclass
+
+A mapped-superclass can be defined completely, or with specific elements
+to provide extensions to a mapped-superclass from another mapping file.
+The following table lists individual override and merging rules:
+
+entity-mappings/mapped-superclass
+
+Rule
+
+Description
+
+id-class
+
+Full override
+
+If an id-class setting exists, then the EclipseLink-ORM.XML’s id-class
+setting overrides the existing setting, or creates a new id-class
+setting.
+
+exclude-default-listeners
+
+Full override
+
+If an exclude-default-listeners setting exists, then the
+EclipseLink-ORM.XML’s exclude-default-listeners setting will be applied.
+If the exclude-default-listeners setting is not specified, it will not
+override an existing setting, that is essentially turning it off.
+
+exclude-superclass-listeners
+
+Full override
+
+If an exclude-superclass-listeners setting exists, then the
+EclipseLink-ORM.XML’s exclude-superclass-listeners setting will be
+applied. If exclude-superclass-listeners setting is not specified, it
+will not override an existing setting, that is essentially turning it
+off.
+
+entity-listeners
+
+Merge and full override
+
+If an entity-listeners setting exists, then the EclipseLink-ORM.XML’s
+entity-listeners setting will override and merge with an existing
+setting, or creates a new entity-listeners setting all together. Note:
+An entity listener override must be complete. All lifecycle methods of
+that listener must be specified and no merging of individual lifecycle
+methods of an entity listener is allowed. The class name of the listener
+is the key to identify the override.
+
+pre-persist
+
+Full override
+
+If a pre-persist setting exists, then the EclipseLink-ORM.XML’s
+pre-persist setting overrides the existing setting, or creates a new
+pre-persist setting.
+
+post-persist
+
+Full override
+
+If a post-persist setting exists, then the EclipseLink-ORM.XML’s
+post-persist setting overrides the existing setting, or creates a new
+post-persist setting.
+
+pre-remove
+
+Full override
+
+If a pre-remove setting exists, then the EclipseLink-ORM.XML’s
+pre-remove setting overrides the existing setting, or creates a new
+pre-remove setting.
+
+post-remove
+
+Full override
+
+If a post-remove setting exists, then the EclipseLink-ORM.XML’s
+post-remove setting overrides the existing setting, or creates a new
+post-remove setting.
+
+pre-update
+
+Full override
+
+If a pre-update setting exists, then the EclipseLink-ORM.XML’s
+pre-update setting overrides the existing setting, or creates a new
+pre-update setting.
+
+post-update
+
+Full override
+
+If a post-update setting exists, then the EclipseLink-ORM.XML’s
+post-update setting overrides the existing setting, or creates a new
+post-update setting.
+
+post-load
+
+Full override
+
+If a post-load setting exists, then the EclipseLink-ORM.XML’s post-load
+setting overrides the existing setting, or creates a new post-load
+setting.
+
+attributes
+
+Merge and mapping level override
+
+If the attribute settings (id, embedded-id, basic, version, many-to-one,
+one-to-many, one-to-one, many-to-many, embedded, transient) exist at the
+mapping level, then the EclipseLink-ORM.XML’s attributes merges or
+overrides the existing settings, else creates new attributes.
+
+class
+
+None
+
+access
+
+Full override
+
+If an access setting exists, then the EclipseLink-ORM.XML’s access
+setting overrides the existing setting, or creates a new access setting.
+It also overrides the default class setting.
+
+metadata-complete
+
+Full override
+
+If a metadata-complete setting exists, then the EclipseLink-ORM.XML’s
+metadata-complete setting will be applied. If metadata-complete setting
+is not specified, it will not override an existing setting, that is
+essentially turning it off.
+
+==== Entity override and merging rules
+
+An entity can be defined completely, or with specific elements to
+provide extensions to an entity from another mapping file. The following
+table lists individual override and merging rules:
+
+entity-mappings/entity
+
+Rule
+
+Comments
+
+table
+
+Full override
+
+The table definition overrides any other table setting (with the same
+name) for this entity. There is no merging of individual table values.
+
+secondary-table
+
+Full override
+
+The secondary-table definition overrides another secondary-table setting
+(with the same name) for this entity. There is no merging of individual
+secondary-table(s) values.
+
+primary-key-join-column
+
+Full override
+
+The primary-key-join-column(s) definition overrides any other
+primary-key-join-column(s) setting for this entity. There is no merging
+of the primary-key-join-column(s). The specification is assumed to be
+complete and these primary-key-join-columns are the source of truth.
+
+id-class
+
+Full override
+
+If an id-class setting exists, then the EclipseLink-ORM.XML’s id-class
+setting overrides the existing setting, or creates a new id-class
+setting.
+
+inheritance
+
+Full override
+
+If an inheritance setting exists, then the EclipseLink-ORM.XML’s
+inheritance setting overrides the existing setting, or creates a new
+inheritance setting.
+
+discriminator-value
+
+Full override
+
+If a discriminator-value setting exists, then the EclipseLink-ORM.XML’s
+discriminator-value setting overrides the existing setting, or creates a
+new discriminator-value setting.
+
+discriminator-column
+
+Full override
+
+If a discriminator-column setting exists, then the EclipseLink-ORM.XML’s
+discriminator-column setting overrides the existing setting, or creates
+a new discriminator-column setting.
+
+sequence-generator
+
+Full override
+
+A sequence-generator is unique by name. The sequence-generator defined
+in EclipseLink-ORM.XML overrides sequence-generator of the same name
+defined in other mapping files. Outside of the overriding case, an
+exception is thrown if two or more sequence-generators with the same
+name are defined in one or across multiple mapping files.
+
+table-generator
+
+Full override
+
+A table-generator is unique by name. The table-generator defined in
+EclipseLink-ORM.XML overrides table-generator of the same name defined
+in other mapping files. Outside of the overriding case, an exception is
+thrown if two or more table-generators with the same name are defined in
+one or across multiple mapping files.
+
+named-query
+
+Merge and full override
+
+A named-query is unique by name. The named-query defined in
+EclipseLink-ORM.XML overrides named-query of the same name defined in
+other mapping files. Outside of the overriding case, an exception is
+thrown if two or more named-query elements with the same name are
+defined in one or across multiple mapping files.
+
+named-native-query
+
+Merge and full override
+
+A named-native-query is unique by name. The named-native-query defined
+in EclipseLink-ORM.XML overrides named-native-query of the same name
+defined in other mapping files. Outside of the overriding case, an
+exception is thrown if two or more named-native-query elements with the
+same name are defined in one or across multiple mapping files.
+
+sql-result-set-mapping
+
+Merge and full override
+
+A sql-result-set-mapping is unique by name. The sql-result-set-mapping
+defined in EclipseLink-ORM.XML overrides sql-result-set-mapping of the
+same name defined in other mapping files. Outside of the overriding
+case, an exception is thrown if two or more sql-result-set-mapping
+elements with the same name are defined in one or across multiple
+mapping files.
+
+exclude-default-listeners
+
+Full override
+
+If an exclude-default-listeners setting exists, then the
+EclipseLink-ORM.XML’s exclude-default-listeners setting will be applied.
+If an exclude-default-listeners setting is not specified, it will not
+override an existing setting, that is essentially turning it off.
+
+exclude-superclass-listeners
+
+Full override
+
+If an exclude-superclass-listeners setting exists, then the
+EclipseLink-ORM.XML’s exclude-superclass-listeners setting will be
+applied. If an exclude-superclass-listeners setting is not specified, it
+will not override an existing setting, that is essentially turning it
+off.
+
+entity-listeners
+
+Full override
+
+If an entity-listeners setting exists, then the EclipseLink-ORM.XML’s
+entity-listeners setting will override and merge with an existing
+setting, or creates a new entity-listeners setting all together. Note:
+An entity listener override must be complete. All lifecycle methods of
+that listener must be specified and no merging of individual lifecycle
+methods of an entity listener is allowed. The class name of the listener
+is the key to identify the override.
+
+pre-persist
+
+Full override
+
+If a pre-persist setting exists, then the EclipseLink-ORM.XML’s
+pre-persist setting overrides the existing setting, or creates a new
+pre-persist setting.
+
+post-persist
+
+Full override
+
+If a post-persist setting exists, then the EclipseLink-ORM.XML’s
+post-persist setting overrides the existing setting, or creates a new
+post-persist setting.
+
+pre-remove
+
+Full override
+
+If a pre-remove setting exists, then the EclipseLink-ORM.XML’s
+pre-remove setting overrides the existing setting, or creates a new
+pre-remove setting.
+
+post-remove
+
+Full override
+
+If a post-remove setting exists, then the EclipseLink-ORM.XML’s
+post-remove setting overrides the existing setting, or creates a new
+post-remove setting.
+
+pre-update
+
+Full override
+
+If a pre-update setting exists, then the EclipseLink-ORM.XML’s
+pre-update setting overrides the existing setting, or creates a new
+pre-update setting.
+
+post-update
+
+Full override
+
+If a post-update setting exists, then the EclipseLink-ORM.XML’s
+post-update setting overrides the existing setting, or creates a new
+post-update setting.
+
+post-load
+
+Full override
+
+If a post-load setting exists, then the EclipseLink-ORM.XML’s post-load
+setting overrides the existing setting, or creates a new post-load
+setting.
+
+attributes
+
+Merge and mapping level override
+
+If the attribute settings (id, embedded-id, basic, version, many-to-one,
+one-to-many, one-to-one, many-to-many, embedded, transient) exist at the
+mapping level, then the EclipseLink-ORM.XML’s attributes merges or
+overrides the existing settings, else creates new attributes.
+
+association-override
+
+Merge and full override
+
+If an association-override setting exists, then the
+EclipseLink-ORM.XML’s association-override setting overrides the
+existing setting, or creates a new association-override setting.
+
+name
+
+Full override
+
+If a name setting exists, then the EclipseLink-ORM.XML’s name setting
+overrides the existing setting, or creates a new name setting.
+
+class
+
+None
+
+access
+
+Full override
+
+If an access setting exists, then the EclipseLink-ORM.XML’s access
+setting overrides the existing setting, or creates a new access setting.
+It also overrides the default class setting.
+
+metadata-complete
+
+Full override
+
+If a metadata-complete setting exists, then the EclipseLink-ORM.XML’s
+metadata-complete setting will be applied. If a metadata-complete
+setting is not specified, it will not override an existing setting, that
+is essentially turning it off.
+
+==== Embeddable
+
+An embeddable can be defined wholely or may be defined so as to provide
+extensions to an embeddeable from another mapping file. Therefore, we
+will allow the merging of that classes metadata. The individual override
+rules for that metadata is tabled below.
+
+[width="100%",cols="9%,6%,85%",options="header",]
+|===
+|entity-mappings/embeddable |Rule |Description
+|attributes |Override and merge |If the attribute settings (id,
+embedded-id, basic, version, many-to-one, one-to-many, one-to-one,
+many-to-many, embedded, transient) exist at the mapping level, then the
+EclipseLink-ORM.XML’s attributes merges or overrides the existing
+settings, or creates new attributes.
+
+|class |None |
+
+|access |Full override |If an access setting exists, then the
+EclipseLink-ORM.XML’s access setting overrides the existing setting, or
+creates a new access setting. It also overrides the default class
+setting.
+
+|metadata-complete |Full override |If a metadata-complete setting
+exists, then the EclipseLink-ORM.XML’s metadata-complete setting will be
+applied. If a metadata-complete setting is not specified, it will not
+override an existing setting, that is essentially turning it off.
+|===
+
+== Defaulting Properties
+
+Each annotation has a default value (consult the JPA specification for
+defaults). A persistence engine defines defaults that apply to the
+majority of applications. You only need to supply values when you want
+to override the default value. Therefore, having to supply a
+configuration value is not a requirement, but the exception to the rule.
+This is known as _configuration by exception_.
+
+[width="100%",cols="<100%",]
+|===
+|*Note:* You should be familiar with the defaults to be able to change
+the behavior when necessary.
+|===
+
+== Configuring an Entity
+
+You can configure your entity’s identity, as well as the locking
+technique and sequence generation option for your entity.
+
+=== Configuring an Entity Identity
+
+Every entity must have a persistent identity, which is an equivalent of
+a primary key in a database table that stores the entity state.
+
+By default, EclipseLink persistence provider assumes that each entity
+has at least one field or property that serves as a primary key.
+
+You can generate and/or configure the identity of your entities by using
+the following annotations:
+
+* link:#@Id[@Id]
+* link:#@IdClass[@IdClass]
+* link:#@EmbeddedId[@EmbeddedId]
+* link:#@GeneratedValue[@GeneratedValue]
+* link:#@TableGenerator[@TableGenerator]
+* link:#@SequenceGenerator[@SequenceGenerator]
+
+You can also use these annotations to fine-tune how your database
+maintains the identity of your entities.
+
+For more information on the EclipseLink artifacts configured by these
+JPA metadata, refer to
+link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Primary_Keys[Configuring
+Primary Keys].
+
+==== @Id
+
+Use the `+@Id+` annotation to designate one or more persistent fields or
+properties as the entity’s primary key.
+
+For each entity, you must designate at least one of the following:
+
+* one `+@Id+`
+* one link:#@EmbeddedId[`+@EmbeddedId+`]
+* multiple `+@Id+` and an link:#@IdClass[`+@IdClass+`]
+
+[width="100%",cols="<100%",]
+|===
+|*Note:* The last option in the preceding list – `+@Id+` and
+`+@IdClass+` combination – is applicable to composite primary key
+configuration.
+|===
+
+The `+@Id+` annotation does not have attributes.
+
+By default, EclipseLink persistence provider chooses the most
+appropriate primary key generator (see
+link:#@GeneratedValue[@GeneratedValue]) and is responsible for managing
+primary key values: you do not need to take any further action if you
+are satisfied with the persistence provider’s default key generation
+mechanism.
+
+This example shows how to use this annotation to designate the
+persistent field `+empID+` as the primary key of the `+Employee+` table.
+
+[#Example 18-2]## *_Usage of @Id Annotation_*
+
+[source,java]
+----
+ @Entity
+ public class Employee implements Serializable {
+     @Id
+     private int empID;
+     ...
+ }
+----
+
+The `+@Id+` annotation supports the use of EclipseLink converters (see
+link:Using%20EclipseLink%20JPA%20Extensions%20(ELUG)#Using_EclipseLink_JPA_Converters[Using
+EclipseLink JPA Converters]).
+
+For more information and examples, see Section 9.1.8 "`Id Annotation`"
+of the http://jcp.org/en/jsr/detail?id=220[JPA Specification].
+
+==== @IdClass
+
+Use the `+@IdClass+` annotation to specify a composite primary key class
+(usually made up of two or more primitive, JDK object types or Entity
+types) for an entity or MappedSuperclass.
+
+[width="100%",cols="<100%",]
+|===
+|*Note:* Composite primary keys typically arise during mapping from
+legacy databases when the database key is comprised of several columns.
+|===
+
+A composite primary key class has the following characteristics:
+
+* It is a POJO class.
+* It is a public class with a public no-argument constructor.
+* If you use property-based access, the properties of the primary key
+class are public or protected.
+* It is serializable.
+* It defines `+equals+` and `+hashCode+` methods. The semantics of value
+equality for these methods must be consistent with the database equality
+for the database types to which the key is mapped.
+* Its fields or properties must correspond in type and name to the
+entity primary key fields or properties annotated with link:#@Id[@Id].
+
+Alternatively, you can make the composite primary key class an embedded
+class owned by the entity (see link:#@EmbeddedId[@EmbeddedId]).
+
+The `+@IdClass+` annotation has a required attribute `+value+` that you
+set to the class to specify this class as a composite primary key class
+(see link:#@AttributeOverride[@AttributeOverride]).
+
+The link:#Example_18-3[Nonembedded Composite Primary Key Class] example
+shows a nonembedded composite primary key class. In this class, fields
+`+empName+` and `+birthDay+` must correspond in name and type to
+properties in the entity class. The link:#Example_18-4[Usage of @IdClass
+Annotation] example shows how to configure an entity with this
+nonembedded composite primary key class using the `+@IdClass+`
+annotation. Because entity class fields `+empName+` and `+birthDay+` are
+used in the primary key, you must also annotate them using the `+@Id+`
+annotation (see link:#@Id[@Id]).
+
+[#Example 18-3]## *_Nonembedded Composite Primary Key Class_*
+
+[source,java]
+----
+ public class EmployeePK implements Serializable {
+
+     private String empName;
+     private Date birthDay;
+
+     public EmployeePK() {
+     }
+
+     public String getName() {
+         return this.empName;
+     }
+
+     public void setName(String name) {
+         this.empName = name;
+     }
+
+     public long getDateOfBirth() {
+         return this.birthDay;
+     }
+
+     public void setDateOfBirth(Date date) {
+         this.birthDay = date;
+     }
+
+     public int hashCode() {
+         return (int)this.empName.hashCode();
+     }
+
+     public boolean equals(Object obj) {
+         if (obj == this) return true;
+         if (!(obj instanceof EmployeePK)) return false;
+         if (obj == null) return false;
+         EmployeePK pk = (EmployeePK) obj;
+         return pk.birthDay = this.birthDay && pk.empName.equals(this.empName);
+     }
+ }
+----
+
+[#Example 18-4]## *_Usage of @IdClass Annotation_*
+
+[source,java]
+----
+  @IdClass (EmployeePK.class)
+ @Entity
+ public class Employee implements Serializable{
+
+     @Id String empName;
+     @Id Date birthDay;
+     ...
+ }
+----
+
+For more information and examples, see Section 9.1.15 "`IdClass
+Annotation`" of the http://jcp.org/en/jsr/detail?id=220[JPA
+Specification].
+
+==== @EmbeddedId
+
+Use the `+@EmbeddedId+` annotation to specify an embeddable composite
+primary key class (usually made up of two or more primitive or JDK
+object types) owned by the entity.
+
+[width="100%",cols="<100%",]
+|===
+|*Note:* Composite primary keys typically arise during mapping from
+legacy databases when the database key is comprised of several columns.
+|===
+
+A composite primary key class has the following characteristics:
+
+* It is a POJO class.
+* It is a public class with a public no-argument constructor.
+* If you use property-based access, the properties of the primary key
+class are public or protected.
+* It is serializable.
+* It defines `+equals+` and `+hashCode+` methods. The semantics of value
+equality for these methods must be consistent with the database equality
+for the database types to which the key is mapped.
+
+Alternatively, you can make the composite primary key class a
+nonembedded class (see link:#@IdClass[@IdClass]).
+
+The `+@EmbeddedId+` annotation does not have attributes.
+
+This example shows a typical composite primary key class annotated with
+link:#@Embeddable[`+@Embeddable+`]. The link:#Example_18-6[Usage of
+@EmbeddedId Annotation] example shows how to configure an entity with
+this embeddable composite primary key class using the `+@EmbeddedId+`
+annotation.
+
+[#'Example 18-5]## *_Embeddable Composite Primary Key Class_*
+
+[source,java]
+----
+ @Embeddable
+ public class EmployeePK implements Serializable {
+
+     private String empName;
+     private long empID;
+
+     public EmployeePK() {
+     }
+
+     public String getName() {
+         return this.empName;
+     }
+
+     public void setName(String name) {
+         this.empName = name;
+     }
+
+     public long getId() {
+         return this.empID;
+     }
+
+     public void setId(long id) {
+         this.empID = id;
+     }
+
+     public int hashCode() {
+         return (int)this.empName.hashCode()+ this.empID;
+     }
+
+     public boolean equals(Object obj) {
+         if (obj == this) return true;
+         if (!(obj instanceof EmployeePK)) return false;
+         if (obj == null) return false;
+         EmployeePK pk = (EmployeePK) obj;
+         return pk.empID == this.empID && pk.empName.equals(this.empName);
+     }
+ }
+----
+
+[#Example 18-6]## *_Usage of @EmbeddedId Annotation_*
+
+[source,java]
+----
+ @Entity
+ public class Employee implements Serializable{
+
+     @EmbeddedId
+     EmployeePK primaryKey;
+
+     public Employee {
+     }
+
+     public EmployeePK getPrimaryKey() {
+         return primaryKey:
+     }
+
+     public void setPrimaryKey(EmployeePK pk) {
+         primaryKey = pk;
+     }
+
+     ...
+ }
+----
+
+For more information and examples, see Section 9.1.14 "`EmbeddedId
+Annotation`" of the http://jcp.org/en/jsr/detail?id=220[JPA
+Specification].
+
+==== @GeneratedValue
+
+Use the `+@GeneratedValue+` annotation to enable EclipseLink persistence
+provider to generate unique identifiers for entity primary keys (see
+link:#@Id[@Id]).
+
+This annotation lets you do the following:
+
+* override the type of identity value generation selected by the
+persistence provider for your database if you feel another generator
+type is more appropriate for your database or application;
+* override the primary key generator name selected by the persistence
+provider if this name is awkward, a reserved word, incompatible with a
+preexisting data model, or invalid as a primary key generator name in
+your database.
+
+The `+@GeneratedValue+` annotation has the following attributes:
+
+* `+generator+` – The default value of this attribute is the name that
+EclipseLink persistence provider assigns to the primary key generator it
+selects. If the generator name is awkward, a reserved word, incompatible
+with a preexisting data model, or invalid as a primary key generator
+name in your database, set the value of this attribute to the `+String+`
+generator name you want to use.
++
+You are not required to specify the value of this attribute.
+* `+strategy+` – By default, EclipseLink persistence provider chooses
+the type of primary key generator that is most appropriate for the
+underlying database. If you feel that another generator type is more
+appropriate for your database or application, set the value of this
+attribute to one of the following enumerated values of the
+`+GenerationType+` enumerated type:
+** `+AUTO+` (default) – specify that EclipseLink persistence provider
+should choose a primary key generator that is most appropriate for the
+underlying database.
++
++
++
++
+*Note:* By default, EclipseLink chooses the `+TABLE+` strategy using a
+table named `+SEQ_GEN_TABLE+`, with `+SEQ_NAME+` and `+SEQ_COUNT+`
+columns, with `+allocationSize+` of 50 and `+pkColumnValue+` of
+`+SEQ_GEN+`. The default `+SEQUENCE+` used is database sequence
+`+SEQ_GEN_SEQUENCE+` with `+allocationSize+` of 50. Note that the
+database sequence increment must match the allocation size.
++
++
++
+** `+TABLE+` – specify that EclipseLink persistence provider assign
+primary keys for the entity using an underlying database table to ensure
+uniqueness (see link:#@TableGenerator[@TableGenerator]).
+** `+SEQUENCE+` – specify that EclipseLink persistence provider use a
+database sequence (see link:#@SequenceGenerator[@SequenceGenerator]).
++
++
++
++
++
++
+** `+IDENTITY+` – specify that EclipseLink persistence provider use a
+database identity column. Setting this value will indicate to the
+persistence provider that it must reread the inserted row from the table
+after an insert has occurred. This will allow it to obtain the newly
+generated identifier from the database and put it into the in-memory
+entity that was just persisted. The identity must be defined as part of
+the database schema for the primary key column. Identity generation may
+not be shared across multiple entity types.
++
++
++
+
+*Note:* `+IDENTITY+` strategy is supported on DB2, SQL Server, MySQL,
+Derby, JavaDB, Informix, and Postgres databases.
+
+\{| class="`Note oac_no_warn`" width="`80%`" border="`1`"
+frame="`hsides`" rules="`groups`" cellpadding="`3`" frame="`hsides`"
+rules="`groups`" | align="`left`" | *Note:* There is a difference
+between using `+IDENTITY+` and other id generation strategies: the
+identifier will not be accessible until after the insert has occurred –
+it is the action of inserting that caused the identifier generation. Due
+to the fact that insertion of entities is most often deferred until the
+commit time, the identifier would not be available until after the
+transaction has been committed. |}
+
+\{| class="`Note oac_no_warn`" width="`80%`" border="`1`"
+frame="`hsides`" rules="`groups`" cellpadding="`3`" frame="`hsides`"
+rules="`groups`" | align="`left`" | *Note:* We do not recommend using
+the `+IDENTITY+` strategy for it does not support preallocation. |} You
+are not required to specify the value of the `+strategy+` attribute.
+This example shows how to use automatic id generation. This will cause
+EclipseLink persistence provider to create an identifier value and
+insert it into the `+id+` field of each `+Employee+` entity that gets
+persisted. [#Example 18-7]## *_Using Automatic Id Generation_*
+
+[source,java]
+----
+ @Entity
+ public class Employee implements Serializable {
+
+     @Id
+     @GeneratedValue(strategy=GenerationType.AUTO)
+     private int id;
+     ...
+ }
+----
+
+\{| class="`Note oac_no_warn`" width="`80%`" border="`1`"
+frame="`hsides`" rules="`groups`" cellpadding="`3`" frame="`hsides`"
+rules="`groups`" | align="`left`" | *Caution:* Be careful when using the
+automatic id generation: the persistence provider has to pick its own
+strategy to store the identifiers, but it needs to have a persistent
+resource, such as a table or a sequence, to do so. The persistence
+provider cannot always rely upon the database connection that it obtains
+from the server to have permissions to create a table in the database.
+This is usually a privileged operation that is often restricted to the
+DBA. There will need to be a creation phase or schema generation to
+cause the resource to be created before the `+AUTO+` strategy can
+function. |}
+
+For more information and examples, see Section 9.1.9 "`GeneratedValue
+Annotation`" of the http://jcp.org/en/jsr/detail?id=220[JPA
+Specification].
+
+=== Configuring Sequence Generation
+
+Many databases support an internal mechanism for id generation called
+sequences. You can use a database sequence to generate identifiers when
+the underlying database supports them.
+
+For more information, see
+link:Introduction%20to%20Relational%20Projects%20(ELUG)#Table_Sequencing[Table
+Sequencing].
+
+==== @SequenceGenerator
+
+If you use the link:#@GeneratedValue[@GeneratedValue annotation] to
+specify a primary key generator of type `+SEQUENCE+`, then you can use
+the `+@SequenceGenerator+` annotation to fine-tune this primary key
+generator to do the following:
+
+* change the allocation size to match your application requirements or
+database performance parameters;
+* change the initial value to match an existing data model (for example,
+if you are building on an existing data set for which a range of primary
+key values has already been assigned or reserved);
+* use a predefined sequence in an existing data model.
+
+The `+@SequenceGenerator+` annotation has the following attributes:
+
+* `+name+` – The name of the generator must match the name of a
+`+GeneratedValue+` with its `+strategy+` attribute set to `+SEQUENCE+`.
++
+You are required to specify the value of this attribute.
+* `+allocationSize+` – By default, EclipseLink persistence provider uses
+an allocation size of 50.
++
+The value of this attribute must match the increment size on the
+database sequence object. If this allocation size does not match your
+application requirements or database performance parameters, set this
+attribute to the `+int+` value you want.
++
+You are not required to specify the value of the `+allocationSize+`
+attribute.
+* `+initialValue+` – By default, EclipseLink persistence provider starts
+all primary key values from 0. If this does not match an existing data
+model, set this attribute to the `+int+` value you want.
++
+You are not required to specify the value of the `+initialValue+`
+attribute.
+* `+sequenceName+` – By default, EclipseLink persistence provider
+assigns a sequence name of its own creation.
++
+The `+sequenceName+` defaults to the name of the `+SequenceGenerator+`.
+If you prefer to use an existing or predefined sequence, set
+`+sequenceName+` to the `+String+` name you want.
++
+You are not required to specify the value of the `+sequenceName+`
+attribute.
+
+This example shows how to use this annotation to specify the allocation
+size for the `+SEQUENCE+` primary key generator named `+Cust_Seq+`.
+
+[#Example 18-8]## *_Usage of @SequenceGenerator_*
+
+[source,java]
+----
+ @Entity
+ public class Employee implements Serializable {
+     ...
+     @Id
+     @SequenceGenerator(name="Cust_Seq", allocationSize=25)
+     @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="Cust_Seq")
+     @Column(name="CUST_ID")
+     public Long getId() {
+         return id;
+     }
+     ...
+ }
+----
+
+For more information and examples, see Section 9.1.37
+"`SequenceGenerator Annotation`" of the
+http://jcp.org/en/jsr/detail?id=220[JPA Specification].
+
+For more information on the EclipseLink artifacts configured by these
+JPA metadata, refer to
+link:Introduction%20to%20Descriptors%20(ELUG)#Descriptors_and_Sequencing[Descriptors
+and Sequencing].
+
+==== @TableGenerator
+
+If you use the link:#@GeneratedValue[`+@GeneratedValue+` annotation] to
+specify a primary key generator of type `+TABLE+`, then you can use the
+`+@TableGenerator+` annotation to fine-tune this primary key generator
+to do the following:
+
+* change the name of the primary key generator’s table, because the name
+is awkward, a reserved word, incompatible with a preexisting data model,
+or invalid as a table name in your database;
+* change the allocation size to match your application requirements or
+database performance parameters;
+* change the initial value to match an existing data model (for example,
+if you are building on an existing data set, for which a range of
+primary key values has already been assigned or reserved);
+* configure the primary key generator’s table with a specific catalog or
+schema;
+* configure a unique constraint on one or more columns of the primary
+key generator’s table;
+
+The `+@TableGenerator+` annotation has the following attributes:
+
+* `+name+` – The name of the generator must match the name of a
+`+GeneratedValue+` with its `+strategy+` attribute set to `+TABLE+`. The
+scope of the generator name is global to the persistence unit (across
+all generator types).
++
+You are required to specify the value of this attribute.
+* `+allocationSize+` – By default, EclipseLink persistence provider uses
+an allocation size of 50. If this allocation size does not match your
+application requirements or database performance parameters, set this
+attribute to the `+int+` value you want.
++
+You are not required to specify the value of the `+allocationSize+`
+attribute.
+* `+catalog+` – By default, EclipseLink persistence provider uses
+whatever the default catalog is for your database. If the default
+catalog is inappropriate for your application, set the value of this
+attribute to the `+String+` catalog name to use.
++
+You are not required to specify the value of the `+catalog+` attribute.
+* `+initialValue+` – By default, EclipseLink persistence provider starts
+all primary key values from 0. If this does not match an existing data
+model, set this attribute to the `+int+` value you want.
++
+You are not required to specify the value of the `+initialValue+`
+attribute.
+* `+pkColumnName+` – By default, EclipseLink persistence provider
+supplies a name for the primary key column in the generator table:
+`+"SEQ_NAME"+`. If this name is inappropriate for your application, set
+the value of this attribute to the `+String+` name you want.
++
+You are not required to specify the value of the `+pkColumnName+`
+attribute.
+* `+pkColumnValue+` – By default, EclipseLink persistence provider
+supplies a suitable primary key value for the primary key column in the
+generator table: `+TableGenereator.name+`. If this value is
+inappropriate for your application, set the value of this attribute to
+the `+String+` value you want.
++
+You are not required to specify the value of the `+pkColumnValue+`
+attribute.
+* `+schema+` – By default, EclipseLink persistence provider uses
+whatever the default schema is for your database. If this value is
+inappropriate for your application, set the value of this attribute to
+the `+String+` schema name you choose.
++
+You are not required to specify the value of the `+schema+` attribute.
+* `+table+` – By default, EclipseLink persistence provider supplies a
+suitable name for the table that stores the generated id values:
+`+"SEQUENCE"+`. If this value is inappropriate for your application, set
+the value of this attribute to the `+String+` table name you want.
++
+You are not required to specify the value of the `+table+` attribute.
+* `+uniqueConstraints+` – By default, EclipseLink persistence provider
+assumes that none of the columns in the primary key generator table have
+unique constraints. If unique constraints do apply to one or more
+columns in this table, set the value of this attribute to an array of
+one or more `+UniqueConstraint+` instances. For more information, see
+Section 9.1.4 "`UniqueConstraint Annotation`" of the
+http://jcp.org/en/jsr/detail?id=220[JPA Specification].
++
+You are not required to specify the value of the `+uniqueConstraints+`
+attribute.
+* `+valueColumnName+` – By default, EclipseLink persistence provider
+supplies a suitable name for the column that stores the generated id
+values: `+"SEQ_COUNT"+`. If the default column name is inappropriate for
+your application, set the value of this attribute to the `+String+`
+column name you want.
++
+You are not required to specify the value of the `+valueColumnName+`
+attribute.
+
+The link:#Example_18-9[Usage of @TableGenerator] example shows how to
+use this annotation to specify the allocation size for the `+TABLE+`
+primary key generator named `+Emp_Gen+`.
+
+[#Example 18-9]## *_Usage of @TableGenerator_*
+
+[source,java]
+----
+ @Entity
+ public class Employee implements Serializable {
+     ...
+     @Id
+     @TableGenerator(name="Emp_Gen", allocationSize=1)
+     @GeneratedValue(strategy=GenerationType.TABLE, generator="Emp_Gen")
+     @Column(name="CUST_ID")
+     public Long getId() {
+         return id;
+     }
+     ...
+ }
+----
+
+Every table that you use for id generation should have two columns – if
+there are more columns, only two will be used. The first column is of a
+string type and is used to identify the particular generator sequence.
+It is the primary key for all of the generators in the table. The name
+of this column is specified by the `+pkColumnName+` attribute. The
+second column is of an integer type and stores the actual id sequence
+that is being generated. The value stored in this column is the last
+identifier that was allocated in the sequence. The name of this column
+is specified by the `+valueColumnName+` attribute.
+
+Each defined generator represents a row in the table. The name of the
+generator becomes the value stored in the `+pkColumnName+` column for
+that row and is used by EclipseLink persistence provider to look up the
+generator to obtain its last allocated value.
+
+For more information and examples, see Section 9.1.38 "`TableGenerator
+Annotation`" of the http://jcp.org/en/jsr/detail?id=220[JPA
+Specification].
+
+=== Configuring Locking
+
+You have the choice between optimistic and pessimistic locking. We
+recommend using EclipseLink
+link:Introduction_to_EclipseLink%20Application%20Development%20(ELUG)#Optimistic_Locking[optimistic
+locking]. For more information, see
+link:Introduction_to_EclipseLink%20Application%20Development%20(ELUG)#Locking[Locking].
+
+By default, EclipseLink persistence provider assumes that the
+application is responsible for data consistency.
+
+Use the `+@Version+` annotation to enable the JPA-managed optimistic
+locking by specifying the version field or property of an entity class
+that serves as its optimistic lock value (recommended).
+
+When choosing a version field or property, ensure that the following is
+true:
+
+* there is only one version field or property per entity;
+* you choose a property or field persisted to the primary table (see
+Section 9.1.1 "`Table Annotation`" of the
+http://jcp.org/en/jsr/detail?id=220[JPA Specification]);
+* your application does not modify the version property or field.
+
+[width="100%",cols="<100%",]
+|===
+|*Note:* The field or property type must either be a numeric type (such
+as `+Number+`, `+long+`, `+int+`, `+BigDecimal+`, and so on), or a
+`+java.sql.Timestamp+`. We recommend using a numeric type.
+|===
+
+The `+@Version+` annotation does not have attributes.
+
+The link:#Example_18-10[Usage of @Version Annotation] example shows how
+to use this annotation to specify property `+getVersionNum+` as the
+optimistic lock value. In this example, the column name for this
+property is set to `+OPTLOCK+` (see Section 9.1.5 "`Column Annotation`"
+of the http://jcp.org/en/jsr/detail?id=220[JPA Specification]) instead
+of the default column name for the property.
+
+[#Example 18-10]## *_Usage of @Version Annotation_*
+
+[source,java]
+----
+ @Entity
+ public class Employee implements Serializable {
+     ...
+     @Version
+     @Column(name="OPTLOCK")
+     protected int getVersionNum() {
+         return versionNum;
+     }
+     ...
+ }
+----
+
+The `+@Version+` annotation supports the use of EclipseLink converters
+(see
+link:Using%20EclipseLink%20JPA%20Extensions%20(ELUG)#Using_EclipseLink_JPA_Converters[Using
+EclipseLink JPA Converters]).
+
+For more information, see the following:
+
+* Section 3.4 "`Optimistic Locking and Concurrency`" of the
+http://jcp.org/en/jsr/detail?id=220[JPA Specification]
+* Section 9.1.17 "`Version Annotation`" of the
+http://jcp.org/en/jsr/detail?id=220[JPA Specification]
+* link:Using%20EclipseLink%20JPA%20Extensions%20(ELUG)#Using_EclipseLink_JPA_Extensions_for_Optimistic_Locking[Using
+EclipseLink JPA Extensions for Optimistic Locking]
+
+For more information on the EclipseLink artifacts configured by these
+JPA metadata, refer to
+link:Introduction%20to%20Descriptors%20(ELUG)#Descriptors_and_Locking[Descriptors
+and Locking].
+
+== Declaring Basic Property Mappings
+
+Simple Java types are mapped as part of the immediate state of an entity
+in its fields or properties. Mappings of simple Java types are called
+_basic mappings_.
+
+By default, EclipseLink persistence provider automatically configures a
+basic mapping for simple types.
+
+Use the following annotations to fine-tune how your database implements
+these mappings:
+
+* link:#@Basic[@Basic]
+* link:#@Enumerated[@Enumerated]
+* link:#@Temporal[@Temporal]
+* link:#@Lob[@Lob]
+* link:#@Transient[@Transient]
+
+For more information, see
+link:Using%20EclipseLink%20JPA%20Extensions%20(ELUG)#Using_EclipseLink_JPA_Converters[Using
+EclipseLink JPA Converters].
+
+=== @Basic
+
+By default, EclipseLink persistence provider automatically configures
+`+@Basic+` mapping for most Java primitive types, wrappers of the
+primitive types, and enumerated types.
+
+EclipseLink uses the default column name format of or in uppercase
+characters.
+
+You may explicitly place an optional `+@Basic+` annotation on a field or
+property to explicitly mark it as persistent.
+
+[width="100%",cols="<100%",]
+|===
+|*Note:* The `+@Basic+` annotation is mostly for documentation purposes
+– it is not required for the field or property to be persistent.
+|===
+
+Use the `+@Basic+` annotation to do the following:
+
+* configure the fetch type to `+LAZY+`;
+* configure the mapping to forbid null values (for nonprimitive types)
+in case null values are inappropriate for your application.
+
+The `+@Basic+` annotation has the following attributes:
+
+* `+fetch+` – By default, EclipseLink persistence provider uses a fetch
+type of `+javax.persitence.FetchType.EAGER+`: data must be eagerly
+fetched.If the default is inappropriate for your application or a
+particular persistent field, set `+fetch+` to `+FetchType.LAZY+`: this
+is a hint to the persistence provider that data should be fetched lazily
+when it is first accessed (if possible).You are not required to specify
+the value of this attribute. For more information, see
+link:Using%20EclipseLink%20JPA%20Extensions%20(ELUG)#What_You_May_Need_to_Know_About_EclipseLink_JPA_Lazy_Loading[What
+You May Need to Know About EclipseLink JPA Lazy Loading].
+* `+optional+` – By default, EclipseLink persistence provider assumes
+that the value of all (nonprimitive) fields and properties may be
+`+null+`. If the default is inappropriate for your application, set this
+the value of this attribute to `+false+`.
++
+You are not required to specify the value of this attribute.
+
+This example shows how to use this annotation to specify a fetch type of
+`+LAZY+` for a basic mapping.
+
+[#Example 18-11]## *_Usage of the @Basic Annotation_*
+
+[source,java]
+----
+ @Entity
+ public class Employee implements Serializable {
+     ...
+     @Basic(fetch=LAZY)
+     protected String getName() {
+         return name;
+     }
+     ...
+ }
+----
+
+For more information and examples, see Section 9.1.18 "`Basic
+Annotation`" of the http://jcp.org/en/jsr/detail?id=220[JPA
+Specification].
+
+For more information on EclipseLink direct mappings and relationship
+mappings, see
+link:Introduction%20to%20Relational%20Mappings%20(ELUG)#Relational_Mapping_Types[Relational
+Mapping Types].
+
+=== @Enumerated
+
+By default, EclipseLink persistence provider persists the ordinal values
+of enumerated constants.
+
+Use the `+@Enumerated+` annotation to specify whether EclipseLink
+persistence provider should persist ordinal or `+String+` values of
+enumerated constants if the `+String+` value suits your application
+requirements, or to match an existing database schema:
+
+You can use this annotation with the link:#@Basic[@Basic annotation].
+
+The `+@Enumerated+` annotation has the following attributes:
+
+* `+value+` – By default, EclipseLink persistence provider assumes that
+for a property or field mapped to an enumerated constant, the ordinal
+value should be persisted. In the link:#Example_18-13[Usage of the
+@Enumerated Annotation] example, the ordinal value of `+EmployeeStatus+`
+is written to the database when `+Employee+` is persisted. If you want
+the `+String+` value of the enumerated constant persisted, set value to
+`+EnumType.STRING+`.
++
+You are not required to specify the value of this attribute.
+
+Given the enumerated constants in the link:#Example_18-12[Enumerated
+Constants] example, the link:#Example_18-13[Usage of the @Enumerated
+Annotation] example shows how to use the `+@Enumerated+` annotation to
+specify that the `+String+` value of `+SalaryRate+` should be written to
+the database when `+Employee+` is persisted. By default, the ordinal
+value of `+EmployeeStatus+` is written to the database.
+
+[#Example 18-12]## *_Enumerated Constants_*
+
+[source,java]
+----
+ public enum EmployeeStatus {FULL_TIME, PART_TIME, CONTRACT}
+ public enum SalaryRate {JUNIOR, SENIOR, MANAGER, EXECUTIVE}
+----
+
+[#Example 18-13]## *_Usage of the @Enumerated Annotation_*
+
+[source,java]
+----
+ @Entity
+ public class Employee implements Serializable{
+     ...
+     public EmployeeStatus getStatus() {
+         ...
+     }
+
+     @Enumerated(STRING)
+     public SalaryRate getRate() {
+         ...
+     }
+     ...
+ }
+----
+
+For more information and examples, see Section 9.1.21 "`Enumerated
+Annotation`" of the http://jcp.org/en/jsr/detail?id=220[JPA
+Specification].
+
+=== @Temporal
+
+Use the `+@Temporal+` annotation to specify the database type that
+EclipseLink persistence provider should persist for persistent fields or
+properties of type `+java.util.Date+` and `+java.util.Calendar+` only.
+
+You can use this annotation with the link:#@Basic[`+@Basic+`
+annotation].
+
+The `+@Temporal+` annotation has the following attributes:
+
+* `+value+` – Set this attribute to the `+TemporalType+` that
+corresponds to database type you want EclipseLink persistence provider
+to use:
+** `+DATE+` – equivalent of `+java.sql.Date+`
+** `+TIME+` – equivalent of `+java.time.Date+`
+** `+TIMESTAMP+` – equivalent of `+java.sql.Timestamp+`
+
+You are required to specify the value of this attribute.
+
+This example shows how to use this annotation to specify that
+EclipseLink persistence provider should persist `+java.util.Date+` field
+`+startDate+` as a `+DATE+` (`+java.sql.Date+`) database type.
+
+[#Example 18-14]## *_Usage of the @Temporal Annotation_*
+
+[source,java]
+----
+ @Entity
+ public class Employee implements Serializable{
+     ...
+     @Temporal(DATE)
+     protected java.util.Date startDate;
+     ...
+ }
+----
+
+For more information and examples, see Section 9.1.20 "`Temporal
+Annotation`" of the http://jcp.org/en/jsr/detail?id=220[JPA
+Specification].
+
+=== @Lob
+
+By default, EclipseLink persistence provider assumes that all persistent
+data can be represented as typical database data types.
+
+Use the `+@Lob+` annotation with the link:#@Basic[`+@Basic+` mapping] to
+specify that a persistent property or field should be persisted as a
+large object to a database-supported large object type.
+
+A `+Lob+` may be either a binary or character type. The persistence
+provider infers the `+Lob+` type from the type of the persistent field
+or property.
+
+For `+String+` and character-based types, the default is `+Clob+`. In
+all other cases, the default is `+Blob+`.
+
+You can also use the `+@Column+` attribute `+columnDefinition+` (see
+Section 9.1.5 "`Column Annotation`" of the
+http://jcp.org/en/jsr/detail?id=220[JPA Specification]) to further
+refine the `+Lob+` type.
+
+The `+@Lob+` annotation does not have attributes.
+
+This example shows how to use this `+@Lob+` annotation to specify that
+persistent field `+pic+` should be persisted as a `+Blob+`.
+
+[#Example 18-15]## *_Usage of the @Lob Annotation_*
+
+[source,java]
+----
+ @Entity
+ public class Employee implements Serializable {
+     ...
+     @Lob
+     @Basic(fetch=LAZY)
+     @Column(name="EMP_PIC", columnDefinition="BLOB NOT NULL")
+     protected byte[] pic;
+     ...
+ }
+----
+
+For more information and examples, see Section 9.1.20 "`Temporal
+Annotation`" of the http://jcp.org/en/jsr/detail?id=220[JPA
+Specification].
+
+=== @Transient
+
+By default, EclipseLink persistence provider assumes that all the fields
+of an entity are persistent.
+
+Use the `+@Transient+` annotation to specify a field or property of an
+entity that is not persistent (for example, a field or property that is
+used at run time, but that is not part of the entity’s state).
+
+EclipseLink persistence provider will not persist (or create database
+schema) for a property or field annotated with `+@Transient+`.
+
+This annotation can be used with `+@Entity+` (see Section 8.1 "`Entity`"
+of the http://jcp.org/en/jsr/detail?id=220[JPA Specification]),
+link:#@MappedSuperclass[`+@MappedSuperclass+`]), and
+link:#@Embeddable[`+@Embeddable+`].
+
+The `+@Transient+` annotation does not have attributes.
+
+The link:#Example_18-16[Usage of the @Transient Annotation] example
+shows how to use the `+@Transient+` annotation to specify `+Employee+`
+field `+currentSession+` as not persistent. EclipseLink persistence
+provider will not persist this field.
+
+[#Example 18-16]## *_Usage of the @Transient Annotation_*
+
+[source,java]
+----
+ @Entity
+ public class Employee implements Serializable {
+     ...
+     @Id
+     int id;
+
+     @Transient
+     Session currentSession;
+     ...
+ }
+----
+
+For more information and examples, see Section 9.1.16 "`Transient
+Annotation`" of the http://jcp.org/en/jsr/detail?id=220[JPA
+Specification].
+
+== Mapping Relationships
+
+EclipseLink persistence provider requires that you map relationships
+explicitly.
+
+Use the following annotations to specify the type and characteristics of
+entity relationships to fine-tune how your database implements these
+relationships:
+
+* link:#@OneToOne[@OneToOne]
+* link:#@ManyToOne[@ManyToOne]
+* link:#@OneToMany[@OneToMany]
+* link:#@ManyToMany[@ManyToMany]
+* link:#@MapKey[@MapKey]
+* link:#@MapKey[@MapKey]
+
+At end of relationships section should link to the EclipseLink
+relationships mappings section and state that additional advanced
+mapping and mapping options are available through EclipseLink’s
+descriptor and mapping API through using a `+DescriptorCustomizer+`.
+
+For more information, see
+link:Introduction%20to%20Relational%20Mappings%20(ELUG)#Relational_Mapping_Types[Relational
+Mapping Types].
+
+You can access additional advanced mappings and mapping options through
+EclipseLink descriptor and mapping API
+link:Customizing%20the%20EclipseLink%20Application%20(ELUG)#Using_the_Descriptor_Customizer_Class[using
+a DescriptorCustomizer Class].
+
+=== @OneToOne
+
+By default, JPA automatically defines a `+OneToOne+` mapping for a
+single-valued association to another entity that has one-to-one
+multiplicity and infers the associated target entity from the type of
+the object being referenced.
+
+Use the `+OneToOne+` annotation to do the following:
+
+* configure the fetch type to `+LAZY+`;
+* configure the mapping to forbid null values (for nonprimitive types)
+in case null values are inappropriate for your application;
+* configure the associated target entity, if it cannot be inferred from
+the type of the object being referenced;
+* configure the operations that must be cascaded to the target of the
+association (for example, if the owning entity is removed, ensure that
+the target of the association is also removed).
+
+The `+@OneToOne+` annotation has the following attributes:
+
+* `+cascade+` – By default, JPA does not cascade any persistence
+operations to the target of the association. Thus, the default value of
+this attribute is an empty `+javax.persitence.CascadeType+` array. If
+you want some or all persistence operations cascaded to the target of
+the association, set the value of this attribute to one or more
+`+CascadeType+` instances, including the following:
+** `+ALL+` – Any persistence operation performed on the owning entity is
+cascaded to the target of the association.
+** `+MERGE+` – If the owning entity is merged, the merge is cascaded to
+the target of the association.
+** `+PERSIST+` – If the owning entity is persisted, the persist is
+cascaded target of the association.
+** `+REFRESH+` – If the owning entity is refreshed, the refresh is
+cascaded target of the association.
+** `+REMOVE+` – If the owning entity is removed, the target of the
+association is also removed.
++
+You are not required to provide value for this attribute.
+* `+fetch+` – By default, EclipseLink persistence provider uses a fetch
+type of `+javax.persitence.FetchType.EAGER+`: this is a requirement on
+the persistence provider runtime that data must be eagerly fetched.If
+the default is inappropriate for your application or a particular
+persistent field, set `+fetch+` to `+FetchType.LAZY+`: this is a hint to
+the persistence provider that data should be fetched lazily when it is
+first accessed (if possible). We recommend using the FetchType.LAZY on
+all relationships. You are not required to provide value for this
+attribute. For more information, see
+link:Using%20EclipseLink%20JPA%20Extensions%20(ELUG)#What_You_May_Need_to_Know_About_EclipseLink_JPA_Lazy_Loading[What
+You May Need to Know About EclipseLink JPA Lazy Loading].
+* `+mappedBy+` – By default, EclipseLink persistence provider infers the
+associated target entity from the type of the object being referenced.
+Use the `+mappedBy+` attribute if the relationship is bidirectional and
+the target entity has an inverse one-to-one relationship that has
+already been mapped. You can only use `+mappedBy+` on the side of the
+relationship that does not define the foreign key in its table. This is
+the only way in JPA to define a target foreign key relationship. For
+example, if the foreign key for the one-to-one is in the target entity’s
+table, you must define the one-to-one mapping on both sides of the
+relationship and use the `+mappedBy+` on the target foreign key side.
+For more information on target foreign keys, see
+link:Introduction%20to%20Relational%20Mappings%20(ELUG)#One-to-One_Mapping[One-to-One
+Mapping].
++
+You are not required to specify the value of this attribute.
+* `+optional+` – By default, EclipseLink persistence provider assumes
+that the value of all (nonprimitive) fields and properties may be
+`+null+`.
++
+The default value of this attribute is `+true+`. If the default is
+inappropriate for your application, set value of this attribute to
+`+false+`.
++
+You are not required to specify the value of this attribute.
+* `+targetEntity+` – By default, EclipseLink persistence provider infers
+the associated target entity from the type of the object being
+referenced. If the persistence provider cannot infer the type of the
+target entity, then set the `+targetEntity+` element on owning side of
+the association to the `+Class+` of the entity that is the target of the
+relationship.
++
+You are not required to specify the value of this attribute.
+
+The link:#Example_18-17[Usage of @OneToOne Annotation - Customer Class]
+and link:#Example_18-18[Usage of @OneToOne Annotation - CustomerRecord
+Class] examples show how to use this annotation to configure a
+one-to-one mapping between `+Customer+` (the owning side) and
+`+CustomerRecord+` (the owned side).
+
+[#Example 18-17]## *_Usage of @OneToOne Annotation - Customer Class_*
+
+[source,java]
+----
+ @Entity
+ public class Customer implements Serializable {
+     ...
+     @OneToOne(optional=false)
+     @JoinColumn(name="CUSTREC_ID", unique=true, nullable=false, updatable=false)
+     public CustomerRecord getCustomerRecord() {
+         return customerRecord;
+     }
+     ...
+ }
+----
+
+[width="100%",cols="<100%",]
+|===
+|*Note:* You have to provide a `+@JoinColumn+` (see Section 9.1.6
+"`JoinColumn Annotation`" of the http://jcp.org/en/jsr/detail?id=220[JPA
+Specification]) for a `+@OneToOne+` defining the foreign key. Otherwise,
+the foreign key will be assumed to be the `+_+` or `+_+`.
+|===
+
+Use either a `+@JoinColumn+` or a `+@JoinTable+` (see Section 9.1.25
+"`JoinTable Annotation`" of the http://jcp.org/en/jsr/detail?id=220[JPA
+Specification]) with the mapping; if you do not specify any of them,
+EclipseLink will default to `+@JoinTable+` with the join table name
+format of `+_+` in uppercase characters, and with columns format of
+`+_+`, `+_+` (or _ ) in uppercase characters.
+
+[#Example 18-18]## *_Usage of @OneToOne Annotation - CustomerRecord
+Class_*
+
+[source,java]
+----
+ @Entity
+ public class CustomerRecord implements Serializable {
+     ...
+     @OneToOne(optional=false, mappedBy="customerRecord")
+     public Customer getCustomer() {
+         return customer;
+     }
+     ...
+ }
+----
+
+For more information and examples, see Section 9.1.23 "`OneToOne
+Annotation`" of the http://jcp.org/en/jsr/detail?id=220[JPA
+Specification].
+
+For more information on EclipseLink direct mappings and relationship
+mappings, see
+link:Introduction%20to%20Relational%20Mappings%20(ELUG)#Relational_Mapping_Types[Relational
+Mapping Types].
+
+For more information, see
+link:Introduction%20to%20Relational%20Mappings%20(ELUG)#One-to-One_Mapping[One-to-One
+Mapping] and
+link:Configuring_a_Relational_One-to-One_Mapping_(ELUG)[Configuring a
+Relational One-to-One Mapping].
+
+=== @ManyToOne
+
+By default, JPA automatically defines a `+ManyToOne+` mapping for a
+single-valued association to another entity class that has many-to-one
+multiplicity.
+
+Use the `+ManyToOne+` annotation to do the following:
+
+* configure the fetch type to `+LAZY+`;
+* configure the mapping to forbid null values (for nonprimitive types)
+in case null values are inappropriate for your application;
+* configure the associated target entity, if it cannot be inferred from
+the type of the object being referenced;
+* configure the operations that must be cascaded to the target of the
+association (for example, if the owning entity is removed, ensure that
+the target of the association is also removed).
+
+The `+@ManyToOne+` annotation has the following attributes:
+
+* `+cascade+` – By default, JPA does not cascade any persistence
+operations to the target of the association. Thus, the default value of
+this attribute is an empty `+javax.persistence.CascadeType+` array. If
+you want some or all persistence operations cascaded to the target of
+the association, set the value of this attribute to one or more
+`+CascadeType+` instances, including the following:
+** `+ALL+` – Any persistence operation performed on the owning entity is
+cascaded to the target of the association.
+** `+MERGE+` – If the owning entity is merged, the merge is cascaded to
+the target of the association.
+** `+PERSIST+` – If the owning entity is persisted, the persist is
+cascaded target of the association.
+** `+REFRESH+` – If the owning entity is refreshed, the refresh is
+cascaded target of the association.
+** `+REMOVE+` – If the owning entity is removed, the target of the
+association is also removed.
++
+You are not required to provide value for this attribute.
+* `+fetch+` – By default, EclipseLink persistence provider uses a fetch
+type of javax.persitence.`+FetchType.EAGER+`: this is a requirement on
+the persistence provider runtime that data must be eagerly fetched. If
+the default is inappropriate for your application or a particular
+persistent field, set `+fetch+` to `+FetchType.LAZY+`: this is a hint to
+the persistence provider that data should be fetched lazily when it is
+first accessed (if possible).
++
+You are not required to provide value for this attribute. For more
+information, see
+link:Using%20EclipseLink%20JPA%20Extensions%20(ELUG)#What_You_May_Need_to_Know_About_EclipseLink_JPA_Lazy_Loading[What
+You May Need to Know About EclipseLink JPA Lazy Loading].
+* `+optional+` – By default, EclipseLink persistence provider assumes
+that the value of all (nonprimitive) fields and properties may be
+`+null+`.
++
+The default value of this attribute is `+true+`. If the default is
+inappropriate for your application, set value of this attribute to
+`+false+`.
++
+You are not required to specify the value of this attribute.
+* `+targetEntity+` – By default, EclipseLink persistence provider infers
+the associated target entity from the type of the object being
+referenced. If the persistence provider cannot infer the type of the
+target entity, then set the `+targetEntity+` element on owning side of
+the association to the `+Class+` of the entity that is the target of the
+relationship.
++
+You are not required to specify the value of this attribute.
+
+This example shows how to use this annotation to configure a many-to-one
+mapping between `+Customer+` (the owned side) and `+Order+` (the owning
+side) using generics.
+
+[#Example 18-19]## *_Usage of @ManyToOne Annotation_*
+
+[source,java]
+----
+ @Entity
+ public class Order implements Serializable {
+     ...
+     @ManyToOne(optional=false)
+     @JoinColumn(name="CUST_ID", nullable=false, updatable=false)
+     public Customer getCustomer() {
+         return customer;
+     }
+     ...
+ }
+----
+
+[width="100%",cols="<100%",]
+|===
+|*Note:* You have to provide a `+@JoinColumn+` (see Section 9.1.6
+"`JoinColumn Annotation`" of the http://jcp.org/en/jsr/detail?id=220[JPA
+Specification]) for a `+@ManyToOne+` defining the foreign key.
+Otherwise, the foreign key will be assumed to be the `+_+` or _ .
+|===
+
+Use either a `+@JoinColumn+` or a `+@JoinTable+` (see Section 9.1.25
+"`JoinTable Annotation`" of the http://jcp.org/en/jsr/detail?id=220[JPA
+Specification]) with the mapping; if you do not specify any of them,
+EclipseLink will default to `+@JoinTable+` with the join table name
+format of `+_+` in uppercase characters, and with columns format of
+`+_+`, `+_+` (or _ ) in uppercase characters.
+
+For more information and examples, see Section 9.1.22 "`ManyToOne
+Annotation`" of the http://jcp.org/en/jsr/detail?id=220[JPA
+Specification].
+
+For more information on EclipseLink direct mappings and relationship
+mappings, see
+link:Introduction%20to%20Relational%20Mappings%20(ELUG)#Relational_Mapping_Types[Relational
+Mapping Types].
+
+=== @OneToMany
+
+By default, JPA automatically defines a `+OneToMany+` mapping for a
+many-valued association with one-to-many multiplicity.
+
+Use the `+OneToMany+` annotation to do the following:
+
+* configure the fetch type to `+EAGER+`;
+* configure the associated target entity, because the `+Collection+`
+used is not defined using generics;
+* configure the operations that must be cascaded to the target of the
+association: for example, if the owning entity is removed, ensure that
+the target of the association is also removed;
+* configure the details of the join table used by the persistence
+provider for unidirectional one-to-many relationships (see Section
+9.1.25 "`JoinTable Annotation`" of the
+http://jcp.org/en/jsr/detail?id=220[JPA Specification]).
+
+The `+@OneToMany+` annotation has the following attributes:
+
+* `+cascade+` – By default, JPA does not cascade any persistence
+operations to the target of the association. Thus, the default value of
+this attribute is an empty `+javax.persitence.CascadeType+` array. If
+you want some or all persistence operations cascaded to the target of
+the association, set the value of this attribute to one or more
+`+CascadeType+` instances, including the following:
+** `+ALL+` – Any persistence operation performed on the owning entity is
+cascaded to the target of the association.
+** `+MERGE+` – If the owning entity is merged, the merge is cascaded to
+the target of the association.
+** `+PERSIST+` – If the owning entity is persisted, the persist is
+cascaded target of the association.
+** `+REFRESH+` – If the owning entity is refreshed, the refresh is
+cascaded target of the association.
+** `+REMOVE+` – If the owning entity is removed, the target of the
+association is also removed.
++
+You are not required to provide value for this attribute.
+* `+fetch+` – By default, EclipseLink persistence provider uses a fetch
+type of javax.persitence.`+FetchType.LAZY+`: this is a hint to the
+persistence provider that data should be fetched lazily when it is first
+accessed (if possible). If the default is inappropriate for your
+application or a particular persistent field, set `+fetch+` to
+`+FetchType.EAGER+`: this is a requirement on the persistence provider
+runtime that data must be eagerly fetched.
++
+You are not required to provide value for this attribute. For more
+information, see
+link:Using%20EclipseLink%20JPA%20Extensions%20(ELUG)#What_You_May_Need_to_Know_About_EclipseLink_JPA_Lazy_Loading[What
+You May Need to Know About EclipseLink JPA Lazy Loading].
+* `+mappedBy+` – By default, if the relationship is unidirectional,
+EclipseLink persistence provider determines the field that owns the
+relationship. If the relationship is bidirectional, then set the
+`+mappedBy+` element on the inverse (non-owning) side of the association
+to the name of the field or property that owns the relationship, as the
+link:#Example_18-21[Usage of @ManyToOne Annotation - Order Class with
+Generics] example shows.
++
+You are not required to specify the value of this attribute.
+* `+targetEntity+` – By default, if you are using a `+Collection+`
+defined using generics, then the persistence provider infers the
+associated target entity from the type of the object being referenced.
+Thus, the default is the parameterized type of the `+Collection+` when
+defined using generics. If your `+Collection+` does not use generics,
+then you must specify the entity class that is the target of the
+association: set the `+targetEntity+` element on owning side of the
+association to the `+Class+` of the entity that is the target of the
+relationship.
++
+You are not required to specify the value of this attribute.
+
+The link:#Example_18-20[Usage of @OneToMany Annotation - Customer Class
+with Generics] and link:#Example_18-21[Usage of @ManyToOne Annotation -
+Order Class with Generics] examples show how to use this annotation to
+configure a one-to-many mapping between `+Customer+` (the owned side)
+and `+Order+` (the owning side) using generics.
+
+[#Example 18-20]## *_Usage of @OneToMany Annotation - Customer Class
+with Generics_*
+
+[source,java]
+----
+ @Entity
+ public class Customer implements Serializable {
+     ...
+     @OneToMany(cascade=ALL, mappedBy="customer")
+     public Set<Order> getOrders() {
+         return orders;
+     }
+     ...
+ }
+----
+
+[#Example 18-21]## *_Usage of @ManyToOne Annotation - Order Class with
+Generics_*
+
+[source,java]
+----
+ @Entity
+ public class Order implements Serializable {
+     ...
+     @ManyToOne
+     @JoinColumn(name="CUST_ID", nullable=false)
+     public Customer getCustomer() {
+         return customer;
+     }
+     ...
+ }
+----
+
+For more information and examples, see Section 9.1.24 "`OneToMany
+Annotation`" of the http://jcp.org/en/jsr/detail?id=220[JPA
+Specification].
+
+For more information on EclipseLink direct mappings and relationship
+mappings, see
+link:Introduction%20to%20Relational%20Mappings%20(ELUG)#Relational_Mapping_Types[Relational
+Mapping Types].
+
+For more information on EclipseLink one-to-one mappings, see
+link:Introduction%20to%20Relational%20Mappings%20(ELUG)#One-to-Many_Mapping[One-to-Many
+Mapping], and for information on how to configure these mappings, see
+link:Configuring_a_Relational_One-to-Many_Mapping_(ELUG)[Configuring a
+Relational One-to-Many Mapping].
+
+=== @ManyToMany
+
+By default, JPA automatically defines a `+ManyToMany+` mapping for a
+many-valued association with many-to-many multiplicity.
+
+Use the `+@ManyToMany+` annotation to do the following:
+
+* configure the fetch type to `+EAGER+`;
+* configure the mapping to forbid null values (for nonprimitive types)
+in case `+null+` values are inappropriate for your application;
+* configure the associated target entity because the `+Collection+` used
+is not defined using generics;
+* configure the operations that must be cascaded to the target of the
+association (for example, if the owning entity is removed, ensure that
+the target of the association is also removed).
+
+The `+@ManyToMany+` annotation has the following attributes:
+
+* `+cascade+` – By default, JPA does not cascade any persistence
+operations to the target of the association. Thus, the default value of
+this attribute is an empty `+javax.persitence.CascadeType+` array. If
+you want some or all persistence operations cascaded to the target of
+the association, set the value of this attribute to one or more
+`+CascadeType+` instances, including the following:
+** `+ALL+` – Any persistence operation performed on the owning entity is
+cascaded to the target of the association.
+** `+MERGE+` – If the owning entity is merged, the merge is cascaded to
+the target of the association.
+** `+PERSIST+` – If the owning entity is persisted, the persist is
+cascaded target of the association.
+** `+REFRESH+` – If the owning entity is refreshed, the refresh is
+cascaded target of the association.
+** `+REMOVE+` – If the owning entity is removed, the target of the
+association is also removed.
++
+You are not required to provide value for this attribute.
+* `+fetch+` – By default, EclipseLink persistence provider uses a fetch
+type of `+javax.persitence.FetchType.LAZY+`: this is a hint to the
+persistence provider that data should be fetched lazily when it is first
+accessed (if possible). If the default is inappropriate for your
+application or a particular persistent field, set `+fetch+` to
+`+FetchType.EAGER+`: this is a requirement on the persistence provider
+runtime that data must be eagerly fetched.
++
+You are not required to provide value for this attribute. For more
+information, see
+link:Using%20EclipseLink%20JPA%20Extensions%20(ELUG)#What_You_May_Need_to_Know_About_EclipseLink_JPA_Lazy_Loading[What
+You May Need to Know About EclipseLink JPA Lazy Loading].
+* `+mappedBy+` – By default, if the relationship is unidirectional,
+EclipseLink persistence provider determines the field that owns the
+relationship. If the relationship is bidirectional, then set the
+`+mappedBy+` element on the inverse (non-owning) side of the association
+to the name of the field or property that owns the relationship, as the
+link:#Example_18-23[Usage of @ManyToMany Annotation - Project Class with
+Generics] example shows.
++
+You are not required to specify the value of this attribute.
+* `+targetEntity+` – By default, if you are using a `+Collection+`
+defined using generics, then the persistence provider infers the
+associated target entity from the type of the object being referenced.
+Thus, the default is the parameterized type of the `+Collection+` when
+defined using generics. If your `+Collection+` does not use generics,
+then you must specify the entity class that is the target of the
+association: set the `+targetEntity+` element on owning side of the
+association to the `+Class+` of the entity that is the target of the
+relationship.
++
+You are not required to specify the value of this attribute.
+
+The link:#Example_18-22[Usage of @ManyToMany Annotation - Employee Class
+with Generics] and link:#Example_18-23[Usage of @ManyToMany Annotation -
+Project Class with Generics] examples show how to use this annotation to
+configure a many-to-many mapping between `+Employee+` and `+Project+`
+using generics.
+
+[#Example 18-22]## *_Usage of @ManyToMany Annotation - Employee Class
+with Generics_*
+
+[source,java]
+----
+ @Entity
+ public class Employee implements Serializable {
+     @Id
+     private int id;
+     private String name;
+     @ManyToMany
+     @JoinTable(name="EMP_PROJ",
+                 joinColumns=
+                      @JoinColumn(name="EMP_ID"),
+                 inverseJoinColumns=
+                      @JoinColumn(name="PROJ_ID)
+     )
+     private Collection<Project> projects;
+     ...
+ }
+----
+
+[width="100%",cols="<100%",]
+|===
+|*Note:* Use a `+@JoinTable+` (see Section 9.1.25 "`JoinTable
+Annotation`" of the http://jcp.org/en/jsr/detail?id=220[JPA
+Specification]) annotation to define a many-to-many join table; if you
+do not specify this annotation, EclipseLink will default to
+`+@JoinTable+` with the join table name format of `+_+` in uppercase
+characters, and with columns format of `+_+`, `+_+` (or _ ) in uppercase
+characters.
+|===
+
+[#Example 18-23]## *_Usage of @ManyToMany Annotation - Project Class
+with Generics_*
+
+[source,java]
+----
+ @Entity
+ public class Project implements Serializable {
+     ...
+     @ManyToMany(mappedBy="projects")
+     public Set<Employee> getEmployees() {
+         return employees;
+     }
+     ...
+ }
+----
+
+For more information and examples, see Section 9.1.26 "`ManyToMany
+Annotation`" of the http://jcp.org/en/jsr/detail?id=220[JPA
+Specification].
+
+For more information on EclipseLink direct mappings and relationship
+mappings, see
+link:Introduction%20to%20Relational%20Mappings%20(ELUG)#Relational_Mapping_Types[Relational
+Mapping Types].
+
+For more information on EclipseLink one-to-one mappings, see
+link:Introduction%20to%20Relational%20Mappings%20(ELUG)#Many-to-Many_Mapping[Many-to-Many
+Mapping], and for information on how to configure these mappings, see
+link:Configuring_a_Relational_Many-to-Many_Mapping_(ELUG)[Configuring a
+Relational Many-to-Many Mapping].
+
+=== @MapKey
+
+By default, EclipseLink persistence provider assumes that the primary
+key of the associated entity is the map key for associations of type
+`+java.util.Map+`. If the primary key is a noncomposite primary key
+annotated with the link:#@Id[@Id annotation], an instance of this field
+or property’s type is used as the map key.
+
+Use the `+@MapKey+` annotation to specify the following:
+
+* some other field or property as the map key if the primary key of the
+associated entity is not appropriate for your application;
+* an embedded composite primary key class (see
+link:#@EmbeddedId[@EmbeddedId]).
+
+The field or property you specify must have a unique constraint (see
+Section 9.1.4 "`UniqueConstraint Annotation`" of the
+http://jcp.org/en/jsr/detail?id=220[JPA Specification]).
+
+The `+@MapKey+` annotation has the following attributes:
+
+* `+name+` – By default, EclipseLink persistence provider uses the
+primary key of the associated entity as the `+Map+` key for a property
+or field mapped to a `+java.util.Map+` for noncomposite primary keys, or
+composite primary keys annotated with the `+@IdClass+` annotation (see
+link:#@IdClass[@IdClass]). If you want to use some other field or
+property as the map key, set name to the associated entity’s `+String+`
+field or property name to use.
++
+You are not required to provide value for this attribute.
+
+In the link:#Example_18-24[Project Entity Using @MapKey Annotation]
+example, `+Project+` owns a one-to-many relationship to instances of
+`+Employee+` as a `+Map+`. The link:#Example_18-24[Project Entity Using
+@MapKey Annotation] example shows how to use the `+@MapKey+` annotation
+to specify that the key for this `+Map+` is `+Employee+` field
+`+empPK+`, an embedded composite primary key (see the
+link:#Example_18-25[Employee Entity] example) of type `+EmployeePK+`
+(see the link:#Example_18-24[Project Entity Using @MapKey Annotation]
+example).
+
+[#Example 18-24]## *_Project Entity Using @MapKey Annotation_*
+
+[source,java]
+----
+ @Entity
+ public class Project implements Serializable {
+     ...
+     @OneToMany(mappedBy="project")
+     @MapKey(name="empPK")
+     public Map<EmployeePK, Employee> getEmployees() {
+         ...
+     }
+     ...
+ }
+----
+
+[#Example 18-25]## *_Employee Entity_*
+
+[source,java]
+----
+ @Entity
+ public class Employee implements Serializable {
+     ...
+     @EmbeddedId
+     public EmployeePK getEmpPK() {
+         ...
+     }
+
+     @ManyToOne
+     @JoinColumn(name="proj_id")
+     public Project getProject() {
+         ...
+     }
+     ...
+ }
+----
+
+[#Example 18-26]## *_EmployeePK Composite Primary Key Class_*
+
+[source,java]
+----
+ @Embeddable
+ public class EmployeePk {
+
+     String name;
+     Date birthDate;
+     ...
+ }
+----
+
+For more information and examples, see Section 9.1.27 "`MapKey
+Annotation`" of the http://jcp.org/en/jsr/detail?id=220[JPA
+Specification].
+
+=== @OrderBy
+
+Use the `+@OrderBy+` annotation with `+@OneToMany+` and `+@ManyToMany+`
+to specify the following:
+
+* one or more other field or property names to order by;
+* different orders (ascending or descending) for each such field or
+property names.
+
+The `+@OrderBy+` annotation has the following attributes:
+
+* `+value+` – By default, EclipseLink persistence provider retrieves the
+members of an association in ascending order by primary key of the
+associated entities. If you want to order by some other fields or
+properties and specify different, set `+value+` to a comma-separated
+list of the following elements: "``+property-or-field-name ASC|DESC+``"
+(see Example 1-65).
++
+You are not required to provide value for this attribute.
+
+This example shows how to use the `+@OrderBy+` annotation to specify
+that the `+Project+` method `+getEmployees+` should return a `+List+` of
+`+Employee+` in ascending order by `+Employee+` field `+lastname+`, and
+in descending order by `+Employee+` field `+seniority+`.
+
+[#Example 18-27]## *_Project Entity Using @OrderBy Annotation_*
+
+[source,java]
+----
+ @Entity
+ public class Project implements Serializable {
+     ...
+     @ManyToMany(mappedBy="project")
+     @OrderBy("lastname ASC, seniority DESC")
+     public List<Employee> getEmployees() {
+         ...
+     }
+     ...
+ }
+----
+
+For more information and examples, see Section 9.1.28 "`OrderBy
+Annotation`" of the http://jcp.org/en/jsr/detail?id=220[JPA
+Specification].
+
+== Mapping Inheritance
+
+By default, EclipseLink persistence provider assumes that all persistent
+fields are defined by a single entity class.
+
+Use the following annotations if your entity class inherits some or all
+persistent fields from one or more superclasses:
+
+* link:#@Inheritance[@Inheritance]
+* link:#@MappedSuperclass[@MappedSuperclass]
+* link:#@DiscriminatorColumn[@DiscriminatorColumn]
+* link:#@DiscriminatorValue[@DiscriminatorValue]
+
+For more information, see Section 2.1.9 "`Inheritance`" of the
+http://jcp.org/en/jsr/detail?id=220[JPA Specification].
+
+You can access advanced inheritance options through EclipseLink
+descriptor API
+link:Customizing%20the%20EclipseLink%20Application%20(ELUG)#Using_the_Descriptor_Customizer_Class[using
+a DescriptorCustomizer class].
+
+=== @Inheritance
+
+By default, the EclipseLink persistence provider automatically manages
+the persistence of entities in an inheritance hierarchy.
+
+Use the `+@Inheritance+` annotation to customize the persistence
+provider’s inheritance hierarchy support to improve application
+performance or to match an existing data model.
+
+The `+@Inheritance+` annotation has the following attributes:
+
+* `+strategy+` – By default, the EclipseLink persistence provider
+assumes that all the classes in a hierarchy are mapped to a single table
+differentiated by the discriminator value (see
+link:#@DiscriminatorValue[@DiscriminatorValue]) in the table’s
+discriminator column (see
+link:#@DiscriminatorColumn[@DiscriminatorColumn]):
+`+InheritanceType.SINGLE_TABLE+`. If this is not appropriate for your
+application or if you must match an existing data model, set
+`+strategy+` to the desired `+InheritanceType+` enumerated type:
+** `+SINGLE_TABLE+` – all the classes in a hierarchy are mapped to a
+single table. The table has a discriminator column
+(link:#@DiscriminatorColumn[@DiscriminatorColumn]) whose value
+(link:#@DiscriminatorValue[@DiscriminatorValue]) identifies the specific
+subclass to which the instance that is represented by the row belongs.
++
++
++
++
+*Note:* This option provides the best support for both polymorphic
+relationships between entities and queries that range over the class
+hierarchy. The disadvantages of this option include the need to make
+nullable columns that should be `+NOT NULL+`.
++
++
++
++
+For more information, see Section 2.1.10.1 "`Single Table per Class
+Hierarchy Strategy`" of the http://jcp.org/en/jsr/detail?id=220[JPA
+Specification].
+** `+TABLE_PER_CLASS+` – each class is mapped to a separate table. All
+properties of the class, including inherited properties, are mapped to
+columns of the table for the class.
++
++
++
++
+*Note:* This option is available starting in EclipseLink Release 1.1.
+For earlier versions, you can instead either map each entity subclass
+independently, or use a link:#@MappedSuperclass[`+@MappedSuperclass+`].
++
++
++
++
+For more information, see Section 2.1.10.2 "`Table per Concrete Class
+Strategy`" of the http://jcp.org/en/jsr/detail?id=220[JPA
+Specification].
+** `+JOINED+` – the root of the class hierarchy is represented by a
+single table and each subclass is represented by a separate table. Each
+subclass table contains only those fields that are specific to the
+subclass (not inherited from its superclass) and primary key columns
+that serve as foreign keys to the primary keys of the superclass table.
+For more information, see Section 2.1.10.3 "`Joined Subclass Strategy`"
+of the http://jcp.org/en/jsr/detail?id=220[JPA Specification].
++
+You are not required to specify the value of this attribute.
+
+This example shows how to use this annotation to specify that all
+subclasses of `+Customer+` will use `+InheritanceType.JOINED+`. The
+subclass in the link:#Example_18-29[@Inheritance - Subclass Using
+JOINED] example will be mapped to its own table that contains a column
+for each the persistent properties of `+ValuedCustomer+` and one foreign
+key column that contains the primary key to the `+Customer+` table.
+
+[#Example 18-28]## *_@Inheritance - Root Class Using JOINED_*
+
+[source,java]
+----
+ import static javax.persistence.InheritanceType.JOINED;
+ @Entity
+ @Inheritance(strategy=JOINED)
+ public class Customer implements Serializable {
+
+     @Id
+     private int customerId;
+     ...
+ }
+----
+
+[#Example 18-29]## *_@Inheritance - Subclass Using JOINED_*
+
+[source,java]
+----
+ @Entity
+ public class ValuedCustomer extends Customer {
+     ...
+ }
+----
+
+In the link:#Example_18-30[@Inheritance - Root Class Specifying its
+Discriminator Column] example, by default,
+`+InheritanceType.SINGLE_TABLE+` applies to `+Customer+` and all its
+subclasses. In this example, the default discriminator table column
+`+DTYPE+` (link:#@DiscriminatorColumn[@DiscriminatorColumn]) is
+specified as having a discriminator type of `+INTEGER+` and the
+`+@DiscriminatorValue+` for `+Customer+` is specified as 1. The
+link:#Example_18-31[@Inheritance - Subclass Specifying its Discriminator
+Value] example shows how to specify the discriminator value for subclass
+`+ValuedCustomer+` as 2. In this example, all the persistent properties
+of both `+Customer+` and `+ValuedCustomer+` will be mapped to a single
+table.
+
+[#Example 18-30]## *_@Inheritance - Root Class Specifying its
+Discriminator Column_*
+
+[source,java]
+----
+ @Entity
+ @DiscriminatorColumn(discriminatorType=DiscriminatorType.INTEGER)
+ @DiscriminatorValue(value="1")
+ public class Customer implements Serializable {
+     ...
+ }
+----
+
+[#Example 18-31]## *_@Inheritance - Subclass Specifying its
+Discriminator Value_*
+
+[source,java]
+----
+ @Entity
+ @DiscriminatorValue(value="2")
+ public class ValuedCustomer extends Customer {
+     ...
+ }
+----
+
+For more information, see the following sections of the
+http://jcp.org/en/jsr/detail?id=220[JPA Specification]:
+
+* Section 2.1.9 "`Inheritance`"
+* Section 2.1.10 "`Inheritance Mapping Strategies`"
+* Section 9.1.29 "`Inheritance Annotation`"
+
+=== @MappedSuperclass
+
+By default, a EclipseLink persistence provider assumes that all the
+persistent fields of an entity are defined in that entity.
+
+The `+@MappedSuperclass+` annotation lets you define mappings in a
+nonpersistent abstract superclass and enable their inheritance by the
+subclasses. You can use the link:#@AttributeOverride[@AttributeOverride]
+and link:#@AssociationOverride[@AssociationOverride] annotations to
+override the mapping information in these subclasses.
+
+Use the `+@MappedSuperclass+` annotation to designate a superclass from
+which your entity class inherits persistent fields. This is a convenient
+pattern when multiple entity classes share common persistent fields or
+properties.
+
+You can annotate this superclass’ fields and properties with any of the
+direct and relationship mapping annotations (such as
+link:#@Basic[@Basic] and link:#@ManyToMany[@ManyToMany]) as you would
+for an entity, but these mappings apply only to its subclasses since no
+table exists for the superclass itself. The inherited persistent fields
+or properties belong to the subclass’ table.
+
+The `+@MappedSuperclass+` annotation does not have any attributes.
+
+This example shows how to use the `+@MappedSuperclass+` annotation to
+specify `+Employee+` as a mapped superclass. The
+link:#Example_18-33[Extending a Mapped Superclass] example shows how to
+extend this superclass in an entity and how to use the
+`+@AttributeOverride+` annotation in the entity class to override
+configuration made in the superclass.
+
+[#Example 18-32]## *_Usage of the @MappedSuperclass Annotation_*
+
+[source,java]
+----
+ @MappedSuperclass
+ public class Employee implements Serializable {
+
+     @Id
+     protected Integer empId;
+     @Version
+     protected Integer version;
+
+     @ManyToOne
+     @JoinColumn(name="ADDR")
+     protected Address address;
+
+     ...
+ }
+----
+
+[#Example 18-33]## *_Extending a Mapped Superclass_*
+
+[source,java]
+----
+ @Entity
+ @AttributeOverride(name="address", column=@Column(name="ADDR_ID"))
+ public class PartTimeEmployee extends Employee {
+     @Column(name="WAGE")
+     protected Float hourlyWage;
+
+     ...
+ }
+----
+
+For more information, see the following sections of the
+http://jcp.org/en/jsr/detail?id=220[JPA Specification]:
+
+* Section 9.1.36 "`MappedSuperclass Annotation`"
+* Section 2.1.9.2 "`Mapped Superclasses`"
+* Section 2.1.10 "`Inheritance Mapping Strategies`"
+
+=== @DiscriminatorColumn
+
+By default, when link:#@Inheritance[@Inheritance] attribute strategy is
+`+InheritanceType.SINGLE_TABLE+` or `+JOINED+`, EclipseLink persistence
+provider creates a discriminator column named `+DTYPE+` to differentiate
+classes in an inheritance hierarchy.
+
+Use the `+@DiscriminatorColumn+` annotation to do the following:
+
+* specify a discriminator column name if the column name in your data
+model is not the default column name `+DTYPE+`;
+* specify a discriminator column length that is appropriate for your
+application or a preexisting data model;
+* fine-tune the characteristics of the discriminator column in your
+database.
+
+The `+@DiscriminatorColumn+` annotation has the following attributes:
+
+* `+columnDefinition+` – By default, EclipseLink persistence provider
+creates a database table column with minimal SQL: empty `+String+`. If
+you want the column created with more specialized options, set the value
+of this attribute to the SQL fragment that you want JPA to use when
+generating the DDL for the column.
++
+You are not required to specify the value of this attribute.
+* `+discriminatorType+` – By default, EclipseLink persistence provider
+assumes that the discriminator type is a `+String+`:
+`+DiscriminatorType.STRING+`. If you want to use a different type, set
+the value of this attribute to `+DiscriminatorType.CHAR+` or
+`+DiscriminatorType.INTEGER+`.
++
+Your link:#@DiscriminatorValue[@DiscriminatorValue] must conform to this
+type.
++
+You are not required to specify the value of this attribute.
+* `+length+` – By default, EclipseLink persistence provider assumes that
+the discriminator column has a maximum length of 255 characters when
+used to hold a `+String+` value. Default value of this attribute is
+[arabic, start=31]
+. If this column width is inappropriate for your application or
+database, set the length to the int value appropriate for your database
+column.
++
+Your link:#@DiscriminatorValue[@DiscriminatorValue] must conform to this
+type.
++
+You are not required to specify the value of this attribute.
+* `+name+` – By default, EclipseLink persistence provider assumes that
+the discriminator column is named "``+DTYPE+``".
++
+To specify an alternative column name, set name to the `+String+` column
+name you want.
++
+You are not required to specify the value of this attribute.
+
+The link:#Example_18-34[@DiscriminatorColumn and @DiscriminatorValue -
+Root Class] example shows how to use this annotation to specify a
+discriminator column named `+DISC+` of type `+STRING+` and length 20. In
+this example, the link:#@DiscriminatorValue[@DiscriminatorValue] for
+this class is specified as `+CUST+`. The subclass in the
+link:#Example_18-35[@DiscriminatorValue - Subclass] example specifies
+its own `+@DiscriminatorValue+` of `+VIP+`. In both `+Customer+` and
+`+ValuedCustomer+`, the value for `+@DiscriminatorValue+` must be
+convertible to the type specified by `+@DiscriminatorColumn+` attribute
+`+discriminatorType+` and must conform to `+@DiscriminatorColumn+`
+attribute `+length+`.
+
+[#Example 18-34]## *_@DiscriminatorColumn and @DiscriminatorValue - Root
+Class_*
+
+[source,java]
+----
+ @Entity
+ @Table(name="CUST")
+ @Inheritance(strategy=SINGLE_TABLE)
+ @DiscriminatorColumn(name="DISC", discriminatorType=STRING, length=20)
+ @DiscriminatorValue(value="CUST")
+ public class Customer implements Serializable {
+     ...
+ }
+----
+
+[#Example 18-35]## *_@DiscriminatorValue - Subclass_*
+
+[source,java]
+----
+ @Entity
+ @DiscriminatorValue(value="VIP")
+ public class ValuedCustomer extends Customer {
+     ...
+ }
+----
+
+For more information, see the following sections of the
+http://jcp.org/en/jsr/detail?id=220[JPA Specification]:
+
+* Section 9.1.30 "`DiscriminatorColumn Annotation`"
+* Section 9.1.31 "`DiscriminatorValue Annotation`"
+* Section 2.1.10 "`Inheritance Mapping Strategies`"
+
+=== @DiscriminatorValue
+
+By default, when `+@Inheritance+` attribute strategy is
+`+InheritanceType.SINGLE_TABLE+` or `+JOINED+`, EclipseLink persistence
+provider uses a `+@DiscriminatorColumn+` to differentiate classes in the
+inheritance hierarchy by entity name (see Section 8.1 "`Entity`" of the
+http://jcp.org/en/jsr/detail?id=220[JPA Specification]).
+
+Use the `+@DiscriminatorValue+` annotation to specify the discriminator
+value used to differentiate an entity in this inheritance hierarchy:
+
+* if the entity name is inappropriate for this application;
+* to match an existing database schema;
+
+The `+@DiscriminatorValue+` annotation has the following attributes:
+
+* `+value+` – Set value to the `+String+` equivalent of a discriminator
+value that conforms to the `+@DiscriminatorColumn+` attributes
+`+discriminatorType+` and `+length+`.
++
+You are required to specify the value of this attribute.
+
+The link:#Example_18-36[@DiscriminatorColumn and @DiscriminatorValue -
+Root Class] example shows how to use this annotation to specify a
+discriminator column named `+DISC+` of type `+STRING+` and length 20. In
+this example, the `+@DiscriminatorValue+` for this class is specified as
+`+CUST+`. The subclass in the link:#Example_18-37[@DiscriminatorValue -
+Subclass] example specifies its own `+@DiscriminatorValue+` of `+VIP+`.
+In both `+Customer+` and `+ValuedCustomer+`, the value for
+`+@DiscriminatorValue+` must be convertible to the type specified by
+`+@DiscriminatorColumn+` attribute `+discriminatorType+` and must
+conform to `+@DiscriminatorColumn+` attribute `+length+`.
+
+[#Example 18-36]## *_@DiscriminatorColumn and @DiscriminatorValue - Root
+Class_*
+
+[source,java]
+----
+ @Entity
+ @Table(name="CUST")
+ @Inheritance(strategy=SINGLE_TABLE)
+ @DiscriminatorColumn(name="DISC", discriminatorType=STRING, length=20)
+ @DiscriminatorValue(value="CUST")
+ public class Customer implements Serializable {
+     ...
+ }
+----
+
+[#Example 18-37]## *_@DiscriminatorValue - Subclass_*
+
+[source,java]
+----
+ @Entity
+ @DiscriminatorValue(value="VIP")
+ public class ValuedCustomer extends Customer {
+     ...
+ }
+----
+
+For more information, see the following sections of the
+http://jcp.org/en/jsr/detail?id=220[JPA Specification]:
+
+* Section 9.1.30 "`DiscriminatorColumn Annotation`"
+* Section 9.1.31 "`DiscriminatorValue Annotation`"
+* Section 2.1.10 "`Inheritance Mapping Strategies`"
+
+== Using Embedded Objects
+
+An embedded object does not have its own persistent identity – it is
+dependent upon an entity for its identity. For more information, see
+Section 2.1.5 "`Embeddable Classes`" of the
+http://jcp.org/en/jsr/detail?id=220[JPA Specification].
+
+By default, EclipseLink persistence provider assumes that every entity
+is mapped to its own table. Use the following annotations to override
+this behavior for entities that are owned by other entities:
+
+* link:#@Embeddable[@Embeddable]
+* link:#@Embedded[@Embedded]
+* link:#@AttributeOverride[@AttributeOverride]
+* link:#@AttributeOverrides[@AttributeOverrides]
+* link:#@AssociationOverride[@AssociationOverride]
+* link:#@AssociationOverrides[@AssociationOverrides]
+
+For information on EclipseLink aggregate descriptors, refer to
+link:Introduction%20to%20Relational%20Descriptors%20(ELUG)#Aggregate_and_Composite_Descriptors_in_Relational_Projects[Aggregate
+and Composite Descriptors in Relational Projects]; for aggregates
+advanced configuration options, refer to EclipseLink API.
+
+=== @Embeddable
+
+Use the `+@Embeddable+` annotation to specify a class whose instances
+are stored as an intrinsic part of an owning entity and share the
+identity of the entity. Each of the persistent properties or fields of
+the embedded object is mapped to the database table for the entity.
+
+The `+@Embeddable+` annotation does not have attributes.
+
+The link:#Example_18-38[Usage of the @Embeddable Annotation] example
+shows how to use this annotation to specify that class
+`+EmploymentPeriod+` may be embedded in an entity when used as the type
+for a persistent field annotated as `+@Embedded+` (see
+thelink:#Example_18-39[Usage of the @Embedded Annotation] and
+link:#@Embedded[@Embedded] examples).
+
+[#Example 18-38]## *_Usage of the @Embeddable Annotation_*
+
+[source,java]
+----
+ @Embeddable
+ public class EmploymentPeriod {
+
+     java.util.Date startDate;
+     java.util.Date endDate;
+     ...
+ }
+----
+
+For more information, see Section 9.1.34 "`Embeddable Annotation`" of
+the http://jcp.org/en/jsr/detail?id=220[JPA Specification].
+
+=== @Embedded
+
+Use the `+@Embedded+` annotation to specify a persistent field whose
+link:#@Embeddable[@Embeddable] type can be stored as an intrinsic part
+of the owning entity and share the identity of the entity. Each of the
+persistent properties or fields of the embedded object is mapped to the
+database table for the owning entity.
+
+You can use the `+@Embedded+` annotation in conjunction with
+`+@Embeddable+` to model a strict ownership relationship so that if the
+owning object is removed, the owned object is also removed.
+
+Embedded objects should not be mapped across more than one table.
+
+By default, column definitions (see Section 9.1.5 "`Column Annotation`"
+of the http://jcp.org/en/jsr/detail?id=220[JPA Specification]) specified
+in the `+@Embeddable+` class apply to the `+@Embedded+` class. If you
+want to override these column definitions, use the
+link:#@AttributeOverride[@AttributeOverride] annotation.
+
+The `+@Embedded+` annotation does not have attributes.
+
+The link:#Example_18-39[Usage of the @Embedded Annotation] example shows
+how to use this annotation to specify that `+@Embeddable+` class
+`+EmploymentPeriod+` (see the link:#Example_18-38[Usage of the
+@Embeddable Annotation]) example may be embedded in the entity class
+using the specified attribute overrides
+(link:#@AttributeOverride[@AttributeOverride]). If you do not need
+attribute overrides, you can omit the `+@Embedded+` annotation entirely:
+EclipseLink persistence provider will infer that `+EmploymentPeriod+` is
+embedded from its `+@Embeddable+` annotation.
+
+[#Example 18-39]## *_Usage of the @Embedded Annotation_*
+
+[source,java]
+----
+ @Embeddable
+ public class Employee implements Serializable {
+     ...
+     @Embedded
+     @AttributeOverrides({
+     @AttributeOverride(name="startDate", column=@Column(name="EMP_START")),
+     @AttributeOverride(name="endDate", column=@Column(name="EMP_END"))})
+     public EmploymentPeriod getEmploymentPeriod() {
+     ...
+     }
+     ...
+ }
+----
+
+For more information, see Section 9.1.35 "`Embedded Annotation`" of the
+http://jcp.org/en/jsr/detail?id=220[JPA Specification].
+
+=== @AttributeOverride
+
+By default, EclipseLink persistence provider automatically assumes that
+a subclass inherits both persistent properties and their basic mappings
+from the superclass.
+
+Use the `+@AttributeOverride+` annotation to customize a basic mapping
+inherited from a link:#@MappedSuperclass[@MappedSuperclass] or
+link:#@Embeddable[@Embeddable] to change the `+@Column+` (see Section
+9.1.5 "`Column Annotation`" of the
+http://jcp.org/en/jsr/detail?id=220[JPA Specification]) associated with
+the field or property if the inherited column definition is incorrect
+for your entity (for example, if the inherited column name is
+incompatible with a preexisting data model, or invalid as a column name
+in your database).
+
+If you have more than one `+@AttributeOverride+` change to make, you
+must use the link:#@AttributeOverrides[@AttributeOverrides] annotation.
+
+To customize an association mapping to change its `+@JoinColumn+` (see
+Section 9.1.6 "`JoinColumn Annotation`" of the
+http://jcp.org/en/jsr/detail?id=220[JPA Specification]), use the
+link:#@AssociationOverride[@AssociationOverride] annotation.
+
+The `+@AttributeOverride+` annotation has the following attributes:
+
+* `+column+` – The `+@Column+` that is being mapped to the persistent
+attribute. The mapping type will remain the same as is defined in the
+embeddable class or mapped superclass.
++
+You are required to specify the value of this attribute.
+* `+name+` – The name of the property in the embedded object that is
+being mapped if property-based access is being used, or the name of the
+field if field-based access is used.
++
+You are required to specify the value of this attribute.
+
+The link:#Example_18-40[Usage of the @MappedSuperclass Annotation]
+example shows a `+@MappedSuperclass+` that the entity in the
+link:#Example_18-41[Usage of the @AttributeOverride Annotation] example
+extends. The link:#Example_18-41[Usage of the @AttributeOverride
+Annotation] example shows how to use `+@AttributeOverride+` in the
+entity subclass to override the `+@Column+` defined (by default) in the
+`+@MappedSuperclass+` `+Employee+` for the basic mapping to `+Address+`.
+
+With the `+@AttributeOverride+`, the `+Employee+` table contains the
+following columns:
+
+* `+ID+`
+* `+VERSION+`
+* `+ADDR_STRING+`
+* `+WAGE+`
+
+Without the `+@AttributeOverride+`, the `+Employee+` table contains the
+following columns:
+
+* `+ID+`
+* `+VERSION+`
+* `+ADDRESS+`
+* `+WAGE+`
+
+[#Example 18-40]## *_Usage of the @MappedSuperclass Annotation_*
+
+[source,java]
+----
+ @MappedSuperclass
+ public class Employee {
+
+     @Id
+     protected Integer id;
+     @Version
+     protected Integer version;
+     protected String address;
+     ...
+ }
+----
+
+[#Example 18-41]## *_Usage of the @AttributeOverride Annotation_*
+
+[source,java]
+----
+ @Entity
+ @AttributeOverride(name="address", column=@Column(name="ADDR_STRING"))
+ public class PartTimeEmployee extends Employee {
+
+     @Column(name="WAGE")
+     protected Float hourlyWage;
+     ...
+ }
+----
+
+For more information, see Section 9.1.10 "`AttributeOverride
+Annotation`" of the http://jcp.org/en/jsr/detail?id=220[JPA
+Specification].
+
+=== @AttributeOverrides
+
+If you need to specify more than one
+link:#@AttributeOverride[@AttributeOverride], you must specify all your
+attribute overrides using a single `+@AttributeOverrides+` annotation.
+
+The `+@AttributeOverrides+` annotation has the following attributes:
+
+* `+value+` – To specify two or more attribute overrides, set `+value+`
+to an array of `+AttributeOverride+` instances.
++
+You are required to specify the value of this attribute.
+
+This example shows how to use this annotation to specify two attribute
+overrides.
+
+[#Example 18-42]## *_Usage of the @AttributeOverrides Annotation_*
+
+[source,java]
+----
+ @Entity
+ @AttributeOverrides({
+     @AttributeOverride(name="address", column=@Column(name="ADDR_ID")),
+     @AttributeOverride(name="id", column=@Column(name="PTID"))
+ })
+ public class PartTimeEmployee extends Employee {
+
+     @Column(name="WAGE")
+     protected Float hourlyWage;
+
+     public PartTimeEmployee() {
+     ...
+     }
+
+     public Float getHourlyWage() {
+     ...
+     }
+
+     public void setHourlyWage(Float wage) {
+     ...
+     }
+ }
+----
+
+For more information, see Section 9.1.11 "`AttributeOverrides
+Annotation`" of the http://jcp.org/en/jsr/detail?id=220[JPA
+Specification].
+
+=== @AssociationOverride
+
+By default, EclipseLink persistence provider automatically assumes that
+a subclass inherits both persistent properties and their association
+mappings from the superclass.
+
+Use the `+@AssociationOverride+` annotation to customize an
+link:#@OneToOne[@OneToOne] or link:#@ManyToOne[@ManyToOne] mapping
+inherited from a `+@MappedSuperclass+` (see
+link:#@MappedSuperclass[@MappedSuperclass]) or
+link:#@Embeddable[@Embeddable] to change the `+@JoinColumn+` (see
+Section 9.1.6 "`JoinColumn Annotation`" of the
+http://jcp.org/en/jsr/detail?id=220[JPA Specification]) associated with
+the field or property if the inherited column definition is incorrect
+for your entity (for example, if the inherited column name is
+incompatible with a preexisting data model, or invalid as a column name
+in your database).
+
+If you have more than one `+@AssociationOverride+` change to make, you
+must use the link:#@AssociationOverrides[@AssociationOverrides
+annotation].
+
+To customize an association mapping to change its `+@Column+` (see
+Section 9.1.5 "`Column Annotation`" of the
+http://jcp.org/en/jsr/detail?id=220[JPA Specification]), use the
+`+@AttributeOverride+` annotation.
+
+The `+@AssociationOverride+` annotation has the following attributes:
+
+* `+joinColumns+` – To specify the join columns that are being mapped to
+the persistent attribute, set the `+joinColumns+` to an array of
+`+JoinColumn+` instances (see Section 9.1.6 "`JoinColumn Annotation`" of
+the http://jcp.org/en/jsr/detail?id=220[JPA Specification]).
++
+The mapping type will remain the same as is defined in the embeddable
+class or mapped superclass.
++
+You are required to specify the value of this attribute.
+* `+name+` – The name of the property in the embedded object that is
+being mapped if property-based access is being used, or the name of the
+field if field-based access is used.
++
+You are required to specify the value of this attribute.
+
+The link:#Example_18-43[Usage of the @MappedSuperclass Annotation]
+example shows a link:#@MappedSuperclass[@MappedSuperclass] that the
+entity in the link:#Example_18-44[Usage of the @AssociationOverride
+Annotation] example extends. The link:#Example_18-44[Usage of the
+@AssociationOverride Annotation] example shows how to use
+`+@AssociationOverride+` in the entity subclass to override the
+`+@JoinColumn+` defined (by default) in the `+@MappedSuperclass+`
+`+Employee+` for the association to `+Address+`.
+
+With the `+@AssociationOverride+`, the `+Employee+` table contains the
+following columns:
+
+* `+ID+`
+* `+VERSION+`
+* `+ADDR_ID+`
+* `+WAGE+`
+
+Without the `+@AssociationOverride+`, the `+Employee+` table contains
+the following columns:
+
+* `+ID+`
+* `+VERSION+`
+* `+ADDRESS+`
+* `+WAGE+`
+
+[#Example 18-43]## *_Usage of the @MappedSuperclass Annotation_*
+
+[source,java]
+----
+ @MappedSuperclass
+ public class Employee {
+
+     @Id
+     protected Integer id;
+     @Version
+     protected Integer version;
+     @ManyToOne
+     protected Address address;
+     ...
+ }
+----
+
+[#Example 18-44]## *_Usage of the @AssociationOverride Annotation_*
+
+[source,java]
+----
+ @Entity
+ @AssociationOverride(name="address", joinColumns=@JoinColumn(name="ADDR_ID"))
+ public class PartTimeEmployee extends Employee {
+
+     @Column(name="WAGE")
+     protected Float hourlyWage;
+     ...
+ }
+----
+
+For more information, see Section 9.1.12 "`AssociationOverride
+Annotation`" of the http://jcp.org/en/jsr/detail?id=220[JPA
+Specification].
+
+=== @AssociationOverrides
+
+If you need to specify more than one
+link:#@AssociationOverride[@AssociationOverride], you must specify all
+your association overrides using a single `+@AssociationOverrides+`
+annotation.
+
+The `+@AssociationOverrides+` annotation has the following attributes:
+
+* `+value+` – To specify two or more association overrides, set this
+attribute to an array of `+AssociationOverride+` instances.
++
+You are required to specify the value of this attribute.
+
+This example shows how to use this annotation to specify two association
+overrides.
+
+[#Example 18-45]## *_Usage of the @AssociationOverrides Annotation_*
+
+[source,java]
+----
+ @Entity
+ @AssociationOverrides({
+     @AssociationOverride(name="address", joinColumn=@JoinColumn(name="ADDR_ID")),
+     @AssociationOverride(name="phone", joinColumn=@JoinColumn(name="PHONE_NUM"))
+ })
+ public class PartTimeEmployee extends Employee {
+
+     @Column(name="WAGE")
+     protected Float hourlyWage;
+     ...
+ }
+----
+
+For more information, see Section 9.1.13 "`AssociationOverrides
+Annotation`" of the http://jcp.org/en/jsr/detail?id=220[JPA
+Specification].
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Release_1[Category: Release 1] Category:_Concept[Category:
+Concept] Category:_JPA[Category: JPA]

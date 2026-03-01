@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -63,14 +63,11 @@ public class EntityManagerWrapper {
     }
 
     public Object find(Object obj) {
-        if (obj instanceof Truck){
-            Truck t = (Truck)obj;
+        if (obj instanceof Truck t){
             return (em.find(Truck.class, t.getId()));
-        }else if (obj instanceof Route){
-            Route r = (Route)obj;
+        }else if (obj instanceof Route r){
             return (em.find(Route.class, r.getId()));
-        }else if (obj instanceof Address){
-            Address a = (Address)obj;
+        }else if (obj instanceof Address a){
             return (em.find(Address.class, a.getId()));
         }
         return null;

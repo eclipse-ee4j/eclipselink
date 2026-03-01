@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -64,13 +64,14 @@ public class PrependedSchemaTestSuite extends DBWSTestSuite {
             "\nBUFFER_POOL DEFAULT" +
           "\n)";
     static final String CREATE_TESMAN_TYPE1 =
-        "CREATE TYPE XTESMAN_TYPE1 AS OBJECT" +
-          "\n(" +
-            "\nACCT NUMBER, " +
-            "\nSTATE VARCHAR2(30)," +
-            "\nDIVISION VARCHAR2(30)," +
-            "\nCOUNTRY VARCHAR2(30)" +
-          "\n);";
+            """
+                    CREATE TYPE XTESMAN_TYPE1 AS OBJECT
+                    (
+                    ACCT NUMBER,\s
+                    STATE VARCHAR2(30),
+                    DIVISION VARCHAR2(30),
+                    COUNTRY VARCHAR2(30)
+                    );""";
     static final String CREATE_TESMAN_TYPE2 =
         "CREATE TYPE XTESMAN_TYPE2 AS OBJECT" +
           "\n(" +
@@ -152,8 +153,8 @@ public class PrependedSchemaTestSuite extends DBWSTestSuite {
             runDdl(conn, CREATE_TESMAN_TABLE2, ddlDebug);
             try {
                 Statement stmt = conn.createStatement();
-                for (int i = 0; i < POPULATE_TESMAN_TABLE2.length; i++) {
-                    stmt.addBatch(POPULATE_TESMAN_TABLE2[i]);
+                for (String s : POPULATE_TESMAN_TABLE2) {
+                    stmt.addBatch(s);
                 }
                 stmt.executeBatch();
             }

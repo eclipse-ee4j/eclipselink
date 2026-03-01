@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,26 +34,29 @@ import dbws.testing.DBWSTestSuite;
 public class NcharTypeTestSuite extends DBWSTestSuite {
 
     static final String CREATE_PKG =
-        "CREATE OR REPLACE PACKAGE NCHARTYPE AS" +
-            "\nPROCEDURE FindByJob(J IN NVARCHAR2, R OUT EMPTYPE);" +
-        "\nEND NCHARTYPE;";
+            """
+                    CREATE OR REPLACE PACKAGE NCHARTYPE AS
+                    PROCEDURE FindByJob(J IN NVARCHAR2, R OUT EMPTYPE);
+                    END NCHARTYPE;""";
     static final String CREATE_PKG_BODY =
-        "CREATE OR REPLACE PACKAGE BODY NCHARTYPE AS" +
-            "\nPROCEDURE FindByJob(J IN NVARCHAR2, R OUT EMPTYPE) AS" +
-            "\nBEGIN" +
-                "\nSELECT VALUE(E) INTO R FROM EMPTYPE_TABLE E WHERE JOB LIKE J;" +
-            "\nEND;" +
-        "\nEND NCHARTYPE;";
+            """
+                    CREATE OR REPLACE PACKAGE BODY NCHARTYPE AS
+                    PROCEDURE FindByJob(J IN NVARCHAR2, R OUT EMPTYPE) AS
+                    BEGIN
+                    SELECT VALUE(E) INTO R FROM EMPTYPE_TABLE E WHERE JOB LIKE J;
+                    END;
+                    END NCHARTYPE;""";
     static final String CREATE_TYPE =
-        "CREATE OR REPLACE TYPE EMPTYPE AS OBJECT (" +
-            "\nEMPNO decimal(4,0)," +
-            "\nENAME nvarchar2(10)," +
-            "\nJOB nchar(9)," +
-            "\nMGR decimal(4,0)," +
-            "\nSAL decimal(7,2)," +
-            "\nCOMM decimal(7,2)," +
-            "\nDEPTNO decimal(2)" +
-        "\n);";
+            """
+                    CREATE OR REPLACE TYPE EMPTYPE AS OBJECT (
+                    EMPNO decimal(4,0),
+                    ENAME nvarchar2(10),
+                    JOB nchar(9),
+                    MGR decimal(4,0),
+                    SAL decimal(7,2),
+                    COMM decimal(7,2),
+                    DEPTNO decimal(2)
+                    );""";
     static final String CREATE_TYPE_TABLE =
             "CREATE TABLE EMPTYPE_TABLE OF EMPTYPE";
     static String[] POPULATE_SP_TABLE = new String[] {

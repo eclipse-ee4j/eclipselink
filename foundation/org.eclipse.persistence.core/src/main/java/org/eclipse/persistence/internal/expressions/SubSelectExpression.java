@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -15,12 +15,6 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.expressions;
 
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
@@ -31,6 +25,12 @@ import org.eclipse.persistence.internal.queries.StatementQueryMechanism;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.queries.ReportQuery;
 import org.eclipse.persistence.queries.SQLCall;
+
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * This is used to support subselects.
@@ -87,7 +87,7 @@ public class SubSelectExpression extends BaseExpression {
     /**
      * INTERNAL:
      * This method creates a report query that counts the number of values in baseExpression.anyOf(attribute)
-     *
+     * <p>
      * For most queries, a ReportQuery will be created that does a simple count using an anonymous query.  In the case of
      * a DirectCollectionMapping, the ReportQuery will use the baseExpression to create a join to the table
      * containing the Direct fields and count based on that join.
@@ -99,10 +99,12 @@ public class SubSelectExpression extends BaseExpression {
                 ClassDescriptor descriptor = baseExpression.getSession().getDescriptor(sourceClass);
                 if (descriptor != null){
                     DatabaseMapping mapping = descriptor.getMappingForAttributeName(attribute);
-                    if (mapping != null && mapping.isDirectCollectionMapping()){
+                    if (mapping != null && (mapping.isDirectCollectionMapping() || mapping.isAggregateCollectionMapping())){
                         subQuery.setExpressionBuilder(baseExpression.getBuilder());
                         subQuery.setReferenceClass(sourceClass);
-                        subQuery.addCount(attribute, subQuery.getExpressionBuilder().anyOf(attribute), returnType);
+                        if (mapping.isDirectCollectionMapping() || subQuery.getItems().isEmpty()) {
+                            subQuery.addCount(attribute, subQuery.getExpressionBuilder().anyOf(attribute), returnType);
+                        }
                         return;
                     }
                 }
@@ -131,7 +133,7 @@ public class SubSelectExpression extends BaseExpression {
      * For iterating using an inner class
      */
     @Override
-    public void iterateOn(ExpressionIterator iterator) {
+    public void iterateOn(ExpressionIterator<?> iterator) {
         super.iterateOn(iterator);
         if (baseExpression != null) {
             baseExpression.iterateOn(iterator);
@@ -172,7 +174,7 @@ public class SubSelectExpression extends BaseExpression {
      * Normalize this expression now that the parent statement has been normalized.
      * For CR#4223
      */
-    public Expression normalizeSubSelect(ExpressionNormalizer normalizer, Map clonedExpressions) {
+    public Expression normalizeSubSelect(ExpressionNormalizer normalizer, Map<Expression, Expression> clonedExpressions) {
         if (this.hasBeenNormalized) {
             return this;
         }
@@ -187,12 +189,12 @@ public class SubSelectExpression extends BaseExpression {
             // The criteria should be of form builder.equal(exp), where exp belongs
             // to the parent statement and has already been normalized, hence it
             // knows its reference class.
-            if (criteria instanceof LogicalExpression) {
+            if (criteria.isLogicalExpression()) {
                 criteria = ((LogicalExpression)criteria).getFirstChild();
             }
-            if (criteria instanceof RelationExpression) {
+            if (criteria.isRelationExpression()) {
                 Expression rightChild = ((RelationExpression)criteria).getSecondChild();
-                if (rightChild instanceof QueryKeyExpression) {
+                if (rightChild.isQueryKeyExpression()) {
                     ClassDescriptor descriptor = ((QueryKeyExpression)rightChild).getDescriptor();
                     // descriptor will be null here for query key expressions
                     if (descriptor ==null){
@@ -221,7 +223,7 @@ public class SubSelectExpression extends BaseExpression {
      * The query must be cloned, and the sub-expression must be cloned using the same outer expression identity.
      */
     @Override
-    protected void postCopyIn(Map alreadyDone) {
+    protected void postCopyIn(Map<Expression, Expression> alreadyDone) {
         initializeCountSubQuery();
         super.postCopyIn(alreadyDone);
         ReportQuery clonedQuery = (ReportQuery)getSubQuery().clone();

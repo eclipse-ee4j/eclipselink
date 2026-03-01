@@ -1,7 +1,7 @@
 /*
- * Copyright (c) 2015, 2022 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2010, 2022 IBM Corporation.
- * Copyright (c) 2010, 2022 Dies Koper (Fujitsu).
+ * Copyright (c) 2015, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010, 2024 IBM Corporation.
+ * Copyright (c) 2010, 2024 Dies Koper (Fujitsu).
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -155,9 +155,7 @@ public class TogglingFastTableCreator extends TableCreator {
      */
     protected static String buildFullColumnName(
             final String tableName, final String columnName) {
-        final StringBuilder sb = new StringBuilder(tableName.length() + columnName.length() + 1);
-        sb.append(tableName).append(TABLE_FIELD_SEPARATOR).append(columnName);
-        return sb.toString();
+        return tableName + TABLE_FIELD_SEPARATOR + columnName;
 
     }
 
@@ -187,7 +185,7 @@ public class TogglingFastTableCreator extends TableCreator {
         field.setSize(size);
         field.setShouldAllowNull(false);
         field.setIsPrimaryKey(true);
-        field.setUnique(true);
+        field.setUnique(false);
         field.setIsIdentity(true);
         return field;
     }
@@ -205,18 +203,19 @@ public class TogglingFastTableCreator extends TableCreator {
     /**
      * Helper method to create {@link FieldDefinition} instance for
      * numeric foreign key with given name, size and foreign key name.
-     * @param name   Column name.
-     * @param size   Column numeric type size.
+     * @param name Column name.
+     * @param size Column numeric type size.
      * @param fkName Foreign key name (e.g. {@code "MY_TABLE.ID"}.
+     * @param allowNull Allow {@code null} values for column.
      * @return Initialized {@link FieldDefinition} instance.
      */
     protected static FieldDefinition createNumericFk(
-            final String name, final int size, final String fkName) {
+            final String name, final int size, final String fkName, final boolean allowNull) {
         final FieldDefinition field = new FieldDefinition();
         field.setName(name);
         field.setTypeName("NUMERIC");
         field.setSize(size);
-        field.setShouldAllowNull(false);
+        field.setShouldAllowNull(allowNull);
         field.setIsPrimaryKey(false);
         field.setUnique(false);
         field.setIsIdentity(false);
@@ -229,11 +228,35 @@ public class TogglingFastTableCreator extends TableCreator {
      * numeric foreign key with given name, foreign key name and default size
      * of {@code 15}.
      * @param name Column name.
+     * @param fkName Foreign key name (e.g. {@code "MY_TABLE.ID"}.
      * @return Initialized {@link FieldDefinition} instance.
      */
     protected static FieldDefinition createNumericFk(
             final String name, final String fkName) {
-        return createNumericFk(name, 15, fkName);
+        return createNumericFk(name, 15, fkName, false);
+    }
+
+    /**
+     * Helper method to create {@link FieldDefinition} instance for numeric column
+     * with given name and size and without any additional constraints.
+     * @param name Column name.
+     * @param size Column numeric type size.
+     * @param subSize Column numeric type sub size.
+     * @param allowNull Allow {@code null} values for column.
+     * @return Initialized {@link FieldDefinition} instance.
+     */
+    protected static FieldDefinition createNumericColumn(
+            final String name, final int size, final int subSize, final boolean allowNull) {
+        final FieldDefinition field = new FieldDefinition();
+        field.setName(name);
+        field.setTypeName("NUMERIC");
+        field.setSize(size);
+        field.setSubSize(subSize);
+        field.setShouldAllowNull(allowNull);
+        field.setIsPrimaryKey(false);
+        field.setUnique(false);
+        field.setIsIdentity(false);
+        return field;
     }
 
     /**
@@ -246,15 +269,7 @@ public class TogglingFastTableCreator extends TableCreator {
      */
     protected static FieldDefinition createNumericColumn(
             final String name, final int size, final boolean allowNull) {
-        final FieldDefinition field = new FieldDefinition();
-        field.setName(name);
-        field.setTypeName("NUMERIC");
-        field.setSize(size);
-        field.setShouldAllowNull(allowNull);
-        field.setIsPrimaryKey(false);
-        field.setUnique(false);
-        field.setIsIdentity(false);
-        return field;
+        return createNumericColumn(name, size, 0, allowNull);
     }
 
     /**
@@ -267,6 +282,44 @@ public class TogglingFastTableCreator extends TableCreator {
     protected static FieldDefinition createNumericColumn(
             final String name) {
         return createNumericColumn(name, 15, true);
+    }
+
+    /**
+     * Helper method to create {@link FieldDefinition} instance for numeric column
+     * with given name to store float type values.
+     * @param name Column name.
+     * @param allowNull Allow {@code null} values for column.
+     * @return Initialized {@link FieldDefinition} instance.
+     */
+    protected static FieldDefinition createFloatColumn(
+            final String name, final boolean allowNull) {
+        final FieldDefinition field = new FieldDefinition();
+        field.setName(name);
+        field.setType(Float.class);
+        field.setShouldAllowNull(allowNull);
+        field.setIsPrimaryKey(false);
+        field.setUnique(false);
+        field.setIsIdentity(false);
+        return field;
+    }
+
+    /**
+     * Helper method to create {@link FieldDefinition} instance for numeric column
+     * with given name to store double type values.
+     * @param name Column name.
+     * @param allowNull Allow {@code null} values for column.
+     * @return Initialized {@link FieldDefinition} instance.
+     */
+    protected static FieldDefinition createDoubleColumn(
+            final String name, final boolean allowNull) {
+        final FieldDefinition field = new FieldDefinition();
+        field.setName(name);
+        field.setType(Double.class);
+        field.setShouldAllowNull(allowNull);
+        field.setIsPrimaryKey(false);
+        field.setUnique(false);
+        field.setIsIdentity(false);
+        return field;
     }
 
     /**
@@ -317,7 +370,7 @@ public class TogglingFastTableCreator extends TableCreator {
      */
     protected static FieldDefinition createStringColumn(
             final String name) {
-        return createStringColumn(name, 32, true);
+        return createStringColumn(name, 255, true);
     }
 
     /**
@@ -351,7 +404,41 @@ public class TogglingFastTableCreator extends TableCreator {
      */
     protected static FieldDefinition createDateColumn(
             final String name) {
-        return createDateColumn(name, 23, true);
+        return createDateColumn(name, 3, true);
+    }
+
+    /**
+     * Helper method to create {@link FieldDefinition} instance
+     * for {@link java.time.LocalTime} column with given name and size and without
+     * any additional constraints.
+     * @param name Column name.
+     * @param size Column date size.
+     * @param allowNull Allow {@code null} values for column.
+     * @return Initialized {@link FieldDefinition} instance.
+     */
+    protected static FieldDefinition createTimeColumn(
+            final String name, final int size, final boolean allowNull) {
+        final FieldDefinition field = new FieldDefinition();
+        field.setName(name);
+        field.setTypeName("TIME");
+        field.setSize(size);
+        field.setShouldAllowNull(allowNull);
+        field.setIsPrimaryKey(false);
+        field.setUnique(false);
+        field.setIsIdentity(false);
+        return field;
+    }
+
+    /**
+     * Helper method to create {@link FieldDefinition} instance
+     * for {@link java.time.LocalTime} column with given name size of {@code 23},
+     * with {@code null} value allowed and without any additional constraints.
+     * @param name Column name.
+     * @return Initialized {@link FieldDefinition} instance.
+     */
+    protected static FieldDefinition createTimeColumn(
+            final String name) {
+        return createDateColumn(name, 3, true);
     }
 
     protected void adjustForeignKeyFieldTypes(DatabaseSession session) {

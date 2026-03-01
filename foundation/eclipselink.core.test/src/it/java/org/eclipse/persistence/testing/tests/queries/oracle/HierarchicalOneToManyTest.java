@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,12 +14,12 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.queries.oracle;
 
-import java.util.Vector;
-
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.testing.models.mapping.Employee;
+
+import java.util.Vector;
 
 public class HierarchicalOneToManyTest extends HierarchicalQueryTest {
 
@@ -27,7 +27,7 @@ public class HierarchicalOneToManyTest extends HierarchicalQueryTest {
     public Vector expectedResults() {
         Vector<Employee> v = new Vector<>();
         Employee norman = (Employee) getSession().readObject(Employee.class, new ExpressionBuilder().get("firstName").equal("Norman"));
-        v.addElement(norman);
+        v.add(norman);
         return v;
     }
 

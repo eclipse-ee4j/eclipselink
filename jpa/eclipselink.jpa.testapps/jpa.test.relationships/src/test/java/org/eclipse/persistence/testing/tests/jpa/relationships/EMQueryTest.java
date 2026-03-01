@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -92,7 +92,7 @@ public class EMQueryTest extends JUnitTestCase {
             Query query3 = em.createNativeQuery("DELETE FROM CMP3_CUSTOMER WHERE (CUST_ID=1111)");
 
             Collection<?> c1 = query1.getResultList();
-            if ((c1!=null) &&(c1.size()>0))
+            if ((c1!=null) &&(!c1.isEmpty()))
                 assertNotNull("getResultList returned null ", c1);
             query2.executeUpdate();
             Collection<?> c2 = query1.getResultList();

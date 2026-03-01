@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,20 +15,20 @@
 //       - JPA 2.0 - OrderedList support.
 package org.eclipse.persistence.testing.models.orderedlist;
 
-import java.util.List;
-
 import org.eclipse.persistence.annotations.OrderCorrectionType;
 import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.testing.framework.TestSystem;
 
+import java.util.List;
+
 public class EmployeeSystem extends TestSystem {
 
-    public static enum ChangeTracking {
+    public enum ChangeTracking {
         DEFERRED,
         ATTRIBUTE
     }
-    public static enum JoinFetchOrBatchRead {
+    public enum JoinFetchOrBatchRead {
         NONE,
         INNER_JOIN,
         OUTER_JOIN,
@@ -79,8 +79,7 @@ public class EmployeeSystem extends TestSystem {
     public void addDescriptors(DatabaseSession session) {
         if(shouldOverrideContainerPolicy) {
             List<CollectionMapping> listOrderMappings = ((EmployeeProject)this.project).getListOrderMappings();
-            for(int i=0; i < listOrderMappings.size(); i++) {
-                CollectionMapping mapping = listOrderMappings.get(i);
+            for (CollectionMapping mapping : listOrderMappings) {
                 mapping.setContainerPolicy(new NullsLastOrderedListContainerPolicy(mapping.getContainerPolicy().getContainerClass()));
             }
         }

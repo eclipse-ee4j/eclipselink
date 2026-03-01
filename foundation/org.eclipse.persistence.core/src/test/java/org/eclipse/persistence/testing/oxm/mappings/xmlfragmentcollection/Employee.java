@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,17 +14,18 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.oxm.mappings.xmlfragmentcollection;
 
-import java.io.StringWriter;
-import java.util.Collection;
-import java.util.Iterator;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.Text;
+
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import java.io.StringWriter;
+import java.util.Collection;
+import java.util.Iterator;
 
 /**
  *  @version $Header: Employee.java 28-may-2007.13:04:10 dmccann Exp $
@@ -41,11 +42,10 @@ public class Employee {
     }
 
      public boolean equals(Object obj) {
-        if(!(obj instanceof Employee)) {
+        if(!(obj instanceof Employee emp)) {
             return false;
         }
-        Employee emp = (Employee)obj;
-        boolean equal = this.firstName.equals(emp.firstName);
+         boolean equal = this.firstName.equals(emp.firstName);
         equal = equal && this.lastName.equals(emp.lastName);
 
         int size =emp.xmlnodes.size();
@@ -116,19 +116,17 @@ public class Employee {
         writer.write(" " + lastName);
         TransformerFactory factory = TransformerFactory.newInstance();
         if(xmlnodes != null){
-          Iterator<Node> iter = xmlnodes.iterator();
-          while(iter.hasNext()){
-            Node xmlNode = iter.next();
-            try {
-                Transformer tf = factory.newTransformer();
-                DOMSource source = new DOMSource(xmlNode);
-                StreamResult result = new StreamResult(writer);
-                tf.transform(source, result);
+            for (Node xmlNode : xmlnodes) {
+                try {
+                    Transformer tf = factory.newTransformer();
+                    DOMSource source = new DOMSource(xmlNode);
+                    StreamResult result = new StreamResult(writer);
+                    tf.transform(source, result);
 
-            } catch (Exception ex) {
-                ex.printStackTrace();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
             }
-          }
         }
         return writer.toString();
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,11 +14,11 @@
 // bdoughan - January 7/2009 - 1.1 - Initial implementation
 package org.eclipse.persistence.internal.oxm;
 
-import javax.xml.namespace.QName;
-
 import org.eclipse.persistence.internal.oxm.mappings.Field;
 import org.eclipse.persistence.internal.oxm.mappings.Mapping;
 import org.eclipse.persistence.internal.oxm.record.MarshalRecord;
+
+import javax.xml.namespace.QName;
 
 /**
  * A node value corresponding to mapping.
@@ -54,7 +54,7 @@ public abstract class MappingNodeValue extends NodeValue {
             }
 
             String prefix = marshalRecord.getNamespaceResolver().resolveNamespaceURI(qname.getNamespaceURI());
-            if ((prefix == null) || prefix.length() == 0) {
+            if ((prefix == null) || prefix.isEmpty()) {
 
                 if(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI.equals(qname.getNamespaceURI())){
                     prefix = marshalRecord.getNamespaceResolver().generatePrefix(Constants.SCHEMA_PREFIX);

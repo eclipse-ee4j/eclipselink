@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,7 +21,7 @@ import jakarta.activation.DataHandler;
 * special handling for Binary Data. This is used for fields mapped using an XMLBinaryDataMapping
 * to retrieve an id to be marshaled in place of the binary object. This id will be passed into
 * an XMLAttachmentUnmarshaller when the document is unmarshalled to retrieve the original data.
-*
+* <p>
 * If isXOPPackage returns false, then no other methods on this interface will be called, and it
 * will be assumed that all binary mapped fields should be inlined as base64.
 *

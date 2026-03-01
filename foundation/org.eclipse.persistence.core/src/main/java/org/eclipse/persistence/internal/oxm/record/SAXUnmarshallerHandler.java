@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,14 +14,10 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.oxm.record;
 
-import java.lang.reflect.Modifier;
-
-import javax.xml.namespace.QName;
-
 import org.eclipse.persistence.core.queries.CoreAttributeGroup;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.EclipseLinkException;
-import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.oxm.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.Constants;
@@ -45,6 +41,9 @@ import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.ext.Locator2;
+
+import javax.xml.namespace.QName;
+import java.lang.reflect.Modifier;
 
 /**
  * INTERNAL:
@@ -174,7 +173,7 @@ public class SAXUnmarshallerHandler implements ExtendedContentHandler {
 
     /**
      * INTERNAL:
-     *
+     * <p>
      * Resolve any mapping references.
      */
     public void resolveReferences() {
@@ -187,14 +186,14 @@ public class SAXUnmarshallerHandler implements ExtendedContentHandler {
     public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
         try {
             String name;
-            if (localName == null || localName.length() == 0) {
+            if (localName == null || localName.isEmpty()) {
                 name = qName;
             } else {
                 name = localName;
             }
 
             XPathQName rootQName;
-            if (namespaceURI == null || namespaceURI.length() == 0) {
+            if (namespaceURI == null || namespaceURI.isEmpty()) {
                 rootQName = new XPathQName(name, xmlReader.isNamespaceAware() );
             } else {
                 rootQName = new XPathQName(namespaceURI, name, xmlReader.isNamespaceAware() );
@@ -246,7 +245,7 @@ public class SAXUnmarshallerHandler implements ExtendedContentHandler {
                     String descLocalName = xmlDescriptor.getDefaultRootElementField().getXPathFragment().getLocalName();
                     if( descLocalName != null && descLocalName.equals(localName) ){
                         String descUri = xmlDescriptor.getDefaultRootElementField().getXPathFragment().getNamespaceURI();
-                        if(!xmlReader.isNamespaceAware() || (xmlReader.isNamespaceAware() && ((namespaceURI == null && descUri == null ) || (namespaceURI !=null &&namespaceURI.length() == 0 && descUri == null ) || (namespaceURI != null && namespaceURI.equals(descUri))))){
+                        if(!xmlReader.isNamespaceAware() || (xmlReader.isNamespaceAware() && ((namespaceURI == null && descUri == null ) || (namespaceURI !=null && namespaceURI.isEmpty() && descUri == null ) || (namespaceURI != null && namespaceURI.equals(descUri))))){
                             //found a descriptor based on root element then know we won't need to wrap in an XMLRoot
                            shouldWrap = false;
                         }
@@ -282,7 +281,7 @@ public class SAXUnmarshallerHandler implements ExtendedContentHandler {
                        // sure it is non-abstract
                        if (Modifier.isAbstract(xmlDescriptor.getJavaClass().getModifiers())) {
                            // need to throw an exception here
-                           throw DescriptorException.missingClassIndicatorField(tmpUnmarshalRecord, (org.eclipse.persistence.oxm.XMLDescriptor)xmlDescriptor.getInheritancePolicy().getDescriptor());
+                           throw DescriptorException.missingClassIndicatorField(tmpUnmarshalRecord.toString(), (org.eclipse.persistence.oxm.XMLDescriptor)xmlDescriptor.getInheritancePolicy().getDescriptor());
                        }
                    }
                 }
@@ -318,9 +317,7 @@ public class SAXUnmarshallerHandler implements ExtendedContentHandler {
                         unmappedContentHandler = (UnmappedContentHandler)privilegedNewInstanceFromClass.run();
                     } catch (ClassCastException e) {
                         throw XMLMarshalException.unmappedContentHandlerDoesntImplement(e, unmappedContentHandlerClass.getName());
-                    } catch (IllegalAccessException e) {
-                        throw XMLMarshalException.errorInstantiatingUnmappedContentHandler(e, unmappedContentHandlerClass.getName());
-                    } catch (InstantiationException e) {
+                    } catch (IllegalAccessException | InstantiationException e) {
                         throw XMLMarshalException.errorInstantiatingUnmappedContentHandler(e, unmappedContentHandlerClass.getName());
                     }
 

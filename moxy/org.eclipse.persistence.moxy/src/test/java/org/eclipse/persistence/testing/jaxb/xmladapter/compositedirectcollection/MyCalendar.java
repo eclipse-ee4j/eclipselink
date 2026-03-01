@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,10 +30,9 @@ public class MyCalendar {
     public ArrayList<MyCalendarType> date;
 
     public boolean equals(Object obj) {
-        if (!(obj instanceof MyCalendar)) {
+        if (!(obj instanceof MyCalendar myCal)) {
             return false;
         }
-        MyCalendar myCal = (MyCalendar) obj;
         for (Iterator<MyCalendarType> calIt = myCal.date.iterator(); calIt.hasNext(); ) {
             MyCalendarType myCalType = calIt.next();
             if (!date.contains(myCalType)) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,7 +23,6 @@ import org.eclipse.persistence.queries.DeleteAllQuery;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.UnitOfWork;
 
-import java.util.Iterator;
 import java.util.Vector;
 
 public class DeleteAllQueryTestHelper {
@@ -65,7 +64,7 @@ public class DeleteAllQueryTestHelper {
         }
         String errorMsg = execute(mainSession, referenceClass, selectionExpression, shouldDeferExecutionInUOW, handleChildren, rootClass);
 
-        if(errorMsg.length() == 0) {
+        if(errorMsg.isEmpty()) {
             return null;
         } else {
             return errorMsg;
@@ -74,7 +73,7 @@ public class DeleteAllQueryTestHelper {
 
     protected static String execute(Session mainSession, Class<?> referenceClass, Expression selectionExpression, boolean shouldDeferExecutionInUOW, boolean handleChildren,
                                     Class<?> rootClass) {
-        String errorMsg = "";
+        StringBuilder errorMsg = new StringBuilder();
         clearCache(mainSession);
 
         // first delete using the original TopLink approach - one by one.
@@ -123,14 +122,14 @@ public class DeleteAllQueryTestHelper {
         // deleted objects should've disappeared, others remain
         String classErrorMsg = "";
         for(int i=0; i < objectsToDelete.size(); i++) {
-            Object deletedObject = session.readObject(objectsToDelete.elementAt(i));
+            Object deletedObject = session.readObject(objectsToDelete.get(i));
             if(deletedObject != null) {
                 classErrorMsg = classErrorMsg + "Deleted object "+ deletedObject +" is stil in cache; ";
                 break;
             }
         }
         for(int i=0; i < objectsLeftAfterOriginalDeletion.size(); i++) {
-            Object remainingObject = objectsLeftAfterOriginalDeletion.elementAt(i);
+            Object remainingObject = objectsLeftAfterOriginalDeletion.get(i);
             Object remainingObjectRead = session.readObject(remainingObject);
             if(remainingObjectRead == null) {
                 classErrorMsg = classErrorMsg + "Remaining object " + remainingObject +" is not in cache; ";
@@ -142,14 +141,14 @@ public class DeleteAllQueryTestHelper {
         clearCache(mainSession);
         // deleted objects should've disappeared, others remain
         for(int i=0; i < objectsToDelete.size(); i++) {
-            Object deletedObject = session.readObject(objectsToDelete.elementAt(i));
+            Object deletedObject = session.readObject(objectsToDelete.get(i));
             if(deletedObject != null) {
                 classErrorMsg = classErrorMsg + "Deleted object "+ deletedObject + " is stil in db; ";
                 break;
             }
         }
         for(int i=0; i < objectsLeftAfterOriginalDeletion.size(); i++) {
-            Object remainingObject = objectsLeftAfterOriginalDeletion.elementAt(i);
+            Object remainingObject = objectsLeftAfterOriginalDeletion.get(i);
             Object remainingObjectRead = session.readObject(remainingObject);
             if(remainingObjectRead == null) {
                 classErrorMsg = classErrorMsg + "Remaining object " + remainingObject +" is not in db; ";
@@ -159,23 +158,21 @@ public class DeleteAllQueryTestHelper {
 
         session.rollbackTransaction();
 
-        if(classErrorMsg.length() > 0) {
+        if(!classErrorMsg.isEmpty()) {
             String className = referenceClass.getName();
             String shortClassName = className.substring(className.lastIndexOf('.') + 1);
-            errorMsg = errorMsg + " " + shortClassName + ": " + classErrorMsg;
+            errorMsg.append(" ").append(shortClassName).append(": ").append(classErrorMsg);
         }
 
         if(handleChildren) {
             if(descriptor.hasInheritance() && descriptor.getInheritancePolicy().hasChildren()) {
-                Iterator<ClassDescriptor> it = descriptor.getInheritancePolicy().getChildDescriptors().iterator();
-                while(it.hasNext()) {
-                    ClassDescriptor childDescriptor = it.next();
+                for (ClassDescriptor childDescriptor : descriptor.getInheritancePolicy().getChildDescriptors()) {
                     Class<?> childReferenceClass = childDescriptor.getJavaClass();
-                    errorMsg += execute(mainSession, childReferenceClass, selectionExpression, shouldDeferExecutionInUOW, handleChildren, rootClass);
+                    errorMsg.append(execute(mainSession, childReferenceClass, selectionExpression, shouldDeferExecutionInUOW, handleChildren, rootClass));
                 }
             }
         }
-        return errorMsg;
+        return errorMsg.toString();
     }
 
     protected static void clearCache(Session mainSession) {

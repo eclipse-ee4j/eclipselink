@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2015 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -40,7 +40,7 @@ public class TestNVarChar {
                     value = "UseNationalCharacterVaryingTypeForString=true"), })
     private EntityManagerFactory emf;
 
-    final String latinChars = new String("\u0274\u0275");
+    final String latinChars = "\u0274\u0275";
 
     @Test
     public void testPersist() {
@@ -111,7 +111,7 @@ public class TestNVarChar {
     @Test
     public void testJPQLNoLiteral() {
         // Latin characters
-        String str = new String("\u0274\u0275");
+        String str = "\u0274\u0275";
         EntityManager em = emf.createEntityManager();
         AbstractSession as = em.unwrap(AbstractSession.class);
         DatabasePlatform db = as.getPlatform();

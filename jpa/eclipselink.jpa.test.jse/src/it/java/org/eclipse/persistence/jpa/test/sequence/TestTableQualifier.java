@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2017, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
+ * Copyright (c) 2017, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -47,7 +48,7 @@ public class TestTableQualifier {
         TableSequence tableSequence = (TableSequence) descriptor.getSequence();
         DatabaseTable table = tableSequence.getTable();
 
-        String tableName = table.getName(); // returns fully qualified table name, by design
+        String tableName = table.getName();
         String tableQualifier = table.getTableQualifier();
 
         String tsQualifier = tableSequence.getQualifier();
@@ -55,11 +56,11 @@ public class TestTableQualifier {
         String tsQualifiedTableName = tableSequence.getQualifiedTableName();
 
         Assert.assertNotNull("Table name should be non-null", tableName);
-        Assert.assertTrue("Table name should not be empty", tableName.length() > 0);
+        Assert.assertTrue("Table name should not be empty", !tableName.isEmpty());
         Assert.assertNotNull("Table qualifier should be non-null", tableQualifier);
-        Assert.assertTrue("Table qualifier should not be empty", tableQualifier.length() > 0);
+        Assert.assertTrue("Table qualifier should not be empty", !tableQualifier.isEmpty());
 
-        Assert.assertEquals("Table Sequence : table name (with qualifier) should be equal", (tableQualifier + "." + tableName), tsTableName);
+        Assert.assertEquals("Table Sequence : table name should be equal", tableName, tsTableName);
         Assert.assertEquals("Table Sequence : table qualifier should be equal", tableQualifier, tsQualifier);
         Assert.assertEquals("Table Sequence : qualified table name should be equal", (tableQualifier + "." + tableName), tsQualifiedTableName);
     }

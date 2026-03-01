@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2024 Contributors to the Eclipse Foundation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,8 +16,11 @@
 //
 package org.eclipse.persistence.jpa.jpql.parser;
 
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -197,11 +201,7 @@ public abstract class AbstractExpression implements Expression {
             }
             return true;
         }
-        catch (NoSuchMethodException e) {
-            // Ignore, just do nothing
-            return false;
-        }
-        catch (IllegalAccessException e) {
+        catch (NoSuchMethodException | IllegalAccessException e) {
             // Ignore, just do nothing
             return false;
         }
@@ -236,6 +236,7 @@ public abstract class AbstractExpression implements Expression {
      * @see #acceptUnknownVisitor(ExpressionVisitor)
      * @since 2.4
      */
+    @SuppressWarnings("removal")
     protected void acceptUnknownVisitor(ExpressionVisitor visitor,
                                         Class<?> type,
                                         Class<?> parameterType) throws NoSuchMethodException,
@@ -244,7 +245,9 @@ public abstract class AbstractExpression implements Expression {
 
         try {
             Method visitMethod = type.getDeclaredMethod("visit", parameterType);
-            visitMethod.setAccessible(true);
+            if (!visitMethod.canAccess(visitor)) {
+                AccessController.doPrivileged((PrivilegedAction<Void>) () -> {visitMethod.setAccessible(true); return null;});
+            }
             visitMethod.invoke(visitor, this);
         }
         catch (NoSuchMethodException e) {
@@ -516,6 +519,20 @@ public abstract class AbstractExpression implements Expression {
     }
 
     /**
+     * Returns closest nested expression that encapsulates this expression,
+     * or the root expression if not inside a nested expression.
+     *
+     * @return  Parent expression
+     */
+    public final ParentExpression getParentExpression() {
+        if (parent == null || (!(this.isSubExpression()) && (this.isParentExpression()))) {
+            return (ParentExpression)this;
+        } else {
+            return parent.getParentExpression();
+        }
+    }
+
+    /**
      * Returns the encapsulated text of this {@link AbstractExpression}, which can be used in various
      * ways, it can be a keyword, a literal, etc.
      *
@@ -585,6 +602,16 @@ public abstract class AbstractExpression implements Expression {
         return false;
     }
 
+
+    /**
+     * Flag if expression is a parent/root in the tree.
+     *
+     * @return {@code boolean} {@code true} - yes it's parent/root , {@code false} - if not
+     */
+    public boolean isParentExpression() {
+        return false;
+    }
+
     /**
      * Determines whether the parsing is complete based on what is left in the given text. The text
      * is never empty.
@@ -621,6 +648,10 @@ public abstract class AbstractExpression implements Expression {
      */
     protected boolean isTolerant() {
         return getRoot().isTolerant();
+    }
+
+    protected boolean isSubExpression() {
+        return false;
     }
 
     /**
@@ -747,7 +778,7 @@ public abstract class AbstractExpression implements Expression {
             String word = wordParser.word();
 
             // A word was parsed, attempt to parse it using first the factory, then the fallback factory
-            if (word.length() > 0) {
+            if (!word.isEmpty()) {
 
                 // Nothing more to parse
                 if (!tolerant && !beginning && isParsingComplete(wordParser, word, expression) ||
@@ -767,6 +798,9 @@ public abstract class AbstractExpression implements Expression {
 
                     if (factory != null) {
                         child = factory.buildExpression(this, wordParser, word, queryBNF, expression, tolerant);
+
+                        // if an invalid expression came from the factory, ignore it and try fallback
+                        child = revertExpressionIfInvalid(child, wordParser, word);
 
                         if (child != null) {
 
@@ -922,7 +956,7 @@ public abstract class AbstractExpression implements Expression {
 
                 // No more text, the query ends with a comma
                 word = wordParser.word();
-                boolean stopParsing = tolerant && (word.length() == 0 || isParsingComplete(wordParser, word, null));
+                boolean stopParsing = tolerant && (word.isEmpty() || isParsingComplete(wordParser, word, null));
 
                 if (wordParser.isTail() || stopParsing) {
 
@@ -985,6 +1019,14 @@ public abstract class AbstractExpression implements Expression {
             rootInfo.buildCommas(),
             rootInfo.buildSpaces()
         );
+    }
+
+    static AbstractExpression revertExpressionIfInvalid(AbstractExpression expression, WordParser wordParser, String word) {
+        if (expression != null && expression.isInvalid()) {
+            wordParser.moveBackward(word);
+            return null;
+        }
+        return expression;
     }
 
     /**
@@ -1131,6 +1173,17 @@ public abstract class AbstractExpression implements Expression {
      * JPQL identifiers
      */
     protected abstract void toParsedText(StringBuilder writer, boolean actual);
+
+    /**
+     * Whether this expression is not valid and should be discarded. If it returns true,
+     * the parser will be reverted to the state before this expression was parsed
+     * and it will attempt to parse a different expression.
+     *
+     * @return True if this expression is invalid and should be discarded, otherwise false. By default returns false, should be overriden if expression should be reverted.
+     */
+    protected boolean isInvalid() {
+        return false;
+    }
 
     @Override
     public final String toString() {

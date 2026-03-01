@@ -1,0 +1,64 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[MAPPINGINTRO004]]
+=== Object-JSON Mapping Concepts
+
+EclipseLink MOXy supports the ability to convert objects to and from
+JSON (JavaScript Object Notation). This feature is useful when creating
+RESTful services; JAX-RS services can accept both XML and JSON messages.
+
+EclipseLink supports all MOXy object-to-XML options when reading and
+writing JSON, including:
+
+* EclipseLink's advanced and extended mapping features (in addition to
+the JAXB specification)
+* Storing mappings in external bindings files
+* Creating dynamic models with Dynamic JAXB
+* Building extensible models that support multitenant applications
+
+EclipseLink provides the following support for mapping JSON documents:
+
+* JSON bindings that do not require compile time dependencies, in
+addition to those required for normal JAXB use. You can also write MOXy
+External Bindings files as JSON documents.
+* Although XML has a single datatype, JSON differentiates between
+strings, numbers, and booleans. EclipseLink supports these datatypes
+automatically.
+* JSON does not use attributes; anything mapped with a `@XmlAttribute`
+annotation will be marshalled as an element. By default, EclipseLink
+triggers both the attribute and element events, thereby allowing either
+the mapped attribute or element to handle the value.
+* EclipseLink supports JSON documents without a root element. By
+default, if no `@XmlRootElement` annotation exists, the marshalled JSON
+document will not have a root element. With EclipseLink, you can
+override this behavior (that is, omit the root element from the JSON
+output).
+* Because JSON does not use namespaces, all namespaces and prefixes are
+ignored by default when marshaling and unmarshaling. With EclipseLink,
+you can supply a `Map` of namespace-to-prefix (or an instance of
+`NamespacePrefixMapper`) to the marshaller and unmarshaller. The
+namespace prefix will appear in the marshalled document prepended to the
+element name.
+* By default, when marshalling to JSON, EclipseLink marshals empty
+collections as [ ], EclipseLink allows you to override this behavior, so
+that empty collections are not marshalled at all.
+* You can marshal and unmarshal root-level collections.
+
+For more information on EclipseLink support for JSON documents, see
+"Using JSON Documents" in _Developing JAXB Applications EclipseLink
+MOXy_

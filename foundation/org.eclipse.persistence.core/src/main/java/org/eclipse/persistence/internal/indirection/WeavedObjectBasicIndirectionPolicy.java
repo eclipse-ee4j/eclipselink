@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,10 +14,6 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.indirection;
 
-import java.beans.PropertyChangeListener;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-
 import org.eclipse.persistence.descriptors.changetracking.ChangeTracker;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.indirection.ValueHolderInterface;
@@ -26,10 +22,14 @@ import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 
+import java.beans.PropertyChangeListener;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
 /**
  * A WeavedObjectBasicIndirectionPolicy is used by OneToOne mappings that are LAZY through weaving
  * and which use Property(method) access.
- *
+ * <p>
  * It extends BasicIndirection by providing the capability of calling the set method that was initially
  * mapped in addition to the set method for the weaved valueholder in order to coordinate the value of the
  * underlying property with the value stored in the valueholder
@@ -99,7 +99,7 @@ public class WeavedObjectBasicIndirectionPolicy extends BasicIndirectionPolicy {
                 if (actualTypeClassName != null) {
                     try {
                         // try the actual class of the field or property
-                        parameterTypes[0] = Helper.getClassFromClasseName(actualTypeClassName, sourceMapping.getReferenceClass().getClassLoader());
+                        parameterTypes[0] = Helper.getClassFromClassName(actualTypeClassName, sourceMapping.getReferenceClass().getClassLoader());
                         setMethod = Helper.getDeclaredMethod(sourceMapping.getDescriptor().getJavaClass(), setMethodName, parameterTypes);
                     } catch (NoSuchMethodException nsme) {}
                     if (setMethod != null) {

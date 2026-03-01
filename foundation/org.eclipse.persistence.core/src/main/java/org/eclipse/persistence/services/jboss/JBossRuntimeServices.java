@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,10 +19,10 @@
 //       see <link>http://wiki.eclipse.org/EclipseLink/DesignDocs/316513</link>
 package org.eclipse.persistence.services.jboss;
 
-import java.util.Locale;
-
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.services.RuntimeServices;
+
+import java.util.Locale;
 
 /**
  * <p>
@@ -61,7 +61,7 @@ public class JBossRuntimeServices extends RuntimeServices {
 
     /**
      *  Create an instance of JBossRuntimeServices to be associated with the provided locale
-     *
+     * <p>
      *  The user must call setSession(Session) afterwards to define the session.
      */
     public JBossRuntimeServices(Locale locale) {

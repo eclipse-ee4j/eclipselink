@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2005, 2020 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2005, 2015 SAP. All rights reserved.
+ * Copyright (c) 2005, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2024 SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -55,11 +55,10 @@ public class CubiclePrimaryKeyClass implements Serializable {
             return true;
         }
 
-        if (!(other instanceof CubiclePrimaryKeyClass)) {
+        if (!(other instanceof CubiclePrimaryKeyClass otherKey)) {
             return false;
         }
 
-        CubiclePrimaryKeyClass otherKey = ((CubiclePrimaryKeyClass) other);
         if (floor.equals(otherKey.floor) && place.equals(otherKey.place)) {
             return true;
         }

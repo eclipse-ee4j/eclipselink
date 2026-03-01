@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2022 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,29 +37,50 @@
 //       - 456067 : Added support for defining query timeout units
 package org.eclipse.persistence.queries;
 
-import java.util.*;
-import java.util.concurrent.TimeUnit;
-import java.io.*;
-
-import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.config.ParameterDelimiterType;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.DescriptorQueryManager;
 import org.eclipse.persistence.descriptors.partitioning.PartitioningPolicy;
-import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.internal.expressions.*;
-import org.eclipse.persistence.internal.databaseaccess.*;
-import org.eclipse.persistence.internal.queries.*;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.internal.sessions.remote.*;
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.exceptions.EclipseLinkException;
+import org.eclipse.persistence.exceptions.OptimisticLockException;
+import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.internal.databaseaccess.Accessor;
+import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
+import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
+import org.eclipse.persistence.internal.expressions.SQLStatement;
+import org.eclipse.persistence.internal.helper.ConversionManager;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.helper.InvalidObject;
+import org.eclipse.persistence.internal.queries.CallQueryMechanism;
+import org.eclipse.persistence.internal.queries.DatabaseQueryMechanism;
+import org.eclipse.persistence.internal.queries.DatasourceCallQueryMechanism;
+import org.eclipse.persistence.internal.queries.ExpressionQueryMechanism;
+import org.eclipse.persistence.internal.queries.JPQLCallQueryMechanism;
+import org.eclipse.persistence.internal.queries.StatementQueryMechanism;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
+import org.eclipse.persistence.internal.sessions.remote.RemoteSessionController;
+import org.eclipse.persistence.internal.sessions.remote.Transporter;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.sessions.DataRecord;
-import org.eclipse.persistence.sessions.remote.*;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.sessions.SessionProfiler;
+import org.eclipse.persistence.sessions.remote.DistributedSession;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>
@@ -255,11 +276,11 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * queryTimeout has three possible settings: DefaultTimeout, NoTimeout, and
      * 1..N This applies to both DatabaseQuery.queryTimeout and
      * DescriptorQueryManager.queryTimeout
-     *
+     * <p>
      * DatabaseQuery.queryTimeout: - DefaultTimeout: get queryTimeout from
      * DescriptorQueryManager - NoTimeout, 1..N: overrides queryTimeout in
      * DescriptorQueryManager
-     *
+     * <p>
      * DescriptorQueryManager.queryTimeout: - DefaultTimeout: get queryTimeout
      * from parent DescriptorQueryManager. If there is no parent, default to
      * NoTimeout - NoTimeout, 1..N: overrides parent queryTimeout
@@ -526,7 +547,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
         } else if (!getQueryMechanism().isStatementQueryMechanism()) {
             setQueryMechanism(new StatementQueryMechanism(this));
         }
-        ((StatementQueryMechanism) getQueryMechanism()).getSQLStatements().addElement(statement);
+        ((StatementQueryMechanism) getQueryMechanism()).getSQLStatements().add(statement);
         // Must un-prepare is prepare as the SQL may change.
         setIsPrepared(false);
     }
@@ -719,6 +740,9 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
                 cloneQuery.queryMechanism = this.queryMechanism.clone(cloneQuery);
             }
             cloneQuery.isPrepared = this.isPrepared; // Setting some things may trigger unprepare.
+            // JPA 3.2 cache bypass flags must be preserved in clones
+            cloneQuery.shouldRetrieveBypassCache = this.shouldRetrieveBypassCache;
+            cloneQuery.shouldStoreBypassCache = this.shouldStoreBypassCache;
             return cloneQuery;
         } catch (CloneNotSupportedException e) {
             return null;
@@ -929,7 +953,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * INTERNAL: Return the accessor.
      */
     public Accessor getAccessor() {
-        if ((this.accessors == null) || (this.accessors.size() == 0)) {
+        if ((this.accessors == null) || (this.accessors.isEmpty())) {
             return null;
         }
         if (this.accessors instanceof List) {
@@ -993,7 +1017,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      */
     public List<String> getArgumentTypeNames() {
         if (argumentTypeNames == null) {
-            argumentTypeNames = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+            argumentTypeNames = new ArrayList<>();
         }
         return argumentTypeNames;
     }
@@ -1079,12 +1103,11 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      */
     public Call getDatasourceCall() {
         Call call = null;
-        if (this.queryMechanism instanceof DatasourceCallQueryMechanism) {
-            DatasourceCallQueryMechanism mechanism = (DatasourceCallQueryMechanism) this.queryMechanism;
+        if (this.queryMechanism instanceof DatasourceCallQueryMechanism mechanism) {
             call = mechanism.getCall();
             // If has multiple calls return the first one.
             if ((call == null) && mechanism.hasMultipleCalls()) {
-                call = (Call) mechanism.getCalls().get(0);
+                call = mechanism.getCalls().get(0);
             }
         }
         if ((call == null) && (this.queryMechanism != null) && this.queryMechanism.isJPQLCallQueryMechanism()) {
@@ -1101,8 +1124,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      */
     public List getDatasourceCalls() {
         List calls = new Vector();
-        if (getQueryMechanism() instanceof DatasourceCallQueryMechanism) {
-            DatasourceCallQueryMechanism mechanism = (DatasourceCallQueryMechanism) getQueryMechanism();
+        if (getQueryMechanism() instanceof DatasourceCallQueryMechanism mechanism) {
 
             // If has multiple calls return the first one.
             if (mechanism.hasMultipleCalls()) {
@@ -1171,7 +1193,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * Return the String used to delimit an SQL parameter.
      */
     public String getParameterDelimiter() {
-        if(null == parameterDelimiter || parameterDelimiter.length() == 0) {
+        if(null == parameterDelimiter || parameterDelimiter.isEmpty()) {
             parameterDelimiter = ParameterDelimiterType.DEFAULT;
         }
         return parameterDelimiter;
@@ -1469,7 +1491,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
             if (!(call instanceof SQLCall)) {
                 return null;
             }
-            returnSQL.addElement(((SQLCall) call).getSQLString());
+            returnSQL.add(((SQLCall) call).getSQLString());
         }
         return returnSQL;
     }
@@ -1827,7 +1849,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * called on the original query, and the other is called on the copy of the
      * query. This query is copied for concurrency so this prepare can only
      * setup things that will apply to any future execution of this query.
-     *
+     * <p>
      * Resolve the queryTimeout using the DescriptorQueryManager if required.
      */
     protected void prepare() throws QueryException {
@@ -1879,6 +1901,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
         this.argumentTypeNames = query.argumentTypeNames;
         this.argumentValues = query.argumentValues;
         this.queryTimeout = query.queryTimeout;
+        this.queryTimeoutUnit = query.queryTimeoutUnit;
         this.redirector = query.redirector;
         this.sessionName = query.sessionName;
         this.shouldBindAllParameters = query.shouldBindAllParameters;
@@ -2131,7 +2154,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     public void setEJBQLString(String ejbqlString) {
         // Added the check for when we are building the query from the
         // deployment XML
-        if ((ejbqlString != null) && (!ejbqlString.equals(""))) {
+        if ((ejbqlString != null) && (!ejbqlString.isEmpty())) {
             JPQLCallQueryMechanism mechanism = new JPQLCallQueryMechanism(this, new JPQLCall(ejbqlString));
             setQueryMechanism(mechanism);
         }
@@ -2258,7 +2281,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      */
     public void setParameterDelimiter(String aParameterDelimiter) {
         // 325167: if the parameterDelimiter is invalid - use the default # symbol
-        if(null == aParameterDelimiter || aParameterDelimiter.length() == 0) {
+        if(null == aParameterDelimiter || aParameterDelimiter.isEmpty()) {
             aParameterDelimiter = ParameterDelimiterType.DEFAULT;
         }
         parameterDelimiter = aParameterDelimiter;
@@ -2291,7 +2314,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * PUBLIC: Set the number of seconds the driver will wait for a Statement to
      * execute to the given number of seconds. If the limit is exceeded, a
      * DatabaseException is thrown.
-     *
+     * <p>
      * queryTimeout - the new query timeout limit in seconds; DefaultTimeout is
      * the default, which redirects to DescriptorQueryManager's queryTimeout.
      *
@@ -2486,7 +2509,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     public void setSQLString(String sqlString) {
         // Added the check for when we are building the query from the
         // deployment XML
-        if ((sqlString != null) && (!sqlString.equals(""))) {
+        if ((sqlString != null) && (!sqlString.isEmpty())) {
             setCall(new SQLCall(sqlString));
         }
     }
@@ -2688,7 +2711,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * flag specifies the behavior when data is read from the database and when
      * data is committed into the database. Calling this method will set a store
      * bypass to true.
-     *
+     * <p>
      * Note: For a cache store mode of REFRESH, see refreshIdentityMapResult()
      * from ObjectLevelReadQuery.
      */
@@ -2704,7 +2727,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
         if (getReferenceClass() != null) {
             referenceClassString = "referenceClass=" + getReferenceClass().getSimpleName() + " ";
         }
-        if ((getName() != null) && (!getName().equals(""))) {
+        if ((getName() != null) && (!getName().isEmpty())) {
             nameString = "name=\"" + getName() + "\" ";
         }
         if (isSQLCallQuery()) {

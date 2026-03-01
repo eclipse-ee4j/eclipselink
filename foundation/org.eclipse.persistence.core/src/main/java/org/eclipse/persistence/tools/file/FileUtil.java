@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,6 +14,9 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.tools.file;
 
+import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.logging.SessionLog;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -21,22 +24,18 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Vector;
 import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
 import java.util.zip.CRC32;
 import java.util.zip.ZipEntry;
 
-import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.logging.AbstractSessionLog;
-import org.eclipse.persistence.logging.SessionLog;
-
 /**
  * INTERNAL:
- *
+ * <p>
  * <b>Purpose</b>: Provide common file I/O utilities
  * @author Steven Vo
  * @since TopLink 4.5
@@ -135,9 +134,9 @@ public final class FileUtil {
                         "Cannot create directory '{0}'", new Object[] {jar.getParentFile()}, false);
             }
         }
-        JarOutputStream jarOut = null;
-        try {
-            jarOut = new JarOutputStream(new FileOutputStream(jar), new Manifest());
+
+        try (JarOutputStream jarOut = new JarOutputStream(new FileOutputStream(jar), new Manifest());) {
+
             List<File> files = findFiles(jarDirectory, filtertedExtensions);
 
             for (int i = 0; i < files.size(); i++) {
@@ -146,12 +145,8 @@ public final class FileUtil {
                 String relativePathToDirectory = file.getAbsolutePath().substring(directory.getAbsolutePath().length() + 1);
                 String entryName = relativePathToDirectory.replace('\\', '/');
 
-                FileInputStream inStream = null;
-                ByteArrayOutputStream byteStream = null;
-
-                try {
-                    inStream = new FileInputStream(file);
-                    byteStream = new ByteArrayOutputStream();
+                try (FileInputStream inStream = new FileInputStream(file);
+                     ByteArrayOutputStream byteStream = new ByteArrayOutputStream()) {
 
                     int length = 0;
                     byte[] buffer = new byte[1024];
@@ -170,13 +165,8 @@ public final class FileUtil {
                     meta.setMethod(ZipEntry.STORED);
                     jarOut.write(arr, 0, arr.length);
                     jarOut.closeEntry();
-                } finally {
-                    Helper.close(byteStream);
-                    Helper.close(inStream);
                 }
             }
-        } finally {
-            Helper.close(jarOut);
         }
     }
 
@@ -184,13 +174,13 @@ public final class FileUtil {
      * Return vector of all Files contained in a path.
      *
      * @filteredExtensions: filter files that end with specified strings i.e {".java", ".class", ".xml"}
-     *      If filteredExtensions == null or empty then then return all instances of File contained in the directory and its sub directories
+     *      If filteredExtensions == null or empty then return all instances of File contained in the directory and its subdirectories
      * @Path: a directory path or a file path.
      *      If it's file path then return a single instance of File
-     *      If it's directory path then return all instances of File contained in the directory and its sub directories
+     *      If it's directory path then return all instances of File contained in the directory and its subdirectories
      */
     public static List<File> findFiles(String path, String[] filteredExtensions) {
-        List<File> files = new Vector<>();
+        List<File> files = new ArrayList<>();
 
         findFilesHelper(new File(path), filteredExtensions, files);
         return files;

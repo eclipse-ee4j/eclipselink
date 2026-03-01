@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2022, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -88,7 +88,7 @@ public class UUIDTester extends TypeTester {
         FieldDefinition fieldDef;
 
         definition.setName("UUIDS");
-        fieldDef = new FieldDefinition("UUIDV", String.class, 50);
+        fieldDef = new FieldDefinition("UUIDV", UUID.class);
         fieldDef.setShouldAllowNull(false);
         definition.addField(fieldDef);
 
@@ -98,7 +98,7 @@ public class UUIDTester extends TypeTester {
     public static Vector testInstances() {
         Vector tests = new Vector(1);
 
-        tests.addElement(new UUIDTester(UUID.fromString(UUID_TEST_VALUE)));
+        tests.add(new UUIDTester(UUID.fromString(UUID_TEST_VALUE)));
         return tests;
     }
 

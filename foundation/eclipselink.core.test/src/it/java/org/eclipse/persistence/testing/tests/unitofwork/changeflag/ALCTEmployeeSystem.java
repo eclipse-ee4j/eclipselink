@@ -85,8 +85,9 @@ public class ALCTEmployeeSystem extends TestSystem {
         emp.setFirstName("ALCTEmp");
         emp.setLastName("NotRequired");
         ALCTEmploymentPeriod empPeriod = new ALCTEmploymentPeriod();
-        empPeriod.setEndDate(Helper.dateFromYearMonthDate(2006, 12, 2));
-        empPeriod.setStartDate(Helper.dateFromYearMonthDate(2004, 12, 2));
+        //Valid month is 0-11
+        empPeriod.setEndDate(Helper.dateFromYearMonthDate(2006, 11, 2));
+        empPeriod.setStartDate(Helper.dateFromYearMonthDate(2004, 11, 2));
         emp.setPeriod(empPeriod);
         unitOfWork.registerObject(emp);
         unitOfWork.commit();

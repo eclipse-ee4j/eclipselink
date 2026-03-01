@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,6 +20,7 @@ import org.eclipse.persistence.sessions.Session;
 
 import java.io.Writer;
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.Vector;
 
 /**
@@ -85,7 +86,7 @@ public abstract class TestCollection extends junit.framework.TestSuite implement
         tests = new Vector<>();
         finishedTests = new Vector<>();
         summary = new TestResultsSummary(this);
-        if ((getName() == null) || (getName().length() == 0)) {
+        if ((getName() == null) || (getName().isEmpty())) {
             setName(getClass().getName().substring(getClass().getName().lastIndexOf('.') + 1));
         } else {
             setName(getName());
@@ -133,8 +134,8 @@ public abstract class TestCollection extends junit.framework.TestSuite implement
      * Adds a test collection to itself
      */
     public final void addTests(Vector<? extends Test> theTests) {
-        for (Enumeration<? extends Test> allTests = theTests.elements(); allTests.hasMoreElements();) {
-            junit.framework.Test test = allTests.nextElement();
+        for (Iterator<? extends Test> iterator = theTests.iterator(); iterator.hasNext();) {
+            junit.framework.Test test = iterator.next();
             addTest(test);
         }
     }
@@ -146,7 +147,7 @@ public abstract class TestCollection extends junit.framework.TestSuite implement
 
         try {
 
-            /** The code below is doing a roundabout version of the following (because of packaging problems):
+            /* The code below is doing a roundabout version of the following (because of packaging problems):
              *
              * org.eclipse.persistence.testing.framework.ejb.ServerTestCase serverTestCase;
              * serverTestCase = new org.eclipse.persistence.testing.framework.ejb.ServerTestCase(
@@ -312,7 +313,7 @@ public abstract class TestCollection extends junit.framework.TestSuite implement
      */
     @Override
     public junit.framework.Test testAt(int index) {
-        return getTests().elementAt(index);
+        return getTests().get(index);
     }
 
     @Override
@@ -395,10 +396,9 @@ public abstract class TestCollection extends junit.framework.TestSuite implement
             logHeadNote(log);
         }
 
-        for (Enumeration<Test> tests = getFinishedTests().elements(); tests.hasMoreElements();) {
-            junit.framework.Test test = tests.nextElement();
-            if (test instanceof TestEntity) {
-                TestEntity testEntity = (TestEntity)test;
+        for (Iterator<Test> iterator = getFinishedTests().iterator(); iterator.hasNext();) {
+            junit.framework.Test test = iterator.next();
+            if (test instanceof TestEntity testEntity) {
                 if (regression) {
                     if (!(testEntity instanceof TestCase) || !(testEntity.getReport().hasPassed() || ((TestResult)testEntity.getReport()).hasWarning())) {
                         testEntity.logRegressionResult(log);
@@ -428,13 +428,11 @@ public abstract class TestCollection extends junit.framework.TestSuite implement
      */
     public void computeResultSummary() {
         getSummary().resetTotals();
-        for (Enumeration<Test> tests = getFinishedTests().elements(); tests.hasMoreElements();) {
-            junit.framework.Test test = tests.nextElement();
-            if (test instanceof TestCase) {
-                TestCase testEntity = (TestCase)test;
+        for (Iterator<Test> iterator = getFinishedTests().iterator(); iterator.hasNext();) {
+            junit.framework.Test test = iterator.next();
+            if (test instanceof TestCase testEntity) {
                 testEntity.appendTestResult(getSummary());
-            } else if (test instanceof TestCollection) {
-                TestCollection testEntity = (TestCollection)test;
+            } else if (test instanceof TestCollection testEntity) {
                 testEntity.computeResultSummary();
                 testEntity.appendTestResult(getSummary());
             } else {
@@ -448,7 +446,7 @@ public abstract class TestCollection extends junit.framework.TestSuite implement
      * Remove the test colleciton.
      */
     protected void removeTest(TestEntity test) {
-        getTests().removeElement(test);
+        getTests().remove(test);
     }
 
     @Override
@@ -465,8 +463,8 @@ public abstract class TestCollection extends junit.framework.TestSuite implement
     @Override
     public void resetNestedCounter() {
         setNestedCounter(INITIAL_VALUE);
-        for (Enumeration<Test> tests = getTests().elements(); tests.hasMoreElements();) {
-            Object test = tests.nextElement();
+        for (Iterator<Test> iterator = getTests().iterator(); iterator.hasNext();) {
+            Object test = iterator.next();
             if (test instanceof TestEntity) {
                 ((TestEntity)test).resetNestedCounter();
             }

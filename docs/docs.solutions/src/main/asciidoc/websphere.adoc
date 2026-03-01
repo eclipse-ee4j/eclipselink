@@ -1,0 +1,56 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[ELWS]]
+== Using EclipseLink with IBM WebSphere Application Server
+
+This chapter describes how to use EclipseLink as the persistence
+provider for applications deployed to IBM WebSphere Application Server.
+
+This chapter includes the following sections:
+
+* xref:{relativedir}/websphere001.adoc#ELWS001[Introduction to the Solution]
+* xref:{relativedir}/websphere002.adoc#ELWS002[Implementing the Solution]
+* xref:{relativedir}/websphere003.adoc#ELWS003[Additional Resources]
+
+*Use Case*
+
+EclipseLink can be used with a number of popular Jakarta EE application
+servers, including WebSphere Application Server.
+
+*Solution*
+
+Configure WebSphere to use EclipseLink runtime, and deploy applications
+developed using EclipseLink APIs.
+
+*Components*
+
+* EclipseLink 2.4 or later.
+* WebSphere Application Server 7 or later. These instructions are based
+on WebSphere 8.5.
+* A compliant Java Database Connectivity (JDBC) database, such as Oracle
+Database, Oracle Express, MySQL, the Derby database included in
+WebSphere Application Server, and so on.
+
+//Introduction to the Solution
+include::{rootdir}/websphere001.adoc[]
+
+//Implementing the Solution
+include::{rootdir}/websphere002.adoc[]
+
+//Additional Resources
+include::{rootdir}/websphere003.adoc[]

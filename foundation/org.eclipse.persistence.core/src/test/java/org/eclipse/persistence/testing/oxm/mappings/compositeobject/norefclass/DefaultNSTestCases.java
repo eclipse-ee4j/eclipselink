@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,13 +14,7 @@
 //     bdoughan - March 11/2010 - 2.0.2 - Initial implementation
 package org.eclipse.persistence.testing.oxm.mappings.compositeobject.norefclass;
 
-import org.eclipse.persistence.oxm.mappings.UnmarshalKeepAsElementPolicy;
-import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
-import org.eclipse.persistence.sessions.Project;
-import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.XMLWithJSONMappingTestCases;
-import org.eclipse.persistence.testing.oxm.mappings.compositeobject.self.norefclass.CompositeObjectSelfNoRefClassNSProject;
-import org.eclipse.persistence.testing.oxm.mappings.compositeobject.self.norefclass.Root;
 
 public class DefaultNSTestCases  extends XMLWithJSONMappingTestCases{
 

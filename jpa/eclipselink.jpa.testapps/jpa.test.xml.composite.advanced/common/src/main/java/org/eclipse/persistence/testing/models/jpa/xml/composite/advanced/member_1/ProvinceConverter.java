@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,34 +31,21 @@ public class ProvinceConverter implements Converter {
         } else {
             String province = (String) dataValue;
 
-            switch (province) {
-                case "AB":
-                    return "Alberta";
-                case "BC":
-                    return "British Columnbia";
-                case "MB":
-                    return "Manitoba";
-                case "NB":
-                    return "New Brunswick";
-                case "NT":
-                    return "Northwest Territories";
-                case "NS":
-                    return "Nova Scotia";
-                case "NU":
-                    return "Nunavut";
-                case "ON":
-                    return "Ontario";
-                case "PE":
-                    return "Prince Edward Island";
-                case "QC":
-                    return "Quebec";
-                case "SK":
-                    return "Saskatchewan";
-                case "YT":
-                    return "Yukon";
-                default:
-                    return province;
-            }
+            return switch (province) {
+                case "AB" -> "Alberta";
+                case "BC" -> "British Columnbia";
+                case "MB" -> "Manitoba";
+                case "NB" -> "New Brunswick";
+                case "NT" -> "Northwest Territories";
+                case "NS" -> "Nova Scotia";
+                case "NU" -> "Nunavut";
+                case "ON" -> "Ontario";
+                case "PE" -> "Prince Edward Island";
+                case "QC" -> "Quebec";
+                case "SK" -> "Saskatchewan";
+                case "YT" -> "Yukon";
+                default -> province;
+            };
         }
     }
 

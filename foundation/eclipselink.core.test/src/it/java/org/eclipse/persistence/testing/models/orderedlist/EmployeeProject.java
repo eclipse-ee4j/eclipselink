@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,20 +15,30 @@
 //       - JPA 2.0 - OrderedList support.
 package org.eclipse.persistence.testing.models.orderedlist;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Vector;
-
+import org.eclipse.persistence.annotations.BatchFetchType;
+import org.eclipse.persistence.annotations.OrderCorrectionType;
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.RelationalDescriptor;
+import org.eclipse.persistence.descriptors.VersionLockingPolicy;
+import org.eclipse.persistence.indirection.IndirectList;
+import org.eclipse.persistence.mappings.AggregateCollectionMapping;
+import org.eclipse.persistence.mappings.CollectionMapping;
+import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.DirectCollectionMapping;
+import org.eclipse.persistence.mappings.DirectToFieldMapping;
+import org.eclipse.persistence.mappings.ForeignReferenceMapping;
+import org.eclipse.persistence.mappings.ManyToManyMapping;
+import org.eclipse.persistence.mappings.OneToManyMapping;
+import org.eclipse.persistence.mappings.OneToOneMapping;
+import org.eclipse.persistence.mappings.UnidirectionalOneToManyMapping;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.testing.models.orderedlist.EmployeeSystem.ChangeTracking;
 import org.eclipse.persistence.testing.models.orderedlist.EmployeeSystem.JoinFetchOrBatchRead;
-import org.eclipse.persistence.annotations.BatchFetchType;
-import org.eclipse.persistence.annotations.OrderCorrectionType;
-import org.eclipse.persistence.descriptors.*;
-import org.eclipse.persistence.indirection.IndirectList;
-import org.eclipse.persistence.mappings.*;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Vector;
 
 public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
 
@@ -573,9 +583,8 @@ public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
 
     List<CollectionMapping> getListOrderMappings() {
         List<CollectionMapping> list = new ArrayList();
-        Iterator<ClassDescriptor> it = this.getDescriptors().values().iterator();
-        while(it.hasNext()) {
-            list.addAll(getListOrderMappings(it.next()));
+        for (ClassDescriptor classDescriptor : this.getDescriptors().values()) {
+            list.addAll(getListOrderMappings(classDescriptor));
         }
         return list;
     }
@@ -590,13 +599,13 @@ public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
     static List<CollectionMapping> getListOrderMappings(ClassDescriptor desc) {
         List<CollectionMapping> list = new ArrayList();
         List<DatabaseMapping> mappings = desc.getMappings();
-        for(int i=0; i < mappings.size(); i++) {
-            if(mappings.get(i).isCollectionMapping()) {
-                CollectionMapping collectionMapping = (CollectionMapping)mappings.get(i);
-                if(collectionMapping.getListOrderField() != null) {
+        for (DatabaseMapping mapping : mappings) {
+            if (mapping.isCollectionMapping()) {
+                CollectionMapping collectionMapping = (CollectionMapping) mapping;
+                if (collectionMapping.getListOrderField() != null) {
                     list.add(collectionMapping);
                 }
-             }
+            }
         }
         return list;
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,30 +14,14 @@
 //     Gordon Yorke
 package org.eclipse.persistence.internal.helper;
 
-
-/**
- * INTERNAL:
- * <p>
- * <b>Purpose</b>: Define a {@link Map} that manages key equality by reference,
- * not equals(). This is required to track objects throughout the lifecycle
- * of a {@link org.eclipse.persistence.sessions.UnitOfWork}, regardless if the domain
- * object redefines its equals() method. Additionally, this implementation does
- * <b>not</b> permit nulls either as values or as keys.  Any Entry that has a null in the key or
- * in the value will be assumed to have garbage collected.
- * This class also uses weak references to the contents of the map allowing for garbage
- * collection to reduce the size of the Map
- *
- * This work is an extension of the original work completed on the IdentityWeakHashMap as completed by
- * Mike Norman.
- *
- * @author Gordon Yorke (EclipseLink 1.0M4)
- *
- */
-
 // J2SE imports
+
+import org.eclipse.persistence.internal.localization.ExceptionLocalization;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serial;
 import java.io.Serializable;
 import java.lang.ref.ReferenceQueue;
 import java.lang.ref.WeakReference;
@@ -51,10 +35,27 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
-import org.eclipse.persistence.internal.localization.ExceptionLocalization;
-
+/**
+ * INTERNAL:
+ * <p>
+ * <b>Purpose</b>: Define a {@link Map} that manages key equality by reference,
+ * not equals(). This is required to track objects throughout the lifecycle
+ * of a {@link org.eclipse.persistence.sessions.UnitOfWork}, regardless if the domain
+ * object redefines its equals() method. Additionally, this implementation does
+ * <b>not</b> permit nulls either as values or as keys.  Any Entry that has a null in the key or
+ * in the value will be assumed to have garbage collected.
+ * This class also uses weak references to the contents of the map allowing for garbage
+ * collection to reduce the size of the Map
+ * <p>
+ * This work is an extension of the original work completed on the IdentityWeakHashMap as completed by
+ * Mike Norman.
+ *
+ * @author Gordon Yorke (EclipseLink 1.0M4)
+ *
+ */
 public class IdentityWeakHashMap<K,V> extends AbstractMap<K,V> implements Map<K,V>, Cloneable, Serializable {
-    static final long serialVersionUID = -5176951017503351630L;
+    @Serial
+    private static final long serialVersionUID = -5176951017503351630L;
 
     // the default initial capacity
     static final int DEFAULT_INITIAL_CAPACITY = 32;
@@ -555,11 +556,10 @@ public class IdentityWeakHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
 
                         @Override
                         public boolean contains(Object o) {
-                            if (!(o instanceof Map.Entry)) {
+                            if (!(o instanceof Map.Entry entry)) {
                                 return false;
                             }
 
-                            Map.Entry entry = (Map.Entry)o;
                             Object key = entry.getKey();
                             WeakEntry[] copyOfEntries = entries;
                             int hash = System.identityHashCode(key);
@@ -574,10 +574,9 @@ public class IdentityWeakHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
 
                         @Override
                         public boolean remove(Object o) {
-                            if (!(o instanceof WeakEntry)) {
+                            if (!(o instanceof WeakEntry entry)) {
                                 return false;
                             }
-                            WeakEntry entry = (WeakEntry)o;
                             // remove the entry but and increment the modcount
                             // because this is a user action
                             return removeEntry(entry, true);
@@ -664,11 +663,10 @@ public class IdentityWeakHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
 
         @Override
         public boolean equals(Object o) {
-            if (!(o instanceof Map.Entry)) {
+            if (!(o instanceof Map.Entry e)) {
                 return false;
             }
 
-            Map.Entry e = (Map.Entry)o;
             Object v = value.get();
             return (key == e.getKey()) && ((v == null) ? (e.getValue() == null) : v.equals(e.getValue()));
         }
@@ -851,6 +849,7 @@ public class IdentityWeakHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
      * <i>size</i> of the <code>IdentityWeakHashMap</code>, followed by the
      * key-value mappings (in no particular order).
      */
+    @Serial
     private void writeObject(ObjectOutputStream s) throws IOException {
         // Write out the threshold, loadfactor (and any hidden 'magic' stuff).
         s.defaultWriteObject();
@@ -873,6 +872,7 @@ public class IdentityWeakHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
     /**
      * Deserialize the <code>IdentityWeakHashMap</code> from a stream.
      */
+    @Serial
     private void readObject(ObjectInputStream s) throws IOException, ClassNotFoundException {
         // Read in the threshold, loadfactor (and any hidden 'magic' stuff).
         s.defaultReadObject();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -56,11 +56,12 @@ import org.w3c.dom.Document;
  */
 public class ProcedureTypeTestSuite {
     static final String CREATE_OUT_IN_INOUT_ARGSSP_PROC =
-        "CREATE PROCEDURE OUTININOUTARGSSP(T OUT VARCHAR, U IN VARCHAR, V IN OUT NUMERIC) is" +
-        "\nBEGIN" +
-            "\nT := CONCAT('barfoo-' , U);" +
-            "\nV := V + 1;" +
-        "\nEND OUTININOUTARGSSP;";
+            """
+                    CREATE PROCEDURE OUTININOUTARGSSP(T OUT VARCHAR, U IN VARCHAR, V IN OUT NUMERIC) is
+                    BEGIN
+                    T := CONCAT('barfoo-' , U);
+                    V := V + 1;
+                    END OUTININOUTARGSSP;""";
 
     static final String DROP_OUT_IN_INOUT_ARGSSP_PROC =
         "DROP PROCEDURE OUTININOUTARGSSP";
@@ -135,14 +136,13 @@ public class ProcedureTypeTestSuite {
     }
 
     static final String procedureMetadata =
-        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-        "<orm:entity-mappings xsi:schemaLocation=\"http://www.eclipse.org/eclipselink/xsds/persistence/orm org/eclipse/persistence/jpa/eclipselink_orm_2_5.xsd\"" +
-        "     xmlns:orm=\"http://www.eclipse.org/eclipselink/xsds/persistence/orm\" " +
-        "     xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n" +
-        "   <orm:named-stored-procedure-query name=\"OUTININOUTARGSSP\" procedure-name=\"OUTININOUTARGSSP\" returns-result-set=\"false\">\n" +
-        "      <orm:parameter mode=\"OUT\" name=\"T\" type=\"java.lang.String\" class=\"java.lang.String\" jdbc-type=\"12\" jdbc-type-name=\"VARCHAR\"/>\n" +
-        "      <orm:parameter mode=\"IN\" name=\"U\" type=\"java.lang.String\" class=\"java.lang.String\" jdbc-type=\"12\" jdbc-type-name=\"VARCHAR\"/>\n" +
-        "      <orm:parameter mode=\"INOUT\" name=\"V\" type=\"java.math.BigInteger\" class=\"java.math.BigInteger\" jdbc-type=\"2\" jdbc-type-name=\"NUMERIC\"/>\n" +
-        "   </orm:named-stored-procedure-query>\n" +
-        "</orm:entity-mappings>";
+            """
+                    <?xml version="1.0" encoding="UTF-8"?>
+                    <orm:entity-mappings xsi:schemaLocation="http://www.eclipse.org/eclipselink/xsds/persistence/orm org/eclipse/persistence/jpa/eclipselink_orm_2_5.xsd"     xmlns:orm="http://www.eclipse.org/eclipselink/xsds/persistence/orm"      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                       <orm:named-stored-procedure-query name="OUTININOUTARGSSP" procedure-name="OUTININOUTARGSSP" returns-result-set="false">
+                          <orm:parameter mode="OUT" name="T" type="java.lang.String" class="java.lang.String" jdbc-type="12" jdbc-type-name="VARCHAR"/>
+                          <orm:parameter mode="IN" name="U" type="java.lang.String" class="java.lang.String" jdbc-type="12" jdbc-type-name="VARCHAR"/>
+                          <orm:parameter mode="INOUT" name="V" type="java.math.BigInteger" class="java.math.BigInteger" jdbc-type="2" jdbc-type-name="NUMERIC"/>
+                       </orm:named-stored-procedure-query>
+                    </orm:entity-mappings>""";
 }

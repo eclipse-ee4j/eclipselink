@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,18 +16,18 @@
 //       - 490677: Database connection properties made configurable in test.properties
 package org.eclipse.persistence.testing.tests.eis.aq;
 
-import javax.jms.Queue;
-import javax.jms.QueueConnection;
-import javax.jms.QueueReceiver;
-import javax.jms.QueueSender;
-import javax.jms.QueueSession;
-import javax.jms.Session;
-import javax.jms.TextMessage;
-import javax.jms.Topic;
-import javax.jms.TopicConnection;
-import javax.jms.TopicPublisher;
-import javax.jms.TopicSession;
-import javax.jms.TopicSubscriber;
+import jakarta.jms.Queue;
+import jakarta.jms.QueueConnection;
+import jakarta.jms.QueueReceiver;
+import jakarta.jms.QueueSender;
+import jakarta.jms.QueueSession;
+import jakarta.jms.Session;
+import jakarta.jms.TextMessage;
+import jakarta.jms.Topic;
+import jakarta.jms.TopicConnection;
+import jakarta.jms.TopicPublisher;
+import jakarta.jms.TopicSession;
+import jakarta.jms.TopicSubscriber;
 
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
@@ -42,7 +42,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
-import oracle.jms.AQjmsSession;
+import oracle.jakarta.jms.AQjmsSession;
 
 /**
  * Test direct interactions through the AQ JMS driver. Requires AQ installed on this database.

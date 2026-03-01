@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -41,10 +41,10 @@ public class OperationModel {
     }
 
     public boolean isSimpleXMLFormat() {
-        if (simpleXMLFormatTag != null && simpleXMLFormatTag.length() > 0) {
+        if (simpleXMLFormatTag != null && !simpleXMLFormatTag.isEmpty()) {
             isSimpleXMLFormat = true;
         }
-        if (xmlTag != null && xmlTag.length() > 0) {
+        if (xmlTag != null && !xmlTag.isEmpty()) {
             isSimpleXMLFormat = true;
         }
         return isSimpleXMLFormat;
@@ -55,7 +55,7 @@ public class OperationModel {
     }
     public void setSimpleXMLFormatTag(String simpleXMLFormatTag) {
         this.simpleXMLFormatTag = simpleXMLFormatTag;
-        if (simpleXMLFormatTag != null && simpleXMLFormatTag.length() > 0) {
+        if (simpleXMLFormatTag != null && !simpleXMLFormatTag.isEmpty()) {
             setIsSimpleXMLFormat(true);
         }
     }
@@ -65,7 +65,7 @@ public class OperationModel {
     }
     public void setXmlTag(String xmlTag) {
         this.xmlTag = xmlTag;
-        if (xmlTag != null && xmlTag.length() > 0) {
+        if (xmlTag != null && !xmlTag.isEmpty()) {
             setIsSimpleXMLFormat(true);
         }
     }

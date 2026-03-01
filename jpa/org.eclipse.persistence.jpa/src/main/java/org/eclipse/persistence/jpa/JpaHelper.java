@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,14 +18,12 @@ import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Query;
 import org.eclipse.persistence.internal.jpa.*;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
-import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.server.Server;
 import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.sessions.broker.SessionBroker;
 import org.eclipse.persistence.sessions.factories.SessionFactory;
-import org.eclipse.persistence.queries.FetchGroupTracker;
 
 
 /**
@@ -91,7 +89,7 @@ public class JpaHelper {
             return (ReportQuery)dbQuery;
         }
 
-        throw new IllegalArgumentException(ExceptionLocalization.buildMessage("jpa_helper_invalid_report_query" + query.getClass()));
+        throw new IllegalArgumentException(ExceptionLocalization.buildMessage("jpa_helper_invalid_report_query",  new Object[]{query.getClass()}));
     }
 
     /**
@@ -102,14 +100,14 @@ public class JpaHelper {
             return ((JpaQuery)query).getDatabaseQuery();
         }
 
-        throw new IllegalArgumentException(ExceptionLocalization.buildMessage("jpa_helper_invalid_query" + query.getClass()));
+        throw new IllegalArgumentException(ExceptionLocalization.buildMessage("jpa_helper_invalid_query",  new Object[]{query.getClass()}));
     }
 
     /**
      * Access the internal EclipseLink query wrapped within the JPA query. A EclipseLink
      * JPA created from JP QL only contains a ReadAllQuery if only a single entity
      * type is being returned.
-     *
+     * <p>
      * A ReadAllQuery is the super class of a ReportQuery so this method will
      * always work for either a ReportQuery or ReadAllQuery.
      */
@@ -119,7 +117,7 @@ public class JpaHelper {
             return (ReadAllQuery)dbQuery;
         }
 
-        throw new IllegalArgumentException(ExceptionLocalization.buildMessage("jpa_helper_invalid_read_all_query" + query.getClass()));
+        throw new IllegalArgumentException(ExceptionLocalization.buildMessage("jpa_helper_invalid_read_all_query", new Object[]{query.getClass()}));
     }
 
     /**
@@ -133,7 +131,7 @@ public class JpaHelper {
      * Convert a JPA entityManager into a EclipseLink specific one. This will work
      * both within a JavaSE deployment as well as within a container where the
      * EntityManager may be wrapped.
-     *
+     * <p>
      * In the case where the container is not in a transaction it may return null
      * for its delegate. When this happens the only way to access an EntityManager
      * is to use the EntityManagerFactory to create a temporary one where the
@@ -153,7 +151,7 @@ public class JpaHelper {
 
     /**
      * Given a JPA EntityManagerFactory attempt to cast it to a EclipseLink EMF.
-     *
+     * <p>
      * Although this method currently returns an instance of EntityManagerFactoryImpl, it
      * is recommended that users cast to JpaEntityManagerFactory.  Future versions of EclipseLink will
      * return that interface from this method instead
@@ -181,7 +179,7 @@ public class JpaHelper {
     /**
      * Given an EntityManager return the EntityManagerFactory that created it.  This method must be called
      * on an open entity manager and will return null if called on a closed entityManager.
-     *
+     * <p>
      * This method will return null for non-EclipseLink EntityManagers.
      *
      * @see JpaEntityManagerFactory
@@ -229,7 +227,7 @@ public class JpaHelper {
      * Create a EclipseLink EMF using a session name and sessions.xml. This is
      * equivalent to using the EclipseLink.session-xml and EclipseLink.session-name PU
      * properties with the exception that no persistence.xml is required.
-     *
+     * <p>
      * The application would be required to manage this singleton EMF.
      */
     public static EntityManagerFactory createEntityManagerFactory(String sessionName) {

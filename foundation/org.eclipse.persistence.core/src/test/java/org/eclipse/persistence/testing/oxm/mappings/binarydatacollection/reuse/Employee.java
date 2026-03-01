@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,11 +14,11 @@
 //     rbarkhouse - 2009-10-09 14:17:31 - initial implementation
 package org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.reuse;
 
+import org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.MyAttachmentUnmarshaller;
+
+import java.util.Objects;
 import java.util.Stack;
 import java.util.Vector;
-import java.awt.Image;
-
-import org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.MyAttachmentUnmarshaller;
 
 public class Employee {
     public static final int DEFAULT_ID = 123;
@@ -74,34 +74,29 @@ public class Employee {
     }
 
     public String toString() {
-        String returnString = "Employee: " + this.getID() + " ";
+        StringBuilder returnString = new StringBuilder("Employee: " + this.getID() + " ");
         if (getPhotos() != null) {
-            returnString += "Photos: ";
+            returnString.append("Photos: ");
             for (int i = 0; i < getPhotos().size(); i++) {
                 Object next = getPhotos().elementAt(i);
-                if (next != null) {
-                    returnString += (next + " ");
-                } else {
-                    returnString += ("null_item" + " ");
-                }
+                returnString.append(Objects.requireNonNullElse(next, "null_item")).append(" ");
             }
         }
 
         if (getExtraPhotos() != null) {
-            returnString += "Extra Photos: ";
+            returnString.append("Extra Photos: ");
             for (int i = 0; i < getExtraPhotos().size(); i++) {
                 Object next = getExtraPhotos().elementAt(i);
-                returnString += (next.toString() + " ");
+                returnString.append(next.toString()).append(" ");
             }
         }
-        return returnString;
+        return returnString.toString();
     }
 
     public boolean equals(Object object) {
-        if (!(object instanceof Employee)) {
+        if (!(object instanceof Employee employeeObject)) {
             return false;
         }
-        Employee employeeObject = (Employee)object;
 
         if ((this.getPhotos() == null) && (employeeObject.getPhotos() != null)) {
             return false;
@@ -112,7 +107,7 @@ public class Employee {
         if (!(employeeObject.getPhotos().getClass().equals(this.getPhotos().getClass()))) {
             return false;
         }
-        /**
+        /*
          * Note: do not use Vector.contains() for byte[] arrays since each .getBytes() will return
          * a different hash-value and will not pass the embedded (==) during the .contain check.
          * You must check each base64 byte in sequence

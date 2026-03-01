@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,14 +14,14 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.mappings.structures;
 
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
-import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.foundation.AbstractCompositeObjectMapping;
+import org.eclipse.persistence.queries.ObjectBuildingQuery;
 
 
 /**
@@ -54,7 +54,7 @@ public class StructureMapping extends AbstractCompositeObjectMapping {
      * This is the name of the user-defined data type as defined on the database.
      */
     public String getStructureName() {
-        if (getReferenceDescriptor() instanceof ObjectRelationalDataTypeDescriptor) {
+        if (getReferenceDescriptor().isObjectRelationalDataTypeDescriptor()) {
             return ((ObjectRelationalDataTypeDescriptor)getReferenceDescriptor()).getStructureName();
         } else {
             return "";

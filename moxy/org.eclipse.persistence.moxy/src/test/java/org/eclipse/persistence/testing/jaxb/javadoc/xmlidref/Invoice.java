@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,9 +14,6 @@
 //     Praba Vijayaratnam - 2.3 - initial implementation
 package org.eclipse.persistence.testing.jaxb.javadoc.xmlidref;
 
-import jakarta.xml.bind.annotation.XmlAttribute;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlID;
 import jakarta.xml.bind.annotation.XmlIDREF;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
@@ -32,10 +29,9 @@ public class Invoice {
 
 
     public boolean equals(Object obj) {
-        if (obj == null || !(obj instanceof Invoice)) {
+        if (obj == null || !(obj instanceof Invoice inv)) {
             return false;
         }
-        Invoice inv = (Invoice) obj;
         if (this.customer == null) {
             return inv.customer == null;
         }

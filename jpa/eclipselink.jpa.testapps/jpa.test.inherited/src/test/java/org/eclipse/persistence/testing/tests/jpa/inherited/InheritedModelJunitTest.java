@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -546,7 +546,7 @@ public class InheritedModelJunitTest extends JUnitTestCase {
 
             Record record3 = new Record();
             record3.setDescription("Most beers consumed in a second - 5");
-            record3.setDate(Helper.dateFromYearMonthDate(2005, 12, 12));
+            record3.setDate(Helper.dateFromYearMonthDate(2005, 11, 12));
             record3.setLocation(new Location("Miami", "USA"));
             Venue venue3 = new Venue();
             venue3.setAttendance(63000);
@@ -763,7 +763,7 @@ public class InheritedModelJunitTest extends JUnitTestCase {
     // This test should be run after testCreateExpertBearConsumer
     // This test makes changes, so testReadExpertBeerConsumer will fail after this test.
     public void testExpertBeerConsumerRecordsCRUD() {
-        String errorMsg = "";
+        StringBuilder errorMsg = new StringBuilder();
 
         int nRecords;
         int nRecordsExpected = 2;
@@ -781,7 +781,7 @@ public class InheritedModelJunitTest extends JUnitTestCase {
             commitTransaction(em);
             closeEntityManager(em);
             if(nRecords != nRecordsExpected) {
-                errorMsg += "wrong number of records after read; ";
+                errorMsg.append("wrong number of records after read; ");
             }
 
             // remove Record
@@ -799,7 +799,7 @@ public class InheritedModelJunitTest extends JUnitTestCase {
             closeEntityManager(em);
             nRecords = consumer.getRecords().size();
             if(nRecords != nRecordsExpected) {
-                errorMsg += "cache: wrong number of records after remove; ";
+                errorMsg.append("cache: wrong number of records after remove; ");
             }
             // verify in db
             clearCache();
@@ -808,7 +808,7 @@ public class InheritedModelJunitTest extends JUnitTestCase {
             closeEntityManager(em);
             nRecords = consumer.getRecords().size();
             if(nRecords != nRecordsExpected) {
-                errorMsg += "db: wrong number of records after remove; ";
+                errorMsg.append("db: wrong number of records after remove; ");
             }
 
             // add Record
@@ -833,7 +833,7 @@ public class InheritedModelJunitTest extends JUnitTestCase {
             closeEntityManager(em);
             nRecords = consumer.getRecords().size();
             if(nRecords != nRecordsExpected) {
-                errorMsg += "cache: wrong number of records after add; ";
+                errorMsg.append("cache: wrong number of records after add; ");
             }
             // verify in db
             clearCache();
@@ -842,7 +842,7 @@ public class InheritedModelJunitTest extends JUnitTestCase {
             closeEntityManager(em);
             nRecords = consumer.getRecords().size();
             if(nRecords != nRecordsExpected) {
-                errorMsg += "db: wrong number of records after add; ";
+                errorMsg.append("db: wrong number of records after add; ");
             }
 
             // update all Records one by one.
@@ -870,7 +870,7 @@ public class InheritedModelJunitTest extends JUnitTestCase {
             closeEntityManager(em);
             nRecords = consumer.getRecords().size();
             if(nRecords != nRecordsExpected) {
-                errorMsg += "cache: wrong number of records after update; ";
+                errorMsg.append("cache: wrong number of records after update; ");
             }
             Set<String> usedDescriptions = new HashSet<>(nRecords);
             Set<String> usedNames = new HashSet<>(nRecords);
@@ -879,20 +879,20 @@ public class InheritedModelJunitTest extends JUnitTestCase {
                 Record record = it.next();
                 String description = record.getDescription();
                 if(!description.startsWith(newDescription)) {
-                    errorMsg += "cache: wrong record description after update; ";
+                    errorMsg.append("cache: wrong record description after update; ");
                 }
                 usedDescriptions.add(description);
                 String name = record.getVenue().getName();
                 if(!name.startsWith(newName)) {
-                    errorMsg += "cache: wrong venue name after update; ";
+                    errorMsg.append("cache: wrong venue name after update; ");
                 }
                 usedNames.add(name);
             }
             if(usedDescriptions.size() != nRecords) {
-                errorMsg += "cache: records with same description; ";
+                errorMsg.append("cache: records with same description; ");
             }
             if(usedNames.size() != nRecords) {
-                errorMsg += "cache: venues with same name; ";
+                errorMsg.append("cache: venues with same name; ");
             }
             // verify in db
             clearCache();
@@ -901,7 +901,7 @@ public class InheritedModelJunitTest extends JUnitTestCase {
             closeEntityManager(em);
             nRecords = consumer.getRecords().size();
             if(nRecords != nRecordsExpected) {
-                errorMsg += "db: wrong number of records after update; ";
+                errorMsg.append("db: wrong number of records after update; ");
             }
             usedDescriptions.clear();
             usedNames.clear();
@@ -910,24 +910,24 @@ public class InheritedModelJunitTest extends JUnitTestCase {
                 Record record = it.next();
                 String description = record.getDescription();
                 if(!description.startsWith(newDescription)) {
-                    errorMsg += "db: wrong record description after update; ";
+                    errorMsg.append("db: wrong record description after update; ");
                 }
                 usedDescriptions.add(description);
                 String name = record.getVenue().getName();
                 if(!name.startsWith(newName)) {
-                    errorMsg += "db: wrong venue name after update; ";
+                    errorMsg.append("db: wrong venue name after update; ");
                 }
                 usedNames.add(name);
             }
             if(usedDescriptions.size() != nRecords) {
-                errorMsg += "db: records with same description; ";
+                errorMsg.append("db: records with same description; ");
             }
             if(usedNames.size() != nRecords) {
-                errorMsg += "db: venues with same name; ";
+                errorMsg.append("db: venues with same name; ");
             }
 
             if(errorMsg.length() > 0) {
-                fail(errorMsg);
+                fail(errorMsg.toString());
             }
         } finally {
             if(em != null) {
@@ -1319,8 +1319,7 @@ public class InheritedModelJunitTest extends JUnitTestCase {
                 fail("Exception was expected - but not thrown");
             } catch (RuntimeException e) {
                 boolean isCorrectException = false;
-                if(e instanceof QueryException) {
-                    QueryException queryException = (QueryException)e;
+                if(e instanceof QueryException queryException) {
                     if(((QueryException) e).getErrorCode() == QueryException.LIST_ORDER_FIELD_WRONG_VALUE) {
                         isCorrectException = true;
                     }
@@ -1890,23 +1889,23 @@ public class InheritedModelJunitTest extends JUnitTestCase {
         em.getCriteriaBuilder();
         Class<?>[] testClasses = new Class<?>[]{BeerConsumer.class, Alpine.class, NoviceBeerConsumer.class, Bluish.class, Blue.class, Corona.class, ExpertBeerConsumer.class, Heineken.class};
 
-        for (int index = 0;index<testClasses.length;index++){
-            Class<?>[] interfaces = testClasses[index].getInterfaces();
-            Type[] genericInterfaces = testClasses[index].getGenericInterfaces();
+        for (Class<?> testClass : testClasses) {
+            Class<?>[] interfaces = testClass.getInterfaces();
+            Type[] genericInterfaces = testClass.getGenericInterfaces();
 
-            if (interfaces.length != genericInterfaces.length){
-                fail("Weaving failed to correctly update interfaces for " + testClasses[index]);
+            if (interfaces.length != genericInterfaces.length) {
+                fail("Weaving failed to correctly update interfaces for " + testClass);
             }
 
-            for (int i=0;i<interfaces.length;i++){
+            for (int i = 0; i < interfaces.length; i++) {
                 String comparisonString = null;
-                if (genericInterfaces[i] instanceof Class<?>){
-                    comparisonString = ((Class<?>)genericInterfaces[i]).getCanonicalName();
-                } else if (genericInterfaces[i] instanceof ParameterizedType){
-                    comparisonString = ((Class<?>)((ParameterizedType)genericInterfaces[i]).getRawType()).getCanonicalName();
+                if (genericInterfaces[i] instanceof Class<?>) {
+                    comparisonString = ((Class<?>) genericInterfaces[i]).getCanonicalName();
+                } else if (genericInterfaces[i] instanceof ParameterizedType) {
+                    comparisonString = ((Class<?>) ((ParameterizedType) genericInterfaces[i]).getRawType()).getCanonicalName();
                 }
 
-                assertEquals("Mismatched interface on " + testClasses[index] + ": " + interfaces[i].getCanonicalName() + " != " + comparisonString, interfaces[i].getCanonicalName(), comparisonString);
+                assertEquals("Mismatched interface on " + testClass + ": " + interfaces[i].getCanonicalName() + " != " + comparisonString, interfaces[i].getCanonicalName(), comparisonString);
             }
         }
     }

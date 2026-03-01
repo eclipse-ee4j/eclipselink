@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -140,7 +140,7 @@ public class MarshallerPropertiesTestCases extends OXTestCase {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         marshaller.setProperty("org.glassfish.jaxb.xmlHeaders", header);
         marshaller.marshal(emp, stream);
-        assertTrue("Custom header not written when marshalling to Stream.", new String(stream.toByteArray()).contains(header));
+        assertTrue("Custom header not written when marshalling to Stream.", stream.toString().contains(header));
 
         // Marshal to Writer
         StringWriter writer =  new StringWriter();
@@ -166,7 +166,7 @@ public class MarshallerPropertiesTestCases extends OXTestCase {
         marshaller.setProperty("org.glassfish.jaxb.xmlHeaders", header);
         marshaller.setSchema(FakeSchema.INSTANCE);
         marshaller.marshal(emp, stream);
-        assertTrue("Custom header not written when marshalling to Stream.", new String(stream.toByteArray()).contains(header));
+        assertTrue("Custom header not written when marshalling to Stream.", stream.toString().contains(header));
 
         // Marshal to Writer
         StringWriter writer =  new StringWriter();
@@ -193,7 +193,7 @@ public class MarshallerPropertiesTestCases extends OXTestCase {
         marshaller.setProperty("org.glassfish.jaxb.xmlHeaders", header);
         marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
         marshaller.marshal(emp, stream);
-        assertTrue("Custom header not written when marshalling to Stream.", new String(stream.toByteArray()).contains(header));
+        assertTrue("Custom header not written when marshalling to Stream.", stream.toString().contains(header));
 
         // Marshal to Writer
         StringWriter writer =  new StringWriter();

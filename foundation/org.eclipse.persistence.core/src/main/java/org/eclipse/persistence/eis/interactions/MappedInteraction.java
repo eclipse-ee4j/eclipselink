@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,14 +14,17 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.eis.interactions;
 
-import java.util.*;
-import jakarta.resource.*;
-import jakarta.resource.cci.*;
-
+import jakarta.resource.ResourceException;
+import jakarta.resource.cci.IndexedRecord;
+import jakarta.resource.cci.MappedRecord;
+import org.eclipse.persistence.eis.EISAccessor;
+import org.eclipse.persistence.eis.EISException;
+import org.eclipse.persistence.eis.EISMappedRecord;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.sessions.DatabaseRecord;
-import org.eclipse.persistence.eis.*;
+
+import java.util.Vector;
 
 /**
  * Defines the specification for a call to a JCA interaction using Mapped records.
@@ -63,8 +66,8 @@ public class MappedInteraction extends EISInteraction {
      * If these names are the same (as they normally are) this method can be called with a single argument.
      */
     public void addArgument(String parameterName, String argumentFieldName) {
-        getArgumentNames().addElement(parameterName);
-        getArguments().addElement(new DatabaseField(argumentFieldName));
+        getArgumentNames().add(parameterName);
+        getArguments().add(new DatabaseField(argumentFieldName));
     }
 
     /**
@@ -75,8 +78,8 @@ public class MappedInteraction extends EISInteraction {
      * The argumentValue is the value of the input record argument.
      */
     public void addArgumentValue(String parameterName, Object argumentValue) {
-        getArgumentNames().addElement(parameterName);
-        getArguments().addElement(argumentValue);
+        getArgumentNames().add(parameterName);
+        getArguments().add(argumentValue);
     }
 
     /**
@@ -132,7 +135,7 @@ public class MappedInteraction extends EISInteraction {
             // The input record can either be build from the interaction arguments,
             // or the modify row.
             if ((getInputRow() != null) && (!hasArguments())) {
-                if (getInputResultPath().length() == 0) {
+                if (getInputResultPath().isEmpty()) {
                     record = (MappedRecord)createRecordElement(getInputRecordName(), getInputRow(), accessor);
                 } else {
                     record = accessor.getRecordFactory().createMappedRecord(getInputRecordName());
@@ -180,8 +183,7 @@ public class MappedInteraction extends EISInteraction {
         }
         AbstractRecord row = null;
 
-        if (record instanceof IndexedRecord) {
-            IndexedRecord indexedRecord = (IndexedRecord)record;
+        if (record instanceof IndexedRecord indexedRecord) {
             if (indexedRecord.isEmpty()) {
                 return null;
             }
@@ -190,12 +192,11 @@ public class MappedInteraction extends EISInteraction {
             }
         }
         // If not a mapped record then just put it as a result value in the row.
-        if (!(record instanceof MappedRecord)) {
+        if (!(record instanceof MappedRecord mappedRecord)) {
             row = new DatabaseRecord(1);
             row.put(getOutputResultPath(), record);
             return row;
         }
-        MappedRecord mappedRecord = (MappedRecord)record;
 
         // The desired result is either the entire output record,
         // or a translation of the output with the output arguments.
@@ -206,7 +207,7 @@ public class MappedInteraction extends EISInteraction {
                 row.put(field, mappedRecord.get(getOutputArgumentNames().get(index)));
             }
             return row;
-        } else if (getOutputResultPath().length() > 0) {
+        } else if (!getOutputResultPath().isEmpty()) {
             // Extract the desired nested record from the output.
             mappedRecord = (MappedRecord)mappedRecord.get(getOutputResultPath());
         }

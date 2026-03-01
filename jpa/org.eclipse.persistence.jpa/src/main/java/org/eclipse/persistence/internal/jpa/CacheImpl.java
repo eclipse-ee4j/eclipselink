@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2008, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -64,7 +64,7 @@ public class CacheImpl implements JpaCache {
             return false;
         }
         ClassDescriptor descriptor = getSession().getClassDescriptor(cls); // getDescriptor() is the same call
-        /**
+        /*
          * Check for no descriptor associated with the class parameter.
          * This will occur if the class represents a MappedSuperclass (concrete or abstract class),
          * an interface or Embeddable class.
@@ -152,7 +152,7 @@ public class CacheImpl implements JpaCache {
     @Override
     public void evict(Class<?> classToEvict, Object id, boolean invalidateInCluster) {
         getEntityManagerFactory().verifyOpen();
-        /**
+        /*
          * The following descriptor lookup will return the Entity representing the classToEvict parameter,
          * or it will return the first Entity superclass of a MappedSuperclass in the hierarchy
          * - in this case all subclasses of the parent Entity will be evicted.

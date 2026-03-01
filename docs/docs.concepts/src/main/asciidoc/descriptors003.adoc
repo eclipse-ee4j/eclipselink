@@ -1,0 +1,139 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+
+=== Descriptor Files
+[[DESCRIPTORS003]]
+The following sections describe the descriptor files that can be used
+for object-relational and MOXy mapping.
+
+* link:#BCFDEAGB[Using orm.xml for Object-Relational Mappings]
+* link:#BCFDDBGI[Using eclipselink-orm.xml for EclipseLink Object-Relational Mappings]
+* link:#CHDIJFAC[Using eclipselink-oxm.xml for EclipseLink MOXy Mappings]
+
+[[BCFDEAGB]][[OTLCG94268]]
+
+==== Using orm.xml for Object-Relational Mappings
+
+Use the `orm.xml` file to apply the metadata to the persistence unit.
+This metadata is a union of all the mapping files and the annotations
+(if there is no `xml-mapping-metadata-complete` element). If you use one
+mapping `orm.xml` file for your metadata and place this file in a
+`META-INF` directory on the classpath, then you do not need to
+explicitly list it. The persistence provider will automatically search
+for this file (`orm.xml`) and use it.
+
+The schema for the JPA 2.0 `orm.xml` is `orm_2_0.xsd`.
+(`http://java.sun.com/xml/ns/persistence/orm_2_0.xsd`)
+
+If you use a different name for your mapping files or place them in a
+different location, you must list them in the `mapping-file` element of
+the `persistence.xml` file.
+
+[[BCFDDBGI]][[OTLCG145]]
+
+==== Using eclipselink-orm.xml for EclipseLink Object-Relational Mappings
+
+EclipseLink supports an extended JPA `orm.xml` mapping configuration
+file called `eclipselink-orm.xml`. This mapping file can be used in
+place of JPA's standard mapping file or can be used to override a JPA
+mapping file. In additional to allowing all of the standard JPA mapping
+capabilities it also includes advanced mapping types and options.
+
+For more information on the `eclipselink-orm.xml` file, see
+"eclipselink-orm.xml Schema Reference" in _Jakarta Persistence API (JPA)
+Extensions Reference for EclipseLink_.
+
+NOTE: Using this mapping file enables many EclipseLink advanced features, but
+it may prevent the persistence unit from being portable to other JPA
+implementations.
+
+For more information, on overriding values, see:
+
+* "XML Overriding Rules" in the JPA Specification.
++
+`http://jcp.org/en/jsr/detail?id=338`
+* The schema for `eclipselink-orm.xml` is `eclipselink_orm_2_2.xsd`:
++
+`http://www.eclipse.org/eclipselink/xsds/eclipselink_orm_2_2.xsd`
+
+[[OTLCG94269]]
+
+[[sthref31]]
+
+===== Overriding and Merging Mapping Information
+
+To override the `orm.xml` file's mapping, you must define the
+`META-INF/eclipselink-orm.xml` file in the project. The contents of
+`eclipselink-orm.xml` override `orm.xml` and any other JPA mapping file
+specified in the persistence unit. If there are overlapping
+specifications in multiple ORM files, the files are merged if there are
+no conflicting entities.
+
+For more information, see "Overriding and Merging" in _Jakarta
+Persistence API (JPA) Extensions Reference for EclipseLink_.
+
+[[OTLCG94270]]
+
+[[sthref32]]
+
+===== Validating the XML Schema
+
+By default the content of your `.orm` XML file is not validated against
+the JPA `.orm` XML schema.
+
+During development it is a good idea to validate your `.orm` XML file
+against the schema to ensure it is valid. In EclipseLink, validating the
+`.orm` XML schema can be enabled using the persistence unit property
+"`eclipselink.orm.validate.schema`" in your `persistence.xml` file.
+
+[[OTLCG94271]]
+
+[[sthref33]]
+
+===== Advantages and Disadvantages of Using XML
+
+Some advantages of using XML instead of annotations include:
+
+* No coupling between the metadata and the source code
+* Compliance with the existing, pre-EJB 3.0 development process
+* Support in IDEs and source control systems
+
+The main disadvantages of mapping with XML include:
+
+* It is inherently complex (when compared to annotations)
+* The need for replication of the code context (that is, defining the
+structure in both the XML and the source code)
+
+For more information, see Chapter 10 "Metadata Annotations" in the JPA
+Specification:
+
+`http://jcp.org/en/jsr/detail?id=338`
+
+[[CHDIJFAC]][[OTLCG162]]
+
+==== Using eclipselink-oxm.xml for EclipseLink MOXy Mappings
+
+You can use Java annotations to specify JAXB features in your projects.
+In addition to Java annotations, EclipseLink provides an XML mapping
+configuration file called `eclipselink-oxm.xml`. This mapping file
+contains the standard JAXB mappings and configuration options for
+advanced mapping types. You can use the `eclipselink-oxm.xml` file in
+place of or to override JAXB annotations in source code.
+
+NOTE: Using this mapping file will enable many advanced features but it can
+prevent the model from being portable to other JAXB implementations.

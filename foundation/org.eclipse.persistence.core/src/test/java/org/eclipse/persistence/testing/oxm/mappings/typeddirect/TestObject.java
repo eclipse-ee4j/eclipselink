@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -181,11 +181,10 @@ public class TestObject {
     }
 
     public boolean equals(Object anObject) {
-        if (!(anObject instanceof TestObject)) {
+        if (!(anObject instanceof TestObject aTestObject)) {
             return false;
         }
 
-        TestObject aTestObject = (TestObject) anObject;
         boolean equal = true;
 
         equal = equal && equalByteArrays(aTestObject.getBase64(), this.getBase64());

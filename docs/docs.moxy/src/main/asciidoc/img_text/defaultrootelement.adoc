@@ -1,0 +1,4 @@
+:nofooter:
+This figure illustrates one-to-one (1:1) mappings from the
+*billingAddress* and *shippingAddress* attributes of the *Customer*
+class to the *Address* class.

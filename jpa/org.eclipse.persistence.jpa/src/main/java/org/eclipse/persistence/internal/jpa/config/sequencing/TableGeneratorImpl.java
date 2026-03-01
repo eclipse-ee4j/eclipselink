@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,8 +20,6 @@ import org.eclipse.persistence.internal.jpa.config.MetadataImpl;
 import org.eclipse.persistence.internal.jpa.config.tables.IndexImpl;
 import org.eclipse.persistence.internal.jpa.config.tables.UniqueConstraintImpl;
 import org.eclipse.persistence.internal.jpa.metadata.sequencing.TableGeneratorMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.tables.IndexMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.tables.UniqueConstraintMetadata;
 import org.eclipse.persistence.jpa.config.Index;
 import org.eclipse.persistence.jpa.config.TableGenerator;
 import org.eclipse.persistence.jpa.config.UniqueConstraint;
@@ -37,8 +35,8 @@ public class TableGeneratorImpl extends MetadataImpl<TableGeneratorMetadata> imp
     public TableGeneratorImpl() {
         super(new TableGeneratorMetadata());
 
-        getMetadata().setIndexes(new ArrayList<IndexMetadata>());
-        getMetadata().setUniqueConstraints(new ArrayList<UniqueConstraintMetadata>());
+        getMetadata().setIndexes(new ArrayList<>());
+        getMetadata().setUniqueConstraints(new ArrayList<>());
     }
 
     @Override

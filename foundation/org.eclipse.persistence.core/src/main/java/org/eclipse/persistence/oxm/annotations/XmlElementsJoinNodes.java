@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,50 +14,55 @@
 // dmccann - November 29/2010 - 2.3 - Initial implementation
 package org.eclipse.persistence.oxm.annotations;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
 import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-
 /**
- * XmlElementsJoinNodes is used in conjunction with {@code XmlElements} in order to specify the key references for the
- * targets of the XmlElements annotation. There must be one XmlJoinNodes for each XmlElement This is similar to using {@code XmlIDREF}
- * with {@code XmlElements} but allows customisation of the xpath for the source keys and allows for composite key
- * relationships.
+ * XmlElementsJoinNodes is used in conjunction with {@linkplain jakarta.xml.bind.annotation.XmlElements}
+ * in order to specify the key references for the targets of the {@linkplain jakarta.xml.bind.annotation.XmlElements}
+ * annotation. There must be one {@linkplain XmlJoinNodes} for each {@linkplain jakarta.xml.bind.annotation.XmlElement}.
+ * This is similar to using {@linkplain jakarta.xml.bind.annotation.XmlIDREF} with {@linkplain jakarta.xml.bind.annotation.XmlElements}
+ * but allows customisation of the xpath for the source keys and allows for composite key relationships.
  *
- * <p><b>Example:</b></p>
- * <pre>
- * &#64;XmlRootElement
- * public class Client {
+ * <p><b>Example:</b>
+ * {@snippet :
+ *  @XmlRootElement
+ *  public class Client {
  *
- *   ...
+ *      ...
  *
- *   &#64;XmlElements({
- *       &#64;XmlElement(name="mail", type=Address.class),
- *       &#64;XmlElement(name="phone", type=PhoneNumber.class)
- *   })
- *   &#64;XmlElementsJoinNodes({
- *       &#64;XmlJoinNodes({
- *           &#64;XmlJoinNode(xmlPath="mail/@id", referencedXmlPath="@aid"),
- *           &#64;XmlJoinNode(xmlPath="mail/type/text()", referencedXmlPath="@type")
- *       }),
- *       &#64;XmlJoinNodes({
- *           &#64;XmlJoinNode(xmlPath="phone/@id", referencedXmlPath="@pid"),
- *           &#64;XmlJoinNode(xmlPath="phone/type/text()", referencedXmlPath="@type")
- *       })
- *   })
- *   public Object preferredContactMethod;
- * </pre>
- *
- *   @see XmlJoinNodes
- *   @see XmlJoinNode
- *   @see jakarta.xml.bind.annotation.XmlElements XmlElements
- *   @see XmlKey
+ *    @XmlElements({
+ *        @XmlElement(name="mail", type=Address.class),
+ *        @XmlElement(name="phone", type=PhoneNumber.class)
+ *    })
+ *    @XmlElementsJoinNodes({
+ *        @XmlJoinNodes({
+ *            @XmlJoinNode(xmlPath="mail/@id", referencedXmlPath="@aid"),
+ *            @XmlJoinNode(xmlPath="mail/type/text()", referencedXmlPath="@type")
+ *        }),
+ *        @XmlJoinNodes({
+ *            @XmlJoinNode(xmlPath="phone/@id", referencedXmlPath="@pid"),
+ *            @XmlJoinNode(xmlPath="phone/type/text()", referencedXmlPath="@type")
+ *        })
+ *    })
+ *    public Object preferredContactMethod;
+ *  }
+ * }
+ * @see XmlJoinNodes
+ * @see XmlJoinNode
+ * @see jakarta.xml.bind.annotation.XmlElement
+ * @see jakarta.xml.bind.annotation.XmlElements
+ * @see XmlKey
  */
 @Target({METHOD, FIELD})
 @Retention(RUNTIME)
 public @interface XmlElementsJoinNodes {
+    /**
+     * An array of named XmlJoinNodes annotations.
+     */
     XmlJoinNodes[] value();
 }

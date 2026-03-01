@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,20 +14,20 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.mappings.converters;
 
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
-
 import org.eclipse.persistence.exceptions.ConversionException;
-import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.sessions.Session;
 
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
+
 /**
  * <b>Purpose</b>: Allows a class name to be converted to and from a new instance of the class.
- *
+ * <p>
  * When using a ClassInstanceConverter, the database will store the Class name and the java object
  * model will contain an instance of that class initialized with its default constructor
  *
@@ -52,7 +52,7 @@ public class ClassInstanceConverter implements Converter {
     public Object convertDataValueToObjectValue(Object fieldValue, Session session) {
         Object attributeValue = null;
         if (fieldValue != null) {
-            Class<?> attributeClass = session.getDatasourcePlatform().convertObject(fieldValue, ClassConstants.CLASS);
+            Class<?> attributeClass = session.getDatasourcePlatform().convertObject(fieldValue, CoreClassConstants.CLASS);
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try {
@@ -96,7 +96,7 @@ public class ClassInstanceConverter implements Converter {
 
             // Allow user to specify field type to override computed value. (i.e. blob, nchar)
             if (directMapping.getFieldClassification() == null) {
-                directMapping.setFieldClassification(ClassConstants.STRING);
+                directMapping.setFieldClassification(CoreClassConstants.STRING);
             }
         }
     }

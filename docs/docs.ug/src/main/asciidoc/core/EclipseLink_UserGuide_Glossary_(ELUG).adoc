@@ -1,0 +1,551 @@
+*TOC*
+
+This glossary contains terms and abbreviations that you should be
+familiar with when using EclipseLink.
+
+== A
+
+*attribute*
+
+A variable of a class or object. In EclipseLink, an attribute describes
+all instance variables of a class. Every attribute contains a single
+mapping. Attributes store primitive data such as integers, and simple
+Java types such as `+String+` or `+Date+`.
+
+*authentication*
+
+The means by which a data source validates a user’s identity and
+determines whether or not the user has sufficient privileges to perform
+a given action.
+
+== B
+
+*bean class*
+
+The implementation of the bean. The bean is accessed from the client
+using the home and remote interfaces. bean-managed persistence (BMP)
+
+A scheme for persisting entity beans that requires the developer to
+manually code the methods that perform the persistence.
+
+Compare to link:#C[container-managed persistence (CMP)].
+
+*branch class*
+
+Has a persistent superclass and also has subclasses. By default, queries
+performed on the branch class return instances of the branch class and
+any of its subclasses. However, the branch class can be configured so
+that queries on it return only instances of itself without instances of
+its subclasses.
+
+Compare to link:#L[leaf class].
+
+== C
+
+*class*
+
+A category of objects. Classes allow data and method to be grouped
+together.
+
+*class indicator field*
+
+A field in the table of the root class that indicates which subclass
+should be instantiated
+
+*client session broker*
+
+A collection of client sessions, one from each server session associated
+with the session broker.
+
+*connection pool*
+
+A collection of reusable connections to a single data source.
+
+*custom SQL*
+
+Refers to any non-EclipseLink-generated SQL used through EclipseLink.
+This includes hard-coded SQL and stored procedure calls.
+
+== D
+
+*data definition language (DDL)*
+
+The data definition part of the structured query language (SQL). The
+Workbench can generate DDL creation scripts that can be used to create
+tables on the desired database.
+
+*database session*
+
+A database session provides a client application with a single data
+store connection, for simple, standalone applications in which a single
+connection services all data store requests for one user.
+
+*default mapping*
+
+A relational persistence framework term that refers to making the
+framework automatically generate the object descriptor metadata
+(including such things as mappings, login data, database platform,
+locking, and foreign keys). Default mapping is available for EclipseLink
+projects using EJB 2.0 CMP applications with OC4J.
+
+*dependent class path (IBM WebSphere)*
+
+Location where nonbean classes are specified. EclipseLink requires that
+the bean classes be included here since they are referenced by the
+project.
+
+*deployment descriptor*
+
+A set of XML files that provide the additional required information to
+install an EJB within its server. Typically, this incudes security,
+transaction, relationship, and persistence information.
+
+Compare with link:#E[EclipseLink descriptors].
+
+*descriptors*
+
+An EclipseLink object that describes how an object’s attributes and
+relationships are to be represented in relational database table(s). An
+"`EclipseLink descriptor`" is not the same as a deployment descriptor,
+although it plays a similar role.
+
+*direct access*
+
+By default, EclipseLink accesses public attributes directly when writing
+the attributes of the object to the database or reading the attributes
+of the object from the database.
+
+Compare to link:#M[method access].
+
+*direct mapping*
+
+There are two basic ways of storing object attributes directly in a
+table:
+
+* The information can be stored directly if the attribute type is
+comparable to a database type.
+* If there is no database primitive type that is logically comparable to
+the attribute’s type, it must be transformed on its way to and from the
+database
+
+EclipseLink provides five classes of direct mappings.
+
+Compare to link:#R[relationship mapping].
+
+== E
+
+*EclipseLink session broker*
+
+A mechanism that enables client applications to transparently access
+multiple databases through a single EclipseLink session.
+
+’’’Enterprise Java Beans (EJB)
+
+EJB are server-side domain objects that fit into a standard
+component-based architecture for building enterprise applications with
+Java. They are objects that become distributed, transactional, and
+secure components. Workbench uses three types of EJB: session beans,
+entity beans, and message-driven beans.
+
+*expressions*
+
+The EclipseLink equivalent of an SQL conditional clause. EclipseLink
+expressions are specified using the `+Expression+` and
+`+ExpressionBuilder+` classes.
+
+*entity beans*
+
+EJB that represent a persistent data object. EclipseLink uses two
+schemes for persisting entity beans: bean-managed persistence (BMP) and
+container-managed persistence (CMP).
+
+== F
+
+*fetch group*
+
+A performance enhancement that defines a subset of object attributes to
+be loaded initially and ensures that all other attributes are loaded on
+demand.
+
+== H
+
+*hub*
+
+A common connection point for devices in a network.
+
+== I
+
+*identity map*
+
+Used to cache objects for performance and to maintain object identity.
+
+See also link:#O[object identity].
+
+*independent relationship*
+
+A relationship in which the source and target are public objects that
+exist independently; the destruction of one object does not necessarily
+imply the destruction of the other.
+
+Compare to link:#P[private relationship].
+
+*indirection*
+
+The EclipseLink term for lazy loading.
+
+By default, when EclipseLink retrieves a persistent object, it retrieves
+all of the dependent objects to which it refers. When you configure
+indirection (also known as lazy loading, lazy reading, and just-in-time
+reading) for an attribute mapped with a relationship mapping,
+EclipseLink uses an indirection object as a place holder for the
+referenced object: EclipseLink defers reading the dependent object until
+you access that specific attribute. This can result in a significant
+performance improvement, especially if the application is interested
+only in the contents of the retrieved object, rather than the objects to
+which it is related.
+
+EclipseLink supports a variety of types of indirection, including: value
+holder indirection, transparent indirect container indirection, and
+proxy indirection.
+
+*inheritance*
+
+Describes how a child class inherits the characteristics of its parent
+class. EclipseLink supports multiple approaches to database
+implementations that preserve the inheritance relationship.
+
+*in-memory query*
+
+A query that is run against the shared session cache.
+
+*instantiate*
+
+Create an instance of a Java class.
+
+== J
+
+*JCA*
+
+The Java EE Connector architecture (JCA) adapter is a way to persist
+Java objects to a nonrelational data source, such as XML.
+
+*Java SE*
+
+The Java Platform, Standard Edition (Java SE) is the core Java
+technology platform. It provides software compilers, tools, runtimes,
+and APIs for writing, deploying, and running applets and applications in
+Java.
+
+*Java EE*
+
+The Java Platform, Enterprise Edition (Java EE) is an environment for
+developing and deploying enterprise applications. Java EE includes a set
+of services, APIs, and protocols for developing multitiered web-based
+applications.
+
+*Java EE Containers*
+
+A Java EE container is a run-time environment for Enterprise Java Beans
+(EJB) that includes such basic functions as security, life cycle
+management, transaction management, and deployment services. Java EE
+containers are usually provided by a Java EE server, such as Oracle
+Containers for J2EE.
+
+*Java Messaging Service (JMS)*
+
+The JMS API is a protocol for communication that provides asynchronous
+communication between components in a distributed computing environment.
+
+*Java Naming and Directory Interface (JNDI)*
+
+The JDBC specification recommends using a JNDI naming service to acquire
+a connection to a database. EclipseLink supports acquiring a database
+connection in this fashion. To take advantage of this feature, construct
+and configure an instance of
+`+org.eclipse.persistence.sessions.JNDIConnector+` and pass it to the
+project login object using the `+setConnector+` method.
+
+*Java Persistence API (JPA)*
+
+The Java Persistence API (JPA) provides a POJO persistence model for
+object-relational mapping in both Java EE and Java SE applications.
+
+*Java Transaction API (JTA)*
+
+The Java Transaction API (JTA) specifies the interfaces between a
+transaction manager, a resource manager, an application server, and
+transactional applications involved in a distributed transaction system.
+
+*just-in-time reading*
+
+A synonym for link:#I[indirection].
+
+== L
+
+*lazy loading*
+
+A synonym for link:#I[indirection.] This is the term used for
+indirection in the Java Persistence API (JPA).
+
+*lazy reading*
+
+A synonym for indirection.
+
+*leaf class*
+
+Has a persistent superclass in the hierarchy but does not have
+subclasses; queries performed on the leaf class can return only
+instances of the leaf class.
+
+Compare to link:#B[branch class].
+
+*locking policy*
+
+A mechanism that ensures one user does not overwrite another users’s
+work. EclipseLink descriptors support optimistic and pessimistic locking
+policies.
+
+== M
+
+*mappings*
+
+Describe how individual Java objects and attributes relate to a data
+source.
+
+*message-driven beans*
+
+An EJB that processes asynchronous Java Messaging Service (JMS)
+messages. For EclipseLink clients, a message-driven bean is simply a JMS
+consumer with no conversational state and no home or remote interfaces.
+
+*method access*
+
+The application registers accessor methods for the attribute.
+
+Compare to link:#D[direct access].
+
+== N
+
+*named query*
+
+An EclipseLink query that is created and stored, by name, in a session
+for later retrieval and execution.
+
+== O
+
+*object identity*
+
+Ensures that each object is represented by one and only one instance in
+the application; that is, multiple retrievals of the same object return
+references to the same object instance, not multiple copies of the same
+object. Violating object identity can corrupt the object model.
+
+See also link:#I[identity map].
+
+*object-relational data type*
+
+The object-relational data type paradigm extends traditional relational
+databases to include object-oriented functions. Oracle, IBM DB2,
+Informix, and other DBMS databases allow users to store, access, and use
+complex data in more sophisticated ways.The object-relational data type
+standard is an evolving standard concerned mainly with extending the
+database data structures and SQL (SQL 3).
+
+Object-relational data type descriptors describe Java objects that you
+map to special relational database types that correspond more closely to
+object types. Using these special object-relational data type database
+types can simplify mapping objects to relational database tables. Not
+all relational databases support these special object-relational data
+type database types.
+
+*optimistic locking*
+
+Also known as write locking; allows unlimited read access to objects. A
+client can write an object to the database only if the object has not
+changed since it was last read.
+
+Compare to link:#P[pessimistic locking].
+
+== P
+
+*packet*
+
+A piece of a message transmitted over a packet-switching network. One of
+the key features of a packet is that it contains the destination address
+in addition to the data.
+
+*packet time-to-live*
+
+A number of hops that session data packets can take before expiring. The
+default is 2.
+
+See also link:#P[packet].
+
+*persist*
+
+In object technology, the storage of an Java object by a data source.
+pessimistic locking
+
+Objects are locked before they are edited, which ensures that only one
+client is editing the object at any given time.
+
+Compare to link:#O[optimistic locking].
+
+*POJO*
+
+Plain Old Java Object.
+
+In EclipseLink, POJO means just a regular Java object model class and is
+used to refer to using the EclipseLink API directly rather than using
+EclipseLink API indirectly by way of CMP or JPA.
+
+*primary key*
+
+A field (or combination of fields) that uniquely identifies a record in
+the data source.
+
+*private relationship*
+
+A relationship in which the target object is considered to be a private
+component of the source object; the target object cannot exist without
+the source and is accessible only through the source object;
+furthermore, if the source object is destroyed, the target object is
+destroyed as well.
+
+Compare to link:#I[independent relationship].
+
+*proxy indirection*
+
+A type of EclipseLink indirection.
+
+The Java class Proxy lets you to use dynamic proxy objects as
+place-holders for a defined interface. Certain EclipseLink mappings can
+be configured to use proxy indirection, which gives you the benefits of
+EclipseLink indirection without the need to include EclipseLink classes
+in your domain model or use weaving.
+
+== Q
+
+*query manager*
+
+An object, owned by a descriptor, that controls the way the descriptor
+accesses the database. The query manager generates its own default SQL
+to access the database in a transparent manner.
+
+*query optimization*
+
+EclipseLink supports two forms of query optimization: *joining* and
+*batch reading*. Their purpose is to optimize database access through
+reducing the number of database calls required to read a group of
+objects.
+
+== R
+
+*relationship*
+
+In EclipseLink, a reference between two EclipseLink-enabled objects.
+
+*relationship mapping*
+
+Persistent objects use relationship mappings to store references to
+instances of other persistent classes. The appropriate mapping class is
+chosen primarily by the cardinality of the relationship. EclipseLink
+provides five classes of relationship mappings.
+
+Compare to link:#D[direct mapping.]
+
+*Remote Method Invocation (RMI)*
+
+A set of protocols that enable Java objects to communicate remotely with
+other Java objects.
+
+*remote session*
+
+A remote session is a client-side session that communicates over RMI
+with a corresponding client session and server session on the server
+side. Remote sessions handle object identity and marshalling and
+unmarshalling between client side and server side.
+
+== S
+
+*service channel*
+
+A name of the EclipseLink coordinated cache channel to which sessions
+subscribe in order to participate in the same coordinated cache.
+
+*session beans*
+
+EJB that represent a business operation, task, or process. EclipseLink
+can use session beans to make the regular Java objects they access
+persistent, or to wrap other legacy applications.
+
+*stale data*
+
+An artifact of caching, in which an object in the cache is not the most
+recent version committed to the data source.
+
+== T
+
+*transparent indirect container indirection*
+
+A type of EclipseLink link:#I[indirection].
+
+Using this type of EclipseLink indirection, you can configure
+indirection for any relationship attribute of a persistent class that
+holds a collection of related objects as any of the following:
+
+* `+java.util.Collection+`
+* `+java.util.Hastable+`
+* `+java.util.List+`
+* `+java.util.Map+`
+* `+java.util.Set+`
+* `+java.util.Vector+`
+
+EclipseLink will use an indirection object that implements the
+appropriate interface and also performs just-in-time reading of the
+related objects. When using transparent indirection, you do not have to
+declare the attributes as `+ValueHolderInterface+`.
+
+Newly created collection mappings use transparent indirection by default
+if their attribute is not a `+ValueHolderInterface+`.
+
+For JPA entities or POJO classes that you configure for weaving,
+EclipseLink weaves value holder indirection for one-to-one mappings and
+transparent indirect container indirection for collection mappings.
+
+== U
+
+*unit of work*
+
+A transactional EclipseLink session that allows for a transaction to
+occur at the object level not only the database level. Changes to
+objects are not visible globally until the unit of work is committed.
+
+== V
+
+*value holder indirection*
+
+A type of EclipseLink link:#I[indirection].
+
+Persistent classes that use indirection must replace relationship
+attributes with value holder attributes. A value holder is an instance
+of a class that implements the `+ValueHolderInterface+` interface, such
+as `+ValueHolder+`. This object stores the information necessary to
+retrieve the object it is replacing from the database. If the
+application does not access the value holder, the replaced object is
+never read from the database. To obtain the object that the value holder
+replaces, use the `+getValue+` and `+setValue+` methods of the
+`+ValueHolderInterface+`. A convenient way of using these methods is to
+hide the `+getValue+` and `+setValue+` methods of the
+`+ValueHolderInterface+` inside get and set methods.
+
+For JPA entities or POJO classes that you configure for weaving,
+EclipseLink weaves value holder indirection for one-to-one mappings and
+transparent indirect container indirection for collection mappings.
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Concept[Category: Concept]

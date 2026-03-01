@@ -1,0 +1,18 @@
+== Cache
+
+The following sections describe how to use the EclipseLink object cache
+in both distributed and nondistributed applications:
+
+* link:Introduction_to_Cache_(ELUG)[Introduction to Cache] - describes
+each of the different EclipseLink cache types and important cache
+concepts.
+
+* link:Configuring_a_Coordinated_Cache_(ELUG)[Configuring a Coordinated
+Cache]
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Concept[Category: Concept]

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,7 +16,7 @@
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.spi.PersistenceProvider;
-import org.eclipse.persistence.config.CacheIsolationType;
+import org.eclipse.persistence.annotations.CacheIsolationType;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -102,7 +102,7 @@ public class JPAPerformanceComparisonModel extends TestModel {
 
         setupProvider();
         getSession().logMessage(getExecutor().getEntityManagerFactory().getClass().toString());
-        System.out.println(getExecutor().getEntityManagerFactory().getClass().toString());
+        System.out.println(getExecutor().getEntityManagerFactory().getClass());
         // Populate database.
         EmulatedDriver.emulate = false;
         EntityManager manager = getExecutor().createEntityManager();
@@ -121,7 +121,7 @@ public class JPAPerformanceComparisonModel extends TestModel {
             Employee empInsert = new Employee();
             empInsert.setFirstName("Brendan");
             empInsert.setMale();
-            empInsert.setLastName("" + j + "");
+            empInsert.setLastName("" + j);
             empInsert.setSalary(100000);
             EmploymentPeriod employmentPeriod = new EmploymentPeriod();
             java.sql.Date startDate = Helper.dateFromString("1901-12-31");
@@ -426,7 +426,7 @@ public class JPAPerformanceComparisonModel extends TestModel {
                 em.close();
             }
         };
-        test.setName("ReadAllVsReadAllResultSet(" + Helper.getShortClassName(targetClass) + ')');
+        test.setName("ReadAllVsReadAllResultSet(" + targetClass.getSimpleName() + ')');
         return test;
     }
 
@@ -967,7 +967,7 @@ public class JPAPerformanceComparisonModel extends TestModel {
             super();
             this.targetClass = targetClass;
             this.withCache = withCache;
-            setName("ResultSetOptimizationSideBySideTest(" + Helper.getShortClassName(targetClass) + ')' + (withCache ? " CACHE" : " NO CACHE"));
+            setName("ResultSetOptimizationSideBySideTest(" + targetClass.getSimpleName() + ')' + (withCache ? " CACHE" : " NO CACHE"));
         }
 
         @Override

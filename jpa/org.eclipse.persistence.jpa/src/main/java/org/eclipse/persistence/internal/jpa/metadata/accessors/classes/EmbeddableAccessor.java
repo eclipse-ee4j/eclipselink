@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -79,7 +79,7 @@ import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JP
 /**
  * INTERNAL:
  * An embeddable accessor.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -95,7 +95,7 @@ import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JP
 public class EmbeddableAccessor extends ClassAccessor {
     // Embedding accessors is a map of those classes that embed this embeddable.
     // All embedding accessors are owning descriptors, but not vice versa.
-    private Map<String, ClassAccessor> m_embeddingAccessors = new HashMap<String, ClassAccessor>();
+    private Map<String, ClassAccessor> m_embeddingAccessors = new HashMap<>();
 
     /**
      * INTERNAL:
@@ -172,14 +172,14 @@ public class EmbeddableAccessor extends ClassAccessor {
      * INTERNAL:
      * Build a list of classes that are decorated with a MappedSuperclass
      * annotation or that are tagged as a mapped-superclass in an XML document.
-     *
+     * <p>
      * This method will also do a couple other things as well since we are
      * traversing the parent classes:
      *  - Build a map of generic types specified and will be used to resolve
      *    actual class types for mappings.
      *  - save mapped-superclass descriptors on the project for later use
      *    by the Metamodel API
-     *
+     * <p>
      * We don't support embeddable inheritance yet. When that is added, this
      * method will need to change and in fact we may be able to re-use the
      * existing discover method from EntityAccessor (with minor tweaks).
@@ -226,15 +226,15 @@ public class EmbeddableAccessor extends ClassAccessor {
      * the owners better be same or mappings must be fully specified and not use
      * any defaults. I think that is somewhat ok given we're going beyond the
      * spec and TopLink doesn't even support it anyway???
-     *
+     * <p>
      * So the stance is, we'll allow the extra mappings on embeddables that are
      * not shared, however on shared cases there are restrictions. Users should
      * use mapped superclasses when they have a need to share complex
      * embeddables.
-     *
+     * <p>
      * Or they can write customizers to modify their embeddable descriptors
      * after initialize (after they have been cloned)
-     *
+     * <p>
      * Future: the metadata processing 'could' set all necessary (per owning
      * descriptor) metadata and have the descriptor initialize code handle it.
      * Metadata processing would process embeddable classes as it currently does
@@ -242,7 +242,7 @@ public class EmbeddableAccessor extends ClassAccessor {
      * context. At descriptor initialize time, we would avoid cloning the
      * aggregate descriptor and use the one metadata processing provided.
      * Investigate further at a later date ...
-     *
+     * <p>
      * Callers to this method are ...
      * BasicCollectionAccessor - processCollectionTable - defaults pk names from the owning descriptor.
      * RelationshipAccessor - processJoinTable - defaults the join table name and the source field name
@@ -252,7 +252,7 @@ public class EmbeddableAccessor extends ClassAccessor {
      */
     @Override
     public MetadataDescriptor getOwningDescriptor() {
-        if (getOwningDescriptors() != null && getOwningDescriptors().size() > 0) {
+        if (getOwningDescriptors() != null && !getOwningDescriptors().isEmpty()) {
             // Return the first owning descriptor. In most cases this will be OK
             // since in most cases there is only one.
             return getOwningDescriptors().get(0);
@@ -273,12 +273,12 @@ public class EmbeddableAccessor extends ClassAccessor {
      * INTERNAL:
      * The pre-process method is called during regular deployment and metadata
      * processing.
-     *
+     * <p>
      * This method is called after each entity of the persistence unit has had
      * an opportunity to pre-process itself first since we'll rely on owning
      * entities for things like access type etc. The pre-process will run some
      * validation.
-     *
+     * <p>
      * The order of processing is important, care must be taken if changes must
      * be made.
      */
@@ -310,7 +310,7 @@ public class EmbeddableAccessor extends ClassAccessor {
      * during the canonical model generation. The use of this pre-process allows
      * us to remove some items from the regular pre-process that do not apply
      * to the canonical model generation.
-     *
+     * <p>
      * The order of processing is important, care must be taken if changes must
      * be made.
      */

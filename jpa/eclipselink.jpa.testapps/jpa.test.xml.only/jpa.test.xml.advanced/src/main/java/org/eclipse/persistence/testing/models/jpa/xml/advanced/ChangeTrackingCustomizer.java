@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,7 +14,7 @@
 //     James Sutherland (Oracle) - initial API and implementation
 package org.eclipse.persistence.testing.models.jpa.xml.advanced;
 
-import org.eclipse.persistence.config.DescriptorCustomizer;
+import org.eclipse.persistence.descriptors.DescriptorCustomizer;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.changetracking.DeferredChangeDetectionPolicy;
 

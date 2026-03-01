@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -298,6 +298,12 @@ public final class JPQLQueryProblemResourceBundle extends ListResourceBundle {
             {"IDENTIFICATION_VARIABLE_DECLARATION_JOINS_HAS_COMMA",                    "JOIN expressions cannot be separated by a comma."},
             {"IDENTIFICATION_VARIABLE_DECLARATION_MISSING_RANGE_VARIABLE_DECLARATION", "The range variable declaration must be specified."},
 
+            // IdExpression - Grammar
+            {"ID_EXPRESSION_INVALID_EXPRESSION",        "The encapsulated expression is not a valid expression."},
+            {"ID_EXPRESSION_MISSING_EXPRESSION",        "An identification variable must be provided for an ID expression."},
+            {"ID_EXPRESSION_MISSING_LEFT_PARENTHESIS",  "The left parenthesis is missing from the ID expression."},
+            {"ID_EXPRESSION_MISSING_RIGHT_PARENTHESIS", "The right parenthesis is missing from the ID expression."},
+
             // IndexExpression - Grammar
             {"INDEX_EXPRESSION_INVALID_EXPRESSION",        "The encapsulated expression is not a valid expression."},
             {"INDEX_EXPRESSION_INVALID_JPA_VERSION",       "An INDEX expression cannot be used in a JPQL query when the JPA platform is 1.0."},
@@ -350,6 +356,18 @@ public final class JPQLQueryProblemResourceBundle extends ListResourceBundle {
             {"KEY_EXPRESSION_MISSING_LEFT_PARENTHESIS",  "The left parenthesis is missing from the ABS expression."},
             {"KEY_EXPRESSION_MISSING_RIGHT_PARENTHESIS", "The right parenthesis is missing from the ABS expression."},
 
+            // LeftExpression - Grammar
+            {"LEFT_EXPRESSION_INVALID_FIRST_EXPRESSION",     "The first argument is not a valid expression."},
+            {"LEFT_EXPRESSION_INVALID_SECOND_EXPRESSION",    "The second argument is not a valid expression."},
+            {"LEFT_EXPRESSION_MISSING_FIRST_COMMA",          "The first comma is missing from the LEFT expression."},
+            {"LEFT_EXPRESSION_MISSING_FIRST_EXPRESSION",     "The first argument is missing from the LEFT expression."},
+            {"LEFT_EXPRESSION_MISSING_LEFT_PARENTHESIS",     "The left parenthesis is missing from the LEFT expression."},
+            {"LEFT_EXPRESSION_MISSING_RIGHT_PARENTHESIS",    "The right parenthesis is missing from the LEFT expression."},
+            {"LEFT_EXPRESSION_MISSING_SECOND_EXPRESSION",    "The second argument is missing from the LEFT expression."},
+            // LeftExpression - Semantic
+            {"LEFT_EXPRESSION_FIRST_EXPRESSION_WRONG_TYPE",  "The first argument is not a String value."},
+            {"LEFT_EXPRESSION_SECOND_EXPRESSION_WRONG_TYPE", "The second argument is not an integer value."},
+                
             // LengthExpression - Grammar
             {"LENGTH_EXPRESSION_INVALID_EXPRESSION",        "The encapsulated expression is not a valid expression."},
             {"LENGTH_EXPRESSION_MISSING_EXPRESSION",        "An expression must be provided for a LENGTH expression."},
@@ -474,12 +492,40 @@ public final class JPQLQueryProblemResourceBundle extends ListResourceBundle {
             {"REGEXP_EXPRESSION_INVALID_STRING_EXPRESSION", "The string expression is not a valid expression."},
             {"REGEXP_EXPRESSION_MISSING_PATTERN_VALUE",     "The pattern value must be specified."},
             {"REGEXP_EXPRESSION_MISSING_STRING_EXPRESSION", "The string expression must be specified."},
-
+                
+            // ReplaceExpression - Grammar
+            {"REPLACE_EXPRESSION_INVALID_FIRST_EXPRESSION",     "The first argument is not a valid expression."},
+            {"REPLACE_EXPRESSION_INVALID_SECOND_EXPRESSION",    "The second argument is not a valid expression."},
+            {"REPLACE_EXPRESSION_INVALID_THIRD_EXPRESSION",     "The third argument is not a valid expression."},
+            {"REPLACE_EXPRESSION_MISSING_FIRST_COMMA",          "The first comma is missing from the REPLACE expression."},
+            {"REPLACE_EXPRESSION_MISSING_FIRST_EXPRESSION",     "The first argument is missing from the REPLACE expression."},
+            {"REPLACE_EXPRESSION_MISSING_LEFT_PARENTHESIS",     "The left parenthesis is missing from the REPLACE expression."},
+            {"REPLACE_EXPRESSION_MISSING_RIGHT_PARENTHESIS",    "The right parenthesis is missing from the REPLACE expression."},
+            {"REPLACE_EXPRESSION_MISSING_SECOND_COMMA",         "The second comma is missing from the REPLACE expression."},
+            {"REPLACE_EXPRESSION_MISSING_SECOND_EXPRESSION",    "The second argument is missing from the REPLACE expression."},
+            {"REPLACE_EXPRESSION_MISSING_THIRD_EXPRESSION",     "The third argument is missing from the REPLACE expression."},
+            // ReplaceExpression - Semantic
+            {"REPLACE_EXPRESSION_FIRST_EXPRESSION_WRONG_TYPE",  "The first argument is not a String value."},
+            {"REPLACE_EXPRESSION_SECOND_EXPRESSION_WRONG_TYPE", "The second argument is not an String value."},
+            {"REPLACE_EXPRESSION_THIRD_EXPRESSION_WRONG_TYPE",  "The third argument is not an String value."},
+                
             // ResultVariable - Grammar
             {"RESULT_VARIABLE_INVALID_JPA_VERSION",       "A result variable cannot be used in a JPQL query when the JPA platform is 1.0."},
             {"RESULT_VARIABLE_MISSING_SELECT_EXPRESSION", "The select item is missing from the result variable declaration."},
             {"RESULT_VARIABLE_MISSING_RESULT_VARIABLE",   "The result variable is missing from the select item declaration."},
-
+                
+            // RightExpression - Grammar
+            {"RIGHT_EXPRESSION_INVALID_FIRST_EXPRESSION",     "The first argument is not a valid expression."},
+            {"RIGHT_EXPRESSION_INVALID_SECOND_EXPRESSION",    "The second argument is not a valid expression."},
+            {"RIGHT_EXPRESSION_MISSING_FIRST_COMMA",          "The first comma is missing from the RIGHT expression."},
+            {"RIGHT_EXPRESSION_MISSING_FIRST_EXPRESSION",     "The first argument is missing from the RIGHT expression."},
+            {"RIGHT_EXPRESSION_MISSING_LEFT_PARENTHESIS",     "The left parenthesis is missing from the RIGHT expression."},
+            {"RIGHT_EXPRESSION_MISSING_RIGHT_PARENTHESIS",    "The right parenthesis is missing from the RIGHT expression."},
+            {"RIGHT_EXPRESSION_MISSING_SECOND_EXPRESSION",    "The second argument is missing from the RIGHT expression."},
+            // RightExpression - Semantic
+            {"RIGHT_EXPRESSION_FIRST_EXPRESSION_WRONG_TYPE",  "The first argument is not a String value."},
+            {"RIGHT_EXPRESSION_SECOND_EXPRESSION_WRONG_TYPE", "The second argument is not an integer value."},
+                
             // SimpleSelectClause - Grammar
             {"SIMPLE_SELECT_CLAUSE_NOT_SINGLE_EXPRESSION", "Only one expression can be declared in a SELECT clause of a subquery."},
 
@@ -606,6 +652,12 @@ public final class JPQLQueryProblemResourceBundle extends ListResourceBundle {
             {"VALUE_EXPRESSION_MISSING_EXPRESSION",        "An identification variable must be provided for a VALUE expression."},
             {"VALUE_EXPRESSION_MISSING_LEFT_PARENTHESIS",  "The left parenthesis is missing from the VALUE expression."},
             {"VALUE_EXPRESSION_MISSING_RIGHT_PARENTHESIS", "The right parenthesis is missing from the VALUE expression."},
+
+            // VersionExpression - Grammar
+            {"VERSION_EXPRESSION_INVALID_EXPRESSION",        "The encapsulated expression is not a valid expression."},
+            {"VERSION_EXPRESSION_MISSING_EXPRESSION",        "An identification variable must be provided for an VERSION expression."},
+            {"VERSION_EXPRESSION_MISSING_LEFT_PARENTHESIS",  "The left parenthesis is missing from the VERSION expression."},
+            {"VERSION_EXPRESSION_MISSING_RIGHT_PARENTHESIS", "The right parenthesis is missing from the VERSION expression."},
 
             // WhenClause - Grammar
             {"WHEN_CLAUSE_MISSING_THEN_EXPRESSION", "A conditional expression must be provided for a WHEN clause."},

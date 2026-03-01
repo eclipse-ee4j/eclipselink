@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,12 +14,6 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.oxm.inheritance.typetests.any;
 
-import javax.xml.namespace.QName;
-
-import org.eclipse.persistence.testing.oxm.inheritance.typetests.Address;
-import org.eclipse.persistence.testing.oxm.inheritance.typetests.CanadianAddress;
-import org.eclipse.persistence.testing.oxm.inheritance.typetests.ContactMethod;
-
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
@@ -27,6 +21,11 @@ import org.eclipse.persistence.oxm.mappings.XMLAnyObjectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 import org.eclipse.persistence.oxm.schema.XMLSchemaClassPathReference;
 import org.eclipse.persistence.sessions.Project;
+import org.eclipse.persistence.testing.oxm.inheritance.typetests.Address;
+import org.eclipse.persistence.testing.oxm.inheritance.typetests.CanadianAddress;
+import org.eclipse.persistence.testing.oxm.inheritance.typetests.ContactMethod;
+
+import javax.xml.namespace.QName;
 
 public class AnyTypeProject extends Project {
     private NamespaceResolver namespaceResolver;

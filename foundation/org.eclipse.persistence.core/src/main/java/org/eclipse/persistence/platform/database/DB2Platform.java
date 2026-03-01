@@ -1,6 +1,7 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2022 IBM Corporation. All rights reserved.
+ * Copyright (c) 2025 Contributors to the Eclipse Foundation.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,25 +30,50 @@
 //       - 542491: Add new 'eclipselink.jdbc.force-bind-parameters' property to force enable binding
 package org.eclipse.persistence.platform.database;
 
-import java.io.*;
-import java.sql.*;
-import java.util.*;
-
+import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.ValidationException;
-import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.internal.sessions.AbstractRecord;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionOperator;
+import org.eclipse.persistence.expressions.ListExpressionOperator;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.databaseaccess.DatasourceCall.ParameterType;
-import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 import org.eclipse.persistence.internal.expressions.ConstantExpression;
 import org.eclipse.persistence.internal.expressions.ExpressionJavaPrinter;
 import org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter;
+import org.eclipse.persistence.internal.expressions.ExtractOperator;
 import org.eclipse.persistence.internal.expressions.ParameterExpression;
 import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
-import org.eclipse.persistence.queries.*;
+import org.eclipse.persistence.internal.helper.BasicTypeHelperImpl;
+import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.helper.ConversionManager;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.queries.SQLCall;
+import org.eclipse.persistence.queries.StoredProcedureCall;
+import org.eclipse.persistence.queries.ValueReadQuery;
 import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
+
+import static java.sql.Types.TIMESTAMP;
+
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.time.OffsetDateTime;
+import java.time.OffsetTime;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.HexFormat;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 
 /**
  * <p>
@@ -68,7 +94,9 @@ import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
  *
  * @since TOPLink/Java 1.0
  */
-public class DB2Platform extends org.eclipse.persistence.platform.database.DatabasePlatform {
+public class DB2Platform extends DatabasePlatform {
+    
+    protected boolean supportsWaitForUpdate;
 
     public DB2Platform() {
         super();
@@ -84,6 +112,11 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
         // DB2 database doesn't support NVARCHAR column types and as such doesn't support calling
         // get/setNString() on the driver.
         this.driverSupportsNationalCharacterVarying = false;
+        
+        String databaseVersion = connection.getMetaData().getDatabaseProductVersion();
+
+        // Includes NOWAIT
+        this.supportsWaitForUpdate = Helper.compareVersions(databaseVersion, "11.5.6") >= 0;
     }
 
     /**
@@ -95,7 +128,7 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
     protected void appendByteArray(byte[] bytes, Writer writer) throws IOException {
         if (usesNativeSQL()) {
             writer.write("BLOB(x'");
-            Helper.writeHexString(bytes, writer);
+            writer.write(HexFormat.of().formatHex(bytes));
             writer.write("')");
         } else {
             super.appendByteArray(bytes, writer);
@@ -291,66 +324,23 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
     }
 
     @Override
-    protected Hashtable<Class<?>, FieldTypeDefinition> buildFieldTypes() {
-        Hashtable<Class<?>, FieldTypeDefinition> fieldTypeMapping = new Hashtable<>();
+    public int getJDBCTypeForSetNull(DatabaseField field) {
 
-        fieldTypeMapping.put(Boolean.class, new FieldTypeDefinition("SMALLINT DEFAULT 0", false));
+        Class<?> javaType = ConversionManager.getObjectClass(field.getType());
 
-        fieldTypeMapping.put(Integer.class, new FieldTypeDefinition("INTEGER", false));
-        fieldTypeMapping.put(Long.class, new FieldTypeDefinition("BIGINT", false));
-        fieldTypeMapping.put(Float.class, new FieldTypeDefinition("FLOAT", false));
-        fieldTypeMapping.put(Double.class, new FieldTypeDefinition("FLOAT", false));
-        fieldTypeMapping.put(Short.class, new FieldTypeDefinition("SMALLINT", false));
-        fieldTypeMapping.put(Byte.class, new FieldTypeDefinition("SMALLINT", false));
-        fieldTypeMapping.put(java.math.BigInteger.class, new FieldTypeDefinition("BIGINT", false));
-        fieldTypeMapping.put(java.math.BigDecimal.class, new FieldTypeDefinition("DECIMAL", 15));
-        fieldTypeMapping.put(Number.class, new FieldTypeDefinition("DECIMAL", 15));
-        if(getUseNationalCharacterVaryingTypeForString()){
-            fieldTypeMapping.put(String.class, new FieldTypeDefinition("VARCHAR", DEFAULT_VARCHAR_SIZE, "FOR MIXED DATA"));
-        }else {
-            fieldTypeMapping.put(String.class, new FieldTypeDefinition("VARCHAR", DEFAULT_VARCHAR_SIZE));
+        // Mirror the mappings for OffsetDateTime and OffsetTime
+        // as set above for fieldTypeMapping. These differ from the
+        // usual mapping to TIMESTAMP_WITH_TIMEZONE / TIME_WITH_TIMEZONE
+
+        if (javaType == OffsetDateTime.class) {
+            return TIMESTAMP;
         }
-        fieldTypeMapping.put(Character.class, new FieldTypeDefinition("CHAR", 1));
-        fieldTypeMapping.put(Byte[].class, new FieldTypeDefinition("BLOB", 64000));
-        fieldTypeMapping.put(Character[].class, new FieldTypeDefinition("CLOB", 64000));
-        fieldTypeMapping.put(byte[].class, new FieldTypeDefinition("BLOB", 64000));
-        fieldTypeMapping.put(char[].class, new FieldTypeDefinition("CLOB", 64000));
-        fieldTypeMapping.put(java.sql.Blob.class, new FieldTypeDefinition("BLOB", 64000));
-        fieldTypeMapping.put(java.sql.Clob.class, new FieldTypeDefinition("CLOB", 64000));
 
-        fieldTypeMapping.put(java.sql.Date.class, new FieldTypeDefinition("DATE", false));
-        fieldTypeMapping.put(java.sql.Time.class, new FieldTypeDefinition("TIME", false));
-        fieldTypeMapping.put(java.sql.Timestamp.class, new FieldTypeDefinition("TIMESTAMP", false));
+        if (javaType == OffsetTime.class) {
+            return TIMESTAMP;
+        }
 
-        return fieldTypeMapping;
-    }
-
-    /**
-     * INTERNAL: returns the maximum number of characters that can be used in a
-     * field name on this platform.
-     */
-    @Override
-    public int getMaxFieldNameSize() {
-        return 128;
-    }
-
-    /**
-     * INTERNAL: returns the maximum number of characters that can be used in a
-     * foreign key name on this platform.
-     */
-    @Override
-    public int getMaxForeignKeyNameSize() {
-        return 18;
-    }
-
-    /**
-     * INTERNAL:
-     * returns the maximum number of characters that can be used in a unique key
-     * name on this platform.
-     */
-    @Override
-    public int getMaxUniqueKeyNameSize() {
-        return 18;
+        return super.getJDBCTypeForSetNull(field);
     }
 
     /**
@@ -376,7 +366,7 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
                 query = query + " AND TBCREATOR = " + creator;
             }
         }
-        return session.executeSelectingCall(new org.eclipse.persistence.queries.SQLCall(query));
+        return session.executeSelectingCall(new SQLCall(query));
     }
 
     /**
@@ -388,45 +378,48 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
         return "CALL ";
     }
 
+    @Override
+    public boolean supportsWaitForUpdate() {
+        return supportsWaitForUpdate;
+    }
+
     /**
      * INTERNAL:
      * Used for pessimistic locking in DB2.
      * Without the "WITH RS" the lock is not held.
      */
-    // public String getSelectForUpdateString() { return " FOR UPDATE"; }
     @Override
     public String getSelectForUpdateString() {
         return " FOR READ ONLY WITH RS USE AND KEEP UPDATE LOCKS";
-        //return " FOR READ ONLY WITH RR";
-        //return " FOR READ ONLY WITH RS";
-        //return " FOR UPDATE WITH RS";
     }
 
     /**
-     * INTERNAL:
-     * Used for stored procedure defs.
+     * INTERNAL: DB2 does not support NOWAIT before 11.5.6
      */
     @Override
-    public String getProcedureEndString() {
-        return "END";
+    public String getNoWaitString() {
+        return supportsWaitForUpdate() ? " NOWAIT" : "";
     }
 
-    /**
-     * Used for stored procedure defs.
-     */
     @Override
-    public String getProcedureBeginString() {
-        return "BEGIN";
+    public String getSelectForUpdateWaitString(Integer waitTimeout) {
+        return getSelectForUpdateString() + " WAIT " + waitTimeout;
     }
 
-    /**
-     * INTERNAL:
-     * Used for stored procedure defs.
-     */
     @Override
-    public String getProcedureAsString() {
-        return "";
+    public boolean isLockTimeoutException(DatabaseException e) {
+        return
+            e.getInternalException() instanceof SQLException s &&
+
+            // -911/40001 means deadlock or timeout
+            s.getErrorCode() == -911 &&
+            "40001".equals(s.getSQLState()) &&
+
+            // 68 specifically makes it timeout
+            s.getMessage() != null &&
+            s.getMessage().contains("SQLERRMC=68");
     }
+
 
     /**
      * Obtain the platform specific argument string
@@ -440,22 +433,12 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
     }
 
     /**
-     * INTERNAL:
-     * This is required in the construction of the stored procedures with output
-     * parameters.
-     */
-    @Override
-    public boolean shouldPrintOutputTokenAtStart() {
-        return true;
-    }
-
-    /**
      * Used to determine if the platform should perform partial parameter binding or not
      * Enabled for DB2 and DB2 for zOS to add support for partial binding
      */
     @Override
     public boolean shouldBindPartialParameters() {
-        return this.shouldBindPartialParameters;
+        return true;
     }
 
     /**
@@ -507,6 +490,9 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
         addOperator(lengthOperator());
         addOperator(nullifOperator());
         addOperator(coalesceOperator());
+
+        addOperator(roundOperator());
+        addOperator(db2ExtractOperator());
     }
 
     /**
@@ -588,6 +574,51 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
                 super.printJavaCollection(items, printer);
             }
         };
+    }
+    
+    private static final class DB2ExtractOperator extends ExtractOperator {
+
+        // DATE emulation: CAST(:first AS DATE)
+        private static final String[] DATE_STRINGS = new String[] {"CAST(", " AS DATE)"};
+        // TIME emulation: TIME(:first)
+        private static final String[] TIME_STRINGS = new String[] {"TIME(", ")"};
+
+        private DB2ExtractOperator() {
+            super();
+        }
+
+        @Override
+        protected void printDateSQL(final Expression first, Expression second, final ExpressionSQLPrinter printer) {
+            printer.printString(DATE_STRINGS[0]);
+            first.printSQL(printer);
+            printer.printString(DATE_STRINGS[1]);
+        }
+
+        @Override
+        protected void printDateJava(final Expression first, Expression second, final ExpressionJavaPrinter printer) {
+            printer.printString(DATE_STRINGS[0]);
+            first.printJava(printer);
+            printer.printString(DATE_STRINGS[1]);
+        }
+        
+        @Override
+        protected void printTimeSQL(final Expression first, Expression second, final ExpressionSQLPrinter printer) {
+            printer.printString(TIME_STRINGS[0]);
+            first.printSQL(printer);
+            printer.printString(TIME_STRINGS[1]);
+        }
+
+        @Override
+        protected void printTimeJava(final Expression first, Expression second, final ExpressionJavaPrinter printer) {
+            printer.printString(TIME_STRINGS[0]);
+            first.printJava(printer);
+            printer.printString(TIME_STRINGS[1]);
+        }
+    }
+
+    // Create EXTRACT operator for DB2 platform
+    private static ExpressionOperator db2ExtractOperator() {
+        return new DB2Platform.DB2ExtractOperator();
     }
 
     /**
@@ -812,7 +843,7 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
         ExpressionOperator operator = new ExpressionOperator();
         operator.setType(ExpressionOperator.FunctionOperator);
         operator.setSelector(ExpressionOperator.Concat);
-        Vector<String> v = new Vector<String>(5);
+        Vector<String> v = new Vector<>(5);
         v.add("VARCHAR(");
         v.add(" || ");
         v.add(")");
@@ -1409,7 +1440,7 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
 
         operator.setType(ExpressionOperator.FunctionOperator);
         operator.setSelector(ExpressionOperator.LeftTrim2);
-        Vector<String> v = new Vector<String>(5);
+        Vector<String> v = new Vector<>(5);
         v.add("TRIM(LEADING ");
         v.add(" FROM ");
         v.add(")");
@@ -1482,7 +1513,7 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
 
         operator.setType(ExpressionOperator.FunctionOperator);
         operator.setSelector(ExpressionOperator.RightTrim2);
-        Vector<String> v = new Vector<String>(5);
+        Vector<String> v = new Vector<>(5);
         v.add("TRIM(TRAILING ");
         v.add(" FROM ");
         v.add(")");
@@ -1494,6 +1525,19 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
         operator.setArgumentIndices(indices);
 
         operator.setNodeClass(ClassConstants.FunctionExpression_Class);
+        return operator;
+    }
+
+    /**
+     * DB2 requires that at least one argument be a known type
+     * <p>
+     * With binding enabled, DB2 will throw an error:
+     * <pre>Db2 cannot determine how to implicitly cast the arguments between string and 
+     * numeric data types. DB2 SQL Error: SQLCODE=-245, SQLSTATE=428F5</pre>
+     */
+    protected ExpressionOperator roundOperator() {
+        ExpressionOperator operator = disableAtLeast1BindingExpression();
+        ExpressionOperator.round().copyTo(operator);
         return operator;
     }
 
@@ -1512,8 +1556,8 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
      * precision {@literal &} Scale
      */
     @Override
-    public Hashtable<Class<? extends Number>, ? super Number> maximumNumericValues() {
-        Hashtable<Class<? extends Number>, ? super Number> values = new Hashtable<>();
+    public Map<Class<? extends Number>, ? super Number> maximumNumericValues() {
+        Map<Class<? extends Number>, ? super Number> values = new HashMap<>();
 
         values.put(Integer.class, Integer.MAX_VALUE);
         values.put(Long.class, (long) Integer.MAX_VALUE);
@@ -1521,8 +1565,8 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
         values.put(Double.class, (double) Float.MAX_VALUE);
         values.put(Short.class, Short.MAX_VALUE);
         values.put(Byte.class, Byte.MAX_VALUE);
-        values.put(java.math.BigInteger.class, new java.math.BigInteger("999999999999999"));
-        values.put(java.math.BigDecimal.class, new java.math.BigDecimal("0.999999999999999"));
+        values.put(BigInteger.class, new BigInteger("999999999999999"));
+        values.put(BigDecimal.class, new BigDecimal("0.999999999999999"));
         return values;
     }
 
@@ -1536,8 +1580,8 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
      * precision {@literal &} Scale
      */
     @Override
-    public Hashtable<Class<? extends Number>, ? super Number> minimumNumericValues() {
-        Hashtable<Class<? extends Number>, ? super Number> values = new Hashtable<>();
+    public Map<Class<? extends Number>, ? super Number> minimumNumericValues() {
+        Map<Class<? extends Number>, ? super Number> values = new HashMap<>();
 
         values.put(Integer.class, Integer.MIN_VALUE);
         values.put(Long.class, (long) Integer.MIN_VALUE);
@@ -1545,8 +1589,8 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
         values.put(Double.class, (double) Float.MIN_VALUE);
         values.put(Short.class, Short.MIN_VALUE);
         values.put(Byte.class, Byte.MIN_VALUE);
-        values.put(java.math.BigInteger.class, new java.math.BigInteger("-999999999999999"));
-        values.put(java.math.BigDecimal.class, new java.math.BigDecimal("-0.999999999999999"));
+        values.put(BigInteger.class, new BigInteger("-999999999999999"));
+        values.put(BigDecimal.class, new BigDecimal("-0.999999999999999"));
         return values;
     }
 
@@ -1585,29 +1629,6 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
 
         selectQuery.setSQLString(writer.toString());
         return selectQuery;
-    }
-
-    /**
-     * INTERNAL: Append the receiver's field 'identity' constraint clause to a
-     * writer.
-     * Used by table creation with sequencing.
-     */
-    @Override
-    public void printFieldIdentityClause(Writer writer) throws ValidationException {
-        try {
-            writer.write(" GENERATED ALWAYS AS IDENTITY");
-        } catch (IOException ioException) {
-            throw ValidationException.fileError(ioException);
-        }
-    }
-
-    @Override
-    protected void printFieldTypeSize(Writer writer, FieldDefinition field, FieldTypeDefinition ftd) throws IOException {
-        super.printFieldTypeSize(writer, field, ftd);
-        String suffix = ftd.getTypesuffix();
-        if (suffix != null) {
-            writer.append(" " + suffix);
-        }
     }
 
     /**
@@ -1668,14 +1689,6 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
     }
 
     /**
-     * INTERNAL: DB2 does not support NOWAIT.
-     */
-    @Override
-    public String getNoWaitString() {
-        return "";
-    }
-
-    /**
      * INTERNAL: DB2 has issues with binding with temp table queries.
      * This is used by UpdateAllQuerys.
      */
@@ -1701,7 +1714,7 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
      */
     @Override
     public boolean isDynamicSQLRequiredForFunctions() {
-        if(shouldForceBindAllParameters()) {
+        if(shouldForceBindAllParameters() || shouldBindPartialParameters()) {
             return false;
         }
         return !isCastRequired();
@@ -1709,8 +1722,8 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
 
     /**
      * INTERNAL: DB2 does not allow stand alone, untyped parameter markers in select clause.
-     * @see org.eclipse.persistence.internal.expressions.ConstantExpression#writeFields(ExpressionSQLPrinter, List, SQLSelectStatement)
-     * @see org.eclipse.persistence.internal.expressions.ParameterExpression#writeFields(ExpressionSQLPrinter, List, SQLSelectStatement)
+     * @see ConstantExpression#writeFields(ExpressionSQLPrinter, List, SQLSelectStatement)
+     * @see ParameterExpression#writeFields(ExpressionSQLPrinter, List, SQLSelectStatement)
      */
     @Override
     public boolean allowBindingForSelectClause() {
@@ -1797,14 +1810,6 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
         return false;
     }
 
-    /**
-     * INTERNAL: DB2 added SEQUENCE support as of (I believe) v8.
-     */
-    @Override
-    public boolean isAlterSequenceObjectSupported() {
-        return true;
-    }
-
     @Override
     public boolean shouldPrintForUpdateClause() {
         return false;
@@ -1850,6 +1855,144 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
         }
         call.setIgnoreFirstRowSetting(true);
         call.setIgnoreMaxResultsSetting(true);
+    }
+
+    /*
+                                 ____  ____  __
+                                |    \|    \|  |
+                                |  |  |  |  |  |__
+                                |____/|____/|_____|
+     */
+
+    private static final FieldDefinition.DatabaseType DB2_TYPE_BOOLEAN = new FieldDefinition.DatabaseType("SMALLINT DEFAULT 0", false);
+    private static final FieldDefinition.DatabaseType DB2_TYPE_BIGINT = new FieldDefinition.DatabaseType("BIGINT", false);
+    private static final FieldDefinition.DatabaseType DB2_TYPE_INTEGER = new FieldDefinition.DatabaseType("INTEGER", false);
+    private static final FieldDefinition.DatabaseType DB2_TYPE_FLOAT = new FieldDefinition.DatabaseType("FLOAT", false);
+    private static final FieldDefinition.DatabaseType DB2_TYPE_REAL = new FieldDefinition.DatabaseType("REAL", false);
+    private static final FieldDefinition.DatabaseType DB2_TYPE_SMALLINT = new FieldDefinition.DatabaseType("SMALLINT", false);
+    private static final FieldDefinition.DatabaseType DB2_TYPE_DECIMAL = new FieldDefinition.DatabaseType("DECIMAL", 15);
+    private static final FieldDefinition.DatabaseType DB2_TYPE_CHAR = TYPE_CHAR.ofSize(1);
+    private static final FieldDefinition.DatabaseType DB2_TYPE_VARCHAR = TYPE_VARCHAR.ofSize(DEFAULT_VARCHAR_SIZE);
+    private static final FieldDefinition.DatabaseType DB2_TYPE_NVARCHAR = new FieldDefinition.DatabaseType("VARCHAR", DEFAULT_VARCHAR_SIZE, "FOR MIXED DATA");
+    private static final FieldDefinition.DatabaseType DB2_TYPE_TIMESTAMP = TYPE_TIMESTAMP.ofNoSize();
+    private static final FieldDefinition.DatabaseType DB2_TYPE_TIME = TYPE_TIME.ofNoSize();
+    private static final FieldDefinition.DatabaseType DB2_TYPE_DATE = TYPE_DATE.ofNoSize();
+    private static final FieldDefinition.DatabaseType DB2_TYPE_BLOB = TYPE_BLOB.ofSize(64000);
+    private static final FieldDefinition.DatabaseType DB2_TYPE_CLOB = TYPE_CLOB.ofSize(64000);
+    private static final FieldDefinition.DatabaseType DB2_TYPE_BINARY = new FieldDefinition.DatabaseType("CHAR", 16, "FOR BIT DATA");
+
+    @Override
+    protected Map<Class<?>, FieldDefinition.DatabaseType> buildDatabaseTypes() {
+        Map<Class<?>, FieldDefinition.DatabaseType> fieldTypeMapping = new HashMap<>();
+
+        fieldTypeMapping.put(Boolean.class, DB2_TYPE_BOOLEAN);
+
+        fieldTypeMapping.put(Integer.class, DB2_TYPE_INTEGER);
+        fieldTypeMapping.put(Long.class, DB2_TYPE_BIGINT);
+        fieldTypeMapping.put(Float.class, DB2_TYPE_REAL); //
+        fieldTypeMapping.put(Double.class, DB2_TYPE_FLOAT);
+        fieldTypeMapping.put(Short.class, DB2_TYPE_SMALLINT);
+        fieldTypeMapping.put(Byte.class, DB2_TYPE_SMALLINT);
+        fieldTypeMapping.put(BigInteger.class, DB2_TYPE_BIGINT);
+        fieldTypeMapping.put(BigDecimal.class, DB2_TYPE_DECIMAL);
+        fieldTypeMapping.put(Number.class, DB2_TYPE_DECIMAL);
+        if (getUseNationalCharacterVaryingTypeForString()) {
+            fieldTypeMapping.put(String.class, DB2_TYPE_NVARCHAR);
+        } else {
+            fieldTypeMapping.put(String.class, DB2_TYPE_VARCHAR);
+        }
+        fieldTypeMapping.put(Character.class, DB2_TYPE_CHAR);
+        fieldTypeMapping.put(Byte[].class, DB2_TYPE_BLOB);
+        fieldTypeMapping.put(Character[].class, DB2_TYPE_CLOB);
+        fieldTypeMapping.put(byte[].class, DB2_TYPE_BLOB);
+        fieldTypeMapping.put(char[].class, DB2_TYPE_CLOB);
+        fieldTypeMapping.put(java.sql.Blob.class, DB2_TYPE_BLOB);
+        fieldTypeMapping.put(java.sql.Clob.class, DB2_TYPE_CLOB);
+
+        fieldTypeMapping.put(java.sql.Date.class, DB2_TYPE_DATE);
+        fieldTypeMapping.put(java.sql.Time.class, DB2_TYPE_TIME);
+        fieldTypeMapping.put(java.sql.Timestamp.class, DB2_TYPE_TIMESTAMP);
+
+        fieldTypeMapping.put(java.time.LocalDate.class, TYPE_DATE);
+        fieldTypeMapping.put(java.time.LocalDateTime.class, TYPE_TIMESTAMP);
+        fieldTypeMapping.put(java.time.LocalTime.class, DB2_TYPE_TIME);
+        fieldTypeMapping.put(java.time.OffsetDateTime.class, TYPE_TIMESTAMP);
+        fieldTypeMapping.put(java.time.OffsetTime.class, TYPE_TIMESTAMP);
+        fieldTypeMapping.put(java.time.Instant.class, DB2_TYPE_TIMESTAMP);
+        fieldTypeMapping.put(java.util.UUID.class, DB2_TYPE_BINARY);
+
+        return fieldTypeMapping;
+    }
+
+    @Override
+    public int getMaxFieldNameSize() {
+        return 128;
+    }
+
+    @Override
+    public int getMaxForeignKeyNameSize() {
+        return 18;
+    }
+
+    @Override
+    public int getMaxUniqueKeyNameSize() {
+        return 18;
+    }
+
+    @Override
+    public String getProcedureEndString() {
+        return "END";
+    }
+
+    @Override
+    public String getProcedureBeginString() {
+        return "BEGIN";
+    }
+
+    @Override
+    public String getProcedureAsString() {
+        return "";
+    }
+
+    /**
+     * INTERNAL: Append the receiver's field 'identity' constraint clause to a
+     * writer.
+     * Used by table creation with sequencing.
+     */
+    @Override
+    public void printFieldIdentityClause(Writer writer) throws ValidationException {
+        try {
+            writer.write(" GENERATED ALWAYS AS IDENTITY");
+        } catch (IOException ioException) {
+            throw ValidationException.fileError(ioException);
+        }
+    }
+
+    @Override
+    public void printFieldTypeSize(Writer writer, FieldDefinition field, FieldDefinition.DatabaseType ftd) throws IOException {
+        super.printFieldTypeSize(writer, field, ftd);
+        String suffix = ftd.suffix();
+        if (suffix != null) {
+            writer.append(" ").append(suffix);
+        }
+    }
+
+    @Override
+    public boolean shouldPrintOutputTokenAtStart() {
+        return true;
+    }
+
+    @Override
+    public boolean supportsFractionalTime() {
+        return true;
+    }
+
+    /**
+     * INTERNAL: DB2 added SEQUENCE support as of (I believe) v8.
+     */
+    @Override
+    public boolean isAlterSequenceObjectSupported() {
+        return true;
     }
 
 }

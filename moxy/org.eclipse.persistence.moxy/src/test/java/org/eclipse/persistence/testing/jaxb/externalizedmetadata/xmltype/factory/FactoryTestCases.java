@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -102,7 +102,7 @@ public class FactoryTestCases extends TestCase {
         try {
             JAXBException jaxbException = (JAXBException) caughtException;
             IntegrityException integrityException = (IntegrityException) jaxbException.getLinkedException();
-            DescriptorException descriptorException = (DescriptorException) integrityException.getIntegrityChecker().getCaughtExceptions().firstElement();
+            DescriptorException descriptorException = (DescriptorException) integrityException.getIntegrityChecker().getCaughtExceptions().get(0);
             assertEquals("Incorrect error code:", DescriptorException.INSTANTIATION_WHILE_CONSTRUCTOR_INSTANTIATION_OF_FACTORY, descriptorException.getErrorCode());
         } catch (Exception e) {
             fail("The expected Exception structure was not thrown, instead caught: " + caughtException.getLocalizedMessage());
@@ -152,7 +152,7 @@ public class FactoryTestCases extends TestCase {
         try {
             JAXBException jaxbException = (JAXBException) caughtException;
             IntegrityException integrityException = (IntegrityException) jaxbException.getLinkedException();
-            DescriptorException descriptorException = (DescriptorException) integrityException.getIntegrityChecker().getCaughtExceptions().firstElement();
+            DescriptorException descriptorException = (DescriptorException) integrityException.getIntegrityChecker().getCaughtExceptions().get(0);
             assertEquals("Incorrect error code:", DescriptorException.NO_SUCH_METHOD_WHILE_INITIALIZING_INSTANTIATION_POLICY, descriptorException.getErrorCode());
         } catch (Exception e) {
             fail("The expected Exception structure was not thrown, instead caught: " + caughtException.getLocalizedMessage());

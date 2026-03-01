@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -172,11 +172,11 @@ public class InheritanceModelExamples  {
     public static Company companyExample1() {
         Company example = new Company();
         Vector<Vehicle> vehicle = new Vector<>();
-        vehicle.addElement(busExample1(example));
-        vehicle.addElement(bikeExample1(example));
-        vehicle.addElement(busExample2(example));
-        vehicle.addElement(busExample3(example));
-        vehicle.addElement(nonFueledVehicleExample1(example));
+        vehicle.add(busExample1(example));
+        vehicle.add(bikeExample1(example));
+        vehicle.add(busExample2(example));
+        vehicle.add(busExample3(example));
+        vehicle.add(nonFueledVehicleExample1(example));
         example.setName("TOP");
         example.setVehicles(vehicle);
         return example;
@@ -185,11 +185,11 @@ public class InheritanceModelExamples  {
     public static Company companyExample2() {
         Company example = new Company();
         Vector<Vehicle> vehicle = new Vector<>();
-        vehicle.addElement(boatExample1(example));
-        vehicle.addElement(bikeExample2(example));
-        vehicle.addElement(busExample2(example));
-        vehicle.addElement(fueledVehicleExample1(example));
-        vehicle.addElement(nonFueledVehicleExample1(example));
+        vehicle.add(boatExample1(example));
+        vehicle.add(bikeExample2(example));
+        vehicle.add(busExample2(example));
+        vehicle.add(fueledVehicleExample1(example));
+        vehicle.add(nonFueledVehicleExample1(example));
         example.setName("ABC");
         example.setVehicles(vehicle);
         return example;
@@ -198,11 +198,11 @@ public class InheritanceModelExamples  {
     public static Company companyExample3() {
         Company example = new Company();
         Vector<Vehicle> vehicle = new Vector<>();
-        vehicle.addElement(boatExample1(example));
-        vehicle.addElement(bikeExample3(example));
-        vehicle.addElement(boatExample2(example));
-        vehicle.addElement(boatExample3(example));
-        vehicle.addElement(nonFueledVehicleExample1(example));
+        vehicle.add(boatExample1(example));
+        vehicle.add(bikeExample3(example));
+        vehicle.add(boatExample2(example));
+        vehicle.add(boatExample3(example));
+        vehicle.add(nonFueledVehicleExample1(example));
         example.setName("XYZ");
         example.setVehicles(vehicle);
         return example;

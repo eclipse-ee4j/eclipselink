@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,24 +14,47 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.expressions;
 
-import org.eclipse.persistence.testing.models.employee.domain.*;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.platform.database.*;
-import org.eclipse.persistence.queries.*;
+import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.expressions.ExpressionMath;
+import org.eclipse.persistence.platform.database.DB2Platform;
+import org.eclipse.persistence.platform.database.DerbyPlatform;
+import org.eclipse.persistence.platform.database.MaxDBPlatform;
+import org.eclipse.persistence.platform.database.MySQLPlatform;
+import org.eclipse.persistence.platform.database.OraclePlatform;
+import org.eclipse.persistence.platform.database.PostgreSQLPlatform;
+import org.eclipse.persistence.platform.database.SQLAnywherePlatform;
+import org.eclipse.persistence.platform.database.SQLServerPlatform;
+import org.eclipse.persistence.platform.database.SybasePlatform;
+import org.eclipse.persistence.platform.database.SymfowarePlatform;
+import org.eclipse.persistence.platform.database.TimesTenPlatform;
+import org.eclipse.persistence.queries.ReadAllQuery;
+import org.eclipse.persistence.queries.ReadObjectQuery;
+import org.eclipse.persistence.testing.framework.TestSuite;
 import org.eclipse.persistence.testing.models.collections.Restaurant;
-import org.eclipse.persistence.testing.models.multipletable.LargeBusinessProject;
-import org.eclipse.persistence.testing.models.ownership.*;
-import org.eclipse.persistence.testing.framework.*;
-import org.eclipse.persistence.tools.schemaframework.PopulationManager;
-import java.util.*;
-
-import org.eclipse.persistence.testing.models.inheritance.SalesRep;
-import org.eclipse.persistence.testing.models.inheritance.Engineer;
+import org.eclipse.persistence.testing.models.employee.domain.Address;
+import org.eclipse.persistence.testing.models.employee.domain.Employee;
+import org.eclipse.persistence.testing.models.employee.domain.EmploymentPeriod;
+import org.eclipse.persistence.testing.models.employee.domain.LargeProject;
+import org.eclipse.persistence.testing.models.employee.domain.PhoneNumber;
+import org.eclipse.persistence.testing.models.employee.domain.Project;
+import org.eclipse.persistence.testing.models.employee.domain.SmallProject;
 import org.eclipse.persistence.testing.models.inheritance.Computer;
-import org.eclipse.persistence.testing.models.inheritance.Vehicle;
+import org.eclipse.persistence.testing.models.inheritance.Engineer;
 import org.eclipse.persistence.testing.models.inheritance.NonFueledVehicle;
+import org.eclipse.persistence.testing.models.inheritance.SalesRep;
+import org.eclipse.persistence.testing.models.inheritance.Vehicle;
+import org.eclipse.persistence.testing.models.multipletable.LargeBusinessProject;
+import org.eclipse.persistence.testing.models.ownership.ObjectB;
+import org.eclipse.persistence.testing.models.ownership.ObjectC;
+import org.eclipse.persistence.tools.schemaframework.PopulationManager;
+
+import java.util.Calendar;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.Set;
+import java.util.Vector;
 
 public class ExpressionTestSuite extends TestSuite {
     protected PopulationManager manager;
@@ -119,7 +142,7 @@ public class ExpressionTestSuite extends TestSuite {
         exp = exp.and(builder.get("firstName").replace("B", "C").equal("Cob"));
         exp = exp.and(builder.get("salary").toNumber().lessThan(100000));
         exp = exp.and(builder.get("firstName").substring(1, 1).equal("B"));
-        exp = exp.and(builder.get("firstName").translate(new String("Bo"), new String("bo")).equal("bob"));
+        exp = exp.and(builder.get("firstName").translate("Bo", "bo").equal("bob"));
 
         ReadAllExpressionTest test = new ReadAllExpressionTest(Employee.class, 0);
         test.setExpression(exp);
@@ -200,7 +223,7 @@ public class ExpressionTestSuite extends TestSuite {
     }
 
     private void addAggregateQueryTest() {
-        Employee employee = (Employee)getManager().getObject(new org.eclipse.persistence.testing.models.employee.domain.Employee().getClass(), "0003");
+        Employee employee = (Employee)getManager().getObject(Employee.class, "0003");
 
         ExpressionBuilder builder = new ExpressionBuilder();
         Expression expression = builder.get("period").get("startDate").equal(employee.getPeriod().getStartDate());
@@ -219,13 +242,13 @@ public class ExpressionTestSuite extends TestSuite {
 
         ReadAllExpressionTest test = new ReadAllExpressionTest(cls, 1);
         test.setExpression(expression);
-        test.setName("Aggregate Colection Join Test " + Helper.getShortClassName(cls));
+        test.setName("Aggregate Colection Join Test " + cls.getSimpleName());
         test.setDescription("Test aggregate collection join with 2 anyOf clauses");
         addTest(test);
     }
 
     private void addAndNullTest() {
-        Employee employee = (Employee)getManager().getObject(new org.eclipse.persistence.testing.models.employee.domain.Employee().getClass(), "0003");
+        Employee employee = (Employee)getManager().getObject(Employee.class, "0003");
 
         ExpressionBuilder builder = new ExpressionBuilder();
         Expression exp1 = builder.get("lastName").equal("Chanley");
@@ -239,7 +262,7 @@ public class ExpressionTestSuite extends TestSuite {
     }
 
     private void addAndTest() {
-        Employee employee = (Employee)getManager().getObject(new org.eclipse.persistence.testing.models.employee.domain.Employee().getClass(), "0003");
+        Employee employee = (Employee)getManager().getObject(Employee.class, "0003");
 
         ExpressionBuilder builder = new ExpressionBuilder();
         Expression exp1 = builder.get("lastName").equal("Chanley");
@@ -331,7 +354,7 @@ public class ExpressionTestSuite extends TestSuite {
     }
 
     protected void addBuilderEqualParameterTest() {
-        Employee employee = (Employee)getManager().getObject(new org.eclipse.persistence.testing.models.employee.domain.Employee().getClass(), "0002");
+        Employee employee = (Employee)getManager().getObject(Employee.class, "0002");
 
         ExpressionBuilder emp = new ExpressionBuilder();
         Expression expression = emp.equal(emp.getParameter("employee"));
@@ -483,7 +506,7 @@ public class ExpressionTestSuite extends TestSuite {
     }
 
     private void addEqualDoubleTest() {
-        Employee employee = (Employee)getManager().getObject(new org.eclipse.persistence.testing.models.employee.domain.Employee().getClass(), "0001");
+        Employee employee = (Employee)getManager().getObject(Employee.class, "0001");
 
         ExpressionBuilder builder = new ExpressionBuilder();
         Expression expression = builder.get("salary").equal((double)35000);
@@ -495,7 +518,7 @@ public class ExpressionTestSuite extends TestSuite {
     }
 
     private void addEqualTest() {
-        Employee employee = (Employee)getManager().getObject(new org.eclipse.persistence.testing.models.employee.domain.Employee().getClass(), "0003");
+        Employee employee = (Employee)getManager().getObject(Employee.class, "0003");
 
         ExpressionBuilder builder = new ExpressionBuilder();
         Expression expression = builder.get("lastName").equal("Chanley");
@@ -511,7 +534,7 @@ public class ExpressionTestSuite extends TestSuite {
      *   and itself
      */
     private void addEqualUnneccessaryJoinTest() {
-        Employee employee = (Employee)getManager().getObject(new Employee().getClass(), "0008");
+        Employee employee = (Employee)getManager().getObject(Employee.class, "0008");
 
         ExpressionBuilder builder = new ExpressionBuilder();
         Expression expression = builder.get("firstName").equal("Fred").or(builder.get("manager").notEqual(builder.get("manager")));
@@ -709,12 +732,12 @@ public class ExpressionTestSuite extends TestSuite {
     }
 
     private void addInTest() {
-        Employee employee = (Employee)getManager().getObject(new Employee().getClass(), "0003");
+        Employee employee = (Employee)getManager().getObject(Employee.class, "0003");
 
         Vector names = new Vector();
-        names.addElement("Jennifer");
-        names.addElement("Chanley");
-        names.addElement("Beavis");
+        names.add("Jennifer");
+        names.add("Chanley");
+        names.add("Beavis");
 
         ExpressionBuilder builder = new ExpressionBuilder();
         Expression expression = builder.get("lastName").in(names);
@@ -726,7 +749,7 @@ public class ExpressionTestSuite extends TestSuite {
     }
 
     private void addInCollectionTest() {
-        Employee employee = (Employee)getManager().getObject(new Employee().getClass(), "0003");
+        Employee employee = (Employee)getManager().getObject(Employee.class, "0003");
 
         Set names = new HashSet();
         names.add("Jennifer");
@@ -749,7 +772,7 @@ public class ExpressionTestSuite extends TestSuite {
         ExpressionBuilder builder = new ExpressionBuilder();
         Expression expression = builder.get("lastName").in(names);
 
-        ReadObjectExpressionTest test = new ReadObjectExpressionTest(new Employee().getClass(), expression);
+        ReadObjectExpressionTest test = new ReadObjectExpressionTest(Employee.class, expression);
         test.setName("InCollectionEmptyExpressionTest");
         test.setDescription("Test IN expression with empty collection");
         addTest(test);
@@ -762,7 +785,7 @@ public class ExpressionTestSuite extends TestSuite {
         ExpressionBuilder builder = new ExpressionBuilder();
         Expression expression = builder.get("lastName").in(names);
 
-        ReadObjectExpressionTest test = new ReadObjectExpressionTest(new Employee().getClass(), expression);
+        ReadObjectExpressionTest test = new ReadObjectExpressionTest(Employee.class, expression);
         test.setName("InCollectionNullExpressionTest");
         test.setDescription("Test IN expression with null collection");
         addTest(test);
@@ -863,7 +886,7 @@ public class ExpressionTestSuite extends TestSuite {
     }
 
     private void addLikeEscapeTest() {
-        Employee employee = (Employee)getManager().getObject(new org.eclipse.persistence.testing.models.employee.domain.Employee().getClass(), "0003");
+        Employee employee = (Employee)getManager().getObject(Employee.class, "0003");
 
         ExpressionBuilder builder = new ExpressionBuilder();
         Expression expression = builder.get("lastName").like("/%han", "/");
@@ -885,7 +908,7 @@ public class ExpressionTestSuite extends TestSuite {
      * This method was created in VisualAge.
      */
     public void addLikeIgnoreCaseTest() {
-        Employee employee = (Employee)getManager().getObject(new org.eclipse.persistence.testing.models.employee.domain.Employee().getClass(), "0003");
+        Employee employee = (Employee)getManager().getObject(Employee.class, "0003");
 
         ExpressionBuilder builder = new ExpressionBuilder();
         Expression expression = builder.get("lastName").likeIgnoreCase("%haNLey");
@@ -897,7 +920,7 @@ public class ExpressionTestSuite extends TestSuite {
     }
 
     private void addLikeIgnoringCaseTest1() {
-        Employee employee = (Employee)getManager().getObject(new org.eclipse.persistence.testing.models.employee.domain.Employee().getClass(), "0003");
+        Employee employee = (Employee)getManager().getObject(Employee.class, "0003");
 
         ExpressionBuilder builder = new ExpressionBuilder();
         Expression exp1 = builder.get("lastName").likeIgnoreCase("cHANley");
@@ -911,7 +934,7 @@ public class ExpressionTestSuite extends TestSuite {
     }
 
     private void addLikeIgnoringCaseTest2() {
-        Employee employee = (Employee)getManager().getObject(new org.eclipse.persistence.testing.models.employee.domain.Employee().getClass(), "0003");
+        Employee employee = (Employee)getManager().getObject(Employee.class, "0003");
 
         ExpressionBuilder builder = new ExpressionBuilder();
         Expression exp1 = builder.get("lastName").likeIgnoreCase("cHANlEy");
@@ -929,7 +952,7 @@ public class ExpressionTestSuite extends TestSuite {
     }
 
     private void addLikeTest() {
-        Employee employee = (Employee)getManager().getObject(new org.eclipse.persistence.testing.models.employee.domain.Employee().getClass(), "0003");
+        Employee employee = (Employee)getManager().getObject(Employee.class, "0003");
 
         ExpressionBuilder builder = new ExpressionBuilder();
         Expression expression = builder.get("lastName").like("%hanley");
@@ -941,7 +964,7 @@ public class ExpressionTestSuite extends TestSuite {
     }
 
     private void addLowerCaseTest() {
-        Employee employee = (Employee)getManager().getObject(new org.eclipse.persistence.testing.models.employee.domain.Employee().getClass(), "0002");
+        Employee employee = (Employee)getManager().getObject(Employee.class, "0002");
 
         ExpressionBuilder builder = new ExpressionBuilder();
         Expression expression = builder.get("address").get("city").toLowerCase().equal("ottawa");
@@ -1557,7 +1580,7 @@ public class ExpressionTestSuite extends TestSuite {
     }
 
     private void addOneToOneEqualTest() {
-        Employee employee = (Employee)getManager().getObject(new org.eclipse.persistence.testing.models.employee.domain.Employee().getClass(), "0002");
+        Employee employee = (Employee)getManager().getObject(Employee.class, "0002");
 
         Expression expression = new ExpressionBuilder().get("address").equal(employee.getAddress());
         ReadObjectExpressionTest test = new ReadObjectExpressionTest(employee, expression);
@@ -1590,7 +1613,7 @@ public class ExpressionTestSuite extends TestSuite {
     }
 
     private void addOrNullTest() {
-        Employee employee = (Employee)getManager().getObject(new org.eclipse.persistence.testing.models.employee.domain.Employee().getClass(), "0003");
+        Employee employee = (Employee)getManager().getObject(Employee.class, "0003");
 
         ExpressionBuilder builder = new ExpressionBuilder();
         Expression exp1 = builder.get("lastName").equal("Chanley");
@@ -1604,7 +1627,7 @@ public class ExpressionTestSuite extends TestSuite {
     }
 
     private void addOrTest() {
-        Employee employee = (Employee)getManager().getObject(new org.eclipse.persistence.testing.models.employee.domain.Employee().getClass(), "0003");
+        Employee employee = (Employee)getManager().getObject(Employee.class, "0003");
 
         ExpressionBuilder builder = new ExpressionBuilder();
         Expression exp1 = builder.get("lastName").equal("Chanley");
@@ -1637,7 +1660,7 @@ public class ExpressionTestSuite extends TestSuite {
         test.setQuery(query);
         test.getArguments().add(null);
         test.getArguments().add(1);
-        test.getArguments().add(new String("String"));
+        test.getArguments().add("String");
         test.setName("ParameterIsNullTest");
         test.setDescription("For bug 3107049 tests parameterExp.isNull.");
         test.addUnsupportedPlatform(SybasePlatform.class);
@@ -1661,7 +1684,7 @@ public class ExpressionTestSuite extends TestSuite {
     }
 
     private void addSelectionObjectWithoutPrepareTest() {
-        Employee employee = (Employee)getManager().getObject(new org.eclipse.persistence.testing.models.employee.domain.Employee().getClass(), "0002");
+        Employee employee = (Employee)getManager().getObject(Employee.class, "0002");
         ReadObjectQuery query = new ReadObjectQuery(employee);
         query.setShouldPrepare(false);
 
@@ -1682,7 +1705,7 @@ public class ExpressionTestSuite extends TestSuite {
         test.setDescription("Tests equal between two object expressions.  An optimization could mean this expression using a single table.");
         addTest(test);
 
-        Expression notExpression = ((Expression)expression.clone()).not();
+        Expression notExpression = expression.clone().not();
         test = new ReadAllExpressionTest(Employee.class, 8);
         test.setExpression(notExpression);
         test.setName("NotSelfManagedEmployeeTest");
@@ -1700,7 +1723,7 @@ public class ExpressionTestSuite extends TestSuite {
     }
 
     private void addSingleTableJoinTest() {
-        Employee employee = (Employee)getManager().getObject(new org.eclipse.persistence.testing.models.employee.domain.Employee().getClass(), "0002");
+        Employee employee = (Employee)getManager().getObject(Employee.class, "0002");
 
         ExpressionBuilder builder = new ExpressionBuilder();
         Expression expression = builder.get("address").get("city").equal("Ottawa");
@@ -1953,7 +1976,7 @@ public class ExpressionTestSuite extends TestSuite {
     }
 
     private void addUpperCaseTest() {
-        Employee employee = (Employee)getManager().getObject(new org.eclipse.persistence.testing.models.employee.domain.Employee().getClass(), "0002");
+        Employee employee = (Employee)getManager().getObject(Employee.class, "0002");
 
         ExpressionBuilder builder = new ExpressionBuilder();
         Expression expression = builder.get("address").get("city").toUpperCase().equal("OTTAWA");

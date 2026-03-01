@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,21 +14,20 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.oxm.xmlmarshaller;
 
-import java.io.StringWriter;
-import java.util.Vector;
 import junit.textui.TestRunner;
+import org.eclipse.persistence.eis.mappings.EISDirectMapping;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.IntegrityException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.mappings.DirectToFieldMapping;
-import org.eclipse.persistence.oxm.XMLDescriptor;
-import org.eclipse.persistence.eis.mappings.EISDirectMapping;
-import org.eclipse.persistence.oxm.XMLMarshaller;
-import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.oxm.XMLContext;
-import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.oxm.XMLDescriptor;
+import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.testing.oxm.OXTestCase;
+
+import java.io.StringWriter;
+import java.util.List;
 
 public class XMLMarshallerCreateTestCases extends OXTestCase {
     private static String SESSION_NAME = "XMLMarshallerTestSession";
@@ -53,12 +52,12 @@ public class XMLMarshallerCreateTestCases extends OXTestCase {
         try {
             XMLContext context = new XMLContext(sessionName);
         } catch (ValidationException exception) {
-            assertTrue("A session not found exception should have been caught but wasn't.", exception.getErrorCode() == ValidationException.NO_SESSION_FOUND);
+            assertEquals("A session not found exception should have been caught but wasn't.", ValidationException.NO_SESSION_FOUND, exception.getErrorCode());
             return;
         } catch (Exception e) {
-            assertTrue("A session not found exception should have been caught but wasn't.", false);
+            fail("A session not found exception should have been caught but wasn't.");
         }
-        assertTrue("A session not found exception should have been caught but wasn't.", false);
+        fail("A session not found exception should have been caught but wasn't.");
 
     }
 
@@ -76,17 +75,17 @@ public class XMLMarshallerCreateTestCases extends OXTestCase {
         try {
             XMLContext context = new XMLContext(project);
         } catch (DescriptorException exception) {
-            assertTrue("An invalid mapping type exception should have been caught but wasn't.", exception.getErrorCode() == DescriptorException.INVALID_MAPPING_TYPE);
+            assertEquals("An invalid mapping type exception should have been caught but wasn't.", DescriptorException.INVALID_MAPPING_TYPE, exception.getErrorCode());
             return;
         } catch (IntegrityException exception) {
-            Vector exceptions = exception.getIntegrityChecker().getCaughtExceptions();
-            assertTrue("Too many exceptions were found...should have been 1.", exceptions.size() == 1);
-            Exception e = (Exception)exceptions.elementAt(0);
-            assertTrue("A DescriptorException should have been caught but wasn't.", e.getClass() == DescriptorException.class);
-            assertTrue("An invalid mapping type exception should have been caught but wasn't.", ((DescriptorException)e).getErrorCode() == DescriptorException.INVALID_MAPPING_TYPE);
+            List<Exception> exceptions = exception.getIntegrityChecker().getCaughtExceptions();
+            assertEquals("Too many exceptions were found...should have been 1.", 1, exceptions.size());
+            Exception e = exceptions.get(0);
+            assertSame("A DescriptorException should have been caught but wasn't.", e.getClass(), DescriptorException.class);
+            assertEquals("An invalid mapping type exception should have been caught but wasn't.", DescriptorException.INVALID_MAPPING_TYPE, ((DescriptorException) e).getErrorCode());
             return;
         }
-        assertTrue("An invalid mapping type exception should have been caught but wasn't.", false);
+        fail("An invalid mapping type exception should have been caught but wasn't.");
     }
 
     public void testInvalidMappingTypeRelational() {
@@ -103,17 +102,17 @@ public class XMLMarshallerCreateTestCases extends OXTestCase {
         try {
             XMLContext context = new XMLContext(project);
         } catch (DescriptorException exception) {
-            assertTrue("An invalid mapping type exception should have been caught but wasn't.", exception.getErrorCode() == DescriptorException.INVALID_MAPPING_TYPE);
+            assertEquals("An invalid mapping type exception should have been caught but wasn't.", DescriptorException.INVALID_MAPPING_TYPE, exception.getErrorCode());
             return;
         } catch (IntegrityException exception) {
-            Vector exceptions = exception.getIntegrityChecker().getCaughtExceptions();
-            assertTrue("Too many exceptions were found...should have been 1.", exceptions.size() == 1);
-            Exception e = (Exception)exceptions.elementAt(0);
-            assertTrue("A DescriptorException should have been caught but wasn't.", e.getClass() == DescriptorException.class);
-            assertTrue("An invalid mapping type exception should have been caught but wasn't.", ((DescriptorException)e).getErrorCode() == DescriptorException.INVALID_MAPPING_TYPE);
+            List<Exception> exceptions = exception.getIntegrityChecker().getCaughtExceptions();
+            assertEquals("Too many exceptions were found...should have been 1.", 1, exceptions.size());
+            Exception e = (Exception)exceptions.get(0);
+            assertSame("A DescriptorException should have been caught but wasn't.", e.getClass(), DescriptorException.class);
+            assertEquals("An invalid mapping type exception should have been caught but wasn't.", DescriptorException.INVALID_MAPPING_TYPE, ((DescriptorException) e).getErrorCode());
             return;
         }
-        assertTrue("An invalid mapping type exception should have been caught but wasn't.", false);
+        fail("An invalid mapping type exception should have been caught but wasn't.");
     }
 
     /**
@@ -146,12 +145,12 @@ public class XMLMarshallerCreateTestCases extends OXTestCase {
         try {
             XMLContext context = new XMLContext(sessionName);
         } catch (ValidationException exception) {
-            assertTrue("A session not found exception should have been caught but wasn't.", exception.getErrorCode() == ValidationException.NO_SESSION_FOUND);
+            assertEquals("A session not found exception should have been caught but wasn't.", ValidationException.NO_SESSION_FOUND, exception.getErrorCode());
             return;
         } catch (Exception e) {
-            assertTrue("A session not found exception should have been caught but wasn't.", false);
+            fail("A session not found exception should have been caught but wasn't.");
         }
-        assertTrue("A session not found exception should have been caught but wasn't", false);
+        fail("A session not found exception should have been caught but wasn't");
     }
 
     /**

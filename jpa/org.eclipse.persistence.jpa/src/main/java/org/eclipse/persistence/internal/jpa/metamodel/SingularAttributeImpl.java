@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,6 +21,7 @@
 //       - 357474: Address primaryKey option from tenant discriminator column
 package org.eclipse.persistence.internal.jpa.metamodel;
 
+import java.io.Serial;
 import java.lang.reflect.Field;
 
 import jakarta.persistence.metamodel.Bindable;
@@ -56,6 +57,7 @@ import org.eclipse.persistence.mappings.structures.ReferenceMapping;
 public class SingularAttributeImpl<X, T> extends AttributeImpl<X, T> implements SingularAttribute<X, T> {
 
     /** Item 54: DI 89: explicit UID will avoid performance hit runtime generation of one */
+    @Serial
     private static final long serialVersionUID = 3928292425281232234L;
 
     /** The Type representing this Entity or Basic type **/
@@ -75,7 +77,7 @@ public class SingularAttributeImpl<X, T> extends AttributeImpl<X, T> implements 
         super(managedType, mapping);
         // Case: Handle primitive or java lang type (non-Entity) targets
         Class<?> attributeClass = mapping.getAttributeClassification();
-        /**
+        /*
          * Case: Handle Entity targets
          * Process supported mappings by assigning their elementType.
          * For unsupported mappings we default to MetamodelImpl.DEFAULT_ELEMENT_TYPE.
@@ -244,7 +246,7 @@ public class SingularAttributeImpl<X, T> extends AttributeImpl<X, T> implements 
      */
     @Override
     public String toString() {
-        StringBuffer aBuffer = new StringBuffer("SingularAttributeImpl[");
+        StringBuilder aBuffer = new StringBuilder("SingularAttributeImpl[");
         aBuffer.append(getType());
         aBuffer.append(",");
         aBuffer.append(getMapping());

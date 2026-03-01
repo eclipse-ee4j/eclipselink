@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -104,7 +104,7 @@ public class FeatureResponseBuilderImpl implements FeatureResponseBuilder {
      * @return the list. Returns an empty list if reportItems is null or empty.
      */
     public List<JAXBElement<?>> createShellJAXBElementList(List<ReportItem> reportItems, Object record) {
-        if (reportItems == null || reportItems.size() == 0) {
+        if (reportItems == null || reportItems.isEmpty()) {
             return Collections.emptyList();
         }
 

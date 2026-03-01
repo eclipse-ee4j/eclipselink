@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,8 +20,8 @@ package org.eclipse.persistence.testing.models.jpa.xml.inherited;
 
 import java.util.Collection;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
 
@@ -51,7 +51,7 @@ public class BeerConsumer extends Consumer {
 
     public void addAlpineBeerToConsume(Alpine alpine, int index) {
         alpine.setBeerConsumer(this);
-        ((Vector<Alpine>) alpineBeersToConsume).insertElementAt(alpine, index);
+        ((Vector<Alpine>) alpineBeersToConsume).add(index, alpine);
     }
 
     public void addBecksBeerToConsume(Becks becks, BecksTag becksTag) {
@@ -89,7 +89,7 @@ public class BeerConsumer extends Consumer {
     }
 
     public Alpine getAlpineBeerToConsume(int index) {
-        return ((Vector<Alpine>) alpineBeersToConsume).elementAt(index);
+        return ((Vector<Alpine>) alpineBeersToConsume).get(index);
     }
 
     public Map<BecksTag, Becks> getBecksBeersToConsume() {
@@ -136,9 +136,9 @@ public class BeerConsumer extends Consumer {
     }
 
     public boolean hasTelephoneNumber(TelephoneNumber telephoneNumber) {
-        Enumeration<TelephoneNumberPK> keys = ((Hashtable<TelephoneNumberPK, TelephoneNumber>) telephoneNumbers).keys();
-        while (keys.hasMoreElements()) {
-            TelephoneNumberPK key = keys.nextElement();
+        Iterator<TelephoneNumberPK> iterator = telephoneNumbers.keySet().iterator();
+        while (iterator.hasNext()) {
+            TelephoneNumberPK key = iterator.next();
 
             if (telephoneNumbers.get(key).equals(telephoneNumber)) {
                 return true;
@@ -149,16 +149,16 @@ public class BeerConsumer extends Consumer {
     }
 
     public void removeAlpineBeerToConsume(int index) {
-        Alpine alpine = ((Vector<Alpine>) alpineBeersToConsume).elementAt(index);
+        Alpine alpine = ((Vector<Alpine>) alpineBeersToConsume).get(index);
         alpine.setBeerConsumer(null);
-        ((Vector<Alpine>) alpineBeersToConsume).removeElementAt(index);
+        ((Vector<Alpine>) alpineBeersToConsume).remove(index);
 
     }
 
     public void removePhoneNumber(TelephoneNumber telephoneNumber) {
-        Enumeration<TelephoneNumberPK> keys = ((Hashtable<TelephoneNumberPK, TelephoneNumber>) telephoneNumbers).keys();
-        while (keys.hasMoreElements()) {
-            TelephoneNumberPK key = keys.nextElement();
+        Iterator<TelephoneNumberPK> iterator = telephoneNumbers.keySet().iterator();
+        while (iterator.hasNext()) {
+            TelephoneNumberPK key = iterator.next();
             TelephoneNumber potentialTelephoneNumber = telephoneNumbers.get(key);
 
             if (potentialTelephoneNumber.equals(telephoneNumber)) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,15 +14,10 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.oxm;
 
-import java.lang.reflect.Modifier;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import javax.xml.namespace.QName;
-
+import org.eclipse.persistence.core.queries.CoreAttributeGroup;
+import org.eclipse.persistence.core.queries.CoreAttributeItem;
 import org.eclipse.persistence.exceptions.DescriptorException;
-import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.oxm.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.core.helper.CoreField;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
@@ -35,10 +30,14 @@ import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.XMLReader;
 import org.eclipse.persistence.internal.oxm.record.XMLRecord;
 import org.eclipse.persistence.internal.oxm.record.deferred.DescriptorNotFoundContentHandler;
-import org.eclipse.persistence.core.queries.CoreAttributeGroup;
-import org.eclipse.persistence.core.queries.CoreAttributeItem;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
+
+import javax.xml.namespace.QName;
+import java.lang.reflect.Modifier;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
 
@@ -88,7 +87,7 @@ public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
                 // on the mapping -  make sure it is non-abstract
                 if (Modifier.isAbstract(xmlDescriptor.getJavaClass().getModifiers())) {
                     // need to throw an exception here
-                    throw DescriptorException.missingClassIndicatorField(unmarshalRecord, (org.eclipse.persistence.oxm.XMLDescriptor)xmlDescriptor.getInheritancePolicy().getDescriptor());
+                    throw DescriptorException.missingClassIndicatorField(unmarshalRecord.toString(), (org.eclipse.persistence.oxm.XMLDescriptor)xmlDescriptor.getInheritancePolicy().getDescriptor());
                 }
             }
         }
@@ -137,7 +136,7 @@ public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
 
             if(schemaType != null){
                 schemaType = schemaType.trim();
-                if(schemaType.length() > 0) {
+                if(!schemaType.isEmpty()) {
                     XPathFragment frag = new XPathFragment(schemaType, unmarshalRecord.getNamespaceSeparator(), unmarshalRecord.isNamespaceAware());
 
                     QName qname = null;

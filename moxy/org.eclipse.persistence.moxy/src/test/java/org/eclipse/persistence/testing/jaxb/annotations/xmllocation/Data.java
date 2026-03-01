@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -52,10 +52,10 @@ public class Data {
             loc = " L" + locator.getLineNumber() + " C" + locator.getColumnNumber() + " " + locator.getSystemId();
         }
 
-        String subDataS = "\n";
+        StringBuilder subDataS = new StringBuilder("\n");
         for (Iterator<SubData> iterator = subData.iterator(); iterator.hasNext();) {
             SubData type = iterator.next();
-            subDataS += "\t" + type.toString() + "\n";
+            subDataS.append("\t").append(type.toString()).append("\n");
         }
 
         return "\nData(" + key + ")" + loc + subDataS;
@@ -63,11 +63,9 @@ public class Data {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == null || !(obj instanceof Data)) {
+        if (obj == null || !(obj instanceof Data d)) {
             return false;
         }
-
-        Data d = (Data) obj;
 
         if (!(d.key.equals(this.key))) {
             return false;

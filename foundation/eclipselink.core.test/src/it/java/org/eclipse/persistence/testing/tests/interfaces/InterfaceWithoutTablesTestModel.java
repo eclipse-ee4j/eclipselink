@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,11 +14,39 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.interfaces;
 
-import org.eclipse.persistence.testing.framework.*;
-import org.eclipse.persistence.tools.schemaframework.*;
-import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.testing.models.interfaces.*;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.queries.ReadAllQuery;
+import org.eclipse.persistence.queries.ReadObjectQuery;
+import org.eclipse.persistence.testing.framework.DeleteObjectTest;
+import org.eclipse.persistence.testing.framework.InsertObjectTest;
+import org.eclipse.persistence.testing.framework.ReadAllTest;
+import org.eclipse.persistence.testing.framework.ReadObjectTest;
+import org.eclipse.persistence.testing.framework.TestModel;
+import org.eclipse.persistence.testing.framework.TestSuite;
+import org.eclipse.persistence.testing.framework.UnitOfWorkBasicUpdateObjectTest;
+import org.eclipse.persistence.testing.framework.WriteObjectTest;
+import org.eclipse.persistence.testing.models.interfaces.Actor;
+import org.eclipse.persistence.testing.models.interfaces.Company;
+import org.eclipse.persistence.testing.models.interfaces.Contact;
+import org.eclipse.persistence.testing.models.interfaces.ContactHolder;
+import org.eclipse.persistence.testing.models.interfaces.CourseDeveloper;
+import org.eclipse.persistence.testing.models.interfaces.Documentary;
+import org.eclipse.persistence.testing.models.interfaces.Email;
+import org.eclipse.persistence.testing.models.interfaces.Employee;
+import org.eclipse.persistence.testing.models.interfaces.Film;
+import org.eclipse.persistence.testing.models.interfaces.InterfaceWithoutTablesSystem;
+import org.eclipse.persistence.testing.models.interfaces.Job;
+import org.eclipse.persistence.testing.models.interfaces.ManagerialJob;
+import org.eclipse.persistence.testing.models.interfaces.PersonnelManager;
+import org.eclipse.persistence.testing.models.interfaces.Phone;
+import org.eclipse.persistence.testing.models.interfaces.ProductDeveloper;
+import org.eclipse.persistence.testing.models.interfaces.ProductManager;
+import org.eclipse.persistence.testing.models.interfaces.Receptionist;
+import org.eclipse.persistence.testing.models.interfaces.Secretary;
+import org.eclipse.persistence.testing.models.interfaces.Unionized;
+import org.eclipse.persistence.testing.models.interfaces.VIP;
+import org.eclipse.persistence.tools.schemaframework.PopulationManager;
 
 /**
  * This model tests interface support, where the interfaces do not have tables in the database.

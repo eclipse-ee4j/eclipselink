@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,20 +19,21 @@ import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Marshaller;
 import jakarta.xml.bind.Unmarshaller;
-import java.io.File;
+
 import java.io.StringWriter;
 
 public class XmlAnyMixedTestCases extends TestCase {
-    private static final String EXPECTED = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><main><RootAnyMixed>\n" +
-            "        <SomeTag>\n" +
-            "            <AChildTag>\n" +
-            "                <AnotherChildTag/>\n" +
-            "                <AnotherChildTag/>\n" +
-            "            </AChildTag>\n" +
-            "        </SomeTag>\n" +
-            "    </RootAnyMixed><RootAny><VeryGood><TheBest><MegaSuper/><MegaSuper/>\n" +
-            "            </TheBest>\n" +
-            "        </VeryGood></RootAny></main>";
+    private static final String EXPECTED = """
+            <?xml version="1.0" encoding="UTF-8"?><main><RootAnyMixed>
+                    <SomeTag>
+                        <AChildTag>
+                            <AnotherChildTag/>
+                            <AnotherChildTag/>
+                        </AChildTag>
+                    </SomeTag>
+                </RootAnyMixed><RootAny><VeryGood><TheBest><MegaSuper/><MegaSuper/>
+                        </TheBest>
+                    </VeryGood></RootAny></main>""";
 
     public static void main(String[] args) {
         String[] arguments = {"-c", "org.eclipse.persistence.testing.jaxb.xmlAnyMixed.XmlAnyMixedTestCases"};

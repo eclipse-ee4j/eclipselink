@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -53,14 +53,14 @@ public class PlsqlRecordType extends SqlTypeWithFields {
             return m_fieldsPublishedOnly;
         }
         else {
-            ArrayList<AttributeField> fieldsCS = new ArrayList<AttributeField>();
+            ArrayList<AttributeField> fieldsCS = new ArrayList<>();
             PLSQLMap map = new PLSQLMap(m_parentType, m_reflector);
-            for (int i = 0; i < m_fields.size(); i++) {
-                if (map.getMemberName(m_fields.get(i).getName()) != null) {
-                    fieldsCS.add(m_fields.get(i));
+            for (AttributeField mField : m_fields) {
+                if (map.getMemberName(mField.getName()) != null) {
+                    fieldsCS.add(mField);
                 }
             }
-            m_fieldsPublishedOnly = new ArrayList<AttributeField>(fieldsCS);
+            m_fieldsPublishedOnly = new ArrayList<>(fieldsCS);
             return m_fieldsPublishedOnly;
         }
     }
@@ -96,20 +96,20 @@ public class PlsqlRecordType extends SqlTypeWithFields {
         Iterator<ViewRow> iter = viewCache.getRows(ALL_ARGUMENTS, new String[0], new String[]{
             OWNER, PACKAGE_NAME, OBJECT_NAME, OVERLOAD}, new Object[]{schema, packageName,
             methodName, methodNo}, new String[]{SEQUENCE});
-        ArrayList<ViewRow> viewRows = new ArrayList<ViewRow>();
+        ArrayList<ViewRow> viewRows = new ArrayList<>();
         while (iter.hasNext()) {
             UserArguments item = (UserArguments)iter.next();
             viewRows.add(item);
         }
         PlsqlTypeInfo[] info = PlsqlTypeInfo.getPlsqlTypeInfo(viewRows);
         if (info != null) {
-            for (int i = 0; i < info.length; i++) {
-                if (data_level == -1 && (sequence == -1 || sequence == info[i].sequence)) {
-                    data_level = info[i].dataLevel; // Data level for the record
+            for (PlsqlTypeInfo plsqlTypeInfo : info) {
+                if (data_level == -1 && (sequence == -1 || sequence == plsqlTypeInfo.sequence)) {
+                    data_level = plsqlTypeInfo.dataLevel; // Data level for the record
                 }
-                if (data_level > -1 && data_level == info[i].dataLevel && next_rec_sequence == -1
-                    && sequence < info[i].sequence) {
-                    next_rec_sequence = info[i].sequence;
+                if (data_level > -1 && data_level == plsqlTypeInfo.dataLevel && next_rec_sequence == -1
+                        && sequence < plsqlTypeInfo.sequence) {
+                    next_rec_sequence = plsqlTypeInfo.sequence;
                     break;
                 }
             }
@@ -118,7 +118,7 @@ public class PlsqlRecordType extends SqlTypeWithFields {
         iter = viewCache.getRows(ALL_ARGUMENTS, new String[0], new String[]{OWNER, PACKAGE_NAME,
             OBJECT_NAME, OVERLOAD, DATA_LEVEL}, new Object[]{schema, packageName,
             methodName, methodNo, data_level}, new String[]{SEQUENCE});
-        viewRows = new ArrayList<ViewRow>();
+        viewRows = new ArrayList<>();
         while (iter.hasNext()) { // DISTINCT
             UserArguments item = (UserArguments)iter.next();
             if ((sequence == -1 || item.sequence > sequence)

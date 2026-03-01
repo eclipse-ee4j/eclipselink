@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -57,7 +57,7 @@ public class MethodInfo {
     }
 
     public static MethodInfo[] getMethodInfo(Iterator<ViewRow> iter) throws SQLException {
-        ArrayList<MethodInfo> a = new ArrayList<MethodInfo>();
+        ArrayList<MethodInfo> a = new ArrayList<>();
         while (iter.hasNext()) {
             ViewRow vr = iter.next();
             if (vr.isAllArguments() || vr.isUserArguments()) {
@@ -67,26 +67,26 @@ public class MethodInfo {
                 a.add(new MethodInfo((AllTypeMethods)vr));
             }
         }
-        return a.toArray(new MethodInfo[a.size()]);
+        return a.toArray(new MethodInfo[0]);
     }
 
     // GROUP BY: METHOD_NAME, METHOD_NO: MAX(PARAMETERS). MAX(RESULTS)
     public static MethodInfo[] groupBy(Iterator<ViewRow> iter) throws java.sql.SQLException {
         MethodInfo[] minfo = getMethodInfo(iter);
-        Map<String,MethodInfo> miMap = new HashMap<String,MethodInfo>();
-        for (int i = 0; i < minfo.length; i++) {
-            String key = minfo[i].methodName + "," + minfo[i].methodNo;
+        Map<String,MethodInfo> miMap = new HashMap<>();
+        for (MethodInfo methodInfo : minfo) {
+            String key = methodInfo.methodName + "," + methodInfo.methodNo;
             MethodInfo mi = miMap.get(key);
             if (mi == null) {
-                miMap.put(key, minfo[i]);
+                miMap.put(key, methodInfo);
             }
-            if (mi != null && mi.parameters < minfo[i].parameters) {
-                mi.parameters = minfo[i].parameters;
+            if (mi != null && mi.parameters < methodInfo.parameters) {
+                mi.parameters = methodInfo.parameters;
             }
-            if (mi != null && mi.results < minfo[i].results) {
-                mi.results = minfo[i].results;
+            if (mi != null && mi.results < methodInfo.results) {
+                mi.results = methodInfo.results;
             }
         }
-        return miMap.values().toArray(new MethodInfo[miMap.size()]);
+        return miMap.values().toArray(new MethodInfo[0]);
     }
 }

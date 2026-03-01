@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,7 +19,7 @@ import jakarta.persistence.criteria.ParameterExpression;
 import jakarta.persistence.metamodel.Metamodel;
 
 import org.eclipse.persistence.expressions.ExpressionBuilder;
-import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 
 public class ParameterExpressionImpl<T> extends ExpressionImpl<T> implements ParameterExpression<T> {
 
@@ -90,9 +90,10 @@ public class ParameterExpressionImpl<T> extends ExpressionImpl<T> implements Par
      * native query when the implementation does not support this
      * use.
      */
-     @Override
+    @Override
+    @SuppressWarnings("unchecked")
     public Class<T> getParameterType(){
-         return this.javaType;
+         return (Class<T>) this.javaType;
      }
 
     @Override
@@ -120,7 +121,7 @@ public class ParameterExpressionImpl<T> extends ExpressionImpl<T> implements Par
             return true;
         if (obj == null)
             return false;
-        if (ClassConstants.STRING == obj.getClass()) {
+        if (CoreClassConstants.STRING == obj.getClass()) {
             return (this.internalName.equals(obj));
         }
         if (getClass() != obj.getClass())

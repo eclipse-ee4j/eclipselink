@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,6 +14,7 @@
 //     Oracle - initial API and implementation
 package org.eclipse.persistence.platform.database.oracle.annotations;
 
+import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 import java.util.ArrayList;
@@ -31,20 +32,22 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  */
 @Target({TYPE})
 @Retention(RUNTIME)
+@Repeatable(OracleArrays.class)
 public @interface OracleArray {
 
     /**
-     * (Required) The name of the VARRAY type in the database.
+     * The name of the VARRAY type in the database.
      */
     String name();
 
     /**
-     * (Required) The name of the database type this VARRAY holds onto.
+     * The name of the database type this VARRAY holds onto.
      */
     String nestedType() default "VARCHAR_TYPE";
 
     /**
-     * (Optional) The Java Collection class to map the VARRAY to.
+     * The Java Collection class to map the VARRAY to.
+     * <p>
      * This can be any valid Collection implementation.
      */
     Class<?> javaType() default ArrayList.class;

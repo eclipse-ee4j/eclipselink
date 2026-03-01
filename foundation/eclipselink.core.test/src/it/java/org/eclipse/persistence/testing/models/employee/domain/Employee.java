@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,16 +16,22 @@
 //       - 237545: List attribute types on OneToMany using @OrderBy does not work with attribute change tracking
 package org.eclipse.persistence.testing.models.employee.domain;
 
-import java.util.*;
-import java.io.*;
+import org.eclipse.persistence.descriptors.changetracking.ChangeTracker;
+import org.eclipse.persistence.descriptors.changetracking.CollectionChangeEvent;
+import org.eclipse.persistence.indirection.ValueHolder;
+import org.eclipse.persistence.indirection.ValueHolderInterface;
+import org.eclipse.persistence.internal.helper.ConversionManager;
+import org.eclipse.persistence.sessions.DataRecord;
+import org.eclipse.persistence.sessions.Session;
+
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.io.Serializable;
+import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.sql.Time;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeEvent;
-import org.eclipse.persistence.internal.helper.ConversionManager;
-import org.eclipse.persistence.indirection.*;
-import org.eclipse.persistence.sessions.*;
-import org.eclipse.persistence.descriptors.changetracking.*;
+import java.util.Calendar;
+import java.util.Vector;
 
 /**
  * <p><b>Purpose</b>: Represent a employee of an organization.
@@ -332,7 +338,7 @@ public class Employee implements org.eclipse.persistence.testing.models.employee
      */
     @Override
     public void removeManagedEmployee(org.eclipse.persistence.testing.models.employee.interfaces.Employee employee) {
-        if(getManagedEmployees().removeElement(employee)) {
+        if(getManagedEmployees().remove(employee)) {
             collectionChange("managedEmployees", managedEmployees, employee, 1, true);
             employee.setManager(null);
         }
@@ -346,21 +352,21 @@ public class Employee implements org.eclipse.persistence.testing.models.employee
      */
     @Override
     public void removePhoneNumber(PhoneNumber phoneNumber) {
-        if(getPhoneNumbers().removeElement(phoneNumber)) {
+        if(getPhoneNumbers().remove(phoneNumber)) {
             collectionChange("phoneNumbers", phoneNumbers, phoneNumber, 1, true);
         }
     }
 
     @Override
     public void removeProject(org.eclipse.persistence.testing.models.employee.interfaces.Project project) {
-        if(getProjects().removeElement(project)) {
+        if(getProjects().remove(project)) {
             collectionChange("projects", projects, project, 1, true);
         }
     }
 
     @Override
     public void removeResponsibility(String responsibility) {
-        if(getResponsibilitiesList().removeElement(responsibility)) {
+        if(getResponsibilitiesList().remove(responsibility)) {
             collectionChange("responsibilitiesList", responsibilitiesList, responsibility, 1, true);
         }
     }

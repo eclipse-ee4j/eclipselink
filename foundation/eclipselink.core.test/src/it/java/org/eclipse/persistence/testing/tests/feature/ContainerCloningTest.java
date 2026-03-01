@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,16 +14,16 @@
 //     Chris Delahunt - initial API and implementation
 package org.eclipse.persistence.testing.tests.feature;
 
-import java.util.Collection;
-import java.util.Map;
-
-import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.queries.CollectionContainerPolicy;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.queries.MapContainerPolicy;
 import org.eclipse.persistence.testing.framework.AutoVerifyTestCase;
 import org.eclipse.persistence.testing.framework.TestErrorException;
 import org.eclipse.persistence.testing.models.employee.domain.Employee;
+
+import java.util.Collection;
+import java.util.Map;
 
 /*
  * Added for bug 241322 - JPA Collection mapping assumes clone is implemented/supported
@@ -38,7 +38,7 @@ public class ContainerCloningTest extends AutoVerifyTestCase {
     @Override
     public void test() {
         ContainerPolicy cp = new CollectionContainerPolicy();
-        cp.setContainerClass(ClassConstants.ArrayList_class);
+        cp.setContainerClass(CoreClassConstants.ArrayList_class);
         Collection<Employee> originalC = java.util.Arrays.asList(new Employee());
         Collection cloneC = (Collection)cp.cloneFor(originalC);
 

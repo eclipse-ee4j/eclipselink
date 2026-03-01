@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -465,7 +465,7 @@ public class JUnitJPQLComplexAggregateTest extends JUnitTestCase
         Number expectedResult = expectedResultVector.get(0);
 
         String ejbqlString = "SELECT MAX(DISTINCT emp.salary) FROM Employee emp";
-        Number result = em.createQuery(ejbqlString, Number.class).getSingleResult();
+        Object result = em.createQuery(ejbqlString).getSingleResult();
 
         Assert.assertEquals("Type returned was not expected", Integer.class, result.getClass());
         Assert.assertEquals("Complex MAX test failed", expectedResult, result);
@@ -489,7 +489,7 @@ public class JUnitJPQLComplexAggregateTest extends JUnitTestCase
         Number expectedResult = expectedResultVector.get(0);
 
         String ejbqlString = "SELECT MIN(DISTINCT emp.salary) FROM Employee emp";
-        Number result = em.createQuery(ejbqlString, Number.class).getSingleResult();
+        Object result = em.createQuery(ejbqlString, Object.class).getSingleResult();
 
         Assert.assertEquals("Type returned was not expected", Integer.class, result.getClass());
         Assert.assertEquals("Complex MIN test failed", expectedResult, result);

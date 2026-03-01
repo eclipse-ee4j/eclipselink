@@ -1,0 +1,60 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[DBWSCREATE]]
+== Creating DBWS Services
+
+This chapter describes how to create EclipseLink DBWS services.
+
+This chapter includes the following sections:
+
+* xref:{relativedir}/creating_dbws_services001.adoc#DBWSCREATE001[Creating EclipseLink DBWS Service from a Database Table]
+* xref:{relativedir}/creating_dbws_services002.adoc#DBWSCREATE002[Using an EclipseLink SessionCustomizer]
+* xref:{relativedir}/creating_dbws_services003.adoc#DBWSCREATE003[Using Existing EclipseLink ORM and OXM Mappings]
+* xref:{relativedir}/creating_dbws_services004.adoc#DBWSCREATE004[Creating a DBWS Service from SQL Statements]
+* xref:{relativedir}/creating_dbws_services005.adoc#DBWSCREATE005[Creating from a Stored Procedure]
+* xref:{relativedir}/creating_dbws_services006.adoc#DBWSCREATE006[Creating from a Stored Function]
+* xref:{relativedir}/creating_dbws_services007.adoc#DBWSCREATE007[Creating from a Stored Procedure with complex PL/SQL arguments]
+* xref:{relativedir}/creating_dbws_services008.adoc#DBWSCREATE008[Creating from a Stored Function with complex PL/SQL arguments]
+* xref:{relativedir}/creating_dbws_services009.adoc#DBWSCREATE009[Creating from an Overloaded PL/SQL Stored Procedure]
+
+//Creating EclipseLink DBWS Service from a Database Table
+include::{rootdir}/creating_dbws_services001.adoc[]
+
+//Using an EclipseLink SessionCustomizer
+include::{rootdir}/creating_dbws_services002.adoc[]
+
+//Using Existing EclipseLink ORM and OXM Mappings
+include::{rootdir}/creating_dbws_services003.adoc[]
+
+//Creating a DBWS Service from SQL Statements
+include::{rootdir}/creating_dbws_services004.adoc[]
+
+//Creating from a Stored Procedure
+include::{rootdir}/creating_dbws_services005.adoc[]
+
+//Creating from a Stored Function
+include::{rootdir}/creating_dbws_services006.adoc[]
+
+//Creating from a Stored Procedure with complex PL/SQL arguments
+include::{rootdir}/creating_dbws_services007.adoc[]
+
+//Creating from a Stored Function with complex PL/SQL arguments
+include::{rootdir}/creating_dbws_services008.adoc[]
+
+//Creating from an Overloaded PL/SQL Stored Procedure
+include::{rootdir}/creating_dbws_services009.adoc[]

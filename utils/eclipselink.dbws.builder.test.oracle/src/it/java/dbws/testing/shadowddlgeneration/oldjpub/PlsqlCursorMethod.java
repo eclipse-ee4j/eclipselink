@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,8 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 //EclipseLink imports
-import dbws.testing.shadowddlgeneration.oldjpub.Util;
-import dbws.testing.shadowddlgeneration.oldjpub.RowtypeInfo;
+
 
 /**
  * A PL/SQL method returning REF CURSOR as beans
@@ -84,11 +83,11 @@ public class PlsqlCursorMethod extends PlsqlMethod implements CursorMethod {
             m_returnEleType = returnColTypes[0];
         }
         else if (returnColTypes != null) {
-            fields = new ArrayList<AttributeField>(returnColTypes.length);
+            fields = new ArrayList<>(returnColTypes.length);
             for (int i = 0; i < returnColTypes.length; i++) {
                 // MYOBJ(ENAME, SAL) => MYOBJ
                 String returnColName = returnColNames[i];
-                if (returnColName.indexOf("(") > -1) {
+                if (returnColName.contains("(")) {
                     returnColName = returnColName.substring(0, returnColName.indexOf("("));
                 }
                 fields.add(new AttributeField(returnColName, returnColTypes[i], 0, 0, 0,

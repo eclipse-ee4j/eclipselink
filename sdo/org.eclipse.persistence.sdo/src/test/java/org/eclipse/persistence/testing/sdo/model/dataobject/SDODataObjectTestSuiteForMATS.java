@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,8 +22,6 @@ import org.eclipse.persistence.testing.sdo.helper.datahelper.DataHelperToYearMon
 import org.eclipse.persistence.testing.sdo.helper.datahelper.DataHelperToYearMonthWithCalnTest;
 import org.eclipse.persistence.testing.sdo.helper.datahelper.DataHelperToYearTest;
 import org.eclipse.persistence.testing.sdo.helper.datahelper.DataHelperToYearWithCalnTest;
-import org.eclipse.persistence.testing.sdo.model.dataobject.xpathpositional.SDODataObjectXPathPositionalTestSuite;
-import org.eclipse.persistence.testing.sdo.model.dataobject.xpathquery.SDODataObjectXPathQueryTestSuite;
 
 public class SDODataObjectTestSuiteForMATS {
     public SDODataObjectTestSuiteForMATS() {

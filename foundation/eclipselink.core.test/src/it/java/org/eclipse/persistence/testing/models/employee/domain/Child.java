@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -78,14 +78,10 @@ public class Child implements Serializable{
     }
 
     public boolean equals(java.lang.Object arg0){
-        if ( !(arg0 instanceof Child) ){
+        if ( !(arg0 instanceof Child c2) ){
             return false;
         }
-        Child c2 = (Child)arg0;
-        if ((id == c2.id) || ( (id !=null) && (c2.id !=null) && id.equals(c2.id) ) ){
-            return true;
-        }
-        return false;
+        return (id == c2.id) || ((id != null) && (c2.id != null) && id.equals(c2.id));
     }
 
 }

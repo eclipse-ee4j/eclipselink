@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,9 +14,10 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.descriptors;
 
-import java.io.Serializable;
-import org.eclipse.persistence.exceptions.*;
+import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+
+import java.io.Serializable;
 
 /**
  * <p><b>Purpose</b>: The wrapper policy can be used to wrap all objects read from the database in another object.
@@ -24,7 +25,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
  * application to deal with another version of the object.
  * The wrapper policy is used for things such as EJB Entity Beans and is directly used by the
  * TopLink for WebLogic product for EJB Container Managed Persistence.
- *
+ * <p>
  * It is assumed that relationships must be through the wrapper objects.
  * Object identity is not maintained on the wrapper objects, only the wrapped object.
  */

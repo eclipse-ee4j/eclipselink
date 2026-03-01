@@ -1,0 +1,7 @@
+:nofooter:
+This figure illustrates an XML direct mapping with a simple Type
+translator.. The class *PhoneNumber* contains two attributes: *areaCode*
+and *number*, both of type *Object*. The *areaCode* attribute maps to
+the `<area-code>` element in the XML document, using the *xsd:int* type.
+The *number* attribute maps to the `<number>` element in the XML
+document, using the *xsd:string* type.

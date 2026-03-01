@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,7 +15,7 @@
 package dbws.testing.ordescriptor;
 
 //javase imports
-import java.util.Vector;
+import java.util.List;
 
 //java eXtension imports
 import javax.wsdl.WSDLException;
@@ -26,6 +26,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static org.eclipse.persistence.internal.xr.XRDynamicClassLoader.COLLECTION_WRAPPER_SUFFIX;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -70,84 +71,88 @@ public class ORDescriptorTestSuite extends DBWSTestSuite {
     public static final String ARECORD_DESCRIPTOR_JAVACLASSNAME = ARECORD_DATABASETYPE.toLowerCase();
 
     static final String CREATE_PACKAGE_ORPACKAGE =
-        "CREATE OR REPLACE PACKAGE ORPACKAGE AS" +
-            "\nTYPE TBL1 IS TABLE OF VARCHAR2(111) INDEX BY BINARY_INTEGER;" +
-            "\nTYPE TBL2 IS TABLE OF NUMBER INDEX BY BINARY_INTEGER;" +
-            "\nTYPE ARECORD IS RECORD (" +
-                "\nT1 TBL1," +
-                "\nT2 TBL2," +
-                "\nT3 BOOLEAN" +
-            "\n);" +
-            "\nTYPE TBL3 IS TABLE OF ARECORD INDEX BY PLS_INTEGER;" +
-            "\nTYPE TBL4 IS TABLE OF TBL2 INDEX BY PLS_INTEGER;" +
-            "\nPROCEDURE P1(SIMPLARRAY IN TBL1, FOO IN VARCHAR2);" +
-            "\nPROCEDURE P2(OLD IN TBL2, NEW IN TBL2);" +
-            "\nPROCEDURE P4(REC IN ARECORD);" +
-            "\nPROCEDURE P5(OLDREC IN ARECORD, NEWREC OUT ARECORD);" +
-            "\nPROCEDURE P7(SIMPLARRAY IN TBL1, FOO IN VARCHAR2);" +
-            "\nPROCEDURE P7(SIMPLARRAY IN TBL1, FOO IN VARCHAR2, BAR IN VARCHAR2);" +
-            "\nPROCEDURE P8(FOO IN VARCHAR2);" +
-            "\nPROCEDURE P8(FOO IN VARCHAR2, BAR IN VARCHAR2);" +
-            "\nFUNCTION F2(OLD IN TBL2, SIMPLARRAY IN TBL1) RETURN TBL2;" +
-            "\nFUNCTION F4(RECARRAY IN TBL3, OLDREC IN ARECORD) RETURN TBL3;" +
-        "\nEND ORPACKAGE;";
+            """
+                    CREATE OR REPLACE PACKAGE ORPACKAGE AS
+                    TYPE TBL1 IS TABLE OF VARCHAR2(111) INDEX BY BINARY_INTEGER;
+                    TYPE TBL2 IS TABLE OF NUMBER INDEX BY BINARY_INTEGER;
+                    TYPE ARECORD IS RECORD (
+                    T1 TBL1,
+                    T2 TBL2,
+                    T3 BOOLEAN
+                    );
+                    TYPE TBL3 IS TABLE OF ARECORD INDEX BY PLS_INTEGER;
+                    TYPE TBL4 IS TABLE OF TBL2 INDEX BY PLS_INTEGER;
+                    PROCEDURE P1(SIMPLARRAY IN TBL1, FOO IN VARCHAR2);
+                    PROCEDURE P2(OLD IN TBL2, NEW IN TBL2);
+                    PROCEDURE P4(REC IN ARECORD);
+                    PROCEDURE P5(OLDREC IN ARECORD, NEWREC OUT ARECORD);
+                    PROCEDURE P7(SIMPLARRAY IN TBL1, FOO IN VARCHAR2);
+                    PROCEDURE P7(SIMPLARRAY IN TBL1, FOO IN VARCHAR2, BAR IN VARCHAR2);
+                    PROCEDURE P8(FOO IN VARCHAR2);
+                    PROCEDURE P8(FOO IN VARCHAR2, BAR IN VARCHAR2);
+                    FUNCTION F2(OLD IN TBL2, SIMPLARRAY IN TBL1) RETURN TBL2;
+                    FUNCTION F4(RECARRAY IN TBL3, OLDREC IN ARECORD) RETURN TBL3;
+                    END ORPACKAGE;""";
 
     static final String CREATE_PACKAGE_BODY_ORPACKAGE =
-        "\nCREATE OR REPLACE PACKAGE BODY ORPACKAGE AS" +
-            "\nPROCEDURE P1(SIMPLARRAY IN TBL1, FOO IN VARCHAR2) AS" +
-            "\nBEGIN" +
-                "\nNULL;" +
-            "\nEND P1;" +
-            "\nPROCEDURE P2(OLD IN TBL2, NEW IN TBL2) AS" +
-            "\nBEGIN" +
-                "\nNULL;" +
-            "\nEND P2;" +
-            "\nPROCEDURE P4(REC IN ARECORD) AS" +
-            "\nBEGIN" +
-                "\nNULL;" +
-            "\nEND P4;" +
-            "\nPROCEDURE P5(OLDREC IN ARECORD, NEWREC OUT ARECORD) AS" +
-            "\nBEGIN" +
-                "\nNEWREC.T1 := OLDREC.T1;" +
-                "\nNEWREC.T2 := OLDREC.T2;" +
-                "\nNEWREC.T3 := OLDREC.T3;" +
-             "\nEND P5;" +
-             "\nPROCEDURE P7(SIMPLARRAY IN TBL1, FOO IN VARCHAR2) AS" +
-             "\nBEGIN" +
-                 "\nNULL;" +
-             "\nEND P7;" +
-             "\nPROCEDURE P7(SIMPLARRAY IN TBL1, FOO IN VARCHAR2, BAR IN VARCHAR2) AS" +
-             "\nBEGIN" +
-                 "\nNULL;" +
-             "\nEND P7;" +
-             "\nPROCEDURE P8(FOO IN VARCHAR2) AS" +
-             "\nBEGIN" +
-                 "\nNULL;" +
-             "\nEND P8;" +
-             "\nPROCEDURE P8(FOO IN VARCHAR2, BAR IN VARCHAR2) AS" +
-             "\nBEGIN" +
-                 "\nNULL;" +
-             "\nEND P8;" +
-             "\nFUNCTION F2(OLD IN TBL2, SIMPLARRAY IN TBL1) RETURN TBL2 IS" +
-             "\nBEGIN" +
-                 "\nRETURN OLD;" +
-             "\nEND F2;" +
-             "\nFUNCTION F4(RECARRAY IN TBL3, OLDREC IN ARECORD) RETURN TBL3 IS" +
-             "\nBEGIN" +
-                 "\nRETURN RECARRAY;" +
-             "\nEND F4;" +
-         "\nEND ORPACKAGE;";
+            """
+
+                    CREATE OR REPLACE PACKAGE BODY ORPACKAGE AS
+                    PROCEDURE P1(SIMPLARRAY IN TBL1, FOO IN VARCHAR2) AS
+                    BEGIN
+                    NULL;
+                    END P1;
+                    PROCEDURE P2(OLD IN TBL2, NEW IN TBL2) AS
+                    BEGIN
+                    NULL;
+                    END P2;
+                    PROCEDURE P4(REC IN ARECORD) AS
+                    BEGIN
+                    NULL;
+                    END P4;
+                    PROCEDURE P5(OLDREC IN ARECORD, NEWREC OUT ARECORD) AS
+                    BEGIN
+                    NEWREC.T1 := OLDREC.T1;
+                    NEWREC.T2 := OLDREC.T2;
+                    NEWREC.T3 := OLDREC.T3;
+                    END P5;
+                    PROCEDURE P7(SIMPLARRAY IN TBL1, FOO IN VARCHAR2) AS
+                    BEGIN
+                    NULL;
+                    END P7;
+                    PROCEDURE P7(SIMPLARRAY IN TBL1, FOO IN VARCHAR2, BAR IN VARCHAR2) AS
+                    BEGIN
+                    NULL;
+                    END P7;
+                    PROCEDURE P8(FOO IN VARCHAR2) AS
+                    BEGIN
+                    NULL;
+                    END P8;
+                    PROCEDURE P8(FOO IN VARCHAR2, BAR IN VARCHAR2) AS
+                    BEGIN
+                    NULL;
+                    END P8;
+                    FUNCTION F2(OLD IN TBL2, SIMPLARRAY IN TBL1) RETURN TBL2 IS
+                    BEGIN
+                    RETURN OLD;
+                    END F2;
+                    FUNCTION F4(RECARRAY IN TBL3, OLDREC IN ARECORD) RETURN TBL3 IS
+                    BEGIN
+                    RETURN RECARRAY;
+                    END F4;
+                    END ORPACKAGE;""";
 
     static final String CREATE_TYPE_ORPACKAGE_TBL1 =
         "CREATE OR REPLACE TYPE ORPACKAGE_TBL1 AS TABLE OF VARCHAR2(111)";
     static final String CREATE_TYPE_ORPACKAGE_TBL2 =
         "CREATE OR REPLACE TYPE ORPACKAGE_TBL2 AS TABLE OF NUMBER";
     static final String CREATE_TYPE_ORPACKAGE_ARECORD =
-        "CREATE OR REPLACE TYPE ORPACKAGE_ARECORD AS OBJECT (" +
-              "\nT1 ORPACKAGE_TBL1," +
-              "\nT2 ORPACKAGE_TBL2," +
-              "\nT3 INTEGER" +
-         "\n)";
+            """
+                    CREATE OR REPLACE TYPE ORPACKAGE_ARECORD AS OBJECT (
+                    T1 ORPACKAGE_TBL1,
+                    T2 ORPACKAGE_TBL2,
+                    T3 INTEGER
+                    )""";
     static final String CREATE_TYPE_ORPACKAGE_TBL3 =
         "CREATE OR REPLACE TYPE ORPACKAGE_TBL3 AS TABLE OF ORPACKAGE_ARECORD";
     static final String CREATE_TYPE_ORPACKAGE_TBL4 =
@@ -384,69 +389,69 @@ public class ORDescriptorTestSuite extends DBWSTestSuite {
 
     // ASSERT METHODS
     protected void tbl1Asserts(ClassDescriptor tbl1Descriptor) {
-        assertTrue("Wrong Java class name.  Expected [" + TBL1_DESCRIPTOR_JAVACLASSNAME + "] but was [" + tbl1Descriptor.getJavaClassName() + "]", tbl1Descriptor.getJavaClassName().equals(TBL1_DESCRIPTOR_JAVACLASSNAME));
-        Vector<DatabaseMapping> mappings = tbl1Descriptor.getMappings();
-        assertTrue("Wrong number of mappings.  Expected [1] but was [" + mappings.size() + "]", mappings.size() == 1);
+        assertEquals("Wrong Java class name.  Expected [" + TBL1_DESCRIPTOR_JAVACLASSNAME + "] but was [" + tbl1Descriptor.getJavaClassName() + "]", tbl1Descriptor.getJavaClassName(), TBL1_DESCRIPTOR_JAVACLASSNAME);
+        List<DatabaseMapping> mappings = tbl1Descriptor.getMappings();
+        assertEquals("Wrong number of mappings.  Expected [1] but was [" + mappings.size() + "]", 1, mappings.size());
         DatabaseMapping mapping = mappings.get(0);
-        assertTrue("Incorrect mapping attribute name.  Expected [" + BaseDBWSBuilderHelper.ITEMS_MAPPING_ATTRIBUTE_NAME + "] but was [" + mapping.getAttributeName() + "]", mapping.getAttributeName().equals(BaseDBWSBuilderHelper.ITEMS_MAPPING_ATTRIBUTE_NAME));
-        assertTrue("Incorrect mapping field name.  Expected [" + BaseDBWSBuilderHelper.ITEMS_MAPPING_FIELD_NAME + "] but was [" + mapping.getField().getName() + "]", mapping.getField().getName().equals(BaseDBWSBuilderHelper.ITEMS_MAPPING_FIELD_NAME));
+        assertEquals("Incorrect mapping attribute name.  Expected [" + BaseDBWSBuilderHelper.ITEMS_MAPPING_ATTRIBUTE_NAME + "] but was [" + mapping.getAttributeName() + "]", BaseDBWSBuilderHelper.ITEMS_MAPPING_ATTRIBUTE_NAME, mapping.getAttributeName());
+        assertEquals("Incorrect mapping field name.  Expected [" + BaseDBWSBuilderHelper.ITEMS_MAPPING_FIELD_NAME + "] but was [" + mapping.getField().getName() + "]", BaseDBWSBuilderHelper.ITEMS_MAPPING_FIELD_NAME, mapping.getField().getName());
         assertTrue("Incorrect mapping type.  Expected [AbstractCompositeDirectCollection mapping], but was [" + mapping.getClass().getName() + "]",  mapping.isAbstractCompositeDirectCollectionMapping());
         ArrayMapping arrayMapping = (ArrayMapping)mapping;
-        assertTrue("Wrong structure name for mapping.  Expected [" + TBL1_COMPATIBLETYPE + "] but was [" + arrayMapping.getStructureName() + "]", arrayMapping.getStructureName().equals(TBL1_COMPATIBLETYPE));
+        assertEquals("Wrong structure name for mapping.  Expected [" + TBL1_COMPATIBLETYPE + "] but was [" + arrayMapping.getStructureName() + "]", TBL1_COMPATIBLETYPE, arrayMapping.getStructureName());
     }
 
     protected void tbl2Asserts(ClassDescriptor tbl2Descriptor) {
-        assertTrue("Wrong Java class name.  Expected [" + TBL2_DESCRIPTOR_JAVACLASSNAME + "] but was [" + tbl2Descriptor.getJavaClassName() + "]", tbl2Descriptor.getJavaClassName().equals(TBL2_DESCRIPTOR_JAVACLASSNAME));
-        Vector<DatabaseMapping> mappings = tbl2Descriptor.getMappings();
-        assertTrue("Wrong number of mappings.  Expected [1] but was [" + mappings.size() + "]", mappings.size() == 1);
+        assertEquals("Wrong Java class name.  Expected [" + TBL2_DESCRIPTOR_JAVACLASSNAME + "] but was [" + tbl2Descriptor.getJavaClassName() + "]", tbl2Descriptor.getJavaClassName(), TBL2_DESCRIPTOR_JAVACLASSNAME);
+        List<DatabaseMapping> mappings = tbl2Descriptor.getMappings();
+        assertEquals("Wrong number of mappings.  Expected [1] but was [" + mappings.size() + "]", 1, mappings.size());
         DatabaseMapping mapping = mappings.get(0);
-        assertTrue("Incorrect mapping attribute name.  Expected [" + BaseDBWSBuilderHelper.ITEMS_MAPPING_ATTRIBUTE_NAME + "] but was [" + mapping.getAttributeName() + "]", mapping.getAttributeName().equals(BaseDBWSBuilderHelper.ITEMS_MAPPING_ATTRIBUTE_NAME));
-        assertTrue("Incorrect mapping field name.  Expected [" + BaseDBWSBuilderHelper.ITEMS_MAPPING_FIELD_NAME + "] but was [" + mapping.getField().getName() + "]", mapping.getField().getName().equals(BaseDBWSBuilderHelper.ITEMS_MAPPING_FIELD_NAME));
+        assertEquals("Incorrect mapping attribute name.  Expected [" + BaseDBWSBuilderHelper.ITEMS_MAPPING_ATTRIBUTE_NAME + "] but was [" + mapping.getAttributeName() + "]", BaseDBWSBuilderHelper.ITEMS_MAPPING_ATTRIBUTE_NAME, mapping.getAttributeName());
+        assertEquals("Incorrect mapping field name.  Expected [" + BaseDBWSBuilderHelper.ITEMS_MAPPING_FIELD_NAME + "] but was [" + mapping.getField().getName() + "]", BaseDBWSBuilderHelper.ITEMS_MAPPING_FIELD_NAME, mapping.getField().getName());
         assertTrue("Incorrect mapping type.  Expected [AbstractCompositeDirectCollection mapping], but was [" + mapping.getClass().getName() + "]", mapping.isAbstractCompositeDirectCollectionMapping());
         ArrayMapping arrayMapping = (ArrayMapping)mapping;
-        assertTrue("Wrong structure name for mapping.  Expected [" + TBL2_COMPATIBLETYPE + "] but was [" + arrayMapping.getStructureName() + "]", arrayMapping.getStructureName().equals(TBL2_COMPATIBLETYPE));
+        assertEquals("Wrong structure name for mapping.  Expected [" + TBL2_COMPATIBLETYPE + "] but was [" + arrayMapping.getStructureName() + "]", TBL2_COMPATIBLETYPE, arrayMapping.getStructureName());
     }
 
     protected void tbl3Asserts(ClassDescriptor tbl3Descriptor) {
-        assertTrue("Wrong Java class name.  Expected [" + TBL3_DESCRIPTOR_JAVACLASSNAME + "] but was [" + tbl3Descriptor.getJavaClassName() + "]", tbl3Descriptor.getJavaClassName().equals(TBL3_DESCRIPTOR_JAVACLASSNAME));
-        Vector<DatabaseMapping> mappings = tbl3Descriptor.getMappings();
-        assertTrue("Wrong number of mappings.  Expected [1] but was [" + mappings.size() + "]", mappings.size() == 1);
+        assertEquals("Wrong Java class name.  Expected [" + TBL3_DESCRIPTOR_JAVACLASSNAME + "] but was [" + tbl3Descriptor.getJavaClassName() + "]", tbl3Descriptor.getJavaClassName(), TBL3_DESCRIPTOR_JAVACLASSNAME);
+        List<DatabaseMapping> mappings = tbl3Descriptor.getMappings();
+        assertEquals("Wrong number of mappings.  Expected [1] but was [" + mappings.size() + "]", 1, mappings.size());
         DatabaseMapping mapping = mappings.get(0);
-        assertTrue("Incorrect mapping attribute name.  Expected [" + BaseDBWSBuilderHelper.ITEMS_MAPPING_ATTRIBUTE_NAME + "] but was [" + mapping.getAttributeName() + "]", mapping.getAttributeName().equals(BaseDBWSBuilderHelper.ITEMS_MAPPING_ATTRIBUTE_NAME));
-        assertTrue("Incorrect mapping field name.  Expected [" + BaseDBWSBuilderHelper.ITEMS_MAPPING_FIELD_NAME + "] but was [" + mapping.getField().getName() + "]", mapping.getField().getName().equals(BaseDBWSBuilderHelper.ITEMS_MAPPING_FIELD_NAME));
+        assertEquals("Incorrect mapping attribute name.  Expected [" + BaseDBWSBuilderHelper.ITEMS_MAPPING_ATTRIBUTE_NAME + "] but was [" + mapping.getAttributeName() + "]", BaseDBWSBuilderHelper.ITEMS_MAPPING_ATTRIBUTE_NAME, mapping.getAttributeName());
+        assertEquals("Incorrect mapping field name.  Expected [" + BaseDBWSBuilderHelper.ITEMS_MAPPING_FIELD_NAME + "] but was [" + mapping.getField().getName() + "]", BaseDBWSBuilderHelper.ITEMS_MAPPING_FIELD_NAME, mapping.getField().getName());
         assertTrue("Incorrect mapping type.  Expected [AbstractCompositeCollection mapping] but was [" + mapping.getClass().getName() + "]", mapping.isAbstractCompositeCollectionMapping());
 
         ObjectArrayMapping oArrayMapping = (ObjectArrayMapping)mapping;
-        assertTrue("Incorrect structure name.  Expected [" + TBL3_COMPATIBLETYPE + "] but was [" + oArrayMapping.getStructureName() + "]", oArrayMapping.getStructureName().equals(TBL3_COMPATIBLETYPE));
-        assertTrue("Incorrect reference class name.  Expected [" + ARECORD_DESCRIPTOR_JAVACLASSNAME + "] but was [" + oArrayMapping.getReferenceClassName() + "]", oArrayMapping.getReferenceClassName().equals(ARECORD_DESCRIPTOR_JAVACLASSNAME));
+        assertEquals("Incorrect structure name.  Expected [" + TBL3_COMPATIBLETYPE + "] but was [" + oArrayMapping.getStructureName() + "]", TBL3_COMPATIBLETYPE, oArrayMapping.getStructureName());
+        assertEquals("Incorrect reference class name.  Expected [" + ARECORD_DESCRIPTOR_JAVACLASSNAME + "] but was [" + oArrayMapping.getReferenceClassName() + "]", oArrayMapping.getReferenceClassName(), ARECORD_DESCRIPTOR_JAVACLASSNAME);
     }
     protected void tbl4Asserts(ClassDescriptor tbl4Descriptor) {
-        assertTrue("Wrong Java class name.  Expected [" +TBL4_DESCRIPTOR_JAVACLASSNAME + "] but was [" + tbl4Descriptor.getJavaClassName() + "]", tbl4Descriptor.getJavaClassName().equals(TBL4_DESCRIPTOR_JAVACLASSNAME));
-        Vector<DatabaseMapping> mappings = tbl4Descriptor.getMappings();
-        assertTrue("Wrong number of mappings.  Expected [1] but was [" + mappings.size() + "]", mappings.size() == 1);
+        assertEquals("Wrong Java class name.  Expected [" + TBL4_DESCRIPTOR_JAVACLASSNAME + "] but was [" + tbl4Descriptor.getJavaClassName() + "]", tbl4Descriptor.getJavaClassName(), TBL4_DESCRIPTOR_JAVACLASSNAME);
+        List<DatabaseMapping> mappings = tbl4Descriptor.getMappings();
+        assertEquals("Wrong number of mappings.  Expected [1] but was [" + mappings.size() + "]", 1, mappings.size());
         DatabaseMapping mapping = mappings.get(0);
-        assertTrue("Incorrect mapping attribute name.  Expected [" + BaseDBWSBuilderHelper.ITEMS_MAPPING_ATTRIBUTE_NAME + "] but was [" + mapping.getAttributeName() + "]", mapping.getAttributeName().equals(BaseDBWSBuilderHelper.ITEMS_MAPPING_ATTRIBUTE_NAME));
-        assertTrue("Incorrect mapping field name.  Expected [" + BaseDBWSBuilderHelper.ITEMS_MAPPING_FIELD_NAME + "] but was [" + mapping.getField().getName() + "]", mapping.getField().getName().equals(BaseDBWSBuilderHelper.ITEMS_MAPPING_FIELD_NAME));
+        assertEquals("Incorrect mapping attribute name.  Expected [" + BaseDBWSBuilderHelper.ITEMS_MAPPING_ATTRIBUTE_NAME + "] but was [" + mapping.getAttributeName() + "]", BaseDBWSBuilderHelper.ITEMS_MAPPING_ATTRIBUTE_NAME, mapping.getAttributeName());
+        assertEquals("Incorrect mapping field name.  Expected [" + BaseDBWSBuilderHelper.ITEMS_MAPPING_FIELD_NAME + "] but was [" + mapping.getField().getName() + "]", BaseDBWSBuilderHelper.ITEMS_MAPPING_FIELD_NAME, mapping.getField().getName());
         assertTrue("Incorrect mapping type.  Expected [isAbstractCompositeDirectCollectionMapping mapping] but was [" + mapping.getClass().getName() + "]", mapping.isAbstractCompositeDirectCollectionMapping());
         ArrayMapping arrayMapping2 = (ArrayMapping)mapping;
-        assertTrue("Incorrect structure name.  Expected [" + TBL4_COMPATIBLETYPE + "] but was [" +arrayMapping2.getStructureName() + "]", arrayMapping2.getStructureName().equals(TBL4_COMPATIBLETYPE));
+        assertEquals("Incorrect structure name.  Expected [" + TBL4_COMPATIBLETYPE + "] but was [" + arrayMapping2.getStructureName() + "]", TBL4_COMPATIBLETYPE, arrayMapping2.getStructureName());
     }
     protected void aRecordAsserts(ClassDescriptor aRecordDescriptor) {
-        assertTrue("Wrong Java class name.  Expected [" + ARECORD_DESCRIPTOR_JAVACLASSNAME + "] but was [" + aRecordDescriptor.getJavaClassName() + "]", aRecordDescriptor.getJavaClassName().equals(ARECORD_DESCRIPTOR_JAVACLASSNAME));
-        Vector<DatabaseMapping> mappings = aRecordDescriptor.getMappings();
-        assertTrue("Wrong number of mappings.  Expected [3] but was [" + mappings.size() + "]", mappings.size() == 3);
+        assertEquals("Wrong Java class name.  Expected [" + ARECORD_DESCRIPTOR_JAVACLASSNAME + "] but was [" + aRecordDescriptor.getJavaClassName() + "]", aRecordDescriptor.getJavaClassName(), ARECORD_DESCRIPTOR_JAVACLASSNAME);
+        List<DatabaseMapping> mappings = aRecordDescriptor.getMappings();
+        assertEquals("Wrong number of mappings.  Expected [3] but was [" + mappings.size() + "]", 3, mappings.size());
         DatabaseMapping dm1 = mappings.get(0);
-        assertTrue("Incorrect mapping attribute name.  Expected [t1] but was [" + dm1.getAttributeName() + "]", dm1.getAttributeName().equals("t1"));
+        assertEquals("Incorrect mapping attribute name.  Expected [t1] but was [" + dm1.getAttributeName() + "]", "t1", dm1.getAttributeName());
         assertTrue("Incorrect mapping type.  Expected [AbstractCompositeDirectCollection mapping] but was [" + dm1.getClass().getName() +"]", dm1.isAbstractCompositeDirectCollectionMapping());
         ArrayMapping arrayMapping1 = (ArrayMapping)dm1;
-        assertTrue("Incorrect attribute element class.  Expected [" + TBL1_COMPATIBLETYPE + "] but was [" + arrayMapping1.getStructureName() + "]", arrayMapping1.getStructureName().equals(TBL1_COMPATIBLETYPE));
+        assertEquals("Incorrect attribute element class.  Expected [" + TBL1_COMPATIBLETYPE + "] but was [" + arrayMapping1.getStructureName() + "]", TBL1_COMPATIBLETYPE, arrayMapping1.getStructureName());
         DatabaseMapping dm2 = mappings.get(1);
-        assertTrue("Incorrect mapping attribute name.  Expected [t2] but was [" + dm2.getAttributeName() + "]", dm2.getAttributeName().equals("t2"));
+        assertEquals("Incorrect mapping attribute name.  Expected [t2] but was [" + dm2.getAttributeName() + "]", "t2", dm2.getAttributeName());
         assertTrue("Incorrect mapping type.  Expected [AbstractCompositeDirectCollection mapping ]but was [" + dm2.getClass().getName() +"]", dm2.isAbstractCompositeDirectCollectionMapping());
         ArrayMapping arrayMapping2 = (ArrayMapping)dm2;
-        assertTrue("Incorrect structure name.  Expected [" + TBL2_COMPATIBLETYPE + "] but was [" + arrayMapping2.getStructureName() + "]", arrayMapping2.getStructureName().equals(TBL2_COMPATIBLETYPE));
+        assertEquals("Incorrect structure name.  Expected [" + TBL2_COMPATIBLETYPE + "] but was [" + arrayMapping2.getStructureName() + "]", TBL2_COMPATIBLETYPE, arrayMapping2.getStructureName());
         DatabaseMapping dm3 = mappings.get(2);
-        assertTrue("Incorrect mapping attribute name.  Expected [t3] but was [" + dm3.getAttributeName() + "]", dm3.getAttributeName().equals("t3"));
+        assertEquals("Incorrect mapping attribute name.  Expected [t3] but was [" + dm3.getAttributeName() + "]", "t3", dm3.getAttributeName());
         assertTrue("Incorrect mapping type.  Expected [DirectToField mapping] but was [" + dm3.getClass().getName() + "]", dm3.isDirectToFieldMapping());
     }
 }

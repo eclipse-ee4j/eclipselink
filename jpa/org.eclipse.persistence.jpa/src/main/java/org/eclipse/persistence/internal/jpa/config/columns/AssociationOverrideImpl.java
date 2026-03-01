@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,7 +17,6 @@ package org.eclipse.persistence.internal.jpa.config.columns;
 import java.util.ArrayList;
 
 import org.eclipse.persistence.internal.jpa.config.tables.JoinTableImpl;
-import org.eclipse.persistence.internal.jpa.metadata.columns.JoinColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.AssociationOverrideMetadata;
 import org.eclipse.persistence.jpa.config.AssociationOverride;
 import org.eclipse.persistence.jpa.config.ForeignKey;
@@ -35,7 +34,7 @@ public class AssociationOverrideImpl extends AbstractOverrideImpl<AssociationOve
     public AssociationOverrideImpl() {
         super(new AssociationOverrideMetadata());
 
-        getMetadata().setJoinColumns(new ArrayList<JoinColumnMetadata>());
+        getMetadata().setJoinColumns(new ArrayList<>());
     }
 
     @Override

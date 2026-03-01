@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,13 +17,6 @@
 //         (non-default) will now invalidate the implementing subtree
 //           from [Class] down.  Previously only the single Class inside the tree was invalidated.
 package org.eclipse.persistence.internal.sessions;
-
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
 
 import org.eclipse.persistence.descriptors.CacheIndex;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -43,6 +36,13 @@ import org.eclipse.persistence.sessions.DataRecord;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.sessions.coordination.CommandManager;
 import org.eclipse.persistence.sessions.coordination.MergeChangeSetCommand;
+
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 
 /**
  * INTERNAL:
@@ -253,7 +253,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * INTERNAL:
      * This method is used to get a list of those classes with IdentityMaps in the Session.
      */
-    public Vector getClassesRegistered() {
+    public List<String> getClassesRegistered() {
         return getIdentityMapManager().getClassesRegistered();
     }
 
@@ -885,10 +885,10 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      */
     @Override
     public void invalidateAll() {
-        Iterator identiyMapClasses = getIdentityMapManager().getIdentityMapClasses();
+        Iterator<Class<?>> identiyMapClasses = getIdentityMapManager().getIdentityMapClasses();
 
         while (identiyMapClasses.hasNext()) {
-            invalidateClass((Class) identiyMapClasses.next());
+            invalidateClass(identiyMapClasses.next());
         }
     }
 
@@ -1158,7 +1158,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
             ClassDescriptor descriptor = descriptors.next();
             IdentityMap cache = getIdentityMap(descriptor, true);
             if (cache != null) {
-                for (Enumeration mapEnum = cache.elements(); mapEnum.hasMoreElements();) {
+                for (Enumeration<Object> mapEnum = cache.elements(); mapEnum.hasMoreElements();) {
                     iterator.startIterationOn(mapEnum.nextElement());
                 }
             }

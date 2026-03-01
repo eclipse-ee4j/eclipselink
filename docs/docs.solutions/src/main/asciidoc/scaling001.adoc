@@ -1,0 +1,56 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[SCALING001]]
+=== Introduction to the Solution
+
+EclipseLink applications that are deployed to an application server
+cluster benefit from cluster scalability, load balancing, and failover.
+These capabilities ensure that EclipseLink applications are highly
+available and scale as application demand increases. EclipseLink
+applications are deployed the same way in application server clusters as
+they are in standalone server environments. However, additional planning
+and configuration is required to ensure cache consistency in an
+application server cluster.
+
+EclipseLink uses a shared (L2) object cache that avoids database access
+for objects and their relationships. The cache is enabled by default and
+enhances application performance. In an application server cluster,
+caching can result in consistency issues (such as stale data) because
+changes made on one server are not reflected on objects cached in other
+servers. Cache consistency is problematic only for objects that are
+frequently updated. Read-only objects are not affected by cache
+consistency. For more details about caching, see:
+
+`http://wiki.eclipse.org/EclipseLink/UserGuide/JPA/Basic_JPA_Development/Caching/Caching_Overview`
+
+Various options are available for addressing cache consistency:
+
+* Use cache coordination. Cache coordination is a feature that
+broadcasts changes between the servers in the cluster to update or
+invalidate changed objects.
+* Use distributed caching. EclipseLink Grid is an integration between
+EclipseLink and Oracle Coherence that addresses many cache consistency
+issues that result from operating in a distributed environment. For
+details on EclipseLink Grid, see
+* Use optimistic locking. Optimistic locking is a feature that prevents
+updates to stale objects, and triggers the objects to be invalidated in
+the cache.
+* Refresh the cache. Refreshing a cache loads that latest data in the
+cache.
+* Disable the shared cache for highly volatile entities or limit the
+cache to read-only objects.

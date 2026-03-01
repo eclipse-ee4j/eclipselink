@@ -1,0 +1,24 @@
+== Data Access
+
+The following sections describe how EclipseLink defines connections to a
+data source:
+
+* link:Introduction_to_Data_Access_(ELUG)[Introduction to Data Access] -
+describes each of the different EclipseLink data source login types and
+important data access concepts.
+
+* link:Configuring_a_Data_Source_Login_(ELUG)[Configuring a Data Source
+Login] - explains how to configure EclipseLink data source login options
+common to two or more data source login types.
+
+* link:Creating_an_Internal_Connection_Pool_(ELUG)[Creating an Internal
+Connection Pool]
+
+* link:Configuring_an_Internal_Connection_Pool_(ELUG)[Configuring an
+Internal Connection Pool]
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]

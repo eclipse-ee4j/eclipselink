@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,12 +18,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.Locale;
 import java.util.TimeZone;
-
-import junit.framework.TestCase;
-import org.eclipse.persistence.internal.oxm.XMLConversionManager;
-import org.eclipse.persistence.oxm.XMLConstants;
 
 public class DataHelperToDateTest extends DataHelperTestCases {
 
@@ -93,7 +88,7 @@ public class DataHelperToDateTest extends DataHelperTestCases {
     public void testToDateWithTime() {
         Calendar controlCalendar = Calendar.getInstance();
         controlCalendar.clear();
-        controlCalendar.set(Calendar.HOUR, 1);
+        controlCalendar.set(Calendar.HOUR_OF_DAY, 1);
         controlCalendar.set(Calendar.MINUTE, 21);
         controlCalendar.set(Calendar.SECOND, 12);
         controlCalendar.set(Calendar.MILLISECOND, 37);
@@ -121,7 +116,7 @@ public class DataHelperToDateTest extends DataHelperTestCases {
         controlCalendar.set(Calendar.YEAR, 2001);
         controlCalendar.set(Calendar.MONTH, 9);
         controlCalendar.set(Calendar.DATE, 1);
-        controlCalendar.set(Calendar.HOUR, 0);
+        controlCalendar.set(Calendar.HOUR_OF_DAY, 0);
         controlCalendar.set(Calendar.MINUTE, 0);
         controlCalendar.set(Calendar.SECOND, 1);
         controlCalendar.set(Calendar.MILLISECOND, 1);
@@ -137,7 +132,7 @@ public class DataHelperToDateTest extends DataHelperTestCases {
         controlCalendar.set(Calendar.YEAR, 12);
         controlCalendar.set(Calendar.MONTH, 9);
         controlCalendar.set(Calendar.DATE, 2);
-        controlCalendar.set(Calendar.HOUR, 0);
+        controlCalendar.set(Calendar.HOUR_OF_DAY, 0);
         controlCalendar.set(Calendar.MINUTE, 40);
         controlCalendar.set(Calendar.SECOND, 27);
         controlCalendar.set(Calendar.MILLISECOND, 87);

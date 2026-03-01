@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,15 +16,15 @@ package org.eclipse.persistence.config;
 
 /**
  * This class contains predefined StructConverter types.
- *
+ * <p>
  * Users can use these types to define what StructConverter to use. For instance:
- *
- * {@literal @StructConverter(name="JGeom", converter="JGEOMETRY")}
+ * {@snippet :
+ *  @StructConverter(name="JGeom", converter="JGEOMETRY")
+ * }
  *
  * @author tware
- *
  */
-public class StructConverterType {
+public final class StructConverterType {
 
     public static final String JGeometry = "JGEOMETRY";
 

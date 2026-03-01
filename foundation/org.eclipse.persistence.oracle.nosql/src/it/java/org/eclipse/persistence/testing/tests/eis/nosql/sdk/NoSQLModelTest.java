@@ -127,12 +127,12 @@ public class NoSQLModelTest {
         NoSQLHandle noSQLHandle = oracleNoSQLConnection.getNoSQLHandle();
         TableLimits limits = new TableLimits(1, 2, 1);
         TableRequest tableRequestDrop = new TableRequest().setStatement(DROP_TABLE_DDL);
-        noSQLHandle.doTableRequest(tableRequestDrop, 60000, 1000);
+        noSQLHandle.doTableRequest(tableRequestDrop, 60000, 2024);
         TableRequest tableRequestCreate = new TableRequest().setStatement(CRATE_TABLE_DDL).
                 setTableLimits(limits);
-        noSQLHandle.doTableRequest(tableRequestCreate, 60000, 1000);
+        noSQLHandle.doTableRequest(tableRequestCreate, 60000, 2024);
         LOG.info("order table was created.");
-        setupOrderDescriptor((DatabaseSession)session);
+        setupOrderDescriptor(session);
 
     }
 

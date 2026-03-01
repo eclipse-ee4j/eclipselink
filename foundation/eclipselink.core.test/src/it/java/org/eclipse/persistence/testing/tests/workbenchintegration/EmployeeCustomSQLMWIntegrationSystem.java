@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,12 +19,12 @@ import org.eclipse.persistence.queries.DataReadQuery;
 import org.eclipse.persistence.queries.StoredFunctionCall;
 import org.eclipse.persistence.queries.StoredProcedureCall;
 import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.sessions.factories.XMLProjectReader;
+import org.eclipse.persistence.sessions.factories.XMLProjectWriter;
 import org.eclipse.persistence.testing.models.employee.relational.EmployeeProject;
 import org.eclipse.persistence.testing.tests.customsqlstoredprocedures.EmployeeCustomSQLSystem;
 import org.eclipse.persistence.tools.schemaframework.SchemaManager;
 import org.eclipse.persistence.tools.schemaframework.StoredProcedureDefinition;
-import org.eclipse.persistence.sessions.factories.XMLProjectReader;
-import org.eclipse.persistence.sessions.factories.XMLProjectWriter;
 
 
 /**

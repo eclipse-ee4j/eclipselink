@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,13 +15,13 @@
 //       SerializedObjectPolicy initial API and implementation
 package org.eclipse.persistence.internal.descriptors;
 
-import java.util.List;
-
 import org.eclipse.persistence.descriptors.SerializedObjectPolicy;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
+
+import java.util.List;
 
 /**
  * It's a transition class that holds SerializedObjectPolicy class name

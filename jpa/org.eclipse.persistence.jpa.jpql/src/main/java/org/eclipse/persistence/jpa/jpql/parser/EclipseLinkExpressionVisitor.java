@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -46,25 +46,11 @@ public interface EclipseLinkExpressionVisitor extends ExpressionVisitor {
     void visit(AsOfClause expression);
 
     /**
-     * Visits the {@link CastExpression} expression.
-     *
-     * @param expression The {@link Expression} to visit
-     */
-    void visit(CastExpression expression);
-
-    /**
      * Visits the {@link ConnectByClause} expression.
      *
      * @param expression The {@link ConnectByClause} to visit
      */
     void visit(ConnectByClause expression);
-
-    /**
-     * Visits the {@link DatabaseType} expression.
-     *
-     * @param expression The {@link DatabaseType} to visit
-     */
-    void visit(DatabaseType expression);
 
     /**
      * Visits the {@link ExtractExpression} expression.
@@ -114,11 +100,4 @@ public interface EclipseLinkExpressionVisitor extends ExpressionVisitor {
      * @param expression The {@link Expression} to visit
      */
     void visit(TableVariableDeclaration expression);
-
-    /**
-     * Visits the {@link UnionClause} expression.
-     *
-     * @param expression The {@link Expression} to visit
-     */
-    void visit(UnionClause expression);
 }

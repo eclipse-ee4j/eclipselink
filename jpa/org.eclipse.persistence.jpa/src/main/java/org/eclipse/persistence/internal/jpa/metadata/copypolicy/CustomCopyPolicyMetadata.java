@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,7 +33,7 @@ import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 /**
  * Used to store information about CopyPolicy as it is read from XML or
  * annotations
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -72,8 +72,7 @@ public class CustomCopyPolicyMetadata extends CopyPolicyMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (super.equals(objectToCompare) && objectToCompare instanceof CustomCopyPolicyMetadata) {
-            CustomCopyPolicyMetadata customCopyPoliy = (CustomCopyPolicyMetadata) objectToCompare;
+        if (super.equals(objectToCompare) && objectToCompare instanceof CustomCopyPolicyMetadata customCopyPoliy) {
             return valuesMatch(copyPolicyClassName, customCopyPoliy.getCopyPolicyClassName());
         }
 

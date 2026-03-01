@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,33 +31,21 @@ public class ProvinceConverter implements Converter {
         } else {
             String province = (String) dataValue;
 
-            if (province.equals("AB")) {
-                return "Alberta";
-            } else if (province.equals("BC")) {
-                return "British Columnbia";
-            } else if (province.equals("MB")) {
-                return "Manitoba";
-            } else if (province.equals("NB")) {
-                return "New Brunswick";
-            } else if (province.equals("NT")) {
-                return "Northwest Territories";
-            } else if (province.equals("NS")) {
-                return "Nova Scotia";
-            } else if (province.equals("NU")) {
-                return "Nunavut";
-            } else if (province.equals("ON")) {
-                return "Ontario";
-            } else if (province.equals("PE")) {
-                return "Prince Edward Island";
-            } else if (province.equals("QC")) {
-                return "Quebec";
-            } else if (province.equals("SK")) {
-                return "Saskatchewan";
-            } else if (province.equals("YT")) {
-                return "Yukon";
-            } else {
-                return province;
-            }
+            return switch (province) {
+                case "AB" -> "Alberta";
+                case "BC" -> "British Columnbia";
+                case "MB" -> "Manitoba";
+                case "NB" -> "New Brunswick";
+                case "NT" -> "Northwest Territories";
+                case "NS" -> "Nova Scotia";
+                case "NU" -> "Nunavut";
+                case "ON" -> "Ontario";
+                case "PE" -> "Prince Edward Island";
+                case "QC" -> "Quebec";
+                case "SK" -> "Saskatchewan";
+                case "YT" -> "Yukon";
+                default -> province;
+            };
         }
     }
 

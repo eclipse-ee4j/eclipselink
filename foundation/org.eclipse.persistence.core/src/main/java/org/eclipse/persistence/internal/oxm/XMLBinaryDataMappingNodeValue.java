@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,10 +15,8 @@
 package org.eclipse.persistence.internal.oxm;
 
 import jakarta.activation.DataHandler;
-import javax.xml.namespace.QName;
-
 import org.eclipse.persistence.core.sessions.CoreSession;
-import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.oxm.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.mappings.BinaryDataMapping;
@@ -32,6 +30,8 @@ import org.eclipse.persistence.internal.oxm.record.XMLReader;
 import org.eclipse.persistence.internal.oxm.record.deferred.BinaryMappingContentHandler;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
+
+import javax.xml.namespace.QName;
 
 /**
  * INTERNAL:
@@ -79,8 +79,7 @@ public class XMLBinaryDataMappingNodeValue extends NodeValue implements NullCapa
     public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object objectValue,CoreAbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext, XPathFragment rootFragment) {
         XPathFragment xmlRootFrag = null;
 
-        if (objectValue instanceof Root) {
-            Root xmlRoot = (Root) objectValue;
+        if (objectValue instanceof Root xmlRoot) {
             xmlRootFrag = new XPathFragment();
             if (xmlRoot.getNamespaceURI() != null && !xmlRoot.getNamespaceURI().equals(namespaceResolver.getDefaultNamespaceURI())) {
                 String prefix = namespaceResolver.resolveNamespaceURI(xmlRoot.getNamespaceURI());
@@ -88,7 +87,7 @@ public class XMLBinaryDataMappingNodeValue extends NodeValue implements NullCapa
                 xmlRootFrag.setNamespaceURI(xmlRoot.getNamespaceURI());
             }else{
                 xmlRootFrag.setXPath(xmlRoot.getLocalName());
-                if(xmlRoot.getNamespaceURI() != null && xmlRoot.getNamespaceURI().length() > 0) {
+                if(xmlRoot.getNamespaceURI() != null && !xmlRoot.getNamespaceURI().isEmpty()) {
                     xmlRootFrag.setNamespaceURI(xmlRoot.getNamespaceURI());
                 }
             }

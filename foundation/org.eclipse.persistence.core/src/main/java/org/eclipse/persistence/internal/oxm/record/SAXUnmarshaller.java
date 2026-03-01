@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,31 +14,8 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.oxm.record;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Map;
-
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-import javax.xml.transform.Source;
-import javax.xml.transform.dom.DOMResult;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.sax.SAXResult;
-import javax.xml.transform.sax.SAXSource;
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.validation.Schema;
-import javax.xml.validation.ValidatorHandler;
-
 import org.eclipse.persistence.exceptions.EclipseLinkException;
-import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.oxm.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.helper.XMLHelper;
@@ -64,6 +41,28 @@ import org.xml.sax.EntityResolver;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+import javax.xml.transform.Source;
+import javax.xml.transform.dom.DOMResult;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.sax.SAXResult;
+import javax.xml.transform.sax.SAXSource;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.ValidatorHandler;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Map;
 
 /**
  * INTERNAL:
@@ -342,18 +341,13 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
 
             this.systemId = file.toURI().toURL().toExternalForm();
 
-            FileInputStream inputStream = new FileInputStream(file);
-            try {
+            try (FileInputStream inputStream = new FileInputStream(file)) {
                 return unmarshal(inputStream);
-            } finally {
-                inputStream.close();
             }
-        } catch (FileNotFoundException e) {
-            throw XMLMarshalException.unmarshalException(e);
         } catch (IOException e) {
             throw XMLMarshalException.unmarshalException(e);
         } finally {
-            xmlUnmarshaller.getStringBuffer().reset();
+            xmlUnmarshaller.getStringBuffer().setLength(0);
         }
     }
 
@@ -367,18 +361,13 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
 
             this.systemId = file.toURI().toURL().toExternalForm();
 
-            FileInputStream inputStream = new FileInputStream(file);
-            try {
+            try (FileInputStream inputStream = new FileInputStream(file)) {
                 return unmarshal(inputStream, clazz);
-            } finally {
-                inputStream.close();
             }
-        } catch (FileNotFoundException e) {
-            throw XMLMarshalException.unmarshalException(e);
         } catch (IOException e) {
             throw XMLMarshalException.unmarshalException(e);
         } finally {
-            xmlUnmarshaller.getStringBuffer().reset();
+            xmlUnmarshaller.getStringBuffer().setLength(0);
         }
     }
 
@@ -436,7 +425,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
         } catch (SAXException e) {
             throw convertSAXException(e);
         } finally {
-            xmlUnmarshaller.getStringBuffer().reset();
+            xmlUnmarshaller.getStringBuffer().setLength(0);
         }
     }
 
@@ -523,7 +512,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
         } catch (SAXException e) {
             throw convertSAXException(e);
         } finally {
-            xmlUnmarshaller.getStringBuffer().reset();
+            xmlUnmarshaller.getStringBuffer().setLength(0);
         }
 
         // resolve mapping references
@@ -554,7 +543,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
         } catch (SAXException e) {
             throw convertSAXException(e);
         } finally {
-            xmlUnmarshaller.getStringBuffer().reset();
+            xmlUnmarshaller.getStringBuffer().setLength(0);
         }
 
     }
@@ -624,7 +613,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
         } catch (SAXException e) {
             throw convertSAXException(e);
         } finally {
-            xmlUnmarshaller.getStringBuffer().reset();
+            xmlUnmarshaller.getStringBuffer().setLength(0);
         }
 
         // resolve mapping references
@@ -669,8 +658,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
     @Override
     public Object unmarshal(Source source) {
         try {
-            if (source instanceof SAXSource) {
-                SAXSource saxSource = (SAXSource) source;
+            if (source instanceof SAXSource saxSource) {
                 XMLReader xmlReader = null;
                 if (saxSource.getXMLReader() != null) {
                     if (saxSource.getXMLReader() instanceof XMLReader) {
@@ -685,11 +673,9 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
                 } else {
                     return unmarshal(saxSource.getInputSource(), xmlReader);
                 }
-            } else if (source instanceof DOMSource) {
-                DOMSource domSource = (DOMSource) source;
+            } else if (source instanceof DOMSource domSource) {
                 return unmarshal(domSource.getNode());
-            } else if (source instanceof StreamSource) {
-                StreamSource streamSource = (StreamSource) source;
+            } else if (source instanceof StreamSource streamSource) {
                 if (null != streamSource.getReader()) {
                     return unmarshal(streamSource.getReader());
                 } else if (null != streamSource.getInputStream()) {
@@ -697,8 +683,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
                 } else {
                     return unmarshal(streamSource.getSystemId());
                 }
-            } else if (source instanceof ExtendedSource) {
-                ExtendedSource extendedSource = (ExtendedSource) source;
+            } else if (source instanceof ExtendedSource extendedSource) {
                 return unmarshal(null, extendedSource.createReader(xmlUnmarshaller));
             } else {
                 UnmarshallerHandler handler = this.xmlUnmarshaller.getUnmarshallerHandler();
@@ -710,14 +695,13 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
                 return handler.getResult();
             }
         } finally {
-            xmlUnmarshaller.getStringBuffer().reset();
+            xmlUnmarshaller.getStringBuffer().setLength(0);
         }
     }
 
     @Override
     public Object unmarshal(Source source, Class<?> clazz) {
-        if (source instanceof SAXSource) {
-            SAXSource saxSource = (SAXSource) source;
+        if (source instanceof SAXSource saxSource) {
             XMLReader xmlReader = null;
             if (saxSource.getXMLReader() != null) {
                 if (saxSource.getXMLReader() instanceof XMLReader) {
@@ -732,11 +716,9 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
             } else {
                 return unmarshal(saxSource.getInputSource(), clazz, xmlReader);
             }
-        } else if (source instanceof DOMSource) {
-            DOMSource domSource = (DOMSource) source;
+        } else if (source instanceof DOMSource domSource) {
             return unmarshal(domSource.getNode(), clazz);
-        } else if (source instanceof StreamSource) {
-            StreamSource streamSource = (StreamSource) source;
+        } else if (source instanceof StreamSource streamSource) {
             if (null != streamSource.getReader()) {
                 return unmarshal(streamSource.getReader(), clazz);
             } else if (null != streamSource.getInputStream()) {
@@ -744,8 +726,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
             } else {
                 return unmarshal(streamSource.getSystemId(), clazz);
             }
-        } else if (source instanceof ExtendedSource) {
-            ExtendedSource extendedSource = (ExtendedSource) source;
+        } else if (source instanceof ExtendedSource extendedSource) {
             return unmarshal(null, clazz, extendedSource.createReader(xmlUnmarshaller, clazz));
         } else {
             DOMResult result = new DOMResult();
@@ -776,7 +757,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
             hasThrownException = true;
             throw runtimeException;
         } finally {
-            xmlUnmarshaller.getStringBuffer().reset();
+            xmlUnmarshaller.getStringBuffer().setLength(0);
             try {
                 inputStream.close();
             } catch (IOException e) {
@@ -799,7 +780,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
         try {
             return unmarshal(inputStream, clazz);
         } finally {
-            xmlUnmarshaller.getStringBuffer().reset();
+            xmlUnmarshaller.getStringBuffer().setLength(0);
             try {
                 inputStream.close();
             } catch (IOException e) {
@@ -830,7 +811,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
         } catch (SAXException e) {
             throw convertSAXException(e);
         } finally {
-            xmlUnmarshaller.getStringBuffer().reset();
+            xmlUnmarshaller.getStringBuffer().setLength(0);
         }
     }
 
@@ -864,7 +845,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
             } catch (SAXException e) {
                 throw convertSAXException(e);
             } finally {
-                xmlUnmarshaller.getStringBuffer().reset();
+                xmlUnmarshaller.getStringBuffer().setLength(0);
             }
             // resolve any mapping references
             saxUnmarshallerHandler.resolveReferences();
@@ -905,7 +886,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
         } catch (SAXException e) {
             throw convertSAXException(e);
         } finally {
-            xmlUnmarshaller.getStringBuffer().reset();
+            xmlUnmarshaller.getStringBuffer().setLength(0);
         }
 
         // resolve mapping references
@@ -947,7 +928,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
         } catch (SAXException e) {
             throw convertSAXException(e);
         } finally {
-            xmlUnmarshaller.getStringBuffer().reset();
+            xmlUnmarshaller.getStringBuffer().setLength(0);
         }
     }
 
@@ -1029,7 +1010,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
         } catch (SAXException e) {
             throw convertSAXException(e);
         } finally {
-            xmlUnmarshaller.getStringBuffer().reset();
+            xmlUnmarshaller.getStringBuffer().setLength(0);
         }
     }
 
@@ -1085,8 +1066,8 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
     }
 
     private InputStream getInputStreamFromString(String stringValue) {
-        if (stringValue.length() == 0) {
-            throw org.eclipse.persistence.exceptions.XMLMarshalException.unmarshalFromStringException(stringValue, null);
+        if (stringValue.isEmpty()) {
+            throw XMLMarshalException.unmarshalFromStringException(stringValue, null);
         }
         URL url = null;
         try {
@@ -1095,17 +1076,17 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
                 try {
                     return url.openStream();
                 } catch (IOException e) {
-                    throw org.eclipse.persistence.exceptions.XMLMarshalException.unmarshalFromStringException(stringValue, e);
+                    throw org.eclipse.persistence.oxm.exceptions.XMLMarshalException.unmarshalFromStringException(stringValue, e);
                 }
             }
         } catch (MalformedURLException ex) {
             try {
                 return new FileInputStream(stringValue);
             } catch (FileNotFoundException e) {
-                throw org.eclipse.persistence.exceptions.XMLMarshalException.unmarshalFromStringException(stringValue, e);
+                throw XMLMarshalException.unmarshalFromStringException(stringValue, e);
             }
         }
-        throw org.eclipse.persistence.exceptions.XMLMarshalException.unmarshalFromStringException(stringValue, null);
+        throw org.eclipse.persistence.oxm.exceptions.XMLMarshalException.unmarshalFromStringException(stringValue, null);
     }
 
     private BufferedReader getBufferedReaderForInputSource(InputSource inputSource) {
@@ -1125,9 +1106,9 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
         try {
             br.mark(READ_AHEAD_LIMIT);
             try {
-                char c = 0;
+                int c = 0;
                 for (int i = 0; c != -1 && i < READ_AHEAD_LIMIT; i++) {
-                    c = (char) br.read();
+                    c = br.read();
                     if (c == '[' || c == '{') {
                         return Constants.APPLICATION_JSON;
                     } else if (c == '<') {

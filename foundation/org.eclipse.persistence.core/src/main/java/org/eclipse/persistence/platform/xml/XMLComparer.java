@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,6 +33,9 @@ import org.w3c.dom.Text;
 public class XMLComparer {
 
     private boolean ignoreOrder;
+    //Useful e.g. for password element where is content encrypted by AES/GCM/NoPadding where is randomly generated input vector for every encrypt(.) call.
+    //Control document and test document is not same in this part.
+    private String ignoreElementName = null;
 
     public XMLComparer() {
         super();
@@ -53,34 +56,21 @@ public class XMLComparer {
         } else if (control.getNodeType() != test.getNodeType()) {
             return false;
         }
-        switch (control.getNodeType()) {
-        case (Node.ATTRIBUTE_NODE):
-            return isAttributeEqual((Attr)control, (Attr)test);
-        case (Node.CDATA_SECTION_NODE):
-            return isTextEqual((Text)control, (Text)test);
-        case (Node.COMMENT_NODE):
-            return isCommentEqual((Comment)control, (Comment)test);
-        case (Node.DOCUMENT_FRAGMENT_NODE):
-            return isDocumentFragmentEqual((DocumentFragment)control, (DocumentFragment)test);
-        case (Node.DOCUMENT_NODE):
-            return isDocumentEqual((Document)control, (Document)test);
-        case (Node.DOCUMENT_TYPE_NODE):
-            return isDocumentTypeEqual((DocumentType)control, (DocumentType)test);
-        case (Node.ELEMENT_NODE):
-            return isElementEqual((Element)control, (Element)test);
-        case (Node.ENTITY_NODE):
-            return false;
-        case (Node.ENTITY_REFERENCE_NODE):
-            return isEntityReferenceEqual((EntityReference)control, (EntityReference)test);
-        case (Node.NOTATION_NODE):
-            return false;
-        case (Node.PROCESSING_INSTRUCTION_NODE):
-            return isProcessingInstructionEqual((ProcessingInstruction)control, (ProcessingInstruction)test);
-        case (Node.TEXT_NODE):
-            return isTextEqual((Text)control, (Text)test);
-        default:
-            return true;
-        }
+        return switch (control.getNodeType()) {
+            case (Node.ATTRIBUTE_NODE) -> isAttributeEqual((Attr) control, (Attr) test);
+            case (Node.CDATA_SECTION_NODE) -> isTextEqual((Text) control, (Text) test);
+            case (Node.COMMENT_NODE) -> isCommentEqual((Comment) control, (Comment) test);
+            case (Node.DOCUMENT_FRAGMENT_NODE) -> isDocumentFragmentEqual((DocumentFragment) control, (DocumentFragment) test);
+            case (Node.DOCUMENT_NODE) -> isDocumentEqual((Document) control, (Document) test);
+            case (Node.DOCUMENT_TYPE_NODE) -> isDocumentTypeEqual((DocumentType) control, (DocumentType) test);
+            case (Node.ELEMENT_NODE) -> isElementEqual((Element) control, (Element) test);
+            case (Node.ENTITY_NODE) -> false;
+            case (Node.ENTITY_REFERENCE_NODE) -> isEntityReferenceEqual((EntityReference) control, (EntityReference) test);
+            case (Node.NOTATION_NODE) -> false;
+            case (Node.PROCESSING_INSTRUCTION_NODE) -> isProcessingInstructionEqual((ProcessingInstruction) control, (ProcessingInstruction) test);
+            case (Node.TEXT_NODE) -> isTextEqual((Text) control, (Text) test);
+            default -> true;
+        };
     }
 
     protected boolean isAttributeEqual(Attr control, Attr test) {
@@ -143,6 +133,9 @@ public class XMLComparer {
     }
 
     private boolean isElementEqual(Element control, Element test) {
+        if (ignoreElementName != null && isStringEqual(ignoreElementName, test.getTagName())) {
+            return true;
+        }
         if (!isStringEqual(control.getNamespaceURI(), test.getNamespaceURI())) {
             return false;
         }
@@ -252,5 +245,13 @@ public class XMLComparer {
 
     public void setIgnoreOrder(boolean ignoreOrder) {
         this.ignoreOrder = ignoreOrder;
+    }
+
+    public String getIgnoreElementName() {
+        return ignoreElementName;
+    }
+
+    public void setIgnoreElementName(String ignoreElementName) {
+        this.ignoreElementName = ignoreElementName;
     }
 }

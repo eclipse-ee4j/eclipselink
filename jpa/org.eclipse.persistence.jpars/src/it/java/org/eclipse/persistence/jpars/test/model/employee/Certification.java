@@ -14,21 +14,21 @@
 //      gonural - initial
 package org.eclipse.persistence.jpars.test.model.employee;
 
-import static jakarta.persistence.TemporalType.TIMESTAMP;
-
 import java.util.Calendar;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 
 @Embeddable
 public class Certification {
     @Column(name = "NAME")
     private String name;
 
-    @Temporal(TIMESTAMP)
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "ISSUE_DATE")
+    @SuppressWarnings("deprecation")
     private Calendar issueDate;
 
     public String getName() {

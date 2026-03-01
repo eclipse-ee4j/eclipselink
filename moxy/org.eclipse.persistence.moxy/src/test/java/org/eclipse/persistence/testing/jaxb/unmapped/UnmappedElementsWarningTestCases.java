@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,14 +21,11 @@ import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.ValidationEvent;
 import jakarta.xml.bind.ValidationEventHandler;
-import javax.xml.transform.stream.StreamSource;
 
 import junit.textui.TestRunner;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
-import org.eclipse.persistence.jaxb.UnmarshallerProperties;
-import org.eclipse.persistence.oxm.MediaType;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.testing.oxm.OXTestCase;
 

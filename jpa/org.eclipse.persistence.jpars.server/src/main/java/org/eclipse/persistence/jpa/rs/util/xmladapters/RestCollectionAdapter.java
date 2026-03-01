@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -101,8 +101,7 @@ public class RestCollectionAdapter<T extends PersistenceWeavedRest> extends XmlA
         //result.setItems(v);
 
         // Read links from the RestCollection wrapper
-        if (v instanceof CollectionProxy) {
-            CollectionProxy restCollection = (CollectionProxy)v;
+        if (v instanceof CollectionProxy restCollection) {
             result.setLinks(restCollection.getLinks());
         }
 

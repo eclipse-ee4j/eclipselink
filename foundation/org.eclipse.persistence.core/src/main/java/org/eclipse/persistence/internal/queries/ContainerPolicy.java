@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,22 +14,6 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.queries;
 
-import java.io.Serializable;
-import java.lang.reflect.Constructor;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.IdentityHashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Vector;
-
 import org.eclipse.persistence.annotations.CacheKeyType;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.changetracking.CollectionChangeEvent;
@@ -38,6 +22,7 @@ import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.indirection.IndirectCollection;
 import org.eclipse.persistence.indirection.IndirectCollectionsFactory;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
 import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
 import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
@@ -75,6 +60,23 @@ import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.queries.ScrollableCursorPolicy;
 import org.eclipse.persistence.queries.WriteObjectQuery;
 
+import java.io.Serial;
+import java.io.Serializable;
+import java.lang.reflect.Constructor;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.IdentityHashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Vector;
+
 /**
  * <p><b>Purpose</b>:
  * Used to support collections in read queries.
@@ -86,6 +88,7 @@ import org.eclipse.persistence.queries.WriteObjectQuery;
  * @since TOPLink/Java 1.2
  */
 public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSession>, Cloneable, Serializable {
+    @Serial
     private static final long serialVersionUID = 6971791021041582975L;
 
     /**
@@ -338,23 +341,23 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
      * concrete container class.
      */
     public static ContainerPolicy buildPolicyFor(Class<?> concreteContainerClass, boolean hasOrdering) {
-        if (Helper.classImplementsInterface(concreteContainerClass, ClassConstants.List_Class)) {
+        if (Helper.classImplementsInterface(concreteContainerClass, CoreClassConstants.List_Class)) {
             if (hasOrdering) {
                 return new OrderedListContainerPolicy(concreteContainerClass);
             } else if (concreteContainerClass == ClassConstants.Vector_class) {
                 return new VectorContainerPolicy(concreteContainerClass);
             }  else if (concreteContainerClass == ClassConstants.IndirectList_Class) {
                 return new IndirectListContainerPolicy(concreteContainerClass);
-            }   else if (concreteContainerClass == ClassConstants.ArrayList_class) {
+            }   else if (concreteContainerClass == CoreClassConstants.ArrayList_class) {
                 return new ArrayListContainerPolicy(concreteContainerClass);
             } else {
                 return new ListContainerPolicy(concreteContainerClass);
             }
         } else if (Helper.classImplementsInterface(concreteContainerClass, ClassConstants.SortedSet_Class)) {
             return new SortedCollectionContainerPolicy(concreteContainerClass);
-        } else if (Helper.classImplementsInterface(concreteContainerClass, ClassConstants.Collection_Class)) {
+        } else if (Helper.classImplementsInterface(concreteContainerClass, CoreClassConstants.Collection_Class)) {
             return new CollectionContainerPolicy(concreteContainerClass);
-        } else if (Helper.classImplementsInterface(concreteContainerClass, ClassConstants.Map_Class)) {
+        } else if (Helper.classImplementsInterface(concreteContainerClass, CoreClassConstants.Map_Class)) {
             return new MapContainerPolicy(concreteContainerClass);
         } else if (concreteContainerClass.equals(ClassConstants.CursoredStream_Class)) {
             return new CursoredStreamPolicy();
@@ -580,8 +583,7 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
      * Both of the containers must use the same container policy (namely, this one).
      */
     public Object concatenateContainers(Object firstContainer, Object secondContainer, AbstractSession session) {
-        if (firstContainer instanceof ComplexQueryResult) {
-            ComplexQueryResult firstResult = (ComplexQueryResult)firstContainer;
+        if (firstContainer instanceof ComplexQueryResult firstResult) {
             ComplexQueryResult secondResult = (ComplexQueryResult)secondContainer;
             firstResult.setResult(concatenateContainers(
                     firstResult.getResult(), secondResult.getResult(), session));
@@ -615,7 +617,7 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
             return IndirectCollectionsFactory.createIndirectList();
         } else if (containerClass == ClassConstants.IndirectSet_Class) {
             return IndirectCollectionsFactory.createIndirectSet();
-        } else if (containerClass == ClassConstants.ArrayList_class) {
+        } else if (containerClass == CoreClassConstants.ArrayList_class) {
             return new ArrayList();
         } else if (containerClass == ClassConstants.Vector_class) {
             return new Vector();
@@ -655,7 +657,7 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
                 return IndirectCollectionsFactory.createIndirectList(initialCapacity);
             } else if (containerClass == ClassConstants.IndirectSet_Class) {
                 return IndirectCollectionsFactory.createIndirectSet(initialCapacity);
-            } else if (containerClass == ClassConstants.ArrayList_class) {
+            } else if (containerClass == CoreClassConstants.ArrayList_class) {
                 return new ArrayList(initialCapacity);
             } else if (containerClass == ClassConstants.Vector_class) {
                 return new Vector(initialCapacity);
@@ -909,13 +911,13 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
             Constructor<?> constructor = null;
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
-                    constructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor<>(getContainerClass(), new Class<?>[] { ClassConstants.PINT }, false));
+                    constructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor<>(getContainerClass(), new Class<?>[] { CoreClassConstants.PINT }, false));
                 } catch (PrivilegedActionException exception) {
                     // If there is no constructor then the default will be used.
                     return;
                 }
             } else {
-                constructor = PrivilegedAccessHelper.getConstructorFor(getContainerClass(), new Class<?>[] { ClassConstants.PINT }, false);
+                constructor = PrivilegedAccessHelper.getConstructorFor(getContainerClass(), new Class<?>[] { CoreClassConstants.PINT }, false);
             }
             setConstructor(constructor);
         } catch (Exception exception) {
@@ -1178,7 +1180,7 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
      * INTERNAL:
      * Return the next object on the queue. The iterator is the one
      * returned from #iteratorFor().
-     *
+     * <p>
      * In the case of a Map, this will return a MapEntry to allow use of the key
      *
      * @see ContainerPolicy#iteratorFor(java.lang.Object)
@@ -1193,7 +1195,7 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
      * INTERNAL:
      * Return the next object on the queue. The iterator is the one
      * returned from #iteratorFor().
-     *
+     * <p>
      * In the case of a Map, this will return a MapEntry to allow use of the key
      *
      * @see ContainerPolicy#iteratorFor(Object)
@@ -1537,7 +1539,7 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
 
     @Override
     public String toString() {
-        return Helper.getShortClassName(this.getClass()) + "(" + toStringInfo() + ")";
+        return getClass().getSimpleName() + "(" + toStringInfo() + ")";
     }
 
     protected Object toStringInfo() {
@@ -1672,7 +1674,7 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
         Vector result = new Vector(sizeFor(container));
 
         for (Object iter = iteratorFor(container); hasNext(iter);) {
-            result.addElement(next(iter, session));
+            result.add(next(iter, session));
         }
         return result;
     }

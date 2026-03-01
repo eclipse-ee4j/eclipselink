@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,16 +14,16 @@
 //     Blaise Doughan - 2.5 - initial implementation
 package org.eclipse.persistence.core.descriptors;
 
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.eclipse.persistence.core.queries.CoreAttributeGroup;
 import org.eclipse.persistence.internal.core.descriptors.CoreInstantiationPolicy;
 import org.eclipse.persistence.internal.core.descriptors.CoreObjectBuilder;
 import org.eclipse.persistence.internal.core.helper.CoreField;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
+
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * INTERNAL
@@ -188,7 +188,7 @@ public abstract class CoreDescriptor<
 
     /**
      * PUBLIC:
-     * User can specify a vector of all the primary key field names if primary key is composite.
+     * User can specify a list of all the primary key field names if primary key is composite.
      *
      * @see org.eclipse.persistence.descriptors.ClassDescriptor#addPrimaryKeyFieldName(String)
      */
@@ -196,7 +196,7 @@ public abstract class CoreDescriptor<
 
     /**
      * PUBLIC:
-     * User can specify a vector of all the primary key field names if primary key is composite.
+     * User can specify a list of all the primary key field names if primary key is composite.
      *
      * @see org.eclipse.persistence.descriptors.ClassDescriptor#addPrimaryKeyFieldName(String)
      */

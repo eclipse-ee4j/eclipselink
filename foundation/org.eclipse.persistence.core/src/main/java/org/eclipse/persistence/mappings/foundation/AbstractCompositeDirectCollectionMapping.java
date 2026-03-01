@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,22 +17,41 @@
 //         "java.lang.NoClassDefFoundError: org/eclipse/persistence/testing/models/jpa21/advanced/enums/Gender"
 package org.eclipse.persistence.mappings.foundation;
 
-import java.util.*;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.internal.descriptors.*;
-import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.exceptions.DescriptorException;
+import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
+import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.oxm.mappings.Field;
-import org.eclipse.persistence.internal.queries.*;
-import org.eclipse.persistence.internal.sessions.*;
+import org.eclipse.persistence.internal.queries.CollectionContainerPolicy;
+import org.eclipse.persistence.internal.queries.ContainerPolicy;
+import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
+import org.eclipse.persistence.internal.queries.ListContainerPolicy;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sessions.ChangeRecord;
+import org.eclipse.persistence.internal.sessions.DirectToFieldChangeRecord;
+import org.eclipse.persistence.internal.sessions.MergeManager;
+import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
+import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.internal.sessions.remote.ObjectDescriptor;
-import org.eclipse.persistence.mappings.*;
-import org.eclipse.persistence.mappings.converters.*;
+import org.eclipse.persistence.mappings.ContainerMapping;
+import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.converters.Converter;
+import org.eclipse.persistence.mappings.converters.TypeConversionConverter;
 import org.eclipse.persistence.mappings.structures.ArrayCollectionMapping;
 import org.eclipse.persistence.mappings.structures.ArrayCollectionMappingHelper;
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.sessions.remote.*;
+import org.eclipse.persistence.queries.ObjectBuildingQuery;
+import org.eclipse.persistence.queries.ObjectLevelReadQuery;
+import org.eclipse.persistence.queries.WriteObjectQuery;
 import org.eclipse.persistence.sessions.CopyGroup;
+import org.eclipse.persistence.sessions.remote.DistributedSession;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 
 /**
  * <code>AbstractCompositeDirectCollectionMapping</code> consolidates the behavior of mappings that
@@ -240,9 +259,9 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
      * Return the fields handled by the mapping.
      */
     @Override
-    protected Vector collectFields() {
-        Vector fields = new Vector(1);
-        fields.addElement(this.getField());
+    protected List<DatabaseField> collectFields() {
+        List<DatabaseField> fields = new ArrayList<>(1);
+        fields.add(this.getField());
         return fields;
     }
 
@@ -600,14 +619,14 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
             return cp.containerInstance();
         }
 
-        Vector fieldValues = this.getDescriptor().buildDirectValuesFromFieldValue(fieldValue);
+        List<Object> fieldValues = this.getDescriptor().buildDirectValuesFromFieldValue(fieldValue);
         if (fieldValues == null) {
             return cp.containerInstance();
         }
 
         Object result = cp.containerInstance(fieldValues.size());
-        for (Enumeration stream = fieldValues.elements(); stream.hasMoreElements();) {
-            Object element = stream.nextElement();
+        for (Iterator<Object> iterator = fieldValues.iterator(); iterator.hasNext();) {
+            Object element = iterator.next();
             if (this.getValueConverter() != null) {
                 element = getValueConverter().convertDataValueToObjectValue(element, executionSession);
             }
@@ -642,7 +661,7 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
                 element = getValueConverter().convertObjectValueToDataValue(element, session);
             }
             if (element != null) {
-                elements.addElement(element);
+                elements.add(element);
             }
         }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -371,7 +371,7 @@ public final class XmlEscapeCharacterConverter {
      */
     public static String escape(String value, int[] positions) {
 
-        if ((value == null) || (value.length() == 0)) {
+        if ((value == null) || (value.isEmpty())) {
             return value;
         }
 
@@ -453,7 +453,7 @@ public final class XmlEscapeCharacterConverter {
             }
 
             // No minus accepted
-            if ((value.length() == 0) || (value.charAt(0) == '-')) {
+            if ((value.isEmpty()) || (value.charAt(0) == '-')) {
                 return null;
             }
 
@@ -488,14 +488,14 @@ public final class XmlEscapeCharacterConverter {
      */
     public static String getEscapeCharacter(char character) {
 
-        switch (character) {
-            case '<':  return LESS_THAN_ENTITY_NAME;
-            case '>':  return GREATER_THAN_ENTITY_NAME;
-            case '&':  return AMPERSAND_ENTITY_NAME;
-            case '\'': return APOSTROPHE_ENTITY_NAME;
-            case '\"': return QUOTATION_MARK_NAME;
-            default:   return null;
-        }
+        return switch (character) {
+            case '<' -> LESS_THAN_ENTITY_NAME;
+            case '>' -> GREATER_THAN_ENTITY_NAME;
+            case '&' -> AMPERSAND_ENTITY_NAME;
+            case '\'' -> APOSTROPHE_ENTITY_NAME;
+            case '\"' -> QUOTATION_MARK_NAME;
+            default -> null;
+        };
     }
 
     /**
@@ -507,14 +507,10 @@ public final class XmlEscapeCharacterConverter {
      */
     public static boolean isReserved(char character) {
 
-        switch (character) {
-            case '<':
-            case '>':
-            case '&':
-            case '\'':
-            case '\"': return true;
-            default:   return false;
-        }
+        return switch (character) {
+            case '<', '>', '&', '\'', '\"' -> true;
+            default -> false;
+        };
     }
 
     /**
@@ -537,7 +533,7 @@ public final class XmlEscapeCharacterConverter {
      */
     public static void reposition(CharSequence query, int[] positions) {
 
-        if ((query == null) || (query.length() == 0)) {
+        if ((query == null) || (query.isEmpty())) {
             return;
         }
 
@@ -558,7 +554,7 @@ public final class XmlEscapeCharacterConverter {
                     // Retrieve the reference value
                     String reference = sb.substring(index + 1, semiColonIndex);
 
-                    if (reference.length() > 0) {
+                    if (!reference.isEmpty()) {
 
                         // Retrieve the character mapped to the entity name
                         String unicodeCharacter = XmlEscapeCharacterConverter.getCharacter(reference);
@@ -605,7 +601,7 @@ public final class XmlEscapeCharacterConverter {
      */
     public static String unescape(String value, int[] position) {
 
-        if ((value == null) || (value.length() == 0)) {
+        if ((value == null) || (value.isEmpty())) {
             return value;
         }
 
@@ -626,7 +622,7 @@ public final class XmlEscapeCharacterConverter {
                     // Retrieve the reference
                     String reference = sb.substring(index + 1, semiColonIndex);
 
-                    if (reference.length() > 0) {
+                    if (!reference.isEmpty()) {
 
                         // Retrieve the character mapped to the reference
                         String specialCharacter = getCharacter(reference);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,14 +14,14 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.mapping;
 
-import java.util.*;
-import java.io.*;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.descriptors.RelationalDescriptor;
-import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
-import org.eclipse.persistence.expressions.*;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Employee1 implements Serializable {
     private int id;
@@ -90,10 +90,10 @@ public class Employee1 implements Serializable {
         ExpressionBuilder builder = new ExpressionBuilder();
         descriptor.getQueryManager().setMultipleTableJoinExpression(builder.getField("MUL_EMP.ADDR_ID").equal(builder.getField("MUL_ADDR.ADDR_ID")).and(builder.getField("MUL_ADDR.CNTRY_ID").equal(builder.getField("MUL_CTRY.CNTRY_ID"))));
 
-        Vector tables = new Vector(3);
-        tables.addElement(new DatabaseTable("MUL_CTRY"));
-        tables.addElement(new DatabaseTable("MUL_ADDR"));
-        tables.addElement(new DatabaseTable("MUL_EMP"));
+        List<DatabaseTable> tables = new ArrayList<>(3);
+        tables.add(new DatabaseTable("MUL_CTRY"));
+        tables.add(new DatabaseTable("MUL_ADDR"));
+        tables.add(new DatabaseTable("MUL_EMP"));
         descriptor.setMultipleTableInsertOrder(tables);
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -47,19 +47,19 @@ public class UpdateChangeValueTest extends ComplexUpdateTest {
         employee.getPeriod().setStartDate(Helper.dateFromYearMonthDate(2001, 1, 1));
         // One to many private
         if (!employee.getPhoneNumbers().isEmpty()) {
-            PhoneNumber phone = (PhoneNumber)employee.getPhoneNumbers().firstElement();
+            PhoneNumber phone = (PhoneNumber)employee.getPhoneNumbers().get(0);
             phone.setAreaCode("999");
-            employee.getPhoneNumbers().removeElement(employee.getPhoneNumbers().lastElement());
+            employee.getPhoneNumbers().remove(employee.getPhoneNumbers().lastElement());
         }
         employee.addPhoneNumber(new PhoneNumber("office", "416", "8224599"));
         // Many to many
         if (!employee.getProjects().isEmpty()) {
-            employee.getProjects().removeElement(employee.getProjects().lastElement());
+            employee.getProjects().remove(employee.getProjects().lastElement());
         }
-        employee.getProjects().addElement(getUnitOfWork().readObject(LargeProject.class));
+        employee.getProjects().add(getUnitOfWork().readObject(LargeProject.class));
         // Direct collection
         if (!employee.getResponsibilitiesList().isEmpty()) {
-            employee.getResponsibilitiesList().removeElement(employee.getResponsibilitiesList().lastElement());
+            employee.getResponsibilitiesList().remove(employee.getResponsibilitiesList().lastElement());
         }
         employee.addResponsibility("buy lots of donuts");
         // One to one private

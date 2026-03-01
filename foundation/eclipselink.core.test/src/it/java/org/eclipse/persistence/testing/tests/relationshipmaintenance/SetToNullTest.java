@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,11 +14,11 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.relationshipmaintenance;
 
-import java.util.Iterator;
-import java.util.Vector;
 import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.testing.models.relationshipmaintenance.FieldOffice;
 import org.eclipse.persistence.testing.models.relationshipmaintenance.SalesPerson;
+
+import java.util.Vector;
 
 public class SetToNullTest extends org.eclipse.persistence.testing.framework.AutoVerifyTestCase {
     public FieldOffice fieldOfficeClone;
@@ -40,8 +40,8 @@ public class SetToNullTest extends org.eclipse.persistence.testing.framework.Aut
     public void test() {
         UnitOfWork uow = getSession().acquireUnitOfWork();
         Vector salesPeople = uow.readAllObjects(SalesPerson.class);
-        for (Iterator iterator = salesPeople.iterator(); iterator.hasNext();) {
-            this.sales = (SalesPerson)iterator.next();
+        for (Object salesPerson : salesPeople) {
+            this.sales = (SalesPerson) salesPerson;
             if (sales.getFieldOffice() != null) {
                 this.fieldOfficeClone = this.sales.getFieldOffice();
                 this.sales.setFieldOffice(null);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -49,7 +49,7 @@ import org.eclipse.persistence.mappings.TransformationMapping;
  * INTERNAL:
  * TransformationAccessor. Transformation annotation may or may not be present
  * on the accessible object.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -64,7 +64,7 @@ import org.eclipse.persistence.mappings.TransformationMapping;
  */
 public class TransformationAccessor extends BasicAccessor {
     private ReadTransformerMetadata m_readTransformer;
-    private List<WriteTransformerMetadata> m_writeTransformers = new ArrayList<WriteTransformerMetadata>();
+    private List<WriteTransformerMetadata> m_writeTransformers = new ArrayList<>();
 
     /**
      * INTERNAL:
@@ -109,8 +109,7 @@ public class TransformationAccessor extends BasicAccessor {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (super.equals(objectToCompare) && objectToCompare instanceof TransformationAccessor) {
-            TransformationAccessor transformationAccessor = (TransformationAccessor) objectToCompare;
+        if (super.equals(objectToCompare) && objectToCompare instanceof TransformationAccessor transformationAccessor) {
 
             if (! valuesMatch(m_readTransformer, transformationAccessor.getReadTransformer())) {
                 return false;

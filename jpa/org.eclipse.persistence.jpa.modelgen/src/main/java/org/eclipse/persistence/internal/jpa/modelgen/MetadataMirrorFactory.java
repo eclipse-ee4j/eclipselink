@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,6 +38,7 @@ import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.Name;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.TypeParameterElement;
@@ -169,7 +170,6 @@ public class MetadataMirrorFactory extends MetadataFactory {
                         metadataClass = new MetadataClass(MetadataMirrorFactory.this, name);
                         addMetadataClass(metadataClass);
                         element.accept(elementVisitor, metadataClass);
-                        addMetadataClass(metadataClass);
                     } else {
                         // Only thing going to get through at this point are
                         // TypeParameterElements (presumably generic ones). Look
@@ -180,7 +180,6 @@ public class MetadataMirrorFactory extends MetadataFactory {
                         metadataClass = new MetadataClass(MetadataMirrorFactory.this, name);
                         addMetadataClass(metadataClass);
                         element.accept(elementVisitor, metadataClass);
-                        addMetadataClass(metadataClass);
                     }
                 } else {
                     // Array types etc ...
@@ -281,14 +280,14 @@ public class MetadataMirrorFactory extends MetadataFactory {
     }
 
     /**
-     * INTENAL:
+     * INTERNAL:
      */
     public boolean isRoundElement(Element element) {
         return roundElements.containsKey(element);
     }
 
     /**
-     * INTENAL:
+     * INTERNAL:
      */
     public boolean isRoundElement(MetadataClass cls) {
         return roundMetadataClasses.contains(cls);
@@ -302,9 +301,12 @@ public class MetadataMirrorFactory extends MetadataFactory {
         return processedElements.contains(name);
     }
 
-    /**
-     * INTERNAL:
-     */
+    @Override
+    public boolean isInterface(MetadataClass metadataClass) {
+        TypeElement element = processingEnv.getElementUtils().getTypeElement(metadataClass.getName());
+        return element != null && element.getKind() == ElementKind.INTERFACE;
+    }
+
     @Override
     public void resolveGenericTypes(MetadataClass child, List<String> genericTypes, MetadataClass parent, MetadataDescriptor descriptor) {
         // Our metadata factory does not and can not resolve the types since

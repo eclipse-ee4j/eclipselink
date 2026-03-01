@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2021 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,33 +28,15 @@
 //       - 529602: Added support for CLOBs in DELETE statements for Oracle
 package org.eclipse.persistence.platform.database;
 
-import java.io.CharArrayWriter;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Types;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Vector;
-import java.util.regex.Pattern;
-
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionOperator;
-import org.eclipse.persistence.internal.expressions.ExtractOperator;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.databaseaccess.DatasourceCall.ParameterType;
-import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 import org.eclipse.persistence.internal.expressions.ExpressionJavaPrinter;
 import org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter;
+import org.eclipse.persistence.internal.expressions.ExtractOperator;
 import org.eclipse.persistence.internal.expressions.FunctionExpression;
 import org.eclipse.persistence.internal.expressions.RelationExpression;
 import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
@@ -64,7 +46,6 @@ import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.queries.DataModifyQuery;
 import org.eclipse.persistence.queries.DataReadQuery;
 import org.eclipse.persistence.queries.DatabaseQuery;
@@ -73,7 +54,29 @@ import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.queries.SQLCall;
 import org.eclipse.persistence.queries.StoredProcedureCall;
 import org.eclipse.persistence.queries.ValueReadQuery;
+import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
 import org.eclipse.persistence.tools.schemaframework.TableDefinition;
+
+import java.io.CharArrayWriter;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Types;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.HexFormat;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
+import java.util.regex.Pattern;
 
 /**
  * <p><b>Purpose</b>: Provides Oracle specific behavior.
@@ -85,7 +88,7 @@ import org.eclipse.persistence.tools.schemaframework.TableDefinition;
  *
  * @since TOPLink/Java 1.0
  */
-public class OraclePlatform extends org.eclipse.persistence.platform.database.DatabasePlatform {
+public class OraclePlatform extends DatabasePlatform {
 
     protected static DataModifyQuery vpdSetIdentifierQuery;
     protected static DataModifyQuery vpdClearIdentifierQuery;
@@ -105,7 +108,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
         super();
         this.cursorCode = -10;
         this.pingSQL = "SELECT 1 FROM DUAL";
-        this.storedProcedureTerminationToken = "";
+        setStoredProcedureTerminationToken("");
         this.shouldPrintForUpdateClause = true;
     }
 
@@ -133,7 +136,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
     protected void appendByteArray(byte[] bytes, Writer writer) throws IOException {
         if (usesNativeSQL()) {
             writer.write('\'');
-            Helper.writeHexString(bytes, writer);
+            writer.write(HexFormat.of().formatHex(bytes));
             writer.write('\'');
         } else {
             super.appendByteArray(bytes, writer);
@@ -208,55 +211,58 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
      * INTERNAL:
      */
     @Override
-    protected Hashtable<Class<?>, FieldTypeDefinition> buildFieldTypes() {
-        Hashtable<Class<?>, FieldTypeDefinition> fieldTypeMapping = new Hashtable<>();
-        fieldTypeMapping.put(Boolean.class, new FieldTypeDefinition("NUMBER(1) default 0", false));
+    protected Map<Class<?>, FieldDefinition.DatabaseType> buildDatabaseTypes() {
+        Map<Class<?>, FieldDefinition.DatabaseType> fieldTypeMapping = new HashMap<>();
+        fieldTypeMapping.put(Boolean.class, new FieldDefinition.DatabaseType("NUMBER(1) default 0", false));
 
-        fieldTypeMapping.put(Integer.class, new FieldTypeDefinition("NUMBER", 10));
-        fieldTypeMapping.put(Long.class, new FieldTypeDefinition("NUMBER", 19));
-        fieldTypeMapping.put(Float.class, new FieldTypeDefinition("NUMBER", 19, 4));
-        fieldTypeMapping.put(Double.class, new FieldTypeDefinition("NUMBER", 19, 4));
-        fieldTypeMapping.put(Short.class, new FieldTypeDefinition("NUMBER", 5));
-        fieldTypeMapping.put(Byte.class, new FieldTypeDefinition("NUMBER", 3));
-        fieldTypeMapping.put(java.math.BigInteger.class, new FieldTypeDefinition("NUMBER", 38));
-        fieldTypeMapping.put(java.math.BigDecimal.class, new FieldTypeDefinition("NUMBER", 38).setLimits(38, -38, 38));
-        fieldTypeMapping.put(Number.class, new FieldTypeDefinition("NUMBER", 38).setLimits(38, -38, 38));
+        fieldTypeMapping.put(Integer.class, TYPE_INTEGER);
+        fieldTypeMapping.put(Long.class, TYPE_LONG);
+        fieldTypeMapping.put(Float.class, new FieldDefinition.DatabaseType("NUMBER", 19, 4));
+        fieldTypeMapping.put(Double.class, new FieldDefinition.DatabaseType("NUMBER", 19, 4));
+        fieldTypeMapping.put(Short.class, TYPE_SHORT);
+        fieldTypeMapping.put(Byte.class, TYPE_BYTE);
+        fieldTypeMapping.put(BigInteger.class, new FieldDefinition.DatabaseType("NUMBER", 38));
+        fieldTypeMapping.put(BigDecimal.class, new FieldDefinition.DatabaseType("NUMBER", 38, 0, 38, -38, 38));
+        fieldTypeMapping.put(Number.class, new FieldDefinition.DatabaseType("NUMBER", 38, 0, 38, -38, 38));
 
         if(getUseNationalCharacterVaryingTypeForString()){
-            fieldTypeMapping.put(String.class, new FieldTypeDefinition("NVARCHAR2", DEFAULT_VARCHAR_SIZE));
+            fieldTypeMapping.put(String.class, new FieldDefinition.DatabaseType("NVARCHAR2", DEFAULT_VARCHAR_SIZE));
         }else {
-            fieldTypeMapping.put(String.class, new FieldTypeDefinition("VARCHAR2", DEFAULT_VARCHAR_SIZE));
+            fieldTypeMapping.put(String.class, new FieldDefinition.DatabaseType("VARCHAR2", DEFAULT_VARCHAR_SIZE));
         }
-        fieldTypeMapping.put(Character.class, new FieldTypeDefinition("CHAR", 1));
+        fieldTypeMapping.put(Character.class, new FieldDefinition.DatabaseType("CHAR", 1));
 
-        fieldTypeMapping.put(Byte[].class, new FieldTypeDefinition("BLOB", false));
-        fieldTypeMapping.put(Character[].class, new FieldTypeDefinition("CLOB", false));
-        fieldTypeMapping.put(byte[].class, new FieldTypeDefinition("BLOB", false));
-        fieldTypeMapping.put(char[].class, new FieldTypeDefinition("CLOB", false));
-        fieldTypeMapping.put(java.sql.Blob.class, new FieldTypeDefinition("BLOB", false));
-        fieldTypeMapping.put(java.sql.Clob.class, new FieldTypeDefinition("CLOB", false));
+        fieldTypeMapping.put(Byte[].class, new FieldDefinition.DatabaseType("BLOB", false));
+        fieldTypeMapping.put(Character[].class, new FieldDefinition.DatabaseType("CLOB", false));
+        fieldTypeMapping.put(byte[].class, new FieldDefinition.DatabaseType("BLOB", false));
+        fieldTypeMapping.put(char[].class, new FieldDefinition.DatabaseType("CLOB", false));
+        fieldTypeMapping.put(java.sql.Blob.class, new FieldDefinition.DatabaseType("BLOB", false));
+        fieldTypeMapping.put(java.sql.Clob.class, new FieldDefinition.DatabaseType("CLOB", false));
 
-        fieldTypeMapping.put(java.sql.Date.class, new FieldTypeDefinition("DATE", false));
-        fieldTypeMapping.put(java.sql.Time.class, new FieldTypeDefinition("TIMESTAMP", false));
-        fieldTypeMapping.put(java.sql.Timestamp.class, new FieldTypeDefinition("TIMESTAMP", false));
+        fieldTypeMapping.put(java.sql.Date.class, new FieldDefinition.DatabaseType("DATE", false));
+        fieldTypeMapping.put(java.sql.Time.class, new FieldDefinition.DatabaseType("TIMESTAMP", false));
+        fieldTypeMapping.put(java.sql.Timestamp.class, new FieldDefinition.DatabaseType("TIMESTAMP", false));
         //bug 5871089 the default generator requires definitions based on all java types
-        fieldTypeMapping.put(java.util.Calendar.class, new FieldTypeDefinition("TIMESTAMP"));
-        fieldTypeMapping.put(java.util.Date.class, new FieldTypeDefinition("TIMESTAMP"));
+        fieldTypeMapping.put(java.util.Calendar.class, TYPE_TIMESTAMP);
+        fieldTypeMapping.put(java.util.Date.class, TYPE_TIMESTAMP);
         // Local classes have no TZ information included
-        fieldTypeMapping.put(java.time.LocalDate.class, new FieldTypeDefinition("DATE"));
-        fieldTypeMapping.put(java.time.LocalDateTime.class, new FieldTypeDefinition("TIMESTAMP"));
-        fieldTypeMapping.put(java.time.LocalTime.class, new FieldTypeDefinition("TIMESTAMP"));
+        fieldTypeMapping.put(java.time.LocalDate.class, TYPE_DATE);
+        fieldTypeMapping.put(java.time.LocalDateTime.class, TYPE_TIMESTAMP);
+        fieldTypeMapping.put(java.time.LocalTime.class, TYPE_TIMESTAMP);
         // Offset classes contain an offset from UTC/Greenwich in the ISO-8601 calendar system so TZ should be included
         // but TIMESTAMP WITH TIME ZONE is not supported until 10g
-        fieldTypeMapping.put(java.time.OffsetDateTime.class, new FieldTypeDefinition("TIMESTAMP"));
-        fieldTypeMapping.put(java.time.OffsetTime.class, new FieldTypeDefinition("TIMESTAMP"));
+        fieldTypeMapping.put(java.time.OffsetDateTime.class, TYPE_TIMESTAMP);
+        fieldTypeMapping.put(java.time.OffsetTime.class, TYPE_TIMESTAMP);
+        fieldTypeMapping.put(java.time.Instant.class, new FieldDefinition.DatabaseType("TIMESTAMP", false));
+
+        fieldTypeMapping.put(java.util.UUID.class, new FieldDefinition.DatabaseType("RAW", 16));
 
         return fieldTypeMapping;
     }
 
     /**
      * Build the hint string used for first rows.
-     *
+     * <p>
      * Allows it to be overridden
      */
     protected String buildFirstRowsHint(int max){
@@ -268,7 +274,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
      * Returns null unless the platform supports call with returning
      */
     @Override
-    public DatabaseCall buildCallWithReturning(SQLCall sqlCall, Vector<DatabaseField> returnFields) {
+    public DatabaseCall buildCallWithReturning(SQLCall sqlCall, List<DatabaseField> returnFields) {
         SQLCall call = new SQLCall();
         call.setParameters(sqlCall.getParameters());
         call.setParameterTypes(sqlCall.getParameterTypes());
@@ -280,7 +286,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
             writer.write(" RETURNING ");
 
             for (int i = 0; i < returnFields.size(); i++) {
-                DatabaseField field = returnFields.elementAt(i);
+                DatabaseField field = returnFields.get(i);
                 writer.write(field.getNameDelimited(this));
                 if ((i + 1) < returnFields.size()) {
                     writer.write(", ");
@@ -290,7 +296,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
             writer.write(" INTO ");
 
             for (int i = 0; i < returnFields.size(); i++) {
-                DatabaseField field = returnFields.elementAt(i);
+                DatabaseField field = returnFields.get(i);
                 call.appendOut(writer, field);
                 if ((i + 1) < returnFields.size()) {
                     writer.write(", ");
@@ -587,8 +593,8 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
         addOperator(ExpressionOperator.simpleTwoArgumentFunction(ExpressionOperator.Concat, "CONCAT"));
         addOperator(ExpressionOperator.simpleFunctionNoParentheses(ExpressionOperator.Today, "SYSDATE"));
         addOperator(ExpressionOperator.simpleFunctionNoParentheses(ExpressionOperator.CurrentDate, "TO_DATE(CURRENT_DATE)"));
-        addOperator(ExpressionOperator.simpleFunctionNoParentheses(ExpressionOperator.CurrentTime, "SYSDATE"));
-        addOperator(ExpressionOperator.simpleFunctionNoParentheses(ExpressionOperator.LocalTime, "SYSDATE"));
+        addOperator(ExpressionOperator.simpleFunctionNoParentheses(ExpressionOperator.CurrentTime, "TIMESTAMP '1970-01-01 00:00:00' + (SYSDATE - TRUNC(SYSDATE))"));
+        addOperator(ExpressionOperator.simpleFunctionNoParentheses(ExpressionOperator.LocalTime, "TIMESTAMP '1970-01-01 00:00:00' + (SYSDATE - TRUNC(SYSDATE))"));
         addOperator(ExpressionOperator.simpleFunctionNoParentheses(ExpressionOperator.LocalDateTime, "SYSDATE"));
         addOperator(ExpressionOperator.truncateDate());
         addOperator(ExpressionOperator.newTime());
@@ -600,6 +606,8 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
         addOperator(regexpOperator());
         addOperator(exceptOperator());
         addOperator(oracleExtractOperator());
+        addOperator(oracleLeft());
+        addOperator(oracleRight());
     }
 
     /**
@@ -725,6 +733,46 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
         return exOperator;
     }
 
+    /**
+     * INTERNAL:
+     * Oracle equivalent to LEFT e.g. LEFT(dname, 5) is SUBSTR e.g. SUBSTR(dname, 1, 5).
+     */
+    protected static ExpressionOperator oracleLeft() {
+        ExpressionOperator exOperator = new ExpressionOperator();
+        exOperator.setType(ExpressionOperator.FunctionOperator);
+        exOperator.setSelector(ExpressionOperator.Left);
+        List<String> v = new ArrayList<>(3);
+        v.add("SUBSTR(");
+        v.add(", 1, ");
+        v.add(")");
+        exOperator.printsAs(v);
+        exOperator.bePrefix();
+        int[] indices = { 0, 1 };
+        exOperator.setArgumentIndices(indices);
+        exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
+        return exOperator;
+    }
+
+    /**
+     * INTERNAL:
+     * Oracle equivalent to RIGHT e.g. RIGHT(dname, 5) is SUBSTR e.g. SUBSTR(dname, -5).
+     */
+    protected static ExpressionOperator oracleRight() {
+        ExpressionOperator exOperator = new ExpressionOperator();
+        exOperator.setType(ExpressionOperator.FunctionOperator);
+        exOperator.setSelector(ExpressionOperator.Right);
+        List<String> v = new ArrayList<>(3);
+        v.add("SUBSTR(");
+        v.add(", -");
+        v.add(")");
+        exOperator.printsAs(v);
+        exOperator.bePrefix();
+        int[] indices = { 0, 1 };
+        exOperator.setArgumentIndices(indices);
+        exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
+        return exOperator;
+    }
+
     // Oracle EXTRACT operator needs emulation of QUARTER and WEEK date/time parts.
     private static final class OracleExtractOperator extends ExtractOperator {
 
@@ -732,6 +780,10 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
         private static final String[] QUARTER_STRINGS = new String[] {"TO_NUMBER(TO_CHAR(", ", 'Q'))"};
         // ISO WEEK emulation: TO_NUMBER(TO_CHAR(", ", 'IW'))
         private static final String[] WEEK_STRINGS = new String[] {"TO_NUMBER(TO_CHAR(", ", 'IW'))"};
+        // DATE emulation: TRUNC(:first)
+        private static final String[] DATE_STRINGS = new String[] {"TRUNC(", ")"};
+        // TIME emulation: TO_TIMESTAMP(:first) (Oracle DB doesn't have any conversion function into TIME so whole TIMESTAMP is returned and result is converted to time in EclipseLink/Java)
+        private static final String[] TIME_STRINGS = new String[] {"TO_TIMESTAMP(", ")"};
 
         private OracleExtractOperator() {
             super();
@@ -765,6 +817,33 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
             printer.printString(WEEK_STRINGS[1]);
         }
 
+        @Override
+        protected void printDateSQL(final Expression first, Expression second, final ExpressionSQLPrinter printer) {
+            printer.printString(DATE_STRINGS[0]);
+            first.printSQL(printer);
+            printer.printString(DATE_STRINGS[1]);
+        }
+
+        @Override
+        protected void printDateJava(final Expression first, Expression second, final ExpressionJavaPrinter printer) {
+            printer.printString(DATE_STRINGS[0]);
+            first.printJava(printer);
+            printer.printString(DATE_STRINGS[1]);
+        }
+
+        @Override
+        protected void printTimeSQL(final Expression first, Expression second, final ExpressionSQLPrinter printer) {
+            printer.printString(TIME_STRINGS[0]);
+            first.printSQL(printer);
+            printer.printString(TIME_STRINGS[1]);
+        }
+
+        @Override
+        protected void printTimeJava(final Expression first, Expression second, final ExpressionJavaPrinter printer) {
+            printer.printString(TIME_STRINGS[0]);
+            first.printJava(printer);
+            printer.printString(TIME_STRINGS[1]);
+        }
     }
 
     // Create EXTRACT operator form Oracle platform
@@ -788,40 +867,40 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
     }
 
     /**
-     *    Builds a table of maximum numeric values keyed on java class. This is used for type testing but
+     * Builds a table of maximum numeric values keyed on java class. This is used for type testing but
      * might also be useful to end users attempting to sanitize values.
      * <p><b>NOTE</b>: BigInteger {@literal &} BigDecimal maximums are dependent upon their precision {@literal &} Scale
      */
     @Override
-    public Hashtable<Class<? extends Number>, ? super Number> maximumNumericValues() {
-        Hashtable<Class<? extends Number>, ? super Number> values = new Hashtable<>();
+    public Map<Class<? extends Number>, ? super Number> maximumNumericValues() {
+        Map<Class<? extends Number>, ? super Number> values = new HashMap<>();
         values.put(Integer.class, Integer.MAX_VALUE);
         values.put(Long.class, Long.MAX_VALUE);
         values.put(Double.class, 9.9999E125);
         values.put(Short.class, Short.MAX_VALUE);
         values.put(Byte.class, Byte.MAX_VALUE);
         values.put(Float.class, Float.MAX_VALUE);
-        values.put(java.math.BigInteger.class, new java.math.BigInteger("0"));
-        values.put(java.math.BigDecimal.class, new java.math.BigDecimal(new java.math.BigInteger("0"), 38));
+        values.put(BigInteger.class, new BigInteger("0"));
+        values.put(BigDecimal.class, new BigDecimal(new BigInteger("0"), 38));
         return values;
     }
 
     /**
-     *    Builds a table of minimum numeric values keyed on java class. This is used for type testing but
+     * Builds a table of minimum numeric values keyed on java class. This is used for type testing but
      * might also be useful to end users attempting to sanitize values.
      * <p><b>NOTE</b>: BigInteger {@literal &} BigDecimal minimums are dependent upon their precision {@literal &} Scale
      */
     @Override
-    public Hashtable<Class<? extends Number>, ? super Number> minimumNumericValues() {
-        Hashtable<Class<? extends Number>, ? super Number> values = new Hashtable<>();
+    public Map<Class<? extends Number>, ? super Number> minimumNumericValues() {
+        Map<Class<? extends Number>, ? super Number> values = new HashMap<>();
         values.put(Integer.class, Integer.MIN_VALUE);
         values.put(Long.class, Long.MIN_VALUE);
         values.put(Double.class, -1E-129);
         values.put(Short.class, Short.MIN_VALUE);
         values.put(Byte.class, Byte.MIN_VALUE);
         values.put(Float.class, Float.MIN_VALUE);
-        values.put(java.math.BigInteger.class, new java.math.BigInteger("0"));
-        values.put(java.math.BigDecimal.class, new java.math.BigDecimal(new java.math.BigInteger("0"), 38));
+        values.put(BigInteger.class, new BigInteger("0"));
+        values.put(BigDecimal.class, new BigDecimal(new BigInteger("0"), 38));
         return values;
     }
 
@@ -1047,7 +1126,8 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
                     || ((ObjectBuildingQuery) query).getLockMode() == ObjectBuildingQuery.LOCK_NOWAIT)) {
                 if (query.isReadAllQuery() || query.isReadObjectQuery()) {
                     // Workaround can exist for this specific case
-                    Vector fields = new Vector();
+                    List<DatabaseField> fields = new ArrayList<>();
+                    // Generated field aliases must be cached for later usage by printPrimaryKeys
                     statement.enableFieldAliasesCaching();
                     String queryString = printOmittingOrderByForUpdateUnion(statement, printer, fields);
                     duplicateCallParameters(call);
@@ -1069,16 +1149,23 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
                      * FOR UPDATE; */
                     printer.printString(queryString);
                     printLockStartWithPrimaryKeyFields(statement, printer);
-                    String primaryKeyFields = getPrimaryKeyAliases(statement);
                     printer.printString(SELECT_ID_PREFIX);
-                    printer.printString(primaryKeyFields);
+                    printPrimaryKeys(statement, printer);
                     printer.printString(SELECT_ID_SUFFIX);
                     printer.printString(buildFirstRowsHint(max));
-                    printer.printString(primaryKeyFields);
+                    printPrimaryKeys(statement, printer);
                     printer.printString(FROM_ID);
                     printer.printString(queryString);
-                    printer.printString(ORDER_BY_ID);
-                    printer.printString(primaryKeyFields);
+                    if (statement.hasOrderByExpressions()) {
+                        try {
+                            statement.printSQLOrderByClause(printer);
+                        } catch (IOException exception) {
+                            throw ValidationException.fileError(exception);
+                        }
+                    } else {
+                        printer.printString(ORDER_BY_ID);
+                        printPrimaryKeys(statement, printer);
+                    }
                     printer.printString(END_FROM_ID);
                     printer.printString(MAX_ROW);
                     printer.printParameter(DatabaseCall.MAXROW_FIELD);
@@ -1134,14 +1221,12 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
     }
 
     @SuppressWarnings("unchecked")
-    private String printOmittingOrderByForUpdateUnion(SQLSelectStatement statement, ExpressionSQLPrinter printer, Vector fields) {
+    private String printOmittingOrderByForUpdateUnion(SQLSelectStatement statement, ExpressionSQLPrinter printer, List<DatabaseField> fields) {
         boolean originalShouldPrintForUpdate = this.shouldPrintForUpdateClause;
         Writer originalWriter = printer.getWriter();
-        Vector selectFields = null;
-
+        List<DatabaseField> selectFields = null;
         this.shouldPrintForUpdateClause = false;
         printer.setWriter(new StringWriter());
-
         try {
             selectFields = statement.printSQLSelect(printer);
             statement.printSQLWhereKeyWord(printer);
@@ -1182,16 +1267,22 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
         printer.printString(LOCK_START_SUFFIX);
     }
 
-    private String getPrimaryKeyAliases(SQLSelectStatement statement) {
-        StringBuilder builder = new StringBuilder();
+    private void printPrimaryKeys(SQLSelectStatement statement, ExpressionSQLPrinter printer) {
         Iterator<DatabaseField> iterator = statement.getQuery().getDescriptor().getPrimaryKeyFields().iterator();
         while (iterator.hasNext()) {
-            builder.append(statement.getAliasFor(iterator.next()));
-            if(iterator.hasNext()) {
-                builder.append(',');
+            DatabaseField field = iterator.next();
+            // Aliases caching is enabled in the statement in printSQLSelectStatement
+            // before printOmittingOrderByForUpdateUnion method call.
+            String alias = statement.getAliasFor(field);
+            if (alias != null) {
+                printer.printString(alias);
+            } else {
+                printer.printField(field);
+            }
+            if (iterator.hasNext()) {
+                printer.printString(",");
             }
         }
-        return builder.toString();
     }
 
     /**
@@ -1303,7 +1394,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
      * @return value of {@code true} if given table exists or {@code false} otherwise
      */
     @Override
-    public boolean checkTableExists(final DatabaseSessionImpl session,
+    public boolean checkTableExists(final AbstractSession session,
                                     final TableDefinition table, final boolean suppressLogging) {
         try {
             session.setLoggingOff(suppressLogging);
@@ -1318,4 +1409,15 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
     public int getINClauseLimit() {
         return 1000;
     }
+
+    @Override
+    public ValueReadQuery getUUIDQuery() {
+        if (uuidQuery == null) {
+            uuidQuery = new ValueReadQuery();
+            uuidQuery.setSQLString("SELECT uuid() FROM DUAL");
+            uuidQuery.setAllowNativeSQLQuery(true);
+        }
+        return uuidQuery;
+    }
+
 }

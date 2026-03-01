@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,20 +15,21 @@
 package org.eclipse.persistence.testing.tests.history;
 
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.eclipse.persistence.testing.framework.*;
+import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.platform.database.DatabasePlatform;
-import org.eclipse.persistence.platform.database.MySQLPlatform;
-import org.eclipse.persistence.sessions.*;
+import org.eclipse.persistence.sessions.DatabaseLogin;
+import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.sessions.UnitOfWork;
+import org.eclipse.persistence.testing.framework.TestCase;
 import org.eclipse.persistence.testing.models.mapping.Baby;
 import org.eclipse.persistence.testing.models.mapping.BabyMonitor;
 import org.eclipse.persistence.testing.models.mapping.BiDirectionInserOrderTestProject;
 import org.eclipse.persistence.testing.models.mapping.BiDirectionInsertOrderTableMaker;
 import org.eclipse.persistence.tools.history.HistoryFacade;
 import org.eclipse.persistence.tools.schemaframework.SchemaManager;
-import org.eclipse.persistence.exceptions.DatabaseException;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 // Bug 319276
@@ -46,7 +47,7 @@ public class InsertWithHistoryPolicyTest extends TestCase {
     protected void setup() {
         DatabasePlatform platform = getSession().getPlatform();
         if (platform.isMySQL()) {
-            if (!((MySQLPlatform) platform).isFractionalTimeSupported()) {
+            if (!platform.supportsFractionalTime()) {
                 throwWarning("This test will not work with MySQL pre-5.6.4 because it doesn't support millisecond granularity.");
             }
         } else if (platform.isSybase()) {

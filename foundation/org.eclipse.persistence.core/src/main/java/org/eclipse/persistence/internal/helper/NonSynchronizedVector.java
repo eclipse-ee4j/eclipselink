@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,8 +16,19 @@ package org.eclipse.persistence.internal.helper;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.io.StreamCorruptedException;
-import java.util.*;
+import java.io.Serial;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.ConcurrentModificationException;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.Spliterator;
+import java.util.Vector;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
@@ -27,11 +38,11 @@ import java.util.function.UnaryOperator;
  */
 public class NonSynchronizedVector<E> extends Vector<E> {
     public static <E> NonSynchronizedVector<E> newInstance(int initialCapacity, int capacityIncrement) {
-        return new NonSynchronizedVector<E>(initialCapacity, capacityIncrement);
+        return new NonSynchronizedVector<>(initialCapacity, capacityIncrement);
     }
 
     public static <E> NonSynchronizedVector<E> newInstance(int initialCapacity) {
-        return new NonSynchronizedVector<E>(initialCapacity);
+        return new NonSynchronizedVector<>(initialCapacity);
     }
 
     public static <E> NonSynchronizedVector<E> newInstance() {
@@ -148,7 +159,7 @@ public class NonSynchronizedVector<E> extends Vector<E> {
 
     @Override
     public Enumeration<E> elements() {
-        return new Enumeration<E>() {
+        return new Enumeration<>() {
             int count = 0;
 
             public boolean hasMoreElements() {
@@ -489,7 +500,7 @@ public class NonSynchronizedVector<E> extends Vector<E> {
         while (e1.hasNext() && e2.hasNext()) {
             E o1 = e1.next();
             Object o2 = e2.next();
-            if (!(o1==null ? o2==null : o1.equals(o2)))
+            if (!(Objects.equals(o1, o2)))
                 return false;
         }
         return !(e1.hasNext() || e2.hasNext());
@@ -522,7 +533,7 @@ public class NonSynchronizedVector<E> extends Vector<E> {
 
     @Override
     public List<E> subList(int fromIndex, int toIndex) {
-        return new NonSynchronizedSubVector<E>(this, fromIndex, toIndex);
+        return new NonSynchronizedSubVector<>(this, fromIndex, toIndex);
     }
 
     @Override
@@ -537,11 +548,13 @@ public class NonSynchronizedVector<E> extends Vector<E> {
             es[i] = null;
     }
 
+    @Serial
     private void readObject(ObjectInputStream in)
             throws IOException, ClassNotFoundException {
         in.defaultReadObject();
     }
 
+    @Serial
     private void writeObject(java.io.ObjectOutputStream s)
             throws java.io.IOException {
         s.defaultWriteObject();
@@ -675,9 +688,6 @@ public class NonSynchronizedVector<E> extends Vector<E> {
             throw new ConcurrentModificationException();
     }
 
-    /**
-     * @throws NullPointerException {@inheritDoc}
-     */
     @Override
     public void replaceAll(UnaryOperator<E> operator) {
         Objects.requireNonNull(operator);

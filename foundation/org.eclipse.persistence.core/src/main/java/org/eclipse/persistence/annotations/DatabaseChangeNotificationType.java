@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,11 +14,11 @@
 //     James Sutherland - initial design and implementation
 package org.eclipse.persistence.annotations;
 
-
 /**
  * Configures what type of database change notification an entity/descriptor should use.
- * This is only relevant if the persistence unit/session has been configured with a DatabaseEventListener,
- * such as the OracleChangeNotificationListener that receives database change events.
+ * This is only relevant if the persistence unit/session has been configured with
+ * a {@linkplain org.eclipse.persistence.platform.database.events.DatabaseEventListener},
+ * such as the org.eclipse.persistence.platform.database.oracle.dcn.OracleChangeNotificationListener that receives database change events.
  * This allows for the EclipseLink cache to be invalidated or updated from database changes.
  *
  * @see Cache#databaseChangeNotificationType()
@@ -34,10 +34,12 @@ public enum DatabaseChangeNotificationType {
 
     /**
      * Invalidates the EclipseLink cache when a database change event is received for an object.
-     * This requires a DatabaseEventListener to be configured with the persistence unit or session.
-     * This requires that the database change can be determine to affect the object, some database change events,
-     * such as the OracleChangeNotificationListener (Oracle DCN/QCN) only give the ROWID, so changes to secondary
-     * table or relationships may not be able to be determined to affect and object unless its version is also changed.
+     * This requires a {@linkplain org.eclipse.persistence.platform.database.events.DatabaseEventListener}
+     * to be configured with the persistence unit or session.
+     * This requires that the database change can be determined to affect the object, some database change events,
+     * such as the org.eclipse.persistence.platform.database.oracle.dcn.OracleChangeNotificationListener
+     * (Oracle DCN/QCN) only give the ROWID, so changes to secondary table or relationships may not be
+     * able to be determined to affect and object unless its version is also changed.
      */
     INVALIDATE
 }

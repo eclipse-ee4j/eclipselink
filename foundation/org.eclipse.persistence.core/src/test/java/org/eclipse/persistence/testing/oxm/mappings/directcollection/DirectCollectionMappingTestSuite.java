@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -47,10 +47,6 @@ import org.eclipse.persistence.testing.oxm.mappings.directcollection.identifiedb
 import org.eclipse.persistence.testing.oxm.mappings.directcollection.identifiedbyposition.withgroupingelement.DirectCollectionWithGroupingElementIdentifiedByPositionNullTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.directcollection.identifiedbyposition.withgroupingelement.DirectCollectionWithGroupingElementIdentifiedByPositionTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.directcollection.listoflists.XMLDirectCollectionOfListsTestCases;
-import org.eclipse.persistence.testing.oxm.mappings.directcollection.nillable.DirectCollectionIsSetNodeNullPolicyTrueTestCases;
-import org.eclipse.persistence.testing.oxm.mappings.directcollection.nillable.DirectCollectionNillableNodeNullPolicyTestCases;
-import org.eclipse.persistence.testing.oxm.mappings.directcollection.nillable.DirectCollectionOptionalNodeNullPolicyAttributeTestCases;
-import org.eclipse.persistence.testing.oxm.mappings.directcollection.nillable.DirectCollectionOptionalNodeNullPolicyElementTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.directcollection.reuse.DirectCollectionReuseTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.directcollection.singlenode.DirectCollectionSingleNodeNillableTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.directcollection.singlenode.DirectCollectionSingleNodeTestCases;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,11 +14,12 @@
 //     rbarkhouse - 2009-10-06 10:56:35 - initial implementation
 package org.eclipse.persistence.testing.oxm.mappings.anycollection.reuse;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLDescriptor;
-import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.oxm.mappings.XMLAnyCollectionMapping;
+import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 import org.eclipse.persistence.sessions.Project;
-import org.eclipse.persistence.oxm.mappings.*;
 
 public class ReuseProject extends Project {
 

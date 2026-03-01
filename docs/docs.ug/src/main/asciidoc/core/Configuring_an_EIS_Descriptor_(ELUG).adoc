@@ -1,0 +1,484 @@
+image:Elug_draft_icon.png[Image:Elug draft
+icon.png,title="Image:Elug draft icon.png"] *For the latest EclipseLink
+documentation, please see
+http://www.eclipse.org/eclipselink/documentation/*
+
+'''''
+
+*TOC* Special:Whatlinkshere_Configuring_an_EIS_Descriptor_(ELUG)[Related
+Topics]
+
+For information on how to create EIS descriptors, see
+link:Creating%20an%20EIS%20Descriptor%20(ELUG)[Creating an EIS
+Descriptor].
+
+This table lists the default configurable options for an EIS descriptor.
+
+[#Table 72-1]##
+
+Option to Configure
+
+EclipseLink Workbench
+
+Java
+
+How to Configure XML Schema Namespace
+
+How to Configure an XML Schema Reference
+
+Configuring Schema Context for an EIS Descriptor
+
+Configuring Default Root Element
+
+Configuring Primary Keys 1
+
+Configuring Read-Only Descriptors
+
+Configuring Unit of Work Conforming at the Descriptor Level
+
+Configuring Descriptor Alias
+
+Configuring Descriptor Comments)
+
+Configuring Record Format
+
+How to Create Classes
+
+Configuring Named Queries at the Descriptor Level
+
+Configuring Custom EIS Interactions for Basic Persistence Operations
+
+Configuring Cache Refreshing
+
+Configuring Cache Type and Size at the Descriptor Level
+
+Configuring Cache Isolation at the Descriptor Level
+
+Configuring Cache Coordination Change Propagation at the Descriptor
+Level
+
+Configuring Cache Expiration at the Descriptor Level
+
+Configuring Cache Existence Checking at the Descriptor Level
+
+Configuring an EIS Descriptor as a Root or Composite Type
+
+Configuring Inheritance for a Child (Branch or Leaf) Class Descriptor
+
+Configuring Inheritance for a Parent (Root) Descriptor
+
+Configuring Inherited Attribute Mapping in a Subclass
+
+Configuring a Domain Object Method as an Event Handler
+
+Configuring a Descriptor Event Listener as an Event Handler
+
+Configuring Locking Policy
+
+Configuring Returning Policy
+
+Configuring Instantiation Policy
+
+Configuring Copy Policy
+
+Configuring Change Policy
+
+Configuring Wrapper Policy
+
+Configuring Amendment Methods
+
+Configuring a Mapping
+
+1EIS root descriptors only (see
+link:#Configuring_an_EIS_Descriptor_as_a_Root_or_Composite_Type[Configuring
+an EIS Descriptor as a Root or Composite Type]). For more information,
+see link:Introduction%20to%20EIS%20Descriptors%20(ELUG)[Introduction to
+EIS Descriptors].
+
+== Configuring Schema Context for an EIS Descriptor
+
+Workbench uses the schema context to associate the class that the EIS
+descriptor describes with a simple or complex type in one of the schemas
+associated with the EIS project (see
+link:Using%20Workbench%20(ELUG)#How_to_Configure_an_XML_Schema_Reference[How
+to Configure an XML Schema Reference]). This allows Workbench to display
+the appropriate attributes available for mapping in that context.
+
+You must configure the schema context for an EIS root descriptor (see
+link:#Configuring_an_EIS_Descriptor_as_a_Root_or_Composite_Type[Configuring
+an EIS Descriptor as a Root or Composite Type]) only if you are using
+the Workbench.
+
+=== How to Configure Schema Context for an EIS Descriptor Using Workbench
+
+To associate an EIS descriptor with a simple or complex type in this
+project’s schema, use this procedure:
+
+[arabic]
+. Select an EIS descriptor in the *Navigator*. Its properties appear in
+the Editor.
+. Click the *Descriptor Info* tab. The Descriptor Info tab appears.
+[#Figure 72-1]##*_Descriptor Info Tab, Schema Context Option_*
+image:desschcx.gif[Descriptor Info Tab, Schema Context
+Option,title="Descriptor Info Tab, Schema Context Option"]
+. Complete the *Schema Context* option on the tab.
+. Click *Browse* to select the schema element to associate with this
+descriptor. For more information, see
+link:#Configuring_a_Schema_Context[Configuring a Schema Context].
+
+==== Choosing a Schema Context
+
+Use the Choose Schema Context dialog box to select a specific schema
+element (such as when mapping an element).
+
+[#Figure 72-2]## *_Choose Schema Context Dialog Box_*
+
+.Choose Schema Context Dialog Box
+image::schcontx.gif[Choose Schema Context Dialog
+Box,title="Choose Schema Context Dialog Box"]
+
+Select the schema element and click *OK*.
+
+=== How to Configure Schema Context for an EIS Descriptor Using Java
+
+For an EIS descriptor, the EclipseLink runtime does not need the schema
+context: the runtime can determine the schema context based on the
+mappings you configure on the descriptor. No further configuration is
+required.
+
+== Configuring Default Root Element
+
+You must configure the default root element for
+link:Creating%20an%20EIS%20Descriptor%20(ELUG)#EIS_Root_Descriptors[EIS
+Root Descriptors] so that the EclipseLink runtime knows the data source
+data type associated with the class the descriptor describes.
+Descriptors used only in composite relationship mappings do not require
+a default root element.
+
+[width="100%",cols="<100%",]
+|===
+|*Note:* Although you select an element from your project’s schema to
+configure this attribute, you are choosing the element’s simple or
+complex type.
+|===
+
+For more information, see
+link:Introduction%20to%20Descriptors%20(ELUG)#Default_Root_Element[Default
+Root Element].
+
+=== How to Configure Default Root Element Using Workbench
+
+When you create an EIS project using Workbench, you must use XML
+records. Consequently, you must configure a default root element so that
+Workbench knows what element to start with when persisting an instance
+of the class that the EIS descriptor describes.
+
+To specify a schema element as the default root element for the
+descriptor, use this procedure:
+
+[arabic]
+. Select a descriptor in the *Navigator*. Its properties appear in the
+Editor.
+. Click the *Descriptor Info* tab. The Descriptor Info tab appears.
+[#Figure 72-3]##*_Descriptor Info Tab, Default Root Element Option_*
+image:didocroot.gif[Descriptor Info Tab, Default Root Element
+Option,title="Descriptor Info Tab, Default Root Element Option"]
+. Use the *Default Root Element* option to select the root element for
+this descriptor. Click *Browse* to select the schema element to identify
+as the root element. See link:#onfiguring_a_Root_Element[Configuring a
+Root Element] for more information.
+
+==== Choosing a Root Element
+
+Use the Choose Root Element dialog box to select a specific root
+element.
+
+[#Figure 72-4]## *_Choose Root Element Dialog Box_*
+
+.Choose Root Element Dialog Box
+image::rootelem.gif[Choose Root Element Dialog
+Box,title="Choose Root Element Dialog Box"]
+
+Select the root element and click *OK*.
+
+=== How to Configure Default Root Element Using Java
+
+When you create an EIS project using Java code, use the
+`+EISDescriptor+` method `+setDataTypeName+` to specify the XML schema
+complex type name (if you are using XML records) or the JCA record name
+(if you are using indexed or mapped records) corresponding to the class
+that the EIS descriptor describes. For more information, see
+_EclipseLink API Reference_.
+
+== Configuring Record Format
+
+The EIS descriptor record format determines the EIS record type to which
+the descriptor’s EIS mappings map.
+
+When you create an EIS project using Workbench, EclipseLink configures
+all EIS descriptors with a record format of XML.
+
+When you create an EIS project in Java, you can configure the EIS
+descriptor record type to any of the supported types, as this table
+shows.
+
+[#Table 72-2]##
+
+EISDescriptor Method
+
+EIS Record Type
+
+useMappedRecordFormat
+
+All EIS mappings owned by this descriptor map to EIS mapped records.
+
+useIndexedRecordFormat
+
+All EIS mappings owned by this descriptor map to EIS indexed records.
+
+useXMLRecordFormat
+
+All EIS mappings owned by this descriptor map to EIS XML records.If you
+use the XML record format, you must specify one or more XML schemas in
+your EIS project (see How to Import an XML Schema). The EclipseLink
+runtime performs XML data conversion based on one or more XML schemas.
+In an EIS XML project, Workbench does not directly reference schemas in
+the deployment XML, but insteadexports mappings configured with respect
+to the schemas you specify.
+
+For information on EclipseLink support for XML namespaces, see XML
+Namespaces.
+
+For more information, see
+link:Introduction%20to%20EIS%20Mappings%20(ELUG)#EIS_Record_Type[EIS
+Record Type].
+
+=== How to Configure Record Format Using Java
+
+To configure the EIS record format for an EIS descriptor, use one of the
+`+EISDescriptor+` methods listed in the link:#Table_72-2[EIS Record
+Formats] table, as shown in this example.
+
+[#Example 72-1]## *_Configuring EISDescriptor Record Format_*
+
+`+EISDescriptor descriptor = new EISDescriptor();+`
+`+descriptor.useIndexedRecordFormat();+`
+
+== Configuring Custom EIS Interactions for Basic Persistence Operations
+
+You can use EclipseLink to define an interaction for each basic
+persistence operation (*insert*, *update*, *delete*, *read object*,
+*read all*, or *does exist*) so that when you query and modify your
+EIS-mapped objects, the EclipseLink runtime will use the appropriate EIS
+interaction instead of the default EIS interaction.
+
+You can configure custom EIS interactions for basic persistence
+operations only for EIS descriptors designated as root descriptors (
+link:#Configuring_an_EIS_Descriptor_as_a_Root_or_Composite_Type[Configuring
+an EIS Descriptor as a Root or Composite Type]).
+
+Using Workbench, you can create `+XMLInteraction+` objects, in which
+there is a single query per interaction (see
+link:#How_to_Configure_Custom_EIS_Interactions_for_Basic_Persistence_Operations_Using_Workbench[How
+to Configure Custom EIS Interactions for Basic Persistence Operations
+Using Workbench]).
+
+Using Java, you can create any `+EISInteraction+` type. For some EIS
+projects, it is common for multiple interactions to be used in a single
+query. For example, one interaction–to enqueue a request, and another–to
+dequeue the response. Because Workbench does not support setting
+multiple interactions on a single query, you must use an amendment
+method to create and configure the interaction in Java (see
+link:#How_to_Configure_Custom_EIS_Interactions_for_Basic_Persistence_Operations_Using_Java[How
+to Configure Custom EIS Interactions for Basic Persistence Operations
+Using Java]).
+
+[width="100%",cols="<100%",]
+|===
+|*Note:* In a one-to-one or one-to-many EIS mapping, you must also
+specify a selection interaction that EclipseLink uses to acquire target
+objects. You can use either the target object’s read interaction (the
+default) or specify a separate selection interaction, if necessary. For
+more information, see
+link:Configuring%20an%20EIS%20Mapping%20(ELUG)#Configuring_Selection_Interaction[Configuring
+Selection Interaction]).
+|===
+
+=== How to Configure Custom EIS Interactions for Basic Persistence Operations Using Workbench
+
+To configure custom EIS interactions for basic persistence operations,
+use the following procedure:
+
+[arabic]
+. In the *Navigator*, select an EIS root descriptor in a EIS project.
+. Click the *Queries* tab in the *Editor*. The Queries tab appears.
+. Click the *Custom Calls* tab. The Custom Calls tab appears.
+[#Figure 72-5]##*_Queries, Custom Calls Tab for EIS Calls_*
+image:Qrcalltab.gif[Queries, Custom Calls Tab for EIS
+Calls,title="Queries, Custom Calls Tab for EIS Calls"]
+. Click the appropriate interaction type from the list (*Insert*,
+*Update*, *Delete*, *Read Object*, *Read All*, or *Does Exist*) and use
+the following table to enter data in each field
+
+[width="100%",cols="<7%,<93%",options="header",]
+|===
+|*Field* |*Description*
+|*Interaction Type* |Using Workbench, you can only use XML Interactions.
+You cannot change this field.
+
+|*Function Name* |The name of the EIS function that this call type (Read
+Object or Read All) invokes on the EIS.
+
+|*Input Record Name* |The name passed to the JCA adapter when creating
+the input record.
+
+|*Input Root Element* |The root element name to use for the input DOM.
+
+|*Input Arguments* |The query argument name to map to the interaction
+field or XPath nodes in the argument record. For example, if you are
+using XML records, use this option to map input argument `+name+` to the
+XPath `+name/first-name+`.
+
+|*Output Arguments* |The result record field or XPath nodes to map to
+the correct nodes in the record used by the descriptor’s mappings. For
+example, if you are using XML records, use this option to map the output
+`+fname+` to `+name/first-name+`.Output arguments are not required if
+the interaction returns an XML result that matches the descriptor’s
+mappings.
+
+|*Input Result Path* |Use this option if the EIS interaction expects the
+interaction arguments to be nested in the XML record. For example,
+specify `+arguments+`, if the arguments were to be nested under the root
+element `+exec-find-order+`, then under an `+arguments+` element.
+
+|*Output Result Path* |Use this option if the EIS interaction result
+record contains the XML data that maps to the objects in a nested
+structure. For example, specify `+order+`, if the results were return
+under a root element `+results+`, then under an `+order+` element.
+
+|*Properties* |Any properties required by your EIS platform. For
+example, property name `+operation+` (from
+`+AQPlatform.QUEUE_OPERATION+`) and property value `+enqueue+` (from
+`+AQPlatform.ENQUEUE+`).
+|===
+
+=== How to Configure Custom EIS Interactions for Basic Persistence Operations Using Java
+
+Using Java, you can create any type of
+link:Using%20Basic%20Query%20API%20(ELUG)#Using_EIS_Interactions[EIS
+interaction] that EclipseLink supports.
+
+For some EIS projects, it is common for multiple interactions to be used
+in a single query: for example, one interaction to enqueue a request and
+another to dequeue the response. Because Workbench does not support
+setting multiple interactions on a single query, you must use an
+amendment method to create and configure the interaction in Java, as
+this examle shows.
+
+[#Example 72-2]## *_Creating an XML Interaction for an AQ Platform_*
+
+`+public static void addXMLInteractions(ClassDescriptor descriptor) {+`
+`+    +`*`+//\'\' \'\'find\'\' \'\'order\'\' \'\'interaction+`*
+`+    XMLInteraction request = new XMLInteraction();+`
+`+    request.setProperty(AQPlatform.QUEUE_OPERATION, AQPlatform.ENQUEUE);+`
+`+    request.setProperty(AQPlatform.QUEUE, "ORDER_INBOUND_QUEUE");+`
+`+    request.setProperty(AQPlatform.SCHEMA, "AQUSER");+`
+`+    request.setInputRootElementName("READ_ORDER");+`
+`+    request.addArgument("@id");+` `+ +`
+`+    XMLInteraction response = new XMLInteraction();+`
+`+    response.setProperty(AQPlatform.QUEUE_OPERATION, AQPlatform.DEQUEUE);+`
+`+    response.setProperty(AQPlatform.QUEUE, "ORDER_OUTBOUND_QUEUE");+`
+`+    response.setProperty(AQPlatform.SCHEMA, "AQUSER");+` `+ +`
+`+    ReadObjectQuery query = new ReadObjectQuery();+`
+`+    query.addCall(request);+` `+    query.addCall(response);+`
+`+    descriptor.getQueryManager().setReadObjectQuery(query);+` `+ +`
+`+    +`*`+//\'\' \'\'place\'\' \'\'order\'\' \'\'interaction+`*
+`+    XMLInteraction insert = new XMLInteraction();+`
+`+    insert.setProperty(AQPlatform.QUEUE_OPERATION, AQPlatform.ENQUEUE);+`
+`+    insert.setProperty(AQPlatform.QUEUE, "ORDER_INBOUND_QUEUE");+`
+`+    insert.setProperty(AQPlatform.SCHEMA, "AQUSER");+`
+`+    insert.setInputRootElementName("INSERT_ORDER");+`
+`+                +`
+`+    descriptor.getQueryManager().setInsertCall(insert);+` `+}+`
+
+== Configuring an EIS Descriptor as a Root or Composite Type
+
+You can designate an EIS descriptor as
+link:Creating%20an%20EIS%20Descriptor%20(ELUG)#EIS_Root_Descriptors[root]
+or
+link:Creating%20an%20EIS%20Descriptor%20(ELUG)#EIS_Composite_Descriptors[composite].
+
+When you designate an EIS descriptor as a root, you tell the EclipseLink
+runtime that the EIS descriptor’s reference class is a parent classš–no
+other class will reference it by way of a composite object mapping or
+composite collection mapping. Using an EIS root descriptor, you can
+configure all supported mappings and you can configure the descriptor
+with
+link:Using%20Basic%20Query%20API%20(ELUG)#Using_EIS_Interactions[EIS
+interactions]. However, if you configure the EIS root descriptor with a
+composite object mapping or composite collection mapping, the reference
+descriptor you define must be an EIS composite descriptor; it cannot be
+another EIS root descriptor.
+
+When you designate an EIS descriptor as a composite (the default), you
+tell the EclipseLink runtime that the EIS descriptor’s reference class
+may be referenced by a
+link:Configuring%20an%20EIS%20Composite%20Object%20Mapping%20(ELUG)[composite
+object] or
+link:Configuring%20an%20EIS%20Composite%20Collection%20Mapping_(ELUG)[composite
+collection] mapping. Using an EIS composite descriptor, you can
+configure all supported mappings, but you cannot configure it with EIS
+interactions.
+
+You can configure inheritance for a descriptor designated as a composite
+(see
+link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Inheritance_for_a_Child_(Branch_or_Leaf)_Class_Descriptor[Configuring
+Inheritance for a Child (Branch or Leaf) Class Descriptor]), however, in
+this case, _all_ the descriptors in the inheritance tree must be
+aggregates. Aggregate and class descriptors cannot exist in the same
+inheritance tree. For more information, see
+link:Introduction%20to%20Descriptors%20(ELUG)#Aggregate_and_Composite_Descriptors_and_Inheritance[Aggregate
+and Composite Descriptors and Inheritance].
+
+If you configure a descriptor as a composite using Workbench, you cannot
+configure the descriptor with EJB information.
+
+For more information, see the following:
+
+* link:Introduction%20to%20XML%20Descriptors%20(ELUG)#XML_Descriptors_and_Aggregation[XML
+Descriptors and Aggregation]
+* link:Introduction%20to%20EIS%20Mappings%20(ELUG)#Composite_and_Reference_EIS_Mappings[Composite
+and Reference EIS Mappings]
+
+=== How to Configure an EIS Descriptor as a Root or Composite Type Using Workbench
+
+To configure an EIS descriptor as a root or composite EIS descriptor,
+use this procedure:
+
+[arabic]
+. In the *Navigator*, select an EIS composite descriptor.
+. Click the *Root* or *Composite* descriptor button on the mapping
+toolbar.You can also select the descriptor and choose *Selected* >
+*Descriptor Type* > *Root* or *Composite* from the menu or by
+right-clicking on the descriptor in the *Navigator* and selecting
+*Descriptor Type* > *Root* or *Composite* from the context menu.
+
+=== How to Configure an EIS Descriptor as a Root or Composite Type Using Java
+
+To configure an EIS descriptor as root or composite using Java, create a
+descriptor amendment method (see
+link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Amendment_Methods[Configuring
+Amendment Methods]) and use the following `+EISDescriptor+` methods:
+
+* To designate an EIS descriptor as a root descriptor, use
+`+EISDescriptor+` method `+descriptorIsNormal+`.
+* To designate an EIS descriptor as a composite (nonroot) descriptor,
+use `+EISDescriptor+` method `+descriptorIsAggregate+`.
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Release_1[Category: Release 1] Category:_Task[Category: Task]
+Category:_EIS[Category: EIS]

@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2021 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,36 +20,63 @@
 //       - 458877 : Add national character support
 package org.eclipse.persistence.mappings.foundation;
 
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
-import java.util.*;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.expressions.*;
+import org.eclipse.persistence.exceptions.ConversionException;
+import org.eclipse.persistence.exceptions.DescriptorException;
+import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
-import org.eclipse.persistence.internal.descriptors.*;
+import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
 import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
-import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.queries.MappedKeyMapContainerPolicy;
-import org.eclipse.persistence.internal.sessions.*;
-import org.eclipse.persistence.mappings.converters.*;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.internal.security.PrivilegedClassForName;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sessions.ChangeRecord;
+import org.eclipse.persistence.internal.sessions.DirectToFieldChangeRecord;
+import org.eclipse.persistence.internal.sessions.MergeManager;
+import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
+import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
+import org.eclipse.persistence.mappings.converters.ClassInstanceConverter;
+import org.eclipse.persistence.mappings.converters.Converter;
+import org.eclipse.persistence.mappings.converters.ObjectTypeConverter;
+import org.eclipse.persistence.mappings.converters.SerializedObjectConverter;
+import org.eclipse.persistence.mappings.converters.TypeConversionConverter;
 import org.eclipse.persistence.mappings.querykeys.DirectQueryKey;
 import org.eclipse.persistence.mappings.querykeys.QueryKey;
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.sessions.remote.*;
+import org.eclipse.persistence.queries.DataReadQuery;
+import org.eclipse.persistence.queries.ObjectBuildingQuery;
+import org.eclipse.persistence.queries.ObjectLevelReadQuery;
+import org.eclipse.persistence.queries.QueryByExamplePolicy;
+import org.eclipse.persistence.queries.ReadQuery;
+import org.eclipse.persistence.queries.WriteObjectQuery;
 import org.eclipse.persistence.sessions.CopyGroup;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.Session;
-import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedClassForName;
+import org.eclipse.persistence.sessions.remote.DistributedSession;
+
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * <b>Purpose</b>: Maps an attribute to the corresponding database field type.
@@ -131,7 +158,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
      * INTERNAL:
      * For mappings used as MapKeys in MappedKeyContainerPolicy.  Add the target of this mapping to the deleted
      * objects list if necessary
-     *
+     * <p>
      * This method is used for removal of private owned relationships
      * DirectMappings are dealt with in their parent delete, so this is a no-op.
      */
@@ -161,7 +188,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
      * This can be set to false in this case, or if a Calendar or byte[] is desired to be used as a mutable value it can be set to true.
      */
     public void setIsMutable(boolean isMutable) {
-        if (isMutable == true) {
+        if (isMutable) {
             this.isMutable = Boolean.TRUE;
         } else {
             this.isMutable = Boolean.FALSE;
@@ -392,7 +419,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
     /**
      * INTERNAL:
      * For mappings used as MapKeys in MappedKeyContainerPolicy, Delete the passed object if necessary.
-     *
+     * <p>
      * This method is used for removal of private owned relationships
      * DirectMappings are dealt with in their parent delete, so this is a no-op.
      */
@@ -833,7 +860,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
      */
     @Override
     public List<DatabaseField> getAllFieldsForMapKey(){
-        Vector<DatabaseField> fields = new Vector<>(1);
+        List<DatabaseField> fields = new ArrayList<>(1);
         fields.add(getField());
         return fields;
     }
@@ -946,8 +973,8 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
             }
             // If mapping a temporal type, use the project mutable default.
             if ((getAttributeClassification() != null)
-                    && (ClassConstants.UTILDATE.isAssignableFrom(getAttributeClassification())
-                            || ClassConstants.CALENDAR.isAssignableFrom(getAttributeClassification()))) {
+                    && (CoreClassConstants.UTILDATE.isAssignableFrom(getAttributeClassification())
+                            || CoreClassConstants.CALENDAR.isAssignableFrom(getAttributeClassification()))) {
                 setIsMutable(session.getProject().getDefaultTemporalMutable());
             }
         }
@@ -1179,7 +1206,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
      */
     @Override
     public void validateBeforeInitialization(AbstractSession session) throws DescriptorException {
-        if ((getFieldName() == null) || (getFieldName().length() == 0)) {
+        if ((getFieldName() == null) || (getFieldName().isEmpty())) {
             session.getIntegrityChecker().handleError(DescriptorException.noFieldNameForMapping(this));
         }
     }
@@ -1253,7 +1280,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
      */
     @Override
     public Object valueFromResultSet(ResultSet resultSet, ObjectBuildingQuery query, AbstractSession session, DatabaseAccessor accessor, ResultSetMetaData metaData, int columnNumber, DatabasePlatform platform) throws SQLException {
-        if (this.attributeObjectClassification == ClassConstants.STRING) {
+        if (this.attributeObjectClassification == CoreClassConstants.STRING) {
             Object val;
             if(platform.shouldUseGetSetNString()){
                 val = resultSet.getNString(columnNumber);
@@ -1261,9 +1288,9 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
                 val = resultSet.getString(columnNumber);
             }
             return getObjectValueWithoutClassCheck(val, session);
-        } else if (this.attributeObjectClassification == ClassConstants.LONG) {
+        } else if (this.attributeObjectClassification == CoreClassConstants.LONG) {
             return getObjectValueWithoutClassCheck(resultSet.getLong(columnNumber), session);
-        } else if (this.attributeObjectClassification == ClassConstants.INTEGER) {
+        } else if (this.attributeObjectClassification == CoreClassConstants.INTEGER) {
             return getObjectValueWithoutClassCheck(resultSet.getInt(columnNumber), session);
         }
         Object fieldValue = accessor.getObject(resultSet, getField(), metaData, columnNumber, platform, true, session);

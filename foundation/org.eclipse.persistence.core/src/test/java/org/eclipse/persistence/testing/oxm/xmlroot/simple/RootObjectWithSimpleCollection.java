@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,8 +17,6 @@ package org.eclipse.persistence.testing.oxm.xmlroot.simple;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.persistence.testing.oxm.mappings.directcollection.Employee;
-
 public class RootObjectWithSimpleCollection {
     private List<String> theList;
 
@@ -35,9 +33,8 @@ public class RootObjectWithSimpleCollection {
     }
 
     public boolean equals(Object object) {
-        if (!(object instanceof RootObjectWithSimpleCollection))
+        if (!(object instanceof RootObjectWithSimpleCollection theObject))
             return false;
-        RootObjectWithSimpleCollection theObject = (RootObjectWithSimpleCollection) object;
 
         if (this.getTheList() == null && theObject.getTheList() != null) {
             return false;
@@ -46,14 +43,10 @@ public class RootObjectWithSimpleCollection {
             return false;
         }
 
-        if ((this.getTheList() == null && theObject.getTheList() == null)
+        return (this.getTheList() == null && theObject.getTheList() == null)
                 || (this.getTheList().isEmpty() && theObject.getTheList()
-                        .isEmpty())
+                .isEmpty())
                 || ((this.getTheList().containsAll(theObject.getTheList())) && (theObject
-                        .getTheList().containsAll(this.getTheList())))) {
-
-            return true;
-        }
-        return false;
+                .getTheList().containsAll(this.getTheList())));
     }
 }

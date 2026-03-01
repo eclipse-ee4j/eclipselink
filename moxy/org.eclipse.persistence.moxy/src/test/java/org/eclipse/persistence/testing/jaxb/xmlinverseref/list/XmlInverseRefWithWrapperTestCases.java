@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -79,8 +79,7 @@ public class XmlInverseRefWithWrapperTestCases extends JAXBWithJSONTestCases {
         public List<Address> addrs;
 
         public boolean equals(Object obj) {
-            if (obj instanceof PersonWithWrapper) {
-                PersonWithWrapper comparePerson = (PersonWithWrapper) obj;
+            if (obj instanceof PersonWithWrapper comparePerson) {
                 if (!name.equals(comparePerson.name)) {
                     return false;
                 }
@@ -118,8 +117,7 @@ public class XmlInverseRefWithWrapperTestCases extends JAXBWithJSONTestCases {
        public PersonWithWrapper owner;
 
        public boolean equals(Object obj){
-           if(obj instanceof Address){
-               Address compareAddr = (Address)obj;
+           if(obj instanceof Address compareAddr){
                if(! street.equals(compareAddr.street)){
                    return false;
                }

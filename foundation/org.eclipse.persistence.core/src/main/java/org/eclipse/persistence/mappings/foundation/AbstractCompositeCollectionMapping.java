@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,24 +16,49 @@
 //       - 354678: Temp classloader is still being used during metadata processing
 package org.eclipse.persistence.mappings.foundation;
 
-import java.util.*;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.exceptions.*;
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.exceptions.DescriptorException;
+import org.eclipse.persistence.exceptions.OptimisticLockException;
+import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.expressions.Expression;
-import org.eclipse.persistence.internal.descriptors.*;
-import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
+import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
+import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
-import org.eclipse.persistence.internal.queries.*;
-import org.eclipse.persistence.internal.sessions.*;
+import org.eclipse.persistence.internal.queries.CollectionContainerPolicy;
+import org.eclipse.persistence.internal.queries.ContainerPolicy;
+import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
+import org.eclipse.persistence.internal.queries.ListContainerPolicy;
+import org.eclipse.persistence.internal.queries.MapContainerPolicy;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sessions.AggregateCollectionChangeRecord;
+import org.eclipse.persistence.internal.sessions.ChangeRecord;
+import org.eclipse.persistence.internal.sessions.MergeManager;
+import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
+import org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet;
+import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.internal.sessions.remote.ObjectDescriptor;
-import org.eclipse.persistence.mappings.*;
+import org.eclipse.persistence.mappings.AggregateMapping;
+import org.eclipse.persistence.mappings.ContainerMapping;
 import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.mappings.structures.ArrayCollectionMapping;
 import org.eclipse.persistence.mappings.structures.ArrayCollectionMappingHelper;
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.sessions.remote.*;
+import org.eclipse.persistence.queries.DeleteObjectQuery;
+import org.eclipse.persistence.queries.ObjectBuildingQuery;
+import org.eclipse.persistence.queries.ObjectLevelReadQuery;
+import org.eclipse.persistence.queries.QueryByExamplePolicy;
+import org.eclipse.persistence.queries.WriteObjectQuery;
 import org.eclipse.persistence.sessions.CopyGroup;
+import org.eclipse.persistence.sessions.remote.DistributedSession;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Vector;
 
 /**
  * Define an embedded collection of objects.
@@ -260,9 +285,9 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
      * Return the fields handled by the mapping.
      */
     @Override
-    protected Vector collectFields() {
-        Vector fields = new Vector(1);
-        fields.addElement(this.getField());
+    protected List<DatabaseField> collectFields() {
+        List<DatabaseField> fields = new ArrayList<>(1);
+        fields.add(this.getField());
         return fields;
     }
 
@@ -304,14 +329,14 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
     protected ChangeRecord convertToChangeRecord(Object cloneCollection, ObjectChangeSet owner, AbstractSession session) {
         ContainerPolicy cp = getContainerPolicy();
         Object cloneIter = cp.iteratorFor(cloneCollection);
-        Vector collectionChanges = new Vector(2);
+        List<ObjectChangeSet> collectionChanges = new ArrayList<>(2);
         while (cp.hasNext(cloneIter)) {
             Object aggregateObject = cp.next(cloneIter, session);
 
             // For CR#2258 quietly ignore nulls inserted into a collection.
             if (aggregateObject != null) {
                 ObjectChangeSet changes = getReferenceDescriptor(aggregateObject.getClass(), session).getObjectBuilder().compareForChange(aggregateObject, null, (UnitOfWorkChangeSet)owner.getUOWChangeSet(), session);
-                collectionChanges.addElement(changes);
+                collectionChanges.add(changes);
             }
         }
 
@@ -670,14 +695,14 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
             return cp.containerInstance();
         }
 
-        Vector nestedRows = this.getReferenceDescriptor().buildNestedRowsFromFieldValue(fieldValue, executionSession);
+        List<AbstractRecord> nestedRows = this.getReferenceDescriptor().buildNestedRowsFromFieldValue(fieldValue, executionSession);
         if (nestedRows == null) {
             return cp.containerInstance();
         }
 
         Object result = cp.containerInstance(nestedRows.size());
-        for (Enumeration stream = nestedRows.elements(); stream.hasMoreElements();) {
-            AbstractRecord nestedRow = (AbstractRecord)stream.nextElement();
+        for (Iterator iterator = nestedRows.iterator(); iterator.hasNext();) {
+            AbstractRecord nestedRow = (AbstractRecord) iterator.next();
 
             ClassDescriptor descriptor = this.getReferenceDescriptor();
             if (descriptor.hasInheritance()) {
@@ -739,7 +764,7 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
             if (hasConverter()) {
                 element = getConverter().convertObjectValueToDataValue(element, session);
             }
-            nestedRows.addElement(buildCompositeRow(element, session, row, writeType));
+            nestedRows.add(buildCompositeRow(element, session, row, writeType));
         }
 
         Object fieldValue = null;

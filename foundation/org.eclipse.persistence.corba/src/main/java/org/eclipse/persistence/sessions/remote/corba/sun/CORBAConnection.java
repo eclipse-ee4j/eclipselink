@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -151,10 +151,10 @@ public class CORBAConnection extends RemoteConnection {
         Vector<Object> clientNextPageObjects = serverNextPageObjects;
         if (query.isReadAllQuery() && (!query.isReportQuery())) {// could be DataReadQuery
             clientNextPageObjects = new Vector<>(serverNextPageObjects.size());
-            for (Enumeration<Object> objEnum = serverNextPageObjects.elements(); objEnum.hasMoreElements();) {
+            for (Iterator<Object> iterator = serverNextPageObjects.iterator(); iterator.hasNext();) {
                 // 2612538 - the default size of Map (32) is appropriate
-                Object clientObject = session.getObjectCorrespondingTo(objEnum.nextElement(), transporter.getObjectDescriptors(), new IdentityHashMap(), (ObjectLevelReadQuery)query);
-                clientNextPageObjects.addElement(clientObject);
+                Object clientObject = session.getObjectCorrespondingTo(iterator.next(), transporter.getObjectDescriptors(), new IdentityHashMap(), (ObjectLevelReadQuery)query);
+                clientNextPageObjects.add(clientObject);
             }
         }
 
@@ -264,12 +264,12 @@ public class CORBAConnection extends RemoteConnection {
      * Return the read-only classes
      */
     @Override
-    public Vector getDefaultReadOnlyClasses() {
+    public List<Class<?>> getDefaultReadOnlyClasses() {
         Transporter transporter = getRemoteSessionController().getDefaultReadOnlyClasses();
         if (!transporter.wasOperationSuccessful()) {
             throw transporter.getException();
         } else {
-            return (Vector)transporter.getObject();
+            return (List<Class<?>>)transporter.getObject();
         }
     }
 

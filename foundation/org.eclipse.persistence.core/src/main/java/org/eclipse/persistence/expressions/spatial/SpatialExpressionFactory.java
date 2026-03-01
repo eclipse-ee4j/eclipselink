@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,17 +14,17 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.expressions.spatial;
 
-import java.util.List;
-import java.util.Vector;
-
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.internal.expressions.FunctionExpression;
 
-import static org.eclipse.persistence.expressions.ExpressionOperator.SDO_WITHIN_DISTANCE;
-import static org.eclipse.persistence.expressions.ExpressionOperator.SDO_RELATE;
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.eclipse.persistence.expressions.ExpressionOperator.SDO_FILTER;
 import static org.eclipse.persistence.expressions.ExpressionOperator.SDO_NN;
+import static org.eclipse.persistence.expressions.ExpressionOperator.SDO_RELATE;
+import static org.eclipse.persistence.expressions.ExpressionOperator.SDO_WITHIN_DISTANCE;
 
 /**
  * This class is used to construct expressions that use Oracle Spatial operators
@@ -134,11 +134,11 @@ public final class SpatialExpressionFactory {
      * @param operator the ordinal of the operator
      */
     public static Expression getSpatialExpression(int operator, Expression geom1, Object geom2, String params) {
-        List<Object> vParameters = new Vector<>(2);
+        List<Object> vParameters = new ArrayList<>(2);
         vParameters.add(geom2);
         //Bug 5885276, the empty string either like " " or "" needs to be substituted
         //by null prior to passing to Geometry call.
-        if (params==null || params.trim().equals("")){
+        if (params==null || params.trim().isEmpty()){
             vParameters.add(null);
         }else{
             vParameters.add(params);
@@ -146,7 +146,6 @@ public final class SpatialExpressionFactory {
         ExpressionOperator anOperator = geom1.getOperator(operator);
         FunctionExpression expression = new FunctionExpression();
         expression.create(geom1, vParameters, anOperator);
-        Expression finalExpression = expression.equal("TRUE");
-        return finalExpression;
+        return expression.equal("TRUE");
     }
 }

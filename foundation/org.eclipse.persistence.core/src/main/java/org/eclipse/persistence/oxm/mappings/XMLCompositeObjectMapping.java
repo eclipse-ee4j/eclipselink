@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,14 +14,10 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.oxm.mappings;
 
-import java.lang.reflect.Modifier;
-
-import javax.xml.namespace.QName;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.DescriptorException;
-import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.oxm.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
@@ -55,6 +51,9 @@ import org.eclipse.persistence.sessions.Session;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
+import javax.xml.namespace.QName;
+import java.lang.reflect.Modifier;
 
 /**
  * <p>Composite object XML mappings represent a relationship between two classes.  In XML, the "owned"
@@ -104,7 +103,6 @@ import org.w3c.dom.NodeList;
  *
  * <p><b>Mapping into the Parent Record</b>: The composite object may be mapped into the parent
  * record in a corresponding XML document.
- *
  * <!--
  *    <?xml version="1.0" encoding="UTF-8"?>
  *    <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
@@ -146,7 +144,6 @@ import org.w3c.dom.NodeList;
  *
  * <p><b>Mapping to an Element</b>: The composite object may be mapped to an element in a corresponding
  * XML document.
- *
  * <!--
  * <?xml version="1.0" encoding="UTF-8"?>
  * <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
@@ -538,7 +535,7 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
                     if(nextNode.getNodeType() == Node.ELEMENT_NODE){
                         //complex child
                         String type = ((Element) nestedRow.getDOM()).getAttributeNS(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
-                        if(type != null && type.length() > 0) {
+                        if(type != null && !type.isEmpty()) {
                             throw XMLMarshalException.unknownXsiTypeValue(type, (CompositeObjectMapping) this);
                         } else {
                             throw XMLMarshalException.noDescriptorFound((CompositeObjectMapping) this);
@@ -570,7 +567,7 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
                     // use the reference descriptor -  make sure it is non-abstract
                     if (Modifier.isAbstract(aDescriptor.getJavaClass().getModifiers())) {
                         // throw an exception
-                        throw DescriptorException.missingClassIndicatorField((org.eclipse.persistence.internal.oxm.record.XMLRecord) nestedRow, aDescriptor.getInheritancePolicy().getDescriptor());
+                        throw DescriptorException.missingClassIndicatorField(nestedRow.toString(), aDescriptor.getInheritancePolicy().getDescriptor());
                     }
                 }
             }
@@ -597,13 +594,13 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
                 toReturn = stringValue;
             }
          }
-        if ((stringValue == null) || stringValue.length() == 0) {
+        if ((stringValue == null) || stringValue.isEmpty()) {
             return toReturn;
         }
 
         String type = ((Element) nestedRow.getDOM()).getAttributeNS(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
 
-        if ((null != type) && type.length() > 0) {
+        if ((null != type) && !type.isEmpty()) {
             XPathFragment typeFragment = new XPathFragment(type);
             String namespaceURI = nestedRow.resolveNamespacePrefix(typeFragment.getPrefix());
 
@@ -703,7 +700,7 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
             // Try to find a descriptor based on the schema type
             String type = ((Element) xmlRecord.getDOM()).getAttributeNS(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
 
-            if ((null != type) && type.length() > 0) {
+            if ((null != type) && !type.isEmpty()) {
                 XPathFragment typeFragment = new XPathFragment(type);
                 String namespaceURI = xmlRecord.resolveNamespacePrefix(typeFragment.getPrefix());
                 typeFragment.setNamespaceURI(namespaceURI);
@@ -717,10 +714,10 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
                     XPathFragment frag = new XPathFragment();
                     String xpath = leafType.getLocalPart();
                     String uri = leafType.getNamespaceURI();
-                    if ((uri != null) && uri.length() > 0) {
+                    if ((uri != null) && !uri.isEmpty()) {
                         frag.setNamespaceURI(uri);
                         String prefix = ((XMLDescriptor) getDescriptor()).getNonNullNamespaceResolver().resolveNamespaceURI(uri);
-                        if ((prefix != null) && prefix.length() > 0) {
+                        if ((prefix != null) && !prefix.isEmpty()) {
                             xpath = prefix + XMLConstants.COLON + xpath;
                         }
                     }

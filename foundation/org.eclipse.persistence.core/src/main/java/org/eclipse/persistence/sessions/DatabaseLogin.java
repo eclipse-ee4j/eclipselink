@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,18 +14,33 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.sessions;
 
-import java.io.*;
-import java.sql.Connection;
+import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.databaseaccess.Platform;
-import org.eclipse.persistence.internal.localization.*;
-import org.eclipse.persistence.platform.database.*;
+import org.eclipse.persistence.internal.localization.ToStringLocalization;
+import org.eclipse.persistence.platform.database.AccessPlatform;
+import org.eclipse.persistence.platform.database.CloudscapePlatform;
+import org.eclipse.persistence.platform.database.DB2Platform;
+import org.eclipse.persistence.platform.database.DBasePlatform;
+import org.eclipse.persistence.platform.database.DatabasePlatform;
+import org.eclipse.persistence.platform.database.DerbyPlatform;
+import org.eclipse.persistence.platform.database.HSQLPlatform;
+import org.eclipse.persistence.platform.database.InformixPlatform;
+import org.eclipse.persistence.platform.database.MySQLPlatform;
+import org.eclipse.persistence.platform.database.OraclePlatform;
+import org.eclipse.persistence.platform.database.PointBasePlatform;
+import org.eclipse.persistence.platform.database.SQLServerPlatform;
+import org.eclipse.persistence.platform.database.SybasePlatform;
+import org.eclipse.persistence.platform.database.SymfowarePlatform;
 import org.eclipse.persistence.platform.database.converters.StructConverter;
 import org.eclipse.persistence.platform.database.partitioning.DataPartitioningCallback;
 import org.eclipse.persistence.sequencing.NativeSequence;
-import org.eclipse.persistence.exceptions.*;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.sql.Connection;
 
 /**
  * <p>
@@ -49,7 +64,7 @@ import org.eclipse.persistence.exceptions.*;
  */
 public class DatabaseLogin extends DatasourceLogin {
 
-    /**
+    /*
      * Transaction isolation levels used in setTransactionIsolation().
      * These constants are from java.sql.Connection.
      */
@@ -704,10 +719,10 @@ public class DatabaseLogin extends DatasourceLogin {
      */
     protected boolean oracleDriverIs(String urlPrefix) {
         try {
-            if (getDriverURLHeader().length() != 0) {
-                return getDriverURLHeader().indexOf(urlPrefix) != -1;
+            if (!getDriverURLHeader().isEmpty()) {
+                return getDriverURLHeader().contains(urlPrefix);
             } else {
-                return getDatabaseURL().indexOf(urlPrefix) != -1;
+                return getDatabaseURL().contains(urlPrefix);
             }
         } catch (ValidationException e) {
             // this exception will be thrown if we are using something other than a DefaultConnector
@@ -1190,7 +1205,8 @@ public class DatabaseLogin extends DatasourceLogin {
     public String toString() {
         StringWriter stringWriter = new StringWriter();
         PrintWriter writer = new PrintWriter(stringWriter);
-        writer.println("DatabaseLogin(");
+        writer.print(getClass().getSimpleName());
+        writer.println("(");
         writer.println("\t" + ToStringLocalization.buildMessage("platform", null) + "=>" + getDatasourcePlatform());
         writer.println("\t" + ToStringLocalization.buildMessage("user_name", null) + "=> \"" + getUserName() + "\"");
         writer.print("\t");

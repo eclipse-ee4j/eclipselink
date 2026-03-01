@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,16 +14,10 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.oxm.mappings;
 
-import java.lang.reflect.Modifier;
-import java.util.Enumeration;
-import java.util.Vector;
-
-import javax.xml.namespace.QName;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.DescriptorException;
-import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.oxm.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.oxm.ConversionManager;
@@ -60,6 +54,12 @@ import org.eclipse.persistence.sessions.Session;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
+import javax.xml.namespace.QName;
+import java.lang.reflect.Modifier;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
 
 /**
  * <p>Composite collection XML mappings map an attribute that contains a homogeneous collection of objects
@@ -101,7 +101,6 @@ import org.w3c.dom.NodeList;
  * </table>
  *
  * <p><b>Mapping a Composite Collection</b>:
- *
  * <!--
  * <?xml version="1.0" encoding="UTF-8"?>
  * <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
@@ -460,7 +459,7 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
                         nestedRows.add(nestedRow);
                     }
                 } else {
-                    nestedRows.addElement(buildCompositeRow(element, session, row, writeType));
+                    nestedRows.add(buildCompositeRow(element, session, row, writeType));
                 }
             }
         }
@@ -489,7 +488,7 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
             }
         }
 
-        Vector nestedRows = this.getDescriptor().buildNestedRowsFromFieldValue(fieldValue, executionSession);
+        List<AbstractRecord> nestedRows = this.getDescriptor().buildNestedRowsFromFieldValue(fieldValue, executionSession);
         if (nestedRows == null) {
             if (reuseContainer) {
                 Object currentObject = ((XMLRecord) row).getCurrentObject();
@@ -509,8 +508,8 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
             result = cp.containerInstance(nestedRows.size());
         }
 
-        for (Enumeration stream = nestedRows.elements(); stream.hasMoreElements();) {
-            XMLRecord nestedRow = (XMLRecord) stream.nextElement();
+        for (Iterator iterator = nestedRows.iterator(); iterator.hasNext();) {
+            XMLRecord nestedRow = (XMLRecord) iterator.next();
             Object objectToAdd;
             if (getNullPolicy().valueIsNull((Element) nestedRow.getDOM())) {
                 objectToAdd = null;
@@ -553,7 +552,7 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
                     if(nextNode.getNodeType() == Node.ELEMENT_NODE){
                         //complex child
                         String type = ((Element) ((DOMRecord)nestedRow).getDOM()).getAttributeNS(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
-                        if(type != null && type.length() > 0) {
+                        if(type != null && !type.isEmpty()) {
                             throw XMLMarshalException.unknownXsiTypeValue(type, (Mapping) this);
                         } else {
                             throw XMLMarshalException.noDescriptorFound((Mapping) this);
@@ -608,12 +607,12 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
                 objectToAdd = stringValue;
             }
         }
-        if ((stringValue == null) || stringValue.length() == 0 ) {
+        if ((stringValue == null) || stringValue.isEmpty()) {
             return objectToAdd;
         }
 
         String type = theElement.getAttributeNS(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
-        if ((null != type) && type.length() > 0) {
+        if ((null != type) && !type.isEmpty()) {
             XPathFragment typeFragment = new XPathFragment(type);
             String namespaceURI = ((DOMRecord)nestedRow).resolveNamespacePrefix(typeFragment.getPrefix());
             typeFragment.setNamespaceURI(namespaceURI);
@@ -634,7 +633,7 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
             // Try to find a descriptor based on the schema type
             String type = ((Element) xmlRecord.getDOM()).getAttributeNS(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
 
-            if ((null != type) && type.length() >0 ) {
+            if ((null != type) && !type.isEmpty()) {
                 XPathFragment typeFragment = new XPathFragment(type);
                 String namespaceURI = xmlRecord.resolveNamespacePrefix(typeFragment.getPrefix());
                 typeFragment.setNamespaceURI(namespaceURI);
@@ -648,10 +647,10 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
                     XPathFragment frag = new XPathFragment();
                     String xpath = leafType.getLocalPart();
                     String uri = leafType.getNamespaceURI();
-                    if ((uri != null) && uri.length() > 0) {
+                    if ((uri != null) && !uri.isEmpty()) {
                         frag.setNamespaceURI(uri);
                         String prefix = ((XMLDescriptor) getDescriptor()).getNonNullNamespaceResolver().resolveNamespaceURI(uri);
-                        if ((prefix != null) && prefix.length() > 0) {
+                        if ((prefix != null) && !prefix.isEmpty()) {
                             xpath = prefix + XMLConstants.COLON + xpath;
                         }
                     }

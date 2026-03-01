@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2020 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -15,19 +15,18 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.sessionsxml;
 
+import org.eclipse.persistence.logging.SessionLog;
+import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.sessions.factories.SessionManager;
+import org.eclipse.persistence.sessions.factories.XMLSessionConfigLoader;
+import org.eclipse.persistence.testing.framework.AutoVerifyTestCase;
+import org.eclipse.persistence.testing.framework.TestErrorException;
+
 import java.io.File;
 import java.io.FileReader;
 import java.io.LineNumberReader;
-
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
-
-import org.eclipse.persistence.logging.SessionLog;
-import org.eclipse.persistence.sessions.DatabaseSession;
-import org.eclipse.persistence.testing.framework.AutoVerifyTestCase;
-import org.eclipse.persistence.testing.framework.TestErrorException;
-import org.eclipse.persistence.sessions.factories.SessionManager;
-import org.eclipse.persistence.sessions.factories.XMLSessionConfigLoader;
 
 
 /**
@@ -74,12 +73,12 @@ public class SessionsXMLSchemaJavaLogTest extends AutoVerifyTestCase {
     @Override
     protected void verify() {
         if (generationException != null) {
-            throw new TestErrorException("Exception thrown during session configuration: " + generationException.toString());
+            throw new TestErrorException("Exception thrown during session configuration: " + generationException);
         }
         if (!findStringInFile(testString, fileName)) {
             String exceptionString = "String: " + testString + " not found in " + fileName;
             if (fileReadException != null) {
-                exceptionString = exceptionString + " Exception thrown while reading file. - " + fileReadException.toString();
+                exceptionString = exceptionString + " Exception thrown while reading file. - " + fileReadException;
             }
             throw new TestErrorException(exceptionString);
         }
@@ -91,7 +90,7 @@ public class SessionsXMLSchemaJavaLogTest extends AutoVerifyTestCase {
             LineNumberReader lnr = new LineNumberReader(reader);
             String line = lnr.readLine();
             while (line != null) {
-                if (line.indexOf(string) > -1) {
+                if (line.contains(string)) {
                     return true;
                 }
                 line = lnr.readLine();
@@ -99,7 +98,6 @@ public class SessionsXMLSchemaJavaLogTest extends AutoVerifyTestCase {
         } catch (Exception exception) {
             fileReadException = exception;
         }
-        ;
         return false;
     }
 }

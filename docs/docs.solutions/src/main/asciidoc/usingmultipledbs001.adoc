@@ -1,0 +1,76 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[USINGMULTIDBS001]]
+=== Introduction to the Solution
+
+With a composite persistence unit, you can:
+
+* Map relationships among any of the entities in multiple persistence
+units
+* Access entities stored in multiple databases and different data
+sources
+* Easily perform queries and transactions across the complete set of
+entities
+
+link:#CIHFBBDJ[Example 9-1] shows how you can persist data from a single
+persistence context into two different databases:
+
+[[CIHFBBDJ]]
+
+*_Example 9-1 Using Multiple Databases_*
+
+[source,oac_no_warn]
+----
+em.persist(new A(..));
+em.persist(new B(..));
+// You can insert A into database1 and insert B into database2.
+// The two databases can be from different vendors.
+
+em.flush();
+----
+
+link:#BABJAABI[Figure 9-1] illustrates a simple composite persistence
+unit. EclipseLink processes the `persistence.xml` file and detects the
+composite persistence unit, which contains two composite member
+persistence units:
+
+* Class *A* is mapped by a persistence unit named *memberPu1* located in
+the `member1.jar` file.
+* Class *B* is mapped by a persistence unit named *memberPu2* located in
+the `member2.jar` file.
+
+[[BABJAABI]]
+
+*_Figure 9-1 A Simple Composite Persistence Unit_*
+
+image:{imagesrelativedir}/composite_persistence_units.png[Description of Figure 9-1 follows,title="Description of Figure 9-1 follows"] +
+xref:{imagestextrelativedir}/composite_persistence_units.adoc[Description of "Figure 9-1 A Simple Composite Persistence Unit"]
+
+[[CIHJCHAF]]
+
+=== Composite Persistence Unit Requirements
+
+When using composite persistence units, note the following requirements:
+
+* The name of each composite member persistence unit must be unique
+within the composite.
+* The `transaction-type` and other properties that correspond to the
+entire persistence unit (such as target server, logging, transactions,
+and so on) should be defined in the composite persistence unit. If not,
+the transaction types, target server information, and logging properties
+defined with composite members will be ignored.

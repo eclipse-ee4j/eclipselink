@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,13 +15,6 @@
 //     Marcel Valovy - 2.6.0 - added case insensitive unmarshalling
 package org.eclipse.persistence.internal.oxm.record;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.xml.namespace.QName;
-
 import org.eclipse.persistence.core.descriptors.CoreDescriptor;
 import org.eclipse.persistence.core.descriptors.CoreDescriptorEventManager;
 import org.eclipse.persistence.core.descriptors.CoreInheritancePolicy;
@@ -29,7 +22,7 @@ import org.eclipse.persistence.core.queries.CoreAttributeGroup;
 import org.eclipse.persistence.descriptors.DescriptorEvent;
 import org.eclipse.persistence.descriptors.DescriptorEventManager;
 import org.eclipse.persistence.exceptions.EclipseLinkException;
-import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.oxm.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.core.helper.CoreField;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractRecord;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
@@ -47,7 +40,6 @@ import org.eclipse.persistence.internal.oxm.Reference;
 import org.eclipse.persistence.internal.oxm.ReferenceResolver;
 import org.eclipse.persistence.internal.oxm.Root;
 import org.eclipse.persistence.internal.oxm.SAXFragmentBuilder;
-import org.eclipse.persistence.internal.oxm.StrBuffer;
 import org.eclipse.persistence.internal.oxm.Unmarshaller;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.XPathNode;
@@ -72,6 +64,12 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.ext.Locator2;
 import org.xml.sax.ext.Locator2Impl;
+
+import javax.xml.namespace.QName;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p><b>Purpose:</b>Provide an implementation of ContentHandler that is used by TopLink OXM to
@@ -436,7 +434,7 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
         this.noNamespaceSchemaLocation = location;
     }
 
-    protected StrBuffer getStringBuffer() {
+    protected StringBuilder getStringBuffer() {
         return unmarshaller.getStringBuffer();
     }
 
@@ -469,9 +467,8 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
     public void setDocumentLocator(Locator locator) {
     if(xmlReader != null){
         xmlReader.setLocator(locator);
-        if (null == rootElementName  && null == rootElementLocalName && parentRecord == null && locator instanceof Locator2){
-                Locator2 loc = (Locator2)locator;
-                this.setEncoding(loc.getEncoding());
+        if (null == rootElementName  && null == rootElementLocalName && parentRecord == null && locator instanceof Locator2 loc){
+            this.setEncoding(loc.getEncoding());
                 this.setVersion(loc.getXMLVersion());
             }
     }
@@ -863,7 +860,7 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
                 if ((null == xPathNode.getXPathFragment()) && (parentNodeValue != null)) {
                     XPathFragment parentFragment = new XPathFragment();
                     parentFragment.setNamespaceAware(isNamespaceAware());
-                    if(namespaceURI != null && namespaceURI.length() == 0){
+                    if(namespaceURI != null && namespaceURI.isEmpty()){
                         parentFragment.setLocalName(qName);
                         parentFragment.setNamespaceURI(null);
                     } else {
@@ -924,7 +921,7 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
 
                         // Some parsers don't set the URI/local name for namespace
                         // attributes
-                        if ((attLocalName == null) || (attLocalName.length() == 0)) {
+                        if ((attLocalName == null) || (attLocalName.isEmpty())) {
                             String qname = atts.getQName(i);
                             if (qname != null) {
                                 int qnameLength = qname.length();
@@ -1001,7 +998,7 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
     }
 
     private void updateXPathFragment(String qName, String localName, String namespaceURI) {
-        if (namespaceURI != null && namespaceURI.length() == 0) {
+        if (namespaceURI != null && namespaceURI.isEmpty()) {
             xPathFragment.setLocalName(qName);
             xPathFragment.setNamespaceURI(null);
         } else {
@@ -1023,7 +1020,7 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
                 messageBuilder.append(localName);
                 messageBuilder.append("\"). Expected elements are ");
                 List<XPathNode> nonAttributeChildren = xPathNode.getNonAttributeChildren();
-                if(nonAttributeChildren == null || nonAttributeChildren.size() == 0) {
+                if(nonAttributeChildren == null || nonAttributeChildren.isEmpty()) {
                     messageBuilder.append("(none)");
                 } else {
                     for(int x=0, size=nonAttributeChildren.size(); x<size; x++) {
@@ -1060,9 +1057,7 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
                 unmappedContentHandler = (UnmappedContentHandler)privilegedNewInstanceFromClass.run();
             } catch (ClassCastException e) {
                 throw XMLMarshalException.unmappedContentHandlerDoesntImplement(e, unmappedContentHandlerClass.getName());
-            } catch (IllegalAccessException e) {
-                throw XMLMarshalException.errorInstantiatingUnmappedContentHandler(e, unmappedContentHandlerClass.getName());
-            } catch (InstantiationException e) {
+            } catch (IllegalAccessException | InstantiationException e) {
                 throw XMLMarshalException.errorInstantiatingUnmappedContentHandler(e, unmappedContentHandlerClass.getName());
             }
         }
@@ -1117,7 +1112,7 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
             } else {
                 XPathNode textNode = xPathNode.getTextNode();
 
-                if (null != textNode && getStringBuffer().length() == 0) {
+                if (null != textNode && getStringBuffer().isEmpty()) {
                     NodeValue textNodeUnmarshalNodeValue = textNode.getUnmarshalNodeValue();
                     if(textNode.isWhitespaceAware()){
                         if (textNodeUnmarshalNodeValue.isMappingNodeValue()) {
@@ -1222,9 +1217,9 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
         return;
     }
         try {
-            int strBufferInitialLength = -1;
+            int sbInitialLength = -1;
             if (null != selfRecords) {
-                strBufferInitialLength = getStringBuffer().length();
+                sbInitialLength = getStringBuffer().length();
                 for (int x = 0, selfRecordsSize = selfRecords.size(); x < selfRecordsSize; x++) {
                     UnmarshalRecord selfRecord = selfRecords.get(x);
                     if(selfRecord != null){
@@ -1252,7 +1247,7 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
             if (null != textNode) {
                 if(textNode.getUnmarshalNodeValue().isMixedContentNodeValue()) {
                     String tmpString = new String(ch, start, length);
-                    if (!textNode.isWhitespaceAware() && tmpString.trim().length() == 0) {
+                    if (!textNode.isWhitespaceAware() && tmpString.trim().isEmpty()) {
                         return;
                     }
                 }
@@ -1262,12 +1257,12 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
 
             NodeValue unmarshalNodeValue = xPathNode.getUnmarshalNodeValue();
             if (null != unmarshalNodeValue && !unmarshalNodeValue.isWrapperNodeValue()) {
-                if(strBufferInitialLength == -1) {
+                if(sbInitialLength == -1) {
                     getStringBuffer().append(ch, start, length);
                 } else {
-                    StrBuffer strBuffer = getStringBuffer();
-                    if(strBufferInitialLength == strBuffer.length()) {
-                        strBuffer.append(ch, start, length);
+                    StringBuilder stringBuilder = getStringBuffer();
+                    if(sbInitialLength == stringBuilder.length()) {
+                        stringBuilder.append(ch, start, length);
                     }
                 }
             }
@@ -1467,9 +1462,9 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
     /**
      * INTERNAL:
      * Creates an auxiliary lookup table containing lower-cased localNames of XPathFragments.
-     *
+     * <p>
      * Does NOT pass the Turkey test.
-     *
+     * <p>
      * For future development: Handle ISO-8859-9 encoding.
      * if (encoding.equals("ISO-8859-9")) {
      *      String auxLocalName = entry.getKey().getLocalName().toLowerCase(Locale.forLanguageTag("tr-TR"));
@@ -1526,7 +1521,7 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
 
     @Override
     public void resetStringBuffer() {
-        this.getStringBuffer().reset();
+        this.getStringBuffer().setLength(0);
         this.isBufferCDATA = false;
     }
 

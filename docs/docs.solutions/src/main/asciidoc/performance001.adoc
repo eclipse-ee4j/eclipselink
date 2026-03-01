@@ -1,0 +1,766 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[PERFORMANCE001]]
+=== Performance Features
+
+EclipseLink includes a number of performance features that make it the
+industry's best performing and most scalable JPA implementation. These
+features include:
+
+* link:#CHDCGIHF[Object Caching]
+* link:#CHDJFFEJ[Querying]
+* link:#CHDDGGFI[Mapping]
+* link:#CHDBIBAI[Transactions]
+* link:#CHDHFDEJ[Database]
+* link:#BBAFFHDD[Automated Tuning]
+* link:#CHDIICEJ[Tools]
+
+[[CHDCGIHF]]
+
+==== Object Caching
+
+The EclipseLink cache is an in-memory repository that stores recently
+read or written objects based on class and primary key values. The cache
+helps improve performance by holding recently read or written objects
+and accessing them in-memory to minimize database access.
+
+Caching allows you to:
+
+* Set how long the cache lives and the time of day, a process called
+cache invalidation.
+* Configure cache types (Weak, Soft, SoftCache, HardCache, Full) on a
+per entity basis.
+* Configure cache size on a per entity basis.
+* Coordinate clustered caches.
+
+===== Caching Annotations
+
+EclipseLink defines these entity caching annotations:
+
+* `@Cache`
+* `@TimeOfDay`
+* `@ExistenceChecking`
+
+EclipseLink also provides a number of persistence unit properties that
+you can specify to configure the EclipseLink cache (see "Persistence
+Property Extensions Reference" in _Jakarta Persistence API (JPA)
+Extensions Reference for EclipseLink_). These properties might
+compliment or provide an alternative to the usage of annotations.
+
+===== Using the @Cache Annotation
+
+EclipseLink uses identity maps to cache objects in order to enhance
+performance, as well as maintain object identity. You can control the
+cache and its behavior by using the `@Cache` annotation in your entity
+classes. link:#CHDBDCBC[Example 18-1] shows how to implement this
+annotation.
+
+[[CHDBDCBC]]
+
+*_Example 18-1 Using the @Cache Annotation_*
+
+[source,oac_no_warn]
+----
+@Entity
+ @Table(name="EMPLOYEE")
+ @Cache (
+     type=CacheType.WEAK,
+     isolated=false,
+     expiry=600000,
+     alwaysRefresh=true,
+     disableHits=true,
+     coordinationType=INVALIDATE_CHANGED_OBJECTS
+     )
+ public class Employee implements Serializable {
+     ...
+ }
+----
+
+For more information about object caching and using the `@Cache`
+annotation, see "@Cache" in the _Jakarta Persistence API (JPA)
+Extensions Reference for EclipseLink_.
+
+[[CHDJFFEJ]]
+
+==== Querying
+
+The scope of a query, the amount of data returned, and how that data is
+returned can all affect the performance of a EclipseLink-enabled
+application. EclipseLink query mechanisms enhance query performance by
+providing these features:
+
+* link:#CHDEHHHD[Read-only Queries]
+* link:#CHDEGCHH[Join Fetching]
+* link:#CHDFHFEB[Batch Reading]
+* link:#CHDDJCAC[Fetch Size]
+* link:#CHDIEBJE[Pagination]
+* link:#CHDBGFAI[Cache Usage]
+
+This section describes how these features improve performance.
+
+[[CHDEHHHD]]
+
+===== Read-only Queries
+
+EclipseLink uses the `eclipselink.read-only` hint, `QueryHint`
+(`@QueryHint`) to retrieve read-only results back from a query. On
+nontransactional read operations, where the requested entity types are
+stored in the shared cache, you can request that the shared instance be
+returned instead of a detached copy.
+
+For more information about read-only queries, see the documentation for
+the read-only hint in _Jakarta Persistence API (JPA) Extensions
+Reference for EclipseLink_.
+
+[[CHDEGCHH]]
+
+===== Join Fetching
+
+Join Fetching enhances performance by enabling the joining and reading
+of the related objects in the same query as the source object. Enable
+Join Fetching by using the `@JoinFetch` annotation, as shown in
+link:#CHDBICAF[Example 18-2]. This example shows how the `@JoinFetch`
+annotation specifies the `Employee` field `managedEmployees`.
+
+[[CHDBICAF]]
+
+*_Example 18-2 Enabling JoinFetching_*
+
+[source,oac_no_warn]
+----
+@Entity
+ public class Employee implements Serializable {
+     ...
+     @OneToMany(cascade=ALL, mappedBy="owner")
+     @JoinFetch(value=OUTER)
+     public Collection<Employee> getManagedEmployees() {
+         return managedEmployees;
+     }
+     ...
+ }
+----
+
+For more details on Join Fetching, see "@JoinFetch" in _Jakarta
+Persistence API (JPA) Extensions Reference for EclipseLink_.
+
+[[CHDFHFEB]]
+
+===== Batch Reading
+
+The `eclipselink.batch` hint supplies EclipseLink with batching
+information so subsequent queries of related objects can be optimized in
+batches instead of being retrieved one-by-one or in one large joined
+read. Batch reading is more efficient than joining because it avoids
+reading duplicate data. Batching is only allowed on queries that have a
+single object in their select clause.
+
+[[CHDDJCAC]]
+
+===== Fetch Size
+
+If you have large queries that return a large number of objects you can
+improve performance by reducing the number database hits required to
+satisfy the selection criteria. To do this, use the The
+`eclipselink.jdbc.fetch-size` hint. This hint specifies the number of
+rows that should be fetched from the database when more rows are
+required (depending on the JDBC driver support level). Most JDBC drivers
+default to a fetch size of 10, so if you are reading 1000 objects,
+increasing the fetch size to 256 can significantly reduce the time
+required to fetch the query's results. The optimal fetch size is not
+always obvious. Usually, a fetch size of one half or one quarter of the
+total expected result size is optimal. Note that if you are unsure of
+the result set size, incorrectly setting a fetch size too large or too
+small can decrease performance.
+
+[[CHDIEBJE]]
+
+===== Pagination
+
+Slow paging can result in significant application overhead; however,
+EclipseLink includes a variety of solutions for improving paging
+results; for example, you can:
+
+* Configure the first and maximum number of rows to retrieve when
+executing a query.
+* Perform a query on the database for all of the ID values that match
+the criteria and then use these values to retrieve specific sets.
+* Configure EclipseLink to return a `ScrollableCursor` object from a
+query by using query hints. This returns a database cursor on the
+query's result set and allows the client to scroll through the results
+page by page.
+
+For details on improving paging performance, see "How to use EclipseLink
+Pagination" in the EclipseLink online documentation, at:
+
+`http://wiki.eclipse.org/EclipseLink/Examples/JPA/Pagination#How_to_use_EclipseLink_Pagination`
+
+[[CHDBGFAI]]
+
+===== Cache Usage
+
+EclipseLink uses a shared cache mechanism that is scoped to the entire
+persistence unit. When operations are completed in a particular
+persistence context, the results are merged back into the shared cache
+so that other persistence contexts can use them. This happens regardless
+of whether the entity manager and persistence context are created in
+Java SE or Jakarta EE. Any entity persisted or removed using the entity
+manager will always be kept consistent with the cache.
+
+You can specify how the query should interact with the EclipseLink cache
+by using the `eclipselink.cache-usage` hint. For more information, see
+"cache usage" in t__Jakarta Persistence API (JPA) Extensions Reference
+for EclipseLink__.
+
+[[CHDDGGFI]]
+
+==== Mapping
+
+Mapping performance is enhanced by these features:
+
+* link:#CHDDJHCG[Read-Only Objects]
+* link:#CHDIJAAH[Weaving]
+
+This section describes these features.
+
+[[CHDDJHCG]]
+
+===== Read-Only Objects
+
+When you declare a class read-only, clones of that class are neither
+created nor merged greatly improving performance. You can declare a
+class as read-only within the context of a unit of work by using the
+`addReadOnlyClass()` method.
+
+* To configure a read-only class for a single unit of work, specify that
+class as the argument to `addReadOnlyClass()`:
++
+[source,oac_no_warn]
+----
+myUnitofWork.addReadOnlyClass(B.class);
+----
+* To configure multiple classes as read-only, add them to a vector and
+specify that vector as the argument to `addReadOnlyClass()`:
++
+[source,oac_no_warn]
+----
+myUnitOfWork.addReadOnlyClasses(myVectorOfClasses);
+----
+
+For more information about using read-only objects to enhance
+performance, see "@ReadOnly" in _Jakarta Persistence API (JPA)
+Extensions Reference for EclipseLink_.
+
+[[CHDIJAAH]]
+
+==== Weaving
+
+Weaving is a technique of manipulating the byte-code of compiled Java
+classes. The EclipseLink JPA persistence provider uses weaving to
+enhance both JPA entities and Plain Old Java Object (POJO) classes for
+such things as lazy loading, change tracking, fetch groups, and internal
+optimizations.Weaving can be performed either dynamically at runtime,
+when entities are loaded, or statically at compile time by
+post-processing the entity `.class` files. By default, EclipseLink uses
+dynamic weaving whenever possible. This includes inside an Jakarta EE
+5/6 application server and in Java SE when the EclipseLink agent is
+configured. Dynamic weaving is recommended as it is easy to configure
+and does not require any changes to a project's build process
+
+For details on how to use weaving to enhance application performance,
+see "weaving" in _Jakarta Persistence API (JPA) Extensions Reference for
+EclipseLink_.
+
+[[CHDBIBAI]]
+
+==== Transactions
+
+To optimize performance during data transactions, use change tracking,.
+Change tracking allows you to tune the way EclipseLink detects changes
+that occur during a transaction. You should choose the strategy based on
+the usage and data modification patterns of the entity type as different
+types may have different access patterns and hence different settings,
+and so on.
+
+Enable change tracking by using the `@ChangeTracking` annotation, as
+shown in link:#CHDJDDFA[Example 18-3].
+
+[[CHDJDDFA]]
+
+*_Example 18-3 Enabling Change Tracking_*
+
+[source,oac_no_warn]
+----
+@Entity
+@Table(name="EMPLOYEE")
+@ChangeTracking(OBJECT) (
+public class Employee implements Serializable {
+    ...
+}
+----
+
+For more details on change tracking, see "@ChangeTracking" in _Jakarta
+Persistence API (JPA) Extensions Reference for EclipseLink_.
+
+[[CHDHFDEJ]]
+
+==== Database
+
+Database performance features in EclipseLink include:
+
+* link:#CHDJFFHG[Connection Pooling]
+* link:#CHDHECDD[Parameterized SQL and Statement Caching]
+* link:#CHDHDFAD[Batch Writing]
+* link:#BBAJBHBI[Serialized Object Policy]
+
+This section describes these features.
+
+[[CHDJFFHG]]
+
+===== Connection Pooling
+
+Establishing a connection to a data source can be time-consuming, so
+reusing such connections in a connection pool can improve performance.
+EclipseLink uses connection pools to manage and share the connections
+used by server and client sessions. This feature reduces the number of
+connections required and allows your application to support many
+clients.
+
+By default, EclipseLink sessions use internal connection pools. These
+pools allow you to optimize the creation of read connections for
+applications that read data only to display it and only infrequently
+modify data. The also allow you to use Workbench to configure the
+default (write) and read connection pools and to create additional
+connection pools for object identity or any other purpose.
+
+In addition to internal connection pools, you can also configure
+EclipseLink to use any of these types of connection pools:
+
+* External connection pools; you must use this type of connection pool
+to integrate with external transaction controller (JTA).
+* Default (write) and read connection pools;
+
+* Sequence connection pools; Use these types of pools when your
+application requires table sequencing (that is, non-native sequencing)
+and you are using an external transaction controller.
+Application-specific connection pools; These are connection pools that
+you can create and use for any application purpose, provided you are
+using internal EclipseLink connection pools in a session.
+
+For more information about using connection pools with EclipseLink, see
+the following topics in _EclipseLink Concepts_:
+
+* "Understanding Connections"
+* "Understanding Connection Pools"
+
+[[CHDHECDD]]
+
+===== Parameterized SQL and Statement Caching
+
+Parameterized SQL can prevent the overall length of an SQL query from
+exceeding the statement length limit that your JDBC driver or database
+server imposes. Using parameterized SQL along with prepared statement
+caching can improve performance by reducing the number of times the
+database SQL engine parses and prepares SQL for a frequently called
+query
+
+By default, EclipseLink enables parameterized SQL but not prepared
+statement caching. You should enable statement caching either in
+EclipseLink when using an internal connection pool or in the data source
+when using an external connection pool and want to specify a statement
+cache size appropriate for your application.
+
+To enable parameterized SQL, add this line to the `persistence.xml` file
+that is in the same path as your domain classes:
+
+[source,oac_no_warn]
+----
+<property name="eclipselink.jdbc.bind-parameters" value="true"/>
+----
+
+To disable parameterized SQL, change `value=` to `false`.
+
+EclipseLink determines binding behavior based on the database platform's
+support for binding. If the database does not support untyped parameter
+markers in specific SQL expressions, EclipseLink will disable parameter
+binding for the whole query.
+
+To enable EclipseLink to restrict parameter binding decisions per
+expression, instead of per query, add this line to the persistence.xml
+file that is in the same path as your domain classes:
+
+[source,oac_no_warn]
+----
+<property name="eclipselink.jdbc.allow-partial-bind-parameters" value="true"/>
+----
+
+For more information about using parameterized SQL and statement
+caching, see "jdbc.bind-parameters" in _Jakarta Persistence API (JPA)
+Extensions Reference for EclipseLink_.
+
+[[CHDHDFAD]]
+
+===== Batch Writing
+
+Heterogeneous batch writing is an optimization that allows EclipseLink
+to send multiple heterogeneous dynamic SQL statements to the database to
+be executed as a single batch. Batch writing is best used for
+applications that perform multiples writes in each transaction.
+
+To configure batch writing, include the `eclipselink.jdbc.batch-writing`
+and `eclipselink.jdbc.batch-writing.size` properties in the
+`persistence.xml` file. The following example enables Oracle's native
+batch writing feature that is available with the Oracle JDBC driver and
+configures the batch size to 150 statements:
+
+[source,oac_no_warn]
+----
+<property name="eclipselink.jdbc.batch-writing" value="Oracle-JDBC"/>
+<property name="eclipselink.jdbc.batch-writing.size" value="150"/>
+----
+
+Different batch options are supported and custom batch implementations
+can also be used. For a detailed reference of the batch writing
+properties, see the `batch-writing` and `batch-writing.size`
+documentation in _Jakarta Persistence API (JPA) Extensions Reference for
+EclipseLink_.
+
+[[BBAJBHBI]]
+
+===== Serialized Object Policy
+
+Serialized object policy is an optimization that allows EclipseLink to
+write out the whole entity object with its privately owned (and nested
+privately owned) entities and element collections into an additional
+field in the database. Serialized object policy optimizes fetching from
+the database, provides faster database reads, and reduces middle tier
+CPU and network access in certain situations.
+
+Serialized object policy is best for read-only or read-mostly
+applications and should only be used for entities that load all their
+dependent entities or element collections. When using serialized object
+policy, database write operations (insert and update) are slower and
+queries for objects without private-owned data are slower. See
+link:#BBAHIFAF["A Simple Serialized Object Policy Example"] that
+demonstrates when serialized object policy is best used to increase
+performance.
+
+Consider using serialized object policy only for complex objects with
+numerous aggregation as characterized by:
+
+* Multiple database rows mapped to a single Java object
+* When the object is read from the database all these rows are read at
+once (no indirection, or all indirection always triggered). There may be
+un-triggered indirection for other fields that are not included in the
+serialized object policy field
+* If versionning is used, then updating or deleting any mapped row (or
+inserting of a new one) should result in incrementing of the object's
+version
+* Object deletion causes all the rows to be deleted.
+* Irregular structure of the aggregation makes it less possible to use
+other common optimizations (such as join fetching and batch reading).
+
+*Serialized Object Policy Configuration*
+
+Serialized object policy is enabled by using the `@SerializedObject`
+annotation on an entity or mapped superclass and passing in an
+implementation of the `SerializedObjectPolicy` interface. You must
+provide an implementation of this interface; there is no default
+implementation. The annotations also includes a field to define the
+column name for the object in the database. The default column name is
+`SOP`.
+
+link:#BBAHGDFA[Example 18-4] enables serialized object policy, overrides
+the default column name, and sets optimistic locking to `cascade`, which
+can increase performance by keeping the serialized object policy field
+in the database up-to-date.
+
+NOTE: If serialized object policy is set on an entity, then policies with the
+same fields are set on all inheriting entities.
+
+[[BBAHGDFA]]
+
+*_Example 18-4 Enabling Serialized Object Policy Using Annotations_*
+
+[source,oac_no_warn]
+----
+@Entity
+@SerializedObject(MySerializedObjectPolicy.class)
+@OptimisticLocking(cascade = true) 
+public class Employee implements Serializable {
+... 
+ 
+@Entity
+@SerializedObject(MySerializedObjectPolicy.class, column = @Column(name="ADDR_SOP"))
+@OptimisticLocking(cascade = true)
+public class Address implements Serializable {
+...
+----
+
+link:#BBABHJJI[Example 18-5] enables serialized object policy in the
+`eclipselink-orm.xml` file
+
+[[BBABHJJI]]
+
+*_Example 18-5 Enabling Serialized Object Policy Using
+eclipselink-orm.xml_*
+
+[source,oac_no_warn]
+----
+<entity class="Employee">
+    <optimistic-locking cascade="true">
+    <serialized-object class="MySerializedObjectPolicy">
+</entity>
+
+<entity class="Address">
+    <optimistic-locking cascade="true">
+    <serialized-object class="MySerializedObjectPolicy">
+        <column name="ADDR_SOP"/>
+    </serialized-object>
+</entity>
+----
+
+link:#BBAGBGFB[Example 18-6] enables serialized object policy in a
+customizer (either session or descriptor):
+
+[[BBAGBGFB]]
+
+*_Example 18-6 Enabling Serialized Object Policy in a Customizer_*
+
+[source,oac_no_warn]
+----
+if (descriptor.hasSerializedObjectPolicy()) {
+
+    MySerializedObjectPolicy sop = (MySerializedObjectPolicy)descriptor.
+       getSerializedObjectPolicy();
+
+    // to compare pk cached in SOP Object with pk read directly from the row from
+    //pk field(s) (false by default):
+
+    sop.setShouldVerifyPrimaryKey(true);
+
+    // to NOT compare version cached in SOP Object with version read directly from
+    // the row from version field (true by default):
+
+    sop.setShouldVerifyVersion(false);
+
+    // to define recoverable SOP (false by default):
+
+    sop.setIsRecoverable(true);
+}
+----
+
+To use a descriptor customizer, define the class and specify it using
+the `@Customizer` annotation:
+
+[source,oac_no_warn]
+----
+public class MyDescriptorCustomizer implements
+   org.eclipse.persistence.config.DescriptorCustomizer {
+    public void customize(ClassDescriptor descriptor) throws Exception 
+    {
+         ...
+    }
+}
+...
+@Customizer(MyDescriptorCustomizer.class)
+public class Employee implements Serializable {... 
+----
+
+To use a session customizer to reach all descriptors at once, specify it
+in a persistence unit property:
+
+[source,oac_no_warn]
+----
+public class MySessionCustomizer implements
+   org.eclipse.persistence.config.SessionCustomizer {
+    public void customize(Session session) throws Exception 
+    {
+        for (ClassDescriptor descriptor : session.getDescriptors().values()) {
+            ...        
+        }
+    }
+}
+ 
+<property name="eclipselink.session.customizer" value="MySessionCustomizer"/>
+----
+
+Read queries (including find and refresh) automatically use a serialized
+object if serialized object policy is enabled. If the serialized object
+column contains `null`, or an obsolete version of the object, then a
+query using a serialized object policy would either throw an exception
+or, if all other fields have been read as well, build the object using
+these fields (exactly as in the case where a serialized object policy is
+not used).
+
+To disable querying the serialized object, set the `SERIALIZED_OBJECT`
+property to `false` as part of a query hint. For example:
+
+[source,oac_no_warn]
+----
+Query query = em.createQuery("SELECT e FROM Employee e")
+   .setHint(QueryHints.SERIALIZED_OBJECT, "false");
+----
+
+The following example demonstrates disabling searching for a serialized
+object:
+
+[source,oac_no_warn]
+----
+Map hints = new HashMap();
+hints.put("eclipselink.serialized-object", "false");
+Employee emp = em.find(Employee.class, id, hints);
+----
+
+Applications that use serialized object policy should also consider
+using the result set access optimization. Use the optimization when
+querying to avoid the costly reading of the serialized object policy
+field (which can be large) if it is already cached and the query is not
+a refresh query. The optimization ensures that only the primary key is
+retrieved from the result set and only gets additional values if the
+cached object cannot be used. To enable the result set access
+optimization, set the `eclipselink.jdbc.result-set-access-optimization`
+persistent unit property to `true` in the `persistence.xml` file. For
+example:
+
+[source,oac_no_warn]
+----
+<property name="eclipselink.jdbc.result-set-access-optimization" value="true"/>
+----
+
+[[BBAHIFAF]]
+
+*A Simple Serialized Object Policy Example*
+
+Consider the following example object model:
+
+[source,oac_no_warn]
+----
+@Entity(name="SOP_PartOrWhole")
+@Table(name="SOP_PART_OR_WHOLE")
+@Inheritance(strategy=InheritanceType.SINGLE_TABLE)
+@Index(columnNames={"LEFTPART_ID", "RIGHTPART_ID"})
+public abstract class PartOrWhole implements Serializable {
+    @Id
+    @GeneratedValue(strategy=GenerationType.TABLE)
+    public long id;
+ 
+    protected String description = "";
+    
+    @OneToOne(cascade=CascadeType.ALL, orphanRemoval=true)
+    protected Part leftPart; 
+    @OneToOne(cascade=CascadeType.ALL, orphanRemoval=true)
+    protected Part rightPart;
+}
+ 
+@Entity(name="SOP_Whole")
+@DiscriminatorValue("W")
+@SerializedObject(MySerializedObjectPolicy.class)
+@NamedQueries({
+    @NamedQuery(name="findWhole", query="Select w from SOP_Whole w where w.id =
+    :id", hints= @QueryHint(name="eclipselink.serialized-object", value="false")),
+    @NamedQuery(name="findWholeSOP", query="Select w from SOP_Whole w where w.id =
+    :id"),
+})
+public class Whole extends PartOrWhole {
+}
+ 
+@Entity(name="SOP_Part")
+@DiscriminatorValue("P")
+public class Part extends PartOrWhole {
+}
+----
+
+The above data model allows the construction of a `Whole` object with
+any number of (nested) `Part` objects. For example:
+
+* 1 level – A `Whole` object contains left and right `Part` objects (3
+objects all together)
+* 2 levels – A `Whole` object contains left and right `Part` objects;
+each of the `Part` objects has left and right `Part` objects (7 objects
+all together)
+* 3 levels – A `Whole` object contains left and right `Part` object;
+each of the `Part` objects has a left and right `Part` objects; which
+each have a left and right `Part` objects (15 objects all together)
+* _`n`_ levels – (2__`n`__+1 - 1 objects all together)
+
+Performance for the above data model increases as the number of levels
+in the model increases. For example:
+
+* 1 level – performance is slower than without serialized object policy.
+* 2 levels – performance is only slightly faster than without serialized
+object policy.
+* 5 levels – performance is 7 times faster than without serialized
+object policy.
+* 10 levels – performance is more than 25 times faster than without
+serialized object policy.
+
+[[BBAFFHDD]]
+
+==== Automated Tuning
+
+Automated tuning is an optimization that allows applications to
+automatically tune JPA and session configuration for a specific purpose.
+Multiple configuration options can be configured by a single tuner and
+different configurations can be specified before and after application
+deployment and after application metadata has been processed but before
+connecting the session. Automated tuning simplifies configuration and
+allows a dynamic single tuning option.
+
+Tuners are created by implementing the
+`org.eclipse.persistence.tools.tuning.SessionTuner` interface. Two tuner
+implementations are provided and custom tuners can be created as
+required:
+
+* Standard (`StandardTuner`) – The standard tuner is enabled by default
+and does not change any of the default configuration settings.
+* Safe (`SafeModeTuner`) – The safe tuner configures the persistence
+unit for debugging. It disables caching and several performance
+optimizations to provide a simplified debugging and development
+configuration:
++
+[source,oac_no_warn]
+----
+WEAVING_INTERNAL = false
+WEAVING_CHANGE_TRACKING = false
+CACHE_SHARED_DEFAULT = false
+JDBC_BIND_PARAMETERS = false
+ORM_SCHEMA_VALIDATION = true
+TEMPORAL_MUTABLE = true
+ORDER_UPDATES = true
+----
+
+To enable a tuner, specify a predefined tuner or enter the fully
+qualified name of a `SessionTuner` implementation as the value of the
+`eclipselink.tuning` property in the `persistence.xml` file. The
+following example enables the safe tuner.
+
+[source,oac_no_warn]
+----
+<property name="eclipselink.tuning" value="Safe"/>
+----
+
+For a detailed reference of the `tuning` property, see _Jakarta
+Persistence API (JPA) Extensions Reference for EclipseLink_.
+
+[[CHDIICEJ]]
+
+==== Tools
+
+EclipseLink provides monitoring and optimization tools, as described in
+xref:{relativedir}/performance002.adoc#PERFORMANCE002[Monitoring and Optimizing
+EclipseLink-Enabled Applications].

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -140,17 +140,11 @@ public class ArchiveFactoryImpl implements ArchiveFactory {
             if (in == null) { // for directories, we may get InputStream as null
                 return false;
             }
-            JarInputStream jis = null;
-            try {
-                jis = new JarInputStream(in);
-                if (jis.getNextEntry() == null){// if there is no next entry, this jar stream can't be used
+            try (JarInputStream jis = new JarInputStream(in)) {
+                if (jis.getNextEntry() == null) {// if there is no next entry, this jar stream can't be used
                     return false;
                 }
                 return true; // we are successful in creating a Jar format IS
-            } finally {
-                if (jis != null){
-                    jis.close();
-                }
             }
 
         } catch (IOException ioe) {

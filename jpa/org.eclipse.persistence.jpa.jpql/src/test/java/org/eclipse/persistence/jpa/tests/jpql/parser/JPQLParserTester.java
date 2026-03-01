@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2012, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2024 Contributors to the Eclipse Foundation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -42,6 +43,7 @@ import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.CollectionMe
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.CollectionValuedPathExpressionTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.ComparisonExpressionTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.ConcatExpressionTester;
+import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.ConcatPipesExpressionTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.ConnectByClauseTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.ConstructorExpressionTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.CountFunctionTester;
@@ -65,12 +67,14 @@ import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.HavingClause
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.HierarchicalQueryClauseTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.IdentificationVariableDeclarationTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.IdentificationVariableTester;
+import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.IdExpressionTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.InExpressionTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.IndexExpressionTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.InputParameterTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.JPQLExpressionTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.JoinTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.KeywordExpressionTester;
+import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.LeftExpressionTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.LengthExpressionTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.LikeExpressionTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.LnExpressionTester;
@@ -94,7 +98,9 @@ import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.OrderSibling
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.PowerExpressionTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.RangeVariableDeclarationTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.RegexpExpressionTester;
+import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.ReplaceExpressionTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.ResultVariableTester;
+import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.RightExpressionTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.RoundExpressionTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.SelectClauseTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.SelectStatementTester;
@@ -122,6 +128,7 @@ import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.UpdateClause
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.UpdateItemTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.UpdateStatementTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.UpperExpressionTester;
+import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.VersionExpressionTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.WhenClauseTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.WhereClauseTester;
 
@@ -438,6 +445,11 @@ public final class JPQLParserTester {
             return new ConcatExpressionTester(collection(expressions));
         }
         return new ConcatExpressionTester(expressions[0]);
+    }
+
+    public static ConcatPipesExpressionTester concatPipes(ExpressionTester leftExpression,
+                                                                 ExpressionTester rightExpression) {
+        return new ConcatPipesExpressionTester(leftExpression, rightExpression);
     }
 
     public static ConnectByClauseTester connectBy(ExpressionTester expression) {
@@ -1062,6 +1074,14 @@ public final class JPQLParserTester {
             rangeVariableDeclarationAs(abstractSchemaName, identificationVariable),
             spacedCollection(joins)
         );
+    }
+
+    public static IdExpressionTester id(ExpressionTester identificationVariable) {
+        return new IdExpressionTester(identificationVariable);
+    }
+
+    public static IdExpressionTester id(String identificationVariable) {
+        return id(variable(identificationVariable));
     }
 
     public static InExpressionTester in(ExpressionTester stateFieldPathExpression,
@@ -2834,7 +2854,7 @@ public final class JPQLParserTester {
         int dotIndex = pathExpression.indexOf('.');
 
         if (dotIndex == 0) {
-            return path(nullExpression(), false, pathExpression);
+            return path(nullExpression(), false, pathExpression.substring(1));
         }
 
         String variable = pathExpression.substring(0, dotIndex);
@@ -3531,6 +3551,25 @@ public final class JPQLParserTester {
         return subFromIn(collectionPath(collectionPath));
     }
 
+    public static LeftExpressionTester left(ExpressionTester firstExpression,
+                                                  ExpressionTester secondExpression) {
+
+        return new LeftExpressionTester(firstExpression, secondExpression);
+    }
+
+    public static RightExpressionTester right(ExpressionTester firstExpression,
+                                            ExpressionTester secondExpression) {
+
+        return new RightExpressionTester(firstExpression, secondExpression);
+    }
+
+    public static ReplaceExpressionTester replace(ExpressionTester firstExpression,
+                                                                   ExpressionTester secondExpression,
+                                                                   ExpressionTester thirdExpression) {
+
+        return new ReplaceExpressionTester(firstExpression, secondExpression, thirdExpression);
+    }
+
     public static SimpleSelectStatementTester subquery(ExpressionTester selectClause,
                                                        ExpressionTester fromClause) {
 
@@ -3996,6 +4035,22 @@ public final class JPQLParserTester {
     }
 
     public static UpdateClauseTester update(String abstractSchemaName,
+                                            String virtualVariable,
+                                            ExpressionTester updateItem,
+                                            boolean dummy) {
+
+        UpdateClauseTester updateClause = update(
+                rangeVariableDeclaration(
+                        abstractSchemaName(abstractSchemaName),
+                        virtualVariable(virtualVariable)
+                ),
+                updateItem
+        );
+        updateClause.hasSpaceAfterRangeVariableDeclaration = false;
+        return updateClause;
+    }
+
+    public static UpdateClauseTester update(String abstractSchemaName,
                                             ExpressionTester... updateItems) {
 
         UpdateClauseTester updateClause = update(
@@ -4090,6 +4145,14 @@ public final class JPQLParserTester {
         }
 
         return new IdentificationVariableTester(identificationVariable, false, nullExpression());
+    }
+
+    public static VersionExpressionTester version(ExpressionTester identificationVariable) {
+        return new VersionExpressionTester(identificationVariable);
+    }
+
+    public static VersionExpressionTester version(String identificationVariable) {
+        return version(variable(identificationVariable));
     }
 
     public static IdentificationVariableTester virtualVariable(String identificationVariable) {

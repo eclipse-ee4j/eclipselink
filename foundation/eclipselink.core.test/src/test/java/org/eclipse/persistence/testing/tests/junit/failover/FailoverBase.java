@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -56,7 +56,9 @@ public abstract class FailoverBase<T extends DatabaseSession> {
 
         // this will actually store the results on the driver for subsequent connections.
         EmulatedConnection con = (EmulatedConnection) ((DatabaseSessionImpl) session).getAccessor().getConnection();
-        Vector<DatabaseField> pingFields = new Vector<DatabaseField>() {{ add(new DatabaseField("1"));}};
+        Vector<DatabaseField> pingFields = new Vector<>() {{
+            add(new DatabaseField("1"));
+        }};
         con.putRows("SELECT 1", new Vector() {{ add(new ArrayRecord(pingFields,pingFields.toArray(new DatabaseField[0]), new Object[] { "1" })); }});
         con.putRows(Address.getSQL(), Address.getData(cd));
     }

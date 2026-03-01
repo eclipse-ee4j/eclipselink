@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,17 +18,13 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import junit.framework.TestCase;
 import org.eclipse.persistence.testing.sdo.SDOTestCase;
 
 import commonj.sdo.DataObject;
 import commonj.sdo.Property;
-import commonj.sdo.Type;
-import commonj.sdo.helper.DataFactory;
 
 import org.eclipse.persistence.jaxb.JAXBContext;
 import org.eclipse.persistence.oxm.XMLContext;
-import org.eclipse.persistence.sdo.helper.SDOHelperContext;
 import org.eclipse.persistence.sdo.helper.jaxb.JAXBHelperContext;
 
 public class OppositePropertyTestCases extends SDOTestCase {

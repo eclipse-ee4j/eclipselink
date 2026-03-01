@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,11 +14,16 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.expressions;
 
-import java.util.*;
-import org.eclipse.persistence.testing.models.employee.domain.*;
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.testing.framework.*;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.expressions.ExpressionMath;
+import org.eclipse.persistence.queries.InMemoryQueryIndirectionPolicy;
+import org.eclipse.persistence.queries.ReadAllQuery;
+import org.eclipse.persistence.testing.framework.TestEntity;
+import org.eclipse.persistence.testing.models.employee.domain.Employee;
+
+import java.util.Calendar;
+import java.util.Vector;
 
 /**
  * <b>Purpose:</b> Tests Complex queries executed In-Memory.
@@ -112,7 +117,7 @@ public class ExpressionInMemoryTestSuite extends ExpressionUnitTestSuite {
     }
 
     protected void _addEqual$DateTest() {
-        Employee employee = (Employee)getManager().getObject(new org.eclipse.persistence.testing.models.employee.domain.Employee().getClass(), "0003");
+        Employee employee = (Employee)getManager().getObject(Employee.class, "0003");
 
         ExpressionBuilder builder = new ExpressionBuilder();
         Expression expression = builder.get("period").get("startDate").equal(employee.getPeriod().getStartDate());
@@ -150,7 +155,7 @@ public class ExpressionInMemoryTestSuite extends ExpressionUnitTestSuite {
     }
 
     protected void _addGreaterThan$DateTest() {
-        Employee employee = (Employee)getManager().getObject(new org.eclipse.persistence.testing.models.employee.domain.Employee().getClass(), "0003");
+        Employee employee = (Employee)getManager().getObject(Employee.class, "0003");
 
         ExpressionBuilder builder = new ExpressionBuilder();
         Expression expression = builder.get("period").get("startDate").greaterThan(employee.getPeriod().getStartDate());
@@ -188,7 +193,7 @@ public class ExpressionInMemoryTestSuite extends ExpressionUnitTestSuite {
     }
 
     protected void _addGreaterThanEqual$DateTest() {
-        Employee employee = (Employee)getManager().getObject(new org.eclipse.persistence.testing.models.employee.domain.Employee().getClass(), "0003");
+        Employee employee = (Employee)getManager().getObject(Employee.class, "0003");
 
         ExpressionBuilder builder = new ExpressionBuilder();
         Expression expression = builder.get("period").get("startDate").greaterThanEqual(employee.getPeriod().getStartDate());
@@ -271,7 +276,7 @@ public class ExpressionInMemoryTestSuite extends ExpressionUnitTestSuite {
     }
 
     protected void _addLessThan$DateTest() {
-        Employee employee = (Employee)getManager().getObject(new org.eclipse.persistence.testing.models.employee.domain.Employee().getClass(), "0003");
+        Employee employee = (Employee)getManager().getObject(Employee.class, "0003");
 
         ExpressionBuilder builder = new ExpressionBuilder();
         Expression expression = builder.get("period").get("startDate").lessThan(employee.getPeriod().getStartDate());
@@ -309,7 +314,7 @@ public class ExpressionInMemoryTestSuite extends ExpressionUnitTestSuite {
     }
 
     protected void _addLessThanEqual$DateTest() {
-        Employee employee = (Employee)getManager().getObject(new org.eclipse.persistence.testing.models.employee.domain.Employee().getClass(), "0003");
+        Employee employee = (Employee)getManager().getObject(Employee.class, "0003");
 
         ExpressionBuilder builder = new ExpressionBuilder();
         Expression expression = builder.get("period").get("startDate").lessThanEqual(employee.getPeriod().getStartDate());
@@ -347,7 +352,7 @@ public class ExpressionInMemoryTestSuite extends ExpressionUnitTestSuite {
     }
 
     protected void _addNotEqual$DateTest() {
-        Employee employee = (Employee)getManager().getObject(new org.eclipse.persistence.testing.models.employee.domain.Employee().getClass(), "0003");
+        Employee employee = (Employee)getManager().getObject(Employee.class, "0003");
 
         ExpressionBuilder builder = new ExpressionBuilder();
         Expression expression = builder.get("period").get("startDate").notEqual(employee.getPeriod().getStartDate());
@@ -434,10 +439,9 @@ public class ExpressionInMemoryTestSuite extends ExpressionUnitTestSuite {
         _addLikeDoubleWildcardTest();
 
         Vector inMemoryTests = new Vector(getTests().size());
-        for (Iterator iter = getTests().iterator(); iter.hasNext();) {
-            TestEntity baseTest = (TestEntity)iter.next();
-            if (baseTest instanceof ReadAllExpressionTest) {
-                ReadAllExpressionTest test = (ReadAllExpressionTest)baseTest;
+        for (junit.framework.Test value : getTests()) {
+            TestEntity baseTest = (TestEntity) value;
+            if (baseTest instanceof ReadAllExpressionTest test) {
                 if (test.isPlatformSpecific()) {
                     continue;
                 }
@@ -449,7 +453,7 @@ public class ExpressionInMemoryTestSuite extends ExpressionUnitTestSuite {
                 InMemoryQueryIndirectionPolicy policy = new InMemoryQueryIndirectionPolicy();
                 policy.triggerIndirection();
                 query.setInMemoryQueryIndirectionPolicy(policy);
-                inMemoryTests.addElement(baseTest);
+                inMemoryTests.add(baseTest);
             }
         }
         inMemoryTests.trimToSize();
@@ -462,14 +466,11 @@ public class ExpressionInMemoryTestSuite extends ExpressionUnitTestSuite {
      */
     public boolean shouldTestPassInMemory(ReadAllExpressionTest test) {
         String name = test.getName();
-        if (// Exclude batching tests
-            (name.indexOf("MultiPlatformTest") > -1) ||// MultiPlatformTestx use functions that are not supported in memory yet
-            (name.indexOf("Batch") > -1) ||// Exclude float tests because of Java floating point conversion issues.
-            (name.indexOf("$float") > -1) ||// Exclude char tests because they use field values, with incorrect types.
-            (name.indexOf("$char") > -1) ||// Excluded due to bug 3246889, inner/outerjoin symantics need to be supported.
-            (name.equals("JoinsShrinkResultSetSizeTest")) || (name.equals("NotSelfManagedEmployeeTest")) || (name.equals("NotEqualSelfManagedEmployeeTest")) || (name.equals("NotBetween$ObjectTest")) || (name.equals("IsNullAccrossAnyOfTest")) || (name.equals("VehicleViewJoinOnlyTest"))) {
-            return false;
-        }
-        return true;
+        // Exclude batching tests
+        return (!name.contains("MultiPlatformTest")) &&// MultiPlatformTestx use functions that are not supported in memory yet
+                (!name.contains("Batch")) &&// Exclude float tests because of Java floating point conversion issues.
+                (!name.contains("$float")) &&// Exclude char tests because they use field values, with incorrect types.
+                (!name.contains("$char")) &&// Excluded due to bug 3246889, inner/outerjoin symantics need to be supported.
+                (!name.equals("JoinsShrinkResultSetSizeTest")) && (!name.equals("NotSelfManagedEmployeeTest")) && (!name.equals("NotEqualSelfManagedEmployeeTest")) && (!name.equals("NotBetween$ObjectTest")) && (!name.equals("IsNullAccrossAnyOfTest")) && (!name.equals("VehicleViewJoinOnlyTest"));
     }
 }

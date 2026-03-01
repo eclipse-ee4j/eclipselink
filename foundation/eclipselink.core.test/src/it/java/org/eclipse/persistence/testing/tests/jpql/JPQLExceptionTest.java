@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,12 +14,15 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.jpql;
 
-import java.util.*;
-import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.testing.framework.*;
-import org.eclipse.persistence.queries.ReadAllQuery;
+import org.eclipse.persistence.exceptions.EclipseLinkException;
+import org.eclipse.persistence.exceptions.JPQLException;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
+import org.eclipse.persistence.queries.ReadAllQuery;
+import org.eclipse.persistence.testing.framework.TestErrorException;
+import org.eclipse.persistence.testing.framework.TestSuite;
+
+import java.util.Vector;
 
 public class JPQLExceptionTest extends JPQLTestCase {
     public EclipseLinkException expectedException;
@@ -79,15 +82,6 @@ public class JPQLExceptionTest extends JPQLTestCase {
         theTest.expectedException = JPQLException.aliasResolutionException(null, 0, 0, null);
         theTest.setEjbqlString("SELECT OBJECT(emp) FROM Employee employee WHERE emp.firstName = \"Fred\"");
         theTest.setName("Bad Alias Exception Test 2");
-        return theTest;
-    }
-
-    //This test produced a stack overflow in the Beta of Pine
-    public static JPQLExceptionTest noAliasWithWHEREAndParameterExceptionTest() {
-        JPQLExceptionTest theTest = new JPQLExceptionTest();
-        theTest.expectedException = JPQLException.unexpectedToken(null, 0, 0, null, null);
-        theTest.setEjbqlString("FROM Employee WHERE firstName = ?1");
-        theTest.setName("No Alias With WHERE and Parameter Exception Test");
         return theTest;
     }
 
@@ -164,7 +158,6 @@ public class JPQLExceptionTest extends JPQLTestCase {
         // theSuite.addTest(EJBQLExceptionTest.expressionNotSupportedTest());
         // Removed by JED - Member of is now supported
         // theSuite.addTest(EJBQLExceptionTest.memberOfNotSupportedTest());
-        theSuite.addTest(JPQLExceptionTest.noAliasWithWHEREAndParameterExceptionTest());
     }
 
     @Override
@@ -187,7 +180,7 @@ public class JPQLExceptionTest extends JPQLTestCase {
     @Override
     public void verify() {
         if (caughtException == null) {
-            throw new TestErrorException("The proper exception was not thrown:" + org.eclipse.persistence.internal.helper.Helper.cr() + "caught exception was null! \n\n[EXPECTING] " + expectedException);
+            throw new TestErrorException("The proper exception was not thrown:" + System.lineSeparator() + "caught exception was null! \n\n[EXPECTING] " + expectedException);
         }
 
         if (caughtException instanceof JPQLException) {
@@ -199,14 +192,14 @@ public class JPQLExceptionTest extends JPQLTestCase {
         }
         if (caughtException.getClass() == JPQLException.class) {
             Vector exceptions = (Vector)((JPQLException)caughtException).getInternalExceptions();
-            if (exceptions.size() > 0) {
-                JPQLException internalException = (JPQLException)exceptions.firstElement();
+            if (!exceptions.isEmpty()) {
+                JPQLException internalException = (JPQLException)exceptions.get(0);
                 if (internalException.getErrorCode() == expectedException.getErrorCode()) {
                     return;
                 }
             }
         }
-        throw new TestErrorException("The proper exception was not thrown:" + org.eclipse.persistence.internal.helper.Helper.cr() + "[CAUGHT] " + caughtException + "\n\n[EXPECTING] " + expectedException);
+        throw new TestErrorException("The proper exception was not thrown:" + System.lineSeparator() + "[CAUGHT] " + caughtException + "\n\n[EXPECTING] " + expectedException);
     }
 
     @Override

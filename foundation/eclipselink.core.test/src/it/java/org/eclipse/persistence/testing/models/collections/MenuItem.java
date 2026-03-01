@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,11 +14,12 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.collections;
 
+import org.eclipse.persistence.descriptors.changetracking.ChangeTracker;
+import org.eclipse.persistence.indirection.ValueHolder;
+import org.eclipse.persistence.indirection.ValueHolderInterface;
+
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import org.eclipse.persistence.descriptors.changetracking.ChangeTracker;
-import org.eclipse.persistence.indirection.*;
-import org.eclipse.persistence.testing.models.collections.Menu;
 
 public class MenuItem implements ChangeTracker {
     private String name;
@@ -271,11 +272,11 @@ public class MenuItem implements ChangeTracker {
      * @return a string representation of the receiver
      */
     public String toString() {
-        StringBuffer buf = new StringBuffer();
-        buf.append(org.eclipse.persistence.internal.helper.Helper.getShortClassName(getClass()));
+        StringBuilder buf = new StringBuilder();
+        buf.append(getClass().getSimpleName());
         buf.append("(");
         if (getName() != null) {
-            buf.append(getName().substring(0, Math.min(10, getName().length())));
+            buf.append(getName(), 0, Math.min(10, getName().length()));
         }
         buf.append(")");
         return buf.toString();

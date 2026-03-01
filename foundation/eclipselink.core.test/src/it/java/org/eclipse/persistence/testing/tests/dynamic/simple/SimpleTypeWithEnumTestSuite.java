@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,17 +21,7 @@
 package org.eclipse.persistence.testing.tests.dynamic.simple;
 
 //javase imports
-import java.util.Calendar;
 
-//JUnit4 imports
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
-//EclipseLink imports
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
 import org.eclipse.persistence.dynamic.DynamicEntity;
@@ -39,7 +29,7 @@ import org.eclipse.persistence.dynamic.DynamicEnumBuilder;
 import org.eclipse.persistence.dynamic.DynamicHelper;
 import org.eclipse.persistence.dynamic.DynamicType;
 import org.eclipse.persistence.dynamic.DynamicTypeBuilder;
-import org.eclipse.persistence.exceptions.DynamicException;
+import org.eclipse.persistence.dynamic.DynamicException;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.dynamic.DynamicTypeImpl;
 import org.eclipse.persistence.queries.ReadObjectQuery;
@@ -48,10 +38,21 @@ import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.IdentityMapAccessor;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.UnitOfWork;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
-//domain-specific (testing) imports
+import java.util.Calendar;
+
 import static org.eclipse.persistence.testing.tests.dynamic.DynamicTestingHelper.createSession;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 public class SimpleTypeWithEnumTestSuite {
 

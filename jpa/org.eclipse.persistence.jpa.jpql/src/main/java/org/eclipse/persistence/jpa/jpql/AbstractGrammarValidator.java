@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2006, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,6 +15,8 @@
 //     Oracle - initial API and implementation
 //     04/21/2022: Tomas Kraus
 //       - Issue 1474: Update JPQL Grammar for Jakarta Persistence 2.2, 3.0 and 3.1
+//     06/02/2023: Radek Felcman
+//       - Issue 1885: Implement new JPQLGrammar for upcoming Jakarta Persistence 3.2
 package org.eclipse.persistence.jpa.jpql;
 
 import java.util.ArrayList;
@@ -46,6 +49,7 @@ import org.eclipse.persistence.jpa.jpql.parser.ArithmeticTermBNF;
 import org.eclipse.persistence.jpa.jpql.parser.AvgFunction;
 import org.eclipse.persistence.jpa.jpql.parser.BadExpression;
 import org.eclipse.persistence.jpa.jpql.parser.BetweenExpression;
+import org.eclipse.persistence.jpa.jpql.parser.CastExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CaseExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CoalesceExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CollectionExpression;
@@ -56,9 +60,12 @@ import org.eclipse.persistence.jpa.jpql.parser.CollectionValuedPathExpressionBNF
 import org.eclipse.persistence.jpa.jpql.parser.ComparisonExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CompoundExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ConcatExpression;
+import org.eclipse.persistence.jpa.jpql.parser.ConcatPipesExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ConditionalExpressionBNF;
 import org.eclipse.persistence.jpa.jpql.parser.ConstructorExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CountFunction;
+import org.eclipse.persistence.jpa.jpql.parser.DatabaseType;
+import org.eclipse.persistence.jpa.jpql.parser.DatabaseTypeFactory;
 import org.eclipse.persistence.jpa.jpql.parser.DateTime;
 import org.eclipse.persistence.jpa.jpql.parser.DeleteClause;
 import org.eclipse.persistence.jpa.jpql.parser.DeleteStatement;
@@ -75,6 +82,7 @@ import org.eclipse.persistence.jpa.jpql.parser.HavingClause;
 import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariable;
 import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariableBNF;
 import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariableDeclaration;
+import org.eclipse.persistence.jpa.jpql.parser.IdExpression;
 import org.eclipse.persistence.jpa.jpql.parser.InExpression;
 import org.eclipse.persistence.jpa.jpql.parser.IndexExpression;
 import org.eclipse.persistence.jpa.jpql.parser.InputParameter;
@@ -86,6 +94,7 @@ import org.eclipse.persistence.jpa.jpql.parser.Join;
 import org.eclipse.persistence.jpa.jpql.parser.JoinAssociationPathExpressionBNF;
 import org.eclipse.persistence.jpa.jpql.parser.KeyExpression;
 import org.eclipse.persistence.jpa.jpql.parser.KeywordExpression;
+import org.eclipse.persistence.jpa.jpql.parser.LeftExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LengthExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LikeExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LikeExpressionEscapeCharacterBNF;
@@ -108,7 +117,9 @@ import org.eclipse.persistence.jpa.jpql.parser.OrderByClause;
 import org.eclipse.persistence.jpa.jpql.parser.OrderByItem;
 import org.eclipse.persistence.jpa.jpql.parser.RangeDeclarationBNF;
 import org.eclipse.persistence.jpa.jpql.parser.RangeVariableDeclaration;
+import org.eclipse.persistence.jpa.jpql.parser.ReplaceExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ResultVariable;
+import org.eclipse.persistence.jpa.jpql.parser.RightExpression;
 import org.eclipse.persistence.jpa.jpql.parser.SelectClause;
 import org.eclipse.persistence.jpa.jpql.parser.SelectStatement;
 import org.eclipse.persistence.jpa.jpql.parser.SimpleFromClause;
@@ -117,7 +128,10 @@ import org.eclipse.persistence.jpa.jpql.parser.SimpleSelectStatement;
 import org.eclipse.persistence.jpa.jpql.parser.SizeExpression;
 import org.eclipse.persistence.jpa.jpql.parser.SqrtExpression;
 import org.eclipse.persistence.jpa.jpql.parser.StateFieldPathExpression;
+import org.eclipse.persistence.jpa.jpql.parser.StringExpression;
+import org.eclipse.persistence.jpa.jpql.parser.StringExpressionBNF;
 import org.eclipse.persistence.jpa.jpql.parser.StringLiteral;
+import org.eclipse.persistence.jpa.jpql.parser.StringTermBNF;
 import org.eclipse.persistence.jpa.jpql.parser.SubExpression;
 import org.eclipse.persistence.jpa.jpql.parser.SubstringExpression;
 import org.eclipse.persistence.jpa.jpql.parser.SubtractionExpression;
@@ -125,12 +139,14 @@ import org.eclipse.persistence.jpa.jpql.parser.SumFunction;
 import org.eclipse.persistence.jpa.jpql.parser.TreatExpression;
 import org.eclipse.persistence.jpa.jpql.parser.TrimExpression;
 import org.eclipse.persistence.jpa.jpql.parser.TypeExpression;
+import org.eclipse.persistence.jpa.jpql.parser.UnionClause;
 import org.eclipse.persistence.jpa.jpql.parser.UnknownExpression;
 import org.eclipse.persistence.jpa.jpql.parser.UpdateClause;
 import org.eclipse.persistence.jpa.jpql.parser.UpdateItem;
 import org.eclipse.persistence.jpa.jpql.parser.UpdateStatement;
 import org.eclipse.persistence.jpa.jpql.parser.UpperExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ValueExpression;
+import org.eclipse.persistence.jpa.jpql.parser.VersionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.WhenClause;
 import org.eclipse.persistence.jpa.jpql.parser.WhereClause;
 
@@ -233,19 +249,22 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
     }
 
     protected AbstractSingleEncapsulatedExpressionHelper<AbsExpression> buildAbsExpressionHelper() {
-        return new AbstractSingleEncapsulatedExpressionHelper<AbsExpression>(this) {
+        return new AbstractSingleEncapsulatedExpressionHelper<>(this) {
             @Override
             public String encapsulatedExpressionInvalidKey(AbsExpression expression) {
                 return AbsExpression_InvalidExpression;
             }
+
             @Override
             public String encapsulatedExpressionMissingKey(AbsExpression expression) {
                 return AbsExpression_MissingExpression;
             }
+
             @Override
             public String leftParenthesisMissingKey(AbsExpression expression) {
                 return AbsExpression_MissingLeftParenthesis;
             }
+
             @Override
             public String rightParenthesisMissingKey(AbsExpression expression) {
                 return AbsExpression_MissingRightParenthesis;
@@ -254,23 +273,27 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
     }
 
     protected AbstractSingleEncapsulatedExpressionHelper<AllOrAnyExpression> buildAllOrAnyExpressionHelper() {
-        return new AbstractSingleEncapsulatedExpressionHelper<AllOrAnyExpression>(this) {
+        return new AbstractSingleEncapsulatedExpressionHelper<>(this) {
             @Override
             public String[] arguments(AllOrAnyExpression expression) {
-                return new String[] { expression.getIdentifier() };
+                return new String[]{expression.getIdentifier()};
             }
+
             @Override
             public String encapsulatedExpressionInvalidKey(AllOrAnyExpression expression) {
                 return AllOrAnyExpression_InvalidExpression;
             }
+
             @Override
             public String encapsulatedExpressionMissingKey(AllOrAnyExpression expression) {
                 return AllOrAnyExpression_MissingExpression;
             }
+
             @Override
             public String leftParenthesisMissingKey(AllOrAnyExpression expression) {
                 return AllOrAnyExpression_MissingLeftParenthesis;
             }
+
             @Override
             public String rightParenthesisMissingKey(AllOrAnyExpression expression) {
                 return AllOrAnyExpression_MissingRightParenthesis;
@@ -279,24 +302,28 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
     }
 
     protected AbstractSingleEncapsulatedExpressionHelper<AvgFunction> buildAvgFunctionHelper() {
-        return new AbstractSingleEncapsulatedExpressionHelper<AvgFunction>(this) {
+        return new AbstractSingleEncapsulatedExpressionHelper<>(this) {
             @Override
             public String encapsulatedExpressionInvalidKey(AvgFunction expression) {
                 return AvgFunction_InvalidExpression;
             }
+
             @Override
             public String encapsulatedExpressionMissingKey(AvgFunction expression) {
                 return AvgFunction_MissingExpression;
             }
+
             @Override
             public String leftParenthesisMissingKey(AvgFunction expression) {
                 return AvgFunction_MissingLeftParenthesis;
             }
+
             @Override
             public int lengthBeforeEncapsulatedExpression(AvgFunction expression) {
                 return (expression.hasDistinct() ? 8 /* DISTINCT */ : 0) +
                         (expression.hasSpaceAfterDistinct() ? 1 : 0);
             }
+
             @Override
             public String rightParenthesisMissingKey(AvgFunction expression) {
                 return AvgFunction_MissingRightParenthesis;
@@ -305,23 +332,27 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
     }
 
     protected AbstractSingleEncapsulatedExpressionHelper<CoalesceExpression> buildCoalesceExpressionHelper() {
-        return new AbstractSingleEncapsulatedExpressionHelper<CoalesceExpression>(this) {
+        return new AbstractSingleEncapsulatedExpressionHelper<>(this) {
             @Override
             public String encapsulatedExpressionInvalidKey(CoalesceExpression expression) {
                 return CoalesceExpression_InvalidExpression;
             }
+
             @Override
             public String encapsulatedExpressionMissingKey(CoalesceExpression expression) {
                 return CoalesceExpression_MissingExpression;
             }
+
             @Override
             protected boolean isEncapsulatedExpressionValid(CoalesceExpression expression) {
                 return isValidWithChildCollectionBypass(expression.getExpression(), expression.getEncapsulatedExpressionQueryBNFId());
             }
+
             @Override
             public String leftParenthesisMissingKey(CoalesceExpression expression) {
                 return CoalesceExpression_MissingLeftParenthesis;
             }
+
             @Override
             public String rightParenthesisMissingKey(CoalesceExpression expression) {
                 return CoalesceExpression_MissingRightParenthesis;
@@ -339,24 +370,28 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
     }
 
     protected AbstractSingleEncapsulatedExpressionHelper<ConcatExpression> buildConcatExpressionHelper() {
-        return new AbstractSingleEncapsulatedExpressionHelper<ConcatExpression>(this) {
+        return new AbstractSingleEncapsulatedExpressionHelper<>(this) {
             @Override
             public String encapsulatedExpressionInvalidKey(ConcatExpression expression) {
                 return ConcatExpression_InvalidExpression;
             }
+
             @Override
             public String encapsulatedExpressionMissingKey(ConcatExpression expression) {
                 return ConcatExpression_MissingExpression;
             }
+
             @Override
             public boolean isEncapsulatedExpressionValid(ConcatExpression expression) {
                 // Done in visit(ConcatExpression)
                 return true;
             }
+
             @Override
             public String leftParenthesisMissingKey(ConcatExpression expression) {
                 return ConcatExpression_MissingLeftParenthesis;
             }
+
             @Override
             public String rightParenthesisMissingKey(ConcatExpression expression) {
                 return ConcatExpression_MissingRightParenthesis;
@@ -365,27 +400,115 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
     }
 
     protected AbstractSingleEncapsulatedExpressionHelper<CountFunction> buildCountFunctionHelper() {
-        return new AbstractSingleEncapsulatedExpressionHelper<CountFunction>(this) {
+        return new AbstractSingleEncapsulatedExpressionHelper<>(this) {
             @Override
             public String encapsulatedExpressionInvalidKey(CountFunction expression) {
                 return CountFunction_InvalidExpression;
             }
+
             @Override
             public String encapsulatedExpressionMissingKey(CountFunction expression) {
                 return CountFunction_MissingExpression;
             }
+
             @Override
             public String leftParenthesisMissingKey(CountFunction expression) {
                 return CountFunction_MissingLeftParenthesis;
             }
+
             @Override
             public int lengthBeforeEncapsulatedExpression(CountFunction expression) {
                 return (expression.hasDistinct() ? 8 /* DISTINCT */ : 0) +
                         (expression.hasSpaceAfterDistinct() ? 1 : 0);
             }
+
             @Override
             public String rightParenthesisMissingKey(CountFunction expression) {
                 return CountFunction_MissingRightParenthesis;
+            }
+        };
+    }
+
+    protected AbstractDoubleEncapsulatedExpressionHelper<DatabaseType> buildDatabaseTypeHelper() {
+        return new AbstractDoubleEncapsulatedExpressionHelper<>(this) {
+            @Override
+            protected String firstExpressionInvalidKey() {
+                return DatabaseType_InvalidFirstExpression;
+            }
+
+            @Override
+            protected String firstExpressionMissingKey() {
+                return DatabaseType_MissingFirstExpression;
+            }
+
+            @Override
+            protected boolean hasComma(DatabaseType expression) {
+                // If the second expression is not specified, then the comma is not needed
+                return expression.hasComma() ||
+                        !expression.hasSecondExpression();
+            }
+
+            @Override
+            protected boolean hasFirstExpression(DatabaseType expression) {
+                return !expression.hasLeftParenthesis() ||
+                        expression.hasFirstExpression();
+            }
+
+            @Override
+            public boolean hasLeftParenthesis(DatabaseType expression) {
+                if (expression.hasLeftParenthesis()) {
+                    return true;
+                }
+                // The parenthesis are optional unless one the following
+                // items is specified, then '(' is required
+                return !(expression.hasFirstExpression() ||
+                        expression.hasComma() ||
+                        expression.hasSecondExpression() ||
+                        expression.hasRightParenthesis());
+            }
+
+            @Override
+            public boolean hasRightParenthesis(DatabaseType expression) {
+                if (expression.hasRightParenthesis()) {
+                    return true;
+                }
+                // The parenthesis are optional unless one the following
+                // items is specified, then ')' is required
+                return !(expression.hasLeftParenthesis() ||
+                        expression.hasFirstExpression() ||
+                        expression.hasComma() ||
+                        expression.hasSecondExpression());
+            }
+
+            @Override
+            protected boolean hasSecondExpression(DatabaseType expression) {
+                return !expression.hasComma() ||
+                        expression.hasSecondExpression();
+            }
+
+            @Override
+            public String leftParenthesisMissingKey(DatabaseType expression) {
+                return DatabaseType_MissingLeftParenthesis;
+            }
+
+            @Override
+            protected String missingCommaKey() {
+                return DatabaseType_MissingComma;
+            }
+
+            @Override
+            public String rightParenthesisMissingKey(DatabaseType expression) {
+                return DatabaseType_MissingRightParenthesis;
+            }
+
+            @Override
+            protected String secondExpressionInvalidKey() {
+                return DatabaseType_InvalidSecondExpression;
+            }
+
+            @Override
+            protected String secondExpressionMissingKey() {
+                return DatabaseType_MissingSecondExpression;
             }
         };
     }
@@ -395,23 +518,27 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
     }
 
     protected AbstractSingleEncapsulatedExpressionHelper<EntryExpression> buildEntryExpressionHelper() {
-        return new AbstractSingleEncapsulatedExpressionHelper<EntryExpression>(this) {
+        return new AbstractSingleEncapsulatedExpressionHelper<>(this) {
             @Override
             public String encapsulatedExpressionInvalidKey(EntryExpression expression) {
                 return EntryExpression_InvalidExpression;
             }
+
             @Override
             public String encapsulatedExpressionMissingKey(EntryExpression expression) {
                 return EntryExpression_MissingExpression;
             }
+
             @Override
             public boolean isEncapsulatedExpressionValid(EntryExpression expression) {
                 return isValid(expression.getExpression(), IdentificationVariableBNF.ID);
             }
+
             @Override
             public String leftParenthesisMissingKey(EntryExpression expression) {
                 return EntryExpression_MissingLeftParenthesis;
             }
+
             @Override
             public String rightParenthesisMissingKey(EntryExpression expression) {
                 return EntryExpression_MissingRightParenthesis;
@@ -420,19 +547,22 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
     }
 
     protected AbstractSingleEncapsulatedExpressionHelper<ExistsExpression> buildExistsExpressionHelper() {
-        return new AbstractSingleEncapsulatedExpressionHelper<ExistsExpression>(this) {
+        return new AbstractSingleEncapsulatedExpressionHelper<>(this) {
             @Override
             public String encapsulatedExpressionInvalidKey(ExistsExpression expression) {
                 return ExistsExpression_InvalidExpression;
             }
+
             @Override
             public String encapsulatedExpressionMissingKey(ExistsExpression expression) {
                 return ExistsExpression_MissingExpression;
             }
+
             @Override
             public String leftParenthesisMissingKey(ExistsExpression expression) {
                 return ExistsExpression_MissingLeftParenthesis;
             }
+
             @Override
             public String rightParenthesisMissingKey(ExistsExpression expression) {
                 return ExistsExpression_MissingRightParenthesis;
@@ -441,11 +571,12 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
     }
 
     protected AbstractSingleEncapsulatedExpressionHelper<FunctionExpression> buildFunctionExpressionHelper() {
-        return new AbstractSingleEncapsulatedExpressionHelper<FunctionExpression>(this) {
+        return new AbstractSingleEncapsulatedExpressionHelper<>(this) {
             @Override
             public String[] arguments(FunctionExpression expression) {
-                return new String[] { expression.getIdentifier() };
+                return new String[]{expression.getIdentifier()};
             }
+
             @Override
             @SuppressWarnings("fallthrough")
             protected String encapsulatedExpressionInvalidKey(FunctionExpression expression) {
@@ -465,6 +596,7 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
                     }
                 }
             }
+
             @Override
             @SuppressWarnings("fallthrough")
             protected String encapsulatedExpressionMissingKey(FunctionExpression expression) {
@@ -481,48 +613,44 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
                     }
                 }
             }
+
             @Override
             protected boolean isEncapsulatedExpressionMissing(FunctionExpression expression) {
-                switch (expression.getParameterCount()) {
-                    case ONE:
-                    case ONE_OR_MANY: return !expression.hasExpression();
-                    default:          return false;
-                }
+                return switch (expression.getParameterCount()) {
+                    case ONE, ONE_OR_MANY -> !expression.hasExpression();
+                    default -> false;
+                };
             }
+
             @Override
             protected boolean isEncapsulatedExpressionValid(FunctionExpression expression) {
-                switch (expression.getParameterCount()) {
-                    case ONE: {
-                        return isValid(
-                                expression.getExpression(),
-                                expression.getEncapsulatedExpressionQueryBNFId()
-                        );
-                    }
-                    case ONE_OR_MANY: {
-                        return isValidWithChildCollectionBypass(
-                                expression.getExpression(),
-                                expression.getEncapsulatedExpressionQueryBNFId()
-                        );
-                    }
-                    case ZERO_OR_ONE: {
-                        return !expression.hasExpression() ||
-                                isValid(expression.getExpression(), expression.getEncapsulatedExpressionQueryBNFId());
-                    }
-                    default: {
-                        return true;
-                    }
-                }
+                return switch (expression.getParameterCount()) {
+                    case ONE -> isValid(
+                            expression.getExpression(),
+                            expression.getEncapsulatedExpressionQueryBNFId()
+                    );
+                    case ONE_OR_MANY -> isValidWithChildCollectionBypass(
+                            expression.getExpression(),
+                            expression.getEncapsulatedExpressionQueryBNFId()
+                    );
+                    case ZERO_OR_ONE -> !expression.hasExpression() ||
+                            isValid(expression.getExpression(), expression.getEncapsulatedExpressionQueryBNFId());
+                    default -> true;
+                };
             }
+
             @Override
             public String leftParenthesisMissingKey(FunctionExpression expression) {
                 return null; // never happens
             }
+
             @Override
             protected int lengthBeforeEncapsulatedExpression(FunctionExpression expression) {
                 return expression.getFunctionName().length() +
                         (expression.hasComma() ? 1 : 0) +
                         (expression.hasSpaceAfterComma() ? 1 : 0);
             }
+
             @Override
             public String rightParenthesisMissingKey(FunctionExpression expression) {
                 return FunctionExpression_MissingRightParenthesis;
@@ -530,24 +658,57 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         };
     }
 
+    protected AbstractSingleEncapsulatedExpressionHelper<IdExpression> buildIdExpressionHelper() {
+        return new AbstractSingleEncapsulatedExpressionHelper<>(this) {
+            @Override
+            public String encapsulatedExpressionInvalidKey(IdExpression expression) {
+                return IdExpression_InvalidExpression;
+            }
+
+            @Override
+            public String encapsulatedExpressionMissingKey(IdExpression expression) {
+                return IdExpression_MissingExpression;
+            }
+
+            @Override
+            public boolean isEncapsulatedExpressionValid(IdExpression expression) {
+                return isValid(expression.getExpression(), IdentificationVariableBNF.ID);
+            }
+
+            @Override
+            public String leftParenthesisMissingKey(IdExpression expression) {
+                return IdExpression_MissingLeftParenthesis;
+            }
+
+            @Override
+            public String rightParenthesisMissingKey(IdExpression expression) {
+                return IdExpression_MissingRightParenthesis;
+            }
+        };
+    }
+
     protected AbstractSingleEncapsulatedExpressionHelper<IndexExpression> buildIndexExpressionHelper() {
-        return new AbstractSingleEncapsulatedExpressionHelper<IndexExpression>(this) {
+        return new AbstractSingleEncapsulatedExpressionHelper<>(this) {
             @Override
             public String encapsulatedExpressionInvalidKey(IndexExpression expression) {
                 return IndexExpression_InvalidExpression;
             }
+
             @Override
             public String encapsulatedExpressionMissingKey(IndexExpression expression) {
                 return IndexExpression_MissingExpression;
             }
+
             @Override
             public boolean isEncapsulatedExpressionValid(IndexExpression expression) {
                 return isValid(expression.getExpression(), IdentificationVariableBNF.ID);
             }
+
             @Override
             public String leftParenthesisMissingKey(IndexExpression expression) {
                 return IndexExpression_MissingLeftParenthesis;
             }
+
             @Override
             public String rightParenthesisMissingKey(IndexExpression expression) {
                 return IndexExpression_MissingRightParenthesis;
@@ -556,23 +717,27 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
     }
 
     protected AbstractSingleEncapsulatedExpressionHelper<KeyExpression> buildKeyExpressionHelper() {
-        return new AbstractSingleEncapsulatedExpressionHelper<KeyExpression>(this) {
+        return new AbstractSingleEncapsulatedExpressionHelper<>(this) {
             @Override
             public String encapsulatedExpressionInvalidKey(KeyExpression expression) {
                 return KeyExpression_InvalidExpression;
             }
+
             @Override
             public String encapsulatedExpressionMissingKey(KeyExpression expression) {
                 return KeyExpression_MissingExpression;
             }
+
             @Override
             public boolean isEncapsulatedExpressionValid(KeyExpression expression) {
                 return isValid(expression.getExpression(), IdentificationVariableBNF.ID);
             }
+
             @Override
             public String leftParenthesisMissingKey(KeyExpression expression) {
                 return KeyExpression_MissingLeftParenthesis;
             }
+
             @Override
             public String rightParenthesisMissingKey(KeyExpression expression) {
                 return KeyExpression_MissingRightParenthesis;
@@ -580,20 +745,76 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         };
     }
 
+    protected AbstractDoubleEncapsulatedExpressionHelper<DatabaseType> databaseTypeHelper() {
+        AbstractDoubleEncapsulatedExpressionHelper<DatabaseType> helper = getHelper(DatabaseTypeFactory.ID);
+        if (helper == null) {
+            helper = buildDatabaseTypeHelper();
+            registerHelper(DatabaseTypeFactory.ID, helper);
+        }
+        return helper;
+    }
+
+    protected AbstractDoubleEncapsulatedExpressionHelper<LeftExpression> buildLeftExpressionHelper() {
+        return new AbstractDoubleEncapsulatedExpressionHelper<>(this) {
+            @Override
+            protected String firstExpressionInvalidKey() {
+                return LeftExpression_InvalidFirstExpression;
+            }
+
+            @Override
+            protected String firstExpressionMissingKey() {
+                return LeftExpression_MissingFirstExpression;
+            }
+
+            @Override
+            public String identifier(LeftExpression expression) {
+                return RIGHT;
+            }
+
+            @Override
+            public String leftParenthesisMissingKey(LeftExpression expression) {
+                return LeftExpression_MissingLeftParenthesis;
+            }
+
+            @Override
+            public String rightParenthesisMissingKey(LeftExpression expression) {
+                return LeftExpression_MissingRightParenthesis;
+            }
+
+            @Override
+            protected String missingCommaKey() {
+                return LeftExpression_MissingFirstComma;
+            }
+
+            @Override
+            protected String secondExpressionInvalidKey() {
+                return LeftExpression_InvalidSecondExpression;
+            }
+
+            @Override
+            protected String secondExpressionMissingKey() {
+                return LeftExpression_MissingSecondExpression;
+            }
+        };
+    }
+
     protected AbstractSingleEncapsulatedExpressionHelper<LengthExpression> buildLengthExpressionHelper() {
-        return new AbstractSingleEncapsulatedExpressionHelper<LengthExpression>(this) {
+        return new AbstractSingleEncapsulatedExpressionHelper<>(this) {
             @Override
             public String encapsulatedExpressionInvalidKey(LengthExpression expression) {
                 return LengthExpression_InvalidExpression;
             }
+
             @Override
             public String encapsulatedExpressionMissingKey(LengthExpression expression) {
                 return LengthExpression_MissingExpression;
             }
+
             @Override
             public String leftParenthesisMissingKey(LengthExpression expression) {
                 return LengthExpression_MissingLeftParenthesis;
             }
+
             @Override
             public String rightParenthesisMissingKey(LengthExpression expression) {
                 return LengthExpression_MissingRightParenthesis;
@@ -602,47 +823,57 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
     }
 
     protected AbstractTripleEncapsulatedExpressionHelper<LocateExpression> buildLocateExpressionHelper() {
-        return new AbstractTripleEncapsulatedExpressionHelper<LocateExpression>(this) {
+        return new AbstractTripleEncapsulatedExpressionHelper<>(this) {
             @Override
             protected String firstCommaMissingKey() {
                 return LocateExpression_MissingFirstComma;
             }
+
             @Override
             protected String firstExpressionInvalidKey() {
                 return LocateExpression_InvalidFirstExpression;
             }
+
             @Override
             protected String firstExpressionMissingKey() {
                 return LocateExpression_MissingFirstExpression;
             }
+
             @Override
             public String identifier(LocateExpression expression) {
                 return LOCATE;
             }
+
             @Override
             public String leftParenthesisMissingKey(LocateExpression expression) {
                 return LocateExpression_MissingLeftParenthesis;
             }
+
             @Override
             public String rightParenthesisMissingKey(LocateExpression expression) {
                 return LocateExpression_MissingRightParenthesis;
             }
+
             @Override
             protected String secondCommaMissingKey() {
                 return LocateExpression_MissingSecondComma;
             }
+
             @Override
             protected String secondExpressionInvalidKey() {
                 return LocateExpression_InvalidSecondExpression;
             }
+
             @Override
             protected String secondExpressionMissingKey() {
                 return LocateExpression_MissingSecondExpression;
             }
+
             @Override
             protected String thirdExpressionInvalidKey() {
                 return LocateExpression_InvalidThirdExpression;
             }
+
             @Override
             protected String thirdExpressionMissingKey() {
                 return LocateExpression_MissingThirdExpression;
@@ -651,19 +882,22 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
     }
 
     protected AbstractSingleEncapsulatedExpressionHelper<LowerExpression> buildLowerExpressionHelper() {
-        return new AbstractSingleEncapsulatedExpressionHelper<LowerExpression>(this) {
+        return new AbstractSingleEncapsulatedExpressionHelper<>(this) {
             @Override
             public String encapsulatedExpressionInvalidKey(LowerExpression expression) {
                 return LowerExpression_InvalidExpression;
             }
+
             @Override
             public String encapsulatedExpressionMissingKey(LowerExpression expression) {
                 return LowerExpression_MissingExpression;
             }
+
             @Override
             public String leftParenthesisMissingKey(LowerExpression expression) {
                 return LowerExpression_MissingLeftParenthesis;
             }
+
             @Override
             public String rightParenthesisMissingKey(LowerExpression expression) {
                 return LowerExpression_MissingRightParenthesis;
@@ -672,24 +906,28 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
     }
 
     protected AbstractSingleEncapsulatedExpressionHelper<MaxFunction> buildMaxFunctionHelper() {
-        return new AbstractSingleEncapsulatedExpressionHelper<MaxFunction>(this) {
+        return new AbstractSingleEncapsulatedExpressionHelper<>(this) {
             @Override
             public String encapsulatedExpressionInvalidKey(MaxFunction expression) {
                 return MaxFunction_InvalidExpression;
             }
+
             @Override
             public String encapsulatedExpressionMissingKey(MaxFunction expression) {
                 return MaxFunction_MissingExpression;
             }
+
             @Override
             public String leftParenthesisMissingKey(MaxFunction expression) {
                 return MaxFunction_MissingLeftParenthesis;
             }
+
             @Override
             public int lengthBeforeEncapsulatedExpression(MaxFunction expression) {
                 return (expression.hasDistinct() ? 8 /* DISTINCT */ : 0) +
                         (expression.hasSpaceAfterDistinct() ? 1 : 0);
             }
+
             @Override
             public String rightParenthesisMissingKey(MaxFunction expression) {
                 return MaxFunction_MissingRightParenthesis;
@@ -698,24 +936,28 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
     }
 
     protected AbstractSingleEncapsulatedExpressionHelper<MinFunction> buildMinFunctionHelper() {
-        return new AbstractSingleEncapsulatedExpressionHelper<MinFunction>(this) {
+        return new AbstractSingleEncapsulatedExpressionHelper<>(this) {
             @Override
             public String encapsulatedExpressionInvalidKey(MinFunction expression) {
                 return MinFunction_InvalidExpression;
             }
+
             @Override
             public String encapsulatedExpressionMissingKey(MinFunction expression) {
                 return MinFunction_MissingExpression;
             }
+
             @Override
             public String leftParenthesisMissingKey(MinFunction expression) {
                 return MinFunction_MissingLeftParenthesis;
             }
+
             @Override
             public int lengthBeforeEncapsulatedExpression(MinFunction expression) {
                 return (expression.hasDistinct() ? 8 /* DISTINCT */ : 0) +
                         (expression.hasSpaceAfterDistinct() ? 1 : 0);
             }
+
             @Override
             public String rightParenthesisMissingKey(MinFunction expression) {
                 return MinFunction_MissingRightParenthesis;
@@ -724,31 +966,37 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
     }
 
     protected AbstractDoubleEncapsulatedExpressionHelper<ModExpression> buildModExpressionHelper() {
-        return new AbstractDoubleEncapsulatedExpressionHelper<ModExpression>(this) {
+        return new AbstractDoubleEncapsulatedExpressionHelper<>(this) {
             @Override
             protected String firstExpressionInvalidKey() {
                 return ModExpression_InvalidFirstExpression;
             }
+
             @Override
             protected String firstExpressionMissingKey() {
                 return ModExpression_MissingFirstExpression;
             }
+
             @Override
             public String leftParenthesisMissingKey(ModExpression expression) {
                 return ModExpression_MissingLeftParenthesis;
             }
+
             @Override
             protected String missingCommaKey() {
                 return ModExpression_MissingComma;
             }
+
             @Override
             public String rightParenthesisMissingKey(ModExpression expression) {
                 return ModExpression_MissingRightParenthesis;
             }
+
             @Override
             protected String secondExpressionInvalidKey() {
                 return ModExpression_InvalidSecondExpression;
             }
+
             @Override
             protected String secondExpressionMissingKey() {
                 return ModExpression_MissingSecondExpression;
@@ -766,31 +1014,37 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
     }
 
     protected AbstractDoubleEncapsulatedExpressionHelper<NullIfExpression> buildNullIfExpressionHelper() {
-        return new AbstractDoubleEncapsulatedExpressionHelper<NullIfExpression>(this) {
+        return new AbstractDoubleEncapsulatedExpressionHelper<>(this) {
             @Override
             public String firstExpressionInvalidKey() {
                 return NullIfExpression_InvalidFirstExpression;
             }
+
             @Override
             public String firstExpressionMissingKey() {
                 return NullIfExpression_MissingFirstExpression;
             }
+
             @Override
             public String leftParenthesisMissingKey(NullIfExpression expression) {
                 return NullIfExpression_MissingLeftParenthesis;
             }
+
             @Override
             public String missingCommaKey() {
                 return NullIfExpression_MissingComma;
             }
+
             @Override
             public String rightParenthesisMissingKey(NullIfExpression expression) {
                 return NullIfExpression_MissingRightParenthesis;
             }
+
             @Override
             public String secondExpressionInvalidKey() {
                 return NullIfExpression_InvalidSecondExpression;
             }
+
             @Override
             public String secondExpressionMissingKey() {
                 return NullIfExpression_MissingSecondExpression;
@@ -799,23 +1053,27 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
     }
 
     protected AbstractSingleEncapsulatedExpressionHelper<ObjectExpression> buildObjectExpressionHelper() {
-        return new AbstractSingleEncapsulatedExpressionHelper<ObjectExpression>(this) {
+        return new AbstractSingleEncapsulatedExpressionHelper<>(this) {
             @Override
             public String encapsulatedExpressionInvalidKey(ObjectExpression expression) {
                 return ObjectExpression_InvalidExpression;
             }
+
             @Override
             public String encapsulatedExpressionMissingKey(ObjectExpression expression) {
                 return ObjectExpression_MissingExpression;
             }
+
             @Override
             public boolean isEncapsulatedExpressionValid(ObjectExpression expression) {
                 return isValid(expression.getExpression(), IdentificationVariableBNF.ID);
             }
+
             @Override
             public String leftParenthesisMissingKey(ObjectExpression expression) {
                 return ObjectExpression_MissingLeftParenthesis;
             }
+
             @Override
             public String rightParenthesisMissingKey(ObjectExpression expression) {
                 return ObjectExpression_MissingRightParenthesis;
@@ -823,20 +1081,155 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         };
     }
 
+    @Override
+    protected OwningClauseVisitor buildOwningClauseVisitor() {
+        return new OwningClauseVisitor();
+    }
+
+    protected AbstractSingleEncapsulatedExpressionHelper<CastExpression> buildCastExpressionHelper() {
+        return new AbstractSingleEncapsulatedExpressionHelper<>(this) {
+            @Override
+            protected String encapsulatedExpressionInvalidKey(CastExpression expression) {
+                return CastExpression_InvalidExpression;
+            }
+
+            @Override
+            protected String encapsulatedExpressionMissingKey(CastExpression expression) {
+                return CastExpression_MissingExpression;
+            }
+
+            @Override
+            public String leftParenthesisMissingKey(CastExpression expression) {
+                return CastExpression_MissingLeftParenthesis;
+            }
+
+            @Override
+            public String rightParenthesisMissingKey(CastExpression expression) {
+                return CastExpression_MissingRightParenthesis;
+            }
+        };
+    }
+
+    protected AbstractTripleEncapsulatedExpressionHelper<ReplaceExpression> buildReplaceExpressionHelper() {
+        return new AbstractTripleEncapsulatedExpressionHelper<>(this) {
+            @Override
+            protected String firstCommaMissingKey() {
+                return ReplaceExpression_MissingFirstComma;
+            }
+
+            @Override
+            protected String firstExpressionInvalidKey() {
+                return ReplaceExpression_InvalidFirstExpression;
+            }
+
+            @Override
+            protected String firstExpressionMissingKey() {
+                return ReplaceExpression_MissingFirstExpression;
+            }
+
+            @Override
+            public String identifier(ReplaceExpression expression) {
+                return REPLACE;
+            }
+
+            @Override
+            public String leftParenthesisMissingKey(ReplaceExpression expression) {
+                return ReplaceExpression_MissingLeftParenthesis;
+            }
+
+            @Override
+            public String rightParenthesisMissingKey(ReplaceExpression expression) {
+                return ReplaceExpression_MissingRightParenthesis;
+            }
+
+            @Override
+            protected String secondCommaMissingKey() {
+                return ReplaceExpression_MissingSecondComma;
+            }
+
+            @Override
+            protected String secondExpressionInvalidKey() {
+                return ReplaceExpression_InvalidSecondExpression;
+            }
+
+            @Override
+            protected String secondExpressionMissingKey() {
+                return ReplaceExpression_MissingSecondExpression;
+            }
+
+            @Override
+            protected String thirdExpressionInvalidKey() {
+                return ReplaceExpression_InvalidThirdExpression;
+            }
+
+            @Override
+            protected String thirdExpressionMissingKey() {
+                return ReplaceExpression_MissingThirdExpression;
+            }
+        };
+    }
+
+    protected AbstractDoubleEncapsulatedExpressionHelper<RightExpression> buildRightExpressionHelper() {
+        return new AbstractDoubleEncapsulatedExpressionHelper<>(this) {
+            @Override
+            protected String firstExpressionInvalidKey() {
+                return RightExpression_InvalidFirstExpression;
+            }
+
+            @Override
+            protected String firstExpressionMissingKey() {
+                return RightExpression_MissingFirstExpression;
+            }
+
+            @Override
+            public String identifier(RightExpression expression) {
+                return RIGHT;
+            }
+
+            @Override
+            public String leftParenthesisMissingKey(RightExpression expression) {
+                return RightExpression_MissingLeftParenthesis;
+            }
+
+            @Override
+            public String rightParenthesisMissingKey(RightExpression expression) {
+                return RightExpression_MissingRightParenthesis;
+            }
+
+            @Override
+            protected String missingCommaKey() {
+                return RightExpression_MissingFirstComma;
+            }
+
+            @Override
+            protected String secondExpressionInvalidKey() {
+                return RightExpression_InvalidSecondExpression;
+            }
+
+            @Override
+            protected String secondExpressionMissingKey() {
+                return RightExpression_MissingSecondExpression;
+            }
+        };
+    }
+
     protected AbstractSingleEncapsulatedExpressionHelper<SizeExpression> buildSizeExpressionHelper() {
-        return new AbstractSingleEncapsulatedExpressionHelper<SizeExpression>(this) {
+        return new AbstractSingleEncapsulatedExpressionHelper<>(this) {
             @Override
             public String encapsulatedExpressionInvalidKey(SizeExpression expression) {
                 return SizeExpression_InvalidExpression;
             }
+
             @Override
             public String encapsulatedExpressionMissingKey(SizeExpression expression) {
                 return SizeExpression_MissingExpression;
             }
+
             @Override
             public String leftParenthesisMissingKey(SizeExpression expression) {
                 return SizeExpression_MissingLeftParenthesis;
             }
+
             @Override
             public String rightParenthesisMissingKey(SizeExpression expression) {
                 return SizeExpression_MissingRightParenthesis;
@@ -845,19 +1238,22 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
     }
 
     protected AbstractSingleEncapsulatedExpressionHelper<SqrtExpression> buildSqrtExpressionHelper() {
-        return new AbstractSingleEncapsulatedExpressionHelper<SqrtExpression>(this) {
+        return new AbstractSingleEncapsulatedExpressionHelper<>(this) {
             @Override
             public String encapsulatedExpressionInvalidKey(SqrtExpression expression) {
                 return SqrtExpression_InvalidExpression;
             }
+
             @Override
             public String encapsulatedExpressionMissingKey(SqrtExpression expression) {
                 return SqrtExpression_MissingExpression;
             }
+
             @Override
             public String leftParenthesisMissingKey(SqrtExpression expression) {
                 return SqrtExpression_MissingLeftParenthesis;
             }
+
             @Override
             public String rightParenthesisMissingKey(SqrtExpression expression) {
                 return SqrtExpression_MissingRightParenthesis;
@@ -866,47 +1262,57 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
     }
 
     protected AbstractTripleEncapsulatedExpressionHelper<SubstringExpression> buildSubstringExpressionHelper() {
-        return new AbstractTripleEncapsulatedExpressionHelper<SubstringExpression>(this) {
+        return new AbstractTripleEncapsulatedExpressionHelper<>(this) {
             @Override
             protected String firstCommaMissingKey() {
                 return SubstringExpression_MissingFirstComma;
             }
+
             @Override
             protected String firstExpressionInvalidKey() {
                 return SubstringExpression_InvalidFirstExpression;
             }
+
             @Override
             protected String firstExpressionMissingKey() {
                 return SubstringExpression_MissingFirstExpression;
             }
+
             @Override
             public String identifier(SubstringExpression expression) {
                 return SUBSTRING;
             }
+
             @Override
             public String leftParenthesisMissingKey(SubstringExpression expression) {
                 return SubstringExpression_MissingLeftParenthesis;
             }
+
             @Override
             public String rightParenthesisMissingKey(SubstringExpression expression) {
                 return SubstringExpression_MissingRightParenthesis;
             }
+
             @Override
             protected String secondCommaMissingKey() {
                 return SubstringExpression_MissingSecondComma;
             }
+
             @Override
             protected String secondExpressionInvalidKey() {
                 return SubstringExpression_InvalidSecondExpression;
             }
+
             @Override
             protected String secondExpressionMissingKey() {
                 return SubstringExpression_MissingSecondExpression;
             }
+
             @Override
             protected String thirdExpressionInvalidKey() {
                 return SubstringExpression_InvalidThirdExpression;
             }
+
             @Override
             protected String thirdExpressionMissingKey() {
                 return SubstringExpression_MissingThirdExpression;
@@ -915,24 +1321,28 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
     }
 
     protected AbstractSingleEncapsulatedExpressionHelper<SumFunction> buildSumFunctionHelper() {
-        return new AbstractSingleEncapsulatedExpressionHelper<SumFunction>(this) {
+        return new AbstractSingleEncapsulatedExpressionHelper<>(this) {
             @Override
             public String encapsulatedExpressionInvalidKey(SumFunction expression) {
                 return SumFunction_InvalidExpression;
             }
+
             @Override
             public String encapsulatedExpressionMissingKey(SumFunction expression) {
                 return SumFunction_MissingExpression;
             }
+
             @Override
             public String leftParenthesisMissingKey(SumFunction expression) {
                 return SumFunction_MissingLeftParenthesis;
             }
+
             @Override
             public int lengthBeforeEncapsulatedExpression(SumFunction expression) {
                 return (expression.hasDistinct() ? 8 /* DISTINCT */ : 0) +
                         (expression.hasSpaceAfterDistinct() ? 1 : 0);
             }
+
             @Override
             public String rightParenthesisMissingKey(SumFunction expression) {
                 return SumFunction_MissingRightParenthesis;
@@ -941,29 +1351,34 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
     }
 
     protected AbstractSingleEncapsulatedExpressionHelper<TrimExpression> buildTrimExpressionHelper() {
-        return new AbstractSingleEncapsulatedExpressionHelper<TrimExpression>(this) {
+        return new AbstractSingleEncapsulatedExpressionHelper<>(this) {
             @Override
             public String encapsulatedExpressionInvalidKey(TrimExpression expression) {
                 return TrimExpression_InvalidExpression;
             }
+
             @Override
             public String encapsulatedExpressionMissingKey(TrimExpression expression) {
                 return TrimExpression_MissingExpression;
             }
+
             @Override
             public boolean isEncapsulatedExpressionMissing(TrimExpression expression) {
                 // Done in visit(TrimExpression)
                 return false;
             }
+
             @Override
             public boolean isEncapsulatedExpressionValid(TrimExpression expression) {
                 // Done in visit(TrimExpression)
                 return true;
             }
+
             @Override
             public String leftParenthesisMissingKey(TrimExpression expression) {
                 return TrimExpression_MissingLeftParenthesis;
             }
+
             @Override
             public String rightParenthesisMissingKey(TrimExpression expression) {
                 return TrimExpression_MissingRightParenthesis;
@@ -972,19 +1387,22 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
     }
 
     protected AbstractSingleEncapsulatedExpressionHelper<TypeExpression> buildTypeExpressionHelper() {
-        return new AbstractSingleEncapsulatedExpressionHelper<TypeExpression>(this) {
+        return new AbstractSingleEncapsulatedExpressionHelper<>(this) {
             @Override
             public String encapsulatedExpressionInvalidKey(TypeExpression expression) {
                 return TypeExpression_InvalidExpression;
             }
+
             @Override
             public String encapsulatedExpressionMissingKey(TypeExpression expression) {
                 return TypeExpression_MissingExpression;
             }
+
             @Override
             public String leftParenthesisMissingKey(TypeExpression expression) {
                 return TypeExpression_MissingLeftParenthesis;
             }
+
             @Override
             public String rightParenthesisMissingKey(TypeExpression expression) {
                 return TypeExpression_MissingRightParenthesis;
@@ -993,19 +1411,22 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
     }
 
     protected AbstractSingleEncapsulatedExpressionHelper<UpperExpression> buildUpperExpressionHelper() {
-        return new AbstractSingleEncapsulatedExpressionHelper<UpperExpression>(this) {
+        return new AbstractSingleEncapsulatedExpressionHelper<>(this) {
             @Override
             public String encapsulatedExpressionInvalidKey(UpperExpression expression) {
                 return UpperExpression_InvalidExpression;
             }
+
             @Override
             public String encapsulatedExpressionMissingKey(UpperExpression expression) {
                 return UpperExpression_MissingExpression;
             }
+
             @Override
             public String leftParenthesisMissingKey(UpperExpression expression) {
                 return UpperExpression_MissingLeftParenthesis;
             }
+
             @Override
             public String rightParenthesisMissingKey(UpperExpression expression) {
                 return UpperExpression_MissingRightParenthesis;
@@ -1014,26 +1435,59 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
     }
 
     protected AbstractSingleEncapsulatedExpressionHelper<ValueExpression> buildValueExpressionHelper() {
-        return new AbstractSingleEncapsulatedExpressionHelper<ValueExpression>(this) {
+        return new AbstractSingleEncapsulatedExpressionHelper<>(this) {
             @Override
             protected String encapsulatedExpressionInvalidKey(ValueExpression expression) {
                 return ValueExpression_InvalidExpression;
             }
+
             @Override
             protected String encapsulatedExpressionMissingKey(ValueExpression expression) {
                 return ValueExpression_MissingExpression;
             }
+
             @Override
             protected boolean isEncapsulatedExpressionValid(ValueExpression expression) {
                 return isValid(expression.getExpression(), IdentificationVariableBNF.ID);
             }
+
             @Override
             public String leftParenthesisMissingKey(ValueExpression expression) {
                 return ValueExpression_MissingLeftParenthesis;
             }
+
             @Override
             public String rightParenthesisMissingKey(ValueExpression expression) {
                 return ValueExpression_MissingRightParenthesis;
+            }
+        };
+    }
+
+    protected AbstractSingleEncapsulatedExpressionHelper<VersionExpression> buildVersionExpressionHelper() {
+        return new AbstractSingleEncapsulatedExpressionHelper<>(this) {
+            @Override
+            public String encapsulatedExpressionInvalidKey(VersionExpression expression) {
+                return VersionExpression_InvalidExpression;
+            }
+
+            @Override
+            public String encapsulatedExpressionMissingKey(VersionExpression expression) {
+                return VersionExpression_MissingExpression;
+            }
+
+            @Override
+            public boolean isEncapsulatedExpressionValid(VersionExpression expression) {
+                return isValid(expression.getExpression(), IdentificationVariableBNF.ID);
+            }
+
+            @Override
+            public String leftParenthesisMissingKey(VersionExpression expression) {
+                return VersionExpression_MissingLeftParenthesis;
+            }
+
+            @Override
+            public String rightParenthesisMissingKey(VersionExpression expression) {
+                return VersionExpression_MissingRightParenthesis;
             }
         };
     }
@@ -1168,6 +1622,7 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
     /**
      * Returns the registered helper that was cached with the given id.
      *
+     * @param <T> This is the type parameter
      * @param id The key used to retrieve the cached helper, if one was cached
      * @return Either the cached helper or <code>null</code> if no helper was previously cached for
      * the given id
@@ -1189,8 +1644,8 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
     @Override
     protected void initialize() {
         super.initialize();
-        helpers         = new HashMap<String, Object>();
-        inputParameters = new ArrayList<InputParameter>();
+        helpers         = new HashMap<>();
+        inputParameters = new ArrayList<>();
     }
 
     protected boolean isChildOfComparisonExpession(AllOrAnyExpression expression) {
@@ -1285,6 +1740,16 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
      */
     protected boolean isJPA2_1() {
         return getJPAVersion().isNewerThanOrEqual(JPAVersion.VERSION_2_1);
+    }
+
+    /**
+     * Determines whether the JPA version defined by the JPQL grammar is 3.2.
+     *
+     * @return <code>true</code> if the JPQL grammar was defined for JPA 3.2; <code>false</code> if
+     * it was defined for a more recent version
+     */
+    protected boolean isJPA3_2() {
+        return getJPAVersion().isNewerThanOrEqual(JPAVersion.VERSION_3_2);
     }
 
     /**
@@ -1478,11 +1943,29 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         return true;
     }
 
+    protected AbstractSingleEncapsulatedExpressionHelper<IdExpression> idExpressionHelper() {
+        AbstractSingleEncapsulatedExpressionHelper<IdExpression> helper = getHelper(ID);
+        if (helper == null) {
+            helper = buildIdExpressionHelper();
+            registerHelper(ID, helper);
+        }
+        return helper;
+    }
+
     protected AbstractSingleEncapsulatedExpressionHelper<KeyExpression> keyExpressionHelper() {
         AbstractSingleEncapsulatedExpressionHelper<KeyExpression> helper = getHelper(KEY);
         if (helper == null) {
             helper = buildKeyExpressionHelper();
             registerHelper(KEY, helper);
+        }
+        return helper;
+    }
+
+    protected AbstractDoubleEncapsulatedExpressionHelper<LeftExpression> leftExpressionHelper() {
+        AbstractDoubleEncapsulatedExpressionHelper<LeftExpression> helper = getHelper(LEFT);
+        if (helper == null) {
+            helper = buildLeftExpressionHelper();
+            registerHelper(LEFT, helper);
         }
         return helper;
     }
@@ -1577,6 +2060,33 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         helpers.put(id, helper);
     }
 
+    protected AbstractSingleEncapsulatedExpressionHelper<CastExpression> castExpressionHelper() {
+        AbstractSingleEncapsulatedExpressionHelper<CastExpression> helper = getHelper(CAST);
+        if (helper == null) {
+            helper = buildCastExpressionHelper();
+            registerHelper(CAST, helper);
+        }
+        return helper;
+    }
+
+    protected AbstractTripleEncapsulatedExpressionHelper<ReplaceExpression> replaceExpressionHelper() {
+        AbstractTripleEncapsulatedExpressionHelper<ReplaceExpression> helper = getHelper(REPLACE);
+        if (helper == null) {
+            helper = buildReplaceExpressionHelper();
+            registerHelper(REPLACE, helper);
+        }
+        return helper;
+    }
+
+    protected AbstractDoubleEncapsulatedExpressionHelper<RightExpression> rightExpressionHelper() {
+        AbstractDoubleEncapsulatedExpressionHelper<RightExpression> helper = getHelper(RIGHT);
+        if (helper == null) {
+            helper = buildRightExpressionHelper();
+            registerHelper(RIGHT, helper);
+        }
+        return helper;
+    }
+
     protected AbstractSingleEncapsulatedExpressionHelper<SizeExpression> sizeExpressionHelper() {
         AbstractSingleEncapsulatedExpressionHelper<SizeExpression> helper = getHelper(SIZE);
         if (helper == null) {
@@ -1640,6 +2150,15 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         return helper;
     }
 
+    protected AbstractSingleEncapsulatedExpressionHelper<VersionExpression> versionExpressionHelper() {
+        AbstractSingleEncapsulatedExpressionHelper<VersionExpression> helper = getHelper(VERSION);
+        if (helper == null) {
+            helper = buildVersionExpressionHelper();
+            registerHelper(VERSION, helper);
+        }
+        return helper;
+    }
+
     protected void validateAbstractConditionalClause(AbstractConditionalClause expression,
                                                      String missingConditionalExpressionMessageKey,
                                                      String invalidConditionalExpressionMessageKey) {
@@ -1682,6 +2201,7 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
      * Validates the content of an {@link AbstractDoubleEncapsulatedExpression}, which encapsulates
      * two expressions separated by a comma.
      *
+     * @param <T> This is the type parameter
      * @param expression The {@link AbstractDoubleEncapsulatedExpression} to validate
      * @param helper This helper is used to retrieve specific information related to the {@link
      * AbstractDoubleEncapsulatedExpression expression} being validated
@@ -1811,6 +2331,24 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         }
     }
 
+        /**
+     * Determines whether the given {@link Expression} is a child of the <b>UNION</b> clause.
+     *
+     * @param expression The {@link Expression} to visit its parent hierarchy up to the clause
+     * @return <code>true</code> if the first parent being a clause is the <b>UNION</b> clause;
+     * <code>false</code> otherwise
+     */
+    protected boolean isOwnedByUnionClause(Expression expression) {
+        OwningClauseVisitor visitor = getOwningClauseVisitor();
+        try {
+            expression.accept(visitor);
+            return visitor.unionClause != null;
+        }
+        finally {
+            visitor.dispose();
+        }
+    }
+
     /**
      * Validates the select expression of the given <code>SELECT</code> clause. The select expression
      * will only be visited if its JPQL query BNF is part of the select item BNF.
@@ -1821,6 +2359,13 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
      */
     protected void validateAbstractSelectClause(AbstractSelectClause expression,
                                                 boolean multipleSelectItemsAllowed) {
+
+        // Check id a subquery is defined in a UNION clause
+        // If the flag is false, then the SELECT clause is from a subquery
+        if (!multipleSelectItemsAllowed) {
+            Expression parent = expression.getParent();
+            multipleSelectItemsAllowed = isOwnedByUnionClause (parent);
+        }
 
         // Missing select expression
         if (!expression.hasSelectExpression()) {
@@ -2168,6 +2713,19 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         );
     }
 
+    protected void validateStringExpression(StringExpression expression) {
+        validateCompoundExpression(
+                expression,
+                expression.getStringSign(),
+                StringExpression_MissingLeftExpression,
+                StringExpression_InvalidLeftExpression,
+                StringExpression_MissingRightExpression,
+                StringExpression_InvalidRightExpression,
+                StringExpressionBNF.ID,
+                StringTermBNF.ID
+        );
+    }
+
     /**
      * Validates the given {@link Expression} by making sure each child is separated by a comma.
      *
@@ -2404,7 +2962,7 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         String character = literal(escapeCharacter, LiteralType.STRING_LITERAL);
 
         // Check for a single character
-        if ((character.length() > 0) && ExpressionTools.isQuote(character.charAt(0))) {
+        if ((!character.isEmpty()) && ExpressionTools.isQuote(character.charAt(0))) {
 
             // Unquote the literal first
             character = ExpressionTools.unquote(character);
@@ -2438,7 +2996,7 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
             // Check for an input parameter
             character = literal(escapeCharacter, LiteralType.INPUT_PARAMETER);
 
-            if ((character.length() == 0) &&
+            if ((character.isEmpty()) &&
                     !isValid(escapeCharacter, LikeExpressionEscapeCharacterBNF.ID)) {
 
                 int startPosition = position(expression) +
@@ -2722,6 +3280,41 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
     }
 
     @Override
+    public void visit(CastExpression expression) {
+
+        // Wrong JPA version
+        if (!isJPA3_2()) {
+            addProblem(expression, CastExpression_InvalidJPAVersion);
+        }
+        else {
+
+            validateAbstractSingleEncapsulatedExpression(expression, castExpressionHelper());
+
+            // Database type
+            if (expression.hasExpression() || expression.hasAs()) {
+
+                // Missing database type
+                if (!expression.hasDatabaseType()) {
+
+                    int startPosition = position(expression) +
+                            4 /* CAST */ +
+                            (expression.hasLeftParenthesis() ? 1 : 0) +
+                            length(expression.getExpression()) +
+                            (expression.hasSpaceAfterExpression() ? 1 : 0) +
+                            (expression.hasAs() ? 2 : 0) +
+                            (expression.hasSpaceAfterAs() ? 1 : 0);
+
+                    addProblem(expression, startPosition, CastExpression_MissingDatabaseType);
+                }
+                // Validate database type
+                else {
+                    expression.getDatabaseType().accept(this);
+                }
+            }
+        }
+    }
+
+    @Override
     public void visit(CoalesceExpression expression) {
 
         // JPA 1.0 does not support a COALESCE expression
@@ -2945,12 +3538,17 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
     }
 
     @Override
+    public void visit(ConcatPipesExpression expression) {
+        validateStringExpression(expression);
+    }
+
+    @Override
     public void visit(ConstructorExpression expression) {
 
         String className = expression.getClassName();
 
         // Missing constructor name
-        if (className.length() == 0) {
+        if (className.isEmpty()) {
 
             int startPosition = position(expression) +
                     3 /* NEW */ +
@@ -3016,6 +3614,11 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
     }
 
     @Override
+    public void visit(DatabaseType expression) {
+        validateAbstractDoubleEncapsulatedExpression(expression, databaseTypeHelper());
+    }
+
+    @Override
     public void visit(DateTime expression) {
 
         String dateTime = expression.getText();
@@ -3033,7 +3636,7 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
                 int endPosition = startPosition;
 
                 for (int index = 1; index < length; index++) {
-                    if (Character.isWhitespace(dateTime.charAt(index))) {
+                    if (ExpressionTools.isWhiteSpace(dateTime.charAt(index))) {
                         break;
                     }
                     endPosition++;
@@ -3051,7 +3654,7 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
                 for (int index = 1; index < length; index++) {
                     startPosition++;
 
-                    if (Character.isWhitespace(dateTime.charAt(index))) {
+                    if (ExpressionTools.isWhiteSpace(dateTime.charAt(index))) {
                         break;
                     }
                 }
@@ -3283,6 +3886,11 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
     @Override
     public void visit(IdentificationVariableDeclaration expression) {
         validateIdentificationVariableDeclaration(expression);
+    }
+
+    @Override
+    public void visit(IdExpression expression) {
+        validateAbstractSingleEncapsulatedExpression(expression, idExpressionHelper());
     }
 
     @Override
@@ -3648,6 +4256,11 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
     }
 
     @Override
+    public void visit(LeftExpression expression) {
+        validateAbstractDoubleEncapsulatedExpression(expression, leftExpressionHelper());
+    }
+
+    @Override
     public void visit(LengthExpression expression) {
         validateAbstractSingleEncapsulatedExpression(expression, lengthExpressionHelper());
     }
@@ -3927,6 +4540,11 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
     }
 
     @Override
+    public void visit(ReplaceExpression expression) {
+        validateAbstractTripleEncapsulatedExpression(expression, replaceExpressionHelper());
+    }
+
+    @Override
     public void visit(ResultVariable expression) {
 
         // JPA 1.0 does not support a result variable expression
@@ -3970,6 +4588,11 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
                 expression.getResultVariable().accept(this);
             }
         }
+    }
+
+    @Override
+    public void visit(RightExpression expression) {
+        validateAbstractDoubleEncapsulatedExpression(expression, rightExpressionHelper());
     }
 
     @Override
@@ -4167,6 +4790,30 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
     }
 
     @Override
+    public void visit(UnionClause expression) {
+
+        // Wrong JPA version
+        if (!isJPA3_2()) {
+            addProblem(expression, UnionClause_InvalidJPAVersion);
+        }
+        // Missing subquery
+        else if (!expression.hasQuery()) {
+
+            int startPosition = position(expression) +
+                    expression.getIdentifier().length() +
+                    (expression.hasSpaceAfterIdentifier() ? 1 : 0) +
+                    (expression.hasAll() ? 3 : 0) +
+                    (expression.hasSpaceAfterAll() ? 1 : 0);
+
+            addProblem(expression, startPosition, UnionClause_MissingExpression);
+        }
+        // Validate the subquery
+        else {
+            expression.getQuery().accept(this);
+        }
+    }
+
+    @Override
     public void visit(UnknownExpression expression) {
         // Nothing to validate and we don't want to validate its encapsulated expression
     }
@@ -4282,6 +4929,11 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
         else {
             validateAbstractSingleEncapsulatedExpression(expression, valueExpressionHelper());
         }
+    }
+
+    @Override
+    public void visit(VersionExpression expression) {
+        validateAbstractSingleEncapsulatedExpression(expression, versionExpressionHelper());
     }
 
     @Override

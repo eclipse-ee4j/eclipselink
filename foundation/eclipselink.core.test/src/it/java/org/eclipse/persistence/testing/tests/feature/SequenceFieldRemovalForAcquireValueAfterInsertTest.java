@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -12,15 +12,20 @@
 
 package org.eclipse.persistence.testing.tests.feature;
 
-import org.eclipse.persistence.descriptors.*;
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.DescriptorEvent;
+import org.eclipse.persistence.descriptors.DescriptorEventAdapter;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.platform.database.DatabasePlatform;
-import org.eclipse.persistence.sequencing.*;
-import org.eclipse.persistence.sessions.*;
-
-import org.eclipse.persistence.testing.framework.*;
-import org.eclipse.persistence.testing.models.sequencing.*;
+import org.eclipse.persistence.sequencing.NativeSequence;
+import org.eclipse.persistence.sequencing.Sequence;
+import org.eclipse.persistence.sessions.DataRecord;
+import org.eclipse.persistence.sessions.UnitOfWork;
+import org.eclipse.persistence.testing.framework.TestCase;
+import org.eclipse.persistence.testing.framework.TestErrorException;
+import org.eclipse.persistence.testing.framework.TestWarningException;
+import org.eclipse.persistence.testing.models.sequencing.SeqTestClass1;
 
 /**
  * The purpose of this test is to test that when Sequencing shouldAcquireValueAfterInsert is set,
@@ -117,7 +122,7 @@ public class SequenceFieldRemovalForAcquireValueAfterInsertTest extends TestCase
         String fieldName = descriptor.getSequenceNumberField().getName();
         String qualifiedFieldName = descriptor.getSequenceNumberField().getQualifiedName();
 
-        if (sqlString.indexOf(qualifiedFieldName) != -1 || sqlString.indexOf(fieldName) != -1) {
+        if (sqlString.contains(qualifiedFieldName) || sqlString.contains(fieldName)) {
             throw new TestErrorException("Invalid SQL String - sequence field " + fieldName + " was included in SQL: (" + sqlString + ")"
                 + "- incorrect for shouldAcquireValueAfterInsert = true");
         }
@@ -146,8 +151,7 @@ public class SequenceFieldRemovalForAcquireValueAfterInsertTest extends TestCase
         public void aboutToInsert(DescriptorEvent event) {
             DataRecord modifyRow = event.getRecord();
             Object[] keys = modifyRow.keySet().toArray();
-            for (int i = 0; i < keys.length; i++) {
-                Object key = keys[i];
+            for (Object key : keys) {
                 Object value = modifyRow.get(key);
                 if (value != null && value.equals(OMISSION_MARKER)) {
                     modifyRow.remove(key);

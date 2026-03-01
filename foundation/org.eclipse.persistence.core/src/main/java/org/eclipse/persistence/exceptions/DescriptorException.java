@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,18 +20,19 @@
 //       - 322008: Improve usability of additional criteria applied to queries at the session/EM
 package org.eclipse.persistence.exceptions;
 
-import org.eclipse.persistence.mappings.*;
-import org.eclipse.persistence.mappings.foundation.AbstractTransformationMapping;
-import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.internal.oxm.record.XMLRecord;
-import org.eclipse.persistence.internal.sessions.AbstractRecord;
-
-import java.lang.reflect.*;
-import java.util.Collection;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.DescriptorEvent;
 import org.eclipse.persistence.exceptions.i18n.ExceptionMessageGenerator;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.mappings.CollectionMapping;
+import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.ForeignReferenceMapping;
+import org.eclipse.persistence.mappings.foundation.AbstractTransformationMapping;
+
+import java.lang.reflect.Method;
+import java.util.Collection;
 
 /**
  *    <B>Purpose</B>: This exception is used for any problem that is detected with a descriptor or mapping.
@@ -373,7 +374,7 @@ public class DescriptorException extends ValidationException {
     }
 
     public static DescriptorException couldNotInstantiateIndirectContainerClass(Class<?> containerClass, Exception exception) {
-        Object[] args = { containerClass, Helper.getShortClassName(containerClass) };
+        Object[] args = { containerClass, containerClass.getSimpleName() };
 
         DescriptorException descriptorException = new DescriptorException(ExceptionMessageGenerator.buildMessage(DescriptorException.class, COULD_NOT_INSTANTIATE_INDIRECT_CONTAINER_CLASS, args));
         descriptorException.setErrorCode(COULD_NOT_INSTANTIATE_INDIRECT_CONTAINER_CLASS);
@@ -767,7 +768,7 @@ public class DescriptorException extends ValidationException {
     }
 
     public static DescriptorException invalidAttributeTypeForProxyIndirection(Class<?> attributeType, Class<?>[] targetInterfaces, DatabaseMapping mapping) {
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         for (int i = 0; i < targetInterfaces.length; i++) {
             buffer.append(targetInterfaces[i].getName());
             if (i != (targetInterfaces.length - 1)) {
@@ -823,7 +824,7 @@ public class DescriptorException extends ValidationException {
     }
 
     public static DescriptorException invalidGetMethodReturnTypeForProxyIndirection(Class<?> attributeType, Class<?>[] targetInterfaces, DatabaseMapping mapping) {
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         for (int i = 0; i < targetInterfaces.length; i++) {
             buffer.append(targetInterfaces[i].getName());
             if (i != (targetInterfaces.length - 1)) {
@@ -871,7 +872,7 @@ public class DescriptorException extends ValidationException {
     }
 
     public static DescriptorException invalidSetMethodParameterTypeForProxyIndirection(Class<?> attributeType, Class<?>[] targetInterfaces, DatabaseMapping mapping) {
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         for (int i = 0; i < targetInterfaces.length; i++) {
             buffer.append(targetInterfaces[i].getName());
             if (i != (targetInterfaces.length - 1)) {
@@ -956,7 +957,7 @@ public class DescriptorException extends ValidationException {
     /**
      * @since EclipseLink 2.5.0
      */
-    public static DescriptorException missingClassIndicatorField(XMLRecord row, ClassDescriptor descriptor) {
+    public static DescriptorException missingClassIndicatorField(String row, ClassDescriptor descriptor) {
         Object[] args = { row };
 
         DescriptorException descriptorException = new DescriptorException(ExceptionMessageGenerator.buildMessage(DescriptorException.class, MISSING_CLASS_INDICATOR_FIELD, args), descriptor);

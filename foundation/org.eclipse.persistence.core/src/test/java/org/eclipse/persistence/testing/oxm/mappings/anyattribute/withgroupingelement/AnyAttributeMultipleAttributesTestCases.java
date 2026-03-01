@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,23 +14,13 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.oxm.mappings.anyattribute.withgroupingelement;
 
-/**
- *  @version $Header: AnyAttributeMultipleAttributesTestCases.java 30-apr-2007.14:04:49 dmccann Exp $
- *  @author  mmacivor
- *  @since   release specific (what release of product did this appear in)
- */
-
-import java.io.InputStream;
-
-import java.util.HashMap;
-import java.util.Vector;
-
-import javax.xml.namespace.QName;
-
-import javax.xml.transform.stream.StreamSource;
-
 import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.anyattribute.withoutgroupingelement.Root;
+
+import javax.xml.namespace.QName;
+import javax.xml.transform.stream.StreamSource;
+import java.io.InputStream;
+import java.util.HashMap;
 
 public class AnyAttributeMultipleAttributesTestCases extends XMLMappingTestCases {
     public AnyAttributeMultipleAttributesTestCases(String name) throws Exception {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,8 +14,6 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.unitofwork;
 
-import java.util.Vector;
-
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.sessions.UnitOfWork;
@@ -23,6 +21,8 @@ import org.eclipse.persistence.testing.framework.AutoVerifyTestCase;
 import org.eclipse.persistence.testing.framework.TestErrorException;
 import org.eclipse.persistence.testing.framework.TestWarningException;
 import org.eclipse.persistence.testing.models.employee.domain.Employee;
+
+import java.util.Vector;
 
 
 public class NewObjectIdentityTest extends AutoVerifyTestCase {
@@ -55,7 +55,7 @@ public class NewObjectIdentityTest extends AutoVerifyTestCase {
                 public void run() {
                     ReadAllQuery query = new ReadAllQuery(Employee.class);
                     query.setSelectionCriteria(query.getExpressionBuilder().get("firstName").equal("Anthony").and(query.getExpressionBuilder().get("lastName").equal("Anthony")));
-                    readPerson = (Employee)((Vector)getSession().executeQuery(query)).firstElement();
+                    readPerson = (Employee)((Vector)getSession().executeQuery(query)).get(0);
                 }
             };
         Thread thread = new Thread(runnable);

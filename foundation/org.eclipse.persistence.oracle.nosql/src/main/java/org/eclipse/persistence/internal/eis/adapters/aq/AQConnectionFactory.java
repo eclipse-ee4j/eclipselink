@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,7 +20,8 @@ import javax.sql.DataSource;
 import javax.naming.*;
 import jakarta.resource.*;
 import jakarta.resource.cci.*;
-import oracle.AQ.*;
+import oracle.jakarta.AQ.AQSession;
+import oracle.jakarta.AQ.AQDriverManager;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 
@@ -58,9 +59,9 @@ public class AQConnectionFactory implements ConnectionFactory {
                 connection.setAutoCommit(false);
             }
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                AccessController.doPrivileged(new PrivilegedClassForName<>("oracle.AQ.AQOracleDriver", true, this.getClass().getClassLoader()));
+                AccessController.doPrivileged(new PrivilegedClassForName<>("oracle.jakarta.AQ.AQOracleDriver", true, this.getClass().getClassLoader()));
             }else{
-                PrivilegedAccessHelper.getClassForName("oracle.AQ.AQOracleDriver", true, this.getClass().getClassLoader());
+                PrivilegedAccessHelper.getClassForName("oracle.jakarta.AQ.AQOracleDriver", true, this.getClass().getClassLoader());
             }
             session = AQDriverManager.createAQSession(connection);
         } catch (Exception exception) {

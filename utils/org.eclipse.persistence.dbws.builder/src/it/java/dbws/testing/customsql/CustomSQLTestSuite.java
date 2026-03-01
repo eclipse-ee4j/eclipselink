@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -43,17 +43,18 @@ import dbws.testing.DBWSTestSuite;
 public class CustomSQLTestSuite extends DBWSTestSuite {
 
     static final String CREATE_CUSTOM_TABLE =
-        "CREATE TABLE IF NOT EXISTS custom (" +
-            "\nEMPNO NUMERIC(4)," +
-            "\nENAME VARCHAR(10)," +
-            "\nJOB VARCHAR(9)," +
-            "\nMGR NUMERIC(4)," +
-            "\nHIREDATE DATE," +
-            "\nSAL NUMERIC(7,2)," +
-            "\nCOMM NUMERIC(7,2)," +
-            "\nDEPTNO NUMERIC(2)," +
-            "\nPRIMARY KEY (EMPNO)" +
-        "\n)";
+            """
+                    CREATE TABLE IF NOT EXISTS custom (
+                    EMPNO NUMERIC(4),
+                    ENAME VARCHAR(10),
+                    JOB VARCHAR(9),
+                    MGR NUMERIC(4),
+                    HIREDATE DATE,
+                    SAL NUMERIC(7,2),
+                    COMM NUMERIC(7,2),
+                    DEPTNO NUMERIC(2),
+                    PRIMARY KEY (EMPNO)
+                    )""";
     static final String[] POPULATE_CUSTOM_TABLE = new String[] {
         "INSERT INTO custom VALUES (7369,'SMITH','CLERK',7902,'1980-12-17',800,NULL,20)",
         "INSERT INTO custom VALUES (7499,'ALLEN','SALESMAN',7698,'1981-2-20',1600,300,30)",

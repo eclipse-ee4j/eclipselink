@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,6 +37,7 @@ import static dbws.testing.attachedbinary.AttachedBinaryBuilderTestSuite.POPULAT
 import static dbws.testing.attachedbinary.AttachedBinaryBuilderTestSuite.DROP_FUNCTION;
 import static dbws.testing.attachedbinary.AttachedBinaryBuilderTestSuite.DROP_TABLE;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -77,8 +78,8 @@ public class AttachedBinaryServiceTestSuite extends DBWSTestSuite {
             runDdl(conn, CREATE_FUNCTION, ddlDebug);
             try {
                 Statement stmt = conn.createStatement();
-                for (int i = 0; i < POPULATE_TABLE.length; i++) {
-                    stmt.addBatch(POPULATE_TABLE[i]);
+                for (String s : POPULATE_TABLE) {
+                    stmt.addBatch(s);
                 }
                 stmt.executeBatch();
             } catch (SQLException e) {
@@ -108,7 +109,7 @@ public class AttachedBinaryServiceTestSuite extends DBWSTestSuite {
             SOAPMessage request = createSOAPMessage(FIND_ALL);
             SOAPMessage result = sourceDispatch.invoke(request);
 
-            assertTrue("findAll failed:  wrong number of attachments - expected [3] but was [" + result.countAttachments() + "]", result.countAttachments() == 3);
+            assertEquals("findAll failed:  wrong number of attachments - expected [3] but was [" + result.countAttachments() + "]", 3, result.countAttachments());
 
             SOAPElement elt = SOAPFactory.newInstance().createElement("b");
 
@@ -118,9 +119,9 @@ public class AttachedBinaryServiceTestSuite extends DBWSTestSuite {
             assertNotNull("getBlobById failed:  no attachment for [cid:ref1]", ap);
 
             byte[] rawBytes = ap.getRawContentBytes() ;
-            assertTrue("getBlobById failed:  wrong number of bytes returned - expected [15] but was [" + rawBytes.length + "]", rawBytes.length == 15);
-            for (int i = 0; i < rawBytes.length; i++) {
-                assertTrue("getBlobById failed:  wrong byte value returned - expected [1] but was [" + rawBytes[i] + "]", rawBytes[i] == 1);
+            assertEquals("getBlobById failed:  wrong number of bytes returned - expected [15] but was [" + rawBytes.length + "]", 15, rawBytes.length);
+            for (byte value : rawBytes) {
+                assertTrue("getBlobById failed:  wrong byte value returned - expected [1] but was [" + value + "]", value == 1);
             }
             elt.removeContents();
 
@@ -130,9 +131,9 @@ public class AttachedBinaryServiceTestSuite extends DBWSTestSuite {
             assertNotNull("getBlobById failed:  no attachment for [cid:ref2]", ap);
 
             rawBytes = ap.getRawContentBytes() ;
-            assertTrue("getBlobById failed:  wrong number of bytes returned - expected [15] but was [" + rawBytes.length + "]", rawBytes.length == 15);
-            for (int i = 0; i < rawBytes.length; i++) {
-                assertTrue("getBlobById failed:  wrong byte value returned - expected [2] but was [" + rawBytes[i] + "]", rawBytes[i] == 2);
+            assertEquals("getBlobById failed:  wrong number of bytes returned - expected [15] but was [" + rawBytes.length + "]", 15, rawBytes.length);
+            for (byte b : rawBytes) {
+                assertTrue("getBlobById failed:  wrong byte value returned - expected [2] but was [" + b + "]", b == 2);
             }
             elt.removeContents();
 
@@ -142,9 +143,9 @@ public class AttachedBinaryServiceTestSuite extends DBWSTestSuite {
             assertNotNull("getBlobById failed:  no attachment for [cid:ref3]", ap);
 
             rawBytes = ap.getRawContentBytes() ;
-            assertTrue("getBlobById failed:  wrong number of bytes returned - expected [15] but was [" + rawBytes.length + "]", rawBytes.length == 15);
-            for (int i = 0; i < rawBytes.length; i++) {
-                assertTrue("getBlobById failed:  wrong byte value returned - expected [3] but was [" + rawBytes[i] + "]", rawBytes[i] == 3);
+            assertEquals("getBlobById failed:  wrong number of bytes returned - expected [15] but was [" + rawBytes.length + "]", 15, rawBytes.length);
+            for (byte aByte : rawBytes) {
+                assertTrue("getBlobById failed:  wrong byte value returned - expected [3] but was [" + aByte + "]", aByte == 3);
             }
             elt.removeContents();
 
@@ -153,16 +154,16 @@ public class AttachedBinaryServiceTestSuite extends DBWSTestSuite {
             request = createSOAPMessage(GET_BLOB_BY_ID);
             result = sourceDispatch.invoke(request);
 
-            assertTrue("getBlobById failed:  wrong number of attachments - expected [1] but was [" + result.countAttachments() + "]", result.countAttachments() == 1);
+            assertEquals("getBlobById failed:  wrong number of attachments - expected [1] but was [" + result.countAttachments() + "]", 1, result.countAttachments());
 
             elt.addTextNode("cid:ref1");
             ap = result.getAttachment(elt);
             assertNotNull("getBlobById failed:  no attachment for [cid:ref1]", ap);
 
             rawBytes = ap.getRawContentBytes() ;
-            assertTrue("getBlobById failed:  wrong number of bytes returned - expected [15] but was [" + rawBytes.length + "]", rawBytes.length == 15);
-            for (int i = 0; i < rawBytes.length; i++) {
-                assertTrue("getBlobById failed:  wrong byte value returned - expected [1] but was [" + rawBytes[i] + "]", rawBytes[i] == 1);
+            assertEquals("getBlobById failed:  wrong number of bytes returned - expected [15] but was [" + rawBytes.length + "]", 15, rawBytes.length);
+            for (byte rawByte : rawBytes) {
+                assertTrue("getBlobById failed:  wrong byte value returned - expected [1] but was [" + rawByte + "]", rawByte == 1);
             }
         } catch (Exception x) {
             fail("Service test failed: " + x.getMessage());

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,12 +14,6 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.sessions.factories;
 
-import java.io.File;
-import java.net.URL;
-import java.util.Map;
-import java.util.Vector;
-
-import org.eclipse.persistence.exceptions.SessionLoaderException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
@@ -39,6 +33,11 @@ import org.w3c.dom.Document;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
+
+import java.io.File;
+import java.net.URL;
+import java.util.Map;
+import java.util.Vector;
 
 /**
  * Provide a mechanism for loading Session configuration XML files.
@@ -82,7 +81,7 @@ public class XMLSessionConfigLoader {
     /** Used to store the entity resolver to validate the XML schema when parsing. */
     protected PersistenceEntityResolver entityResolver;
 
-    public static final String ECLIPSELINK_SESSIONS_SCHEMA = "org/eclipse/persistence/eclipselink_sessions_2.1.xsd";
+    public static final String ECLIPSELINK_SESSIONS_SCHEMA = "org/eclipse/persistence/eclipselink_sessions_2.2.xsd";
     protected static final String DEFAULT_RESOURCE_NAME = "sessions.xml";
     protected static final String DEFAULT_RESOURCE_NAME_IN_META_INF = "META-INF/sessions.xml";
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -43,7 +43,7 @@ public class GlassfishPackager extends WarPackager {
         String dataSource = builder.getDataSource();
         if (dataSource != null) {
             DatabaseSessionConfig tmpConfig =
-                (DatabaseSessionConfig)ts.getSessionConfigs().firstElement();
+                (DatabaseSessionConfig)ts.getSessionConfigs().get(0);
             ProjectConfig orProject = tmpConfig.getPrimaryProject();
             LogConfig logConfig = tmpConfig.getLogConfig();
             String sessionName = tmpConfig.getName();
@@ -55,9 +55,9 @@ public class GlassfishPackager extends WarPackager {
             customServerPlatformConfig.setEnableJTA(true);
             customServerPlatformConfig.setEnableRuntimeServices(true);
             customServerPlatformConfig.setServerClassName(
-                "org.eclipse.persistence.platform.server.sunas.SunAS9ServerPlatform");
+                "org.eclipse.persistence.platform.server.glassfish.GlassfishPlatform");
             customServerPlatformConfig.setExternalTransactionControllerClass(
-                "org.eclipse.persistence.transaction.sunas.SunAS9TransactionController");
+                "org.eclipse.persistence.transaction.glassfish.GlassfishTransactionController11");
             orSessionConfig.setServerPlatformConfig(customServerPlatformConfig);
             DatabaseLoginConfig dlc = new DatabaseLoginConfig();
             dlc.setPlatformClass(builder.getPlatformClassname());

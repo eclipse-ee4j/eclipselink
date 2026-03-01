@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -17,6 +17,17 @@
 //       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
 package org.eclipse.persistence.queries;
 
+import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.databaseaccess.Accessor;
+import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
+import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
+import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField;
+
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -28,18 +39,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-
-import org.eclipse.persistence.exceptions.QueryException;
-import org.eclipse.persistence.exceptions.ValidationException;
-import org.eclipse.persistence.internal.databaseaccess.Accessor;
-import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
-import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
-import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
-import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.internal.sessions.AbstractRecord;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField;
 
 /**
  * <b>Purpose</b>: Used to define a platform independent procedure call.
@@ -830,7 +829,7 @@ public class StoredProcedureCall extends DatabaseCall {
      */
     @Override
     protected boolean isCallableStatementRequired() {
-        return super.isCallableStatementRequired() || (getProcedureArgumentNames().size() > 0 && getProcedureArgumentNames().get(0) != null);
+        return super.isCallableStatementRequired() || (!getProcedureArgumentNames().isEmpty() && getProcedureArgumentNames().get(0) != null);
     }
 
     @Override
@@ -858,7 +857,7 @@ public class StoredProcedureCall extends DatabaseCall {
             AbstractRecord translationRow, AbstractSession session) throws SQLException {
 
         List<String> procedureArgs = getProcedureArgumentNames();
-        if(procedureArgs.size() == 0 || procedureArgs.get(0) == null) {
+        if(procedureArgs.isEmpty() || procedureArgs.get(0) == null) {
             return super.prepareStatement(accessor, translationRow, session);
         }
 
@@ -923,7 +922,7 @@ public class StoredProcedureCall extends DatabaseCall {
 
     @Override
     public String toString() {
-        return Helper.getShortClassName(getClass()) + "(" + getProcedureName() + ")";
+        return getClass().getSimpleName() + "(" + getProcedureName() + ")";
     }
 
     /**
@@ -1059,7 +1058,7 @@ public class StoredProcedureCall extends DatabaseCall {
     @Override
     public Object getOutputParameterValue(CallableStatement statement, int index, AbstractSession session) throws SQLException {
         List<String> procedureArgs = getProcedureArgumentNames();
-        if(procedureArgs.size() == 0 || procedureArgs.get(0) == null) {
+        if(procedureArgs.isEmpty() || procedureArgs.get(0) == null) {
             return super.getOutputParameterValue(statement, index, session);
         }
 
@@ -1092,7 +1091,7 @@ public class StoredProcedureCall extends DatabaseCall {
         if (hasParameters()) {
             StringWriter writer = new StringWriter();
             writer.write(getSQLString());
-            writer.write(Helper.cr());
+            writer.write(System.lineSeparator());
             if (hasParameters()) {
                 AbstractSession session = null;
                 if (getQuery() != null) {
@@ -1117,7 +1116,7 @@ public class StoredProcedureCall extends DatabaseCall {
     }
 
     private boolean isIndexBased(List<String> procedureArgs, AbstractSession session) {
-        boolean hasNoArgs = procedureArgs.size() == 0 || procedureArgs.get(0) == null;
+        boolean hasNoArgs = procedureArgs.isEmpty() || procedureArgs.get(0) == null;
         boolean isNamingIntoIndexed = false;
         if (session != null && session.getProject() != null) {
             isNamingIntoIndexed = session.getProject().namingIntoIndexed();

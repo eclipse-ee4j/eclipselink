@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2012, 2022 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2012, 2022 IBM Corporation. All rights reserved.
+ * Copyright (c) 2012, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2023 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,21 +18,18 @@
 //       - 438663: Fix injection ordering bug.
 package org.eclipse.persistence.internal.sessions.cdi;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
 import jakarta.enterprise.context.spi.CreationalContext;
 import jakarta.enterprise.inject.spi.AnnotatedType;
 import jakarta.enterprise.inject.spi.BeanManager;
 import jakarta.enterprise.inject.spi.InjectionTarget;
+
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-
-import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.logging.SessionLog;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Manages calls to CDI to inject into managed beans
@@ -77,23 +74,22 @@ public class InjectionManagerImpl<T> implements InjectionManager<T> {
     }
 
     @Override
-    public void cleanUp(AbstractSession session){
+    public void cleanUp(){
         Set<T> keys = new HashSet<>();
-        synchronized(injectionTargets){
-            keys.addAll(injectionTargets.keySet());
-            for (T listener: keys){
-                try{
+        try {
+            synchronized (injectionTargets) {
+                keys.addAll(injectionTargets.keySet());
+                for (T listener : keys) {
                     InjectionTarget<T> target = injectionTargets.get(listener);
                     target.preDestroy(listener);
                     target.dispose(listener);
                     injectionTargets.remove(listener);
-                } catch (Exception e){
-                    session.logThrowable(SessionLog.FINEST, SessionLog.JPA, e);
                 }
             }
-        }
-        if (creationalContext != null){
-            creationalContext.release();
+        } finally {
+            if (creationalContext != null) {
+                creationalContext.release();
+            }
         }
     }
 

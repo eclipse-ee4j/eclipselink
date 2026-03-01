@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2019, 2022 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,15 +25,6 @@
 //       - 450818: Column names with hash mark => "java.sql.SQLException: Invalid column index"
 package org.eclipse.persistence.internal.databaseaccess;
 
-import java.io.CharArrayWriter;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.Writer;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.expressions.ParameterExpression;
 import org.eclipse.persistence.internal.helper.DatabaseField;
@@ -45,6 +36,16 @@ import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField;
 import org.eclipse.persistence.queries.Call;
 import org.eclipse.persistence.queries.DatabaseQuery;
+
+import java.io.CharArrayWriter;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.Serial;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * INTERNAL:
@@ -125,9 +126,9 @@ public abstract class DatasourceCall implements Call {
      * The parameters are the values in order of occurrence in the SQL statement.
      * This is lazy initialized to conserve space on calls that have no parameters.
      */
-    public List getParameters() {
+    public List<Object> getParameters() {
         if (parameters == null) {
-            parameters = new ArrayList();
+            parameters = new ArrayList<>();
         }
         return parameters;
     }
@@ -147,7 +148,7 @@ public abstract class DatasourceCall implements Call {
      */
     public List<Boolean> getParameterBindings() {
         if (parameterBindings == null) {
-            parameterBindings = new ArrayList<Boolean>();
+            parameterBindings = new ArrayList<>();
         }
         return parameterBindings;
     }
@@ -187,7 +188,7 @@ public abstract class DatasourceCall implements Call {
      */
     public List<DatabaseField> getOutputCursors() {
         if (outputCursors == null) {
-            outputCursors = new ArrayList<DatabaseField>();
+            outputCursors = new ArrayList<>();
         }
 
         return outputCursors;
@@ -287,9 +288,8 @@ public abstract class DatasourceCall implements Call {
      */
     @Override
     public DatabaseQueryMechanism buildQueryMechanism(DatabaseQuery query, DatabaseQueryMechanism mechanism) {
-        if (mechanism.isCallQueryMechanism() && (mechanism instanceof DatasourceCallQueryMechanism)) {
+        if (mechanism.isCallQueryMechanism() && (mechanism instanceof DatasourceCallQueryMechanism callMechanism)) {
             // Must also add the call singleton...
-            DatasourceCallQueryMechanism callMechanism = ((DatasourceCallQueryMechanism)mechanism);
             if (!callMechanism.hasMultipleCalls()) {
                 callMechanism.addCall(callMechanism.getCall());
                 callMechanism.setCall(null);
@@ -302,9 +302,10 @@ public abstract class DatasourceCall implements Call {
     }
 
     @Override
-    public Object clone() {
+    @SuppressWarnings({"unchecked"})
+    public DatasourceCall clone() {
         try {
-            return super.clone();
+            return (DatasourceCall) super.clone();
         } catch (CloneNotSupportedException exception) {
             //Do nothing
         }
@@ -496,7 +497,7 @@ public abstract class DatasourceCall implements Call {
      */
     public void translateCustomQuery() {
         if (this.shouldProcessTokenInQuotes) {
-            if (getQueryString().indexOf(this.query.getParameterDelimiter()) == -1) {
+            if (!getQueryString().contains(this.query.getParameterDelimiter())) {
                 if (this.getQuery().shouldBindAllParameters() && getQueryString().indexOf('?') == -1) {
                     return;
                 }
@@ -953,7 +954,7 @@ public abstract class DatasourceCall implements Call {
             // Must translate field parameters and may get new bound parameters for large data.
             List<Object> parameterFields = getParameters();
             List<ParameterType> parameterTypes = getParameterTypes();
-            setParameters(new ArrayList<Object>(parameterFields.size()));
+            setParameters(new ArrayList<>(parameterFields.size()));
             while (lastIndex != -1) {
                 int tokenIndex = queryString.indexOf(argumentMarker(), lastIndex);
                 String token;
@@ -1090,7 +1091,7 @@ public abstract class DatasourceCall implements Call {
 
         boolean hasParameterizedIN = false;
         int size = parameters.size();
-        List<Object> translatedParametersValues = new ArrayList<Object>(size);
+        List<Object> translatedParametersValues = new ArrayList<>(size);
 
         Writer writer = new CharArrayWriter(queryString.length() + 50);
         try {
@@ -1101,7 +1102,7 @@ public abstract class DatasourceCall implements Call {
             List<Boolean> canBindParameters = getParameterBindings();
 
             // clear the parameters list 
-            setParameters(new ArrayList<Object>(parameterFields.size()));
+            setParameters(new ArrayList<>(parameterFields.size()));
 
             for (int parameterIndex = 0; parameterIndex < size; parameterIndex++) {
                 tokenIndex = queryString.indexOf(marker, tokenIndex + 1);
@@ -1321,12 +1322,12 @@ public abstract class DatasourceCall implements Call {
                 }
             }
 
-            if(writer.toString().length() > 0) {
+            if(!writer.toString().isEmpty()) {
                 String token = queryString.substring(lastIndex);
                 writer.write(token);
                 setQueryString(writer.toString());
             }
-            if(translatedParametersValues.size() > 0) {
+            if(!translatedParametersValues.isEmpty()) {
                 setParameters(translatedParametersValues);
             }
 
@@ -1351,7 +1352,7 @@ public abstract class DatasourceCall implements Call {
         try {
             // PERF: This method is heavily optimized do not touch anything unless you know "very well" what your doing.
             List<Object> parameters = getParameters();            
-            List<Object> parametersValues = new ArrayList<Object>(parameters.size());
+            List<Object> parametersValues = new ArrayList<>(parameters.size());
             while (lastIndex != -1) {
                 int tokenIndex = queryString.indexOf(argumentMarker(), lastIndex);
                 String token;
@@ -1366,10 +1367,9 @@ public abstract class DatasourceCall implements Call {
                     // Process next parameter.
                     Object parameter = parameters.get(parameterIndex);
                     // Parameter expressions are used for nesting and correct mapping conversion of the value.
-                    if (parameter instanceof Collection) {
-                        Collection<?> values = (Collection<?>)parameter;
+                    if (parameter instanceof Collection<?> values) {
                         writer.write("(");
-                        if ((values.size() > 0) && (values.iterator().next() instanceof List)) {
+                        if ((!values.isEmpty()) && (values.iterator().next() instanceof List)) {
                             // Support nested lists.
                             int size = values.size();
                             Iterator<?> valuesIterator = values.iterator();
@@ -1389,6 +1389,10 @@ public abstract class DatasourceCall implements Call {
                                     writer.write(",");
                                 }
                             }
+                        } else if (values.isEmpty()){
+                            //Empty collection passed as parameter is translated into null
+                            parametersValues.add(null);
+                            writer.write("?");
                         } else {
                             parametersValues.addAll(values);
                             int size = values.size();
@@ -1423,6 +1427,10 @@ public abstract class DatasourceCall implements Call {
                             }
                         }
                         writer.write(")");
+                    //handle null passed into ...IN (?) as a parameter
+                    } else if (parameter instanceof DatabaseField && translationRow.get(parameter) == null){
+                        parametersValues.add(null);
+                        writer.write("(?)");
                     } else {
                         parametersValues.add(parameter);
                         writer.write("?");
@@ -1585,6 +1593,7 @@ public abstract class DatasourceCall implements Call {
      * This method is used to correct parameterTypes which are compared to static values using == equality, which changes
      * during serialization/deserialization.
      */
+    @Serial
     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
         in.defaultReadObject();
         if (parameterTypes !=null) {

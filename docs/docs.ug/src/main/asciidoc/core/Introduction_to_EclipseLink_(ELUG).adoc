@@ -1,0 +1,276 @@
+image:Elug_draft_icon.png[Image:Elug draft
+icon.png,title="Image:Elug draft icon.png"] *For the latest EclipseLink
+documentation, please see
+http://www.eclipse.org/eclipselink/documentation/*
+
+'''''
+
+*TOC* Special:Whatlinkshere_Introduction_to_EclipseLink_(ELUG)[Related
+Topics]
+
+EclipseLink is an advanced, object-persistence and object-transformation
+framework that provides development tools and run-time capabilities that
+reduce development and maintenance efforts, and increase enterprise
+application functionality.
+
+== What Is EclipseLink?
+
+EclipseLink builds high-performance applications that store persistent
+object-oriented data in a relational database. It successfully
+transforms object-oriented data into either relational data or
+Extensible Markup Language (XML) elements.
+
+*_EclipseLink Runtime Architecture_*
+
+.EclipseLink Runtime Architecture
+image::under02.gif[EclipseLink Runtime
+Architecture,title="EclipseLink Runtime Architecture"]
+
+Using EclipseLink, you can integrate persistence and
+object-transformation into your application, while staying focused on
+your primary domain problem by taking advantage of an efficient,
+flexible, and field-proven solution (see
+link:#What_Is_the_Object-Persistence_Impedance_Mismatch[What Is the
+Object-Persistence Impedance Mismatch]).
+
+EclipseLink is suitable for use with a wide range of Java 2 Enterprise
+Edition (Java EE) and Java application architectures (see
+link:#EclipseLink_Application_Architectures[EclipseLink Application
+Architectures]). Use EclipseLink to design, implement, deploy, and
+optimize an advanced, object-persistence and object-transformation layer
+that supports a variety of data sources and formats, including the
+following:
+
+* Relational–for transactional persistence of Java objects to a
+relational database accessed using Java Database Connectivity (JDBC)
+drivers.
+* Object-Relational Data Type–for transactional persistence of Java
+objects to special purpose structured data source representations
+optimized for storage in object-relational data type databases such as
+Oracle Database.
+* Enterprise information system (EIS)–for transactional persistence of
+Java objects to a nonrelational data source accessed using a Java EE
+Connector architecture (JCA) adapter, and any supported EIS record type,
+including indexed, mapped, or XML.
+* XML–for nontransactional, nonpersistent (in-memory) conversion between
+Java objects and XML Schema Document (XSD)-based XML documents using
+Java Architecture for XML Binding (JAXB).
+
+EclipseLink includes support for EJB 3.0 and the Java Persistence API
+(JPA) in Java EE and Java SE environments including integration with a
+variety of application severs including: Oracle WebLogic Server, OC4J,
+Glassfish/SunAS, JBoss, and IBM WebSphere application server.
+EclipseLink lets you quickly capture and define object-to-data source
+and object-to-data representation mappings in a flexible, efficient
+metadata format (see
+link:Introduction_to_EclipseLink_Application_Development_(ELUG)#Working_with_EclipseLink_Metadata[Working
+with EclipseLink Metadata]).
+
+The EclipseLink runtime lets your application exploit this mapping
+metadata with a simple session facade that provides in-depth support for
+data access, queries, transactions (both with and without an external
+transaction controller), and caching.
+
+For more information, see link:#EclipseLink_Key_Features[EclipseLink Key
+Features].
+
+== What Is the Object-Persistence Impedance Mismatch
+
+Java-to-data source integration is a widely underestimated problem when
+creating enterprise Java applications. This complex problem involves
+more than simply reading from and writing to a data source. The data
+source elements include tables, rows, columns, and primary and foreign
+keys. The Java and Java EE include entity classes (regular Java classes
+or Enterprise JavaBeans (EJB) entity beans), business rules, complex
+relationships, and inheritance. In a nonrelational data source, you must
+match your Java entities with EIS records or XML elements and schemas.
+These differences (as shown in the following figure) are known as the
+object-persistence impedance mismatch.
+
+*_Solving Object-Persistence Impedance Mismatch_*
+
+.Solving Object-Persistence Impedance Mismatch
+image::mismatch.gif[Solving Object-Persistence Impedance
+Mismatch,title="Solving Object-Persistence Impedance Mismatch"]
+
+Successful solution requires bridging these different technologies, and
+solving the object-persistence impedance mismatch–a challenging and
+resource-intensive problem. To solve this problem, you must resolve the
+following issues between Java EE and data source elements:
+
+* Fundamentally different technologies.
+* Different skill sets.
+* Different staff and ownership for each of the technologies.
+* Different modeling and design principles.
+
+As an application developer, you need a product that lets integrate Java
+applications with any data source, without compromising ideal
+application design or data integrity. In addition, as a Java developer,
+you need the ability to store (that is, *persist*) and retrieve business
+domain objects using a relational database or a nonrelational data
+source as a repository.
+
+=== EclipseLink Solution
+
+EclipseLink addresses the disparity between Java objects and data
+sources. EclipseLink is a persistence framework that manages relational,
+object-relational data type, EIS, and XML mappings in a seamless manner.
+This lets you rapidly build applications that combine the best aspects
+of object technology and the specific data source. EclipseLink lets you
+do the following:
+
+* Persist Java objects to virtually _any_ relational database supported
+by a JDBC-compliant driver.
+* Persist Java objects to virtually _any_ nonrelational data source
+supported by a Java EE Connector architecture (JCA) adapter using
+indexed, mapped, or XML enterprise information system (EIS) records.
+* Perform in-memory conversions between Java objects and XML Schema
+(XSD) based XML documents using JAXB.
+* Map _any_ object model to _any_ relational or nonrelational schema,
+using the Workbench graphical mapping tool or Oracle JDeveloper
+EclipseLink editor.
+* Use EclipseLink successfully, even if you are unfamiliar with SQL or
+JDBC, because EclipseLink offers a clear, object-oriented view of data
+sources.
+
+== EclipseLink Key Features
+
+EclipseLink provides an extensive and thorough set of features. You can
+use these features to rapidly build high-performance enterprise
+applications that are both scalable and maintainable.
+
+Some of the primary features of EclipseLink are the following:
+
+* Nonintrusive, flexible, metadata-based architecture (see
+link:Introduction_to_EclipseLink_Application_Development_(ELUG)#Working_with_EclipseLink_Metadata[Working
+with EclipseLink Metadata])
+* Architectural flexibility: Java Persistence API (JPA), Plain Old Java
+Objects (POJO), Java API for XML Binding (JAXB), and Web services.
+* Advanced mapping support and flexibility: relational,
+object-relational data type, Enterprise Information Systems (EIS), and
+XML.
+* Optimized for highly scalable performance and concurrency with
+extensive performance tuning options.
+* Comprehensive object caching support including cluster integration.
+* Extensive query capability including: EclipseLink Expressions
+framework, Java Persistence Query Language (JP QL), and native SQL.
+* Just-in-time reading
+* Object-level transaction support and integration with popular
+application servers and databases.
+* Optimistic and pessimistic locking options and locking policies.
+* Comprehensive visual design tools.
+
+For additional information, see the EclipseLink page:
+http://www.eclipse.org/eclipselink/.
+
+== EclipseLink Application Architectures
+
+You can use EclipseLink in a variety of application architectures,
+including three- and two-tier architectures, with or without Java EE, to
+access a variety of data types on both relational and nonrelational data
+sources.
+
+*_EclipseLink and Your Application Architecture_*
+
+.EclipseLink and Your Application Architecture
+image::whytl.gif[EclipseLink and Your Application
+Architecture,title="EclipseLink and Your Application Architecture"]
+
+For more information on strategies for incorporating EclipseLink into
+your application architecture, see
+link:Introduction_to_EclipseLink_Application_Development_(ELUG)#Designing_Your_Application_with_EclipseLink[Designing
+Your Application with EclipseLink].
+
+This section introduces some of the following common enterprise
+architectures used by EclipseLink applications:
+
+* *Three-Tier* – The three-tier (or Java EE Web) application is one of
+the most common EclipseLink architectures. This architecture is
+characterized by a server-hosted environment in which the business
+logic, persistent entities, and the EclipseLink Foundation Library all
+exist in a single Java Virtual Machine (JVM). See
+link:Introduction_to_EclipseLink_Application_Development_(ELUG)#Considering_Three-Tier_Architecture[Considering
+Three-Tier Architecture] for more information. The most common example
+of this architecture is a simple three-tier application in which the
+client browser accesses the application through servlets, JavaServer
+Pages (JSP) and HTML. The presentation layer communicates with
+EclipseLink through other Java classes in the same JVM, to provide the
+necessary persistence logic. This architecture supports multiple servers
+in a clustered environment, but there is no separation across JVMs from
+the presentation layer and the code that invokes the persistence logic
+against the persistent entities using EclipseLink.
+* *EJB Session Bean Facade*– A popular variation on the three-tier
+application involves wrapping the business logic, including the
+EclipseLink access, in EJB session beans. This architecture provides a
+scalable deployment and includes integration with transaction services
+from the host application server. See
+link:Introduction_to_EclipseLink_Application_Development_(ELUG)#Considering_EJB_Session_Bean_Facade_Architecture[Considering
+EJB Session Bean Facade Architecture] for more information.
+Communication from the presentation layer occurs through calls to the
+EJB session beans. This architecture separates the application into
+different tiers for the deployment. The session bean architecture can
+persist either Java objects or EJB entity beans.
+* *EJB 3.0 Entities with JPA* – The EJB 3.0 specification includes an
+additional persistence specification called the Java Persistence API
+(JPA). You can use this API for creating, reading, updating, and
+deleting plain old Java objects (POJO) within both a compliant EJB 3.0
+Java EE container and a standard Java SE 5 (or later) environment.
+EclipseLink JPA is a standards compliant JPA persistence provider built
+on the EclipseLink foundation library. EclipseLink JPA offers a variety
+of vendor extensions (annotations and persistence properties) that give
+you full access to the underlying EclipseLink API. For more information,
+see:
+** link:Introduction_to_Java_Persistence_API_(ELUG)#Java_Persistence_API_Overview[Java
+Persistence API Overview]
+** link:Introduction_to_EclipseLink_JPA_(ELUG)#EclipseLink_JPA_Overview[EclipseLink
+JPA Overview]
+** link:Developing_Applications_Using_EclipseLink_JPA_(ELUG)[Application
+Development with EclipseLink JPA]
+** http://www.oracle.com/technology/products/ias/toplink/jpa/index.html[`+http://www.oracle.com/technology/products/ias/toplink/jpa/index.html+`]
+** link:Introduction_to_EclipseLink_Application_Development_(ELUG)#Considering_JPA_Entity_Architecture[Considering
+JPA Entity Architecture]
+
+* *Web Services* – A Web services architecture is similar to the
+three-tier or session-bean architecture. However, in a Web services
+architecture you encapsulate business logic (the service) in a Web
+service instead of (or in addition to) using session beans. In a Web
+services architecture, clients communicate with your application using
+XML. As in any architecture, you can use EclipseLink to persist objects
+to relational or EIS data sources. However, in a Web services
+architecture you can also use EclipseLink to map your object model to an
+XML schema for use with the Web service or as the Web service XML
+serializer. See
+link:Introduction_to_EclipseLink_Application_Development_(ELUG)#Considering_Web_Services_Architecture[Considering
+Web Services Architecture] for more information
+* *EclipseLink Database Web Services* – EclipseLink database Web
+services architecture (introduced in 1.1) is similar to the Web services
+architecture. However, in an EclipseLink database Web services
+architecture, you use EclipseLink to automatically generate Web services
+that expose database operations such as queries, DML statements, and
+stored procedures and stored functions. Using EclipseLink database Web
+services, you can provide Java EE compliant, client-neutral access to a
+relational database without having to write Java code. As in any Web
+services architecture, clients communicate with your application using
+SOAP (XML) messages. However, in an EclipseLink database Web services
+architecture you need only specify an XSD for persistent classes.
+Clients need only invoke the operations the EclipseLink database Web
+service exposes to create, read, update, and delete these persistent
+objects. EclipseLink database Web services return objects or row set
+data, depending on the type of operation. See
+link:Introduction_to_EclipseLink_Application_Development_(ELUG)#Considering_EclipseLink_Database_Web_Service_Architecture[Considering
+EclipseLink Database Web Service Architecture] for more information.
+* *Two-Tier* – A two-tier (or client/server) application is one in which
+the EclipseLink application accesses the database directly. Although
+less common than the other architectures discussed here, EclipseLink
+supports this architecture for smaller or embedded data processing
+applications. See
+link:Introduction_to_EclipseLink_Application_Development_(ELUG)#Considering_Two-Tier_Architecture[Considering
+Two-Tier Architecture] for more information.
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Release_1.1[Category: Release 1.1] Category:_Concept[Category:
+Concept]

@@ -1,0 +1,17 @@
+This part describes general mapping information. It contains the
+following sections:
+
+* link:Creating_a_Mapping_(ELUG)[Creating a Mapping (ELUG)] – Contains
+procedures for creating EclipseLink mappings.
+* link:Configuring_a_Mapping_(ELUG)[Configuring a Mapping (ELUG)] –
+Explains how to configure EclipseLink mapping options common to two or
+more mapping types.
+
+*Special:Whatlinkshere_Creating_and_Configuring_Mappings_(ELUG)[Related
+Topics] "`wikilink`")*
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]

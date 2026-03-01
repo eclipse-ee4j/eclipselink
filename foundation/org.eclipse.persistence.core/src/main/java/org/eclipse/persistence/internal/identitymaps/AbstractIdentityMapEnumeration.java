@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,7 +27,7 @@ import java.util.NoSuchElementException;
  *
  * @param <T> type of iterated {@link CacheKey} content
  */
-public abstract class AbstractIdentityMapEnumeration<T> implements Enumeration<T> {
+public abstract class AbstractIdentityMapEnumeration<T> implements Enumeration<T>, Iterator<T>, Iterable<T> {
 
     /** {@link CacheKey} instances iterator. */
     protected final Iterator<CacheKey> cacheKeysIterator;
@@ -57,22 +57,34 @@ public abstract class AbstractIdentityMapEnumeration<T> implements Enumeration<T
      *         one more element to provide or {@code false} otherwise
      */
     @Override
-    public boolean hasMoreElements() {
+    @Deprecated(forRemoval = true)
+    public final boolean hasMoreElements() {
+        return hasNext();
+    }
+
+    @Override
+    public boolean hasNext() {
         this.nextKey = getNextCacheKey();
         return this.nextKey != null;
     }
 
+    @Override
+    public abstract T next();
+
     /**
      * Get next element of {@link CacheKey} content enumeration if this enumeration
      * object has at least one more element to provide.
-     * It it expected that this method will be implemented using {@link #getNextElement()}
+     * It is expected that this method will be implemented using {@link #getNextElement()}
      * in child classes.
      *
      * @return the next element of this enumeration
      * @exception NoSuchElementException if no more elements exist
      */
     @Override
-    public abstract T nextElement();
+    @Deprecated(forRemoval = true)
+    public final T nextElement() {
+        return next();
+    }
 
     /**
      * Get next {@link CacheKey} instance from iterator.
@@ -105,6 +117,12 @@ public abstract class AbstractIdentityMapEnumeration<T> implements Enumeration<T
             this.nextKey.checkReadLock();
         }
         return this.nextKey;
+    }
+
+    @Override
+    @SuppressWarnings("NullableProblems")
+    public Iterator<T> iterator() {
+        return this;
     }
 
 }

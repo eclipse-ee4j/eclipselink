@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2020 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -17,17 +17,18 @@
 //              will allow the retry code to function.
 package org.eclipse.persistence.internal.databaseaccess;
 
-import java.util.*;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.sessions.Login;
-import org.eclipse.persistence.queries.Call;
+import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.internal.sequencing.SequencingCallback;
 import org.eclipse.persistence.internal.sequencing.SequencingCallbackFactory;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.SessionLog;
+import org.eclipse.persistence.queries.Call;
+import org.eclipse.persistence.sessions.Login;
 import org.eclipse.persistence.sessions.SessionProfiler;
 import org.eclipse.persistence.sessions.server.ConnectionPool;
+
+import java.util.Vector;
 
 /**
  * INTERNAL:
@@ -43,7 +44,7 @@ import org.eclipse.persistence.sessions.server.ConnectionPool;
  *
  * @author James
  * @since OracleAS TopLink 10<i>g</i> (10.0.3)
- *
+ * <p>
  * 05/28/2008-1.0M8 Andrei Ilitchev.
  *   - 224964: Provide support for Proxy Authentication through JPA.
  *     Added ConnectionCustomizer, also fixed  postConnect/preDisconnect ExternalConnection calls so that they called in case of reads, too.
@@ -636,6 +637,14 @@ public abstract class DatasourceAccessor implements Accessor {
     @Override
     public java.sql.Connection getConnection() {
         return (java.sql.Connection)this.datasourceConnection;
+    }
+
+    @Override
+    public int getConnectionId() {
+        return this.datasourceConnection != null
+                // Bug 3630182 - if possible, print the actual connection's hashcode instead of just the accessor
+                ? System.identityHashCode(this.datasourceConnection)
+                : System.identityHashCode(this);
     }
 
     /**

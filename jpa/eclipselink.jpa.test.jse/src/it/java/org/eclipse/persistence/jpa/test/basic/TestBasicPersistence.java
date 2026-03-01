@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2014, 2021 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2014, 2017 IBM Corporation. All rights reserved.
+ * Copyright (c) 2014, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -106,7 +106,7 @@ public class TestBasicPersistence {
         rmiRegistry.bind(dsName, mockDataSource);       
 
         connector = JMXConnectorServerFactory.newJMXConnectorServer(new JMXServiceURL("service:jmx:rmi://localhost:" + rmiPort),
-                new HashMap<String, Object>(), ManagementFactory.getPlatformMBeanServer());
+                new HashMap<>(), ManagementFactory.getPlatformMBeanServer());
     }
 
     @AfterClass
@@ -153,7 +153,7 @@ public class TestBasicPersistence {
 
             Dog foundDog = em.find(Dog.class, d.getId());
             foundDog.getOwner();
-            Assert.assertTrue(_sql.size() > 0);
+            Assert.assertTrue(!_sql.isEmpty());
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -203,7 +203,7 @@ public class TestBasicPersistence {
             em.clear();
             em.find(Dog.class, 1);
         } catch (RuntimeException expected) {
-            pass = expected.getMessage().indexOf("tmpDataSourceImp getConnection called") != -1;
+            pass = expected.getMessage().contains("tmpDataSourceImp getConnection called");
             if (!pass) {
                 throw expected;
             }
@@ -266,7 +266,7 @@ public class TestBasicPersistence {
 
             int nonPooledConnectionsAfterFlush = ss.getNumberOfNonPooledConnectionsUsed();
             System.out.println("nonPooledConnectionsAfterFlush = " + nonPooledConnectionsAfterFlush);
-            Assert.assertTrue("Test problem: connection should be not pooled", em.unwrap(UnitOfWork.class).getParent().getAccessor().getPool() == null);
+            Assert.assertNull("Test problem: connection should be not pooled", em.unwrap(UnitOfWork.class).getParent().getAccessor().getPool());
             Assert.assertEquals(initialNonPooledConnections + 1, nonPooledConnectionsAfterFlush);
 
             et.commit();
@@ -278,7 +278,7 @@ public class TestBasicPersistence {
 
             Dog foundDog = em.find(Dog.class, d.getId());
             foundDog.getOwner();
-            Assert.assertTrue(_sql.size() > 0);
+            Assert.assertTrue(!_sql.isEmpty());
 
             int nonPooledConnectionsAfterFind = ss.getNumberOfNonPooledConnectionsUsed();
             System.out.println("nonPooledConnectionsAfterFind = " + nonPooledConnectionsAfterFind);

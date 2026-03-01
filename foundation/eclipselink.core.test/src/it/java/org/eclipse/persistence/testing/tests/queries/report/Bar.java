@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,8 +34,8 @@ public class Bar implements Cloneable, java.io.Serializable {
     }
 
     public void addBeer(Beer aBeer) {
-        getBeerCollection().addElement(aBeer);
-        aBeer.getBarCollection().addElement(this);
+        getBeerCollection().add(aBeer);
+        aBeer.getBarCollection().add(this);
     }
 
     public java.util.Vector getBeerCollection() {
@@ -95,8 +95,8 @@ public class Bar implements Cloneable, java.io.Serializable {
         Bar bar = new Bar();
         bar.key = this.key;
         bar.name = this.name;
-        for (int index = 0; index < this.beerCollection.size(); ++index) {
-            bar.addBeer((Beer)((Beer)this.beerCollection.get(index)).clone());
+        for (Object o : this.beerCollection) {
+            bar.addBeer((Beer) ((Beer) o).clone());
         }
         return bar;
     }

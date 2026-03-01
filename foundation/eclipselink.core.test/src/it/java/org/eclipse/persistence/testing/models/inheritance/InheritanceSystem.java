@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,15 +14,19 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.inheritance;
 
-import java.util.*;
-import org.eclipse.persistence.internal.databaseaccess.*;
-import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.annotations.IdValidation;
-import org.eclipse.persistence.descriptors.*;
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.sessions.factories.*;
-import org.eclipse.persistence.testing.framework.*;
-import org.eclipse.persistence.tools.schemaframework.*;
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
+import org.eclipse.persistence.queries.SQLCall;
+import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.sessions.Session;
+import org.eclipse.persistence.sessions.UnitOfWork;
+import org.eclipse.persistence.sessions.factories.XMLProjectReader;
+import org.eclipse.persistence.testing.framework.TestSystem;
+import org.eclipse.persistence.tools.schemaframework.PopulationManager;
+import org.eclipse.persistence.tools.schemaframework.SchemaManager;
+
+import java.util.Vector;
 
 public class InheritanceSystem extends TestSystem {
     public InheritanceSystem() {
@@ -166,7 +170,7 @@ public class InheritanceSystem extends TestSystem {
         session.writeObject(company);
         manager.registerObject(company, "example1");
 
-        manager.registerObject(((Vector)company.getVehicles().getValue()).firstElement(), "example1");
+        manager.registerObject(((Vector)company.getVehicles().getValue()).get(0), "example1");
 
         company = Company.example2();
         session.writeObject(company);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,17 +14,16 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.feature;
 
-import org.eclipse.persistence.testing.models.insurance.InsuranceSystem;
-import org.eclipse.persistence.testing.framework.*;
-import org.eclipse.persistence.testing.tests.queries.*;
-import org.eclipse.persistence.testing.models.multipletable.ProjectSystem;
-import org.eclipse.persistence.testing.models.ownership.*;
-import org.eclipse.persistence.testing.models.legacy.*;
-import org.eclipse.persistence.testing.tests.queries.options.*;
-import org.eclipse.persistence.testing.tests.queries.repreparation.*;
-import org.eclipse.persistence.testing.models.inheritance.InheritanceSystem;
-import org.eclipse.persistence.testing.tests.events.EventHookTestSuite;
+import org.eclipse.persistence.testing.framework.TestModel;
+import org.eclipse.persistence.testing.framework.TestSuite;
+import org.eclipse.persistence.testing.models.employee.relational.EmployeeSystem;
 import org.eclipse.persistence.testing.models.events.EventHookSystem;
+import org.eclipse.persistence.testing.models.inheritance.InheritanceSystem;
+import org.eclipse.persistence.testing.models.insurance.InsuranceSystem;
+import org.eclipse.persistence.testing.models.legacy.LegacySystem;
+import org.eclipse.persistence.testing.models.multipletable.ProjectSystem;
+import org.eclipse.persistence.testing.models.ownership.OwnershipSystem;
+import org.eclipse.persistence.testing.tests.events.EventHookTestSuite;
 import org.eclipse.persistence.testing.tests.expressions.ExpressionInMemoryTestSuite;
 import org.eclipse.persistence.testing.tests.expressions.ExpressionOperatorUnitTestSuite;
 import org.eclipse.persistence.testing.tests.expressions.ExpressionOuterJoinTestSuite;
@@ -32,11 +31,14 @@ import org.eclipse.persistence.testing.tests.expressions.ExpressionSubSelectTest
 import org.eclipse.persistence.testing.tests.expressions.ExpressionTestSuite;
 import org.eclipse.persistence.testing.tests.expressions.ExpressionUnitTestSuite;
 import org.eclipse.persistence.testing.tests.identitymaps.IdentityMapTestSuite;
+import org.eclipse.persistence.testing.tests.queries.IdentitySystem;
+import org.eclipse.persistence.testing.tests.queries.QueryFrameworkTestSuite;
+import org.eclipse.persistence.testing.tests.queries.options.QueryOptionTestSuite;
+import org.eclipse.persistence.testing.tests.queries.repreparation.QueryRepreparationTestSuite;
+import org.eclipse.persistence.testing.tests.sessioncache.SessionCacheTestSuite;
 import org.eclipse.persistence.testing.tests.transactions.ReadingThroughWriteConnectionInTransactionTest;
 import org.eclipse.persistence.testing.tests.transactions.TransactionTestSuite;
 import org.eclipse.persistence.testing.tests.writing.CommitOrderTest;
-import org.eclipse.persistence.testing.models.employee.relational.EmployeeSystem;
-import org.eclipse.persistence.testing.tests.sessioncache.SessionCacheTestSuite;
 
 public class FeatureTestModel extends TestModel {
 

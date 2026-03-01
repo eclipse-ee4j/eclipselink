@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,9 +14,9 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.relationshipmaintenance;
 
-import java.util.Collection;
-
 import org.eclipse.persistence.indirection.IndirectCollectionsFactory;
+
+import java.util.Collection;
 
 public class Customer {
     public java.util.Collection salespeople;
@@ -109,6 +109,6 @@ public class Customer {
     }
 
     public String toString() {
-        return org.eclipse.persistence.internal.helper.Helper.getShortClassName(this) + "(" + id + ", " + System.identityHashCode(this) + ")";
+        return getClass().getSimpleName() + "(" + id + ", " + System.identityHashCode(this) + ")";
     }
 }

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2018, 2022 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2018, 2024 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -13,7 +13,7 @@
 
 -->
 
-<entity-mappings version="2.3" xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/orm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<entity-mappings version="5.0" xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/orm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <description>Advanced Extended Test Model Instance Document</description>
     <persistence-unit-metadata>
         <persistence-unit-defaults>
@@ -57,7 +57,7 @@
             <primary-key-join-column name="E_ID" referenced-column-name="EMP_ID"/>
         </secondary-table>
         <optimistic-locking type="VERSION_COLUMN" cascade="true"/>
-        <cache type="SOFT_WEAK" size="730" shared="true" disable-hits="true" always-refresh="false" coordination-type="INVALIDATE_CHANGED_OBJECTS">
+        <cache type="SOFT_WEAK" size="730" isolation="SHARED" disable-hits="true" always-refresh="false" coordination-type="INVALIDATE_CHANGED_OBJECTS">
             <!-- disable-hits is set to true. Do not change it, the employee customizer will set it to false and there is a test to verify that. -->
             <expiry>1000</expiry>
         </cache>
@@ -240,7 +240,7 @@
     </entity>
     <entity class="org.eclipse.persistence.testing.models.jpa.xml.advanced.Address">
         <change-tracking type="DEFERRED"/>
-        <cache shared="true"/>
+        <cache isolation="SHARED"/>
         <cache-interceptor class="CacheAuditor"/>
         <named-stored-procedure-query name="SProcXMLAddress" result-class="Address" procedure-name="SProc_Read_XMLAddress">
             <parameter direction="IN_OUT" name="address_id_v" query-parameter="ADDRESS_ID" type="Integer"/>

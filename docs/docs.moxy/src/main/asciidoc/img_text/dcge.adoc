@@ -1,0 +1,6 @@
+:nofooter:
+This figure illustrates an XML direct collection mapping to text nodes
+with a grouping element. The class *Customer* contains the attribute
+*emailAddress* of type *List*. The *emailAddress* attribute maps to the
+two `<email-address>` elements (in the `<email-addresses>` group
+element) in the XML document.

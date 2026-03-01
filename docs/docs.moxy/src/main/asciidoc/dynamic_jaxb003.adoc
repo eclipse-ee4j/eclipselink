@@ -1,0 +1,331 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[DYNAMICJAXB003]]
+=== Bootstrapping from XML Schema (XSD)
+
+With EclipseLink MOXy, you can provide an existing XML schema from which
+to create a `DynamicJAXBContext`. EclipseLink will parse the schema and
+generate `DynamicTypes` for each complex type. This is achieved by use
+of the `DynamicJAXBContextFactory` class. A `DynamicJAXBContext` cannot
+be instantiated directly; it must be created through the factory API.
+
+You can pass the XML Schema to `DynamicJAXBContextFactory` by using:
+
+* `java.io.InputStream`
+* `org.w3c.dom.Node`
+* `javax.xml.transform.Source`
+
+NOTE: EclipseLink MOXy uses Sun's XJC (XML-to-Java Compiler) APIs to parse the
+schema into an in-memory representation and generate dynamic types and
+mappings. When bootstrapping from XSD, you will need to include
+`jaxb-xjc.jar` (from the JAXB reference implementation) on your
+*CLASSPATH*.
+
+The APIs used to create a DynamicJAXBContext are as follows:
+
+[[sthref197]]
+
+*_Example 9-4 Creating a DynamicJAXBContext_*
+
+[source,oac_no_warn]
+----
+/**
+ * Create a DynamicJAXBContext, using XML Schema as the metadata source.
+ *
+ * @param schemaStream
+ *      java.io.InputStream from which to read the XML Schema.
+ * @param resolver
+ *      An org.xml.sax.EntityResolver, used to resolve schema imports.  Can be null.
+ * @param classLoader
+ *      The application's current class loader, which will be used to first lookup
+ *      classes to see if they exist before new DynamicTypes are generated.  Can be
+ *      null, in which case Thread.currentThread().getContextClassLoader() will be used.
+ * @param properties
+ *      Map of properties to use when creating a new DynamicJAXBContext.  Can be null.
+ *
+ * @return
+ *      A new instance of DynamicJAXBContext.
+ *
+ * @throws JAXBException
+ *      if an error was encountered while creating the DynamicJAXBContext.
+ */
+public static DynamicJAXBContext createContextFromXSD(java.io.InputStream schemaStream, EntityResolver resolver,
+   ClassLoader classLoader, Map<String, ?> properties) throws JAXBException
+ 
+public static DynamicJAXBContext createContextFromXSD(org.w3c.dom.Node schemaDOM, EntityResolver resolver,
+   ClassLoader classLoader, Map<String, ?> properties) throws JAXBException
+ 
+public static DynamicJAXBContext createContextFromXSD(javax.xml.transform.Source schemaSource, EntityResolver resolver,
+   ClassLoader classLoader, Map<String, ?> properties) throws JAXBException
+ 
+----
+
+NOTE: The classLoader parameter is your application's current class loader,
+and will be used to first lookup classes to see if they exist before new
+`DynamicTypes` are generated. The user may pass in `null` for this
+parameter, and `Thread.currentThread().getContextClassLoader()` will be
+used instead.
+
+This example shows how to create and marshall a new object using Dynamic
+MOXy.
+
+[[sthref198]]
+
+*_Example 9-5 Sample XML Schema_*
+
+[source,oac_no_warn]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="example" xmlns:myns="example" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    attributeFormDefault="qualified" elementFormDefault="qualified">
+ 
+    <xs:element name="customer" type="myns:customer"/>
+ 
+    <xs:complexType name="customer">
+        <xs:sequence>
+            <xs:element name="first-name" type="xs:string"/>
+            <xs:element name="last-name" type="xs:string"/>
+            <xs:element name="address" type="myns:address"/>
+        </xs:sequence>
+    </xs:complexType>
+ 
+    <xs:complexType name="address">
+        <xs:sequence>
+            <xs:element name="street" type="xs:string"/>
+            <xs:element name="city" type="xs:string"/>
+            <xs:element name="province" type="xs:string"/>
+            <xs:element name="postal-code" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+ 
+</xs:schema>
+ 
+----
+
+The code snippet in link:#BGBFCCBC[Example 9-6]:
+
+* Passes the XML Schema to `DynamicJAXBContextFactory` to create a
+`DynamicJAXBContext`
+* Creates new `DynamicEntities` and sets their properties
+* Creates a `JAXBMarshaller` and marshals the Java objects to XML
+
+[[BGBFCCBC]]
+
+*_Example 9-6 Sample Application Code_*
+
+[source,oac_no_warn]
+----
+InputStream inputStream = myClassLoader.getSystemResourceAsStream("example/resources/xsd/customer.xsd");
+DynamicJAXBContext dContext = DynamicJAXBContextFactory.createContextFromXSD(inputStream, null, myClassLoader, null);
+ 
+DynamicEntity newCustomer = dContext.newDynamicEntity("example.Customer");
+newCustomer.set("firstName", "George");
+newCustomer.set("lastName", "Jones");
+ 
+DynamicEntity newAddress = dContext.newDynamicEntity("example.Address");
+newAddress.set("street", "227 Main St.");
+newAddress.set("city", "Toronto");
+newAddress.set("province", "Ontario");
+newAddress.set("postalCode", "M5V1E6");
+ 
+newCustomer.set("address", newAddress);
+ 
+dContext.createMarshaller().marshal(newCustomer, System.out);
+ 
+----
+
+==== Importing Other Schemas / EntityResolvers
+
+If the XML schema that you use to bootstrap imports other schemas, you
+must configure an `org.xml.sax.EntityResolver` to resolve the locations
+of the imported schemas. You can then pass the `EntityResolver` to the
+`DynamicJAXBContextFactory`.
+
+In link:#BGBIIEGH[Example 9-7], each type is defined in its own schema:
+
+[[BGBIIEGH]]
+
+*_Example 9-7 Sample XML Schema_*
+
+[source,oac_no_warn]
+----
+<!-- customer.xsd -->
+ 
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:myns="example" xmlns:add="addressNamespace"
+   xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="example">
+ 
+    <xs:import namespace="addressNamespace" schemaLocation="address.xsd"/>
+ 
+    <xs:element name="customer" type="myns:customer"/>
+ 
+    <xs:complexType name="customer">
+        <xs:sequence>
+            <xs:element name="first-name" type="xs:string"/>
+            <xs:element name="last-name" type="xs:string"/>
+            <xs:element name="address" type="add:address"/>
+        </xs:sequence>
+    </xs:complexType>
+ 
+</xs:schema>
+ 
+----
+
+You must supply an `EntityResolver` implementation to resolve the
+location of the imported schema.
+
+link:#BGBIJHID[Example 9-8] illustrates the `EntityResolver`:
+
+[[BGBIJHID]]
+
+*_Example 9-8 Sample Application Code_*
+
+[source,oac_no_warn]
+----
+class MyEntityResolver implements EntityResolver {
+ 
+   public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
+      // Imported schemas are located in ext\appdata\xsd\
+ 
+      // Grab only the filename part from the full path
+      String filename = new File(systemId).getName();
+ 
+      // Now prepend the correct path
+      String correctedId = "ext/appdata/xsd/" + filename;
+ 
+      InputSource is = new InputSource(ClassLoader.getSystemResourceAsStream(correctedId));
+      is.setSystemId(correctedId);
+ 
+      return is;
+   }
+ 
+}
+ 
+----
+
+When you create the `DynamicJAXBContext`, pass the `EntityResolver` to
+it, as shown here:
+
+[source,oac_no_warn]
+----
+InputStream inputStream = ClassLoader.getSystemResourceAsStream("com/foo/sales/xsd/customer.xsd");
+DynamicJAXBContext dContext = DynamicJAXBContextFactory.createContextFromXSD(inputStream, new MyEntityResolver(), null, null);
+----
+
+If you encounter the following exception when importing another schema:
+
+`Internal Exception: org.xml.sax.SAXParseException: schema_reference.4: Failed to read schema document '<imported-schema-name>', because 1) could not find the document; 2) the document could not be read; 3) the root element of the document is not <xsd:schema>.`
+
+You should disable XJC's schema correctness check option, either in
+code:
+
+`System.setProperty("com.sun.tools.xjc.api.impl.s2j.SchemaCompilerImpl.noCorrectnessCheck", "true")`
+
+or from the command line:
+
+`-Dcom.sun.tools.xjc.api.impl.s2j.SchemaCompilerImpl.noCorrect`
+
+==== Customizing Generated Mappings with XJC External Binding Customization Files
+
+When bootstrapping from an XSD, you have the option to customize the
+mappings that will be generated through the use of XJC's External
+Binding Customization file format (`.xjb`). In the example below, the
+package name of the dynamic classes has been overridden, and the name
+attribute has been renamed to `last-name-comma-first-name`.
+
+[[sthref201]]
+
+*_Example 9-9 custom1.xjb File_*
+
+[source,oac_no_warn]
+----
+<jxb:bindings version="1.0" xmlns:jxb="http://java.sun.com/xml/ns/jaxb" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <jxb:bindings schemaLocation="employee.xsd" node="/xs:schema">
+ 
+        <!-- Customize the package name that is generated for each schema -->
+        <jxb:schemaBindings>
+            <jxb:package name="com.acme.internal"/>
+        </jxb:schemaBindings>
+ 
+        <!-- Rename the 'name' element to 'last-name-comma-first-name' -->
+        <jxb:bindings node="//xs:complexType[@name='person']">
+            <jxb:bindings node=".//xs:element[@name='name']">
+                <jxb:property name="last-name-comma-first-name"/>
+            </jxb:bindings>
+        </jxb:bindings>
+ 
+    </jxb:bindings>
+</jxb:bindings>
+ 
+----
+
+For complete information on the External Binding Customization file
+format, please see
+`http://download.oracle.com/docs/cd/E17802_01/webservices/webservices/docs/2.0/tutorial/doc/JAXBUsing4.html`.
+
+NOTE: If you wish to use External Binding Customization files, you will need
+to use *Source* objects to point to your XML Schema. *Sources* are used
+to load the `.xjb` files as well, and they must all have the same System
+ID set.
+
+link:#BABIJDEI[Example 9-10] illustrates bootstrapping from an XSD, and
+customizing the mapping generation using two separate `.xjb` files.
+
+[[BABIJDEI]]
+
+*_Example 9-10 Bootstrapping Example_*
+
+[source,oac_no_warn]
+----
+ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+String xsd = "example/resources/xsd/employee.xsd";
+String xjb1 = "example/resources/xsd/custom1.xjb";
+String xjb2 = "example/resources/xsd/custom2.xjb";
+ 
+InputStream xsdStream = classLoader.getSystemResourceAsStream(xsd);
+Source xsdSource = new StreamSource(xsdStream);
+// Set SYSTEM_ID to the filename part of the XSD
+xsdSource.setSystemId("employee.xsd");
+ 
+InputStream xjbStream = classLoader.getResourceAsStream(xjb1);
+Source xjbSource = new StreamSource(xjbStream);
+// Set SYSTEM_ID to be the same as the XSD
+xjbSource.setSystemId(xsdSource.getSystemId());
+ 
+InputStream xjbStream2 = classLoader.getResourceAsStream(xjb2);
+Source xjbSource2 = new StreamSource(xjbStream2);
+// Set SYSTEM_ID to be the same as the XSD
+xjbSource2.setSystemId(xsdSource.getSystemId());
+ 
+ArrayList<Source> xjbFiles = new ArrayList<Source>(2);
+xjbFiles.add(xjbSource);
+xjbFiles.add(xjbSource2);
+ 
+// Put XSD and XJBs into Properties
+Map<String, Object> properties = new HashMap<String, Object>();
+properties.put(DynamicJAXBContextFactory.XML_SCHEMA_KEY, xsdSource);
+properties.put(DynamicJAXBContextFactory.EXTERNAL_BINDINGS_KEY, xjbFiles);
+ 
+// Create Context
+DynamicJAXBContext jaxbContext = (DynamicJAXBContext) JAXBContext.newInstance("example", classLoader, properties);
+ 
+----
+
+The value of `EXTERNAL_BINDINGS_KEY` can be either a single `Source` or
+a `List<Source>`, pointing to your External Binding Customization
+file(s).

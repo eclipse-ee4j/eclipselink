@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,18 +22,11 @@ import java.util.Map;
 
 import jakarta.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
-import javax.xml.stream.XMLEventReader;
-import javax.xml.stream.XMLStreamReader;
-import javax.xml.transform.sax.SAXSource;
-import javax.xml.transform.stream.StreamSource;
 
-import org.eclipse.persistence.internal.oxm.record.XMLStreamReaderInputSource;
 import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
-import org.w3c.dom.Document;
-import org.xml.sax.InputSource;
 
 public class JAXBSingleObjectIntegerNoXsiTestCases extends JAXBWithJSONTestCases {
 

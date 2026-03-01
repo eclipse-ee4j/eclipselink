@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,7 +27,6 @@ import org.eclipse.persistence.testing.models.jpa.advanced.Project;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 
 /**
  * <p>
@@ -66,9 +65,7 @@ public class JUnitDomainObjectComparer {
                 if (JUnitTestCase.usesSOP()) {
                     // In SOP case the PhoneNumber may be read only from Employee's sopObject.
                     // That means that unless read-only attribute PhoneNumber.id is explicitly set (which never happens) it will stay null forever.
-                    if ((obj1 instanceof PhoneNumber) && (obj2 instanceof PhoneNumber)) {
-                        PhoneNumber phone1 = (PhoneNumber)obj1;
-                        PhoneNumber phone2 = (PhoneNumber)obj2;
+                    if ((obj1 instanceof PhoneNumber phone1) && (obj2 instanceof PhoneNumber phone2)) {
                         if (phone1.getId() == null && phone1.getOwner() != null && phone1.getOwner().getId() != null) {
                             // assign ownerId
                             phone1.setId(phone1.getOwner().getId());
@@ -82,9 +79,7 @@ public class JUnitDomainObjectComparer {
                             // reset to the original state
                             phone2.setId(null);
                         }
-                    } else if ((obj1 instanceof Employee) && (obj2 instanceof Employee)) {
-                        Employee emp1 = (Employee)obj1;
-                        Employee emp2 = (Employee)obj2;
+                    } else if ((obj1 instanceof Employee emp1) && (obj2 instanceof Employee emp2)) {
                         Collection<PhoneNumber> phoneNumbers1 = emp1.getPhoneNumbers();
                         Collection<PhoneNumber> phoneNumbers2 = emp2.getPhoneNumbers();
                         // compare PhoneNumbers so that PhoneNumber.id == null are worked around (see PhoneNumber case above)
@@ -105,10 +100,8 @@ public class JUnitDomainObjectComparer {
     }
 
     public boolean compareObjects(Object domainObject1, Collection<?> aCollection) {
-        Iterator<?> itr = aCollection.iterator();
 
-        while (itr.hasNext()) {
-            Object domainObject2 = itr.next();
+        for (Object domainObject2 : aCollection) {
             if (compareObjects(domainObject1, domainObject2)) {
                 return true;
             }
@@ -125,36 +118,33 @@ public class JUnitDomainObjectComparer {
             allMatched = false;
         }*/
         //Enumeration enum1 = objects1.elements();
-        Iterator<?> itr1 = objects1.iterator();
 
-        while (itr1.hasNext()) {
-            Object obj1 = itr1.next();
-
+        for (Object obj1 : objects1) {
             if (obj1 == null) {
                 allMatched = allMatched & objects2.contains(null);
                 continue;
             }
-            if(obj1.getClass().equals(Employee.class)){
-                Employee emp1 = (Employee)obj1;
+            if (obj1.getClass().equals(Employee.class)) {
+                Employee emp1 = (Employee) obj1;
                 Employee emp2 = findEmployeeByIdIn(emp1, objects2);
                 allMatched = allMatched && compareObjects(emp1, emp2);
             }
-            if(obj1.getClass().equals(Project.class)){
-                Project proj1 = (Project)obj1;
+            if (obj1.getClass().equals(Project.class)) {
+                Project proj1 = (Project) obj1;
                 Project proj2 = findProjectByIdIn(proj1, objects2);
                 allMatched = allMatched && compareObjects(proj1, proj2);
             }
-            if(obj1.getClass().equals(LargeProject.class)){
-                Project proj1 = (Project)obj1;
+            if (obj1.getClass().equals(LargeProject.class)) {
+                Project proj1 = (Project) obj1;
                 Project proj2 = findProjectByIdIn(proj1, objects2);
                 allMatched = allMatched && compareObjects(proj1, proj2);
             }
-            if(obj1.getClass().equals(PhoneNumber.class)){
-                PhoneNumber phone1 = (PhoneNumber)obj1;
+            if (obj1.getClass().equals(PhoneNumber.class)) {
+                PhoneNumber phone1 = (PhoneNumber) obj1;
                 PhoneNumber phone2 = findPhoneNumberIn(phone1, objects2);
                 allMatched = allMatched && compareObjects(phone1, phone2);
             }
-            if(obj1.getClass().equals(String.class)){
+            if (obj1.getClass().equals(String.class)) {
                 allMatched = allMatched && objects2.contains(obj1);
 
             }
@@ -163,11 +153,10 @@ public class JUnitDomainObjectComparer {
     }
     public PhoneNumber findPhoneNumberIn(PhoneNumber phone1, Collection<?> phones){
 
-        Iterator<?> itr = phones.iterator();
-        while (itr.hasNext()) {
-            PhoneNumber pTemp = (PhoneNumber)itr.next();
+        for (Object phone : phones) {
+            PhoneNumber pTemp = (PhoneNumber) phone;
             if ((pTemp != null) && pTemp.getNumber().equals(phone1.getNumber())) {
-                if(pTemp.getAreaCode().equals(phone1.getAreaCode())) {
+                if (pTemp.getAreaCode().equals(phone1.getAreaCode())) {
                     if (pTemp.getOwner().getId().equals(phone1.getOwner().getId())) {
                         return pTemp;
                     }
@@ -178,10 +167,9 @@ public class JUnitDomainObjectComparer {
     }
     public Project findProjectByIdIn(Project project, Collection<?> projects){
 
-        Iterator<?> itr = projects.iterator();
-        while (itr.hasNext()) {
+        for (Object o : projects) {
 
-            Project pTemp = (Project)itr.next();
+            Project pTemp = (Project) o;
             if ((pTemp != null) && pTemp.getId().equals(project.getId())) {
                 return pTemp;
             }
@@ -189,10 +177,9 @@ public class JUnitDomainObjectComparer {
         return null;
     }
     public Employee findEmployeeByIdIn(Employee emp, Collection<?> employees){
-        Iterator<?> itr = employees.iterator();
 
-        while (itr.hasNext()) {
-            Employee eTemp = (Employee)itr.next();
+        for (Object employee : employees) {
+            Employee eTemp = (Employee) employee;
             if ((eTemp != null) && eTemp.getId().equals(emp.getId())) {
                 return eTemp;
             }
@@ -200,9 +187,8 @@ public class JUnitDomainObjectComparer {
         return null;
     }
     public Address findAddressByIdIn(Address addr, Collection<?> addresses){
-        Iterator<?> itr = addresses.iterator();
-        while (itr.hasNext()) {
-            Address aTemp = (Address)itr.next();
+        for (Object address : addresses) {
+            Address aTemp = (Address) address;
             if ((aTemp != null) && aTemp.getID() == addr.getID()) {
                 return aTemp;
             }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,9 +30,7 @@ public class Vehicle {
         if (theVehicle instanceof Vehicle) {
             if (topSpeed == (((Vehicle)theVehicle).topSpeed)) {
                 if (((model == null) && (((Vehicle)theVehicle).model == null)) || ((model != null) && (((Vehicle)theVehicle).model != null) && model.equals(((Vehicle)theVehicle).model))) {
-                    if (((manufacturer == null) && (((Vehicle)theVehicle).manufacturer == null)) || ((manufacturer != null) && (((Vehicle)theVehicle).manufacturer != null) && manufacturer.equals(((Vehicle)theVehicle).manufacturer))) {
-                        return true;
-                    }
+                    return ((manufacturer == null) && (((Vehicle) theVehicle).manufacturer == null)) || ((manufacturer != null) && (((Vehicle) theVehicle).manufacturer != null) && manufacturer.equals(((Vehicle) theVehicle).manufacturer));
                 }
             }
         }

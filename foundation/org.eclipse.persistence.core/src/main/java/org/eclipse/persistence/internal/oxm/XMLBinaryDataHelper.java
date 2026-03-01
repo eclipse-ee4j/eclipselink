@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,10 +14,22 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.oxm;
 
-import java.awt.Component;
-import java.awt.Graphics;
-import java.awt.Image;
-import java.awt.MediaTracker;
+import jakarta.activation.DataHandler;
+import jakarta.mail.internet.ContentType;
+import jakarta.mail.internet.MimeMultipart;
+import org.eclipse.persistence.exceptions.ConversionException;
+import org.eclipse.persistence.oxm.exceptions.XMLMarshalException;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
+import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
+import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
+
+import javax.imageio.ImageIO;
+import javax.imageio.ImageWriter;
+import javax.xml.namespace.QName;
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -27,22 +39,6 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
-import jakarta.activation.DataHandler;
-import javax.imageio.ImageIO;
-import javax.imageio.ImageWriter;
-import jakarta.mail.internet.ContentType;
-import jakarta.mail.internet.MimeMultipart;
-import javax.xml.namespace.QName;
-import javax.xml.transform.Source;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
-
-import org.eclipse.persistence.exceptions.ConversionException;
-import org.eclipse.persistence.exceptions.XMLMarshalException;
-import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
-import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
-import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 
 public class XMLBinaryDataHelper {
     protected static XMLBinaryDataHelper binaryDataHelper;
@@ -77,8 +73,7 @@ public class XMLBinaryDataHelper {
     }
 
     public Object convertObject(Object obj, Class<?> classification, CoreAbstractSession session, CoreContainerPolicy cp) {
-        if( obj instanceof List && cp != null){
-            List theList = (List)obj;
+        if( obj instanceof List theList && cp != null){
             Object container = cp.containerInstance(theList.size());
             for(int i=0; i<theList.size(); i++){
                 Object next = theList.get(i);
@@ -153,7 +148,7 @@ public class XMLBinaryDataHelper {
             ContentType contentType = new ContentType(value.getContentType());
             String boundary = contentType.getParameter("boundary");
 
-            output.write(Constants.cr().getBytes());
+            output.write(System.lineSeparator().getBytes());
             output.write(("Content-Type: " + contentType.getBaseType() + "; boundary=\"" + boundary + "\"\n").getBytes());
         } catch (Exception ex) {
             throw ConversionException.couldNotBeConverted(value, byte[].class, ex);
@@ -233,8 +228,7 @@ public class XMLBinaryDataHelper {
         }
         if (obj instanceof DataHandler) {
             try {
-                if (((DataHandler) obj).getContent() instanceof MimeMultipart) {
-                    MimeMultipart multipart = (MimeMultipart) ((DataHandler) obj).getContent();
+                if (((DataHandler) obj).getContent() instanceof MimeMultipart multipart) {
                     return multipart;
                 } else {
                     return new MimeMultipart(((DataHandler) obj).getDataSource());
@@ -254,8 +248,7 @@ public class XMLBinaryDataHelper {
             } catch (Exception ex) {
                 throw ConversionException.couldNotBeConverted(obj, MULTIPART, ex);
             }
-        } else if (obj instanceof Byte[]) {
-            Byte[] objectBytes = (Byte[]) obj;
+        } else if (obj instanceof Byte[] objectBytes) {
             byte[] bytes = new byte[objectBytes.length];
             for (int i = 0; i < objectBytes.length; i++) {
                 bytes[i] = objectBytes[i];
@@ -275,8 +268,7 @@ public class XMLBinaryDataHelper {
         }
         if (obj instanceof DataHandler) {
             try {
-                if (((DataHandler) obj).getContent() instanceof Image) {
-                    Image image = (Image) ((DataHandler) obj).getContent();
+                if (((DataHandler) obj).getContent() instanceof Image image) {
                     return image;
                 } else {
                     return ImageIO.read(((DataHandler) obj).getInputStream());
@@ -291,8 +283,7 @@ public class XMLBinaryDataHelper {
             } catch (Exception ex) {
                 throw ConversionException.couldNotBeConverted(obj, IMAGE, ex);
             }
-        } else if (obj instanceof Byte[]) {
-            Byte[] objectBytes = (Byte[]) obj;
+        } else if (obj instanceof Byte[] objectBytes) {
             byte[] bytes = new byte[objectBytes.length];
             for (int i = 0; i < objectBytes.length; i++) {
                 bytes[i] = objectBytes[i];
@@ -355,8 +346,7 @@ public class XMLBinaryDataHelper {
         DataHandler handler = null;
         if (sourceObject instanceof DataHandler) {
             return (DataHandler) sourceObject;
-        } else if (sourceObject instanceof byte[]) {
-            byte[] bytes = (byte[]) sourceObject;
+        } else if (sourceObject instanceof byte[] bytes) {
             handler = new DataHandler(new ByteArrayDataSource(bytes, "application/octet-stream"));
 
         } else if (sourceObject instanceof Byte[]) {
@@ -401,8 +391,7 @@ public class XMLBinaryDataHelper {
             }
         } else if (obj instanceof byte[]) {
             return new ByteArraySource((byte[])obj);
-        } else if (obj instanceof Byte[]) {
-            Byte[] objectBytes = (Byte[]) obj;
+        } else if (obj instanceof Byte[] objectBytes) {
             byte[] bytes = new byte[objectBytes.length];
             for (int i = 0; i < objectBytes.length; i++) {
                 bytes[i] = objectBytes[i];

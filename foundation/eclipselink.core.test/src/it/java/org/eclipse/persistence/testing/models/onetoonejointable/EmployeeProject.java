@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,10 +15,16 @@
 //       - Bug 282553: JPA 2.0 JoinTable support for OneToOne and ManyToOne
 package org.eclipse.persistence.testing.models.onetoonejointable;
 
-import org.eclipse.persistence.sessions.*;
-import org.eclipse.persistence.descriptors.*;
-import org.eclipse.persistence.mappings.*;
-import org.eclipse.persistence.mappings.converters.*;
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.RelationalDescriptor;
+import org.eclipse.persistence.descriptors.VersionLockingPolicy;
+import org.eclipse.persistence.mappings.DirectCollectionMapping;
+import org.eclipse.persistence.mappings.DirectToFieldMapping;
+import org.eclipse.persistence.mappings.ManyToManyMapping;
+import org.eclipse.persistence.mappings.OneToOneMapping;
+import org.eclipse.persistence.mappings.RelationTableMechanism;
+import org.eclipse.persistence.mappings.converters.ObjectTypeConverter;
+import org.eclipse.persistence.sessions.DatabaseLogin;
 
 public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
     public EmployeeProject() {

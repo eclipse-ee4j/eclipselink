@@ -1,4 +1,4 @@
-[//]: # " Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved. "
+[//]: # " Copyright (c) 2022, 2024 Oracle and/or its affiliates. All rights reserved. "
 [//]: # "  "
 [//]: # " This program and the accompanying materials are made available under the "
 [//]: # " terms of the Eclipse Public License v. 2.0 which is available at "
@@ -42,11 +42,11 @@ if no customized descriptor is provided in `src/main/resources-ejb/META-INF/pers
 * `pom.xml` reference:
 ```xml
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>org.eclipse.persistence.jpa.testapps</artifactId>
         <groupId>org.eclipse.persistence</groupId>
-        <version>4.0.0-SNAPSHOT</version>
+        <version>5.0.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -242,8 +242,8 @@ datasources on the server need to point to different MySQL DB schemas from those
 ```
 WILDFLY_HOME=...
 REPO_HOME=$HOME/.m2/repository/org/eclipse/persistence
-VERSION=4.0.0-SNAPSHOT
-ASM_VERSION=9.3.0
+VERSION=5.0.0-SNAPSHOT
+ASM_VERSION=9.4.0
 
 WR=$WILDFLY_HOME/modules/system/layers/base/org/eclipse/persistence/main
 
@@ -301,7 +301,7 @@ echo '<module name="org.eclipse.persistence" xmlns="urn:jboss:module:1.9">
 
 ```
 connect
-module add --name=com.mysql.driver8 --resources=$HOME/.m2/repository/mysql/mysql-connector-java/8.0.28/mysql-connector-java-8.0.28.jar --dependencies=javax.api,javax.transaction.api
+module add --name=com.mysql.driver8 --resources=$HOME/.m2/repository/com/mysql/mysql-connector-j/8.0.32/mysql-connector-j-8.0.32.jar --dependencies=javax.api,javax.transaction.api
 /subsystem=datasources/jdbc-driver=mysql8/:add(driver-module-name=com.mysql.driver8,driver-name=mysql8,driver-class-name=com.mysql.cj.jdbc.Driver,driver-major-version=8,driver-minor-version=0)
 :shutdown(restart=true)
 ```

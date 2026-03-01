@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,17 +14,7 @@
 //     Denise Smith - November 2, 2009
 package org.eclipse.persistence.oxm.record;
 
-import java.io.CharArrayWriter;
-import java.io.OutputStream;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-
-import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.oxm.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.oxm.CharacterEscapeHandler;
 import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.NamespaceResolver;
@@ -38,6 +28,16 @@ import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.ext.LexicalHandler;
+
+import java.io.CharArrayWriter;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 /**
  * <p>Use this type of MarshalRecord when the marshal target is an OutputStream and the
@@ -540,7 +540,7 @@ public class OutputStreamRecord extends MarshalRecord<XMLMarshaller> {
                         String prefix = nextEntry.getKey();
                         outputStreamWrite(SPACE);
                         outputStreamWrite(javax.xml.XMLConstants.XMLNS_ATTRIBUTE.getBytes(Constants.DEFAULT_XML_ENCODING));
-                        if(null != prefix && prefix.length() > 0) {
+                        if(null != prefix && !prefix.isEmpty()) {
                             outputStreamWrite((byte)Constants.COLON);
                             outputStreamWrite(prefix.getBytes(Constants.DEFAULT_XML_ENCODING));
                         }

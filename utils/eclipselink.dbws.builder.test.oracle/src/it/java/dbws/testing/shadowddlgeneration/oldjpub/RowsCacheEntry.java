@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -99,12 +99,12 @@ public class RowsCacheEntry {
                             break;
                         }
                     }
-                    ArrayList<String> keys = new ArrayList<String>();
-                    ArrayList<Object> values = new ArrayList<Object>();
+                    ArrayList<String> keys = new ArrayList<>();
+                    ArrayList<Object> values = new ArrayList<>();
                     for (int j = 0; j < to.getKeys().length; j++) {
                         boolean match = false;
-                        for (int i = 0; i < m_keys.length; i++) {
-                            if (m_keys[i].equals(to.getKeys()[j])) {
+                        for (String mKey : m_keys) {
+                            if (mKey.equals(to.getKeys()[j])) {
                                 match = true;
                             }
                         }
@@ -115,8 +115,8 @@ public class RowsCacheEntry {
                     }
                     if (compatible) {
                         diff = new RowsCacheEntry(m_view, m_selects,
-                            keys.toArray(new String[keys.size()]),
-                            values.toArray(new Object[values.size()]),
+                            keys.toArray(new String[0]),
+                            values.toArray(new Object[0]),
                             m_rows);
                     }
                 }
@@ -126,19 +126,19 @@ public class RowsCacheEntry {
     }
 
     public String printSummary() {
-        String text = "";
-        text += "  view: " + m_view + "\n";
-        text += "  what: ";
-        for (int i = 0; i < m_selects.length; i++) {
-            text += m_selects[i] + " ";
+        StringBuilder text = new StringBuilder();
+        text.append("  view: ").append(m_view).append("\n");
+        text.append("  what: ");
+        for (String mSelect : m_selects) {
+            text.append(mSelect).append(" ");
         }
-        text += "\n";
-        text += "  where: ";
+        text.append("\n");
+        text.append("  where: ");
         for (int i = 0; i < m_keys.length; i++) {
-            text += m_keys[i] + "=" + m_values[i] + " ";
+            text.append(m_keys[i]).append("=").append(m_values[i]).append(" ");
         }
-        text += "\n";
-        text += "  rows: " + m_rows.size();
-        return text;
+        text.append("\n");
+        text.append("  rows: ").append(m_rows.size());
+        return text.toString();
     }
 }

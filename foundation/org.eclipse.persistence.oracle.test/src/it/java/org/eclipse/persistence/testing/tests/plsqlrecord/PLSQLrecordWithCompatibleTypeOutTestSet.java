@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -10,7 +10,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
  */
 
-// Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
 
 package org.eclipse.persistence.testing.tests.plsqlrecord;
 
@@ -24,6 +24,8 @@ import org.w3c.dom.Document;
 // JUnit imports
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -39,7 +41,6 @@ import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLrecord;
 import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.Project;
-import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.factories.XMLProjectReader;
 
 // other imports
@@ -265,13 +266,13 @@ public class PLSQLrecordWithCompatibleTypeOutTestSet  {
         }
         assertTrue("invocation rec_test_out failed: " + msg, worked);
         assertNotNull("result is supposed to be not-null", result);
-        assertTrue("incorrect EMPNO" , result.employeeNumber.equals(new BigDecimal(1234)));
-        assertTrue("incorrect ENAME" , result.name.equals("GOOFY"));
-        assertTrue("incorrect JOB" , result.job.equals("ACTOR"));
+        assertEquals("incorrect EMPNO", result.employeeNumber, new BigDecimal(1234));
+        assertEquals("incorrect ENAME", "GOOFY", result.name);
+        assertEquals("incorrect JOB", "ACTOR", result.job);
         assertNull("MGR is supposed to be null",  result.manager);
-        assertTrue("incorrect SAL" , result.salary.equals(6000F));
+        assertEquals("incorrect SAL", 6000F, result.salary, 0.0);
         assertNull("COMM is supposed to be null", result.commission);
-        assertTrue("incorrect DEPTNO" , result.department.equals(new BigDecimal(20)));
+        assertEquals("incorrect DEPTNO", result.department, new BigDecimal(20));
         s.logout();
     }
 }

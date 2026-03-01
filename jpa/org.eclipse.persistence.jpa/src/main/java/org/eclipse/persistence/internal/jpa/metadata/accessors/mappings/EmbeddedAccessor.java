@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -71,7 +71,7 @@ import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JP
  * as an entity, therefore, it also must handle nesting embedded's to the nth
  * level. An embedded owning descriptor is a reference back to the actual
  * owning entity's descriptor where the first embedded was discovered.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -86,8 +86,8 @@ import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JP
  */
 public class EmbeddedAccessor extends MappingAccessor {
     private List<ConvertMetadata> m_converts;
-    private List<AssociationOverrideMetadata> m_associationOverrides = new ArrayList<AssociationOverrideMetadata>();
-    private List<AttributeOverrideMetadata> m_attributeOverrides = new ArrayList<AttributeOverrideMetadata>();
+    private List<AssociationOverrideMetadata> m_associationOverrides = new ArrayList<>();
+    private List<AttributeOverrideMetadata> m_attributeOverrides = new ArrayList<>();
 
     /**
      * INTERNAL:
@@ -144,7 +144,7 @@ public class EmbeddedAccessor extends MappingAccessor {
     @Override
     protected void addConvert(ConvertMetadata convert) {
         if (m_converts == null) {
-            m_converts = new ArrayList<ConvertMetadata>();
+            m_converts = new ArrayList<>();
         }
 
         m_converts.add(convert);
@@ -162,8 +162,7 @@ public class EmbeddedAccessor extends MappingAccessor {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (super.equals(objectToCompare) && objectToCompare instanceof EmbeddedAccessor) {
-            EmbeddedAccessor embeddedAccessor = (EmbeddedAccessor) objectToCompare;
+        if (super.equals(objectToCompare) && objectToCompare instanceof EmbeddedAccessor embeddedAccessor) {
 
             if (! valuesMatch(m_associationOverrides, embeddedAccessor.getAssociationOverrides())) {
                 return false;
@@ -297,7 +296,7 @@ public class EmbeddedAccessor extends MappingAccessor {
     /**
      * INTERNAL:
      * Called when process the mapsId metadata. The id fields for this owning
-     * descriptor must have it's id fields update to those from the one to one
+     * descriptor must have its id fields updated to those from the one to one
      * accessor that maps them. We process embedded and embedded id mappings
      * first, so by default they get mapped and processed as they normally
      * would. When we go through the relationship accessors and discover a

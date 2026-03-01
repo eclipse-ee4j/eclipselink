@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,17 +17,22 @@ package org.eclipse.persistence.config;
 /**
  * Logger type persistence property values.
  *
- * <p>JPA persistence property Usage:
- *
- * <p><code>properties.add(PersistenceUnitProperties.LoggerType, LoggerType.JavaLogger);</code>
+ * <p>JPA persistence property usage:
+ * {@snippet :
+ *  properties.add(PersistenceUnitProperties.LoggerType, LoggerType.JavaLogger);
+ * }
  * <p>Property values are case-insensitive.
  *
  * @author Wonseok Kim
  */
-public class LoggerType {
+public final class LoggerType {
     public static final String DefaultLogger = "DefaultLogger";
     public static final String JavaLogger = "JavaLogger";
     public static final String ServerLogger = "ServerLogger";
 
     public static final String DEFAULT = DefaultLogger;
+
+    private LoggerType() {
+        // no instance please
+    }
 }

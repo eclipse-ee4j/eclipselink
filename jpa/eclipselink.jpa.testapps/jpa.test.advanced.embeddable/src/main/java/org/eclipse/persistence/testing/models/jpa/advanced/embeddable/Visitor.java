@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
  * Copyright (c) 2009, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -45,7 +46,7 @@ public class Visitor implements java.io.Serializable {
 
     // Instance variables
     /** Entity primary key. */
-    private String id;
+    private Integer id;
 
     /** Visitor's name. */
     private String name;
@@ -63,7 +64,7 @@ public class Visitor implements java.io.Serializable {
      * @param id   Entity primary key.
      * @param name Visitor's name.
      */
-    public Visitor(String id, String name) {
+    public Visitor(Integer id, String name) {
         this.id = id;
         this.name = name;
     }
@@ -74,7 +75,7 @@ public class Visitor implements java.io.Serializable {
      * @param name    Visitor's name.
      * @param country Visitor's country.
      */
-    public Visitor(String id, String name, Country country) {
+    public Visitor(Integer id, String name, Country country) {
         this.id = id;
         this.name = name;
         this.country = country;
@@ -86,7 +87,7 @@ public class Visitor implements java.io.Serializable {
      */
     @Id
     @Column(name = "ID")
-    public String getId() {
+    public Integer getId() {
         return id;
     }
 
@@ -94,7 +95,7 @@ public class Visitor implements java.io.Serializable {
      * Set entity primary key.
      * @param v Entity primary key.
      */
-    public void setId(String v) {
+    public void setId(Integer v) {
         this.id = v;
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,13 +16,6 @@
 //     14/05/2012-2.4 Guy Pelletier
 //       - 376603: Provide for table per tenant support for multitenant applications
 package org.eclipse.persistence.mappings;
-
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import java.util.Vector;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.TablePerMultitenantPolicy;
@@ -53,6 +46,11 @@ import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+
 /**
  * <p><b>Purpose</b>: Contains relation table functionality
  * that was originally defined in ManyToManyMapping
@@ -63,16 +61,16 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
     protected DatabaseTable relationTable;
 
     /** The field in the source table that corresponds to the key in the relation table */
-    protected Vector<DatabaseField> sourceKeyFields;
+    protected List<DatabaseField> sourceKeyFields;
 
     /**  The field in the target table that corresponds to the key in the relation table */
-    protected Vector<DatabaseField> targetKeyFields;
+    protected List<DatabaseField> targetKeyFields;
 
     /** The field in the intermediate table that corresponds to the key in the source table */
-    protected Vector<DatabaseField> sourceRelationKeyFields;
+    protected List<DatabaseField> sourceRelationKeyFields;
 
     /** The field in the intermediate table that corresponds to the key in the target table */
-    protected Vector<DatabaseField> targetRelationKeyFields;
+    protected List<DatabaseField> targetRelationKeyFields;
 
     /** Query used for single row deletion. */
     protected DataModifyQuery deleteQuery;
@@ -87,10 +85,10 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
     public RelationTableMechanism() {
         this.insertQuery = new DataModifyQuery();
         this.deleteQuery = new DataModifyQuery();
-        this.sourceRelationKeyFields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(1);
-        this.targetRelationKeyFields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(1);
-        this.sourceKeyFields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(1);
-        this.targetKeyFields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(1);
+        this.sourceRelationKeyFields = new ArrayList<>(1);
+        this.targetRelationKeyFields = new ArrayList<>(1);
+        this.sourceKeyFields = new ArrayList<>(1);
+        this.targetKeyFields = new ArrayList<>(1);
         this.hasCustomDeleteQuery = false;
         this.hasCustomInsertQuery = false;
     }
@@ -101,8 +99,8 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
      * key in the source table. This method is used if the keys are composite.
      */
     public void addSourceRelationKeyField(DatabaseField sourceRelationKeyField, DatabaseField sourcePrimaryKeyField) {
-        getSourceRelationKeyFields().addElement(sourceRelationKeyField);
-        getSourceKeyFields().addElement(sourcePrimaryKeyField);
+        getSourceRelationKeyFields().add(sourceRelationKeyField);
+        getSourceKeyFields().add(sourcePrimaryKeyField);
     }
 
     /**
@@ -120,8 +118,8 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
      * key in the target table. This method is used if the keys are composite.
      */
     public void addTargetRelationKeyField(DatabaseField targetRelationKeyField, DatabaseField targetPrimaryKeyField) {
-        getTargetRelationKeyFields().addElement(targetRelationKeyField);
-        getTargetKeyFields().addElement(targetPrimaryKeyField);
+        getTargetRelationKeyFields().add(targetRelationKeyField);
+        getTargetKeyFields().add(targetPrimaryKeyField);
     }
 
     /**
@@ -195,9 +193,7 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
      * the FK field values will be used to re-issue the query when cloning the shared cache entity
      */
     protected void collectQueryParameters(Set<DatabaseField> cacheFields){
-        for (DatabaseField field : getSourceKeyFields()) {
-            cacheFields.add(field);
-        }
+        cacheFields.addAll(getSourceKeyFields());
     }
 
     /**
@@ -231,10 +227,10 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
      * INTERNAL:
      * Helper method to clone vector of fields (used in aggregate initialization cloning).
      */
-    protected Vector cloneFields(Vector fields) {
-        Vector clonedFields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
-        for (Enumeration fieldsEnum = fields.elements(); fieldsEnum.hasMoreElements();) {
-            clonedFields.addElement(((DatabaseField)fieldsEnum.nextElement()).clone());
+    protected List<DatabaseField> cloneFields(List<DatabaseField> fields) {
+        List<DatabaseField> clonedFields = new ArrayList<>();
+        for (Iterator<DatabaseField> iterator = fields.iterator(); iterator.hasNext();) {
+            clonedFields.add(iterator.next().clone());
         }
 
         return clonedFields;
@@ -253,7 +249,7 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
         SQLSelectStatement statement = new SQLSelectStatement();
         statement.addTable(this.relationTable);
         statement.addField(this.sourceRelationKeyFields.get(0).clone());
-        statement.setWhereClause((Expression)lockRelationTableQuery.getSelectionCriteria().clone());
+        statement.setWhereClause(lockRelationTableQuery.getSelectionCriteria().clone());
         statement.setLockingClause(new ForUpdateClause(lockMode));
         statement.normalize(session, null);
         lockRelationTableQueryClone.setSQLStatement(statement);
@@ -314,11 +310,11 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
      * Return the source key field names associated with the mapping.
      * These are in-order with the sourceRelationKeyFieldNames.
      */
-    public Vector getSourceKeyFieldNames() {
-        Vector fieldNames = new Vector(getSourceKeyFields().size());
-        for (Enumeration<DatabaseField> fieldsEnum = getSourceKeyFields().elements();
-             fieldsEnum.hasMoreElements();) {
-            fieldNames.addElement(fieldsEnum.nextElement().getQualifiedName());
+    public List<String> getSourceKeyFieldNames() {
+        List<String> fieldNames = new ArrayList<>(getSourceKeyFields().size());
+        for (Iterator<DatabaseField> iterator = getSourceKeyFields().iterator();
+             iterator.hasNext();) {
+            fieldNames.add(iterator.next().getQualifiedName());
         }
 
         return fieldNames;
@@ -406,7 +402,7 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
      * INTERNAL:
      * Return all the source key fields associated with the mapping.
      */
-    public Vector<DatabaseField> getSourceKeyFields() {
+    public List<DatabaseField> getSourceKeyFields() {
         return sourceKeyFields;
     }
 
@@ -415,11 +411,11 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
      * Return the source relation key field names associated with the mapping.
      * These are in-order with the sourceKeyFieldNames.
      */
-    public Vector getSourceRelationKeyFieldNames() {
-        Vector fieldNames = new Vector(getSourceRelationKeyFields().size());
-        for (Enumeration<DatabaseField> fieldsEnum = getSourceRelationKeyFields().elements();
-             fieldsEnum.hasMoreElements();) {
-            fieldNames.addElement(fieldsEnum.nextElement().getQualifiedName());
+    public List<String> getSourceRelationKeyFieldNames() {
+        List<String> fieldNames = new ArrayList<>(getSourceRelationKeyFields().size());
+        for (Iterator<DatabaseField> iterator = getSourceRelationKeyFields().iterator();
+             iterator.hasNext();) {
+            fieldNames.add(iterator.next().getQualifiedName());
         }
 
         return fieldNames;
@@ -429,7 +425,7 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
      * INTERNAL:
      * Return all the source relation key fields associated with the mapping.
      */
-    public Vector<DatabaseField> getSourceRelationKeyFields() {
+    public List<DatabaseField> getSourceRelationKeyFields() {
         return sourceRelationKeyFields;
     }
 
@@ -438,11 +434,11 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
      * Return the target key field names associated with the mapping.
      * These are in-order with the targetRelationKeyFieldNames.
      */
-    public Vector getTargetKeyFieldNames() {
-        Vector fieldNames = new Vector(getTargetKeyFields().size());
-        for (Enumeration<DatabaseField> fieldsEnum = getTargetKeyFields().elements();
-             fieldsEnum.hasMoreElements();) {
-            fieldNames.addElement(fieldsEnum.nextElement().getQualifiedName());
+    public List<String> getTargetKeyFieldNames() {
+        List<String> fieldNames = new ArrayList<>(getTargetKeyFields().size());
+        for (Iterator<DatabaseField> iterator = getTargetKeyFields().iterator();
+             iterator.hasNext();) {
+            fieldNames.add(iterator.next().getQualifiedName());
         }
 
         return fieldNames;
@@ -464,7 +460,7 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
      * INTERNAL:
      * Return all the target keys associated with the mapping.
      */
-    public Vector<DatabaseField> getTargetKeyFields() {
+    public List<DatabaseField> getTargetKeyFields() {
         return targetKeyFields;
     }
 
@@ -473,11 +469,11 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
      * Return the target relation key field names associated with the mapping.
      * These are in-order with the targetKeyFieldNames.
      */
-    public Vector getTargetRelationKeyFieldNames() {
-        Vector fieldNames = new Vector(getTargetRelationKeyFields().size());
-        for (Enumeration<DatabaseField> fieldsEnum = getTargetRelationKeyFields().elements();
-             fieldsEnum.hasMoreElements();) {
-            fieldNames.addElement(fieldsEnum.nextElement().getQualifiedName());
+    public List<String> getTargetRelationKeyFieldNames() {
+        List<String> fieldNames = new ArrayList<>(getTargetRelationKeyFields().size());
+        for (Iterator<DatabaseField> iterator = getTargetRelationKeyFields().iterator();
+             iterator.hasNext();) {
+            fieldNames.add(iterator.next().getQualifiedName());
         }
 
         return fieldNames;
@@ -487,7 +483,7 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
      * INTERNAL:
      * Return all the target relation key fields associated with the mapping.
      */
-    public Vector<DatabaseField> getTargetRelationKeyFields() {
+    public List<DatabaseField> getTargetRelationKeyFields() {
         return targetRelationKeyFields;
     }
 
@@ -504,7 +500,7 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
      * Indicates whether the mechanism has relation table.
      */
     public boolean hasRelationTable() {
-        return relationTable != null && relationTable.getName().length() > 0;
+        return relationTable != null && !relationTable.getName().isEmpty();
     }
 
     /**
@@ -533,7 +529,7 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
             String beginQuote = session.getDatasourcePlatform().getStartDelimiter();
             String endQuote = session.getDatasourcePlatform().getEndDelimiter();
             //Ensure this table name hasn't already been quoted.
-            if (getRelationTable().getName().indexOf(beginQuote) == -1) {
+            if (!getRelationTable().getName().contains(beginQuote)) {
                 getRelationTable().setName(beginQuote + getRelationTable().getName() + endQuote);
             }
         }
@@ -611,7 +607,7 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
         if(mapping.extendPessimisticLockScope == ExtendPessimisticLockScope.DEDICATED_QUERY) {
             Expression startCriteria = mapping.getSelectionQuery().getSelectionCriteria();
             if(startCriteria != null) {
-                startCriteria = (Expression)startCriteria.clone();
+                startCriteria = startCriteria.clone();
             }
             initializeLockRelationTableQuery(session, mapping, startCriteria);
         }
@@ -689,8 +685,8 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
             throw DescriptorException.noRelationTable(mapping);
         }
 
-        if (platform.getTableQualifier().length() > 0) {
-            if (getRelationTable().getTableQualifier().length() == 0) {
+        if (!platform.getTableQualifier().isEmpty()) {
+            if (getRelationTable().getTableQualifier().isEmpty()) {
                 getRelationTable().setTableQualifier(platform.getTableQualifier());
             }
         }
@@ -720,7 +716,7 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
             if (((ForeignReferenceMapping)mapping).usesIndirection()) {
                 field.setKeepInRow(true);
             }
-            getSourceKeyFields().addElement(field);
+            getSourceKeyFields().add(field);
         }
     }
 
@@ -729,12 +725,12 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
      * All the source relation key field names are converted to DatabaseField and stored.
      */
     protected void initializeSourceRelationKeys(ForeignReferenceMapping mapping) throws DescriptorException {
-        if (getSourceRelationKeyFields().size() == 0) {
+        if (getSourceRelationKeyFields().isEmpty()) {
             throw DescriptorException.noSourceRelationKeysSpecified(mapping);
         }
 
-        for (Enumeration<DatabaseField> entry = getSourceRelationKeyFields().elements(); entry.hasMoreElements();) {
-            DatabaseField field = entry.nextElement();
+        for (Iterator<DatabaseField> iterator = getSourceRelationKeyFields().iterator(); iterator.hasNext();) {
+            DatabaseField field = iterator.next();
 
             // Update the fields table first if the mapping is from a table per tenant entity.
             ClassDescriptor sourceDescriptor = mapping.getDescriptor();
@@ -767,7 +763,7 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
     protected void initializeTargetKeysWithDefaults(AbstractSession session, ForeignReferenceMapping mapping) {
         List<DatabaseField> primaryKeyFields = mapping.getReferenceDescriptor().getPrimaryKeyFields();
         for (int index = 0; index < primaryKeyFields.size(); index++) {
-            getTargetKeyFields().addElement(primaryKeyFields.get(index));
+            getTargetKeyFields().add(primaryKeyFields.get(index));
         }
     }
 
@@ -776,12 +772,12 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
      * All the target relation key field names are converted to DatabaseField and stored.
      */
     protected void initializeTargetRelationKeys(ForeignReferenceMapping mapping) {
-        if (getTargetRelationKeyFields().size() == 0) {
+        if (getTargetRelationKeyFields().isEmpty()) {
             throw DescriptorException.noTargetRelationKeysSpecified(mapping);
         }
 
-        for (Enumeration<DatabaseField> targetEnum = getTargetRelationKeyFields().elements(); targetEnum.hasMoreElements();) {
-            DatabaseField field = targetEnum.nextElement();
+        for (Iterator<DatabaseField> iterator = getTargetRelationKeyFields().iterator(); iterator.hasNext();) {
+            DatabaseField field = iterator.next();
 
             // Update the fields table first if the mapping is from a table per tenant entity.
             ClassDescriptor referenceDescriptor = mapping.getReferenceDescriptor();
@@ -949,10 +945,10 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
      * Set the source key field names associated with the mapping.
      * These must be in-order with the sourceRelationKeyFieldNames.
      */
-    public void setSourceKeyFieldNames(Vector fieldNames) {
-        Vector fields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(fieldNames.size());
-        for (Enumeration fieldNamesEnum = fieldNames.elements(); fieldNamesEnum.hasMoreElements();) {
-            fields.addElement(new DatabaseField((String)fieldNamesEnum.nextElement()));
+    public void setSourceKeyFieldNames(List<String> fieldNames) {
+        List<DatabaseField> fields = new ArrayList<>(fieldNames.size());
+        for (Iterator<String> iterator = fieldNames.iterator(); iterator.hasNext();) {
+            fields.add(new DatabaseField(iterator.next()));
         }
 
         setSourceKeyFields(fields);
@@ -962,7 +958,7 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
      * INTERNAL:
      * Set the source fields.
      */
-    public void setSourceKeyFields(Vector<DatabaseField> sourceKeyFields) {
+    public void setSourceKeyFields(List<DatabaseField> sourceKeyFields) {
         this.sourceKeyFields = sourceKeyFields;
     }
 
@@ -973,7 +969,7 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
      * This method is used if the source primary key is a singleton only.
      */
     public void setSourceRelationKeyFieldName(String sourceRelationKeyFieldName) {
-        getSourceRelationKeyFields().addElement(new DatabaseField(sourceRelationKeyFieldName));
+        getSourceRelationKeyFields().add(new DatabaseField(sourceRelationKeyFieldName));
     }
 
     /**
@@ -981,10 +977,10 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
      * Set the source relation key field names associated with the mapping.
      * These must be in-order with the sourceKeyFieldNames.
      */
-    public void setSourceRelationKeyFieldNames(Vector fieldNames) {
-        Vector fields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(fieldNames.size());
-        for (Enumeration fieldNamesEnum = fieldNames.elements(); fieldNamesEnum.hasMoreElements();) {
-            fields.addElement(new DatabaseField((String)fieldNamesEnum.nextElement()));
+    public void setSourceRelationKeyFieldNames(List<String> fieldNames) {
+        List<DatabaseField> fields = new ArrayList<>(fieldNames.size());
+        for (Iterator<String> iterator = fieldNames.iterator(); iterator.hasNext();) {
+            fields.add(new DatabaseField(iterator.next()));
         }
 
         setSourceRelationKeyFields(fields);
@@ -994,7 +990,7 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
      * INTERNAL:
      * Set the source fields.
      */
-    public void setSourceRelationKeyFields(Vector<DatabaseField> sourceRelationKeyFields) {
+    public void setSourceRelationKeyFields(List<DatabaseField> sourceRelationKeyFields) {
         this.sourceRelationKeyFields = sourceRelationKeyFields;
     }
 
@@ -1003,10 +999,10 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
      * Set the target key field names associated with the mapping.
      * These must be in-order with the targetRelationKeyFieldNames.
      */
-    public void setTargetKeyFieldNames(Vector fieldNames) {
-        Vector fields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(fieldNames.size());
-        for (Enumeration fieldNamesEnum = fieldNames.elements(); fieldNamesEnum.hasMoreElements();) {
-            fields.addElement(new DatabaseField((String)fieldNamesEnum.nextElement()));
+    public void setTargetKeyFieldNames(List<String> fieldNames) {
+        List<DatabaseField> fields = new ArrayList<>(fieldNames.size());
+        for (Iterator<String> iterator = fieldNames.iterator(); iterator.hasNext();) {
+            fields.add(new DatabaseField(iterator.next()));
         }
 
         setTargetKeyFields(fields);
@@ -1016,7 +1012,7 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
      * INTERNAL:
      * Set the target fields.
      */
-    public void setTargetKeyFields(Vector<DatabaseField> targetKeyFields) {
+    public void setTargetKeyFields(List<DatabaseField> targetKeyFields) {
         this.targetKeyFields = targetKeyFields;
     }
 
@@ -1027,7 +1023,7 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
      * This method is used if the target's primary key is a singleton only.
      */
     public void setTargetRelationKeyFieldName(String targetRelationKeyFieldName) {
-        getTargetRelationKeyFields().addElement(new DatabaseField(targetRelationKeyFieldName));
+        getTargetRelationKeyFields().add(new DatabaseField(targetRelationKeyFieldName));
     }
 
     /**
@@ -1035,10 +1031,10 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
      * Set the target relation key field names associated with the mapping.
      * These must be in-order with the targetKeyFieldNames.
      */
-    public void setTargetRelationKeyFieldNames(Vector fieldNames) {
-        Vector fields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(fieldNames.size());
-        for (Enumeration fieldNamesEnum = fieldNames.elements(); fieldNamesEnum.hasMoreElements();) {
-            fields.addElement(new DatabaseField((String)fieldNamesEnum.nextElement()));
+    public void setTargetRelationKeyFieldNames(List<String> fieldNames) {
+        List<DatabaseField> fields = new ArrayList<>(fieldNames.size());
+        for (Iterator<String> iterator = fieldNames.iterator(); iterator.hasNext();) {
+            fields.add(new DatabaseField(iterator.next()));
         }
 
         setTargetRelationKeyFields(fields);
@@ -1048,7 +1044,7 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
      * INTERNAL:
      * Set the target fields.
      */
-    public void setTargetRelationKeyFields(Vector<DatabaseField> targetRelationKeyFields) {
+    public void setTargetRelationKeyFields(List<DatabaseField> targetRelationKeyFields) {
         this.targetRelationKeyFields = targetRelationKeyFields;
     }
 

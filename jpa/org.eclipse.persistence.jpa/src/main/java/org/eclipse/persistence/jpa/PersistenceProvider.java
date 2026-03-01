@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2021 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,22 +28,28 @@
 //       - 458462: generateSchema throws a ClassCastException within a container
 //     02/17/2015-2.6 Rick Curtis
 //       - 460138: Change method visibility.
+//     08/23/2023: Tomas Kraus
+//       - New Jakarta Persistence 3.2 Features
 package org.eclipse.persistence.jpa;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
 import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.PersistenceConfiguration;
 import jakarta.persistence.PersistenceException;
 import jakarta.persistence.spi.ClassTransformer;
 import jakarta.persistence.spi.LoadState;
 import jakarta.persistence.spi.PersistenceUnitInfo;
 import jakarta.persistence.spi.ProviderUtil;
-
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.SystemProperties;
-import org.eclipse.persistence.exceptions.PersistenceUnitLoadingException;
+import org.eclipse.persistence.jpa.exceptions.PersistenceUnitLoadingException;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider;
 import org.eclipse.persistence.internal.jpa.EntityManagerSetupImpl;
@@ -51,11 +57,13 @@ import org.eclipse.persistence.internal.jpa.deployment.JPAInitializer;
 import org.eclipse.persistence.internal.jpa.deployment.JavaSECMPInitializer;
 import org.eclipse.persistence.internal.jpa.deployment.PersistenceUnitProcessor;
 import org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitInfo;
+import org.eclipse.persistence.internal.localization.ExceptionLocalization;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.weaving.PersistenceWeaved;
 
 /**
  * This is the EclipseLink EJB 3.0 provider
- *
+ * <p>
  * This provider should be used by JavaEE and JavaSE users.
  */
 public class PersistenceProvider implements jakarta.persistence.spi.PersistenceProvider, ProviderUtil {
@@ -168,23 +176,9 @@ public class PersistenceProvider implements jakarta.persistence.spi.PersistenceP
         return null;
     }
 
-    /**
-     * Called by Persistence class when an EntityManagerFactory
-     * is to be created.
-     *
-     * @param emName The name of the persistence unit
-     * @param properties A Map of properties for use by the
-     * persistence provider. These properties may be used to
-     * override the values of the corresponding elements in
-     * the persistence.xml file or specify values for
-     * properties not specified in the persistence.xml.
-     * @return EntityManagerFactory for the persistence unit,
-     * or null if the provider is not the right provider
-     */
     @Override
-    public EntityManagerFactory createEntityManagerFactory(String emName, Map properties){
-        Map nonNullProperties = (properties == null) ? new HashMap<>() : properties;
-
+    public EntityManagerFactory createEntityManagerFactory(String emName, Map<?, ?> properties) {
+        Map<?, ?> nonNullProperties = (properties == null) ? new HashMap<>() : properties;
         if (checkForProviderProperty(nonNullProperties)){
             String name = (emName == null) ? "" : emName;
             JPAInitializer initializer = getInitializer(name, nonNullProperties);
@@ -193,6 +187,54 @@ public class PersistenceProvider implements jakarta.persistence.spi.PersistenceP
 
         // Not EclipseLink so return null;
         return null;
+    }
+
+    // Never call this method from this class because of stack frames removal.
+    @Override
+    public EntityManagerFactory createEntityManagerFactory(PersistenceConfiguration configuration) {
+        // Check whether persistence provider is set and matches EclipseLink known classes
+        if (!isProviderEclipseLink(configuration)) {
+            return null;
+        }
+        JPAInitializer initializer = getInitializer(configuration.name(), configuration.properties());
+        // Root URL from method caller
+        StackWalker stackWalker = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE);
+        StackWalker.StackFrame frame = stackWalker.walk(stream -> stream
+                .dropWhile(f -> PersistenceProvider.class.getName().equals(f.getClassName()))
+                .dropWhile(f -> f.getClassName().startsWith("jakarta.persistence"))
+                .findFirst()
+                .orElse(null));
+        URL rootURL;
+        if (frame != null) {
+            // getProtectionDomain() may be restricted by SecurityManager
+            try {
+                rootURL = PrivilegedAccessHelper.callDoPrivileged(
+                        () -> {
+                            Class<?> declaringClass = frame.getDeclaringClass();
+                            return computeRootURL(configuration.name(), declaringClass,
+                                    declaringClass.getProtectionDomain().getCodeSource().getLocation());
+                        }
+                );
+            // fallback Root URL retrieval (unreliable and worse performance), remove when SecurityManager is no longer in Java
+            } catch (SecurityException e) {
+                Class<?> callerClass = frame.getDeclaringClass();
+                rootURL = callerClass.getResource(callerClass.getSimpleName() + ".class");
+                if (rootURL == null) {
+                    throw new PersistenceException(
+                            ExceptionLocalization.buildMessage("custom_pu_create_error_no_caller_class_url",
+                                                               new String[] {configuration.name(), callerClass.getName()}));
+                }
+                rootURL = computeRootURL(configuration.name(), callerClass, rootURL);
+            }
+        } else {
+            throw new PersistenceException(
+                    ExceptionLocalization.buildMessage("custom_pu_create_error_no_caller",
+                                                       new String[] {configuration.name()}));
+        }
+        return createEntityManagerFactoryImpl(
+                initializer.customPersistenceUnitInfo(configuration, rootURL),
+                Collections.emptyMap(),
+                true);
     }
 
     /**
@@ -274,30 +316,59 @@ public class PersistenceProvider implements jakarta.persistence.spi.PersistenceP
         return JavaSECMPInitializer.getJavaSECMPInitializer(classLoader);
     }
 
+    // Package visibility is required for jUnit
+    /**
+     * The Persistence bootstrap class must locate all the persistence providers using the PersistenceProviderResolver
+     * mechanism described in Section 9.3 and call createEntityManagerFactory on them in turn until an appropriate backing
+     * provider returns an EntityManagerFactory instance. A provider may deem itself as appropriate for the persistence unit
+     * if any of the following are true:
+     * <p> * Its implementation class has been specified in the provider element for that persistence unit in the persistence.xml
+     * file and has not been overridden by a different jakarta.persistence.provider property value included in the Map passed
+     * to the createEntityManagerFactory method.
+     * <p> * The jakarta.persistence.provider property was included in the Map passed to createEntityManagerFactory and the value
+     * of the property is the provider’s implementation class.
+     * <p> * No provider was specified for the persistence unit in either the persistence.xml or the property map.
+     *
+     * @since Jakarta Persistence 3.2
+     */
+    static boolean isProviderEclipseLink(PersistenceConfiguration configuration) {
+        // Property jakarta.persistence.provider has higher priority, EclipseLink accepts it also as class.
+        if (configuration.properties().containsKey(PersistenceUnitProperties.PROVIDER)) {
+            return isProviderPropertyEclipseLink(configuration.properties().get(PersistenceUnitProperties.PROVIDER));
+        }
+        // Persistence unit provider configuration option
+        if (configuration.provider() != null && !configuration.provider().isEmpty()) {
+            return checkEclipseLinkProviderClassName(configuration.provider());
+        }
+        return true;
+    }
 
     /**
      * Need to check that the provider property is null or set for EclipseLink
      */
-    public boolean checkForProviderProperty(Map properties){
-        Object provider = properties.get("jakarta.persistence.provider");
-        if (provider != null){
-            //user has specified a provider make sure it is us or abort.
-            if (provider instanceof Class){
-                provider = ((Class)provider).getName();
-            }
-            try{
-                if (!(EntityManagerFactoryProvider.class.getName().equals(provider) || PersistenceProvider.class.getName().equals(provider))){
-                    return false;
-                    //user has requested another provider so lets ignore this request.
-                }
-            }catch(ClassCastException e){
-                return false;
-                // not a recognized provider property value so must be another provider.
-            }
-        }
-        return true;
-
+    public static boolean checkForProviderProperty(Map<?, ?> properties) {
+        return !properties.containsKey(PersistenceUnitProperties.PROVIDER)
+                || isProviderPropertyEclipseLink(properties.get(PersistenceUnitProperties.PROVIDER));
     }
+
+    // Check whether provided jakarta persistence provider property value matches any of known classes.
+    // Supported property value types are String and Class<?>.
+    private static boolean isProviderPropertyEclipseLink(Object providerProperty) {
+        String providerClassName = (providerProperty instanceof String providerString) ? providerString : null;
+        if (providerProperty instanceof Class<?> providerClass) {
+            providerClassName = providerClass.getName();
+        }
+        return providerClassName != null && checkEclipseLinkProviderClassName(providerClassName);
+    }
+
+    // Check whether provided jakarta persistence provider class name matches any of known classes:
+    // * org.eclipse.persistence.jpa.PersistenceProvider
+    // * org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider
+    private static boolean checkEclipseLinkProviderClassName(String providerClassName) {
+        return PersistenceProvider.class.getName().equals(providerClassName)
+                || EntityManagerFactoryProvider.class.getName().equals(providerClassName);
+    }
+
     /**
      * Called by the container when an EntityManagerFactory
      * is to be created.
@@ -335,7 +406,9 @@ public class PersistenceProvider implements jakarta.persistence.spi.PersistenceP
         } else {
             boolean isNew = false;
             ClassTransformer transformer = null;
-            String uniqueName = PersistenceUnitProcessor.buildPersistenceUnitName(info.getPersistenceUnitRootUrl(), info.getPersistenceUnitName());
+            String uniqueName = PersistenceUnitProcessor.buildPersistenceUnitName(info.getPersistenceUnitRootUrl(),
+                                                                                  info.getPersistenceUnitName(),
+                                                                                  null);
             String sessionName = EntityManagerSetupImpl.getOrBuildSessionName(nonNullProperties, info, uniqueName);
             synchronized (EntityManagerFactoryProvider.emSetupImpls) {
                 emSetupImpl = EntityManagerFactoryProvider.getEntityManagerSetupImpl(sessionName);
@@ -518,6 +591,19 @@ public class PersistenceProvider implements jakarta.persistence.spi.PersistenceP
             classloader = Thread.currentThread().getContextClassLoader();
         }
         return classloader;
+    }
+
+    private static URL computeRootURL(String configurationName, Class<?> callerClass, URL rootURL) {
+        String classSuffix = callerClass.getName().replaceAll("\\.", "/") + ".class";
+        try {
+            rootURL = PersistenceUnitProcessor.computePURootURL(rootURL, classSuffix);
+        } catch (IOException | URISyntaxException ex) {
+            throw new PersistenceException(
+                    ExceptionLocalization.buildMessage("custom_pu_create_error",
+                            new String[] { configurationName }),
+                    ex);
+        }
+        return rootURL;
     }
 }
 

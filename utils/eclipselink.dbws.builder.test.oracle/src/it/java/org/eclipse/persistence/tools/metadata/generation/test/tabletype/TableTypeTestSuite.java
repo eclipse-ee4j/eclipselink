@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -57,12 +57,13 @@ import org.w3c.dom.Document;
  */
 public class TableTypeTestSuite {
     static final String CREATE_TABLETYPE_TABLE =
-        "CREATE TABLE TABLETYPE (" +
-            "\nEMPNO DECIMAL(4,0) NOT NULL," +
-            "\nENAME VARCHAR(10)," +
-            "\nHIREDATE DATE," +
-            "\nPRIMARY KEY (EMPNO)" +
-        "\n)";
+            """
+                    CREATE TABLE TABLETYPE (
+                    EMPNO DECIMAL(4,0) NOT NULL,
+                    ENAME VARCHAR(10),
+                    HIREDATE DATE,
+                    PRIMARY KEY (EMPNO)
+                    )""";
     static final String DROP_TABLETYPE_TABLE = "DROP TABLE TABLETYPE";
 
     static boolean ddlCreate = false;
@@ -137,25 +138,24 @@ public class TableTypeTestSuite {
     }
 
     static final String tableMetadata =
-        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-        "<orm:entity-mappings xsi:schemaLocation=\"http://www.eclipse.org/eclipselink/xsds/persistence/orm org/eclipse/persistence/jpa/eclipselink_orm_2_5.xsd\"" +
-        "     xmlns:orm=\"http://www.eclipse.org/eclipselink/xsds/persistence/orm\" " +
-        "     xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n" +
-        "   <orm:entity class=\"metadatagen.Tabletype\" access=\"VIRTUAL\">\n" +
-        "      <orm:table name=\"TABLETYPE\"/>\n" +
-        "      <orm:attributes>\n" +
-        "         <orm:id name=\"empno\" attribute-type=\"java.math.BigInteger\">\n" +
-        "            <orm:column name=\"EMPNO\"/>\n" +
-        "         </orm:id>\n" +
-        "         <orm:basic name=\"ename\" attribute-type=\"java.lang.String\">\n" +
-        "            <orm:column name=\"ENAME\"/>\n" +
-        "         </orm:basic>\n" +
-        "         <orm:basic name=\"hiredate\" attribute-type=\"java.sql.Date\">\n" +
-        "            <orm:column name=\"HIREDATE\"/>\n" +
-        "         </orm:basic>\n" +
-        "      </orm:attributes>\n" +
-        "   </orm:entity>\n" +
-        "</orm:entity-mappings>";
+            """
+                    <?xml version="1.0" encoding="UTF-8"?>
+                    <orm:entity-mappings xsi:schemaLocation="http://www.eclipse.org/eclipselink/xsds/persistence/orm org/eclipse/persistence/jpa/eclipselink_orm_2_5.xsd"     xmlns:orm="http://www.eclipse.org/eclipselink/xsds/persistence/orm"      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                       <orm:entity class="metadatagen.Tabletype" access="VIRTUAL">
+                          <orm:table name="TABLETYPE"/>
+                          <orm:attributes>
+                             <orm:id name="empno" attribute-type="java.math.BigInteger">
+                                <orm:column name="EMPNO"/>
+                             </orm:id>
+                             <orm:basic name="ename" attribute-type="java.lang.String">
+                                <orm:column name="ENAME"/>
+                             </orm:basic>
+                             <orm:basic name="hiredate" attribute-type="java.sql.Date">
+                                <orm:column name="HIREDATE"/>
+                             </orm:basic>
+                          </orm:attributes>
+                       </orm:entity>
+                    </orm:entity-mappings>""";
 
     @Test
     @SuppressWarnings({ "unchecked" })
@@ -183,38 +183,37 @@ public class TableTypeTestSuite {
     }
 
     static final String crudtableMetadata =
-        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-        "<orm:entity-mappings xsi:schemaLocation=\"http://www.eclipse.org/eclipselink/xsds/persistence/orm org/eclipse/persistence/jpa/eclipselink_orm_2_5.xsd\"" +
-        "     xmlns:orm=\"http://www.eclipse.org/eclipselink/xsds/persistence/orm\" " +
-        "     xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n" +
-        "   <orm:entity class=\"metadatagen.Tabletype\" access=\"VIRTUAL\">\n" +
-        "      <orm:table name=\"TABLETYPE\"/>\n" +
-        "      <orm:named-native-query name=\"findByPrimaryKey_TabletypeType\" result-class=\"metadatagen.Tabletype\">\n" +
-        "         <orm:query>SELECT * FROM TABLETYPE WHERE (EMPNO = ?1)</orm:query>\n" +
-        "      </orm:named-native-query>\n" +
-        "      <orm:named-native-query name=\"findAll_TabletypeType\" result-class=\"metadatagen.Tabletype\">\n" +
-        "         <orm:query>SELECT * FROM TABLETYPE</orm:query>\n" +
-        "      </orm:named-native-query>\n" +
-        "      <orm:named-native-query name=\"create_TabletypeType\">\n" +
-        "         <orm:query>INSERT INTO TABLETYPE (EMPNO, ENAME, HIREDATE) VALUES (?, ?, ?)</orm:query>\n" +
-        "      </orm:named-native-query>\n" +
-        "      <orm:named-native-query name=\"update_TabletypeType\">\n" +
-        "         <orm:query>UPDATE TABLETYPE SET ENAME = ?2, HIREDATE = ?3 WHERE (EMPNO = ?1)</orm:query>\n" +
-        "      </orm:named-native-query>\n" +
-        "      <orm:named-native-query name=\"delete_TabletypeType\">\n" +
-        "         <orm:query>DELETE FROM TABLETYPE WHERE (EMPNO = ?1)</orm:query>\n" +
-        "      </orm:named-native-query>\n" +
-        "      <orm:attributes>\n" +
-        "         <orm:id name=\"empno\" attribute-type=\"java.math.BigInteger\">\n" +
-        "            <orm:column name=\"EMPNO\"/>\n" +
-        "         </orm:id>\n" +
-        "         <orm:basic name=\"ename\" attribute-type=\"java.lang.String\">\n" +
-        "            <orm:column name=\"ENAME\"/>\n" +
-        "         </orm:basic>\n" +
-        "         <orm:basic name=\"hiredate\" attribute-type=\"java.sql.Date\">\n" +
-        "            <orm:column name=\"HIREDATE\"/>\n" +
-        "         </orm:basic>\n" +
-        "      </orm:attributes>\n" +
-        "   </orm:entity>\n" +
-        "</orm:entity-mappings>";
+            """
+                    <?xml version="1.0" encoding="UTF-8"?>
+                    <orm:entity-mappings xsi:schemaLocation="http://www.eclipse.org/eclipselink/xsds/persistence/orm org/eclipse/persistence/jpa/eclipselink_orm_2_5.xsd"     xmlns:orm="http://www.eclipse.org/eclipselink/xsds/persistence/orm"      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                       <orm:entity class="metadatagen.Tabletype" access="VIRTUAL">
+                          <orm:table name="TABLETYPE"/>
+                          <orm:named-native-query name="findByPrimaryKey_TabletypeType" result-class="metadatagen.Tabletype">
+                             <orm:query>SELECT * FROM TABLETYPE WHERE (EMPNO = ?1)</orm:query>
+                          </orm:named-native-query>
+                          <orm:named-native-query name="findAll_TabletypeType" result-class="metadatagen.Tabletype">
+                             <orm:query>SELECT * FROM TABLETYPE</orm:query>
+                          </orm:named-native-query>
+                          <orm:named-native-query name="create_TabletypeType">
+                             <orm:query>INSERT INTO TABLETYPE (EMPNO, ENAME, HIREDATE) VALUES (?, ?, ?)</orm:query>
+                          </orm:named-native-query>
+                          <orm:named-native-query name="update_TabletypeType">
+                             <orm:query>UPDATE TABLETYPE SET ENAME = ?2, HIREDATE = ?3 WHERE (EMPNO = ?1)</orm:query>
+                          </orm:named-native-query>
+                          <orm:named-native-query name="delete_TabletypeType">
+                             <orm:query>DELETE FROM TABLETYPE WHERE (EMPNO = ?1)</orm:query>
+                          </orm:named-native-query>
+                          <orm:attributes>
+                             <orm:id name="empno" attribute-type="java.math.BigInteger">
+                                <orm:column name="EMPNO"/>
+                             </orm:id>
+                             <orm:basic name="ename" attribute-type="java.lang.String">
+                                <orm:column name="ENAME"/>
+                             </orm:basic>
+                             <orm:basic name="hiredate" attribute-type="java.sql.Date">
+                                <orm:column name="HIREDATE"/>
+                             </orm:basic>
+                          </orm:attributes>
+                       </orm:entity>
+                    </orm:entity-mappings>""";
 }

@@ -1,0 +1,67 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[METADATASOURCE003]]
+=== Main Tasks
+
+To use an external metadata source for your mapping information, perform
+the following tasks:
+
+* link:#BABEIJIG[Task 1: Configure the Persistence Unit]
+* link:#BABIGAGE[Task 2: Configure the Server]
+
+[[BABEIJIG]]
+
+==== Task 1: Configure the Persistence Unit
+
+In your persistence unit, specify the external metadata source by
+defining an `eclipselink.metadata.source` property and assign as its
+value a class that implements
+`org.eclipse.persistence.jpa.metadata.MetadataSource`. For example:
+
+[source,oac_no_warn]
+----
+<property name="eclipselink.metadata-source" value="mypackage.MyMetadataSource"/>
+----
+
+You are free to provide the metadata location in your class as you
+choose, for example:
+
+[source,oac_no_warn]
+----
+public class AdminMetadataSource extends XMLMetadataSource {
+ 
+    @Override
+    public XMLEntityMappings getEntityMappings(Map<String, Object> properties, ClassLoader classLoader, SessionLog log) {
+        String leagueId = (String) properties.get(LEAGUE_CONTEXT);
+        properties.put(PersistenceUnitProperties.METADATA_SOURCE_XML_URL, "http://myserverlocation/rest/" + leagueId + "/orm");
+        return super.getEntityMappings(properties, classLoader, log);
+    }
+}
+----
+
+[[BABIGAGE]]
+
+==== Task 2: Configure the Server
+
+To access the metadata file, the server must provide URL access to the
+mapping file by using any of the following:
+
+* Static file serving
+* A server-based solution with its own mapping file or a mapping file
+built on-demand from stored mapping information
+* Some other web technology.

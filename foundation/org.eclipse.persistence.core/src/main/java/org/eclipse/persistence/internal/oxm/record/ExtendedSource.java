@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,9 +14,9 @@
 //     Denise Smith - 2.6 - initial implementation
 package org.eclipse.persistence.internal.oxm.record;
 
-import javax.xml.transform.Source;
-
 import org.eclipse.persistence.internal.oxm.Unmarshaller;
+
+import javax.xml.transform.Source;
 
 /**
  * This class is used to introduce new methods to the standard Source

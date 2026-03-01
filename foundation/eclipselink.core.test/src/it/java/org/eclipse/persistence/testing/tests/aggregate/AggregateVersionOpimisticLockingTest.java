@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,9 +14,11 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.aggregate;
 
-import org.eclipse.persistence.sessions.*;
-import org.eclipse.persistence.testing.framework.*;
-import org.eclipse.persistence.testing.models.aggregate.*;
+import org.eclipse.persistence.sessions.UnitOfWork;
+import org.eclipse.persistence.testing.framework.TestCase;
+import org.eclipse.persistence.testing.framework.TestErrorException;
+import org.eclipse.persistence.testing.models.aggregate.AddressDescription;
+import org.eclipse.persistence.testing.models.aggregate.Client;
 
 /**
  * Bug 3443738
@@ -86,17 +88,17 @@ public class AggregateVersionOpimisticLockingTest extends TestCase {
         if (insertException != null) {
             throw new TestErrorException("An exception was thrown when trying to insert an object " +
                                          "with it's optimistic locking version stored in an aggregate: " +
-                                         insertException.toString());
+                    insertException);
         }
         if (updateException != null) {
             throw new TestErrorException("An exception was thrown when trying to update an object " +
                                          "with it's optimistic locking version stored in an aggregate: " +
-                                         updateException.toString());
+                    updateException);
         }
         if (forceUpdateException != null) {
             throw new TestErrorException("An exception was thrown when trying to use an optimistic read lock on  an object " +
                                          "with it's optimistic locking version stored in an aggregate: " +
-                                         forceUpdateException.toString());
+                    forceUpdateException);
         }
 
         if ((initialVersion + 1) != forcedUpdateVersion) {

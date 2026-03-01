@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -15,11 +15,9 @@
 //     Oracle - initial API and implementation
 //     04/21/2022: Tomas Kraus
 //       - Issue 1474: Update JPQL Grammar for Jakarta Persistence 2.2, 3.0 and 3.1
+//     06/02/2023: Radek Felcman
+//       - Issue 1885: Implement new JPQLGrammar for upcoming Jakarta Persistence 3.2
 package org.eclipse.persistence.internal.jpa.jpql;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.jpa.jpql.ExpressionTools;
@@ -34,6 +32,7 @@ import org.eclipse.persistence.jpa.jpql.parser.CoalesceExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CollectionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CollectionValuedPathExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ConcatExpression;
+import org.eclipse.persistence.jpa.jpql.parser.ConcatPipesExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ConstructorExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CountFunction;
 import org.eclipse.persistence.jpa.jpql.parser.DateTime;
@@ -42,11 +41,14 @@ import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkAnonymousExpressionVis
 import org.eclipse.persistence.jpa.jpql.parser.EntryExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ExtractExpression;
 import org.eclipse.persistence.jpa.jpql.parser.FunctionExpression;
+import org.eclipse.persistence.jpa.jpql.parser.IdExpression;
+import org.eclipse.persistence.jpa.jpql.parser.IdExpressionBNF;
 import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariable;
 import org.eclipse.persistence.jpa.jpql.parser.IndexExpression;
 import org.eclipse.persistence.jpa.jpql.parser.Join;
 import org.eclipse.persistence.jpa.jpql.parser.KeyExpression;
 import org.eclipse.persistence.jpa.jpql.parser.KeywordExpression;
+import org.eclipse.persistence.jpa.jpql.parser.LeftExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LengthExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LocateExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LowerExpression;
@@ -59,7 +61,9 @@ import org.eclipse.persistence.jpa.jpql.parser.MultiplicationExpression;
 import org.eclipse.persistence.jpa.jpql.parser.NullIfExpression;
 import org.eclipse.persistence.jpa.jpql.parser.NumericLiteral;
 import org.eclipse.persistence.jpa.jpql.parser.ObjectExpression;
+import org.eclipse.persistence.jpa.jpql.parser.ReplaceExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ResultVariable;
+import org.eclipse.persistence.jpa.jpql.parser.RightExpression;
 import org.eclipse.persistence.jpa.jpql.parser.SelectClause;
 import org.eclipse.persistence.jpa.jpql.parser.SimpleSelectClause;
 import org.eclipse.persistence.jpa.jpql.parser.SizeExpression;
@@ -77,6 +81,10 @@ import org.eclipse.persistence.jpa.jpql.parser.UpperExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ValueExpression;
 import org.eclipse.persistence.queries.ReportQuery;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import static org.eclipse.persistence.jpa.jpql.LiteralType.PATH_EXPRESSION_IDENTIFICATION_VARIABLE;
 import static org.eclipse.persistence.jpa.jpql.LiteralType.PATH_EXPRESSION_LAST_PATH;
 
@@ -88,7 +96,7 @@ import static org.eclipse.persistence.jpa.jpql.LiteralType.PATH_EXPRESSION_LAST_
  * @author John Bracken
  */
 @SuppressWarnings("nls")
-final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
+final class ReportItemBuilder extends JPQLFunctionsAbstractBuilder {
 
     /**
      * The visitor responsible to visit the constructor items.
@@ -104,12 +112,6 @@ final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
      * The {@link ReportQuery} to add the select expressions.
      */
     private ReportQuery query;
-
-    /**
-     * The {@link JPQLQueryContext} is used to query information about the application metadata and
-     * cached information.
-     */
-    private final JPQLQueryContext queryContext;
 
     /**
      * If the select expression is aliased with a result variable, then temporarily cache it so it
@@ -132,10 +134,9 @@ final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
      * tree representation of the JPQL query
      */
     ReportItemBuilder(JPQLQueryContext queryContext, ReportQuery query) {
-        super();
+        super(queryContext);
         this.query        = query;
         this.type         = new Class<?>[1];
-        this.queryContext = queryContext;
     }
 
     private void addAttribute(String generateName, Expression queryExpression) {
@@ -229,6 +230,18 @@ final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
     public void visit(ConcatExpression expression) {
         Expression queryExpression = queryContext.buildExpression(expression, type);
         addAttribute(ExpressionTools.EMPTY_STRING, queryExpression, type[0]);
+    }
+
+    @Override
+    public void visit(ConcatPipesExpression expression) {
+
+        Expression queryExpression = queryContext.buildExpression(expression, type);
+
+        if (type[0] == Object.class) {
+            type[0] = null;
+        }
+
+        addAttribute("ConcatPipes", queryExpression, type[0]);
     }
 
     @Override
@@ -362,6 +375,12 @@ final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
     }
 
     @Override
+    public void visit(LeftExpression expression) {
+        Expression queryExpression = queryContext.buildExpression(expression, type);
+        addAttribute(ExpressionTools.EMPTY_STRING, queryExpression, type[0]);
+    }
+
+    @Override
     public void visit(LengthExpression expression) {
         Expression queryExpression = queryContext.buildExpression(expression, type);
         addAttribute(ExpressionTools.EMPTY_STRING, queryExpression, type[0]);
@@ -477,6 +496,12 @@ final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
     }
 
     @Override
+    public void visit(ReplaceExpression expression) {
+        Expression queryExpression = queryContext.buildExpression(expression, type);
+        addAttribute(ExpressionTools.EMPTY_STRING, queryExpression, type[0]);
+    }
+
+    @Override
     public void visit(ResultVariable expression) {
 
         // Now cache the Expression for future retrieval by the ORDER BY clause
@@ -487,6 +512,12 @@ final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
         expression.getSelectExpression().accept(this);
 
         resultVariable = null;
+    }
+
+    @Override
+    public void visit(RightExpression expression) {
+        Expression queryExpression = queryContext.buildExpression(expression, type);
+        addAttribute(ExpressionTools.EMPTY_STRING, queryExpression, type[0]);
     }
 
     @Override
@@ -596,6 +627,15 @@ final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
         addAttribute(identificationVariable.getText(), queryExpression);
     }
 
+    @Override
+    public void visit(IdExpression expression) {
+        super.visit(expression);
+        if (expression.getStateFieldPathExpressions().size() > 1) {
+            //if multiple @Id attributes exists
+            multipleSelects = true;
+        }
+    }
+
     private void visitAbstractSelectClause(AbstractSelectClause expression) {
 
         multipleSelects = false;
@@ -606,6 +646,10 @@ final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
         }
         else {
             query.returnSingleAttribute();
+        }
+        //Set flag if JPQL query has only ID(...) function as SELECT clause. Like query like SELECT ID(e) FROM Entity e...
+        if (IdExpressionBNF.ID.equals(expression.getSelectExpression().getQueryBNF().getId())) {
+            query.setHasIDFunctionSelectItemOnly(true);
         }
     }
 

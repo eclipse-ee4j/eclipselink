@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,13 +18,6 @@
 //       - 354678: Temp classloader is still being used during metadata processing
 package org.eclipse.persistence.mappings;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.eclipse.persistence.descriptors.changetracking.ChangeTracker;
 import org.eclipse.persistence.descriptors.changetracking.CollectionChangeEvent;
 import org.eclipse.persistence.descriptors.changetracking.MapChangeEvent;
@@ -35,6 +28,7 @@ import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.indirection.IndirectCollection;
 import org.eclipse.persistence.indirection.ValueHolder;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.descriptors.changetracking.AttributeChangeListener;
@@ -69,6 +63,13 @@ import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.WriteObjectQuery;
 import org.eclipse.persistence.sessions.DatabaseRecord;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Mapping for a collection of key-value pairs.
@@ -959,7 +960,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
      */
     @Override
     public void useMapClass(Class<?> concreteClass) {
-        if (!Helper.classImplementsInterface(concreteClass, ClassConstants.Map_Class)) {
+        if (!Helper.classImplementsInterface(concreteClass, CoreClassConstants.Map_Class)) {
             throw DescriptorException.illegalContainerClass(concreteClass);
         }
         containerPolicy.setContainerClass(concreteClass);

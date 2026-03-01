@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,7 +16,8 @@ package org.eclipse.persistence.testing.tests.queries;
 
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.queries.DataReadQuery;
-import org.eclipse.persistence.testing.framework.*;
+import org.eclipse.persistence.testing.framework.TestCase;
+import org.eclipse.persistence.testing.framework.TestErrorException;
 
 /**
  * Test the query timeout feature through using locking.
@@ -46,7 +47,7 @@ public class QueryTimeoutTest extends TestCase {
         }
         try {
             DataReadQuery query = new DataReadQuery();
-            query.setSQLString("SELECT SUM(e.EMP_ID) from EMPLOYEE e , EMPLOYEE b, EMPLOYEE c, EMPLOYEE d, EMPLOYEE f, EMPLOYEE g, EMPLOYEE h");
+            query.setSQLString("SELECT SUM(e.EMP_ID) from EMPLOYEE e , EMPLOYEE b, EMPLOYEE c, EMPLOYEE d, EMPLOYEE f, EMPLOYEE g, EMPLOYEE h, EMPLOYEE g");
             query.setQueryTimeout(1);
             getSession().executeQuery(query);
         } catch (Exception e) {

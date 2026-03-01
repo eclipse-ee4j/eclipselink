@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,12 +14,17 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.sessions;
 
-import java.util.*;
-import org.eclipse.persistence.descriptors.InheritancePolicy;
-import org.eclipse.persistence.mappings.*;
-import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.internal.localization.*;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.InheritancePolicy;
+import org.eclipse.persistence.internal.helper.DescriptorCompare;
+import org.eclipse.persistence.internal.localization.ToStringLocalization;
+import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.ForeignReferenceMapping;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
 
 /**
  * This wraps a descriptor with information required to compute an order for
@@ -100,9 +105,7 @@ public class CommitOrderDependencyNode {
      * If my superclass is related to a class, I'm related to it.
      */
     public void recordMappingDependencies() {
-        for (Enumeration<DatabaseMapping> mappings = getDescriptor().getMappings().elements();
-             mappings.hasMoreElements();) {
-            DatabaseMapping mapping = mappings.nextElement();
+        for (DatabaseMapping mapping: getDescriptor().getMappings()) {
             if (mapping.isForeignReferenceMapping()) {
                 if (mapping.hasConstraintDependency()) {
                     Class<?> ownedClass;
@@ -119,7 +122,7 @@ public class CommitOrderDependencyNode {
                     Vector ownedNodes = withAllSubclasses(node);
 
                     // I could remove duplicates here, but it's not that big a deal.
-                    Helper.addAllToVector(relatedNodes, ownedNodes);
+                    relatedNodes.addAll(ownedNodes);
                 } else if (mapping.hasInverseConstraintDependency()) {
                     Class<?> ownerClass;
                     ClassDescriptor refDescriptor = mapping.getReferenceDescriptor();
@@ -134,7 +137,7 @@ public class CommitOrderDependencyNode {
                     Vector ownedNodes = withAllSubclasses(this);
 
                     // I could remove duplicates here, but it's not that big a deal.
-                    Helper.addAllToVector(ownerNode.getRelatedNodes(), ownedNodes);
+                    ownerNode.getRelatedNodes().addAll(ownedNodes);
                 }
             }
         }
@@ -147,14 +150,14 @@ public class CommitOrderDependencyNode {
      * If my superclass is related to a class, I'm related to it.
      */
     public void recordSpecifiedDependencies() {
-        for (Enumeration constraintsEnum = getDescriptor().getConstraintDependencies().elements();
-                 constraintsEnum.hasMoreElements();) {
-            Class<?> ownedClass = (Class)constraintsEnum.nextElement();
+        for (Iterator<Class<?>> constraintsEnum = getDescriptor().getConstraintDependencies().iterator();
+             constraintsEnum.hasNext();) {
+            Class<?> ownedClass = constraintsEnum.next();
             CommitOrderDependencyNode node = getOwner().nodeFor(ownedClass);
             Vector ownedNodes = withAllSubclasses(node);
 
             // I could remove duplicates here, but it's not that big a deal.
-            Helper.addAllToVector(relatedNodes, ownedNodes);
+            relatedNodes.addAll(ownedNodes);
         }
     }
 
@@ -187,8 +190,8 @@ public class CommitOrderDependencyNode {
         startTime = getOwner().getNextTime();
         setDiscoveryTime(startTime);
 
-        for (Enumeration e = getRelatedNodes().elements(); e.hasMoreElements();) {
-            CommitOrderDependencyNode node = (CommitOrderDependencyNode)e.nextElement();
+        for (Iterator iterator = getRelatedNodes().iterator(); iterator.hasNext();) {
+            CommitOrderDependencyNode node = (CommitOrderDependencyNode) iterator.next();
             if (node.hasNotBeenVisited()) {
                 node.setPredecessor(this);
                 node.visit();
@@ -205,7 +208,7 @@ public class CommitOrderDependencyNode {
     // Return an enumeration of all mappings for my descriptor, including those inherited
     public Vector withAllSubclasses(CommitOrderDependencyNode node) {
         Vector results = new Vector();
-        results.addElement(node);
+        results.add(node);
 
         if (node.getDescriptor().hasInheritance()) {
             InheritancePolicy policy = node.getDescriptor().getInheritancePolicy();
@@ -215,7 +218,7 @@ public class CommitOrderDependencyNode {
             childDescriptors.addAll(policy.getAllChildDescriptors());
 
             // Sort Child Descriptors before adding them to related nodes.
-            Collections.sort(childDescriptors, new DescriptorCompare());
+            childDescriptors.sort(new DescriptorCompare());
 
             for (ClassDescriptor child : childDescriptors) {
                 results.add(getOwner().nodeFor(child));

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,7 +32,6 @@ import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.queries.MapContainerPolicy;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
-import org.eclipse.persistence.mappings.AggregateCollectionMapping;
 import org.eclipse.persistence.mappings.CollectionMapping;
 
 /**
@@ -78,13 +77,13 @@ public abstract class PluralAttributeImpl<X, C, V> extends AttributeImpl<X, C> i
             // TODO: handle AggregateCollectionMapping and verify isAbstractDirectMapping
             if(mapping.isDirectCollectionMapping() || mapping.isAbstractCompositeDirectCollectionMapping()
                     || mapping.isDirectCollectionMapping()) {
-                /**
+                /*
                  * The Map Value parameter was set during metadata processing in DirectCollectionMapping.convertClassNamesToClasses() for example.
                  * The attributeClassification is set from the valueField.typeName String instead of the type Class because of the
                  * way that converters shadow the type/typeName in bug# 289487
                  */
                 attributeClass = mapping.getAttributeClassification();
-                /**
+                /*
                  * REFACTOR
                  * We were unable to get the type because it is not declared as a generic parameter on the method level attribute.
                  * It may be declared on the field.
@@ -183,7 +182,7 @@ public abstract class PluralAttributeImpl<X, C, V> extends AttributeImpl<X, C> i
 
     @Override
     public String toString() {
-        StringBuffer aBuffer = new StringBuffer(getJavaType().getSimpleName());
+        StringBuilder aBuffer = new StringBuilder(getJavaType().getSimpleName());
         aBuffer.append("AttributeImpl[");
         //aBuffer.append(getElementType());
         //aBuffer.append(",");

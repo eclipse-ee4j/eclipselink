@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,24 +14,23 @@
 // mmacivor - September 09/2009 - 1.0 - Initial implementation
 package org.eclipse.persistence.oxm.record;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import javax.xml.stream.XMLEventFactory;
-import javax.xml.stream.XMLEventWriter;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.events.XMLEvent;
-
-import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.oxm.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.NamespaceResolver;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.record.DomToXMLEventWriter;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
+
+import javax.xml.stream.XMLEventFactory;
+import javax.xml.stream.XMLEventWriter;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.events.XMLEvent;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 public class XMLEventWriterRecord extends MarshalRecord {
     private Map<String, String> prefixMapping;
@@ -110,7 +109,7 @@ public class XMLEventWriterRecord extends MarshalRecord {
                  throw XMLMarshalException.marshalException(e);
              }
          } else {
-             if(namespaceURI == null || namespaceURI.length() == 0) {
+             if(namespaceURI == null || namespaceURI.isEmpty()) {
                  event = xmlEventFactory.createAttribute(localName, value);
              } else {
                  int index = name.indexOf(':');
@@ -149,7 +148,7 @@ public class XMLEventWriterRecord extends MarshalRecord {
                  }
                  xmlEventWriter.add(xmlEventFactory.createStartElement(Constants.EMPTY_STRING, Constants.EMPTY_STRING, xPathFragment.getLocalName(), attributesIterator, namespaceDeclarationsIterator));
                  String defaultNamespace = xmlEventWriter.getNamespaceContext().getNamespaceURI(Constants.EMPTY_STRING);
-                 if(defaultNamespace != null && defaultNamespace.length() > 0 ) {
+                 if(defaultNamespace != null && !defaultNamespace.isEmpty()) {
                      xmlEventWriter.setDefaultNamespace(Constants.EMPTY_STRING);
                      xmlEventWriter.add(xmlEventFactory.createNamespace(Constants.EMPTY_STRING));
                  }

@@ -1,0 +1,89 @@
+image:Elug_draft_icon.png[Image:Elug draft
+icon.png,title="Image:Elug draft icon.png"] *For the latest EclipseLink
+documentation, please see
+http://www.eclipse.org/eclipselink/documentation/*
+
+'''''
+
+*NOTOC*
+
+== Developing Relational Projects
+
+=== From an Existing Object and Data Model
+
+[arabic]
+. link:Creating%20a%20Project%20(ELUG)#How_to_Create_a_Project_Using_the_Workbench[Create
+the project].
+. link:Configuring%20a%20Project%20(ELUG)#Configuring_Project_Classpath[Configure
+the project classpath].
+. link:Using%20Workbench%20(ELUG)#How_to_Import_and_Update_Classes[Import
+classes].
+. link:Using%20Workbench%20(ELUG)#Importing_Tables_from_a_Database[Import
+database tables].
+. link:Creating%20a%20Mapping%20(ELUG)#How_to_Create_Mappings_Automatically_During_Development_Using_Workbench[Automatically
+create mappings].
+. link:Configuring%20a%20Project%20(ELUG)[Configure project options].
++
+
+=== From an Existing Object Model
+
+[arabic]
+. link:Creating%20a%20Project%20(ELUG)#How_to_Create_a_Project_Using_the_Workbench[Create
+the project].
+. link:Configuring%20a%20Project%20(ELUG)#Configuring_Project_Classpath[Configure
+the project classpath].
+. link:Using%20Workbench%20(ELUG)#How_to_Import_and_Update_Classes[Import
+classes].
+. link:Using%20Workbench%20(ELUG)#Creating_New_Tables[Generate database
+tables]
+. link:Configuring%20a%20Project%20(ELUG)[Configure project options].
++
+
+=== From an Existing Data Model
+
+[arabic]
+. link:Creating%20a%20Project%20(ELUG)#How_to_Create_a_Project_Using_the_Workbench[Create
+the project].
+. link:Using%20Workbench%20(ELUG)#Importing_Tables_from_a_Database[Import
+database tables].
+. link:Using%20Workbench%20(ELUG)#Generating_Classes_and_Descriptors_from_Database_Tables[Generate
+classes].
+. link:Configuring%20a%20Project%20(ELUG)#Configuring_a_Project[Configure
+project options].
++
+
+=== EclipseLink User’s Guide
+
+The following sections describe relational projects:
+
+* link:Introduction_to_Relational_Projects_(ELUG)[Introduction to
+Relational Projects]
+
+* link:Creating_a_Relational_Project_(ELUG)[Creating a Relational
+Project]
+
+* link:Configuring_a_Relational_Project_(ELUG)[Configuring a Relational
+Project] – explains how to configure project options specific to
+relational project.
+
+* link:Relational_Descriptors_(ELUG)[Creating and Configuring Relational
+Descriptors]
+
+* link:Relational_Mappings_(ELUG)[Creating and Configuring Relational
+Mappings]
+
+* link:Object-Relational_Data_Type_Descriptors_(ELUG)[Creating and
+Configuring Object-Relational Data Type Descriptors]
+
+* link:Object-Relational_Data_Type_Mappings_(ELUG)[Creating and
+Configuring Object-Relational Data Type Mappings]
+
+*Special:Whatlinkshere_EclipseLink_UserGuide_Developing_Relational_Projects_(ELUG)[Related
+Topics]*
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_ORM[Category: ORM]

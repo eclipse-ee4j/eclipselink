@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,7 +17,6 @@ package org.eclipse.persistence.internal.jpa.config.queries;
 import java.util.ArrayList;
 
 import org.eclipse.persistence.internal.jpa.config.MetadataImpl;
-import org.eclipse.persistence.internal.jpa.metadata.queries.FetchAttributeMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.FetchGroupMetadata;
 import org.eclipse.persistence.jpa.config.FetchAttribute;
 import org.eclipse.persistence.jpa.config.FetchGroup;
@@ -33,7 +32,7 @@ public class FetchGroupImpl extends MetadataImpl<FetchGroupMetadata> implements 
     public FetchGroupImpl() {
         super(new FetchGroupMetadata());
 
-        getMetadata().setFetchAttributes(new ArrayList<FetchAttributeMetadata>());
+        getMetadata().setFetchAttributes(new ArrayList<>());
     }
 
     @Override

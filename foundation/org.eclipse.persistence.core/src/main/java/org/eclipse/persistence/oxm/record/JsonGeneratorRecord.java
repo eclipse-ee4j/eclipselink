@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,14 +14,13 @@
 //     Denise Smith - 2.6 - initial implementation
 package org.eclipse.persistence.oxm.record;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
-
 import jakarta.json.stream.JsonGenerator;
-import javax.xml.namespace.QName;
-
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.oxm.ConversionManager;
+
+import javax.xml.namespace.QName;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 
 public class JsonGeneratorRecord extends JsonRecord<JsonRecord.Level> {
 

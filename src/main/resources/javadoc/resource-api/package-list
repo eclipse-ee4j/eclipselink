@@ -1,0 +1,7 @@
+module:jakarta.resource
+jakarta.resource
+jakarta.resource.cci
+jakarta.resource.spi
+jakarta.resource.spi.endpoint
+jakarta.resource.spi.security
+jakarta.resource.spi.work

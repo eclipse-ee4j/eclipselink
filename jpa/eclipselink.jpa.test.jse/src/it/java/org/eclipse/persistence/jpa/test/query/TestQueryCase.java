@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2019, 2021 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2018, 2021 IBM Corporation. All rights reserved.
+ * Copyright (c) 2019, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -86,8 +86,7 @@ public class TestQueryCase {
         EntityManager em = emf.createEntityManager();
         try {
             // test 1
-            TypedQuery<EntityTbl01> query = em.createQuery(""
-                    + "SELECT t FROM EntityTbl01 t "
+            TypedQuery<EntityTbl01> query = em.createQuery("SELECT t FROM EntityTbl01 t "
                         + "WHERE t.itemString1 = ( "
                             + "CASE t.itemInteger1 "
                                 + "WHEN 1000 THEN '047010' "
@@ -100,8 +99,7 @@ public class TestQueryCase {
             assertEquals(0, dto01.size());
 
             // test 2
-            query = em.createQuery(""
-                    + "SELECT t FROM EntityTbl01 t "
+            query = em.createQuery("SELECT t FROM EntityTbl01 t "
                         + "WHERE t.itemString1 = ( "
                             + "CASE t.itemInteger1 "
                                 + "WHEN 1 THEN 'A' "
@@ -198,8 +196,7 @@ public class TestQueryCase {
 
         try {
             // test 1
-            TypedQuery<EntityTbl01> query = em.createQuery(""
-                    + "SELECT t FROM EntityTbl01 t "
+            TypedQuery<EntityTbl01> query = em.createQuery("SELECT t FROM EntityTbl01 t "
                         + "WHERE t.itemString1 = ( "
                             + "CASE t.itemInteger1 "
                                 + "WHEN ?1 THEN ?2 "
@@ -217,8 +214,7 @@ public class TestQueryCase {
             assertEquals(0, dto01.size());
 
             // test 2
-            query = em.createQuery(""
-                    + "SELECT t FROM EntityTbl01 t "
+            query = em.createQuery("SELECT t FROM EntityTbl01 t "
                         + "WHERE t.itemString1 = ( "
                             + "CASE t.itemInteger1 "
                                 + "WHEN ?1 THEN ?2 "
@@ -353,8 +349,7 @@ public class TestQueryCase {
         EntityManager em = emf.createEntityManager();
         try {
             // test 1
-            TypedQuery<EntityTbl01> query = em.createQuery(""
-                    + "SELECT t FROM EntityTbl01 t "
+            TypedQuery<EntityTbl01> query = em.createQuery("SELECT t FROM EntityTbl01 t "
                         + "WHERE t.itemString1 = ( "
                             + "CASE "
                                 + "WHEN t.itemInteger1 = 1000 THEN '047010' "
@@ -367,8 +362,7 @@ public class TestQueryCase {
             assertEquals(0, dto01.size());
 
             // test 2
-            query = em.createQuery(""
-                    + "SELECT t FROM EntityTbl01 t "
+            query = em.createQuery("SELECT t FROM EntityTbl01 t "
                     + "WHERE t.itemString1 = ( "
                         + "CASE "
                             + "WHEN t.itemInteger1 = 1 THEN 'A' "
@@ -467,8 +461,7 @@ public class TestQueryCase {
         EntityManager em = emf.createEntityManager();
         try {
             // test 1
-            TypedQuery<EntityTbl01> query = em.createQuery(""
-                    + "SELECT t FROM EntityTbl01 t "
+            TypedQuery<EntityTbl01> query = em.createQuery("SELECT t FROM EntityTbl01 t "
                         + "WHERE t.itemString1 = ( "
                             + "CASE "
                                 + "WHEN t.itemInteger1 = ?1 THEN ?2 "
@@ -486,8 +479,7 @@ public class TestQueryCase {
             assertEquals(0, dto01.size());
 
             // test 2
-            query = em.createQuery(""
-                    + "SELECT t FROM EntityTbl01 t "
+            query = em.createQuery("SELECT t FROM EntityTbl01 t "
                     + "WHERE t.itemString1 = ( "
                         + "CASE "
                             + "WHEN t.itemInteger1 = ?1 THEN ?2 "
@@ -610,8 +602,7 @@ public class TestQueryCase {
 
         EntityManager em = emf.createEntityManager();
         try {
-            TypedQuery<Dto01> query = em.createQuery(""
-                    + "SELECT new org.eclipse.persistence.jpa.test.query.model.Dto01("
+            TypedQuery<Dto01> query = em.createQuery("SELECT new org.eclipse.persistence.jpa.test.query.model.Dto01("
                         + "t.itemString1, "               // String
                         + "CASE t.itemString2 "           // String
                             + "WHEN 'J' THEN 'Japan' "
@@ -724,8 +715,7 @@ public class TestQueryCase {
 
         EntityManager em = emf.createEntityManager();
         try {
-            TypedQuery<Dto01> query = em.createQuery(""
-                    + "SELECT new org.eclipse.persistence.jpa.test.query.model.Dto01("
+            TypedQuery<Dto01> query = em.createQuery("SELECT new org.eclipse.persistence.jpa.test.query.model.Dto01("
                         + "t.itemString1, "               // String
                         + "CASE t.itemString2 "           // String
                             + "WHEN ?1 THEN ?2 "
@@ -862,8 +852,7 @@ public class TestQueryCase {
 
         EntityManager em = emf.createEntityManager();
         try {
-            TypedQuery<Integer> query = em.createQuery(""
-                    + "SELECT ("
+            TypedQuery<Integer> query = em.createQuery("SELECT ("
                        + "CASE t.itemString2 "
                        + "WHEN 'A' THEN 42 "
                        + "WHEN 'B' THEN 100 "
@@ -936,8 +925,7 @@ public class TestQueryCase {
 
         EntityManager em = emf.createEntityManager();
         try {
-            TypedQuery<Number> query = em.createQuery(""
-                    + "SELECT ("
+            TypedQuery<Number> query = em.createQuery("SELECT ("
                        + "CASE t.itemString2 "
                        + "WHEN ?1 THEN ?2 "
                        + "WHEN ?3 THEN ?4 "
@@ -1029,8 +1017,7 @@ public class TestQueryCase {
 
         EntityManager em = emf.createEntityManager();
         try {
-            TypedQuery<Boolean> query = em.createQuery(""
-                    + "SELECT ("
+            TypedQuery<Boolean> query = em.createQuery("SELECT ("
                        + "CASE "
                        + "WHEN t.itemInteger1 = 1 THEN TRUE "
                        + "ELSE FALSE "
@@ -1101,8 +1088,7 @@ public class TestQueryCase {
 
         EntityManager em = emf.createEntityManager();
         try {
-            TypedQuery<Boolean> query = em.createQuery(""
-                    + "SELECT ("
+            TypedQuery<Boolean> query = em.createQuery("SELECT ("
                        + "CASE "
                        + "WHEN t.itemInteger1 = ?1 THEN ?2 "
                        + "ELSE ?3 "

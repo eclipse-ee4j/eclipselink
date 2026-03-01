@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,17 +14,10 @@
 //     dmccann - September 15/2009 - 1.2 - Initial implementation
 package org.eclipse.persistence.testing.sdo.helper.sdohelper;
 
-import java.io.File;
 import java.io.FileInputStream;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.util.ArrayList;
 import java.util.List;
-
-import javax.xml.namespace.QName;
-import javax.xml.transform.Source;
-import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.sdo.SDOChangeSummary;
@@ -94,8 +87,7 @@ public class SDOHelperTestCases extends TestCase {
         dataFactory = aHelperContext.getDataFactory();
         dataHelper = aHelperContext.getDataHelper();
 
-        Reader rdr = new InputStreamReader(new FileInputStream(new File(
-                "./org/eclipse/persistence/testing/sdo/schemas/Team_cs_on_root.xsd")));
+        Reader rdr = new InputStreamReader(new FileInputStream("./org/eclipse/persistence/testing/sdo/schemas/Team_cs_on_root.xsd"));
         types = xsdHelper.define(rdr, null);
         teamType = typeHelper.getType("http://www.example.org", "Team");
         teamDO = dataFactory.create(teamType);

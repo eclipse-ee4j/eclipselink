@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,16 +15,13 @@
 package org.eclipse.persistence.testing.sdo.model.dataobject;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 
-import junit.framework.TestCase;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOConstants;
-import org.eclipse.persistence.sdo.SDOProperty;
 
 public class SDODataObjectGetBytesByPositionalPathTest extends SDODataObjectGetByPositionalPathTestCases {
     public SDODataObjectGetBytesByPositionalPathTest(String name) {
@@ -52,7 +49,7 @@ public class SDODataObjectGetBytesByPositionalPathTest extends SDODataObjectGetB
     public void testGetBytesFromByte() {
         property_c = dataObject_c.getInstanceProperty(PROPERTY_NAME_C);
         property_c.setType(SDOConstants.SDO_BYTE);
-        dataObject_c.set(property_c, new String("aaa").getBytes()[0]);
+        dataObject_c.set(property_c, "aaa".getBytes()[0]);
         try {
             dataObject_a.getBytes(propertyPath_a_b_c);
         } catch (Exception e) {

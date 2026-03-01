@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -12,23 +12,23 @@
 
 package org.eclipse.persistence.testing.models.plsql;
 
-import java.math.BigDecimal;
-
 import org.eclipse.persistence.mappings.DirectToFieldMapping;
 import org.eclipse.persistence.mappings.structures.ObjectArrayMapping;
 import org.eclipse.persistence.mappings.structures.ObjectRelationalDataTypeDescriptor;
 import org.eclipse.persistence.mappings.structures.StructureMapping;
 import org.eclipse.persistence.platform.database.jdbc.JDBCTypes;
 import org.eclipse.persistence.platform.database.oracle.plsql.OraclePLSQLTypes;
+import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLCollection;
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLStoredFunctionCall;
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLStoredProcedureCall;
-import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLCollection;
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLrecord;
 import org.eclipse.persistence.queries.DataModifyQuery;
 import org.eclipse.persistence.queries.DataReadQuery;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.StoredProcedureCall;
 import org.eclipse.persistence.sessions.Project;
+
+import java.math.BigDecimal;
 
 /**
  * EclipseLink mapping project for PLSQL data structures.

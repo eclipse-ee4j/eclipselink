@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,6 +14,7 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.codegen;
 
+import java.io.IOException;
 
 /**
  * INTERNAL:
@@ -56,11 +57,10 @@ public class AccessLevel {
             return true;
         }
 
-        if (!(object instanceof AccessLevel)) {
+        if (!(object instanceof AccessLevel accessLevel)) {
             return false;
         }
 
-        AccessLevel accessLevel = (AccessLevel)object;
         return ((this.level == accessLevel.level) && (this.isStatic == accessLevel.isStatic) && (this.isFinal == accessLevel.isFinal) && (this.isTransient == accessLevel.isTransient));
     }
 
@@ -141,7 +141,7 @@ public class AccessLevel {
         this.level = level;
     }
 
-    public void write(CodeGenerator generator) {
+    public void write(CodeGenerator generator) throws IOException {
         boolean needsSpace = true;
         if (getLevel() == PUBLIC) {
             generator.write("public");

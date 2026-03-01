@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,11 +17,10 @@ package org.eclipse.persistence.testing.tests.validation;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.exceptions.DescriptorException;
-import org.eclipse.persistence.exceptions.IntegrityChecker;
 import org.eclipse.persistence.exceptions.EclipseLinkException;
+import org.eclipse.persistence.exceptions.IntegrityChecker;
 import org.eclipse.persistence.mappings.DirectToFieldMapping;
 import org.eclipse.persistence.sessions.DatabaseSession;
-import org.eclipse.persistence.testing.tests.validation.ExceptionTest;
 
 
 //Created by Ian Reid
@@ -31,7 +30,7 @@ import org.eclipse.persistence.testing.tests.validation.ExceptionTest;
 public class ClassIndicatorFieldNotFoundTest extends ExceptionTest {
     public ClassIndicatorFieldNotFoundTest() {
         super();
-        setDescription("This tests Class Indicator Field Not Found (TL-ERROR 08) " + "");
+        setDescription("This tests Class Indicator Field Not Found (TL-ERROR 08) ");
     }
 
     @Override

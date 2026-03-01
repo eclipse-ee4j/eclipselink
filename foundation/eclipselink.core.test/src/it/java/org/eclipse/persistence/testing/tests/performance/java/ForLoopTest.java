@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,8 +14,12 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.performance.java;
 
-import java.util.*;
-import org.eclipse.persistence.testing.framework.*;
+import org.eclipse.persistence.testing.framework.PerformanceComparisonTestCase;
+
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.Vector;
 
 /**
  * This test compares the performance of for loops.
@@ -47,8 +51,7 @@ public class ForLoopTest extends PerformanceComparisonTestCase {
     @Override
     public void test() throws Exception {
         int size = list.size();
-        for (int index = 0; index < size; index++) {
-            Object object = list.get(index);
+        for (Object object : list) {
             object.hashCode();
         }
     }
@@ -78,8 +81,7 @@ public class ForLoopTest extends PerformanceComparisonTestCase {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
             @Override
             public void test() {
-                for (Iterator iter = list.iterator(); iter.hasNext();) {
-                    Object object = iter.next();
+                for (Object object : list) {
                     object.hashCode();
                 }
             }
@@ -96,8 +98,7 @@ public class ForLoopTest extends PerformanceComparisonTestCase {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
             @Override
             public void test() {
-                for (Iterator iter = arrayList.iterator(); iter.hasNext();) {
-                    Object object = iter.next();
+                for (Object object : arrayList) {
                     object.hashCode();
                 }
             }
@@ -149,8 +150,7 @@ public class ForLoopTest extends PerformanceComparisonTestCase {
             @Override
             public void test() {
                 int size = arrayList.size();
-                for (int index = 0; index < size; index++) {
-                    Object object = arrayList.get(index);
+                for (Object object : arrayList) {
                     object.hashCode();
                 }
             }

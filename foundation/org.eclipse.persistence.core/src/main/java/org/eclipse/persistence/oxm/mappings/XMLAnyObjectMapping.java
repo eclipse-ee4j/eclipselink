@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,18 +14,10 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.oxm.mappings;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Vector;
-
-import javax.xml.namespace.QName;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.DescriptorException;
-import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.oxm.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
@@ -64,6 +56,14 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
+
+import javax.xml.namespace.QName;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 
 /**
  * <p>Any object XML mappings map an attribute that contains a single object to  an XML element.
@@ -307,7 +307,7 @@ public class XMLAnyObjectMapping extends XMLAbstractAnyMapping implements XMLMap
             //Get the nested row represented by this field to build the Object from
             Object nested = record.get(getField());
             if (nested instanceof Vector) {
-                nested = ((Vector) nested).firstElement();
+                nested = ((Vector) nested).get(0);
             }
             if (!(nested instanceof XMLRecord)) {
                 return null;
@@ -330,7 +330,7 @@ public class XMLAnyObjectMapping extends XMLAbstractAnyMapping implements XMLMap
             Object objectValue = null;
             org.w3c.dom.Node next = (Node) iter.next();
             if (next.getNodeType() == Node.TEXT_NODE) {
-                if ((i == (length - 1)) || (next.getNodeValue().trim().length() > 0)) {
+                if ((i == (length - 1)) || (!next.getNodeValue().trim().isEmpty())) {
                     objectValue = next.getNodeValue();
                     objectValue = convertDataValueToObjectValue(objectValue, session, record.getUnmarshaller());
                     return objectValue;
@@ -349,7 +349,7 @@ public class XMLAnyObjectMapping extends XMLAbstractAnyMapping implements XMLMap
                 String schemaType = ((Element) next).getAttributeNS(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
                 QName schemaTypeQName = null;
                 XPathFragment frag = new XPathFragment();
-                if ((null != schemaType) && (schemaType.length() > 0)) {
+                if ((null != schemaType) && (!schemaType.isEmpty())) {
                     frag.setXPath(schemaType);
                     if (frag.hasNamespace()) {
                         String prefix = frag.getPrefix();
@@ -450,10 +450,10 @@ public class XMLAnyObjectMapping extends XMLAbstractAnyMapping implements XMLMap
             if (wasXMLRoot) {
                 if (((XMLRoot) originalObject).getNamespaceURI() != null) {
                     String prefix = referenceDescriptor.getNonNullNamespaceResolver().resolveNamespaceURI(((XMLRoot) originalObject).getNamespaceURI());
-                    if ((prefix == null) || prefix.length() == 0) {
+                    if ((prefix == null) || prefix.isEmpty()) {
                         prefix = row.getNamespaceResolver().resolveNamespaceURI(((XMLRoot) originalObject).getNamespaceURI());
                     }
-                    if ((prefix == null) || prefix.length() == 0) {
+                    if ((prefix == null) || prefix.isEmpty()) {
                         xmlRootField.getXPathFragment().setGeneratedPrefix(true);
                         prefix = row.getNamespaceResolver().generatePrefix();
                     }
@@ -480,7 +480,7 @@ public class XMLAnyObjectMapping extends XMLAbstractAnyMapping implements XMLMap
         if(referenceDescriptor != null){
             defaultRootElementString = referenceDescriptor.getDefaultRootElement();
             if (!wasXMLRoot && defaultRootElementString == null) {
-                throw XMLMarshalException.defaultRootElementNotSpecified((XMLDescriptor) descriptor);
+                throw XMLMarshalException.defaultRootElementNotSpecified(descriptor.getJavaClassName());
             }
         }
 
@@ -516,7 +516,7 @@ public class XMLAnyObjectMapping extends XMLAbstractAnyMapping implements XMLMap
     }
 
     @Override
-    public Vector getFields() {
+    public List<DatabaseField> getFields() {
         return this.collectFields();
     }
 
@@ -625,7 +625,7 @@ public class XMLAnyObjectMapping extends XMLAbstractAnyMapping implements XMLMap
         if (wasXMLRoot) {
             if (((XMLRoot) originalObject).getNamespaceURI() != null) {
                 String prefix = row.getNamespaceResolver().resolveNamespaceURI(((XMLRoot) originalObject).getNamespaceURI());
-                if ((prefix == null) || prefix.length() == 0) {
+                if ((prefix == null) || prefix.isEmpty()) {
                     xmlRootField.getXPathFragment().setGeneratedPrefix(true);
                     prefix = row.getNamespaceResolver().generatePrefix();
                 }

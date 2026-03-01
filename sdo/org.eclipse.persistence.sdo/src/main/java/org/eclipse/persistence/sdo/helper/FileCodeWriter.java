@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,7 +26,7 @@ import java.io.IOException;
  * @see org.eclipse.persistence.sdo.helper.CodeWriter
  */
 public class FileCodeWriter implements CodeWriter {
-    private static final String fsep = System.getProperty("file.separator");
+    private static final String fsep = File.separator;
 
     /** The source directory to write the generated files to.  This will be prepended to the package. */
     private String sourceDir;

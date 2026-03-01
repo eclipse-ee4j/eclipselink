@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,14 +22,15 @@ package org.eclipse.persistence.config;
  * (createEntityManagerFactory or persistence.xml)
  * or EntityManager (createEntityManager); the latter overrides the former.
  *
- * <p>JPA persistence property Usage:
- *
- * <p><code>properties.add(PersistenceUnitProperties.FLUSH_CLEAR_CACHE, FlushClearCache.Drop);</code>
+ * <p>JPA persistence property usage:
+ * {@snippet :
+ *  properties.add(PersistenceUnitProperties.FLUSH_CLEAR_CACHE, FlushClearCache.Drop);
+ * }
  *
  * <p>Values are case-insensitive.
  * "" could be used instead of default value FlushClearCache.DEFAULT.
  */
-public class FlushClearCache {
+public final class FlushClearCache {
     /** Call to clear method causes to drop from EntityManager cache only the objects that haven't been flushed.
      * This is the most accurate mode: shared cache is perfect after commit;
      * but the least memory effective: smbd repeatedly using flush followed by clear
@@ -38,7 +39,7 @@ public class FlushClearCache {
     public static final String  Merge = "Merge";
 
     /** Call to clear method causes to drop the whole EntityManager cache.
-     * This is the fasteset and using the least memory mode -
+     * This is the fastest and using the least memory mode -
      * but after commit the shared cache potentially contains stale data.
      */
     public static final String  Drop = "Drop";
@@ -53,4 +54,8 @@ public class FlushClearCache {
     public static final String  DropInvalidate = "DropInvalidate";
 
     public static final String DEFAULT = DropInvalidate;
+
+    private FlushClearCache() {
+        // no instance please
+    }
 }

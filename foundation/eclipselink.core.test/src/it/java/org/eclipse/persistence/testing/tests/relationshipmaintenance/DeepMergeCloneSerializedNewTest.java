@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,13 +14,18 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.relationshipmaintenance;
 
-import java.util.*;
-import java.io.*;
-import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.sessions.Session;
-import org.eclipse.persistence.testing.framework.*;
+import org.eclipse.persistence.sessions.UnitOfWork;
+import org.eclipse.persistence.testing.framework.TestErrorException;
+import org.eclipse.persistence.testing.framework.TestWarningException;
 import org.eclipse.persistence.testing.models.relationshipmaintenance.Dept;
 import org.eclipse.persistence.testing.models.relationshipmaintenance.Emp;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
 /**
  * This test checks on a previous problem TopLink had with merging clones and
@@ -88,7 +93,7 @@ public class DeepMergeCloneSerializedNewTest extends org.eclipse.persistence.tes
             try {
                 deserialDept = (Dept)inObjStream.readObject();
             } catch (ClassNotFoundException e) {
-                throw new TestErrorException("Could not deserialize object " + e.toString());
+                throw new TestErrorException("Could not deserialize object " + e);
             }
 
             //add a new manager, test 1-m's
@@ -113,7 +118,7 @@ public class DeepMergeCloneSerializedNewTest extends org.eclipse.persistence.tes
             try {
                 deserialDept = (Dept)inObjStream.readObject();
             } catch (ClassNotFoundException e) {
-                throw new TestErrorException("Could not deserialize object " + e.toString());
+                throw new TestErrorException("Could not deserialize object " + e);
             }
 
             //merge the ammended clone with the unit of work
@@ -121,15 +126,15 @@ public class DeepMergeCloneSerializedNewTest extends org.eclipse.persistence.tes
             if (deptClone.getEmpCollection().size() != collectionSize) {
                 throw new TestErrorException("Failed to merge the collection correctly not enough Emps");
             }
-            for (Iterator iterator = deptClone.getEmpCollection().iterator(); iterator.hasNext();) {
-                Emp emp = (Emp)iterator.next();
+            for (Object o : deptClone.getEmpCollection()) {
+                Emp emp = (Emp) o;
                 if (emp.getDeptno() != deptClone) {
                     throw new TestErrorException("Failed to merge the back pointer");
                 }
             }
             uow.commit();
         } catch (IOException e) {
-            throw new TestErrorException("Error running Test " + e.toString());
+            throw new TestErrorException("Error running Test " + e);
         }
     }
 }

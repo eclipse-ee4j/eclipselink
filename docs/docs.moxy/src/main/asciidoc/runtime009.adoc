@@ -1,0 +1,101 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[RUNTIME009]]
+=== Binding to an Existing Document
+
+The JAXB Binder interface (introduced in JAXB 2.0) allows you to
+preserve an entire XML document, even if only some of the items are
+mapped.
+
+Normally, when using an Unmarshaller to load the XML document into
+objects, and a Marshaller to save the objects back to XML, the unmapped
+content will be lost.
+
+A Binder can be created from the JAXBContext to interact with the XML in
+the form of a DOM. The Binder maintains an association between the Java
+objects and their corresponding DOM nodes.
+
+[[sthref55]]
+
+*_Example 2-31 Using a Binder_*
+
+[source,oac_no_warn]
+----
+import java.io.File;
+import jakarta.xml.bind.*;
+import javax.xml.parsers.*;
+import javax.xml.transform.*;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import org.w3c.dom.*;
+ 
+public class BinderDemo {
+ 
+    public static void main(String[] args) throws Exception {
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        DocumentBuilder db = dbf.newDocumentBuilder();
+        File xml = new File("input.xml");
+        Document document = db.parse(xml);
+ 
+        JAXBContext jc = JAXBContext.newInstance(Customer.class);
+ 
+        Binder<Node> binder = jc.createBinder();
+        Customer customer = (Customer) binder.unmarshal(document);
+        customer.getAddress().setStreet("2 NEW STREET");
+        PhoneNumber workPhone = new PhoneNumber();
+        workPhone.setType("work");
+        workPhone.setValue("555-WORK");
+        customer.getPhoneNumbers().add(workPhone);
+        binder.updateXML(customer);
+ 
+        TransformerFactory tf = TransformerFactory.newInstance();
+        Transformer t = tf.newTransformer();
+        t.transform(new DOMSource(document), new StreamResult(System.out));
+    }
+ 
+}
+ 
+----
+
+The Binder applies the changes to the original DOM instead of creating a
+new XML document, thereby preserving the entire XML infoset.
+
+[source,oac_no_warn]
+----
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<customer>
+    <UNMAPPED_ELEMENT_1/>
+    <name>Jane Doe</name>
+    <!-- COMMENT #1 -->
+    <address>
+        <UNMAPPED_ELEMENT_2/>
+        <street>2 NEW STREET</street>
+        <!-- COMMENT #2 -->
+        <UNMAPPED_ELEMENT_3/>
+        <city>Any Town</city>
+    </address>
+    <!-- COMMENT #3 -->
+    <UNMAPPED_ELEMENT_4/>
+    <phone-number type="home">555-HOME</phone-number>
+    <!-- COMMENT #4 -->
+    <phone-number type="cell">555-CELL</phone-number>
+    <phone-number type="work">555-WORK</phone-number>
+    <UNMAPPED_ELEMENT_5/>
+    <!-- COMMENT #5 -->
+</customer>
+----

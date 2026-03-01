@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,16 +14,12 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.oxm.mappings;
 
-import java.util.*;
-
-import javax.xml.namespace.QName;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.DescriptorException;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
-import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.identitymaps.CacheId;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
@@ -47,12 +43,19 @@ import org.eclipse.persistence.oxm.record.DOMRecord;
 import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
 
+import javax.xml.namespace.QName;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 /**
  * TopLink OXM version of a 1-1 mapping.  A list of source-target key field
  * associations is used to link the source xpaths to their related target xpaths,
  * and hence their primary key (unique identifier) values used when (un)marshalling.
  * This mapping has a Vector of XMLFields as opposed to a single XMLField.
- *
+ * <p>
  * It is important to note that each target xpath is assumed to be set as a primary
  * key field on the target (reference) class descriptor - this is necessary in order
  * to locate the correct target object instance in the session cache when resolving
@@ -60,7 +63,7 @@ import org.eclipse.persistence.queries.ObjectBuildingQuery;
  */
 public class XMLObjectReferenceMapping extends AggregateMapping implements ObjectReferenceMapping<AbstractSession, AttributeAccessor, ContainerPolicy, ClassDescriptor, DatabaseField, UnmarshalRecord, XMLField, XMLRecord>, XMLMapping {
     protected HashMap sourceToTargetKeyFieldAssociations;
-    protected Vector sourceToTargetKeys; // maintain the order of the keys
+    protected List sourceToTargetKeys; // maintain the order of the keys
     private boolean isWriteOnly;
     private XMLInverseReferenceMapping inverseReferenceMapping;
 
@@ -71,7 +74,7 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements Objec
      */
     public XMLObjectReferenceMapping() {
         sourceToTargetKeyFieldAssociations = new HashMap();
-        sourceToTargetKeys = new Vector();
+        sourceToTargetKeys = new ArrayList();
     }
 
     /**
@@ -117,7 +120,7 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements Objec
         ObjectBuilder objectBuilder = descriptor.getObjectBuilder();
         Object primaryKey = objectBuilder.extractPrimaryKeyFromObject(targetObject, session);
         int idx = 0;
-        if(!(null == referenceClass || ClassConstants.OBJECT == getReferenceClass())) {
+        if(!(null == referenceClass || CoreClassConstants.OBJECT == getReferenceClass())) {
             idx = descriptor.getPrimaryKeyFields().indexOf(getSourceToTargetKeyFieldAssociations().get(xmlFld));
             if (idx == -1) {
                 return null;
@@ -151,7 +154,7 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements Objec
 
         Reference reference = resolver.getReference(this, srcObject);
         CacheId primaryKeys;
-        if(null == referenceClass || ClassConstants.OBJECT == referenceClass) {
+        if(null == referenceClass || CoreClassConstants.OBJECT == referenceClass) {
             if (reference == null) {
                 // if reference is null, create a new instance and set it on the resolver
                 primaryKeys = new CacheId(new Object[1]);
@@ -163,7 +166,7 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements Objec
             }
             primaryKeys.set(0, object);
         } else {
-            Vector<String> pkFieldNames = referenceDescriptor.getPrimaryKeyFieldNames();
+            List<String> pkFieldNames = referenceDescriptor.getPrimaryKeyFieldNames();
             // if reference is null, create a new instance and set it on the resolver
             if (reference == null) {
                 primaryKeys = new CacheId(new Object[pkFieldNames.size()]);
@@ -228,14 +231,14 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements Objec
      * in the source-target key field associations list.
      */
     @Override
-    public Vector getFields() {
+    public List<DatabaseField> getFields() {
         return sourceToTargetKeys;
     }
 
     /**
      * Return a QName representation the schema type for a given XMLField, if
      * applicable.
-     *
+     * <p>
      * Note:  This method performs the same functionality as 'getSchemaType' in
      * org.eclipse.persistence.internal.oxm.XMLSimpleMappingNodeValue.
      *
@@ -255,7 +258,7 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements Objec
 
     /**
      * Return a single QName representation for a given XMLUnionField, if applicable.
-     *
+     * <p>
      * Note:  This method performs the same functionality as 'getSingleValueToWriteForUnion'
      * in org.eclipse.persistence.internal.oxm.XMLSimpleMappingNodeValue.
      *
@@ -296,13 +299,13 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements Objec
 
     /**
      * Return a string representation of a given value, based on a given schema type.
-     *
+     * <p>
      * Note:  This method performs the same functionality as 'getValueToWrite'
      * in org.eclipse.persistence.internal.oxm.XMLSimpleMappingNodeValue.
      *
      */
     protected String getValueToWrite(QName schemaType, Object value, AbstractSession session) {
-        return ((XMLConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, ClassConstants.STRING, schemaType);
+        return ((XMLConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, CoreClassConstants.STRING, schemaType);
     }
 
     /**
@@ -321,7 +324,7 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements Objec
                 setReferenceClass(session.getDatasourcePlatform().getConversionManager().convertClassNameToClass(referenceClassName));
             }
         }
-        if(!(null == referenceClass || referenceClass == ClassConstants.OBJECT)) {
+        if(!(null == referenceClass || referenceClass == CoreClassConstants.OBJECT)) {
             super.initialize(session);
         }
 
@@ -390,7 +393,7 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements Objec
         // reference descriptor's primary key entries
         CacheId primaryKeys;
         ClassDescriptor descriptor = sourceQuery.getSession().getClassDescriptor(referenceClass);
-        Vector pkFieldNames = null;
+        List<String> pkFieldNames = null;
         if(null == descriptor) {
             primaryKeys = new CacheId(new Object[1]);
         } else {

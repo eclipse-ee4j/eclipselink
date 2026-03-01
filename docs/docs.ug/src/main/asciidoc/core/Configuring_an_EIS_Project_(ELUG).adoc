@@ -1,0 +1,168 @@
+image:Elug_draft_icon.png[Image:Elug draft
+icon.png,title="Image:Elug draft icon.png"] *For the latest EclipseLink
+documentation, please see
+http://www.eclipse.org/eclipselink/documentation/*
+
+'''''
+
+*TOC* Special:Whatlinkshere_Configuring_an_EIS_Project_(ELUG)[Related
+Topics]
+
+This section describes the various components that you must configure in
+order to use an EIS project.
+
+For information on how to create EIS projects, see
+link:Creating%20an%20EIS%20Project%20(ELUG)[Creating an EIS Project].
+
+This table lists the configurable options for EIS projects.
+
+[#Table 69-1]##
+
+Option to Configure
+
+EclipseLink Workbench
+
+Java
+
+Configuring Project Save Location
+
+Configuring Project Classpath
+
+Configuring Project Comments
+
+Configuring Method or Direct Field Access at the Project Level
+
+Configuring Default Descriptor Advanced Properties
+
+Configuring Existence Checking at the Project Level
+
+Configuring Project Deployment XML Options
+
+Configuring Model Java Source Code Options
+
+Configuring EIS Data Source Platform at the Project Level
+
+Configuring EIS Connection Specification Options at the Project Level
+
+Configuring XML Parser Platform
+
+How to Import an XML Schema
+
+How to Configure XML Schema Namespace
+
+Configuring Cache Type and Size at the Project Level
+
+Configuring Cache Isolation at the Project Level
+
+Configuring Cache Coordination Change Propagation at the Project Level
+
+Configuring Cache Expiration at the Project Level
+
+For more information, see
+link:Introduction%20to%20EIS%20Projects%20(ELUG)[Introduction to EIS
+Projects].
+
+== Configuring EIS Data Source Platform at the Project Level
+
+For each EIS project, you must specify one of the following JCA data
+source platforms that you will be using:
+
+* Oracle AQ
+* Attunity Connect
+* IBM MQSeries
+
+This platform configuration is overridden by the session login, if
+configured.
+
+For more information, see the following:
+
+* link:Configuring%20an%20EIS%20Login%20(ELUG)#Configuring_an_EIS_Data_Source_Platform_at_the_Session_Level[Configuring
+an EIS Data Source Platform at the Session Level]
+* link:Introduction%20to%20Data%20Access%20(ELUG)#Data_Source_Platform_Types[Data
+Source Platform Types]
+
+=== How to Configure EIS Data Source Platform at the Project Level Using Workbench
+
+To specify the data source platform of an EIS project, use this
+procedure:
+
+[arabic]
+. Select an EIS project object in the *Navigator*.
+. Select the *Connection Specifications* tab in the *Editor*. The
+Connection Specifications tab appears.
+. Select the *Connection* tab. The Connection tab appears.
+[#Figure 69-1]##*_Connection Tab, Platform Option_*
+image:eispplat.gif[Connection Tab, Platform
+Option,title="Connection Tab, Platform Option"]
+. Select the EIS platform for this project from the list of options. For
+more information, see
+link:Introduction%20to%20Data%20Access%20(ELUG)#Data_Source_Platform_Types[Data
+Source Platform Types].
+
+== Configuring EIS Connection Specification Options at the Project Level
+
+You can configure connection information at the project level for an EIS
+application. This information is stored in the `+project.xml+` file. The
+EclipseLink runtime uses this information as its deployment login:
+whenever your EIS application performs a persistence operation when
+deployed in a Java EE application server.
+
+This connection configuration is overridden by the connection
+information at the session level, if configured. For more information
+about session level configuration, see
+link:Configuring%20an%20EIS%20Login%20(ELUG)#Configuring_EIS_Connection_Specification_Options_at_the_Session_Level[Configuring
+EIS Connection Specification Options at the Session Level].
+
+=== How to Configure EIS Connection Specification Options at the Project Level Using Workbench
+
+To specify the connection information for an EIS project, use this
+procedure.
+
+[arabic]
+. Select an EIS project object in the *Navigator*.
+. Select the *Connection Specifications* tab in the *Editor*. The
+Connection Specifications tab appears.
+. Select the *Connection* tab. The Connection tab appears.
+[#Figure 69-2]##*_Connection Tab, Connection Specification Options_*
+image:eispcsc.gif[Connection Tab, Connection Specification
+Options,title="Connection Tab, Connection Specification Options"]
+. Complete the fields on the Connection tab.
+
+Use this table to enter data in the following fields to configure the
+connection specification options:
+
+[width="100%",cols="<7%,<93%",options="header",]
+|===
+|*Field* |*Description*
+|*Connection Specification Class* |Specify the appropriate connection
+specification class for the selected *Platform*. Click *Browse* to
+choose from all the classes in the EclipseLink class path. (example: if
+*Platform* is `+org.eclipse.persistence.eis.aq.AQPlatform+`, use
+`+org.eclipse.persistence.eis.aq.AQEISConnectionSpec+`). For more
+information on platform configuration, see
+link:Configuring%20an%20EIS%20Login%20(ELUG)#Configuring_an_EIS_Data_Source_Platform_at_the_Session_Level[Configuring
+an EIS Data Source Platform at the Session Level].
+
+|*Connection Factory URL* |Specify the appropriate connection factory
+URL (as a Java EE JNDI name) for the selected *Connection Specification
+Class* (example: `+java:comp/env/eis/attuntiy+`).
+
+|*Username* |Specify the name required to log in to the data source.
+
+|*Password* |Specify the password required to log in to the data source.
+*Note:* When exporting Java source and deployment XML (see
+link:Creating%20a%20Project%20(ELUG)#Exporting_Project_Information[Exporting
+Project Information]), Workbench writes the database password (if
+applicable) using JCE encryption (when using JDK 1.4). For information
+on how to specify password encryption options, see
+link:Configuring%20a%20Data%20Source%20Login%20(ELUG)#Configuring_Password_Encryption[Configuring
+Password Encryption].
+|===
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Release_1[Category: Release 1] Category:_Task[Category: Task]
+Category:_EIS[Category: EIS]

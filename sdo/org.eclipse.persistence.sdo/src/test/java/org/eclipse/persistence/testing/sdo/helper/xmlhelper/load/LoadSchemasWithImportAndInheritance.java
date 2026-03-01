@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,7 +17,6 @@ package org.eclipse.persistence.testing.sdo.helper.xmlhelper.load;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
@@ -29,11 +28,7 @@ import org.eclipse.persistence.sdo.helper.SchemaResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import commonj.sdo.DataObject;
-import commonj.sdo.helper.HelperContext;
-import commonj.sdo.helper.XMLHelper;
 import commonj.sdo.helper.XSDHelper;
-import commonj.sdo.impl.HelperProvider;
 
 public class LoadSchemasWithImportAndInheritance extends TestCase {
     static String PATH = "./org/eclipse/persistence/testing/sdo/helper/xmlhelper/load/";

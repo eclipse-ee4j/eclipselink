@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -65,6 +65,7 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EntityAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
@@ -95,7 +96,7 @@ import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JP
  * INTERNAL:
  * A relational accessor. A Basic annotation may or may not be present on the
  * accessible object.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -201,8 +202,7 @@ public class BasicAccessor extends DirectAccessor {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (super.equals(objectToCompare) && objectToCompare instanceof BasicAccessor) {
-            BasicAccessor basicAccessor = (BasicAccessor) objectToCompare;
+        if (super.equals(objectToCompare) && objectToCompare instanceof BasicAccessor basicAccessor) {
 
             if (! valuesMatch(m_mutable, basicAccessor.getMutable())) {
                 return false;
@@ -448,14 +448,19 @@ public class BasicAccessor extends DirectAccessor {
         // Process a generated value setting.
         processGeneratedValue();
 
+        String entityName = null;
+        if (this.getClassAccessor().isEntityAccessor()) {
+            entityName = ((EntityAccessor)this.getClassAccessor()).getEntityName();
+        }
+
         // Add the table generator to the project if one is set.
         if (m_tableGenerator != null) {
-            getProject().addTableGenerator(m_tableGenerator, getDescriptor().getDefaultCatalog(), getDescriptor().getDefaultSchema());
+            getProject().addTableGenerator(m_tableGenerator, getDescriptor().getDefaultCatalog(), getDescriptor().getDefaultSchema(), entityName);
         }
 
         // Add the sequence generator to the project if one is set.
         if (m_sequenceGenerator != null) {
-            getProject().addSequenceGenerator(m_sequenceGenerator, getDescriptor().getDefaultCatalog(), getDescriptor().getDefaultSchema());
+            getProject().addSequenceGenerator(m_sequenceGenerator, getDescriptor().getDefaultCatalog(), getDescriptor().getDefaultSchema(), entityName);
         }
 
         // Add the uuid generator to the project if one is set.

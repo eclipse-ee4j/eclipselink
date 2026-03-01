@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,11 +14,6 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.oxm;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-
-import javax.xml.namespace.QName;
-
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.ConversionManager;
@@ -26,11 +21,15 @@ import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.mappings.UnionField;
 import org.eclipse.persistence.internal.oxm.record.AbstractUnmarshalRecord;
 
+import javax.xml.namespace.QName;
+import java.util.ArrayList;
+import java.util.Iterator;
+
 /**
  * <p>Subclass of XMLField for fields that are mapped to unions.
  * Maintains a list of schema types instead of just one single schema type.
  * Schema types can be added using the addSchemaType api.
- *
+ * <p>
  * XMLConstants has a list of useful constants including a list of QNames for
  * built-in schema types that can be used when adding schema types.
  *
@@ -44,7 +43,7 @@ import org.eclipse.persistence.internal.oxm.record.AbstractUnmarshalRecord;
  * <code>
  * In this example the age field could be a date or an int.<br>
  * XMLUnionField field = new XMLUnionField("age/text()");<br>
- * field.addSchemaType(XMLConstants.DATE_QNAME);<br>
+ * field.addSchemaType(Constants.DATE_QNAME);<br>
  * field.addSchemaType(XMLConstants.INT_QNAME)<br>
  * </code>
  *
@@ -255,7 +254,7 @@ public class XMLUnionField extends XMLField implements UnionField<XMLConversionM
      */
     @Override
     public boolean isSchemaType(QName schemaType){
-        if(getSchemaTypes() == null || getSchemaTypes().size() ==0){
+        if(getSchemaTypes() == null || getSchemaTypes().isEmpty()){
             return false;
         }
         return contains(getSchemaTypes(), schemaType);

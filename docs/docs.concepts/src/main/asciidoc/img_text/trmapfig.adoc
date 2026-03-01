@@ -1,0 +1,4 @@
+:nofooter:
+This illustration shows a transformation mapping. This illustration is
+described in the preceding paragraph. The components that make up a
+transformation mapping are listed and described below.

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,15 +14,11 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.oxm.events;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-
-import javax.xml.namespace.QName;
-
-import org.w3c.dom.Document;
-
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
+import org.w3c.dom.Document;
+
+import java.util.ArrayList;
 
 public class RootWithAnyCollectionTestCases extends XMLMappingTestCases {
     public MarshalListenerImpl listener;
@@ -74,13 +70,13 @@ public class RootWithAnyCollectionTestCases extends XMLMappingTestCases {
     @Override
     public void xmlToObjectTest(Object testObject) throws Exception {
         super.xmlToObjectTest(testObject);
-        assertTrue("Expected sequence of Unmarshal events not found", expectedUnmarshalEvents.equals(unmarshalListener.events));
+        assertEquals("Expected sequence of Unmarshal events not found", expectedUnmarshalEvents, unmarshalListener.events);
     }
 
     @Override
     public void objectToXMLDocumentTest(Document testDocument) throws Exception {
         super.objectToXMLDocumentTest(testDocument);
-        assertTrue("Expected sequence of Marshal events not found", expectedMarshalEvents.equals(listener.events));
+        assertEquals("Expected sequence of Marshal events not found", expectedMarshalEvents, listener.events);
     }
 
     @Override

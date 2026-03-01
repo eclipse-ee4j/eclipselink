@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,18 +14,21 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.queries.inmemory;
 
-import java.util.*;
-import java.math.BigDecimal;
-import org.eclipse.persistence.testing.framework.*;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.expressions.ExpressionMath;
+import org.eclipse.persistence.queries.ReadAllQuery;
+import org.eclipse.persistence.queries.ReadObjectQuery;
+import org.eclipse.persistence.testing.framework.TestSuite;
 import org.eclipse.persistence.testing.models.aggregate.Agent;
 import org.eclipse.persistence.testing.models.aggregate.Builder;
-import org.eclipse.persistence.testing.models.employee.domain.*;
-import org.eclipse.persistence.tools.schemaframework.PopulationManager;
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.expressions.*;
+import org.eclipse.persistence.testing.models.employee.domain.Employee;
+import org.eclipse.persistence.testing.models.legacy.Computer;
 import org.eclipse.persistence.testing.models.legacy.Order;
 import org.eclipse.persistence.testing.models.legacy.Shipment;
-import org.eclipse.persistence.testing.models.legacy.Computer;
+import org.eclipse.persistence.tools.schemaframework.PopulationManager;
+
+import java.math.BigDecimal;
+import java.util.Vector;
 
 public class CacheHitAndInMemoryTestSuite extends TestSuite {
     public CacheHitAndInMemoryTestSuite() {
@@ -41,7 +44,7 @@ public class CacheHitAndInMemoryTestSuite extends TestSuite {
         addTest(new CacheHitTest(manager.getObject(org.eclipse.persistence.testing.models.employee.domain.Employee.class, "0001")));
         addTest(new CacheHitTest(manager.getObject(Shipment.class, "example1")));
 
-        Order order = (Order)((Shipment)org.eclipse.persistence.testing.models.legacy.Employee.example1().shipments.elementAt(0)).orders.elementAt(0);
+        Order order = (Order) ((Shipment) org.eclipse.persistence.testing.models.legacy.Employee.example1().shipments.get(0)).orders.get(0);
         order.shipment.shipmentNumber = order.shipment.shipmentNumber.intValue();
         addTest(new CacheHitTest(order));
 
@@ -129,8 +132,8 @@ public class CacheHitAndInMemoryTestSuite extends TestSuite {
 
         builder = new ExpressionBuilder();
         Vector names = new Vector();
-        names.addElement("jonesy");
-        names.addElement(example.getLastName());
+        names.add("jonesy");
+        names.add(example.getLastName());
         query = new ReadObjectQuery(Employee.class, builder.get("lastName").in(names));
         test = new InMemoryCacheHitTest(query);
         query.checkCacheThenDatabase();
@@ -139,8 +142,8 @@ public class CacheHitAndInMemoryTestSuite extends TestSuite {
 
         builder = new ExpressionBuilder();
         Vector ids = new Vector();
-        ids.addElement(123456789L);
-        ids.addElement(example.getId());
+        ids.add(123456789L);
+        ids.add(example.getId());
         query = new ReadObjectQuery(Employee.class, builder.get("id").in(ids));
         test = new InMemoryCacheHitTest(query);
         query.checkCacheThenDatabase();

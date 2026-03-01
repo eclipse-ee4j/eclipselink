@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,8 +25,6 @@ import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
 import org.eclipse.persistence.tools.schemaframework.SchemaManager;
 import org.eclipse.persistence.tools.schemaframework.TableDefinition;
-
-import java.util.Iterator;
 
 public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.schemaframework.TableCreator {
     public ComplexAggregateTableCreator() {
@@ -547,11 +545,10 @@ public class ComplexAggregateTableCreator extends org.eclipse.persistence.tools.
     @Override
     public void replaceTables(DatabaseSession session, SchemaManager schemaManager) {
         if (session.getPlatform().isH2() || session.getPlatform().isHSQL()) {
-            for (Iterator<TableDefinition> iterator = getTableDefinitions().iterator(); iterator.hasNext(); ) {
-                TableDefinition table = iterator.next();
+            for (TableDefinition table : getTableDefinitions()) {
                 if (table.getName().equals("XML_CITYSLICKER") || table.getName().equals("XML_COUNTRY_DWELLER")) {
-                    for (Iterator<FieldDefinition> fields = table.getFields().iterator(); fields.hasNext(); ) {
-                        fields.next().setIsPrimaryKey(false);
+                    for (FieldDefinition fieldDefinition : table.getFields()) {
+                        fieldDefinition.setIsPrimaryKey(false);
                     }
                 }
             }

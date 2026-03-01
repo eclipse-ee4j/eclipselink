@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -54,8 +54,7 @@ public class XMLPersistenceUnitMetadata extends ORMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (objectToCompare instanceof XMLPersistenceUnitMetadata) {
-            XMLPersistenceUnitMetadata persistenceUnitMetadata = (XMLPersistenceUnitMetadata) objectToCompare;
+        if (objectToCompare instanceof XMLPersistenceUnitMetadata persistenceUnitMetadata) {
 
             if (m_xmlMappingMetadataComplete != persistenceUnitMetadata.getXMLMappingMetadataComplete()) {
                 return false;
@@ -84,7 +83,8 @@ public class XMLPersistenceUnitMetadata extends ORMetadata {
 
     @Override
     public int hashCode() {
-        int result = m_xmlMappingMetadataComplete != null ? m_xmlMappingMetadataComplete.hashCode() : 0;
+        int result = super.hashCode();
+        result = 31 * result + (m_xmlMappingMetadataComplete != null ? m_xmlMappingMetadataComplete.hashCode() : 0);
         result = 31 * result + (m_excludeDefaultMappings != null ? m_excludeDefaultMappings.hashCode() : 0);
         result = 31 * result + (m_persistenceUnitDefaults != null ? m_persistenceUnitDefaults.hashCode() : 0);
         return result;
@@ -109,7 +109,7 @@ public class XMLPersistenceUnitMetadata extends ORMetadata {
      * INTERNAL:
      */
     public List<EntityListenerMetadata> getDefaultListeners() {
-        return (m_persistenceUnitDefaults == null) ? new ArrayList<EntityListenerMetadata>(): m_persistenceUnitDefaults.getEntityListeners();
+        return (m_persistenceUnitDefaults == null) ? new ArrayList<>(): m_persistenceUnitDefaults.getEntityListeners();
     }
 
     /**
@@ -147,7 +147,7 @@ public class XMLPersistenceUnitMetadata extends ORMetadata {
      * INTERNAL:
      */
     public boolean isDelimitedIdentifiers() {
-        return (m_persistenceUnitDefaults == null) ? false : m_persistenceUnitDefaults.isDelimitedIdentifiers();
+        return m_persistenceUnitDefaults != null && m_persistenceUnitDefaults.isDelimitedIdentifiers();
     }
 
     /**

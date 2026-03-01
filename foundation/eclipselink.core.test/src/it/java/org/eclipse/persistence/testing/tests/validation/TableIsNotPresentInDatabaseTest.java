@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,12 +16,14 @@ package org.eclipse.persistence.testing.tests.validation;
 
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.exceptions.DescriptorException;
-import org.eclipse.persistence.exceptions.IntegrityChecker;
 import org.eclipse.persistence.exceptions.EclipseLinkException;
+import org.eclipse.persistence.exceptions.IntegrityChecker;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.DirectToFieldMapping;
 import org.eclipse.persistence.mappings.OneToOneMapping;
+
+import java.util.List;
 
 
 //Created by Ian Reid
@@ -30,7 +32,7 @@ import org.eclipse.persistence.mappings.OneToOneMapping;
 public class TableIsNotPresentInDatabaseTest extends ExceptionTest {
     public TableIsNotPresentInDatabaseTest() {
         super();
-        setDescription("This tests Table Is Not Present In Database (TL-ERROR 142) " + "");
+        setDescription("This tests Table Is Not Present In Database (TL-ERROR 142) ");
     }
 
     @Override
@@ -56,11 +58,12 @@ public class TableIsNotPresentInDatabaseTest extends ExceptionTest {
             getSession().getIntegrityChecker().checkDatabase();
 
             RelationalDescriptor descriptor = descriptor();
-            DatabaseTable table = descriptor.getTables().lastElement(); //retrieving address table
+            List<DatabaseTable> tables = descriptor.getTables();
+            DatabaseTable table = tables.get(tables.size() - 1); //retrieving address table
 
             //the following causes the correct error to occure.
             table.setName("Bad_Table"); //change name of table to cause error
-            getSession().getIntegrityChecker().getTables().remove(table); //ensure table does not exist
+            getSession().getIntegrityChecker().getTables().remove(table.getName()); //ensure table does not exist
             //   descriptor.getTables().remove(table);//if you remove it from this vector, it will not check it.
             descriptor.initialize((AbstractSession)getSession());//primary keys need to be initialized for postInit to work
             descriptor.postInitialize((AbstractSession)getSession());

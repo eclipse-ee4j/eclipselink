@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,7 +21,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
-import junit.framework.TestCase;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDOProperty;
@@ -130,7 +129,6 @@ public class SDODataObjectGetDateByPositionalPathTest extends SDODataObjectGetBy
     public void testGetDateConversionFromDefinedStringProperty() {
         // dataObject's type add int property
         dataObject_c.getInstanceProperty(PROPERTY_NAME_C).setType(SDOConstants.SDO_STRING);
-        ;
         Calendar controlCalendar = Calendar.getInstance();
         controlCalendar.clear();
         controlCalendar.set(Calendar.YEAR, 2001);

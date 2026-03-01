@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,12 +14,7 @@
 //     dminsky - initial implementation
 package org.eclipse.persistence.testing.sdo.helper.xsdhelper.define;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
 import java.net.URL;
-import java.util.HashMap;
 import java.util.List;
 
 import javax.xml.transform.Source;
@@ -29,7 +24,6 @@ import junit.textui.TestRunner;
 
 import org.eclipse.persistence.sdo.SDOProperty;
 import org.eclipse.persistence.sdo.SDOType;
-import org.eclipse.persistence.sdo.helper.SDOHelperContext;
 import org.eclipse.persistence.sdo.helper.SDOXSDHelper;
 import org.eclipse.persistence.sdo.helper.SchemaResolver;
 import org.eclipse.persistence.testing.sdo.helper.xsdhelper.XSDHelperTestCases;

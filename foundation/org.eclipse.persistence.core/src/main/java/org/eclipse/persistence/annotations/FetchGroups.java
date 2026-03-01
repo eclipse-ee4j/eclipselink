@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,10 +22,10 @@ import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * A FetchGroups annotation allows the definition of multiple FetchGroup. It
- * may be specified on an Entity or MappedSuperclass.
+ * A FetchGroups annotation allows the definition of multiple {@linkplain FetchGroup}s.
+ * It may be specified on an Entity or MappedSuperclass.
  *
- * @see org.eclipse.persistence.annotations.FetchGroup
+ * @see FetchGroup
  *
  * @author Guy Pelletier
  * @since EclipseLink 2.1
@@ -34,7 +34,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 public @interface FetchGroups {
     /**
-     * (Required) An array of fetch group.
+     * An array of FetchGroup annotations.
      */
     FetchGroup[] value();
 }

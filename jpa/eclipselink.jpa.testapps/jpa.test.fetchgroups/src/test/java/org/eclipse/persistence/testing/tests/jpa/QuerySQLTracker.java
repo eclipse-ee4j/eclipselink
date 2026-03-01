@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,7 +23,6 @@ package org.eclipse.persistence.testing.tests.jpa;
 
 //javase imports
 
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.DefaultSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
@@ -65,8 +64,7 @@ public class QuerySQLTracker extends SessionEventAdapter {
     }
 
     public static void uninstall(Session session) {
-        if (session.getSessionLog() instanceof SQLTrackingSessionLog) {
-            SQLTrackingSessionLog trackingLog = (SQLTrackingSessionLog) session.getSessionLog();
+        if (session.getSessionLog() instanceof SQLTrackingSessionLog trackingLog) {
             QuerySQLTracker tracker = trackingLog.getTracker();
             session.getEventManager().removeListener(tracker);
             session.setSessionLog(trackingLog.originalLog);
@@ -102,7 +100,7 @@ public class QuerySQLTracker extends SessionEventAdapter {
     }
 
     protected QueryResult getCurrentResult() {
-        if (getQueries().size() == 0) {
+        if (getQueries().isEmpty()) {
             getQueries().add(new QueryResult(null));
             // throw new RuntimeException("Received SQL without a Query ???");
         }
@@ -199,7 +197,7 @@ public class QuerySQLTracker extends SessionEventAdapter {
         @SuppressWarnings("unchecked")
         protected void setResult(Object queryResult, Session session) {
             StringWriter writer = new StringWriter();
-            writer.write(Helper.getShortClassName(query));
+            writer.write(query.getClass().getSimpleName());
             writer.write("[" + System.identityHashCode(query) + "]");
             writer.write(" result = ");
 
@@ -211,8 +209,7 @@ public class QuerySQLTracker extends SessionEventAdapter {
             if (result == null) {
                 writer.write("NONE");
             } else {
-                if (result instanceof Object[]) {
-                    Object[] results = (Object[]) result;
+                if (result instanceof Object[] results) {
                     writer.write("<" + results.length + "> [");
                     for (int index = 0; index < results.length; index++) {
                         if (index > 0) {
@@ -223,8 +220,7 @@ public class QuerySQLTracker extends SessionEventAdapter {
                         // if session is provided then may extract pk from
                         // object
                         if (session != null) {
-                            if (object instanceof FetchGroupTracker) {
-                                FetchGroupTracker tracker = (FetchGroupTracker) object;
+                            if (object instanceof FetchGroupTracker tracker) {
                                 // object.toString may trigger loading of the
                                 // whole object. To avoid that write the pk
                                 // only.
@@ -234,7 +230,7 @@ public class QuerySQLTracker extends SessionEventAdapter {
                             }
                         }
                         if (writePkOnly) {
-                            writer.write(Helper.getShortClassName(object) + "("
+                            writer.write(object.getClass().getSimpleName() + "("
                                     + session.getDescriptor(object.getClass()).getObjectBuilder().extractPrimaryKeyFromObject(object, (AbstractSession) session) + ")");
                         } else {
                             writer.write(object + "");
@@ -276,7 +272,7 @@ public class QuerySQLTracker extends SessionEventAdapter {
         protected SQLTrackingSessionLog(Session session, QuerySQLTracker aTracker) {
             this.tracker = aTracker;
             this.originalLog = session.getSessionLog();
-            setSession(session);
+            setSessionName(session.getName());
             setWriter(this.originalLog.getWriter());
         }
 

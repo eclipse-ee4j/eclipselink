@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,12 +17,6 @@
 //     05/26/2016-2.7 Tomas Kraus
 //       - 494610: Session Properties map should be Map<String, Object>
 package org.eclipse.persistence.sessions;
-
-import java.io.Writer;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
-import java.util.concurrent.TimeUnit;
 
 import org.eclipse.persistence.config.ReferenceMode;
 import org.eclipse.persistence.core.sessions.CoreSession;
@@ -48,6 +42,12 @@ import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.queries.SQLCall;
 import org.eclipse.persistence.sessions.serializers.Serializer;
+
+import java.io.Writer;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>
@@ -508,6 +508,14 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
 
     /**
      * PUBLIC:
+     * Return the ID of the session.
+     *
+     * @return The ID of the session.
+     */
+    String getSessionId();
+
+    /**
+     * PUBLIC:
      * Return the database platform currently connected to.
      * The platform is used for database specific behavior.
      * NOTE: this must only be used for relational specific usage,
@@ -737,7 +745,7 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      * PUBLIC:
      * Read all the instances of the class from the database returned through execution the Call string.
      * The Call can be an SQLCall or JPQLCall.
-     *
+     * <p>
      * example: session.readAllObjects(Employee.class, new SQLCall("SELECT * FROM EMPLOYEE"));
      * @see SQLCall
      * @see JPQLCall
@@ -773,7 +781,7 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      * PUBLIC:
      * Read the first instance of the class from the database returned through execution the Call string.
      * The Call can be an SQLCall or JPQLCall.
-     *
+     * <p>
      * example: session.readObject(Employee.class, new SQLCall("SELECT * FROM EMPLOYEE"));
      * @see SQLCall
      * @see JPQLCall
@@ -844,12 +852,12 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
     /**
      * OBSOLETE:
      * Previously used for JTS integration.
-     *
+     * <p>
      * If your application requires to have JTS control transactions a
      * ServerPlatform must be specified before login, either via your sessions.xml or in code.
-     *
+     * <p>
      * A subclass of ServerPlatformBase should handle your requirements.
-     *
+     * <p>
      * If not, we suggest creating your own subclass of ServerPlatformBase to specify the
      * external transaction controller class.
      *

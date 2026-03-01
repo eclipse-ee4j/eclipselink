@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -48,10 +48,10 @@ public class DMLMethod extends SqlStmtMethod {
 
     public static boolean canDMLBatch(String[] dmlBatchOff, TypeClass[] params) {
         if (dmlBatchOff != null) {
-            for (int i = 0; i < params.length; i++) {
-                for (int j = 0; j < dmlBatchOff.length; j++) {
-                    String offName = dmlBatchOff[j].toUpperCase();
-                    String paramName = params[i].getName().toUpperCase();
+            for (TypeClass param : params) {
+                for (String s : dmlBatchOff) {
+                    String offName = s.toUpperCase();
+                    String paramName = param.getName().toUpperCase();
                     if (offName.equals(paramName) || paramName.endsWith(offName)) {
                         return false;
                     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,10 +14,16 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.jpql;
 
-import java.util.*;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.sessions.Session;
-import org.eclipse.persistence.testing.models.employee.domain.*;
+import org.eclipse.persistence.testing.models.employee.domain.Address;
+import org.eclipse.persistence.testing.models.employee.domain.Employee;
+import org.eclipse.persistence.testing.models.employee.domain.LargeProject;
+import org.eclipse.persistence.testing.models.employee.domain.PhoneNumber;
+import org.eclipse.persistence.testing.models.employee.domain.Project;
+
+import java.util.Enumeration;
+import java.util.Vector;
 
 public class DomainObjectComparer {
     Session theSession;
@@ -53,11 +59,8 @@ public class DomainObjectComparer {
     }
 
     public boolean compareObjects(Vector objects1, Vector objects2) {
-        boolean allMatched = true;
+        boolean allMatched = objects1.size() == objects2.size();
 
-        if (objects1.size() != objects2.size()) {
-            allMatched = false;
-        }
         /*else if (objects1.isEmpty() || objects2.isEmpty()) {
           allMatched = false;
         }*/
@@ -87,7 +90,7 @@ public class DomainObjectComparer {
                 allMatched = allMatched && compareObjects(phone1, phone2);
             }
             if (obj1.getClass().equals(String.class)) {
-                allMatched = allMatched && (objects2.indexOf(obj1) != -1);
+                allMatched = allMatched && (objects2.contains(obj1));
             }
         }
         return allMatched;

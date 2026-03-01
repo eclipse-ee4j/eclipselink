@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -44,7 +44,7 @@ public class TestEntityTreeModel implements TreeModel {
     @Override
     public Object getChild(Object parent, int index) {
         if (parent instanceof TestCollection) {
-            return ((TestCollection)parent).getTests().elementAt(index);
+            return ((TestCollection)parent).getTests().get(index);
         } else if (parent instanceof junit.framework.TestSuite) {
             return ((junit.framework.TestSuite)parent).testAt(index);
         } else {

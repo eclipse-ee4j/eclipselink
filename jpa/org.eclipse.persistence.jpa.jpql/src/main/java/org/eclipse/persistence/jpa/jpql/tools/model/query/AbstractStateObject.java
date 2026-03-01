@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,6 +21,8 @@ import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.SPACE;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -112,11 +114,7 @@ public abstract class AbstractStateObject implements StateObject {
             }
             return true;
         }
-        catch (NoSuchMethodException e) {
-            // Ignore, just do nothing
-            return false;
-        }
-        catch (IllegalAccessException e) {
+        catch (NoSuchMethodException | IllegalAccessException e) {
             // Ignore, just do nothing
             return false;
         }
@@ -150,6 +148,7 @@ public abstract class AbstractStateObject implements StateObject {
      * @see #acceptUnknownVisitor(StateObjectVisitor)
      * @since 2.4
      */
+    @SuppressWarnings("removal")
     protected void acceptUnknownVisitor(StateObjectVisitor visitor,
                                         Class<?> type,
                                         Class<?> parameterType) throws NoSuchMethodException,
@@ -158,7 +157,9 @@ public abstract class AbstractStateObject implements StateObject {
 
         try {
             Method visitMethod = type.getDeclaredMethod("visit", parameterType);
-            visitMethod.setAccessible(true);
+            if (!visitMethod.canAccess(visitor)) {
+                AccessController.doPrivileged((PrivilegedAction<Void>) () -> {visitMethod.setAccessible(true); return null;});
+            }
             visitMethod.invoke(visitor, this);
         }
         catch (NoSuchMethodException e) {

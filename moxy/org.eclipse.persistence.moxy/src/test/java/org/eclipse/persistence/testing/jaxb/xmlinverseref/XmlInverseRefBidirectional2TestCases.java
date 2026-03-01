@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,8 +17,6 @@ package org.eclipse.persistence.testing.jaxb.xmlinverseref;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-
-import jakarta.xml.bind.JAXBContext;
 
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 

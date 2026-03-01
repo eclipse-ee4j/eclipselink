@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,11 +19,9 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Calendar;
 
-import junit.framework.TestCase;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOProperty;
 import org.eclipse.persistence.sdo.SDOConstants;
-import org.eclipse.persistence.sdo.SDOType;
 
 public class SDODataObjectGetIntegerConversionTest extends SDODataObjectConversionTestCases {
     public SDODataObjectGetIntegerConversionTest(String name) {
@@ -255,7 +253,7 @@ public class SDODataObjectGetIntegerConversionTest extends SDODataObjectConversi
     public void testGetDecimalFromBytes() {
         SDOProperty property = dataObject.getInstanceProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_BYTES);
-        dataObject.set(property, new String("abcd").getBytes());
+        dataObject.set(property, "abcd".getBytes());
         try {
             dataObject.getBigDecimal(property);
             fail("ClassCastException should be thrown.");

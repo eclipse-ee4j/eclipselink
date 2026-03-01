@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,16 +14,20 @@
 //     James Sutherland (Oracle) - initial API and implementation
 package org.eclipse.persistence.tools.profiler;
 
-import java.text.NumberFormat;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.io.*;
-
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.sessions.DataRecord;
-import org.eclipse.persistence.sessions.SessionProfiler;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.sessions.DataRecord;
+import org.eclipse.persistence.sessions.SessionProfiler;
+
+import java.io.IOException;
+import java.io.Serializable;
+import java.io.StringWriter;
+import java.text.NumberFormat;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * <p><b>Purpose</b>: A tool used to provide performance monitoring information in a server environment.
@@ -157,18 +161,13 @@ public class PerformanceMonitor implements Serializable, Cloneable, SessionProfi
         }
         endOperationProfile(operationName);
         if (query != null) {
-            endOperationProfile(TIMER + query.getMonitorName() + ":" + operationName.substring(TIMER.length(), operationName.length()));
+            endOperationProfile(TIMER + query.getMonitorName() + ":" + operationName.substring(TIMER.length()));
         }
     }
 
     protected Map<String, Long> getOperationStartTimes() {
         Integer threadId = Thread.currentThread().hashCode();
-        Map<String, Long> times = this.operationStartTimesByThread.get(threadId);
-        if (times == null) {
-            times = new Hashtable<>();
-            this.operationStartTimesByThread.put(threadId, times);
-        }
-        return times;
+        return this.operationStartTimesByThread.computeIfAbsent(threadId, k -> new ConcurrentHashMap<>());
     }
 
     protected Map<Integer, Map<String, Long>> getOperationStartTimesByThread() {
@@ -234,7 +233,7 @@ public class PerformanceMonitor implements Serializable, Cloneable, SessionProfi
         }
         startOperationProfile(operationName);
         if (query != null) {
-            startOperationProfile(TIMER + query.getMonitorName() + ":" + operationName.substring(TIMER.length(), operationName.length()));
+            startOperationProfile(TIMER + query.getMonitorName() + ":" + operationName.substring(TIMER.length()));
         }
     }
 
@@ -264,7 +263,7 @@ public class PerformanceMonitor implements Serializable, Cloneable, SessionProfi
             return;
         }
         occurred(operationName, session);
-        occurred(COUNTER + query.getMonitorName() + ":" + operationName.substring(COUNTER.length(), operationName.length()), session);
+        occurred(COUNTER + query.getMonitorName() + ":" + operationName.substring(COUNTER.length()), session);
     }
 
     /**

@@ -1,0 +1,32 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[ORACLEDB001]]
+=== Introduction to the Solution
+
+EclipseLink includes enhanced support for the Oracle Database platform.
+Applications that have standardized on the Oracle Database can take
+advantage of this support to gain ease-of-use, increase performance and
+scalability, and enhance security. EclipseLink includes support for
+native Oracle JDBC-specific APIs, PL/SQL, Oracle Real Application
+Clusters (RAC), Oracle Virtual Private Database, Oracle Proxy
+Authentication, and Oracle Spatial and Graph. Refer to the Oracle
+Database documentation for details on these technologies.
+
+Much of the Oracle Database platform support is contained in the
+`org.eclipse.persistence.platform.database.oracle*` package. For details
+on the APIs, see _Java API Reference for EclipseLink_.

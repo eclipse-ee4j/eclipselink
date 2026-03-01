@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -186,7 +186,7 @@ public abstract class AbstractScalarExpressionStateObjectBuilder<T extends IScal
         checkBuilders(builder1, builder2);
         checkBuilders(builders);
 
-        List<StateObject> stateObjects = new ArrayList<StateObject>();
+        List<StateObject> stateObjects = new ArrayList<>();
         stateObjects.addAll(stateObjects(builders));
         stateObjects.add(0, pop());
         stateObjects.add(0, pop());
@@ -207,7 +207,7 @@ public abstract class AbstractScalarExpressionStateObjectBuilder<T extends IScal
         checkBuilders(builder1, builder2);
         checkBuilders(builders);
 
-        List<StateObject> stateObjects = new ArrayList<StateObject>();
+        List<StateObject> stateObjects = new ArrayList<>();
         stateObjects.addAll(stateObjects(builders));
         stateObjects.add(0, pop());
         stateObjects.add(0, pop());
@@ -368,7 +368,7 @@ public abstract class AbstractScalarExpressionStateObjectBuilder<T extends IScal
 
     protected StateObject literal(String literal) {
 
-        if ((literal != null) && (literal.length() > 0)) {
+        if ((literal != null) && (!literal.isEmpty())) {
 
             char character = literal.charAt(0);
 
@@ -396,7 +396,7 @@ public abstract class AbstractScalarExpressionStateObjectBuilder<T extends IScal
     }
 
     protected List<StateObject> literals(String... literals) {
-        List<StateObject> stateObjects = new ArrayList<StateObject>();
+        List<StateObject> stateObjects = new ArrayList<>();
         for (String literal : literals) {
             stateObjects.add(literal(literal));
         }
@@ -591,7 +591,7 @@ public abstract class AbstractScalarExpressionStateObjectBuilder<T extends IScal
             return Collections.emptyList();
         }
 
-        List<StateObject> items = new ArrayList<StateObject>(count);
+        List<StateObject> items = new ArrayList<>(count);
 
         while (count-- > 0) {
             items.add(0, pop());

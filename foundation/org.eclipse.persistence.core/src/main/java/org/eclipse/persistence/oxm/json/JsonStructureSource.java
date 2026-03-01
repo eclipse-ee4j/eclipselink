@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,7 +15,6 @@
 package org.eclipse.persistence.oxm.json;
 
 import jakarta.json.JsonStructure;
-
 import org.eclipse.persistence.internal.oxm.Unmarshaller;
 import org.eclipse.persistence.internal.oxm.record.ExtendedSource;
 import org.eclipse.persistence.internal.oxm.record.XMLReader;
@@ -24,7 +23,7 @@ import org.eclipse.persistence.internal.oxm.record.json.JsonStructureReader;
 /**
  *   Object to be used with Unmarshaller to unmarshal jakarta.json.JsonStructure objects
  *   (ie: jakarta.json.JsonObject or jakarta.json.JsonArray)
- *
+ * <p>
  *   Usage:
  *      JsonStructureSource source = new JsonStructureSource(jsonObject);
  *      Object unmarshalled = jaxbUnmarshaller.unmarshal(source);

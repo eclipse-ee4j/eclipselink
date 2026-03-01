@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,18 +15,21 @@ package org.eclipse.persistence.testing.tests.nonJDBC;
 // javase imports
 import java.io.FileInputStream;
 import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
-import java.util.Vector;
+
 import org.w3c.dom.Document;
 
 // JUnit imports
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 // EclipseLink imports
-import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.sessions.factories.ObjectPersistenceWorkbenchXMLProject;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLMarshaller;
@@ -37,7 +40,6 @@ import org.eclipse.persistence.queries.DataReadQuery;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.Project;
-import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.factories.XMLProjectReader;
 
 // Domain imports
@@ -175,7 +177,7 @@ public class jiNioTestSet {
         s.dontLogMessages();
         s.login();
         Object o = null;
-        Vector queryArgs = new NonSynchronizedVector();
+        List<Object> queryArgs = new ArrayList<>();
         queryArgs.add("test");
         queryArgs.add(1);
         boolean worked = false;
@@ -188,10 +190,10 @@ public class jiNioTestSet {
           msg = e.getMessage();
         }
         assertTrue("invocation jiNio failed: " + msg, worked);
-        Vector results = (Vector)o;
+        List<?> results = (List<?>) o;
         DatabaseRecord record = (DatabaseRecord)results.get(0);
         Integer bool2int = (Integer)record.get("Y");
-        assertTrue("wrong bool2int value", bool2int == 0);
+        assertEquals("wrong bool2int value", 0, (int) bool2int);
         s.logout();
     }
 }

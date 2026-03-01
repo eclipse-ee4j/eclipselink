@@ -1,0 +1,640 @@
+image:Elug_draft_icon.png[Image:Elug draft
+icon.png,title="Image:Elug draft icon.png"] *For the latest EclipseLink
+documentation, please see
+http://www.eclipse.org/eclipselink/documentation/*
+
+'''''
+
+*TOC* Special:Whatlinkshere_Creating_an_XML_Project_(ELUG)[Related
+Topics]
+
+This section describes the various components that you must configure in
+order to create an XML project.
+
+For information on how to create more than one type of EclipseLink
+projects, see link:Creating%20a%20Project%20(ELUG)[Creating a Project].
+
+== Introduction to XML Project Creation
+
+You can create a project using the Workbench or Java code.
+
+We recommend using the Workbench to create projects and generate
+deployment XML or Java source versions of the project for use at run
+time. For more information on how to create a project using Workbench,
+see
+link:Creating%20a%20Project%20(ELUG)#How_to_Create_a_Project_Using_the_Workbench[How
+to Create a Project Using the Workbench]. For information on how to
+create a project using Java, see
+link:Creating%20a%20Project%20(ELUG)#How_to_Create_a_Project_Using_Java[How
+to Create a Project Using Java].
+
+You can use EclipseLink to create an XML project, if you have an XML
+schema (XSD) document, but no object model yet (see
+link:#Creating_an_XML_Project_from_an_XML_Schema[Creating an XML Project
+from an XML Schema]). If you have both XSD and object model classes, you
+can create an XML project using the procedure described in
+link:Creating%20a%20Project%20(ELUG)#How_to_Create_a_Project_Using_the_Workbench[How
+to Create a Project Using the Workbench]
+
+For more information, see
+link:Introduction%20to%20XML%20Projects%20(ELUG)[Introduction to XML
+Projects].
+
+== Creating an XML Project from an XML Schema
+
+EclipseLink 1.x supports JAXB 2.0 and uses the JAXB 2.0 schema compiler.
+You can use this JAXB compiler to generate POJO (Plain Old Java Objects)
+annotated with JAXB 2.0 mapping metadata. You can define and edit this
+JAXB metadata by embedding these annotations in your source code – not
+the Eclipse Workbench.
+
+To use the Eclipse Workbench to define XPath based mappings:
+
+[arabic]
+. link:Creating%20a%20Project%20(ELUG)#How_to_Create_a_Project_Using_the_Workbench[Create
+an XML project].
+. link:Using_Workbench_(ELUG)#How_to_Import_an_XML_Schema[Import your
+schema] and
+link:Using_Workbench_(ELUG)#How_to_Import_and_Update_Classes[classes]
+into the project.
+. link:Configuring_an_XML_Mapping_%28ELUG%29[Define the mappings]
+between your classes and schema.
+
+The EclipseLink JAXB compiler generates
+link:Introduction%20to%20XML%20Projects%20(ELUG)#Working_with_JAXB-Specific_Generated_Files[JAXB-specific
+files] and
+link:Introduction%20to%20XML%20Projects%20(ELUG)#Working_with_EclipseLink-Specific_Generated_Files[EclipseLink-specific
+files].
+
+Optionally, open the generated
+link:Introduction%20to%20XML%20Projects%20(ELUG)#Workbench_Project[workbench
+project]), customize the generated mappings and descriptors, and
+reexport the EclipseLink project XML.
+
+[width="100%",cols="<100%",]
+|===
+|*Note:* Before you compile your generated classes, be sure to configure
+your IDE classpath to include
+`+<+`_`+ECLIPSELINK_HOME+`_`+>\jlib\moxy\javax.xml.bind_2.0.0.jar+`. For
+example, see
+link:Using%20an%20Integrated%20Development%20Environment%20(ELUG)[Using
+an Integrated Development Environment].
+|===
+
+=== How to Create an XML Project from an XML Schema Using the Command Line
+
+To create a new, mapped Workbench project from an XML schema using JAXB
+from the command line, use the `+jaxb-compiler.cmd+` or
+`+jaxb-compiler.sh+` file (located in the __`+/bin+` directory) as
+follows:
+
+[arabic]
+. Using a text editor, edit the `+jaxb-compiler.cmd+` or
+`+jaxb-compiler.sh+` file to set proxy settings (if required). If you
+are using a schema that imports another schema by URL and you are
+operating behind a proxy, then you must uncomment the lines shown in the
+link:#Example_53-1[Proxy Settings in jaxb-compiler.cmd] or
+link:#Example_53-2[Proxy Settings in jaxb-compiler.sh] examples and edit
+them to set your proxy host (name or IP address) and port:
++
+[#Example 53-1]## *_Proxy Settings in jaxb-compiler.cmd_*
++
+@REM set JVM_ARGS=%JVM_ARGS% -DproxySet=true -Dhttp.proxyHost=
+-Dhttp.proxyPort=
++
+[#Example 53-2]## *_Proxy Settings in jaxb-compiler.sh_*
++
+JVM_ARGS="`$\{JVM_ARGS} -DproxySet=true -Dhttp.proxyHost=
+-Dhttp.proxyPort=`"
+. Execute the `+jaxb-compiler.cmd+` or `+jaxb-compiler.sh+` file
+(located in the __`+/bin+` directory). The EclipseLink JAXB compiler
+generates JAXB-specific files (see
+link:Introduction%20to%20XML%20Projects%20(ELUG)[Working with
+JAXB-Specific Generated Files]) and EclipseLink-specific files (see
+link:Introduction%20to%20XML%20Projects%20(ELUG)[Working with
+EclipseLink-Specific Generated Files]). The
+link:#Example_53-3[Generating an Object Model from a Schema with
+jaxb-compiler.cmd] example illustrates how to generate an object model
+from a schema using the EclipseLink JAXB compiler. The
+link:#Table_53-1[EclipseLink JAXB Binding Compiler Arguments] table
+lists the compiler arguments.
++
+[#Example 53-3]## *_Generating an Object Model from a Schema with
+jaxb-compiler.cmd_*
++
+jaxb-compiler.cmd [-options…] schemafile [-b bindingfile]
++
+[#Table 53-1]## *_EclipseLink JAXB Binding Compiler Arguments_*
++
++
++
++
++
++
+Argument
++
++
++
++
++
+Description
++
++
++
++
++
+Optional?
++
++
++
++
++
++
++
++
++
+-help
++
++
++
++
++
+Prints the help and usage information.
++
++
++
++
++
+Yes
++
++
++
++
++
++
++
+-version
++
++
++
++
++
+Prints the release version of the EclipseLink JAXB compiler.
++
++
++
++
++
+Yes
++
++
++
++
++
++
++
+-verbose
++
++
++
++
++
+The interfaces and classes generated. This argument is optional.
++
++
++
+Default: not verbose.
++
++
++
++
++
+Yes
++
++
++
++
++
++
++
+-customize
++
++
++
++
++
+The fully qualified path and file name of a standard JAXB customization
+file that you can use to override default JAXB compiler behavior.
++
++
++
++
++
+Yes
++
++
++
++
++
++
++
+-nv
++
++
++
++
++
+Do not preform strict validation of the input schemas.
++
++
++
++
++
+Yes
++
++
++
++
++
++
++
+-extension
++
++
++
++
++
+Allow vendor extensions. The compiler will not strictly follow the
+Compatibility Rules and Appendix E.2 or the JAXB specification.
++
++
++
++
++
+Yes
++
++
++
++
++
++
++
+-b
++
++
++
++
++
+Specify external bindings files (or directories). -b file1 -b file2 -b
+file3
++
++
++
+If you include a directory, the compiler will search **/*.xjb.
++
++
++
++
++
+Yes
++
++
++
++
++
++
++
+-d
++
++
++
++
++
+The directory for the generated files.
++
++
++
++
++
+Yes
++
++
++
++
++
++
++
+-p
++
++
++
++
++
+The target package.
++
++
++
++
++
+Yes
++
++
++
++
++
++
++
+-httpproxy
++
++
++
++
++
+Set an HTTP/HTTPS proxy.
++
++
++
+-httpproxy [user[:password]@]proxyHost:proxy:Port
++
++
++
++
++
+Yes
++
++
++
++
++
++
++
+-httpproxyfile
++
++
++
++
++
+Similar to -httpproxy, except that it takes a file (to protect the
+password).
++
++
++
+-httpproxyfile file
++
++
++
++
++
+Yes
++
++
++
++
++
++
++
+-classpath
++
++
++
++
++
+Specify the location of your class files
++
++
++
++
++
+Yes
++
++
++
++
++
++
++
+-catalog
++
++
++
++
++
+Specify the catalog files to resolve external entity references. The
+JAXB compiler supports TR9401, XCatalog, and OASIS XML catalog formats.
++
++
++
+-catalog filename
++
++
++
++
++
+Yes
++
++
++
++
++
++
++
+-customize
++
++
++
++
++
+The fully qualified path and file name of a standard JAXB customization
+file that you can use to override default JAXB compiler behavior.
++
++
++
++
++
+Yes
++
++
++
++
++
++
++
+-readonly
++
++
++
++
++
+The generated files will be in read-only mode.
++
++
++
++
++
+Yes
++
++
++
++
++
++
++
+-npa
++
++
++
++
++
+The package-level annotations '`will not`' be generated
+(**/package-info.java).
++
++
++
++
++
+Yes
++
++
++
++
++
++
++
+-no-header
++
++
++
++
++
+The file header with timestamp will not be generated.
++
++
++
++
++
+Yes
++
++
++
++
++
++
++
+-xmlschmea
++
++
++
++
++
+The input schema will be treated as W3C schema (default).
++
++
++
++
++
+Yes
++
++
++
++
++
++
++
+-relaxng
++
++
++
++
++
+The input schema will be treated as RELAX NG
++
++
++
++
++
+Yes
++
++
++
++
++
++
++
+-relaxng-compact
++
++
++
++
++
+The input schmea will be treated as RELAX NG (compact syntax).
++
++
++
++
++
+Yes
++
++
++
++
++
++
++
+-wsdl
++
++
++
++
++
+The input schmea will be treated as WSDL and compile shemas inside of
+it.
++
++
++
++
++
+Yes
++
++
++
++
++
++
++
+-dtd
++
++
++
++
++
+The input schmea will be trated as XML DTD.
++
++
++
++
++
+Yes
++
++
++
++
++
+. Optionally, open the generated
+link:Introduction%20to%20XML%20Projects%20(ELUG)#Workbench_Project[Workbench
+project] in Workbench, customize the generated mappings and descriptors,
+and reexport the EclipseLink project XML. | |
+|:—————————————————————————————————————————————————————————————————————————————————————————————————————-|
+| *Note:* Before you compile your generated classes, be sure to
+configure your IDE classpath to include
+`+<+`_`+ECLIPSELINK_HOME+`_`+>\jlib\moxy\javax.xml.bind_2.0.0.jar+`. For
+example, see
+link:Using%20an%20Integrated%20Development%20Environment%20(ELUG)[Using
+an Integrated Development Environment]. |
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Release_1.1[Category: Release 1.1] Category:_Task[Category:
+Task] Category:_XML[Category: XML]

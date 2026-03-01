@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,17 +14,25 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.transactions;
 
-import java.util.*;
-
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
-import org.eclipse.persistence.sessions.*;
-import org.eclipse.persistence.sessions.server.*;
-import org.eclipse.persistence.internal.databaseaccess.*;
-import org.eclipse.persistence.testing.framework.*;
-import org.eclipse.persistence.testing.models.mapping.*;
-import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.queries.*;
+import org.eclipse.persistence.queries.ReadObjectQuery;
+import org.eclipse.persistence.sessions.DatabaseLogin;
+import org.eclipse.persistence.sessions.Session;
+import org.eclipse.persistence.sessions.UnitOfWork;
+import org.eclipse.persistence.sessions.server.ClientSession;
+import org.eclipse.persistence.sessions.server.ConnectionPool;
+import org.eclipse.persistence.sessions.server.Server;
+import org.eclipse.persistence.sessions.server.ServerSession;
+import org.eclipse.persistence.testing.framework.TestErrorException;
+import org.eclipse.persistence.testing.framework.TestWarningException;
+import org.eclipse.persistence.testing.models.mapping.Employee;
 import org.eclipse.persistence.testing.tests.clientserver.ClientServerTest;
+
+import java.util.List;
+import java.util.Vector;
 
 /**
  * Tests using the client's write connection when in transaction to
@@ -161,7 +169,7 @@ public class ReadingThroughWriteConnectionInTransactionTest extends org.eclipse.
          */
         test = new ReadingThroughWriteConnectionInTransactionTest("2");
         test.setDescription("test for reading using write/transaction connection when in transaction (CR#4334).  Tests correct (write) accessor used when value holder triggered by in transaction session.");
-        test.setNotSupportedExplanation(new String("Unless the value holder is wrapped, as by a UOW, it will instaniate with the same connection as its parent in cache, the server read connection."));
+        test.setNotSupportedExplanation("Unless the value holder is wrapped, as by a UOW, it will instaniate with the same connection as its parent in cache, the server read connection.");
         test.instantiateValueHolders();
         tests.add(test);
 
@@ -192,7 +200,7 @@ public class ReadingThroughWriteConnectionInTransactionTest extends org.eclipse.
          */
         test = new ReadingThroughWriteConnectionInTransactionTest("4");
         test.setDescription("test for reading using write/transaction connection when in transaction (CR#4334).  Tests correct accessor used when value holder triggered by in transaction session, on object from global cache.");
-        test.setNotSupportedExplanation(new String("A client session is not allowed to own the value holders of objects it has read, as they are put in the cache and another could potentially trigger them with your connection."));
+        test.setNotSupportedExplanation("A client session is not allowed to own the value holders of objects it has read, as they are put in the cache and another could potentially trigger them with your connection.");
         test.readIntoCache();
         test.instantiateValueHolders();
         tests.add(test);
@@ -314,8 +322,8 @@ public class ReadingThroughWriteConnectionInTransactionTest extends org.eclipse.
             // as the result the write connection pool is not shutdown and the connections are leaked.
             // Let's close these connections here.
             try {
-                for (Iterator<ConnectionPool> poolsEnum = ((ServerSession)getServerSession()).getConnectionPools().values().iterator(); poolsEnum.hasNext();) {
-                    poolsEnum.next().shutDown();
+                for (ConnectionPool connectionPool : ((ServerSession) getServerSession()).getConnectionPools().values()) {
+                    connectionPool.shutDown();
                 }
             } catch (Exception ex) {
                 // ignore

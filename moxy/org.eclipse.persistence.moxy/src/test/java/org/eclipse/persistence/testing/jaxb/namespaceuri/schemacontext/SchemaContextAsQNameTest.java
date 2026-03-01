@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -13,9 +13,7 @@
 package org.eclipse.persistence.testing.jaxb.namespaceuri.schemacontext;
 
 import java.util.HashMap;
-import java.util.Map;
 
-import jakarta.xml.bind.JAXBException;
 import javax.xml.namespace.QName;
 
 import junit.framework.TestCase;
@@ -25,7 +23,6 @@ import org.eclipse.persistence.jaxb.JAXBContext;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLDescriptor;
-import org.eclipse.persistence.oxm.schema.XMLSchemaClassPathReference;
 import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
 
 public class SchemaContextAsQNameTest extends TestCase {

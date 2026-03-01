@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,6 +14,37 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.oxm;
 
+import jakarta.xml.bind.JAXBElement;
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.helper.ConversionManager;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.internal.sessions.factories.MissingDescriptorListener;
+import org.eclipse.persistence.internal.sessions.factories.ObjectPersistenceRuntimeXMLProject_11_1_1;
+import org.eclipse.persistence.oxm.XMLContext;
+import org.eclipse.persistence.oxm.XMLLogin;
+import org.eclipse.persistence.oxm.XMLMarshaller;
+import org.eclipse.persistence.oxm.platform.DOMPlatform;
+import org.eclipse.persistence.oxm.platform.SAXPlatform;
+import org.eclipse.persistence.sessions.Project;
+import org.eclipse.persistence.sessions.Session;
+import org.eclipse.persistence.sessions.factories.SessionManager;
+import org.eclipse.persistence.sessions.factories.XMLProjectReader;
+import org.eclipse.persistence.sessions.factories.XMLProjectWriter;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
+import javax.xml.stream.XMLEventReader;
+import javax.xml.stream.XMLEventWriter;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamWriter;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -29,38 +60,6 @@ import java.lang.reflect.Constructor;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.TimeZone;
-
-import jakarta.xml.bind.JAXBElement;
-import javax.xml.stream.XMLEventReader;
-import javax.xml.stream.XMLEventWriter;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamReader;
-import javax.xml.stream.XMLStreamWriter;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-
-import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.exceptions.ValidationException;
-import org.eclipse.persistence.internal.helper.ConversionManager;
-import org.eclipse.persistence.oxm.XMLContext;
-import org.eclipse.persistence.oxm.XMLLogin;
-import org.eclipse.persistence.oxm.XMLMarshaller;
-import org.eclipse.persistence.oxm.platform.DOMPlatform;
-import org.eclipse.persistence.oxm.platform.SAXPlatform;
-import org.eclipse.persistence.sessions.Project;
-import org.eclipse.persistence.sessions.Session;
-import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.sessions.factories.MissingDescriptorListener;
-import org.eclipse.persistence.internal.sessions.factories.ObjectPersistenceRuntimeXMLProject_11_1_1;
-import org.eclipse.persistence.sessions.factories.SessionManager;
-import org.eclipse.persistence.sessions.factories.XMLProjectReader;
-import org.eclipse.persistence.sessions.factories.XMLProjectWriter;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 public abstract class OXTestCase extends XMLTestCase {
     protected static XMLInputFactory XML_INPUT_FACTORY;
@@ -116,9 +115,11 @@ public abstract class OXTestCase extends XMLTestCase {
     }
 
     public boolean useLogging = false;
-    public static enum Platform { DOM, SAX, DOC_PRES };
-    public static enum Metadata { JAVA, XML_TOPLINK, XML_ECLIPSELINK };
-    public static Platform platform;;
+    public enum Platform { DOM, SAX, DOC_PRES }
+
+    public enum Metadata { JAVA, XML_TOPLINK, XML_ECLIPSELINK }
+
+    public static Platform platform;
     public static Metadata metadata;
     // Constants
     public static final String PLATFORM_KEY = "platformType";
@@ -146,11 +147,9 @@ public abstract class OXTestCase extends XMLTestCase {
     public XMLContext getXMLContext(Project project) {
         if (platform == Platform.DOC_PRES) {
             Collection<ClassDescriptor> descriptors = project.getDescriptors().values();
-            Iterator<ClassDescriptor> iter = descriptors.iterator();
-            while (iter.hasNext()) {
-                ClassDescriptor nextDesc = iter.next();
+            for (ClassDescriptor nextDesc : descriptors) {
                 if (nextDesc instanceof org.eclipse.persistence.oxm.XMLDescriptor) {
-                    ((org.eclipse.persistence.oxm.XMLDescriptor)nextDesc).setShouldPreserveDocument(true);
+                    ((org.eclipse.persistence.oxm.XMLDescriptor) nextDesc).setShouldPreserveDocument(true);
                 }
             }
         }
@@ -187,7 +186,7 @@ public abstract class OXTestCase extends XMLTestCase {
                     if (useLogging) {
                         StringWriter stringWriter = new StringWriter();
                         write(originalProject, stringWriter);
-                        log("DEPLOYMENT XML " + stringWriter.toString());
+                        log("DEPLOYMENT XML " + stringWriter);
                     }
                     // Read the deploymentXML-file.xml back in with XMLProjectReader
                     FileInputStream inStream = new FileInputStream(fileName);
@@ -202,7 +201,7 @@ public abstract class OXTestCase extends XMLTestCase {
                     StringWriter stringWriter = new StringWriter();
                     write(originalProject, stringWriter);
                     StringReader reader = new StringReader(stringWriter.toString());
-                    log("DEPLOYMENT XML" + stringWriter.toString());
+                    log("DEPLOYMENT XML" + stringWriter);
                     newProject = XMLProjectReader.read(reader, classLoader);
                 }
         }
@@ -245,8 +244,8 @@ public abstract class OXTestCase extends XMLTestCase {
 
     protected void log(byte[] bytes) {
         if (useLogging) {
-            for (int i = 0; i < bytes.length; i++) {
-                System.out.print(bytes[i]);
+            for (byte aByte : bytes) {
+                System.out.print(aByte);
             }
         }
     }
@@ -288,7 +287,7 @@ public abstract class OXTestCase extends XMLTestCase {
         for (int x = nodeList.getLength() - 1; x >= 0; x--) {
             childNode = nodeList.item(x);
             if (childNode.getNodeType() == Node.TEXT_NODE) {
-                if (childNode.getNodeValue().trim().equals("")) {
+                if (childNode.getNodeValue().trim().isEmpty()) {
                     node.removeChild(childNode);
                 }
             } else if (childNode.getNodeType() == Node.ELEMENT_NODE) {
@@ -404,8 +403,7 @@ public abstract class OXTestCase extends XMLTestCase {
         if(controlValue.getClass().isArray()){
             compareArrays(controlValue, testValue);
         }
-        else if (controlValue instanceof Collection){
-            Collection controlCollection = (Collection)controlValue;
+        else if (controlValue instanceof Collection controlCollection){
             Collection testCollection = (Collection)testValue;
             Iterator<Object> controlIter = controlCollection.iterator();
             Iterator<Object> testIter = testCollection.iterator();
@@ -437,7 +435,7 @@ public abstract class OXTestCase extends XMLTestCase {
 
     protected String loadInputStreamToString(InputStream inputStream){
         StringBuilder sb = new StringBuilder();
-        String lineSep = System.getProperty("line.separator");
+        String lineSep = System.lineSeparator();
 
         try {
             InputStreamReader inputStreamReader = new InputStreamReader(inputStream);

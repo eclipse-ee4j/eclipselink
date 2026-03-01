@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,13 +22,7 @@
 package org.eclipse.persistence.testing.tests.dynamic;
 
 //javase imports
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
-//EclipseLink imports
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.logging.DefaultSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.logging.SessionLogEntry;
@@ -36,6 +30,11 @@ import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.SessionEvent;
 import org.eclipse.persistence.sessions.SessionEventAdapter;
+
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  *
@@ -86,7 +85,7 @@ public class QuerySQLTracker extends SessionEventAdapter {
      * Reset the lists of SQL and queries being tracked
      */
     public void reset() {
-        this.queries = new ArrayList<QueryResult>();
+        this.queries = new ArrayList<>();
     }
 
     public List<QueryResult> getQueries() {
@@ -94,7 +93,7 @@ public class QuerySQLTracker extends SessionEventAdapter {
     }
 
     protected QuerySQLTracker.QueryResult getCurrentResult() {
-        if (getQueries().size() == 0) {
+        if (getQueries().isEmpty()) {
             getQueries().add(new QueryResult(null));
             // throw new RuntimeException("Received SQL without a Query ???");
         }
@@ -161,7 +160,7 @@ public class QuerySQLTracker extends SessionEventAdapter {
     protected class QueryResult {
         private DatabaseQuery query;
         private String resultString = null;
-        private List<String> sqlStatements = new ArrayList<String>();
+        private List<String> sqlStatements = new ArrayList<>();
 
         QueryResult(DatabaseQuery q) {
             query = q;
@@ -174,7 +173,7 @@ public class QuerySQLTracker extends SessionEventAdapter {
         @SuppressWarnings("unchecked")
         protected void setResult(Object queryResult) {
             StringWriter writer = new StringWriter();
-            writer.write(Helper.getShortClassName(query));
+            writer.write(query.getClass().getSimpleName());
             writer.write("[" + System.identityHashCode(query) + "]");
             writer.write(" result = ");
 
@@ -186,8 +185,7 @@ public class QuerySQLTracker extends SessionEventAdapter {
             if (result == null) {
                 writer.write("NONE");
             } else {
-                if (result instanceof Object[]) {
-                    Object[] results = (Object[]) result;
+                if (result instanceof Object[] results) {
                     writer.write("<" + results.length + "> [");
                     for (int index = 0; index < results.length; index++) {
                         if (index > 0) {
@@ -232,7 +230,7 @@ public class QuerySQLTracker extends SessionEventAdapter {
                 QuerySQLTracker aTracker) {
             this.tracker = aTracker;
             this.originalLog = session.getSessionLog();
-            setSession(session);
+            setSessionName(session.getName());
             setWriter(this.originalLog.getWriter());
         }
 

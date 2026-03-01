@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,10 +14,7 @@
 //     Matt MacIvor - 2.3 - initial implementation
 package org.eclipse.persistence.testing.jaxb.listofobjects;
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
-
-import junit.framework.TestCase;
 
 public class JAXBArrayOfInnerEnumTestCases extends JAXBWithJSONTestCases {
     public static String XML_RESOURCE="org/eclipse/persistence/testing/jaxb/listofobjects/innerenum.xml";

@@ -1,0 +1,74 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[CACHE003]]
+=== About Queries and the Cache
+
+A query that is run against the shared persistence unit (session) cache
+is known as an *in-memory query*. Careful configuration of in-memory
+querying can improve performance.
+
+By default, a query that looks for a single object based on primary key
+attempts to retrieve the required object from the cache first, and
+searches the data source only if the object is not in the cache. All
+other query types search the database first, by default. You can specify
+whether a given query runs against the in-memory cache, the database, or
+both.
+
+[[CHDBDFGD]]
+
+==== About Query Cache Options and In-memory Querying
+
+JPA defines standard query hints for configuring how a query interacts
+with the shared persistence unit cache (L2). EclipseLink also provides
+some additional query hints for configuring the cache usage. For
+information on JPA and EclipseLink query hints, see
+xref:{relativedir}/queries006.adoc#QUERY006[About Query Hints.]
+
+Entities can be accessed through JPA using either `find()` method or
+queries. The `find()` method will first check the persistence context
+cache (L1) for the Id, if the object is not found it will check the
+shared persistence unit cache (L2), if the object is still not found it
+will access the database. By default all queries will access the
+database, unless querying by Id or by cache indexed fields. Once the
+query retrieves the rows from the database, it will resolve each row
+with the cache. If the object is already in the cache, then the row will
+be discarded, and the object will be used. If the object is not in the
+shared cache, then it will be built from the row and put into the shared
+cache. A copy will also be put in the persistence context cache and
+returned as the query result.
+
+This is the general process, but it differs if the transaction is dirty.
+If the transaction is dirty then the shared persistence unit cache will
+be ignored and objects will be built directly into the persistence
+context cache.
+
+A transaction is considered dirty in the following circumstances:
+
+* A `flush()` has written changes to the database.
+* A pessimistic lock query has been executed.
+* An update or delete query has been executed.
+* A native SQL query has been executed.
+* This persistence unit property `eclipselink.transaction.join-existing`
+is used.
+* The JDBC connection has been unwrapped from the EntityManager.
+* The `UnitOfWork` API `beginEarlyTransaction` has been called.
+
+Entities can also be configured to be isolated, or noncacheable, in
+which case they will never be placed in the shared cache (see
+xref:#CDEEGICF["Shared, Isolated, Protected, Weak, and
+Read-only Caches"]).

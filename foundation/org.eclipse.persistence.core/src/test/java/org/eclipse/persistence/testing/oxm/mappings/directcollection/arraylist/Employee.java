@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -45,23 +45,22 @@ public class Employee {
     }
 
     public String toString() {
-        String returnString = "Employee: " + this.getID() + " ";
+        StringBuilder returnString = new StringBuilder("Employee: " + this.getID() + " ");
         if (getResponsibilities() != null) {
-            returnString += "Responsiblities: ";
+            returnString.append("Responsiblities: ");
             for (int i = 0; i < getResponsibilities().size(); i++) {
                 Object next = getResponsibilities().get(i);
-                returnString += (next.toString() + " ");
+                returnString.append(next.toString()).append(" ");
             }
         }
 
-        return returnString;
+        return returnString.toString();
     }
 
     public boolean equals(Object object) {
-        if (!(object instanceof Employee)) {
+        if (!(object instanceof Employee employeeObject)) {
             return false;
         }
-        Employee employeeObject = (Employee)object;
         if ((this.getResponsibilities() == null) && (employeeObject.getResponsibilities() != null)) {
             return false;
         }
@@ -69,11 +68,7 @@ public class Employee {
             return false;
         }
 
-        if ((this.getID() == employeeObject.getID()) && (((this.getResponsibilities() == null) && (employeeObject.getResponsibilities() == null)) || (this.getResponsibilities().isEmpty() && employeeObject.getResponsibilities().isEmpty()) || (this.getResponsibilities().containsAll(employeeObject.getResponsibilities())))) {
-            return true;
-        }
-
-        return false;
+        return (this.getID() == employeeObject.getID()) && (((this.getResponsibilities() == null) && (employeeObject.getResponsibilities() == null)) || (this.getResponsibilities().isEmpty() && employeeObject.getResponsibilities().isEmpty()) || (this.getResponsibilities().containsAll(employeeObject.getResponsibilities())));
     }
 
     public void setIdSetCounter(int idSetCounter) {

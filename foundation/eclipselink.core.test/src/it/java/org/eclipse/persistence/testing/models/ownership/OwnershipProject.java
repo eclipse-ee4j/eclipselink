@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,7 +14,8 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.ownership;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * TopLink generated Project class.
@@ -64,8 +65,8 @@ public class OwnershipProject extends org.eclipse.persistence.sessions.Project {
 
         // SECTION: DESCRIPTOR
         descriptor.setJavaClass(org.eclipse.persistence.testing.models.ownership.ObjectA.class);
-        Vector vector = new Vector();
-        vector.addElement("OWNER_A");
+        List<String> vector = new ArrayList<>();
+        vector.add("OWNER_A");
         descriptor.setTableNames(vector);
         descriptor.addPrimaryKeyFieldName("OWNER_A.ID");
 
@@ -115,8 +116,8 @@ public class OwnershipProject extends org.eclipse.persistence.sessions.Project {
 
         // SECTION: DESCRIPTOR
         descriptor.setJavaClass(org.eclipse.persistence.testing.models.ownership.ObjectB.class);
-        Vector vector = new Vector();
-        vector.addElement("OWNER_B");
+        List<String> vector = new ArrayList<>();
+        vector.add("OWNER_B");
         descriptor.setTableNames(vector);
         descriptor.addPrimaryKeyFieldName("OWNER_B.ID");
 
@@ -169,8 +170,8 @@ public class OwnershipProject extends org.eclipse.persistence.sessions.Project {
 
         // SECTION: DESCRIPTOR
         descriptor.setJavaClass(org.eclipse.persistence.testing.models.ownership.ObjectC.class);
-        Vector vector = new Vector();
-        vector.addElement("OWNER_C");
+        List<String> vector = new ArrayList<>();
+        vector.add("OWNER_C");
         descriptor.setTableNames(vector);
         descriptor.addPrimaryKeyFieldName("OWNER_C.ID");
 
@@ -232,8 +233,8 @@ public class OwnershipProject extends org.eclipse.persistence.sessions.Project {
 
         // SECTION: DESCRIPTOR
         descriptor.setJavaClass(org.eclipse.persistence.testing.models.ownership.ObjectD.class);
-        Vector vector = new Vector();
-        vector.addElement("OWNER_D");
+        List<String> vector = new ArrayList<>();
+        vector.add("OWNER_D");
         descriptor.setTableNames(vector);
         descriptor.addPrimaryKeyFieldName("OWNER_D.ID");
 
@@ -283,8 +284,8 @@ public class OwnershipProject extends org.eclipse.persistence.sessions.Project {
 
         // SECTION: DESCRIPTOR
         descriptor.setJavaClass(org.eclipse.persistence.testing.models.ownership.ObjectE.class);
-        Vector vector = new Vector();
-        vector.addElement("OWNER_E");
+        List<String> vector = new ArrayList<>();
+        vector.add("OWNER_E");
         descriptor.setTableNames(vector);
         descriptor.addPrimaryKeyFieldName("OWNER_E.ID");
 

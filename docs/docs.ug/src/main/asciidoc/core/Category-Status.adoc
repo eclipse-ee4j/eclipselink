@@ -1,0 +1,5 @@
+This page lists all sections in the
+_link:EclipseLink_UserGuide[EclipseLink User’s Guide]_, organized by
+*status*.
+
+Category:EclipseLink_User's_Guide[Category:EclipseLink User’s Guide]

@@ -1,0 +1,83 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[JAXBJSON002]]
+=== Marshalling and Unmarshalling JSON Documents
+
+Use the *eclipselink.media-type* property on your JAXB Marshaller or
+Unmarsaller to produce and use JSON documents with your application, as
+shown in link:#BABIBCIA[Example 10-1].
+
+[[BABIBCIA]]
+
+*_Example 10-1 Marshalling and Unmarshalling_*
+
+[source,oac_no_warn]
+----
+...
+ 
+Marshaller m = jaxbContext.createMarshaller();
+m.setProperty("eclipselink.media-type", "application/json");
+ 
+Unmarshaller u = jaxbContext.createUnmarshaller();
+u.setProperty("eclipselink.media-type", "application/json");
+
+...
+----
+
+You can also specify the `eclipselink.media-type` property in the `Map`
+of the properties used when you create the `JAXBContext`, as shown in
+link:#BABFDBJG[Example 10-2].
+
+[[BABFDBJG]]
+
+*_Example 10-2 Using a Map_*
+
+[source,oac_no_warn]
+----
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
+import org.eclipse.persistence.oxm.MediaType;
+ 
+Map<String, Object> properties = new HashMap<String, Object>();
+properties.put("eclipselink.media-type", "application/json");
+ 
+JAXBContext ctx = JAXBContext.newInstance(new Class[] { Employee.class }, properties);
+Marshaller jsonMarshaller = ctx.createMarshaller();
+Unmarshaller jsonUnmarshaller = ctx.createUnmarshaller();
+----
+
+When specified in a Map, the Marshallers and Unmarshallers created from
+the `JAXBContent` will automatically use the specified media type.
+
+You can also configure your application to use JSON documents by using
+the `MarshallerProperties`, `UnmarshallerProperties`, and `MediaType`
+constants, as shown in link:#BABDAGBA[Example 10-3].
+
+[[BABDAGBA]]
+
+*_Example 10-3 Using MarshallerProperties and UnarshallerProperties_*
+
+[source,oac_no_warn]
+----
+import org.eclipse.persistence.jaxb.MarshallerProperties;
+import org.eclipse.persistence.jaxb.UnarshallerProperties;
+import org.eclipse.persistence.oxm.MediaType;
+ 
+m.setProperty(MarshallerProperties.MEDIA_TYPE, MediaType.APPLICATION_JSON);
+u.setProperty(UnmarshallerProperties.MEDIA_TYPE, MediaType.APPLICATION_JSON);
+...
+----

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,10 +28,9 @@ public class ComplexValue {
     }
 
      public boolean equals(Object obj){
-            if(!(obj instanceof ComplexValue)) {
+            if(!(obj instanceof ComplexValue compare)) {
                 return false;
             }
-            ComplexValue compare = (ComplexValue)obj;
-            return thing1.equals(compare.thing1) && thing2.equals(compare.thing2);
+         return thing1.equals(compare.thing1) && thing2.equals(compare.thing2);
       }
 }

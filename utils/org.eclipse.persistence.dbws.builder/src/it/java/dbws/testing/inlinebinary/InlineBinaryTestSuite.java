@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -43,12 +43,13 @@ import dbws.testing.DBWSTestSuite;
 public class InlineBinaryTestSuite extends DBWSTestSuite {
 
     static final String CREATE_INLINE_TABLE =
-        "CREATE TABLE IF NOT EXISTS inlinebinary (" +
-            "\nID DECIMAL(7,0) NOT NULL," +
-            "\nNAME VARCHAR(80)," +
-            "\nB BLOB," +
-            "\nPRIMARY KEY (ID)" +
-        "\n)";
+            """
+                    CREATE TABLE IF NOT EXISTS inlinebinary (
+                    ID DECIMAL(7,0) NOT NULL,
+                    NAME VARCHAR(80),
+                    B BLOB,
+                    PRIMARY KEY (ID)
+                    )""";
     static final String[] POPULATE_INLINE_TABLE = new String[] {
         "insert into inlinebinary(ID, NAME, B) values (1, 'one', 0x010101010101010101010101010101)",
         "insert into inlinebinary(ID, NAME, B) values (2, 'two', 0x020202020202020202020202020202)",

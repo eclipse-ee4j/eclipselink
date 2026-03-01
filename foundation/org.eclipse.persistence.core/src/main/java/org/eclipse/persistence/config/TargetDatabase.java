@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,16 +17,22 @@ package org.eclipse.persistence.config;
 /**
  * Target database persistence property values.
  *
- * <p>JPA persistence property Usage:
- *
- * <p><code>properties.add(PersistenceUnitProperties.TargetDatabase, TargetDatabase.Oracle);</code>
+ * <p>JPA persistence property usage:
+ * {@snippet :
+ *  properties.add(PersistenceUnitProperties.TargetDatabase, TargetDatabase.Oracle);
+ * }
  *
  * <p>Property values are case-insensitive
  */
-public class TargetDatabase {
+public final class TargetDatabase {
     public static final String  Auto = "Auto";
     public static final String  Oracle = "Oracle";
-    public static final String  Oracle11 = "Oracle11";
+    public static final String  Oracle23 = "Oracle23ai";
+    public static final String  Oracle21 = "Oracle21c";
+    public static final String  Oracle19 = "Oracle19c";
+    public static final String  Oracle18 = "Oracle18c";
+    public static final String  Oracle12 = "Oracle12c";
+    public static final String  Oracle11 = "Oracle11g";
     public static final String  Oracle10 = "Oracle10g";
     public static final String  Oracle9 = "Oracle9i";
     public static final String  Oracle8 = "Oracle8i";
@@ -48,6 +54,7 @@ public class TargetDatabase {
     public static final String  MariaDB = "MariaDB";
     public static final String  PointBase = "PointBase";
     public static final String  PostgreSQL = "PostgreSQL";
+    public static final String  PostgreSQL10 = "PostgreSQL10";
     public static final String  SQLAnywhere = "SQLAnywhere";
     public static final String  SQLServer = "SQLServer";
     public static final String  Sybase = "Sybase";
@@ -55,4 +62,8 @@ public class TargetDatabase {
     public static final String  TimesTen = "TimesTen";
 
     public static final String DEFAULT = Auto;
+
+    private TargetDatabase() {
+        // no instance please
+    }
 }

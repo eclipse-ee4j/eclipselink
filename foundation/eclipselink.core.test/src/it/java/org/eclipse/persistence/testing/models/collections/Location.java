@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -159,8 +159,8 @@ public class Location {
      * @return a string representation of the receiver
      */
     public String toString() {
-        StringBuffer buf = new StringBuffer();
-        buf.append(org.eclipse.persistence.internal.helper.Helper.getShortClassName(getClass()));
+        StringBuilder buf = new StringBuilder();
+        buf.append(getClass().getSimpleName());
         buf.append("(");
         if (getArea() != null) {
             buf.append(getArea());

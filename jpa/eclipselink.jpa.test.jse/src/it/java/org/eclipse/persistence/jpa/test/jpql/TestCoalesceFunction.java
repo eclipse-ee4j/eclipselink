@@ -47,7 +47,7 @@ public class TestCoalesceFunction {
             Query query = em.createQuery(jpql);
             query.getSingleResult();
 
-            if(_sql != null && _sql.size() > 0) {
+            if(_sql != null && !_sql.isEmpty()) {
                 String sql = _sql.get(0).toLowerCase();
                 int pos = sql.indexOf("coalesce(");
                 Assert.assertNotEquals(-1L, pos);

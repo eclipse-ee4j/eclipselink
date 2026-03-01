@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,11 +14,11 @@
 //     Blaise Doughan - 2.2 - initial implementation
 package org.eclipse.persistence.testing.oxm.reader;
 
+import org.eclipse.persistence.testing.oxm.OXTestCase;
+
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.eclipse.persistence.testing.oxm.OXTestCase;
 
 public class ReaderTestCases extends OXTestCase {
 
@@ -31,7 +31,7 @@ public class ReaderTestCases extends OXTestCase {
     }
 
     protected List<Event> getControlEvents() {
-        List<Event> controlEvents = new ArrayList<Event>();
+        List<Event> controlEvents = new ArrayList<>();
         controlEvents.add(new StartDocumentEvent());
         controlEvents.add(new StartPrefixMappingEvent("", "default"));
         controlEvents.add(new StartElementEvent("default", "e1", "e1"));

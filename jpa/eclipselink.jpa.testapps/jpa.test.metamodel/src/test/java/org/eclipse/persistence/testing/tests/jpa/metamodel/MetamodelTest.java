@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -3632,7 +3632,7 @@ public class MetamodelTest extends MetamodelTestBase {
             expectedIAExceptionThrown = false;
             MapAttribute<? super Manufacturer, ?, ?> anAttribute =
             entityManufacturer_.getMap("hardwareDesignersMap", Integer.class,  HardwareDesigner.class);
-            // verify the default key type is the not the Map key - rather that is is the managedType PK
+            // verify the default key type is not the Map key - rather that is the managedType PK
             Class<?> keyJavaType = anAttribute.getKeyJavaType();
             //@OneToMany(cascade=ALL, mappedBy="mappedEmployer")
             //private Map<String, HardwareDesigner> hardwareDesignersMap;// = new HashMap<String, HardwareDesigner>();
@@ -5681,7 +5681,7 @@ public class MetamodelTest extends MetamodelTestBase {
             // test variant path: null causes IAE
             expectedIAExceptionThrown = false;
         try {
-            EntityType<Manufacturer> aType = metamodel.entity(null);
+            EntityType<Manufacturer> aType = metamodel.entity((Class<Manufacturer>) null);
         } catch (IllegalArgumentException iae) {
             expectedIAExceptionThrown = true;
             }

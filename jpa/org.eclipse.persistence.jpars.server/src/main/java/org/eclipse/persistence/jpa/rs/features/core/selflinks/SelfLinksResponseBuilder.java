@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -95,8 +95,7 @@ public class SelfLinksResponseBuilder extends FeatureResponseBuilderImpl {
 
     @Override
     public Object buildSingleEntityResponse(PersistenceContext context, Map<String, Object> queryParams, Object result, UriInfo uriInfo) {
-        if (result instanceof PersistenceWeavedRest) {
-            final PersistenceWeavedRest entity = (PersistenceWeavedRest)result;
+        if (result instanceof PersistenceWeavedRest entity) {
             final ClassDescriptor classDescriptor = context.getServerSession().getProject().getDescriptor(result.getClass());
             final String entityClassName = classDescriptor.getAlias();
             final String entityId = IdHelper.stringifyId(entity, entityClassName, context);
@@ -116,8 +115,7 @@ public class SelfLinksResponseBuilder extends FeatureResponseBuilderImpl {
         if ((results != null) && (!results.isEmpty())) {
             final ReadAllQueryResultCollection response = new ReadAllQueryResultCollection();
             for (Object item : results) {
-                if (item instanceof PersistenceWeavedRest) {
-                    final PersistenceWeavedRest entity = (PersistenceWeavedRest) item;
+                if (item instanceof PersistenceWeavedRest entity) {
                     final ClassDescriptor classDescriptor = context.getServerSession().getProject().getDescriptor(item.getClass());
                     final String entityClassName = classDescriptor.getAlias();
                     final String entityId = IdHelper.stringifyId(entity, entityClassName, context);
@@ -142,8 +140,7 @@ public class SelfLinksResponseBuilder extends FeatureResponseBuilderImpl {
 
     private void generateLinksInElementsList(PersistenceContext context, List<JAXBElement<?>> fields) {
         for (JAXBElement<?> field : fields) {
-            if (field.getValue() instanceof PersistenceWeavedRest) {
-                final PersistenceWeavedRest entity = (PersistenceWeavedRest) field.getValue();
+            if (field.getValue() instanceof PersistenceWeavedRest entity) {
                 final ClassDescriptor classDescriptor = context.getServerSession().getProject().getDescriptor(entity.getClass());
                 final String entityClassName = classDescriptor.getAlias();
                 final String entityId = IdHelper.stringifyId(entity, entityClassName, context);

@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,17 +24,7 @@
 //       - 500441: Eclipselink core has System.getProperty() calls that are not potentially executed under doPriv()
 package org.eclipse.persistence.platform.server;
 
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
-import java.sql.SQLException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
 import jakarta.persistence.spi.PersistenceUnitInfo;
-
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.helper.JPAClassLoaderHolder;
@@ -48,6 +38,15 @@ import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.ExternalTransactionController;
 import org.eclipse.persistence.sessions.JNDIConnector;
 import org.eclipse.persistence.transaction.JTA11TransactionController;
+
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
+import java.sql.SQLException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * PUBLIC:
@@ -161,19 +160,19 @@ public abstract class ServerPlatformBase implements ServerPlatform {
         // Enable users to disable or enable (default) MBean registration
         String shouldRegisterRuntimeBeanProperty = PrivilegedAccessHelper.getSystemProperty(JMX_REGISTER_RUN_MBEAN_PROPERTY);
         if(null != shouldRegisterRuntimeBeanProperty) {
-            if(shouldRegisterRuntimeBeanProperty.toLowerCase().indexOf("false") > -1) {
+            if(shouldRegisterRuntimeBeanProperty.toLowerCase().contains("false")) {
                 shouldRegisterRuntimeBean = false;
             }
-            if(shouldRegisterRuntimeBeanProperty.toLowerCase().indexOf("true") > -1) {
+            if(shouldRegisterRuntimeBeanProperty.toLowerCase().contains("true")) {
                 shouldRegisterRuntimeBean = true;
             }
         }
         String shouldRegisterDevelopmentBeanProperty = PrivilegedAccessHelper.getSystemProperty(JMX_REGISTER_DEV_MBEAN_PROPERTY);
         if(null != shouldRegisterDevelopmentBeanProperty) {
-            if(shouldRegisterDevelopmentBeanProperty.toLowerCase().indexOf("false") > -1) {
+            if(shouldRegisterDevelopmentBeanProperty.toLowerCase().contains("false")) {
                 shouldRegisterDevelopmentBean = false;
             }
-            if(shouldRegisterDevelopmentBeanProperty.toLowerCase().indexOf("true") > -1) {
+            if(shouldRegisterDevelopmentBeanProperty.toLowerCase().contains("true")) {
                 shouldRegisterDevelopmentBean = true;
             }
         }
@@ -213,7 +212,7 @@ public abstract class ServerPlatformBase implements ServerPlatform {
     /**
      * INTERNAL: initializeServerNameAndVersion(): Talk to the relevant server class library, and get the server name
      * and version
-     *
+     * <p>
      * Default is "unknown"
      */
     protected void initializeServerNameAndVersion() {
@@ -224,7 +223,7 @@ public abstract class ServerPlatformBase implements ServerPlatform {
      * INTERNAL: getModuleName(): Answer the name of the module (jar name) that my session
        * is associated with.
        * Answer "unknown" if there is no module name available.
-       *
+       * <p>
        * Default behavior is to return "unknown".
      *
      * @return String moduleName
@@ -237,13 +236,13 @@ public abstract class ServerPlatformBase implements ServerPlatform {
     /**
      * INTERNAL: getExternalTransactionControllerClass(): Answer the class of external transaction controller to use
      * For this server platform. This is read-only.
-     *
+     * <p>
        * If the user wants a different external transaction controller class than the provided ServerPlatform(s),
        * we recommend subclassing org.eclipse.persistence.platform.server.ServerPlatformBase (or a subclass),
        * and overriding:
-       *
+       * <p>
        * ServerPlatformBase.getExternalTransactionControllerClass()
-       *
+       * <p>
        * for the desired behavior.
      *
      * @return Class externalTransactionControllerClass
@@ -273,7 +272,7 @@ public abstract class ServerPlatformBase implements ServerPlatform {
     /**
      * INTERNAL: initializeExternalTransactionController(): Populate the DatabaseSession's
      * external transaction controller with an instance of my transaction controller class.
-     *
+     * <p>
      * To change the external transaction controller class, we recommend creating a subclass of
      * ServerPlatformBase, and overriding getExternalTransactionControllerClass().
      */
@@ -315,9 +314,7 @@ public abstract class ServerPlatformBase implements ServerPlatform {
                 controller = PrivilegedAccessHelper.newInstanceFromClass(this.getExternalTransactionControllerClass());
             }
             getDatabaseSession().setExternalTransactionController(controller);
-        } catch (InstantiationException instantiationException) {
-            throw ValidationException.cannotCreateExternalTransactionController(getExternalTransactionControllerClass().getName());
-        } catch (IllegalAccessException illegalAccessException) {
+        } catch (InstantiationException | IllegalAccessException instantiationException) {
             throw ValidationException.cannotCreateExternalTransactionController(getExternalTransactionControllerClass().getName());
         }
     }
@@ -338,7 +335,7 @@ public abstract class ServerPlatformBase implements ServerPlatform {
      * INTERNAL: isJTAEnabled(): Answer true if the DatabaseSession's external transaction controller class will
      * be populated with my transaction controller class at runtime. If the transaction controller class is
      * overridden in the DatabaseSession, my transaction controller class will be ignored.
-     *
+     * <p>
      * Answer true if TopLink will be configured to register for callbacks for beforeCompletion and afterCompletion.
      *
      * @return boolean isJTAEnabled
@@ -348,6 +345,17 @@ public abstract class ServerPlatformBase implements ServerPlatform {
     @Override
     public boolean isJTAEnabled() {
         return this.isJTAEnabled;
+    }
+
+    /**
+     * Set whether {@link DatabaseSession}'s external transaction controller class will be populated with transaction controller
+     * class at runtime.
+     *
+     * @param isJTAEnabled Value of {@code true} when {@link DatabaseSession}'s external transaction controller will be populated
+     *                     or {@code false} otherwise
+     */
+    protected void setJTAEnabled(boolean isJTAEnabled) {
+        this.isJTAEnabled = isJTAEnabled;
     }
 
     /**
@@ -433,7 +441,7 @@ public abstract class ServerPlatformBase implements ServerPlatform {
      * INTERNAL: disableJTA(): Configure the receiver such that my external transaction controller class will
      * be ignored, and will NOT be used to populate DatabaseSession's external transaction controller class
      * at runtime.
-     *
+     * <p>
      * TopLink will NOT be configured to register for callbacks for beforeCompletion and afterCompletion.
      *
      * @see #getExternalTransactionControllerClass()
@@ -446,10 +454,18 @@ public abstract class ServerPlatformBase implements ServerPlatform {
     }
 
     /**
+     * Trigger {@link DatabaseSession}'s external transaction controller class to be populated with transaction controller
+     * class at runtime.
+     * Does nothing by default. Child class may override this method to enable the trigger.
+     */
+    public void enableJTA() {
+    }
+
+    /**
      * INTERNAL:  This method is used to unwrap the connection wrapped by
      * the application server.  TopLink needs this unwrapped connection for certain
      * database vendor specific support. (i.e. TIMESTAMPTZ,NCHAR,XMLTYPE)
-     *
+     * <p>
      * Be default we will use the connection's metadata to try to get the connection
      */
     @Override
@@ -465,7 +481,7 @@ public abstract class ServerPlatformBase implements ServerPlatform {
     /**
      * INTERNAL: launchContainerRunnable(Runnable runnable): Use the container library to
      * start the provided Runnable.
-     *
+     * <p>
      * Default behavior is to use Thread(runnable).start()
      *
      * @param runnable the instance of runnable to be "started"
@@ -494,7 +510,7 @@ public abstract class ServerPlatformBase implements ServerPlatform {
 
     /**
      * INTERNAL: getServerLog(): Return the ServerLog for this platform
-     *
+     * <p>
      * Return the default ServerLog in the base
      *
      * @return org.eclipse.persistence.logging.SessionLog
@@ -600,7 +616,7 @@ public abstract class ServerPlatformBase implements ServerPlatform {
     /**
      * INTERNAL: registerMBean(): Create and deploy the JMX MBean to provide runtime services for my
      * databaseSession.
-     *
+     * <p>
      * Default is to do nothing.
      *
      * @see #isRuntimeServicesEnabled()
@@ -647,7 +663,7 @@ public abstract class ServerPlatformBase implements ServerPlatform {
     /**
      * INTERNAL: serverSpecificUnregisterMBean(): Server specific implementation of the
      * unregistration of the JMX MBean from its server.
-     *
+     * <p>
      * Default is to do nothing. This should be subclassed if required.
      *
      * @see #isRuntimeServicesEnabled()
@@ -659,7 +675,7 @@ public abstract class ServerPlatformBase implements ServerPlatform {
      * INTERNAL: serverSpecificRegisterMBean(): Server specific implementation of the
      * creation and deployment of the JMX MBean to provide runtime services for my
      * databaseSession.
-     *
+     * <p>
      * Default is to do nothing. This should be subclassed if required.
      *
      * @see #isRuntimeServicesEnabled()

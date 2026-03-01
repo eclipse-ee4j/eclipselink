@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2018 IBM Corporation and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,7 +21,7 @@ package org.eclipse.persistence.exceptions.i18n;
 /**
  * INTERNAL:
  * English ResourceBundle for EclipseLinkException messages.
- *
+ * <p>
  * Creation date: (12/6/00 9:47:38 AM)
  * @author Rick Barkhouse
  */

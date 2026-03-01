@@ -1,0 +1,7 @@
+:nofooter:
+This figure illustrates multiple JVMs running more than one persistence
+unit (session) cache. Any changes to a cache sends a change notification
+to the cache coordination software. These changes are broadcast to
+multiple, possibly distributed, instances of a session so that each
+session's cache is either kept up-to-date or notified that the cache
+must update an object from the data source the next time it is read.

@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -59,9 +60,9 @@ public class TestCollectionTableEmbeddable {
             ElementCollectionEntity newEntity = new ElementCollectionEntity();
             newEntity.setId(99);
 
-            Map<Date, ElementCollectionEmbeddableTemporal> map = new HashMap<Date, ElementCollectionEmbeddableTemporal>();
+            Map<Date, ElementCollectionEmbeddableTemporal> map = new HashMap<>();
             map.put(new Date(1), new ElementCollectionEmbeddableTemporal(new Date(System.currentTimeMillis() - 200000000)));
-            newEntity.setMapKeyTemporalValueEmbed(new HashMap<Date, ElementCollectionEmbeddableTemporal>(map));
+            newEntity.setMapKeyTemporalValueEmbed(new HashMap<>(map));
 
             em.getTransaction().begin();
             em.merge(newEntity);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,8 +27,7 @@ public class Root {
     public List<Address> addresses;
 
     public boolean equals(Object compareObj){
-        if (compareObj instanceof Root){
-            Root rootObj = (Root)compareObj;
+        if (compareObj instanceof Root rootObj){
             return (employees == null && rootObj.employees ==null || employees.equals(rootObj.employees) )&&
             (addresses == null && rootObj.addresses ==null || addresses.equals(rootObj.addresses) );
     }

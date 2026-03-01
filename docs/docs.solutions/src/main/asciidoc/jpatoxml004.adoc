@@ -1,0 +1,107 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[JPA2XML004]]
+=== Using XML Metadata Representation to Override JAXB Annotations
+
+In addition to using Java annotations, EclipseLink provides an XML
+mapping configuration file called `eclipselink-oxm.xml` that you can use
+in place of or to override JAXB annotations in the source with an XML
+representation of the metadata. In addition to allowing all of the
+standard JAXB mapping capabilities it also includes advanced mapping
+types and options.
+
+An XML metadata representation is useful when:
+
+* You cannot modify the domain model because, for example, it come from
+a third party).
+* You do not want to introduce compile dependencies on JAXB APIs (if you
+are using a version of Java that predates Java SE 6).
+* You want to apply multiple JAXB mappings to a domain model (you are
+limited to one representation with annotations).
+* Your object model already contains so many annotations from other
+technologies that adding more would make the class unreadable.
+
+This section demonstrates how to use `eclipselink-oxm.xml` to override
+JAXB annotations
+
+NOTE: While using this mapping file enables many advanced features, it might
+prevent you from porting it to other JAXB implementations
+
+==== Task 1: Define Advanced Mappings in the XML
+
+First, update the XML mapping file to expose the
+`eclipselink_oxm_2_3.xsd`. schema. link:#BEIDBECD[Example 15-20] shows
+how to modify the `<xml-bindings>` element in the mapping file to point
+to the correct namespace and leverage the schema. Each Java package can
+have one mapping file.
+
+[[BEIDBECD]]
+
+*_Example 15-20 Updating XML Binding Information in the Mapping File_*
+
+[source,oac_no_warn]
+----
+<?xml version="1.0"?>
+<xml-bindings
+        xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.eclipse.org/eclipselink/xsds/persistence/oxm  http://www.eclipse.org/eclipselink/xsds/eclipselink_oxm_2_4.xsd"
+       version="2.4">
+</xml-bindings>
+----
+
+==== Task 2: Configure Usage in JAXBContext
+
+Next, pass the mapping file to `JAXBContext` in your object:
+
+. Specify the externalized metadata by inserting this code:
++
+[source,oac_no_warn]
+----
+Map<String, Object> properties = new HashMap<String, Object>(1);
+properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, "org/example/oxm.xml);
+JAXBContext.newInstance("org.example', aClassLoader, properties);
+----
+. Create the properties object to pass to the `JAXBContext`. For this
+example:
++
+[source,oac_no_warn]
+----
+Map<String,Object> properties = new HashMap<String,Object>();
+properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadata);
+----
+. Create the `JAXBContext`. For this example:
++
+[source,oac_no_warn]
+----
+JAXBContext.newInstance("example.order:example.customer", aClassLoader, properties);
+----
+
+==== Task 3: Specify the MOXy as the JAXB Implementation
+
+You must use MOXy as your JAXB implementation. To do so, do the
+following:
+
+. Open a `jaxb.properties` file and add the following line:
++
+[source,oac_no_warn]
+----
+jakarta.xml.bind.context.factory=org.eclipse.persistence.jaxb.JAXBContextFactory
+----
+. Copy the `jaxb.properties` file to the package that contains your
+domain classes.

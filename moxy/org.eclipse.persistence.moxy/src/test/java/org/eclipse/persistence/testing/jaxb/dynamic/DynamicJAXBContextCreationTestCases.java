@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,7 +30,7 @@ import javax.xml.transform.stream.StreamSource;
 import junit.framework.TestCase;
 
 import org.eclipse.persistence.dynamic.DynamicEntity;
-import org.eclipse.persistence.exceptions.DynamicException;
+import org.eclipse.persistence.dynamic.DynamicException;
 import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContextFactory;
@@ -87,7 +87,7 @@ public class DynamicJAXBContextCreationTestCases extends TestCase {
         }
 
         assertNotNull("Did not catch exception as expected.", caughtException);
-        assertEquals("Incorrect exception thrown.", 50038, ((org.eclipse.persistence.exceptions.JAXBException) caughtException.getLinkedException()).getErrorCode());
+        assertEquals("Incorrect exception thrown.", 50038, ((org.eclipse.persistence.jaxb.JAXBException) caughtException.getLinkedException()).getErrorCode());
     }
 
     public void testNewInstanceClassesPropsError() throws JAXBException {
@@ -101,7 +101,7 @@ public class DynamicJAXBContextCreationTestCases extends TestCase {
         }
 
         assertNotNull("Did not catch exception as expected.", ex);
-        assertEquals("Incorrect exception thrown.", 50038, ((org.eclipse.persistence.exceptions.JAXBException) ex.getLinkedException()).getErrorCode());
+        assertEquals("Incorrect exception thrown.", 50038, ((org.eclipse.persistence.jaxb.JAXBException) ex.getLinkedException()).getErrorCode());
     }
 
     public void testNewInstanceOXM() throws JAXBException {
@@ -203,14 +203,14 @@ public class DynamicJAXBContextCreationTestCases extends TestCase {
             fail("Unexpected exception thrown. " + e);
         }
 
-        org.eclipse.persistence.exceptions.JAXBException jEx = null;
+        org.eclipse.persistence.jaxb.JAXBException jEx = null;
         Exception currentException = caughtEx;
         // Walk the exception looking for an EclipseLink JAXBException
         while (true) {
             if (currentException instanceof JAXBException) {
                 Exception linkedEx = (Exception) ((JAXBException) currentException).getLinkedException();
-                if (linkedEx instanceof org.eclipse.persistence.exceptions.JAXBException) {
-                    jEx = (org.eclipse.persistence.exceptions.JAXBException) linkedEx;
+                if (linkedEx instanceof org.eclipse.persistence.jaxb.JAXBException) {
+                    jEx = (org.eclipse.persistence.jaxb.JAXBException) linkedEx;
                     break;
                 } else {
                     currentException = linkedEx;
@@ -224,7 +224,7 @@ public class DynamicJAXBContextCreationTestCases extends TestCase {
             fail("Unexpected exception thrown. " + caughtEx);
         }
 
-        assertEquals("Unexpected EclipseLink exception thrown.", org.eclipse.persistence.exceptions.JAXBException.XJB_NOT_SOURCE, jEx.getErrorCode());
+        assertEquals("Unexpected EclipseLink exception thrown.", org.eclipse.persistence.jaxb.JAXBException.XJB_NOT_SOURCE, jEx.getErrorCode());
     }
 
     public void testNewInstanceXSDImportError() throws Exception {
@@ -259,14 +259,14 @@ public class DynamicJAXBContextCreationTestCases extends TestCase {
             fail("Unexpected exception thrown. " + e);
         }
 
-        org.eclipse.persistence.exceptions.JAXBException jEx = null;
+        org.eclipse.persistence.jaxb.JAXBException jEx = null;
         Exception currentException = caughtEx;
         // Walk the exception looking for an EclipseLink JAXBException
         while (true) {
             if (currentException instanceof JAXBException) {
                 Exception linkedEx = (Exception) ((JAXBException) currentException).getLinkedException();
-                if (linkedEx instanceof org.eclipse.persistence.exceptions.JAXBException) {
-                    jEx = (org.eclipse.persistence.exceptions.JAXBException) linkedEx;
+                if (linkedEx instanceof org.eclipse.persistence.jaxb.JAXBException) {
+                    jEx = (org.eclipse.persistence.jaxb.JAXBException) linkedEx;
                     break;
                 } else {
                     currentException = linkedEx;
@@ -280,7 +280,7 @@ public class DynamicJAXBContextCreationTestCases extends TestCase {
             fail("Unexpected exception thrown. " + caughtEx);
         }
 
-        assertEquals("Unexpected EclipseLink exception thrown.", org.eclipse.persistence.exceptions.JAXBException.XSD_IMPORT_NOT_SOURCE, jEx.getErrorCode());
+        assertEquals("Unexpected EclipseLink exception thrown.", org.eclipse.persistence.jaxb.JAXBException.XSD_IMPORT_NOT_SOURCE, jEx.getErrorCode());
     }
 
     public void testNewInstanceXSDExternalBindings() throws Exception {
@@ -347,7 +347,7 @@ public class DynamicJAXBContextCreationTestCases extends TestCase {
         }
 
         assertNotNull("Did not catch exception as expected.", caughtException);
-        assertEquals("Incorrect exception thrown.", 50044, ((org.eclipse.persistence.exceptions.JAXBException) caughtException.getLinkedException()).getErrorCode());
+        assertEquals("Incorrect exception thrown.", 50044, ((org.eclipse.persistence.jaxb.JAXBException) caughtException.getLinkedException()).getErrorCode());
     }
 
     /*
@@ -366,7 +366,7 @@ public class DynamicJAXBContextCreationTestCases extends TestCase {
         }
 
         assertNotNull("Did not catch exception as expected.", caughtException);
-        assertEquals("Incorrect exception thrown.", 50046, ((org.eclipse.persistence.exceptions.JAXBException) caughtException.getLinkedException()).getErrorCode());
+        assertEquals("Incorrect exception thrown.", 50046, ((org.eclipse.persistence.jaxb.JAXBException) caughtException.getLinkedException()).getErrorCode());
     }
     */
 
@@ -400,7 +400,7 @@ public class DynamicJAXBContextCreationTestCases extends TestCase {
         }
 
         assertNotNull("Did not catch exception as expected.", caughtException);
-        assertEquals("Incorrect exception thrown.", 50039, ((org.eclipse.persistence.exceptions.JAXBException) caughtException.getLinkedException()).getErrorCode());
+        assertEquals("Incorrect exception thrown.", 50039, ((org.eclipse.persistence.jaxb.JAXBException) caughtException.getLinkedException()).getErrorCode());
     }
 
     public void testCreateContextFromXSDNodeNull() throws Exception {
@@ -412,7 +412,7 @@ public class DynamicJAXBContextCreationTestCases extends TestCase {
         }
 
         assertNotNull("Did not catch exception as expected.", caughtException);
-        assertEquals("Incorrect exception thrown.", 50045, ((org.eclipse.persistence.exceptions.JAXBException) caughtException.getLinkedException()).getErrorCode());
+        assertEquals("Incorrect exception thrown.", 50045, ((org.eclipse.persistence.jaxb.JAXBException) caughtException.getLinkedException()).getErrorCode());
     }
 
     public void testCreateContextFromXSDSource() throws Exception {
@@ -437,7 +437,7 @@ public class DynamicJAXBContextCreationTestCases extends TestCase {
         }
 
         assertNotNull("Did not catch exception as expected.", caughtException);
-        assertEquals("Incorrect exception thrown.", 50043, ((org.eclipse.persistence.exceptions.JAXBException) caughtException.getLinkedException()).getErrorCode());
+        assertEquals("Incorrect exception thrown.", 50043, ((org.eclipse.persistence.jaxb.JAXBException) caughtException.getLinkedException()).getErrorCode());
     }
 
     public void testCreateContextFromSessionsXMLString() throws JAXBException {
@@ -456,7 +456,7 @@ public class DynamicJAXBContextCreationTestCases extends TestCase {
         }
 
         assertNotNull("Did not catch exception as expected.", caughtException);
-        assertEquals("Incorrect exception thrown.", 50042, ((org.eclipse.persistence.exceptions.JAXBException) caughtException.getLinkedException()).getErrorCode());
+        assertEquals("Incorrect exception thrown.", 50042, ((org.eclipse.persistence.jaxb.JAXBException) caughtException.getLinkedException()).getErrorCode());
     }
 
     public void testCreateContextFromOXM() throws JAXBException {
@@ -494,7 +494,7 @@ public class DynamicJAXBContextCreationTestCases extends TestCase {
         }
 
         assertNotNull("Did not catch exception as expected.", caughtException);
-        assertEquals("Incorrect exception thrown.", 50055, ((org.eclipse.persistence.exceptions.JAXBException) caughtException.getLinkedException()).getErrorCode());
+        assertEquals("Incorrect exception thrown.", 50055, ((org.eclipse.persistence.jaxb.JAXBException) caughtException.getLinkedException()).getErrorCode());
 
         try {
             Map<String, Object> properties = new HashMap<String, Object>();
@@ -504,7 +504,7 @@ public class DynamicJAXBContextCreationTestCases extends TestCase {
         }
 
         assertNotNull("Did not catch exception as expected.", caughtException);
-        assertEquals("Incorrect exception thrown.", 50055, ((org.eclipse.persistence.exceptions.JAXBException) caughtException.getLinkedException()).getErrorCode());
+        assertEquals("Incorrect exception thrown.", 50055, ((org.eclipse.persistence.jaxb.JAXBException) caughtException.getLinkedException()).getErrorCode());
     }
 
     private static final String SESSION_NAMES =

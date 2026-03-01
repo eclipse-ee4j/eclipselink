@@ -1,0 +1,242 @@
+[#sdo-example-dynamicapixml]
+=== Using Dynamic DataObjects to Manipulate XML
+
+* <<sdo-example-dynamicapixml-overview>>
+* <<sdo-example-dynamicapixml-setup>>
+* <<sdo-example-dynamicapixml-init>>
+* <<sdo-example-dynamicapixml-unmarshall>>
+* <<sdo-example-dynamicapixml-track>>
+* <<sdo-example-dynamicapixml-modify>>
+* <<sdo-example-dynamicapixml-marshall>>
+* <<sdo-example-dynamicapixml-interpret>>
+* <<sdo-example-dynamicapixml-download>>
+
+[#sdo-example-dynamicapixml-overview]
+==== Overview
+
+The following example will demonstrate how to use EclipseLink's SDO
+functionality to:
+
+* Define a set of SDO Types from an XML Schema
+* Load an XML file and modify its data
+* Monitor changes made to the data
+* Save the modified data to XML
+
+[#sdo-example-dynamicapixml-setup]
+==== Setup
+
+. Ensure that you have EclipseLink correctly installed and configured
+for your environment. Please see
+link:/EclipseLink/Installing_and_Configuring_EclipseLink[EclipseLink/Installing
+and Configuring EclipseLink] for more information.
+. Ensure that you have ANT correctly installed and configured.
+. Unzip the Example ZIP file to a new directory.
+. Edit the `+env.properties+` file in the root directory of the example
+and specify the path to your EclipseLink `+jlib+` directory:
+
+[source,properties]
+----
+...
+# Edit eclipselink.jlib to point to your EclipseLink jlib directory
+eclipselink.jlib=C:/EclipseLink-1.0/eclipselink/jlib
+...
+----
+
+You can compile and run the Example at any time by typing `+ant+` from
+the Example directory.
+
+For Eclipse IDE users, a `+.project+` file is included in the Example
+directory. To setup this project in Eclipse:
+
+. From the "File" menu, choose "Import..."
+. In the Import dialog, choose "General > Existing Projects into
+Workspace", and click "Next".
+. Click "Browse" to select a root directory, and point to the folder
+containing this example. After selecting the directory, you should see
+the project name in the "Projects" list. Click "Finish".
+
+This project is configured to use a classpath variable,
+`+ECLIPSELINK_JLIB+`, to point to the required JAR files. After the
+project is imported, you should define a variable called
+`+ECLIPSELINK_JLIB+` to point to your EclipseLink `+jlib+` directory.
+
+[#sdo-example-dynamicapixml-init]
+==== Initializing the Types from XML Schema
+
+The first thing that needs to be done in an SDO application is to set up
+the metadata for the Types and Properties. This is most commonly done by
+loading an XML schema, although it may also be done programmatically.
+
+[source,java]
+----
+FileInputStream xsdInputStream = new FileInputStream("Customer.xsd");
+XSDHelper.INSTANCE.define(xsdInputStream, null);
+----
+
+[#sdo-example-dynamicapixml-unmarshall]
+==== Unmarshalling the XML Document
+
+With the SDO Types and Properties defined from the schema, we can now
+load an XML document based on that schema, and then obtain a DataObject
+and begin modifying its contents.
+
+[source,java]
+----
+FileInputStream xmlInputStream = new FileInputStream("Customer-data.xml");
+XMLDocument xmlDocument = XMLHelper.INSTANCE.load(xmlInputStream);
+DataObject customerDO = xmlDocument.getRootObject();
+----
+
+[#sdo-example-dynamicapixml-track]
+==== Tracking Object Modifications using Change Summary
+
+SDO's Change Summary provides access to change history information for
+the DataObjects in a data graph. A change history covers any
+modifications that have been made to a data graph starting from the
+point when logging was activated.
+
+In order to use Change Summary, we have defined an element of type
+"`+sdo:ChangeSummaryType+`" on our root complex type:
+
+[source,xml]
+----
+<xs:complexType name="customer-type">
+    <xs:sequence>
+        ...
+        <xs:element name="changeSummary" type="sdo:ChangeSummaryType" minOccurs="0"/>
+
+    </xs:sequence>
+</xs:complexType>
+----
+
+Before we start modifying our data, we must enable logging:
+
+[source,java]
+----
+customerDO.getChangeSummary().beginLogging();
+----
+
+From this point on, any modifications to the DataObject will be captured
+in the Change Summary, until logging is deactivated:
+
+[source,java]
+----
+customerDO.getChangeSummary().endLogging();
+----
+
+[#sdo-example-dynamicapixml-modify]
+==== Modifying the DataObjects
+
+Below are examples of manipulating the DataObjects using the dynamic
+APIs. Note how the dynamic accessors take an XPath instead of just a
+property name.
+
+Modifying the ShippingAddress ZipCode:
+
+[source,java]
+----
+DataObject addressDO = customerDO.getDataObject("contact-info").getDataObject("shipping-address");
+addressDO.set("zip-code", "27601");
+----
+
+Adding a new PhoneNumber:
+
+[source,java]
+----
+DataObject newPhoneNumberDO = DataFactory.INSTANCE.create("urn:customer-example", "phone-number");
+newPhoneNumberDO.set("number-type", "home");
+newPhoneNumberDO.set("value", "(613) 555-3333");
+customerDO.getList("contact-info/phone-number").add(newPhoneNumberDO);
+----
+
+Removing all "cell" PhoneNumbers:
+
+[source,java]
+----
+ArrayList phoneNumbersToRemove = new ArrayList();
+List phoneNumbers = customerDO.getDataObject("contact-info").getList("phone-number");
+Iterator it = phoneNumbers.iterator();
+while (it.hasNext()) {
+    DataObject phoneNumberDO = (DataObject) it.next();
+    if (phoneNumberDO.get("number-type").equals("cell")) {
+        phoneNumbersToRemove.add(phoneNumberDO);
+    }
+}
+phoneNumbers.removeAll(phoneNumbersToRemove);
+----
+
+There are general accessors for properties, i.e., `+get()+` and
+`+set()+`, as well as specific accessors for the primitive types and
+commonly used data types like String, Date, List, BigInteger, and
+BigDecimal. For more information see the
+http://help.eclipse.org/help32/topic/org.eclipse.emf.ecore.sdo.doc/references/javadoc/commonj/sdo/DataObject.html[documentation
+for DataObject].
+
+[#sdo-example-dynamicapixml-marshall]
+==== Marshalling the DataObjects
+
+The following code segment demonstrates how to marshal DataObjects
+wrapped in a `+commonj.sdo.helper.XMLDocument+` back to XML. In this
+example the stream we are saving to is `+System.out+`, so the XML text
+will be printed to the console.
+
+[source,java]
+----
+XMLHelper.INSTANCE.save(xmlDocument, System.out, null);
+----
+
+[#sdo-example-dynamicapixml-interpret]
+==== Interpreting the Change Summary
+
+When the document is saved to `+System.out+`, we can see the change
+summary information in the XML:
+
+[source,xml]
+----
+<ns1:customer ...>
+   ...
+   <changeSummary logging="false" create="#/ns1:contact-info/ns1:phone-number[2]"
+      delete="#/changeSummary/ns1:contact-info/ns1:phone-number[2]" xmlns:sdo="commonj.sdo">
+      <ns1:contact-info sdo:ref="#/ns1:contact-info">
+         <ns1:phone-number sdo:ref="#/ns1:contact-info/ns1:phone-number[1]"/>
+         <ns1:phone-number number-type="cell">(613) 555-2222</ns1:phone-number>
+      </ns1:contact-info>
+      <shipping-address sdo:ref="#/ns1:contact-info/shipping-address">
+         <zip-code>12345</zip-code>
+      </shipping-address>
+   </changeSummary>
+</ns1:customer>
+----
+
+* For DataObjects with modified data type properties, the Change Summary
+element contains a copy of the DataObject from the data graph, but
+containing only the properties which have changed, and showing their old
+values.  In our example, we see a "`+shipping-address+`" element which
+references "`+#/ns1:contact-info/shipping-address+`" (the element that
+was modified), along with its old value, "`+12345+`".
+
+* DataObjects which are currently in the data graph, but were not
+present when logging was started are indicated in the change summary
+with a "`+create+`" attribute. If more than one DataObject had been
+created, the attribute would contain a space-separated list of
+references, one for each DataObject. In our example, we see a
+"`+create+`" attribute indicating that
+"`+#/ns1:contact-info/ns1:phone-number\[2\]+`" (the second phone number
+in the XML) is the newly created one.
+
+* DataObjects deleted during logging are flagged with the "`+delete+`"
+attribute. In this case the change summary also contains a deep copy of
+the object which was deleted, as it no longer appears in the data graph.
+Here, we see a "`+delete+`" attribute indicating that
+"`+#/changeSummary/ns1:contact-info/ns1:phone-number\[2\]+`" (the second
+phone number in the _Change Summary_) is the one that was deleted from
+the XML.
+
+[#sdo-example-dynamicapixml-download]
+==== Download
+
+Download the "Examples Zip" from the EclipseLink
+http://www.eclipse.org/eclipselink/downloads/[Downloads] page. Code for
+this example will be found in the
+`+org.eclipse.persistence.example.sdo.dynamicapi.zip+` file.
+

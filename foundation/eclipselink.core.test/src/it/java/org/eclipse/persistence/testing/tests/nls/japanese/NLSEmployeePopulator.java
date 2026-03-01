@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,15 +14,16 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.nls.japanese;
 
-import java.sql.*;
-import java.util.*;
 import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.tools.schemaframework.PopulationManager;
 import org.eclipse.persistence.testing.models.employee.domain.Address;
 import org.eclipse.persistence.testing.models.employee.domain.EmploymentPeriod;
+import org.eclipse.persistence.testing.models.employee.domain.LargeProject;
 import org.eclipse.persistence.testing.models.employee.domain.PhoneNumber;
 import org.eclipse.persistence.testing.models.employee.domain.SmallProject;
-import org.eclipse.persistence.testing.models.employee.domain.LargeProject;
+import org.eclipse.persistence.tools.schemaframework.PopulationManager;
+
+import java.sql.Time;
+import java.util.List;
 
 /**
  * <p><b>Purpose</b>: To build and populate the database for example and testing purposes.
@@ -189,7 +190,6 @@ public class NLSEmployeePopulator {
         } catch (Exception exception) {
             throw new RuntimeException(exception.toString());
         }
-        ;
 
         return employee;
     }
@@ -210,7 +210,6 @@ public class NLSEmployeePopulator {
         } catch (Exception exception) {
             throw new RuntimeException(exception.toString());
         }
-        ;
 
         return employee;
     }
@@ -232,7 +231,6 @@ public class NLSEmployeePopulator {
         } catch (Exception exception) {
             throw new RuntimeException(exception.toString());
         }
-        ;
 
         return employee;
     }
@@ -253,7 +251,6 @@ public class NLSEmployeePopulator {
         } catch (Exception exception) {
             throw new RuntimeException(exception.toString());
         }
-        ;
 
         return employee;
     }
@@ -278,7 +275,6 @@ public class NLSEmployeePopulator {
         } catch (Exception exception) {
             throw new RuntimeException(exception.toString());
         }
-        ;
 
         return employee;
     }
@@ -302,7 +298,6 @@ public class NLSEmployeePopulator {
         } catch (Exception exception) {
             throw new RuntimeException(exception.toString());
         }
-        ;
 
         return employee;
     }
@@ -328,7 +323,6 @@ public class NLSEmployeePopulator {
         } catch (Exception exception) {
             throw new RuntimeException(exception.toString());
         }
-        ;
 
         return employee;
     }
@@ -353,7 +347,6 @@ public class NLSEmployeePopulator {
         } catch (Exception exception) {
             throw new RuntimeException(exception.toString());
         }
-        ;
 
         return employee;
     }
@@ -376,7 +369,6 @@ public class NLSEmployeePopulator {
         } catch (Exception exception) {
             throw new RuntimeException(exception.toString());
         }
-        ;
 
         return employee;
     }
@@ -397,7 +389,6 @@ public class NLSEmployeePopulator {
         } catch (Exception exception) {
             throw new RuntimeException(exception.toString());
         }
-        ;
 
         return employee;
     }
@@ -419,7 +410,6 @@ public class NLSEmployeePopulator {
         } catch (Exception exception) {
             throw new RuntimeException(exception.toString());
         }
-        ;
 
         return employee;
     }
@@ -442,7 +432,6 @@ public class NLSEmployeePopulator {
         } catch (Exception exception) {
             throw new RuntimeException(exception.toString());
         }
-        ;
 
         return employee;
     }
@@ -459,7 +448,6 @@ public class NLSEmployeePopulator {
         } catch (Exception exception) {
             throw new RuntimeException(exception.toString());
         }
-        ;
 
         return largeProject;
     }
@@ -476,7 +464,6 @@ public class NLSEmployeePopulator {
         } catch (Exception exception) {
             throw new RuntimeException(exception.toString());
         }
-        ;
 
         return largeProject;
     }
@@ -493,7 +480,6 @@ public class NLSEmployeePopulator {
         } catch (Exception exception) {
             throw new RuntimeException(exception.toString());
         }
-        ;
 
         return largeProject;
     }
@@ -510,7 +496,6 @@ public class NLSEmployeePopulator {
         } catch (Exception exception) {
             throw new RuntimeException(exception.toString());
         }
-        ;
 
         return largeProject;
     }
@@ -527,7 +512,6 @@ public class NLSEmployeePopulator {
         } catch (Exception exception) {
             throw new RuntimeException(exception.toString());
         }
-        ;
 
         return largeProject;
     }
@@ -542,7 +526,6 @@ public class NLSEmployeePopulator {
         } catch (Exception exception) {
             throw new RuntimeException(exception.toString());
         }
-        ;
 
         return smallProject;
     }
@@ -557,7 +540,6 @@ public class NLSEmployeePopulator {
         } catch (Exception exception) {
             throw new RuntimeException(exception.toString());
         }
-        ;
 
         return smallProject;
     }
@@ -572,7 +554,6 @@ public class NLSEmployeePopulator {
         } catch (Exception exception) {
             throw new RuntimeException(exception.toString());
         }
-        ;
 
         return smallProject;
     }
@@ -587,7 +568,6 @@ public class NLSEmployeePopulator {
         } catch (Exception exception) {
             throw new RuntimeException(exception.toString());
         }
-        ;
 
         return smallProject;
     }
@@ -602,7 +582,6 @@ public class NLSEmployeePopulator {
         } catch (Exception exception) {
             throw new RuntimeException(exception.toString());
         }
-        ;
 
         return smallProject;
     }
@@ -617,7 +596,6 @@ public class NLSEmployeePopulator {
         } catch (Exception exception) {
             throw new RuntimeException(exception.toString());
         }
-        ;
 
         return smallProject;
     }
@@ -632,7 +610,6 @@ public class NLSEmployeePopulator {
         } catch (Exception exception) {
             throw new RuntimeException(exception.toString());
         }
-        ;
 
         return smallProject;
     }
@@ -647,7 +624,6 @@ public class NLSEmployeePopulator {
         } catch (Exception exception) {
             throw new RuntimeException(exception.toString());
         }
-        ;
 
         return smallProject;
     }
@@ -662,7 +638,6 @@ public class NLSEmployeePopulator {
         } catch (Exception exception) {
             throw new RuntimeException(exception.toString());
         }
-        ;
 
         return smallProject;
     }
@@ -677,7 +652,6 @@ public class NLSEmployeePopulator {
         } catch (Exception exception) {
             throw new RuntimeException(exception.toString());
         }
-        ;
 
         return smallProject;
     }
@@ -757,7 +731,6 @@ public class NLSEmployeePopulator {
         } catch (Exception exception) {
             throw new RuntimeException(exception.toString());
         }
-        ;
 
         return employee;
     }
@@ -806,7 +779,6 @@ public class NLSEmployeePopulator {
         } catch (Exception exception) {
             throw new RuntimeException(exception.toString());
         }
-        ;
 
         return employee;
     }
@@ -830,7 +802,6 @@ public class NLSEmployeePopulator {
         } catch (Exception exception) {
             throw new RuntimeException(exception.toString());
         }
-        ;
 
         return employee;
     }
@@ -851,7 +822,6 @@ public class NLSEmployeePopulator {
         } catch (Exception exception) {
             throw new RuntimeException(exception.toString());
         }
-        ;
 
         return employee;
     }
@@ -883,7 +853,6 @@ public class NLSEmployeePopulator {
         } catch (Exception exception) {
             throw new RuntimeException(exception.toString());
         }
-        ;
 
         return employee;
     }
@@ -902,7 +871,6 @@ public class NLSEmployeePopulator {
         } catch (Exception exception) {
             throw new RuntimeException(exception.toString());
         }
-        ;
 
         return employee;
     }
@@ -921,7 +889,6 @@ public class NLSEmployeePopulator {
         } catch (Exception exception) {
             throw new RuntimeException(exception.toString());
         }
-        ;
 
         return employee;
     }
@@ -1042,11 +1009,11 @@ public class NLSEmployeePopulator {
         return employmentPeriod;
     }
 
-    protected Vector<Object> getAllObjects() {
+    protected List<Object> getAllObjects() {
         return populationManager.getAllObjects();
     }
 
-    public Vector<Object> getAllObjectsForClass(Class<?> domainClass) {
+    public List<Object> getAllObjectsForClass(Class<?> domainClass) {
         return populationManager.getAllObjectsForClass(domainClass);
     }
 
@@ -1068,7 +1035,6 @@ public class NLSEmployeePopulator {
         } catch (Exception exception) {
             throw new RuntimeException(exception.toString());
         }
-        ;
 
         return largeProject;
     }
@@ -1107,7 +1073,6 @@ public class NLSEmployeePopulator {
         } catch (Exception exception) {
             throw new RuntimeException(exception.toString());
         }
-        ;
 
         return largeProject;
     }
@@ -1126,7 +1091,6 @@ public class NLSEmployeePopulator {
         } catch (Exception exception) {
             throw new RuntimeException(exception.toString());
         }
-        ;
 
         return largeProject;
     }
@@ -1260,7 +1224,6 @@ public class NLSEmployeePopulator {
         }
 
         org.eclipse.persistence.testing.models.employee.interfaces.SmallProject smallProject = basicSmallProjectExample9();
-        ;
         registerObject(smallProject, "0009");
         return smallProject;
     }

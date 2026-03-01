@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,7 +23,7 @@ import java.util.List;
 import javax.xml.namespace.QName;
 
 // EclipseLink imports
-import org.eclipse.persistence.exceptions.DBWSException;
+import org.eclipse.persistence.dbws.DBWSException;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField;
 import org.eclipse.persistence.queries.DataModifyQuery;
@@ -31,7 +31,6 @@ import org.eclipse.persistence.queries.DataReadQuery;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReadObjectQuery;
-import org.eclipse.persistence.queries.StoredFunctionCall;
 import org.eclipse.persistence.queries.StoredProcedureCall;
 import org.eclipse.persistence.queries.ValueReadQuery;
 import static org.eclipse.persistence.internal.xr.Util.SXF_QNAME;
@@ -104,7 +103,7 @@ public class StoredProcedureQueryHandler extends QueryHandler {
                 }
             }
             else {
-                if (getOutArguments().size() == 0 && getInOutArguments().size() == 0) {
+                if (getOutArguments().isEmpty() && getInOutArguments().isEmpty()) {
                     if (isStoredFunctionQueryHandler()) {
                         if (!xrService.descriptorsByQName.containsKey(type)) {
                             databaseQueryToInitialize = new ValueReadQuery();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,13 +14,6 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.descriptors;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
@@ -29,6 +22,13 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
 import org.eclipse.persistence.queries.ObjectLevelModifyQuery;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -62,7 +62,7 @@ public class SelectedFieldsLockingPolicy extends FieldsLockingPolicy {
      * PUBLIC: Add a field name to lock on. All fields in this list will be
      * compared when updating if the value of any of the fields does not match
      * the value in memory, an OptimisticLockException will be thrown.
-     *
+     * <p>
      * Note: An Automatic update will not be done on this field, only a
      * comparison occurs.
      */
@@ -150,11 +150,7 @@ public class SelectedFieldsLockingPolicy extends FieldsLockingPolicy {
             DatabaseField field = lockFields.get(index);
             field = descriptor.buildField(field);
             lockFields.set(index, field);
-            List<DatabaseField> fieldsForTable = getLockFieldsByTable().get(field.getTable());
-            if (fieldsForTable == null) {
-                fieldsForTable = new ArrayList<>();
-                getLockFieldsByTable().put(field.getTable(), fieldsForTable);
-            }
+            List<DatabaseField> fieldsForTable = getLockFieldsByTable().computeIfAbsent(field.getTable(), k -> new ArrayList<>());
             fieldsForTable.add(field);
         }
     }
@@ -163,7 +159,7 @@ public class SelectedFieldsLockingPolicy extends FieldsLockingPolicy {
      * PUBLIC: Set the field names to lock on. All fields in this list will be
      * compared when Updating. If the value of any of the fields does not match
      * the value in memory, an OptimisticLockException will be thrown.
-     *
+     * <p>
      * Note: An Automatic update will not be done on this field, only a
      * comparison occurs.
      */

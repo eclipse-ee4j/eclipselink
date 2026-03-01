@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,7 +14,8 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.sessions.factories.model.pool;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * INTERNAL:
@@ -23,10 +24,10 @@ public class PoolsConfig {
     private ReadConnectionPoolConfig m_readConnectionPoolConfig;
     private WriteConnectionPoolConfig m_writeConnectionPoolConfig;
     private ConnectionPoolConfig m_sequenceConnectionPoolConfig;
-    private Vector<ConnectionPoolConfig> m_connectionPoolConfigs;
+    private List<ConnectionPoolConfig> m_connectionPoolConfigs;
 
     public PoolsConfig() {
-        m_connectionPoolConfigs = new Vector<>();
+        m_connectionPoolConfigs = new ArrayList<>();
     }
 
     public void setReadConnectionPoolConfig(ReadConnectionPoolConfig readConnectionPoolConfig) {
@@ -57,11 +58,11 @@ public class PoolsConfig {
         m_connectionPoolConfigs.add(connectionPoolConfig);
     }
 
-    public void setConnectionPoolConfigs(Vector<ConnectionPoolConfig> connectionPoolConfigs) {
+    public void setConnectionPoolConfigs(List<ConnectionPoolConfig> connectionPoolConfigs) {
         m_connectionPoolConfigs = connectionPoolConfigs;
     }
 
-    public Vector<ConnectionPoolConfig> getConnectionPoolConfigs() {
+    public List<ConnectionPoolConfig> getConnectionPoolConfigs() {
         return m_connectionPoolConfigs;
     }
 }

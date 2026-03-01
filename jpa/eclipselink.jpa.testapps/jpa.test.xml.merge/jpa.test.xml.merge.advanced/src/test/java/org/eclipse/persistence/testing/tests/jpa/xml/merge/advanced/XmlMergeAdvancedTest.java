@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,8 +26,8 @@ import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.xml.merge.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.xml.merge.advanced.Project;
 
+import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 /**
  * JUnit test case(s) for merging xml with metadata-complete="true" and annotations.
@@ -101,35 +101,34 @@ public class XmlMergeAdvancedTest extends JUnitTestCase {
     // The test should be altered accordingly in case the two classes are no longer use the same mappings types.
     public void testMappingsTypes() throws ClassNotFoundException {
         Map<Class<?>, ClassDescriptor> descriptors = getPersistenceUnitServerSession().getDescriptors();
-        String errorMsg = "";
-        for (int i=0; i<classNames.length; i++) {
-            String classErrorMsg = "";
-            String className = packageName + classNames[i];
-            String classToCompareName = packageToCompareName + classNames[i];
+        StringBuilder errorMsg = new StringBuilder();
+        for (String name : classNames) {
+            StringBuilder classErrorMsg = new StringBuilder();
+            String className = packageName + name;
+            String classToCompareName = packageToCompareName + name;
             Class<?> cls = Class.forName(className);
             Class<?> clsToCompare = Class.forName(classToCompareName);
             ClassDescriptor desc = descriptors.get(cls);
             ClassDescriptor descToCompare = descriptors.get(clsToCompare);
-            Vector<DatabaseMapping> mappings = desc.getMappings();
-            Vector<DatabaseMapping> mappingsToCompare = descToCompare.getMappings();
-            if(mappings.size() != mappingsToCompare.size()) {
-                classErrorMsg = classErrorMsg +  "Number of mappings is different; ";
+            List<DatabaseMapping> mappings = desc.getMappings();
+            List<DatabaseMapping> mappingsToCompare = descToCompare.getMappings();
+            if (mappings.size() != mappingsToCompare.size()) {
+                classErrorMsg.append("Number of mappings is different; ");
                 continue;
             }
-            for(int j=0; j<mappings.size(); j++) {
-                DatabaseMapping mapping = mappings.elementAt(j);
+            for (DatabaseMapping mapping : mappings) {
                 String attributeName = mapping.getAttributeName();
                 DatabaseMapping mappingToCompare = descToCompare.getMappingForAttributeName(attributeName);
-                if(!mapping.getClass().equals(mappingToCompare.getClass())) {
-                    classErrorMsg = classErrorMsg + "attribute "+attributeName+" - mappings of different types; ";
+                if (!mapping.getClass().equals(mappingToCompare.getClass())) {
+                    classErrorMsg.append("attribute ").append(attributeName).append(" - mappings of different types; ");
                 }
             }
-            if(classErrorMsg.length() > 0) {
-                errorMsg = errorMsg + "class " + classNames[i] +": " + classErrorMsg;
+            if (classErrorMsg.length() > 0) {
+                errorMsg.append("class ").append(name).append(": ").append(classErrorMsg);
             }
         }
         if(errorMsg.length() > 0) {
-            fail(errorMsg);
+            fail(errorMsg.toString());
         }
     }
 

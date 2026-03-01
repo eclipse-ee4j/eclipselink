@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,7 +32,7 @@ import org.eclipse.persistence.queries.FieldResult;
 /**
  * INTERNAL:
  * Object to hold onto an field result metadata.
- *
+ * <p>
  * Key notes:
  * - all metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -74,8 +74,7 @@ public class FieldResultMetadata extends ORMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (objectToCompare instanceof FieldResultMetadata) {
-            FieldResultMetadata fieldResult = (FieldResultMetadata) objectToCompare;
+        if (objectToCompare instanceof FieldResultMetadata fieldResult) {
 
             if (! valuesMatch(m_name, fieldResult.getName())) {
                 return false;
@@ -89,7 +88,8 @@ public class FieldResultMetadata extends ORMetadata {
 
     @Override
     public int hashCode() {
-        int result = m_name != null ? m_name.hashCode() : 0;
+        int result = super.hashCode();
+        result = 31 * result + (m_name != null ? m_name.hashCode() : 0);
         result = 31 * result + (m_column != null ? m_column.hashCode() : 0);
         return result;
     }

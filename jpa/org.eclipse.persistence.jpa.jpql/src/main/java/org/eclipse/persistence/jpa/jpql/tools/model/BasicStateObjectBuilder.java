@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -12,7 +12,8 @@
 
 // Contributors:
 //     Oracle - initial API and implementation
-//
+//     06/02/2023: Radek Felcman
+//       - Issue 1885: Implement new JPQLGrammar for upcoming Jakarta Persistence 3.2
 package org.eclipse.persistence.jpa.jpql.tools.model;
 
 import java.util.ArrayList;
@@ -42,8 +43,10 @@ import org.eclipse.persistence.jpa.jpql.parser.CollectionMemberExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CollectionValuedPathExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ComparisonExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ConcatExpression;
+import org.eclipse.persistence.jpa.jpql.parser.ConcatPipesExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ConstructorExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CountFunction;
+import org.eclipse.persistence.jpa.jpql.parser.DatabaseType;
 import org.eclipse.persistence.jpa.jpql.parser.DateTime;
 import org.eclipse.persistence.jpa.jpql.parser.DeleteClause;
 import org.eclipse.persistence.jpa.jpql.parser.DeleteStatement;
@@ -57,6 +60,7 @@ import org.eclipse.persistence.jpa.jpql.parser.FromClause;
 import org.eclipse.persistence.jpa.jpql.parser.FunctionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.GroupByClause;
 import org.eclipse.persistence.jpa.jpql.parser.HavingClause;
+import org.eclipse.persistence.jpa.jpql.parser.IdExpression;
 import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariable;
 import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariableDeclaration;
 import org.eclipse.persistence.jpa.jpql.parser.InExpression;
@@ -66,6 +70,7 @@ import org.eclipse.persistence.jpa.jpql.parser.JPQLExpression;
 import org.eclipse.persistence.jpa.jpql.parser.Join;
 import org.eclipse.persistence.jpa.jpql.parser.KeyExpression;
 import org.eclipse.persistence.jpa.jpql.parser.KeywordExpression;
+import org.eclipse.persistence.jpa.jpql.parser.LeftExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LengthExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LikeExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LocateExpression;
@@ -85,7 +90,9 @@ import org.eclipse.persistence.jpa.jpql.parser.OrExpression;
 import org.eclipse.persistence.jpa.jpql.parser.OrderByClause;
 import org.eclipse.persistence.jpa.jpql.parser.OrderByItem;
 import org.eclipse.persistence.jpa.jpql.parser.RangeVariableDeclaration;
+import org.eclipse.persistence.jpa.jpql.parser.ReplaceExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ResultVariable;
+import org.eclipse.persistence.jpa.jpql.parser.RightExpression;
 import org.eclipse.persistence.jpa.jpql.parser.SelectClause;
 import org.eclipse.persistence.jpa.jpql.parser.SelectStatement;
 import org.eclipse.persistence.jpa.jpql.parser.SimpleFromClause;
@@ -108,6 +115,7 @@ import org.eclipse.persistence.jpa.jpql.parser.UpdateItem;
 import org.eclipse.persistence.jpa.jpql.parser.UpdateStatement;
 import org.eclipse.persistence.jpa.jpql.parser.UpperExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ValueExpression;
+import org.eclipse.persistence.jpa.jpql.parser.VersionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.WhenClause;
 import org.eclipse.persistence.jpa.jpql.parser.WhereClause;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.AbsExpressionStateObject;
@@ -132,6 +140,7 @@ import org.eclipse.persistence.jpa.jpql.tools.model.query.CollectionMemberExpres
 import org.eclipse.persistence.jpa.jpql.tools.model.query.CollectionValuedPathExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.ComparisonExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.ConcatExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.tools.model.query.ConcatPipesExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.ConstructorExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.CountFunctionStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.DateTimeStateObject;
@@ -146,6 +155,7 @@ import org.eclipse.persistence.jpa.jpql.tools.model.query.FromClauseStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.FunctionExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.GroupByClauseStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.HavingClauseStateObject;
+import org.eclipse.persistence.jpa.jpql.tools.model.query.IdExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.IdentificationVariableDeclarationStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.IdentificationVariableStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.InExpressionStateObject;
@@ -155,6 +165,7 @@ import org.eclipse.persistence.jpa.jpql.tools.model.query.JPQLQueryStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.JoinStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.KeyExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.KeywordExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.tools.model.query.LeftExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.LengthExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.LikeExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.LocateExpressionStateObject;
@@ -171,7 +182,9 @@ import org.eclipse.persistence.jpa.jpql.tools.model.query.ObjectExpressionStateO
 import org.eclipse.persistence.jpa.jpql.tools.model.query.OrExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.OrderByClauseStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.OrderByItemStateObject;
+import org.eclipse.persistence.jpa.jpql.tools.model.query.ReplaceExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.ResultVariableStateObject;
+import org.eclipse.persistence.jpa.jpql.tools.model.query.RightExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.SelectClauseStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.SelectStatementStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.SimpleFromClauseStateObject;
@@ -775,6 +788,25 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
     }
 
     @Override
+    public void visit(ConcatPipesExpression expression) {
+
+        expression.getLeftExpression().accept(this);
+        StateObject leftStateObject = stateObject;
+
+        expression.getRightExpression().accept(this);
+        StateObject rightStateObject = stateObject;
+
+        ConcatPipesExpressionStateObject stateObject = new ConcatPipesExpressionStateObject(
+                parent,
+                leftStateObject,
+                rightStateObject
+        );
+
+        stateObject.setExpression(expression);
+        this.stateObject = stateObject;
+    }
+
+    @Override
     public void visit(ConstructorExpression expression) {
 
         ConstructorExpressionStateObject stateObject = new ConstructorExpressionStateObject(
@@ -800,6 +832,11 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
 
         stateObject.setExpression(expression);
         this.stateObject = stateObject;
+    }
+
+    @Override
+    public void visit(DatabaseType expression) {
+        // TODO
     }
 
     @Override
@@ -953,6 +990,18 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
     }
 
     @Override
+    public void visit(IdExpression expression) {
+
+        IdExpressionStateObject stateObject = new IdExpressionStateObject(
+                parent,
+                literal(expression.getExpression(), LiteralType.IDENTIFICATION_VARIABLE)
+        );
+
+        stateObject.setExpression(expression);
+        this.stateObject = stateObject;
+    }
+
+    @Override
     public void visit(IndexExpression expression) {
 
         IndexExpressionStateObject stateObject = new IndexExpressionStateObject(
@@ -1029,6 +1078,25 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
         KeywordExpressionStateObject stateObject = new KeywordExpressionStateObject(
             parent,
             expression.getText()
+        );
+
+        stateObject.setExpression(expression);
+        this.stateObject = stateObject;
+    }
+
+    @Override
+    public void visit(LeftExpression expression) {
+
+        expression.getFirstExpression().accept(this);
+        StateObject firstExpression = stateObject;
+
+        expression.getSecondExpression().accept(this);
+        StateObject secondExpression = stateObject;
+
+        LeftExpressionStateObject stateObject = new LeftExpressionStateObject(
+                parent,
+                firstExpression,
+                secondExpression
         );
 
         stateObject.setExpression(expression);
@@ -1301,6 +1369,29 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
     }
 
     @Override
+    public void visit(ReplaceExpression expression) {
+
+        expression.getFirstExpression().accept(this);
+        StateObject firstExpression = stateObject;
+
+        expression.getSecondExpression().accept(this);
+        StateObject secondExpression = stateObject;
+
+        expression.getThirdExpression().accept(this);
+        StateObject thirdExpression = stateObject;
+
+        ReplaceExpressionStateObject stateObject = new ReplaceExpressionStateObject(
+                parent,
+                firstExpression,
+                secondExpression,
+                thirdExpression
+        );
+
+        stateObject.setExpression(expression);
+        this.stateObject = stateObject;
+    }
+
+    @Override
     public final void visit(final ResultVariable expression) {
 
         StateObjectVisitor visitor = new AbstractStateObjectVisitor() {
@@ -1314,6 +1405,25 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
         };
 
         stateObject.accept(visitor);
+    }
+
+    @Override
+    public void visit(RightExpression expression) {
+
+        expression.getFirstExpression().accept(this);
+        StateObject firstExpression = stateObject;
+
+        expression.getSecondExpression().accept(this);
+        StateObject secondExpression = stateObject;
+
+        RightExpressionStateObject stateObject = new RightExpressionStateObject(
+                parent,
+                firstExpression,
+                secondExpression
+        );
+
+        stateObject.setExpression(expression);
+        this.stateObject = stateObject;
     }
 
     @Override
@@ -1553,6 +1663,18 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
         ValueExpressionStateObject stateObject = new ValueExpressionStateObject(
             parent,
             literal(expression.getExpression(), LiteralType.IDENTIFICATION_VARIABLE)
+        );
+
+        stateObject.setExpression(expression);
+        this.stateObject = stateObject;
+    }
+
+    @Override
+    public void visit(VersionExpression expression) {
+
+        IdExpressionStateObject stateObject = new IdExpressionStateObject(
+                parent,
+                literal(expression.getExpression(), LiteralType.IDENTIFICATION_VARIABLE)
         );
 
         stateObject.setExpression(expression);

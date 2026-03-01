@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,11 +14,11 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.sessionsxml;
 
-import org.eclipse.persistence.testing.framework.AutoVerifyTestCase;
-import org.eclipse.persistence.testing.framework.TestErrorException;
 import org.eclipse.persistence.internal.sessions.factories.model.SessionConfigs;
 import org.eclipse.persistence.internal.sessions.factories.model.session.DatabaseSessionConfig;
 import org.eclipse.persistence.sessions.factories.SessionManager;
+import org.eclipse.persistence.testing.framework.AutoVerifyTestCase;
+import org.eclipse.persistence.testing.framework.TestErrorException;
 
 
 /**
@@ -46,11 +46,11 @@ public class MWConfigModelEncryptionTest extends AutoVerifyTestCase {
         // passwords
         // The first one will preserve the password and test the forced
         // encryption on the getPassword() call
-        m_sessionConfig1 = (DatabaseSessionConfig)m_sessions.getSessionConfigs().firstElement();
+        m_sessionConfig1 = (DatabaseSessionConfig)m_sessions.getSessionConfigs().get(0);
 
         // The second one will blank out the password and test that the
         // getPassword() call doesn't throw a null pointer exception
-        m_sessionConfig2 = (DatabaseSessionConfig)m_sessions.getSessionConfigs().lastElement();
+        m_sessionConfig2 = (DatabaseSessionConfig)m_sessions.getSessionConfigs().get(1);
         m_sessionConfig2.getLoginConfig().setEncryptedPassword(null);
     }
 

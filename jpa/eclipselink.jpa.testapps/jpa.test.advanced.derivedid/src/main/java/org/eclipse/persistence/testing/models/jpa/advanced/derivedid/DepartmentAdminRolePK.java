@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -49,10 +49,9 @@ public class DepartmentAdminRolePK {
     }
 
     public boolean equals(Object object){
-        if (!(object instanceof DepartmentAdminRolePK)){
+        if (!(object instanceof DepartmentAdminRolePK pk)){
             return false;
         }
-        DepartmentAdminRolePK pk = (DepartmentAdminRolePK)object;
         return pk.getAdmin() == admin && pk.getDepartment().equals(department);
     }
 

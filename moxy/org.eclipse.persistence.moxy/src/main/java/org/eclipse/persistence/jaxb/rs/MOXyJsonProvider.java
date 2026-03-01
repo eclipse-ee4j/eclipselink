@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -68,10 +68,9 @@ import jakarta.xml.bind.Unmarshaller;
 import javax.xml.namespace.QName;
 import javax.xml.transform.stream.StreamSource;
 
-import org.eclipse.persistence.exceptions.JSONException;
+import org.eclipse.persistence.jaxb.JSONException;
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.internal.localization.JAXBLocalization;
 import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.queries.CollectionContainerPolicy;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
@@ -219,7 +218,7 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
     protected Providers providers;
 
     private String attributePrefix = null;
-    private Map<Set<Class<?>>, JAXBContext> contextCache = new HashMap<Set<Class<?>>, JAXBContext>();
+    private Map<Set<Class<?>>, JAXBContext> contextCache = new HashMap<>();
     private boolean formattedOutput = false;
     private boolean includeRoot = false;
     private boolean marshalEmptyCollections = true;
@@ -252,27 +251,23 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
         if(null == genericType) {
             return asSet(Object.class);
         }
-        if(genericType instanceof Class<?> && genericType != JAXBElement.class) {
-            Class<?> clazz = (Class<?>) genericType;
+        if(genericType instanceof Class<?> clazz && genericType != JAXBElement.class) {
             if(clazz.isArray()) {
                 return getDomainClasses(clazz.getComponentType());
             }
             return asSet(clazz);
         } else if(genericType instanceof ParameterizedType) {
-            Set<Class<?>> result = new LinkedHashSet<Class<?>>();
+            Set<Class<?>> result = new LinkedHashSet<>();
             result.add((Class<?>)((ParameterizedType) genericType).getRawType());
             Type[] types = ((ParameterizedType) genericType).getActualTypeArguments();
-            if(types.length > 0){
-                for (Type upperType : types) {
-                    result.addAll(getDomainClasses(upperType));
-                }
+            for (Type upperType : types) {
+                result.addAll(getDomainClasses(upperType));
             }
             return result;
-        } else if (genericType instanceof GenericArrayType) {
-            GenericArrayType genericArrayType = (GenericArrayType) genericType;
+        } else if (genericType instanceof GenericArrayType genericArrayType) {
             return getDomainClasses(genericArrayType.getGenericComponentType());
         } else if(genericType instanceof WildcardType) {
-            Set<Class<?>> result = new LinkedHashSet<Class<?>>();
+            Set<Class<?>> result = new LinkedHashSet<>();
             Type[] upperTypes = ((WildcardType)genericType).getUpperBounds();
             if(upperTypes.length > 0){
                 for (Type upperType : upperTypes) {
@@ -583,7 +578,7 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
             //special case for List<JAXBElement<String>>
             //this is quick fix, MOXyJsonProvider should be refactored as stated in issue #459541
             if (domainClasses.size() == 3) {
-                Class<?>[] domainArray = domainClasses.toArray(new Class<?>[domainClasses.size()]);
+                Class<?>[] domainArray = domainClasses.toArray(new Class<?>[0]);
                 if (JAXBElement.class.isAssignableFrom(domainArray[1]) && String.class == domainArray[2]) {
                     return true;
                 }
@@ -787,8 +782,7 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
             return true;
         } else if(genericType instanceof GenericArrayType) {
             return wrapItemInJAXBElement(((GenericArrayType) genericType).getGenericComponentType());
-        } else if(genericType instanceof ParameterizedType) {
-            ParameterizedType parameterizedType = (ParameterizedType) genericType;
+        } else if(genericType instanceof ParameterizedType parameterizedType) {
             Type actualType = parameterizedType.getActualTypeArguments()[0];
             return wrapItemInJAXBElement(parameterizedType.getOwnerType()) || wrapItemInJAXBElement(parameterizedType.getRawType()) || wrapItemInJAXBElement(actualType);
         } else {

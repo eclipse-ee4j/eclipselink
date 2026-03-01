@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,11 +14,13 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.queries.oracle;
 
-import java.util.*;
+import org.eclipse.persistence.queries.ReadAllQuery;
+import org.eclipse.persistence.testing.framework.TestCase;
+import org.eclipse.persistence.testing.framework.TestErrorException;
+import org.eclipse.persistence.testing.framework.TestWarningException;
+import org.eclipse.persistence.testing.models.mapping.Employee;
 
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.testing.framework.*;
-import org.eclipse.persistence.testing.models.mapping.*;
+import java.util.Vector;
 
 /**
  * This class is the root class for most Hierarchical Query tests. The subclasses
@@ -57,7 +59,7 @@ public abstract class HierarchicalQueryTest extends TestCase {
             results = (Vector)getSession().executeQuery(getQuery());
         } catch (Exception ex) {
             ex.printStackTrace();
-            if ((ex.getMessage().indexOf("missing BY keyword") != -1) || (ex.getMessage().indexOf("cannot have join with CONNECT BY") != -1)) {
+            if ((ex.getMessage().contains("missing BY keyword")) || (ex.getMessage().contains("cannot have join with CONNECT BY"))) {
                 throw new TestWarningException("This test is indended for Oracle 9i and up");
             }
             ex.printStackTrace();
@@ -71,9 +73,7 @@ public abstract class HierarchicalQueryTest extends TestCase {
         if (expectedResults.size() != results.size()) {
             throw new TestErrorException(ERROR_1);
         }
-        Iterator res = results.iterator();
-        while (res.hasNext()) {
-            Object next = res.next();
+        for (Object next : results) {
             if (!expectedResults.contains(next)) {
                 throw new TestErrorException(ERROR_2 + next);
             }
@@ -83,11 +83,11 @@ public abstract class HierarchicalQueryTest extends TestCase {
     //Adds an employee and all his managed employees recursivly to the provided vector.
     //This creates a hierarchy rooted at Employee emp
     public void addEmployee(Vector toVector, Employee emp) {
-        toVector.addElement(emp);
+        toVector.add(emp);
         Vector managed = emp.getManagedEmployees();
         if (managed != null && !(managed.isEmpty())) {
             for (int i = 0; i < managed.size(); i++) {
-                Employee next = (Employee)managed.elementAt(i);
+                Employee next = (Employee)managed.get(i);
                 addEmployee(toVector, next);
             }
         }

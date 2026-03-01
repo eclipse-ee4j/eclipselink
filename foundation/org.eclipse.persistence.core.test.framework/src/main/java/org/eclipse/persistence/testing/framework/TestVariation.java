@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,7 +16,7 @@ package org.eclipse.persistence.testing.framework;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.Vector;
 
 /**
@@ -65,10 +65,10 @@ public class TestVariation {
         getMembers(object.getClass(), names, getters, setters, fields, true);
         int numberOfTests = (int)java.lang.Math.pow(2, names.size());
         for (int i = 0; i < numberOfTests; i++) {
-            Enumeration<TestCase> enumtr = testsIn.elements();
-            while (enumtr.hasMoreElements()) {
-                TestWrapper testWrapper = createTest(i, object, names, getters, setters, fields, enumtr.nextElement());
-                testsOut.addElement(testWrapper);
+            Iterator<TestCase> iterator = testsIn.iterator();
+            while (iterator.hasNext()) {
+                TestWrapper testWrapper = createTest(i, object, names, getters, setters, fields, iterator.next());
+                testsOut.add(testWrapper);
             }
         }
         return testsOut;
@@ -78,7 +78,7 @@ public class TestVariation {
         Vector<String> names = new Vector<>();
         String[] strPair = splitString(str);
         while (strPair[0] != null) {
-            names.addElement(strPair[0]);
+            names.add(strPair[0]);
             strPair = splitString(strPair[1]);
         }
         return names;
@@ -131,7 +131,7 @@ public class TestVariation {
         }
 
         out[0] = str.substring(first, lastPlusOne);
-        out[1] = str.substring(lastPlusOne, str.length());
+        out[1] = str.substring(lastPlusOne);
 
         return out;
     }
@@ -149,50 +149,50 @@ public class TestVariation {
         Vector<String> candidateSettersNames = new Vector<>();
         Vector<String> candidateFieldsNames = new Vector<>();
 
-        for (int i = 0; i < allMethods.length; i++) {
-            Class<?> returnType = allMethods[i].getReturnType();
-            Class<?>[] parameterTypes = allMethods[i].getParameterTypes();
+        for (Method allMethod : allMethods) {
+            Class<?> returnType = allMethod.getReturnType();
+            Class<?>[] parameterTypes = allMethod.getParameterTypes();
             if (returnType.equals(boolean.class) && (parameterTypes.length == 0)) {
-                candidateGetters.addElement(allMethods[i]);
-                candidateGettersNames.addElement(allMethods[i].getName().toLowerCase());
+                candidateGetters.add(allMethod);
+                candidateGettersNames.add(allMethod.getName().toLowerCase());
             } else if (returnType.equals(void.class) && (parameterTypes.length == 1)) {
                 if (parameterTypes[0].equals(boolean.class)) {
-                    candidateSetters.addElement(allMethods[i]);
-                    candidateSettersNames.addElement(allMethods[i].getName().toLowerCase());
+                    candidateSetters.add(allMethod);
+                    candidateSettersNames.add(allMethod.getName().toLowerCase());
                 }
             }
         }
-        for (int i = 0; i < allFields.length; i++) {
-            Class<?> type = allFields[i].getType();
+        for (Field allField : allFields) {
+            Class<?> type = allField.getType();
             if (type.equals(boolean.class)) {
-                candidateFields.addElement(allFields[i]);
-                candidateFieldsNames.addElement(allFields[i].getName().toLowerCase());
+                candidateFields.add(allField);
+                candidateFieldsNames.add(allField.getName().toLowerCase());
             }
         }
         for (int i = 0; i < names.size(); i++) {
             Method getter = null;
             Method setter = null;
             Field field = null;
-            String name = names.elementAt(i).toLowerCase();
+            String name = names.get(i).toLowerCase();
             for (int j = 0; j < candidateGetters.size(); j++) {
-                if (candidateGettersNames.elementAt(j).contains(name)) {
-                    getter = candidateGetters.elementAt(j);
+                if (candidateGettersNames.get(j).contains(name)) {
+                    getter = candidateGetters.get(j);
                     candidateGetters.remove(j);
                     candidateGettersNames.remove(j);
                     break;
                 }
             }
             for (int j = 0; j < candidateSetters.size(); j++) {
-                if (candidateSettersNames.elementAt(j).contains(name)) {
-                    setter = candidateSetters.elementAt(j);
+                if (candidateSettersNames.get(j).contains(name)) {
+                    setter = candidateSetters.get(j);
                     candidateSetters.remove(j);
                     candidateSettersNames.remove(j);
                     break;
                 }
             }
             for (int j = 0; j < candidateFields.size(); j++) {
-                if (candidateFieldsNames.elementAt(j).contains(name)) {
-                    field = candidateFields.elementAt(j);
+                if (candidateFieldsNames.get(j).contains(name)) {
+                    field = candidateFields.get(j);
                     candidateFields.remove(j);
                     candidateFieldsNames.remove(j);
                     break;
@@ -204,7 +204,7 @@ public class TestVariation {
                 fields.add(field);
             } else {
                 if (throwExceptionIfNotFound) {
-                    throw new TestWarningException("Can't find a setter/getter or field for " + names.elementAt(i));
+                    throw new TestWarningException("Can't find a setter/getter or field for " + names.get(i));
                 } else {
                     names.remove(i);
                     i--;

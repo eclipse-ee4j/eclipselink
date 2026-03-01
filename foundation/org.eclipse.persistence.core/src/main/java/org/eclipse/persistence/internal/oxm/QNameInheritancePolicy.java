@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,12 +14,6 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.oxm;
 
-import java.util.Iterator;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Vector;
-
-import javax.xml.namespace.QName;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.InheritancePolicy;
 import org.eclipse.persistence.descriptors.MultitenantPolicy;
@@ -34,6 +28,12 @@ import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.record.XMLRecord;
+
+import javax.xml.namespace.QName;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * INTERNAL:
@@ -67,9 +67,9 @@ public class QNameInheritancePolicy extends InheritancePolicy {
     @Override
     protected void updateTables(){
         // Unique is required because the builder can add the same table many times.
-        Vector<DatabaseTable> childTables = getDescriptor().getTables();
-        Vector<DatabaseTable> parentTables = getParentDescriptor().getTables();
-        Vector<DatabaseTable> uniqueTables = Helper.concatenateUniqueVectors(childTables, parentTables);
+        List<DatabaseTable> childTables = getDescriptor().getTables();
+        List<DatabaseTable> parentTables = getParentDescriptor().getTables();
+        List<DatabaseTable> uniqueTables = Helper.concatenateUniqueLists(childTables, parentTables);
         getDescriptor().setTables(uniqueTables);
 
         if(getDescriptor().isXMLDescriptor() && getParentDescriptor().isXMLDescriptor()){
@@ -151,7 +151,7 @@ public class QNameInheritancePolicy extends InheritancePolicy {
                     }
                     getClassIndicatorField().setType(type);
                 }
-                getDescriptor().getFields().addElement(getClassIndicatorField());
+                getDescriptor().getFields().add(getClassIndicatorField());
             }
         }
     }
@@ -180,10 +180,9 @@ public class QNameInheritancePolicy extends InheritancePolicy {
             while (entries.hasNext()) {
                 Map.Entry entry = entries.next();
                 Object key = entry.getKey();
-                if (key instanceof String) {
+                if (key instanceof String indicatorValue) {
                     XPathQName qname;
 
-                    String indicatorValue = (String) key;
                     if (!usesXsiType || namespaceResolver == null) {
                         qname = new XPathQName(indicatorValue, true);
                     } else {
@@ -246,9 +245,8 @@ public class QNameInheritancePolicy extends InheritancePolicy {
         }
 
         Class<?> concreteClass;
-        if (indicator instanceof String) {
+        if (indicator instanceof String indicatorValue) {
             boolean namespaceAware = ((XMLRecord) rowFromDatabase).isNamespaceAware();
-            String indicatorValue = (String)indicator;
             int index = -1;
             if(namespaceAware){
               index = indicatorValue.indexOf(((XMLRecord)rowFromDatabase).getNamespaceSeparator());

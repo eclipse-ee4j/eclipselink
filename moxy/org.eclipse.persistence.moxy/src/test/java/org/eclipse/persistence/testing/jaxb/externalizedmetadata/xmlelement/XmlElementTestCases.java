@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,7 +22,6 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TimeZone;
 
 import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
@@ -177,7 +176,7 @@ public class XmlElementTestCases extends JAXBWithJSONTestCases {
         assertNotNull("No descriptor was generated for Employee.", xDesc);
         DatabaseMapping mapping = xDesc.getMappingForAttributeName("myEmployees");
         assertNotNull("No mapping exists on Employee for attribute [myEmployees].", mapping);
-        assertTrue("Expected an XMLCompositeCollectionMapping for attribute [myEmployees], but was [" + mapping.toString() +"].", mapping instanceof XMLCompositeCollectionMapping);
+        assertTrue("Expected an XMLCompositeCollectionMapping for attribute [myEmployees], but was [" + mapping +"].", mapping instanceof XMLCompositeCollectionMapping);
         assertTrue("Expected container class [java.util.LinkedList] but was ["+ mapping.getContainerPolicy().getContainerClassName()+"]", mapping.getContainerPolicy().getContainerClassName().equals("java.util.LinkedList"));
     }
 

@@ -1,0 +1,36 @@
+== Overview of EclipseLink Mappings and Project
+
+The following sections provide an overview of how to use EclipseLink to
+map persistent objects to a data source and how to capture that
+information for use with the EclipseLink run-time component:
+
+* link:Introduction_to_EclipseLink_Mapping_and_Configuration_(ELUG)[Introduction
+to EclipseLink Mapping and Configuration] – Introduces the metadata,
+contained in the descriptor, used by EclipseLink to generate SQL
+statements that create, read, modify, and delete objects.
+
+* link:Introduction_to_Projects_(ELUG)[Introduction to Projects] –
+Describes each of the different EclipseLink project types and important
+project concepts.
+
+* link:Introduction_to_Descriptors_(ELUG)[Introduction to Descriptors] –
+Describes each of the different EclipseLink descriptor types and
+important descriptor concepts.
+
+* link:Introduction_to_Mappings_(ELUG)[Introduction to Mappings] –
+Describes each of the different EclipseLink mapping types and important
+mapping concepts.
+
+* link:Introduction_to_Persistence_Layer_(ELUG)[Introduction to
+Persistence Layer] – Provides an overview of how to use sessions,
+queries, and transactions in your application.
+
+*Special:Whatlinkshere_EclipseLink_UserGuide_Overview_of_EclipseLink_Mappings_and_Project_Configuration_(ELUG)[Related
+Topics]*
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Concept[Category: Concept]

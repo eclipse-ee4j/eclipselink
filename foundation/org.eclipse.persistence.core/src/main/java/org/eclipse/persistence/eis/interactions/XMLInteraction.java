@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,18 +14,22 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.eis.interactions;
 
-import java.io.*;
-import java.util.*;
-
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.eis.EISAccessor;
+import org.eclipse.persistence.eis.EISDOMRecord;
+import org.eclipse.persistence.eis.EISDescriptor;
+import org.eclipse.persistence.internal.databaseaccess.Accessor;
+import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.oxm.XMLObjectBuilder;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.XMLField;
-import org.w3c.dom.Element;
-import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.oxm.record.XMLRecord;
-import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.eis.*;
+import org.eclipse.persistence.queries.DatabaseQuery;
+import org.w3c.dom.Element;
+
+import java.io.StringWriter;
+import java.util.Vector;
 
 /**
  * Defines the specification for a call to a JCA interaction that uses XML.
@@ -89,17 +93,19 @@ public class XMLInteraction extends MappedInteraction {
      */
     @Override
     public void prepare(AbstractSession session) {
-        if (getInputRootElementName().length() == 0) {
-            if ((getQuery() != null) && (getQuery().getDescriptor() instanceof EISDescriptor)) {
-                EISDescriptor descriptor = (EISDescriptor)getQuery().getDescriptor();
+        DatabaseQuery q = getQuery();
+        ClassDescriptor desc = q != null ? q.getDescriptor() : null;
+        if (getInputRootElementName().isEmpty()) {
+            if (desc != null && desc.isEISDescriptor()) {
+                EISDescriptor descriptor = (EISDescriptor) desc;
                 setInputRootElementName(descriptor.getDataTypeName());
             } else {
                 setInputRootElementName("input");
             }
         }
-        if (getOutputRootElementName().length() == 0) {
-            if ((getQuery() != null) && (getQuery().getDescriptor() instanceof EISDescriptor)) {
-                EISDescriptor descriptor = (EISDescriptor)getQuery().getDescriptor();
+        if (getOutputRootElementName().isEmpty()) {
+            if (desc != null && desc.isEISDescriptor()) {
+                EISDescriptor descriptor = (EISDescriptor) desc;
                 setOutputRootElementName(descriptor.getDataTypeName());
             } else {
                 setInputRootElementName("output");
@@ -133,7 +139,7 @@ public class XMLInteraction extends MappedInteraction {
         // The input record can either be build from the interaction arguments,
         // or the modify row.
         if ((getInputRow() != null) && (!hasArguments())) {
-            if (getInputResultPath().length() == 0) {
+            if (getInputResultPath().isEmpty()) {
                 if (getInputRow() instanceof XMLRecord) {
                     dom = (Element)((XMLRecord)getInputRow()).getDOM();
                     // Rename the root element if specified to be different.
@@ -145,7 +151,7 @@ public class XMLInteraction extends MappedInteraction {
                 } else {
                     XMLRecord parameterRow = createXMLRecord(getInputRootElementName());
                     for (int index = 0; index < getInputRow().size(); index++) {
-                        parameterRow.put(getInputRow().getFields().elementAt(index), getInputRow().getValues().elementAt(index));
+                        parameterRow.put(getInputRow().getFields().get(index), getInputRow().getValues().get(index));
                     }
                     dom = (Element)parameterRow.getDOM();
                 }
@@ -183,7 +189,7 @@ public class XMLInteraction extends MappedInteraction {
         if (row == null) {
             return null;
         }
-        if (getOutputResultPath().length() > 0) {
+        if (!getOutputResultPath().isEmpty()) {
             row = (AbstractRecord)row.get(getOutputResultPath());
             // Handle the case were the output row is mapped into a database row of values.
         } else if (hasOutputArguments()) {
@@ -206,7 +212,7 @@ public class XMLInteraction extends MappedInteraction {
             return new Vector<>(0);
         }
         AbstractRecord row = accessor.getEISPlatform().createDatabaseRowFromDOMRecord(record, this, accessor);
-        if (getOutputResultPath().length() > 0) {
+        if (!getOutputResultPath().isEmpty()) {
             @SuppressWarnings({"unchecked"})
             Vector<AbstractRecord> values = (Vector<AbstractRecord>)row.getValues(getOutputResultPath());
             if (values == null) {
@@ -228,13 +234,13 @@ public class XMLInteraction extends MappedInteraction {
         StringWriter writer = new StringWriter();
         writer.write("Executing ");
         writer.write(toString());
-        writer.write(Helper.cr());
+        writer.write(System.lineSeparator());
         writer.write("\tspec => ");
         writer.write(String.valueOf(getInteractionSpec()));
-        writer.write(Helper.cr());
+        writer.write(System.lineSeparator());
         writer.write("\tproperties => ");
         writer.write(String.valueOf(getProperties()));
-        writer.write(Helper.cr());
+        writer.write(System.lineSeparator());
         writer.write("\txml => ");
         Element dom = createInputDOM((EISAccessor)accessor);
         EISDOMRecord record = new EISDOMRecord(dom);
@@ -259,8 +265,9 @@ public class XMLInteraction extends MappedInteraction {
      */
     protected XMLRecord createXMLRecord(String rootName) {
         XMLRecord xmlRec;
-        if (getQuery().getDescriptor() != null && getQuery().getDescriptor() instanceof EISDescriptor && this.getQuery().getDescriptor().getObjectBuilder() instanceof XMLObjectBuilder) {
-            xmlRec = (XMLRecord)((XMLObjectBuilder)this.getQuery().getDescriptor().getObjectBuilder()).createRecord(getInputRootElementName(), getQuery().getSession());
+        ClassDescriptor descriptor = getQuery().getDescriptor();
+        if (descriptor != null && descriptor.isEISDescriptor() && descriptor.getObjectBuilder().isXMLObjectBuilder()) {
+            xmlRec = (XMLRecord)((XMLObjectBuilder) descriptor.getObjectBuilder()).createRecord(getInputRootElementName(), getQuery().getSession());
         } else {
             xmlRec = new org.eclipse.persistence.oxm.record.DOMRecord(getInputRootElementName());
             xmlRec.setSession(getQuery().getSession());

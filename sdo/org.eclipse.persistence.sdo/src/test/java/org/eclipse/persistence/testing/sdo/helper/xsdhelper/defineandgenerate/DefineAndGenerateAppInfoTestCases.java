@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,15 +20,14 @@ import java.io.InputStream;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
-import javax.xml.parsers.DocumentBuilderFactory;
+
 import junit.textui.TestRunner;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDOProperty;
 import org.eclipse.persistence.sdo.SDOType;
 import org.eclipse.persistence.sdo.helper.DefaultSchemaLocationResolver;
 import org.eclipse.persistence.sdo.helper.SDOXSDHelper;
-import org.eclipse.persistence.internal.helper.ClassConstants;
-import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
@@ -199,7 +198,7 @@ public class DefineAndGenerateAppInfoTestCases extends XSDHelperDefineAndGenerat
         /****QUANTITY TYPE*****/
         SDOType quantityType = new SDOType(uri, "quantityType");
         quantityType.setDataType(true);
-        quantityType.setInstanceClass(ClassConstants.PINT);
+        quantityType.setInstanceClass(CoreClassConstants.PINT);
         quantityType.getBaseTypes().add(intType);
 
         /****SKU TYPE*****/
@@ -327,7 +326,13 @@ public class DefineAndGenerateAppInfoTestCases extends XSDHelperDefineAndGenerat
     }
 
     protected String getTestControlString() {
-        String controlString = "<xsd:appinfo source=\"itemTest\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">" + "\n" + "   <someTag>blah blah itemTest</someTag>" + "\n" + "</xsd:appinfo>" + "\n" + "<xsd:appinfo source=\"itemTest\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">" + "\n" + "   <anotherTag>blah blah itemTest</anotherTag>" + "\n" + "</xsd:appinfo>";
+        String controlString = """
+                <xsd:appinfo source="itemTest" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+                   <someTag>blah blah itemTest</someTag>
+                </xsd:appinfo>
+                <xsd:appinfo source="itemTest" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+                   <anotherTag>blah blah itemTest</anotherTag>
+                </xsd:appinfo>""";
         return controlString;
     }
 }

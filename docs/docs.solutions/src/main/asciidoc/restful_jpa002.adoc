@@ -1,0 +1,593 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[RESTJPA002]]
+=== Implementing the Solution
+
+This section contains the following tasks for exposing JPA entities
+using RESTful Data Services:
+
+* link:#CHDCIBDG[Step 1: Prerequisites]
+* link:#CHDGGJJJ[Step 2: Create and Configure the Application]
+* link:#CHDBHBAC[Step 3: Understand RESTful Data Services URI Basics]
+* link:#CHDBIIFF[Step 4: Represent Entities Using JPA, JAXB, or JSON]
+* link:#CHDCIHEG[Step 5: Issue Client Calls for Operations on the Persistence Unit]
+* link:#CHDGJEDF[Step 6: Implement Security]
+* link:#CHDHGACD[Step 7: Understand the Structure of RESTful Data Services Responses]
+
+[[CHDCIBDG]]
+
+==== Step 1: Prerequisites
+
+To implement and use RESTful Data Services, you need:
+
+* Either of the following Jakarta EE application servers:
+** Oracle WebLogic Server Release 4.0 or later.
+** Glassfish Server 3.1.2 or later.
+
+NOTE: With Glassfish Server 3.1.2, you must upgrade the EclipseLink version to
+use the version of the RESTful Data Services shipped in EclipseLink
+2.4.2 (and must also include DBWS). See
+`http://www.eclipse.org/eclipselink/downloads/` for EclipseLink
+downloads.
+
+Those servers include the following:
+** EclipseLink 2.4 or later, configured as the persistence provider.
+** Jersey, the reference implementation of the Java API for RESTful Web
+Services (JAX-RS) 1.0 specification.
+* The `org.eclipse.persistence.jpars_`__`version_num`__`.jar` file,
+where _`version_num`_ is the version of the jpars file, for example,
+`org.eclipse.persistence.jpars_2.4.1.v20121003-ad44345.jar`. This file
+is included in the EclipseLink distributions from the Eclipse
+foundation, at `http://www.eclipse.org/eclipselink/downloads/`:
+** In the installer distribution, the file is located in
+`eclipselink\jlib\jpa\`.
+** In the bundles distribution, the file is located with the other
+bundles.
+* Any compliant Java Database Connectivity (JDBC) database, including
+Oracle Database, Oracle Database Express Edition (Oracle Database XE),
+or MySQL. These instructions are based on Oracle Database XE 11g Release
+2.
+For the certification matrix, see
+
+[[CHDGGJJJ]]
+
+==== Step 2: Create and Configure the Application
+
+RESTful Data Services are designed to function with standard JPA
+applications, with little extra work required beyond enabling the
+service, as described below:
+
+. Develop an application using one or more standard JPA persistence units,
+package it in a Web ARchive (WAR) file, and deploy it normally.
++
+NOTE: The fragment must be placed inside a WAR, because it offers Web
+services. That WAR may optionally be packaged inside an Enterprise
+Archive (EAR) file.
++
+NOTE: Weaving is required for several RESTful Data Services features to work:
+providing relationships as links, editing relationships, and dealing
+with lazy many-to-one relationships. Therefore, for those features, you
+must either deploy to a Jakarta EE compliant server or statically weave
+your classes.
++
+. Include the RESTful Data Services servlet in the WAR containing the
+application. (For instructions on downloading, see.link:#CHDCIBDG[Step
+1: Prerequisites])
++
+NOTE: The RESTful Data Services JAR file includes a `web-fragment.xml` file
+that identifies the servlet and defines the root URI for the RESTful
+service.
+
+Add the `org.eclipse.persistence.jpars_`__`version_num`__`.jar` file to
+the WAR containing the application, under `WEB-INF/lib`.
+
+[[CHDBHBAC]]
+
+==== Step 3: Understand RESTful Data Services URI Basics
+
+URIs used for making REST calls for RESTful Data Services follow these
+standard patterns:
+
+* The base URI for an application is:
+`http://server:port/application-name/persistence/{version}`
+
+NOTE: As of EclipseLink 2.4.2, support for using RESTful Data Services URIs
+without a version number is deprecated and will be removed in future
+releases. The version of RESTful Data Services in EclipseLink 2.4.2 is
+`v1.0`, and that version number should be used to make REST requests to
+RESTful Data Services.
+
+* For base operations on the persistence unit, add the persistence unit
+name:
+`/persistence/{version}/{unit-name}`
+* For specific types of operations, add the type of operation, for
+example:
+** Entity operations: `/persistence/{version}/{unit-name}/entity`
+** Query operations: `/persistence/{version}/{unit-name}/query`
+** Single result query operations:
+`/persistence/{version}/{unit-name}/singleResultQuery`
+** Persistence unit level metadata operations:
+`/persistence/{version}/{unit-name}/metadata`
+** Base operations: `/persistence/{version}`
+
+For complete documentation on how to construct these URIs, see
+xref:{relativedir}/restful_jpa004.adoc#RESTJPA004[RESTful Data Services API Reference.]
+
+[[CHDBIIFF]]
+
+==== Step 4: Represent Entities Using JPA, JAXB, or JSON
+
+Entities in RESTful Data Services are represented in two ways:
+
+* *As JPA Entities* - The mappings of the JPA entities must be
+represented in the typical JPA fashion, using either annotations or XML
+files. These mappings are used to interact with the data source.
+* *As JAXB/JSON* - No specific mapping information is required when
+using JAXB/JSON. By default, RESTful Data Services use the JAXB defaults
+(defined in the JAXB specification) to map to JAXB/JSON. You can
+optionally provide JAXB annotations on the classes to alter the way the
+objects are mapped. Additionally, the persistence unit property
+`eclipselink.jpa-rs.oxm` can be specified in a persistence unit's
+`persistence.xml` to specify XML-defined JAXB mappings.
+
+===== Relationships
+
+In general, JAXB default mappings are sufficient to allow information
+exchange using JSON/JAXB. There are, however, some special cases when
+dealing with relationships.
+
+*Bidirectional Relationships and Cycles*
+
+Bidirectional relationships are typical in JPA and are easy to represent
+in a database using foreign keys. They are more difficult to represent
+in an XML or JSON document using standard JAXB. However, the EclipseLink
+JAXB implementation provides a way to define an inverse relationship.
+Inverse relationships are not directly written to XML or JSON but are
+populated when the XML or JSON is unmarshalled. The way this is handled
+is as follows:
+
+JPA bidirectional relationships are defined to have an owning side and a
+non-owning side. The entity that has the table with a foreign key in the
+database is the _owning_ entity. The other table--the one pointed to--is
+the _inverse_ (non-owning) entity. JPA mapping provides a mapped-by
+attribute that defines which is which. The `mappedBy` attribute must be
+on the inverse side. RESTful Data Services default the owning side to be
+an inverse relationship. As a result, when an object with an owned
+relationship is read or written, that relationship is ignored.
+
+Consider the following pseudo-code:
+
+[source,oac_no_warn]
+----
+  @Entity
+  ClassA{
+ 
+  @Id
+  int id
+ 
+  @OneToOne
+  myB
+ 
+}
+ 
+ 
+  @Entity
+  ClassB{
+ 
+  @Id
+  int id
+ 
+  @OneToOne(mappedby="myB")
+  myA
+ 
+}
+----
+
+If the objects are identified as follows...
+
+* `A1` with `id=1` and `myB = B1`
+* `B1` with `id=11` and `myA = A1`
+
+...the following JSON corresponds to those objects:
+
+[source,oac_no_warn]
+----
+  A {
+    id:1
+  }
+ 
+  B {
+    id:11
+    myA: {
+      id: 1
+    }
+  }
+----
+
+[[CHDBDBHJ]]
+
+*Passing By Value vs. Passing By Reference*
+
+RESTful Data Services allow relationship objects to be passed either by
+value or by reference in the REST request. JSON attributes hold resource
+references (see link:#CHDBADFD["Pass By Value"]), while `_relationship`s
+have "navigation" links (see link:#CHDFJAII["Pass By Reference"]).
+
+[[CHDBADFD]]
+
+*Pass By Value*
+
+To pass an object by value, create typical JSON or XML that represents
+the object. The following JSON passes `myA` by value:
+
+[source,oac_no_warn]
+----
+  B {
+    id:11
+    myA {
+      id: 1
+    }
+  }
+----
+
+[[CHDFJAII]]
+
+*Pass By Reference*
+
+To pass an object by reference, use a `_link`. The link represents the
+RESTful Data Services call necessary to get that object. The following
+JSON passes `myA` by reference:
+
+[source,oac_no_warn]
+----
+  B {
+    id:11
+    myA {
+      _link:{
+          href: "http://localhost:8080/app/persistence/v1.0/pu/entity/A/1"
+          method: "GET"
+          rel: "self"
+      }
+    }
+  }
+----
+
+A `link` consists of `href`, `method` and `rel` attributes.
+
+* The `href` (Hypertext REFerence) is the URI of the entity linked to.
+The `href` uniquely identifies the linked entity or attribute.
+* The `method` identifies the operation the `href` is to be used for.
+* The `rel` represents the relationship between the containing entity
+and the entity linked to.
+
+Lists can mix and match items represented by reference and by value. The
+corresponding entity must exist if an item is represented by reference
+in a request; otherwise RESTful Data Services returns an error.
+
+The following example shows JSON that can be sent to RESTful Data
+Services as a request, in a regular-expression-like syntax:
+
+[source,oac_no_warn]
+----
+{
+    "numericAttribute": 1
+    "stringAttribute": "auction1"
+    "dateAttribute": 12-09-16
+    "singleRelatedItem": RELATED_ITEM?
+      "listRelatedItem":
+      {
+          RELATED_ITEM*
+      }
+  }
+ 
+ 
+  RELATED_ITEM =
+ 
+      {
+        "numericAttribute": 11
+        "stringAttribute": "myName"
+      }
+ 
+  OR
+ 
+      "_link" {
+        "rel"="self", 
+        "href" = "LINK_HREF", 
+        "method"="GET"
+     }
+----
+
+The following JSON represents an entity called `Auction` with several
+directly mapped fields and a collection of an entity called `Bid`.
+
+[source,oac_no_warn]
+----
+  {
+    "description": "Auction 1",
+    "endPrice": 0,
+    "id": 2,
+    "image": "auction1.jpg",
+    "name": "A1",
+    "sold": false,
+    "startPrice": 100,
+    "bids": [
+      {
+        "_link": {
+       "href": "http://localhost:8080/eclipselink.jpars.test/persistence/v1.0/auction/entity/Bid/5",
+        "method": "GET",
+        "rel": "self"
+      }
+    },
+    {
+      "_link": {
+        "href": "http://localhost:8080/eclipselink.jpars.test/persistence/v1.0/auction/entity/Bid/6",
+        "method": "GET",
+        "rel": "self"
+      }
+    }
+  ]
+  }
+----
+
+XML representation mimics the JSON representation. The following is
+sample XML for an entity called `Auction`, with several directly mapped
+attributes and a list of an entity called `Bid`.
+
+[source,oac_no_warn]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<Auction>
+    <description>Auction 1</description>
+    <endPrice>0.0</endPrice>
+    <id>2</id>
+    <image>auction1.jpg</image>
+    <name>A1</name>
+    <sold>false</sold>
+    <startPrice>100.0</startPrice>
+    <bids>
+      <_link href="http://localhost:8080/eclipselink.jpars.test/persistence/v1.0/auction/entity/Bid/5" method="GET" rel="self" />
+    </bids>
+    <bids>
+      <_link href="http://localhost:8080/eclipselink.jpars.test/persistence/v1.0/auction/entity/Bid/6" method="GET" rel="self" />
+    </bids>
+  </Auction> 
+----
+
+[[CHDCIHEG]]
+
+==== Step 5: Issue Client Calls for Operations on the Persistence Unit
+
+Clients use HTTP calls to perform operations on persistence units in a
+deployed application. The requirements and options for constructing the
+calls are described in xref:{relativedir}/restful_jpa004.adoc#RESTJPA004[RESTful Data
+Services API Reference.]
+
+[[CHDCDFHG]]
+
+===== Specify Media Format in the Header
+
+This REST interface can handle both XML and JSON representations of
+data. The caller is responsible for using HTTP header values to indicate
+the format of the content:
+
+* `Content-Type = application/json` indicates that the content being
+sent is JSON
+* `Content-Type = application/xml` indicates that the content being sent
+is XML
+* `Accept = application/json` indicates that the expected format of the
+result is JSON
+* `Accept = application/xml` indicates that the expected format of the
+result is XML
+
+If no header value is specified, JSON is used by default. If
+`Content-type` is specified and `Accept` is not specified, the returned
+format matches the `Content-type` passed in.
+
+NOTE: In many REST utilities, the `Accept` value is defaulted to
+`application/xml`. In those cases, you must configure this value
+explicitly if you want JSON.
+
+
+[[CHDGBJGH]]
+
+===== About Logging
+
+Messages related to RESTful Data Services operations are logged to a
+logger called `org.eclipse.persistence.jpars`. Most messages are logged
+at the `FINE` level. Exception stacks are logged at `FINER`.
+
+Messages related to operations within `EntityManager`s,
+`EntityManagerFactory`s and `JAXBContext`s are logged in the same manner
+as other EclipseLink logging.
+
+[[CHDGJEDF]]
+
+==== Step 6: Implement Security
+
+Secure RESTful Data Services through typical REST security mechanisms.
+
+[[CHDHGACD]]
+
+==== Step 7: Understand the Structure of RESTful Data Services Responses
+
+The RESTful Data Services response messages, either in XML or in JSON,
+contain following categories:
+
+* Basic data types, such as `int`, `double`, `String`, `Integer`,
+`Double`, `Boolean`, etc.
+* Relationships (links and relationships)
+
+The next sections explain the semantic and syntactic details of each
+category of data.
+
+There is also a minor generic difference between the XML and JSON
+responses (other than format). The JSON responses do not include the
+root name of an entity, while XML responses do. See the `employee`
+root/grouping name in the XML response below. The root name is derived
+from the name of the entity it represents.
+
+*JSON*
+
+[source,oac_no_warn]
+----
+{
+   "firstName":"John",
+   "lastName": "Smith",
+   …
+}
+----
+
+*XML*
+
+[source,oac_no_warn]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<employee>
+   <firstName>John</firstName>
+   <lastName>Smith</lastName>
+   …
+</employee>
+----
+
+===== Basic Data Types
+
+In the RESTful Data Services responses, basic data types and primitives
+are presented as simple JSON or XML fields. For example:
+
+*JSON*
+
+[source,oac_no_warn]
+----
+{
+   "firstName":"John",
+   "lastName": "Smith",
+   …
+}
+----
+
+*XML*
+
+[source,oac_no_warn]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<employee>
+   <firstName>John</firstName>
+   <lastName>Smith</lastName>
+   …
+</employee>
+----
+
+===== Links and Relationships
+
+RESTful Data Services operations return all relationships by reference,
+with the exception of JPA embeddables and element collections.
+
+The `relationships` are links pointing to the (JPA) relationships of an
+entity, such as one-to-one and one-to-many. For example, assume that an
+employee has multiple phone numbers (one-to-many). When the employee is
+read, the response will contain a relationship link pointing to the
+relationship between the employee and the phone entities, plus a list of
+the links, with each link pointing to a (unique) phone number that the
+employee owns. For example:
+
+[source,oac_no_warn]
+----
+{
+   "firstName": "Jacob",
+   "gender": "Male",
+   "id": 743627,
+   "lastName": "Smith",
+   "version": 1,
+   "_relationships": [
+      {
+         "_link": {
+            "href": "http://localhost:8080/eclipselink.jpars.test/persistence/hr/entity/Employee/743627/phoneNumbers",
+            "rel": "phoneNumbers"
+         }
+      }
+   ],
+ 
+   "phoneNumbers": [
+      {
+         "_link": {
+            "href": "http://localhost:8080/eclipselink.jpars.test/persistence/hr/entity/PhoneNumber/743627+cell",
+            "method": "GET",
+            "rel": "self"
+         }
+      },
+      {
+         "_link": {
+            "href": "http://localhost:8080/eclipselink.jpars.test/persistence/hr/entity/PhoneNumber/743627+work",
+            "method": "GET",
+            "rel": "self"
+         }
+      }
+   ]
+}
+----
+
+Embedded objects and element collections are strictly privately-owned
+(dependent) objects.They have no identity, and there is no cascade
+option on an `ElementCollection`. The target objects are always
+persisted, merged, and removed with their parent. Therefore, RESTful
+Data Services embeds these objects directly in responses, rather than
+providing links to them. For example, assume the `Employee` object has
+`EmploymentPeriod` defined as `Embedded`. When the `Employee` is read,
+the response will contain `EmploymentPeriod` as an embedded object, not
+a link to it. Relationships are currently not supported for embedded
+attributes. See the example below:
+
+[source,oac_no_warn]
+----
+{
+   "firstName": "John",
+   "lastName": "Smith",
+ 
+   "employmentPeriod": {
+      "startDate": "2010-04-23T14:12:03.905-04:00",
+      "endDate": "2013-01-23T12:00:02.301-04:00",
+      "_relationships": []
+   },
+   ...
+}
+----
+
+Similarly, element collections are also directly contained in RESTful
+Data Services responses as collections, not as links. For example,
+assume the `Employee` object has a `"certifications"` attribute defined
+as a collection of `Certification` objects. When the `Employee` is read,
+the response will contain list of `Certification` objects, not links:
+
+[source,oac_no_warn]
+----
+{
+   "firstName": "John",
+   "lastName": "Smith",
+   "certifications": [
+      {
+         "issueDate": "2013-04-23T15:02:23.071-04:00",
+         "name": "Java"
+      },
+      {
+         "issueDate": "2010-05-23T11:02:23.033-04:00",
+         "name": "Weblogic"
+      }
+   ],
+   ...
+}
+----

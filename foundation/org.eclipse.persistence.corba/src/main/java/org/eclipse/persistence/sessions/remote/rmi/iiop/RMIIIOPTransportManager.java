@@ -12,7 +12,7 @@
 
 package org.eclipse.persistence.sessions.remote.rmi.iiop;
 
-import org.eclipse.persistence.exceptions.RemoteCommandManagerException;
+import org.eclipse.persistence.sessions.coordination.RemoteCommandManagerException;
 import org.eclipse.persistence.internal.sessions.coordination.RemoteConnection;
 import org.eclipse.persistence.internal.sessions.coordination.rmi.RMIRemoteCommandConnection;
 import org.eclipse.persistence.internal.sessions.coordination.rmi.RMIRemoteCommandConnectionImpl;

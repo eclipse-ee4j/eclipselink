@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,11 +30,6 @@ import org.eclipse.persistence.internal.jpa.config.partitioning.RoundRobinPartit
 import org.eclipse.persistence.internal.jpa.config.partitioning.UnionPartitioningImpl;
 import org.eclipse.persistence.internal.jpa.config.partitioning.ValuePartitioningImpl;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.PropertyMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.converters.ConverterMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.converters.ObjectTypeConverterMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.converters.StructConverterMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.converters.TypeConverterMetadata;
 import org.eclipse.persistence.jpa.config.AccessMethods;
 import org.eclipse.persistence.jpa.config.Converter;
 import org.eclipse.persistence.jpa.config.HashPartitioning;
@@ -62,11 +57,11 @@ public class AbstractAccessorImpl<T extends MetadataAccessor, R> extends Metadat
     public AbstractAccessorImpl(T t) {
         super(t);
 
-        getMetadata().setConverters(new ArrayList<ConverterMetadata>());
-        getMetadata().setObjectTypeConverters(new ArrayList<ObjectTypeConverterMetadata>());
-        getMetadata().setProperties(new ArrayList<PropertyMetadata>());
-        getMetadata().setStructConverters(new ArrayList<StructConverterMetadata>());
-        getMetadata().setTypeConverters(new ArrayList<TypeConverterMetadata>());
+        getMetadata().setConverters(new ArrayList<>());
+        getMetadata().setObjectTypeConverters(new ArrayList<>());
+        getMetadata().setProperties(new ArrayList<>());
+        getMetadata().setStructConverters(new ArrayList<>());
+        getMetadata().setTypeConverters(new ArrayList<>());
     }
 
     public Converter addConverter() {

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2019, 2022 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2019, 2025 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -13,20 +13,19 @@
 
 -->
 
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd"
          xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <modelVersion>4.0.0</modelVersion>
 
     <name>EclipseLink Core</name>
-    <groupId>org.eclipse.persistence</groupId>
     <artifactId>org.eclipse.persistence.core</artifactId>
     <packaging>jar</packaging>
 
     <parent>
         <groupId>org.eclipse.persistence</groupId>
-        <artifactId>org.eclipse.persistence.parent</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
+        <artifactId>org.eclipse.persistence.project</artifactId>
+        <version>5.0.0-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
@@ -56,7 +55,25 @@
             <scope>provided</scope>
             <optional>true</optional>
         </dependency>
-        <!--API dependecies-->
+        <!--API and 3rd party dependecies-->
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm</artifactId>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm-commons</artifactId>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm-tree</artifactId>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
         <dependency>
             <groupId>jakarta.enterprise</groupId>
             <artifactId>jakarta.enterprise.cdi-api</artifactId>
@@ -115,6 +132,11 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.tngtech.archunit</groupId>
+            <artifactId>archunit</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -184,25 +206,22 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>default-testCompile</id>
-                        <configuration>
-                            <compilerArgs>
-                                <arg>--add-exports</arg>
-                                <arg>org.eclipse.persistence.core/org.eclipse.persistence.internal.oxm.documentpreservation=org.eclipse.persistence.core.test</arg>
-                                <arg>--add-exports</arg>
-                                <arg>org.eclipse.persistence.core/org.eclipse.persistence.internal.oxm.record.deferred=org.eclipse.persistence.core.test</arg>
-                                <arg>--add-exports</arg>
-                                <arg>org.eclipse.persistence.core/org.eclipse.persistence.internal.oxm.schema=org.eclipse.persistence.core.test</arg>
-                                <arg>--add-exports</arg>
-                                <arg>org.eclipse.persistence.core/org.eclipse.persistence.internal.oxm.conversion=org.eclipse.persistence.core.test</arg>
-                                <arg>--add-exports</arg>
-                                <arg>org.eclipse.persistence.core/org.eclipse.persistence.internal.oxm.schema.model=org.eclipse.persistence.core.test</arg>
-                            </compilerArgs>
-                        </configuration>
-                    </execution>
-                </executions>
+                <configuration>
+                    <compilerArgs combine.children="append">
+                        <arg>--add-exports</arg>
+                        <arg>org.eclipse.persistence.core/org.eclipse.persistence.internal.oxm.documentpreservation=org.eclipse.persistence.core.test</arg>
+                        <arg>--add-exports</arg>
+                        <arg>org.eclipse.persistence.core/org.eclipse.persistence.internal.oxm.record.deferred=org.eclipse.persistence.core.test</arg>
+                        <arg>--add-exports</arg>
+                        <arg>org.eclipse.persistence.core/org.eclipse.persistence.internal.oxm.schema=org.eclipse.persistence.core.test</arg>
+                        <arg>--add-exports</arg>
+                        <arg>org.eclipse.persistence.core/org.eclipse.persistence.internal.oxm.conversion=org.eclipse.persistence.core.test</arg>
+                        <arg>--add-exports</arg>
+                        <arg>org.eclipse.persistence.core/org.eclipse.persistence.internal.oxm.schema.model=org.eclipse.persistence.core.test</arg>
+                        <arg>--add-exports</arg>
+                        <arg>org.eclipse.persistence.core/org.eclipse.persistence.internal.jpa.jpql=org.eclipse.persistence.core.test</arg>
+                    </compilerArgs>
+                </configuration>
             </plugin>
             <!--Generate OSGi bundle/manifest-->
             <plugin>
@@ -282,6 +301,13 @@
                                     *
                                 </Export-Package>
                                 <Import-Package>
+                                    org.eclipse.persistence.internal.libraries.asm*;version=!;resolution:=optional,
+                                    org.objectweb.asm*;version=!;resolution:=optional,
+                                    javax.rmi;version=!;resolution:=optional,
+                                    javax.rmi.CORBA;version=!;resolution:=optional,
+                                    org.omg.CORBA;version=!;resolution:=optional,
+                                    org.omg.CORBA.portable;version=!;resolution:=optional,
+                                    org.omg.CORBA_2_3.portable;version=!;resolution:=optional,
                                     org.eclipse.persistence.internal.libraries.asm*;version="${version;==;${@}}",
                                     org.eclipse.persistence.eis.adapters.xmlfile;resolution:=optional,
                                     org.eclipse.persistence.sessions.coordination.rmi.iiop;resolution:=optional,
@@ -326,6 +352,7 @@
                         <configuration>
                             <includes>
                                 <include>org/eclipse/persistence/testing/tests/junit/**/*Test</include>
+                                <include>org/eclipse/persistence/testing/tests/archunit/**/*Test</include>
                             </includes>
                         </configuration>
                     </execution>

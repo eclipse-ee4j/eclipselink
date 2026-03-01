@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,7 +19,7 @@ package dbws.testing.shadowddlgeneration.oldjpub;
 import java.util.Map;
 
 //EclipseLink imports
-import dbws.testing.shadowddlgeneration.oldjpub.Util;
+
 
 /**
  * NB - this class does <b>NOT</b> implement the {@link java.util.Map} API
@@ -185,6 +185,7 @@ public class Typemap {
     protected int binaryDoubleMap;
     protected SqlReflector m_reflector;
 
+    @SuppressWarnings("this-escape")
     public Typemap(TypeClass s, SqlReflector reflector) {
         if (s != null && (s instanceof JavaType)) {
             m_field_map = null;
@@ -250,7 +251,7 @@ public class Typemap {
         if (!m_mapInitialized) {
             javaMapping();
             m_mapInitialized = true;
-        };
+        }
 
         switch (sqlTypecode) {
             case OracleTypes.ARRAY:
@@ -433,8 +434,7 @@ public class Typemap {
 
     private boolean isOpaque(TypeClass type) {
         boolean opaque = false;
-        if (type instanceof SqlType) {
-            SqlType sqlType = (SqlType)type;
+        if (type instanceof SqlType sqlType) {
             String name = sqlType.getSqlName().getFullTargetTypeName(Util.SCHEMA_ALWAYS);
             if ("SYS.XMLTYPE".equalsIgnoreCase(name)) {
                 opaque = true;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -293,7 +293,7 @@ public abstract class AbstractJPQLQueryHelper {
     public IType getParameterType(String parameterName) {
 
         // Retrieve the input parameter's qualifier (':' or '?')
-        char character = parameterName.length() > 0 ? parameterName.charAt(0) : '\0';
+        char character = !parameterName.isEmpty() ? parameterName.charAt(0) : '\0';
 
         // Does not begin with either ':' or '?'
         if ((character != ':') && (character != '?')) {

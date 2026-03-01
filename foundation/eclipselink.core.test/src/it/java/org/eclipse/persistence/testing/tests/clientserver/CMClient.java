@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,10 +14,11 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.clientserver;
 
-import org.eclipse.persistence.sessions.*;
-import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.testing.framework.*;
-import org.eclipse.persistence.testing.models.employee.domain.*;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.sessions.Session;
+import org.eclipse.persistence.testing.framework.TestErrorException;
+import org.eclipse.persistence.testing.models.employee.domain.Employee;
 
 public class CMClient extends Thread {
     protected CMServer server;
@@ -44,7 +45,7 @@ public class CMClient extends Thread {
         try {
             Expression exp = new ExpressionBuilder().get("firstName").equal("Marcus");
             this.objectRead = (Employee)this.clientSession.readObject(Employee.class, exp);
-            if ((objectRead == null) || objectRead.getLastName().equals("") || objectRead.getAddress().getCountry().equals("")) {
+            if ((objectRead == null) || objectRead.getLastName().isEmpty() || objectRead.getAddress().getCountry().isEmpty()) {
                 throw new TestErrorException("read object on thread #" + this + " fails as null object/attribute is returned which should not be");
             }
         } catch (Exception exception) {

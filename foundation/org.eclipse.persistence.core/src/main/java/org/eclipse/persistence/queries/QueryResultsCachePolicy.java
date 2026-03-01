@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,19 +14,20 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.queries;
 
+import org.eclipse.persistence.descriptors.invalidation.CacheInvalidationPolicy;
+import org.eclipse.persistence.descriptors.invalidation.NoExpiryCacheInvalidationPolicy;
+import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.identitymaps.IdentityMap;
+
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.eclipse.persistence.descriptors.invalidation.*;
-import org.eclipse.persistence.internal.helper.ClassConstants;
-import org.eclipse.persistence.internal.identitymaps.IdentityMap;
-
 /**
  * PUBLIC:
- *
+ * <p>
  * A QueryResultsCache policy dictates how a query's results will be cached.
- *
+ * <p>
  * It allows an invalidation policy and a maximum number of results to be set.
  * Query results are cached based on the parameter values of a query, and the maximum number
  * of results refers to the maximum number of parameter sets results will be cached for.\

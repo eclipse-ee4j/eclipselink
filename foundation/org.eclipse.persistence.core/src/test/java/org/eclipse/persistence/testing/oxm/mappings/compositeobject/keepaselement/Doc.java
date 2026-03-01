@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,7 +15,6 @@
 
 package org.eclipse.persistence.testing.oxm.mappings.compositeobject.keepaselement;
 
-import org.eclipse.persistence.testing.oxm.mappings.anyobject.withoutgroupingelement.RootKeepAsElement;
 import org.w3c.dom.Element;
 
 public class Doc {
@@ -40,8 +39,7 @@ public class Doc {
     }
 
     public boolean equals(Object object) {
-        if (object instanceof Doc) {
-            Doc anotherDoc = (Doc) object;
+        if (object instanceof Doc anotherDoc) {
             if (elem == null && anotherDoc.getElem() != null) {
                 return false;
             }
@@ -57,9 +55,7 @@ public class Doc {
 
             Object obj1 = elem1;
             Object obj2 = anotherDoc.getElem1();
-            if ((obj1 instanceof Element) && (obj2 instanceof Element)) {
-                Element elem1 = (Element )obj1;
-                Element elem2 = (Element) obj2;
+            if ((obj1 instanceof Element elem1) && (obj2 instanceof Element elem2)) {
 
                 if (!(elem1.getLocalName().equals(elem2.getLocalName()))) {
                     return false;
@@ -68,12 +64,9 @@ public class Doc {
                 return false;
             }
 
-            if (!elem.equals(anotherDoc.getElem())) {
-                return false;
-            }
+            return elem.equals(anotherDoc.getElem());
 
             // Passed all equality tests
-            return true;
         } else {
             return false;
         }

@@ -1,0 +1,74 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[DBWSOVERVIEW]]
+== EclipseLink DBWS Overview
+
+This chapter introduces and describes EclipseLink DBWS which provides
+Jakarta EE-compliant, client-neutral access to relational database
+artifacts via a Web service. EclipseLink DBWS extends EclipseLink's core
+capabilities while leveraging its existing ORM and OXM components.
+
+EclipseLink DBWS includes two parts
+
+* A *design-time* component, the `DBWSBuilder` command-line utility,
+that generates the necessary deployment artifacts.
+* A *runtime provider* component that takes a service descriptor (along
+with related deployment artifacts) and realizes it as a JAX-WS 2.0 Web
+service. The runtime provider uses EclipseLink to bridge between the
+database and the XML SOAP Messages used by Web service clients.
+
+An EclipseLink DBWS service may include any number of the following
+*operations*:
+
+. `insert` – inserts into the database persistent entities described by
+an XML document.
+. `update` – updates database persistent entities described by an XML
+document.
+. `delete` – removes from the database persistent entities described by
+an XML document.
+. `query` – retrieves from the database persistent entities described by
+an XML document.
++
+Selection criteria for Query operations can be specified by:
+* custom `SQL SELECT` statement
+* Stored Procedure invocation
+* EclipseLink Named Query (that can use the complete range of
+EclipseLink ORM Expression Framework APIs)
+* JP-QL
+
+The XML documents used by an *operation* conform to an XML Schema
+Definition (`.xsd` file).
+
+This chapter includes the following sections:
+
+* xref:{relativedir}/overview001.adoc#DBWSOVERVIEW001[Understanding XML-to-Relational Mapping (XRM)]
+* xref:{relativedir}/overview002.adoc#DBWSOVERVIEW002[Understanding the DBWS Builder File Properties]
+* xref:{relativedir}/overview003.adoc#DBWSOVERVIEW003[Creating EclipseLink DBWS Services]
+* xref:{relativedir}/overview004.adoc#DBWSOVERVIEW004[Using the DBWS Design Time Component]
+
+//Understanding XML-to-Relational Mapping (XRM)
+include::{rootdir}/overview001.adoc[]
+
+//Understanding the DBWS Builder File Properties
+include::{rootdir}/overview002.adoc[]
+
+//Creating EclipseLink DBWS Services
+include::{rootdir}/overview003.adoc[]
+
+//Using the DBWS Design Time Component
+include::{rootdir}/overview004.adoc[]

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -16,18 +16,7 @@
 package org.eclipse.persistence.internal.sessions.factories;
 
 // javase imports
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
 
-import static java.lang.Integer.MIN_VALUE;
-
-// EclipseLink imports
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.exceptions.DescriptorException;
@@ -37,9 +26,12 @@ import org.eclipse.persistence.internal.helper.ComplexDatabaseType;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.DatabaseType;
-import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.identitymaps.SoftIdentityMap;
+import org.eclipse.persistence.internal.oxm.XMLChoiceFieldToClassAssociation;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
+import org.eclipse.persistence.internal.oxm.documentpreservation.DescriptorLevelDocumentPreservationPolicy;
+import org.eclipse.persistence.internal.oxm.documentpreservation.NoDocumentPreservationPolicy;
+import org.eclipse.persistence.internal.oxm.documentpreservation.XMLBinderPolicy;
 import org.eclipse.persistence.internal.queries.CollectionContainerPolicy;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.queries.SortedCollectionContainerPolicy;
@@ -64,6 +56,8 @@ import org.eclipse.persistence.oxm.mappings.UnmarshalKeepAsElementPolicy;
 import org.eclipse.persistence.oxm.mappings.XMLAnyAttributeMapping;
 import org.eclipse.persistence.oxm.mappings.XMLBinaryDataCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLBinaryDataMapping;
+import org.eclipse.persistence.oxm.mappings.XMLChoiceCollectionMapping;
+import org.eclipse.persistence.oxm.mappings.XMLChoiceObjectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCollectionReferenceMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeDirectCollectionMapping;
@@ -73,12 +67,6 @@ import org.eclipse.persistence.oxm.mappings.XMLFragmentCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLFragmentMapping;
 import org.eclipse.persistence.oxm.mappings.XMLNillableMapping;
 import org.eclipse.persistence.oxm.mappings.XMLObjectReferenceMapping;
-import org.eclipse.persistence.oxm.mappings.XMLChoiceCollectionMapping;
-import org.eclipse.persistence.oxm.mappings.XMLChoiceObjectMapping;
-import org.eclipse.persistence.internal.oxm.XMLChoiceFieldToClassAssociation;
-import org.eclipse.persistence.internal.oxm.documentpreservation.DescriptorLevelDocumentPreservationPolicy;
-import org.eclipse.persistence.internal.oxm.documentpreservation.NoDocumentPreservationPolicy;
-import org.eclipse.persistence.internal.oxm.documentpreservation.XMLBinderPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.IsSetNullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.NullPolicy;
@@ -88,17 +76,27 @@ import org.eclipse.persistence.platform.database.jdbc.JDBCTypes;
 import org.eclipse.persistence.platform.database.oracle.jdbc.OracleArrayType;
 import org.eclipse.persistence.platform.database.oracle.jdbc.OracleObjectType;
 import org.eclipse.persistence.platform.database.oracle.plsql.OraclePLSQLTypes;
+import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLCollection;
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLCursor;
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLStoredFunctionCall;
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLStoredProcedureCall;
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLargument;
-import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLCollection;
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLrecord;
 import org.eclipse.persistence.queries.Call;
 import org.eclipse.persistence.queries.CursoredStreamPolicy;
 import org.eclipse.persistence.queries.ScrollableCursorPolicy;
 import org.eclipse.persistence.queries.StoredFunctionCall;
 import org.eclipse.persistence.queries.StoredProcedureCall;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
+
+import static java.lang.Integer.MIN_VALUE;
 import static org.eclipse.persistence.internal.helper.DatabaseField.NULL_SQL_TYPE;
 import static org.eclipse.persistence.sessions.factories.XMLProjectReader.SCHEMA_DIR;
 import static org.eclipse.persistence.sessions.factories.XMLProjectReader.TOPLINK_11_SCHEMA;
@@ -337,7 +335,7 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
         descriptor.getInheritancePolicy().setParentClass(ClassDescriptor.class);
 
         XMLCompositeCollectionMapping tablesMapping = new XMLCompositeCollectionMapping();
-        tablesMapping.useCollectionClass(NonSynchronizedVector.class);
+        tablesMapping.useCollectionClass(ArrayList.class);
         tablesMapping.setAttributeName("tables/table");
         tablesMapping.setGetMethodName("getTables");
         tablesMapping.setSetMethodName("setTables");
@@ -354,8 +352,7 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
                 public Object getAttributeValueFromObject(Object object) {
                     ClassDescriptor descriptor = (ClassDescriptor) object;
                     List<Association> associations = descriptor.getMultipleTableForeignKeyAssociations();
-                    for (int index = 0; index < associations.size(); index++) {
-                        Association association = associations.get(index);
+                    for (Association association : associations) {
                         String targetPrimaryKeyFieldName = (String) association.getKey();
                         association.setKey(new DatabaseField((String) association.getValue()));
                         association.setValue(new DatabaseField(targetPrimaryKeyFieldName));
@@ -366,8 +363,7 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
                 public void setAttributeValueInObject(Object object, Object value) {
                     ClassDescriptor descriptor = (ClassDescriptor) object;
                     List<Association> associations = (List<Association>) value;
-                    for (int index = 0; index < associations.size(); index++) {
-                        Association association = associations.get(index);
+                    for (Association association : associations) {
                         association.setKey(((DatabaseField) association.getKey()).getQualifiedName());
                         association.setValue(((DatabaseField) association.getValue()).getQualifiedName());
                     }
@@ -616,9 +612,7 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
                 public Object getAttributeValueFromObject(Object object) {
                     Map<XMLField, XMLField> sourceToTargetKeyFields = ((XMLObjectReferenceMapping) object).getSourceToTargetKeyFieldAssociations();
                     List<Association> associations = new ArrayList<>(sourceToTargetKeyFields.size());
-                    Iterator<Map.Entry<XMLField, XMLField>> iterator = sourceToTargetKeyFields.entrySet().iterator();
-                    while (iterator.hasNext()) {
-                        Map.Entry<XMLField, XMLField> entry = iterator.next();
+                    for (Map.Entry<XMLField, XMLField> entry : sourceToTargetKeyFields.entrySet()) {
                         associations.add(new Association(entry.getKey(), entry.getValue()));
                     }
                     return associations;
@@ -629,9 +623,7 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
                     XMLObjectReferenceMapping mapping = (XMLObjectReferenceMapping) object;
                     List<Association> associations = (List<Association>)value;
                     mapping.setSourceToTargetKeyFieldAssociations(new HashMap<>(associations.size() + 1));
-                    Iterator<Association> iterator = associations.iterator();
-                    while (iterator.hasNext()) {
-                        Association association = iterator.next();
+                    for (Association association : associations) {
                         mapping.getSourceToTargetKeyFieldAssociations().put(association.getKey(), association.getValue());
                     }
                 }
@@ -771,7 +763,7 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
               }
               dbfield.sqlType = argumentSQLType;
               if ((argumentSqlTypeName != null) &&
-                  (!argumentSqlTypeName.equals(""))) {
+                  (!argumentSqlTypeName.isEmpty())) {
                   dbfield = new ObjectRelationalDatabaseField(dbfield);
                   ((ObjectRelationalDatabaseField)dbfield).setSqlTypeName(argumentSqlTypeName);
                   dbfield.setSqlType(argumentSQLType);
@@ -784,7 +776,7 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
           }
           void setDatabaseField(DatabaseField dbField) {
               String fieldName = dbField.getName();
-              if (fieldName != null && fieldName.length() > 0) {
+              if (fieldName != null && !fieldName.isEmpty()) {
                  argumentFieldName = fieldName;
               }
               argumentType = dbField.type;
@@ -865,21 +857,12 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
 
         @Override
         public Object buildNewInstance() throws DescriptorException {
-            Object arg = null;
-            switch (argType) {
-                case STORED_PROCEDURE_ARG:
-                    arg = new StoredProcedureArgument();
-                    break;
-                case STORED_PROCEDURE_INOUT_ARG:
-                    arg = new StoredProcedureInOutArgument();
-                    break;
-                case STORED_PROCEDURE_OUT_ARG:
-                    arg = new StoredProcedureOutArgument();
-                    break;
-                case STORED_PROCEDURE_OUTCURSOR_ARG:
-                    arg = new StoredProcedureOutCursorArgument();
-                    break;
-            }
+            Object arg = switch (argType) {
+                case STORED_PROCEDURE_ARG -> new StoredProcedureArgument();
+                case STORED_PROCEDURE_INOUT_ARG -> new StoredProcedureInOutArgument();
+                case STORED_PROCEDURE_OUT_ARG -> new StoredProcedureOutArgument();
+                case STORED_PROCEDURE_OUTCURSOR_ARG -> new StoredProcedureOutCursorArgument();
+            };
             return arg;
         }
     }
@@ -1011,16 +994,14 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
                     spa = new StoredProcedureOutCursorArgument();
                 }
                 spa.argumentName = argumentName;
-                if (argument instanceof DatabaseField) {
-                    DatabaseField argField = (DatabaseField)argument;
+                if (argument instanceof DatabaseField argField) {
                     spa.setDatabaseField(argField);
                 }
                 else {
                     if (argument instanceof Object[]) {
                        Object first = ((Object[])argument)[0];
                        DatabaseField secondField = (DatabaseField)((Object[])argument)[1];
-                       if (first instanceof DatabaseField) {
-                           DatabaseField firstField = (DatabaseField)first;
+                       if (first instanceof DatabaseField firstField) {
                            spa.setDatabaseField(firstField);
                        }
                        else {
@@ -1042,34 +1023,28 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
         public void setAttributeValueInObject(Object domainObject, Object attributeValue) throws DescriptorException {
             StoredProcedureCall spc = (StoredProcedureCall)domainObject;
             // vector of parameters/arguments to be added the call
-            List<StoredProcedureArgument> procedureArguments = (Vector<StoredProcedureArgument>)attributeValue;
-            for (int i = 0; i < procedureArguments.size(); i++) {
-                StoredProcedureArgument spa = procedureArguments.get(i);
+            List<StoredProcedureArgument> procedureArguments = (List<StoredProcedureArgument>)attributeValue;
+            for (StoredProcedureArgument spa : procedureArguments) {
                 ParameterType direction = spa.getDirection();
                 DatabaseField dbField = spa.getDatabaseField();
                 spc.getProcedureArgumentNames().add(spa.argumentName);
                 if (direction.equals(ParameterType.IN)) {
                     if (spa.argumentValue != null) {
                         spc.appendIn(spa.argumentValue);
-                    }
-                    else {
+                    } else {
                         spc.appendIn(dbField);
                     }
-                }
-                else if (direction.equals(ParameterType.OUT)) {
+                } else if (direction.equals(ParameterType.OUT)) {
                     spc.appendOut(dbField);
-                }
-                else if (direction.equals(ParameterType.OUT_CURSOR)) {
+                } else if (direction.equals(ParameterType.OUT_CURSOR)) {
                     spc.appendOutCursor(dbField);
-                }
-                else  if (direction.equals(ParameterType.INOUT)) {
-                    StoredProcedureInOutArgument spaInOut = (StoredProcedureInOutArgument)spa;
+                } else if (direction.equals(ParameterType.INOUT)) {
+                    StoredProcedureInOutArgument spaInOut = (StoredProcedureInOutArgument) spa;
                     DatabaseField outField = new DatabaseField(spaInOut.outputArgumentName);
                     outField.type = dbField.type;
                     if (spaInOut.argumentValue != null) {
                         spc.appendInOut(spaInOut.argumentValue, outField);
-                    }
-                    else {
+                    } else {
                         spc.appendInOut(dbField, outField);
                     }
                 }
@@ -1098,7 +1073,7 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
         descriptor.addMapping(cursorOutputProcedureMapping);
 
         XMLCompositeCollectionMapping storedProcArgumentsMapping = new XMLCompositeCollectionMapping();
-        storedProcArgumentsMapping.useCollectionClass(NonSynchronizedVector.class);
+        storedProcArgumentsMapping.useCollectionClass(ArrayList.class);
         storedProcArgumentsMapping.setAttributeName("procedureArguments");
         storedProcArgumentsMapping.setAttributeAccessor(new StoredProcedureArgumentsAccessor());
         storedProcArgumentsMapping.setReferenceClass(StoredProcedureArgument.class);
@@ -1403,7 +1378,7 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
          @Override
          public Object getAttributeValueFromObject(Object object) throws DescriptorException {
              IsSetNullPolicy aPolicy = (IsSetNullPolicy)object;
-                NonSynchronizedVector aCollection = new NonSynchronizedVector();
+                List<Object> aCollection = new ArrayList<>();
                 for(int i = 0, size = aPolicy.getIsSetParameters().length; i<size;i++) {
                     aCollection.add(aPolicy.getIsSetParameters()[i]);
                 }
@@ -1416,10 +1391,10 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
              if(value instanceof Collection) {
                  int i = 0;
                  Object[] parameters = new Object[((Collection<?>)value).size()];
-                 for(Iterator<?> anIterator = ((Collection<?>)value).iterator(); anIterator.hasNext();) {
-                        // Lookup the object type via the predefined parameterTypes array and convert based on that type
-                        parameters[i] = XMLConversionManager.getDefaultXMLManager().convertObject(//
-                                anIterator.next(), ((IsSetNullPolicy)object).getIsSetParameterTypes()[i++]);
+                 for (Object o : (Collection<?>) value) {
+                     // Lookup the object type via the predefined parameterTypes array and convert based on that type
+                     parameters[i] = XMLConversionManager.getDefaultXMLManager().convertObject(//
+                             o, ((IsSetNullPolicy) object).getIsSetParameterTypes()[i++]);
                  }
                  ((IsSetNullPolicy)object).setIsSetParameters(parameters);
              } else {
@@ -1442,7 +1417,7 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
          @Override
          public Object getAttributeValueFromObject(Object object) throws DescriptorException {
              IsSetNullPolicy aPolicy = (IsSetNullPolicy)object;
-                NonSynchronizedVector aCollection = new NonSynchronizedVector();
+                List<Object> aCollection = new ArrayList<>();
                 for(int i = 0, size = aPolicy.getIsSetParameterTypes().length; i<size;i++) {
                     aCollection.add(aPolicy.getIsSetParameterTypes()[i]);
                 }
@@ -1457,8 +1432,8 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
                  if(value instanceof Collection) {
                      Class<?>[] parameterTypes = new Class<?>[((Collection<?>)value).size()];
                      int i = 0;
-                     for(Iterator<String> anIterator = ((Collection<String>)value).iterator(); anIterator.hasNext();) {
-                         parameterTypes[i++] = Class.forName(anIterator.next());
+                     for (String s : (Collection<String>) value) {
+                         parameterTypes[i++] = Class.forName(s);
                      }
                      ((IsSetNullPolicy)object).setIsSetParameterTypes(parameterTypes);
                  } else {
@@ -1503,8 +1478,7 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
          public Object getAttributeValueFromObject(Object object) throws DescriptorException {
               // If the policy is default (NullPolicy(ispfan=true, inrben=false, inrbxnn=false, XMLNullRep=ABSENT_NODE) return null
               AbstractNullPolicy value = ((XMLNillableMapping)object).getNullPolicy();
-              if(value instanceof NullPolicy) {
-                  NullPolicy aPolicy = (NullPolicy)value;
+              if(value instanceof NullPolicy aPolicy) {
                   if(aPolicy.getIsSetPerformedForAbsentNode() && !aPolicy.isNullRepresentedByEmptyNode() //
                           && !aPolicy.isNullRepresentedByXsiNil() //
                           && aPolicy.getMarshalNullRepresentation().equals(XMLNullRepresentationType.ABSENT_NODE)) {
@@ -1708,10 +1682,8 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
             public Object getAttributeValueFromObject(Object object) {
                  Map<String, DatabaseType> fields = ((OracleObjectType) object).getFields();
                  List<ObjectTypeFieldAssociation> associations = new ArrayList<>(fields.size());
-                 Iterator<Map.Entry<String, DatabaseType>> iterator = fields.entrySet().iterator();
-                 while (iterator.hasNext()) {
-                     Map.Entry<String, DatabaseType> entry = iterator.next();
-                     associations.add(new ObjectTypeFieldAssociation(entry.getKey(),  wrapType(entry.getValue())));
+                 for (Map.Entry<String, DatabaseType> entry : fields.entrySet()) {
+                     associations.add(new ObjectTypeFieldAssociation(entry.getKey(), wrapType(entry.getValue())));
                  }
                  return associations;
              }
@@ -1720,9 +1692,7 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
                  OracleObjectType objectType = (OracleObjectType) object;
                  List<ObjectTypeFieldAssociation> associations = (List<ObjectTypeFieldAssociation>) value;
                  Map<String, DatabaseType> fieldMap = new LinkedHashMap<>(associations.size() + 1);
-                 Iterator<ObjectTypeFieldAssociation> iterator = associations.iterator();
-                 while (iterator.hasNext()) {
-                     ObjectTypeFieldAssociation association = iterator.next();
+                 for (ObjectTypeFieldAssociation association : associations) {
                      fieldMap.put(association.getKey(), unwrapType(association.getValue()));
                  }
                  objectType.setFields(fieldMap);

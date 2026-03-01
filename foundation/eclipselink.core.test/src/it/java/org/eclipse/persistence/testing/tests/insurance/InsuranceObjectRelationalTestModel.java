@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,8 +14,6 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.insurance;
 
-import java.util.Vector;
-
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.testing.framework.TestSuite;
@@ -27,6 +25,8 @@ import org.eclipse.persistence.testing.models.insurance.Policy;
 import org.eclipse.persistence.testing.models.insurance.PolicyHolder;
 import org.eclipse.persistence.testing.models.insurance.objectrelational.InsuranceORSystem;
 import org.eclipse.persistence.testing.tests.expressions.ReadAllExpressionTest;
+
+import java.util.Vector;
 
 /**
  * Used to test object-relational features of oracle 8.1 and jdbc 2.0.
@@ -152,7 +152,7 @@ public class InsuranceObjectRelationalTestModel extends org.eclipse.persistence.
 
         // Test 4: Setting a nested table to null, with non-trivial update.
         policyHolder = PolicyHolder.example1();
-        policy = (Policy)policyHolder.getPolicies().firstElement();
+        policy = (Policy)policyHolder.getPolicies().get(0);
         // Test setting a nested table to null.
         policy.setClaims(null);
         test = new WriteObjectTest(policy);

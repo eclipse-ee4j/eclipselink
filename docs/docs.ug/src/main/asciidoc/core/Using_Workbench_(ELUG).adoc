@@ -1,0 +1,3018 @@
+image:Elug_draft_icon.png[Image:Elug draft
+icon.png,title="Image:Elug draft icon.png"] *For the latest EclipseLink
+documentation, please see
+http://www.eclipse.org/eclipselink/documentation/*
+
+'''''
+
+*TOC* Special:Whatlinkshere_Using_Workbench_(ELUG)[Related Topics]
+
+This section provides information about understanding, using, and
+customizing the EclipseLink Workbench.
+
+For information on using Workbench to configure sessions XML, refer to
+link:EclipseLink_UserGuide_Using_EclipseLink_Sessions_(ELUG)[EclipseLink
+Sessions].
+
+== Introduction to the Workbench
+
+Workbench is a separate component from the EclipseLink runtime – it lets
+you graphically configure descriptors and map your project. Workbench
+can verify the descriptor options, access the data source (either a
+database or an XML schema), and create the database schema. Using
+Workbench, you can define EclipseLink descriptors and configurations
+_without using code_.
+
+The Workbench is primarily for developing when using the native
+EclipseLink API, MOXy, or EIS. When using JPA, other development tools
+such as Eclipse Dali, or Oracle JDeveloper can be used.
+
+You can use Workbench during the _development_ phase of the
+link:Introduction_to_EclipseLink_Application_Development_(ELUG)[development
+process]. Typically, this phase includes the following:
+
+[arabic]
+. Defining an object model (a set of Java classes) to describe and solve
+your problem.
+. Creating a Workbench project, importing your Java classes and data
+sources, and using descriptors to describe how the Java classes map to
+your data source model.
+. Creating an EclipseLink session and registering your descriptors. In
+your application, use the session to retrieve and store objects from and
+to the data source.
+
+Workbench creates a __`+.mwp+` file to store all EclipseLink project
+information, including object model, descriptor, and session
+information.
+
+The __`+.mwp+` file is used only by Workbench. Typically, the only time
+you need to modify the __`+.mwp+` file is to merge changes during
+application development by a team of developers
+(link:Using%20an%20Integrated%20Development%20Environment%20(ELUG)#How_to_Merge_Files[How
+to Merge Files]).
+
+Using Workbench, you export this information into a `+project.xml+` file
+that your EclipseLink enabled application reads at run time.
+
+For more information on using Workbench as the development environment,
+see
+link:Introduction%20to%20EclipseLink%20Development%20Tools%20(ELUG)[Introduction
+to EclipseLink Development Tools].
+
+== Configuring the Workbench Environment
+
+Workbench reads its environment variables from the `+setenv+` script in
+the __`+/bin+` directory.
+
+Before you launch Workbench, you must configure its environment as
+follows:
+
+[arabic]
+. Use a text editor to open the __`+/bin/setenv+` script.
+* For Windows, open the `+setenv.cmd+` file.
+* For UNIX, open the `+setenv.sh+` file.
+. Ensure that the `+JAVA_HOME+` environment variable is set:
+* For Windows: `+set JAVA_HOME=C:/j2sdk1.5.0_04+`
+* For UNIX: `+JAVA_HOME=/usr/local/packages/java; export JAVA_HOME+`
+*Note*: If you have already set JAVA_HOME as a system environment
+variable, you can skip this step.
+. Update the `+DRIVER_CLASSPATH+` environment variable to add the
+location of the following (if necessary): *Note*: Do not include any
+Java classes for your persistent business objects in the
+`+DRIVER_CLASSPATH+` variable. Instead, add these persistent business
+objects in your
+link:Configuring%20a%20Project%20(ELUG)#Configuring_Project_Classpath[Workbench
+project classpath].
+* JDBC drivers – if you are using
+link:Introduction%20to%20Relational%20Projects%20(ELUG)#Building_Relational_Projects[building
+Relational Projects].
+* Java EE Connector Architecture (JCA) adapters – if you are
+link:Introduction%20to%20EIS%20Projects%20(ELUG)#EIS_Project_Concepts[Building
+EIS projects].
+* JCA `+connector.jar+` file – if you are using
+link:Introduction%20to%20EIS%20Projects%20(ELUG)#EIS_Project_Concepts[EIS
+Projects]. The `+connector.jar+` file contains `+javax.resource.cci+`
+and `+javax.resource.spi+` interfaces that EclipseLink EIS uses. Edit
+the `+workbench.cmd+` or `+workbench.sh+` file in
+`+<+`_`+ECLIPSELINK_HOME+`_`+>/utils/workbench/bin+` to change the path
+to this file. At run time, this `+connector.jar+` file (or its
+equivalent) must be on your application or application server classpath.
+* Oracle Database `+ORACLE_HOME/rdbms/jlib/xdb.jar+` file – if you are
+using
+link:Introduction%20to%20Relational%20Mappings%20(ELUG)#Direct-to-XMLType_Mapping[Direct-to-XMLType
+Mappings] with an Oracle9i or later database.
+* Custom `+Collection+` class that you use to override the default
+`+Collection+` class that EclipseLink uses with a
+link:Configuring%20a%20Mapping%20(ELUG)#Configuring_Container_Policy[mapping
+container policy]. The following examples shows how to set the
+`+DRIVER_CLASSPATH+` variable for Windows system and for UNIX.
++
+*’’Example: Setting DRIVER_CLASSPATH on Windows*’’
+`+set DRIVER_CLASSPATH=C:\OraHome\jdbc\lib\ojdbc14.jar;C:\Attunity\Connect\Java\lib\attunityResourceAdapter.jar;C:\OraHome\rdbms\jlib\xdb.jar+`
+*Note*: If the path to your driver(s) contains spaces, you must enclose
+the path in double-quotes in the `+setenv.cmd+` file. For example:
+`+set DRIVER_CLASSPATH="C:\Program Files\some directory\driver.jar"+`
++
+*_Example: Setting DRIVER_CLASSPATH on UNIX_*
+`+DRIVER_CLASSPATH=/OraHome/jdbc/lib/ojdbc14.jar;/attunity/connect/java/lib/attunityResourceAdapter.jar;/OraHome/rdbms/jlib/xdb.jar; export JDBC_CLASSPATH+`
+. Save and close the `+setenv+` script.
+. Start the Workbench by launching the
+__`+\utils\workbench\bin\workbench.cmd+` or `+workbench.sh+` file.
+
+== Using Workbench
+
+The following figure shows the primary parts of the Workbench window.
+
+[#Figure 4-1]## *_Workbench Window_*
+
+.Workbench Window
+image::mw_.gif[Workbench Window,title="Workbench Window"]
+
+The numbered callouts in the previous figure identify the following user
+interface components:
+
+[arabic]
+. Menu bar: The menu bar contains menus for each Workbench function.
+Some objects also contain context-sensitive menus. See
+link:#How_to_Use_Menus[How to Use Menus] for more information.
+. Toolbars: The toolbars contain shortcuts to specific functions. See
+link:#How_to_Use_Toolbars[How to Use Toolbars] for more information.
+. Navigator window section: The Navigator window section shows the
+project navigation tree for all open projects (see
+link:#How_to_Use_the_Navigator[How to Use the Navigator]). Click the
+plus (*+* ) or minus ( *–*) sign next to an object (or double-click the
+object) to expand or collapse the tree. When you select an object in the
+*Navigator* window section, its properties appear in the *Editor*
+window.
+. Editor window section: The *Editor* window section contains specific
+property sheets and option tabs for the currently selected object. See
+link:#How_to_Use_the_Editor[How to Use the Editor] for more information.
+. Problems window section: The *Problems* window section shows messages
+and errors for the currently selected object in the Navigator window
+section (see link:#How_to_Use_the_Problems_Window[How to Use the
+Problems Window]).
+link:EclipseLink_Workbench_Error_Reference_(ELUG)[EclipseLink Workbench
+Error Reference (ELUG)] contains detailed information on each error
+message.
+
+=== How to Use Menus
+
+Workbench contains the following two types of menus:
+
+* Menu bar menus (see link:#Using_Menu_Bar_Menus[Using Menu Bar Menus])
+* Context menus (see link:#Using_Context_Menus[Using Context Menus])
+
+==== Using Menu Bar Menus
+
+The menu bar, located at the top of the Workbench window, provides menus
+for each Workbench function. Some menus (such as *Selected*) are
+context-sensitive; the available options may vary, depending on the
+currently selected object.
+
+[#Figure 4-2]## *_Sample Menu Bar Menu_*
+
+.Sample Menu Bar Menu
+image::menubar.gif[Sample Menu Bar Menu,title="Sample Menu Bar Menu"]
+
+==== Using Context Menus
+
+When you right-click objects in the *Navigator* window, a context menu
+appears with functions specific to the selected object.
+
+[#Figure 4-3]## *_Sample Context Menu_*
+
+.Sample Context Menu
+image::popup.gif[Sample Context Menu,title="Sample Context Menu"]
+
+=== How to Use Toolbars
+
+Workbench contains the following toolbars at the top of the window:
+
+* link:#Using_Standard_Toolbar[Standard Toolbar]
+* link:#Using_Context_Toolbar[Context Toolbar]
+
+Toolbars provide tool tips: each toolbar button provides a brief
+description when you position the mouse pointer over it.
+
+==== Using Standard Toolbar
+
+The standard toolbar furnishes quick access to the standard menu options
+(*File*, *Edit*, *Selected*, and so on).
+
+[#Table 4-1]## *_Standard Toolbar Buttons_*
+
+Button
+
+Description
+
+Available for…
+
+New
+
+All
+
+Open
+
+All
+
+Save
+
+All
+
+Save as
+
+All
+
+Save all
+
+All
+
+Close
+
+All
+
+Close all
+
+All
+
+Export deployment XML for the selected projects
+
+Projects
+
+Refreshes selected classes
+
+Projects
+
+Add or refresh classes
+
+Projects
+
+Create new class
+
+Projects
+
+==== Using Context Toolbar
+
+The context toolbar provides quick access to functions for the currently
+selected object in the *link:#How_to_Use_the_Navigator[Navigator]*. The
+available buttons will vary, depending on which item you have selected.
+
+You can also right-click the item and choose the appropriate option from
+the context menu.
+
+[#Table 4-2]## *_Context Toolbar Buttons_*
+
+Button
+
+Description
+
+Available for…
+
+Login to database
+
+Databases
+
+Logout of database
+
+Databases
+
+Add new table
+
+Databases
+
+Add or update existing tables from database
+
+Databases
+
+Refresh from database
+
+Database tables
+
+Remove table or selected item
+
+Database tables
+
+Rename table or selected item
+
+Database tables
+
+Import schema
+
+Schemas
+
+Relational aggregate descriptor
+
+Descriptors
+
+Relational class descriptor
+
+Descriptors
+
+EIS composite descriptor
+
+Descriptors
+
+EIS root descriptor
+
+Descriptors
+
+XML descriptor
+
+Descriptors
+
+Direct-to-field mapping
+
+Attributes in relational descriptors
+
+Direct-to-XMLType mapping
+
+Attributes in relational descriptors
+
+Direct collection mapping
+
+Attributes in relational descriptors
+
+Direct map mapping
+
+Attributes in relational descriptors
+
+Aggregate mapping
+
+Attributes in relational descriptors
+
+One-to-one mapping
+
+Attributes in relational descriptors
+
+Variable one-to-one mapping
+
+Attributes in relational descriptors
+
+One-to-many mapping
+
+Attributes in relational descriptors
+
+Many-to-many mapping
+
+Attributes in relational descriptors
+
+Direct mapping
+
+Attributes in EIS descriptors
+
+Direct collection mapping
+
+Attributes in EIS descriptors
+
+Composite object mapping
+
+Attributes in EIS descriptors
+
+Composite collection mapping
+
+Attributes in EIS descriptors
+
+One-to-one mapping
+
+Attributes in EIS descriptors
+
+One-to-many mapping
+
+Attributes in EIS descriptors
+
+Direct-to-XML mapping
+
+Attributes in XML descriptors
+
+Direct collection mapping
+
+Attributes in XML descriptors
+
+Composite object mapping
+
+Attributes in XML descriptors
+
+Composite collection mapping
+
+Attributes in XML descriptors
+
+Any object mapping
+
+Attributes in XML descriptors
+
+Any collection mapping
+
+Attributes in XML descriptors
+
+Transformation mapping
+
+Attributes in all descriptors
+
+Unmap
+
+Attributes in all descriptors
+
+Session
+
+Sessions configurations
+
+Session Broker
+
+Sessions configurations
+
+Named connection pool
+
+Server sessions
+
+Sequence connection pool
+
+Server sessions
+
+Write connection pool
+
+Server sessions
+
+Rename
+
+Database sessions, session brokers
+
+Delete session
+
+Database sessions, session brokers
+
+=== How to Use the Navigator
+
+EclipseLink displays the items included in each project (descriptors,
+mappings, data source, and so on) in the *Navigator* on the left side of
+the Workbench window, as this figure shows.
+
+[#Figure 4-4]## *_Sample Navigator_*
+
+.Sample Navigator
+image::city.gif[Sample Navigator,title="Sample Navigator"]
+
+The numbered callouts on this figure identify the following user
+interface components:
+
+[arabic]
+. Project (relational project)
+. Package
+. EclipseLink Descriptor (relational descriptor)
+. Attribute/mapping (direct to field mapping)
+. Unsaved/changed item
+. Database
+. Database table
+
+Click the plus (*+*) or minus (*–*) sign next to the item, or
+double-click the item name to expand or collapse the item.
+
+Workbench identifies items that have been changed but not yet saved by
+adding an asterisk (***) in front of the item name.
+
+When you select an item in the *Navigator*, its properties appear in the
+*Editor* (see link:#How_to_Use_the_Editor[How to Use the Editor]).
+
+To perform specific functions for an item, select the item in the
+*Navigator* and do one of the following:
+
+* Right-click on the object and select the function from the context
+menu (see link:#Using_Context_Menus[Using Context Menus]).
+* Choose a function from the *Selected* menu (see
+link:#Using_Menu_Bar_Menus[Using Menu Bar Menus]).
+
+For information on using the Navigator with a database in relational
+projects, see
+link:#How_to_Use_Database_Tables_in_the_Navigator_Window[How to Use
+Database Tables in the Navigator Window].
+
+For information on using the Navigator with an XML schema in EIS
+projects (using XML records) and XML projects, see
+link:#How_to_Use_XML_Schemas_in_the_Navigator[How to Use XML Schemas in
+the Navigator].
+
+*Active and Inactive Descriptors*
+
+Inactive descriptors appear dimmed in the *Navigator*. Inactive
+descriptors are not registered with the session when the project is
+loaded into Java. This feature lets you define and test subsets of
+descriptors. To activate or deactivate a descriptor, right-click the
+descriptor and select *Activate/Deactivate Descriptor* from the context
+menu.
+
+[#Figure 4-5]## *_Sample Active and Inactive Descriptors_*
+
+.Sample Active and Inactive Descriptors
+image::inactive.gif[Sample Active and Inactive
+Descriptors,title="Sample Active and Inactive Descriptors"]
+
+The numbered callouts show the following user interface components:
+
+[arabic]
+. Inactive descriptor
+. Active descriptor
+
+*Errors and Missing Information*
+
+image:catnicon.gif[Caution / Warning
+icon,title="Caution / Warning icon"] If an element in the project (such
+as a descriptor or mapping) contains an error or some deficiency
+(sometimes called _neediness_), a warning icon appears beside the
+element icon in the *Navigator*, and Workbench displays a message in the
+link:#How_to_Use_the_Problems_Window[Problems window].
+
+link:EclipseLink_Workbench_Error_Reference_(ELUG)[EclipseLink Workbench
+Error Reference (ELUG)] contains more information on each Workbench
+error message.
+
+=== How to Use the Editor
+
+The *Editor*, on the right side of the Workbench window, displays the
+property sheet associated with the currently selected item in the
+*Navigator*, as this figure shows.
+
+[#Figure 4-6]## *_Sample Editor_*
+
+.Sample Editor
+image::edpane.gif[Sample Editor,title="Sample Editor"]
+
+The numbered callouts identify the following user interface components:
+
+[arabic]
+. Selected element (from the *Navigator*)
+. Editor property tabs
+
+=== How to Use the Problems Window
+
+image:catnicon.gif[Caution / Warning
+icon,title="Caution / Warning icon"] If an element in the project (such
+as a descriptor or mapping) contains an error or some deficiency
+(sometimes called _neediness_), the Workbench displays a caution icon
+(represented by a yellow triangle with a black exclamation point in the
+middle) to the left of the deficient element in the *Navigator* (see
+link:#How_to_Use_the_Navigator[How to Use the Navigator]) and displays a
+message in the Problems window as link:#Figure_4-7[the Sample Deficient
+Mapping figure] shows.
+
+If you select the error, then Workbench displays the complete error
+message in the *Problems* window.
+link:EclipseLink_Workbench_Error_Reference_(ELUG)[EclipseLink Workbench
+Error Reference (ELUG)] contains detailed information on each error
+message.
+
+[#Figure 4-7]## *_Sample Deficient Mapping_*
+
+.Sample Deficient Mapping
+image::desmaper.gif[Sample Deficient
+Mapping,title="Sample Deficient Mapping"]
+
+Double-click any error message in the *Problems* window to automatically
+highlight the specific node in the *Navigator*. To display or hide the
+*Problems* window, select *Window > Show Problems* from the menu.
+
+You can also
+link:Creating%20a%20Project%20(ELUG)#How_to_Generate_the_Project_Status_Report[create
+a status report] that includes all errors in a selected project.
+
+== Using Workbench Preferences
+
+To customize Workbench, select *Tools > Preferences* from the menu. The
+*Preferences* dialog box appears.
+
+[#Figure 4-8]## *_Preferences Dialog Box_*
+
+.Preferences Dialog Box
+image::pref_gen.gif[Preferences Dialog
+Box,title="Preferences Dialog Box"]
+
+Workbench provides the following preferences:
+
+* link:#How_to_Use_General_Preferences[General Preferences]
+** link:#How_to_Use_Help_Preferences[Help Preferences]
+* link:#How_to_Use_Mappings_Preferences[Mappings Preferences]
+** link:#How_to_Use_Class_Preferences[Class Preferences]
+** link:#How_to_Use_Database_Preferences[Database Preferences]
+* link:#How_to_Use_Sessions_Configuration_Preferences[Sessions
+Configuration Preferences]
+** link:#How_to_Use_New_Names_Preferences[New Names Preferences]
+** link:#How_to_Use_Session_Platform_Preferences[Session Platform
+Preferences]
+* link:#How_to_Use_Platforms_Preferences[Platforms Preferences]
+
+Use this dialog box to configure Workbench preferences. After changing
+preferences, you must restart Workbench.
+
+To import your preferences from an existing file, click *Import* and
+select the file.
+
+To export your preferences, click *Export* and select a directory
+location and filename.
+
+=== How to Use General Preferences
+
+Use the General preferences to customize the look and feel (the
+graphical user interface) of Workbench as well as to specify any proxy
+information required to access the Internet (for example, to allow
+EclipseLink to access XML schemas hosted on Internet sites). Follow
+these steps to customize the General preferences:
+
+[arabic]
+. Select *Tools > Preferences* from the menu. The *Preferences* dialog
+box appears.
+. Select *General* in the *Category* window.
+[#Figure 4-9]##*_Preferences – General Dialog Box_*
+image:pref_gen.gif[Preferences – General Dialog
+Box,title="Preferences – General Dialog Box"]
+. Complete each field on the *Preferences – General* dialog box and
+click *OK*.
+
+Use the following information to enter data in each field of the dialog
+box:
+
+[width="100%",cols="<16%,<84%",options="header",]
+|===
+|*Field* |*Description*
+|*Display Splash Screen* |Specify if Workbench should show the graphical
+splash screen when starting.
+
+|*Look and Feel* |Select the look and feel to use for Workbench.
+
+|*Size of recently opened files list* |Select the number of projects to
+maintain in the *File* > *Reopen* option. See
+link:Creating%20a%20Project%20(ELUG)#How_to_Open_Existing_Projects[How
+to Open Existing Projects] for more information.
+
+|*HTTP Proxy Host* |Specify if your PC requires a proxy server to access
+the internet.
+
+|*HTTP Proxy Port* |Specify the port used by your proxy host.
+
+|*Network Connect Timeout* |Specify the timeout (in seconds) to
+establish a network or internet connection.
+
+|*Network Read Timeout* |Specify the timeout (in seconds) when accessing
+data from a network or internet connection.
+
+|*Reopen Projects on Startup* |Select to reopen the projects that were
+open the last time you exited the Workbench.
+|===
+
+You must restart Workbench to apply the changes.
+
+=== How to Use Help Preferences
+
+The EclipseLink Workbench online help is web-based. Use the Help
+preferences to define the location of your web browser.
+
+Follow these steps to customize the Help preferences:
+
+[arabic]
+. Select *Tools > Preferences* from the menu. The *Preferences* dialog
+box appears.
+. Select *General > Help* in the *Category* window. The *Help* dialog
+box appears. *_Preferences – Help Dialog Box_*
+image:pref_help.gif[Preferences – Help Dialog
+Box,title="Preferences – Help Dialog Box"]
+. Click *Browse* and select your HTML web browser.
+. Click *OK*.
+
+*Note*: If your location requires a proxy to browse external web pages,
+be sure to complete the *Proxy* fields on the
+link:#How_to_Use_General_Preferences[General Preferences] page.
+
+=== How to Use Mappings Preferences
+
+Use the Mappings preferences to specify general mapping preferences.
+Follow these steps to set the Mapping preferences:
+
+[arabic]
+. Select *Tools > Preferences* from the menu. The *Preferences* dialog
+box appears.
+. Select *Mappings* in the *Category* window. The *Mappings* dialog box
+appears. *_Preferences – Mappings Dialog Box_*
+image:pref_map.gif[Preferences – Mappings Dialog
+Box,title="Preferences – Mappings Dialog Box"]
+. Complete each field on the *Preferences - Mappings* dialog box and
+click *OK*.
+
+Use the following information to enter data in each field:
+
+[width="100%",cols="<17%,<83%",options="header",]
+|===
+|*Field* |*Description*
+|*Allow changing query type* |Configure whether or not Workbench always
+allows, never allows, or prompts before allowing you to change the query
+type associated with a descriptor.
+
+|*Allow changing query format* |Configure whether or not Workbench
+always allows, never allows, or prompts before allowing you to change
+the configuration of a query associated with a descriptor.
+|===
+
+=== How to Use Class Preferences
+
+Use the Class preferences to specify how Workbench maintains classes
+when renaming or editing a zero-argument constructor. Follow these steps
+to set the Class preferences:
+
+[arabic]
+. Select *Tools > Preferences* from the menu. The *Preferences* dialog
+box appears.
+. Expand *Mappings* in the *Category* window and select *Class*.
+[#Figure 4-11]##*_Preferences – Mappings – Class Dialog Box_*
+image:pref_map_class.gif[Preferences – Mappings – Class Dialog
+Box,title="Preferences – Mappings – Class Dialog Box"]
+. On the *Preferences* – *Mappings* – *Class* dialog box, specify how
+Workbench maintains classes when renaming or editing a zero-argument
+constructor.
+
+=== How to Use Database Preferences
+
+Use the Database preferences to specify custom database divers and
+connection URLs for Workbench. These drivers and URLs can then be used
+when defining database logins. Follow these steps to set the Database
+preferences:
+
+[arabic]
+. Select *Tools > Preferences* from the menu. The *Preferences* dialog
+box appears.
+. Expand *Mappings* in the *Category* window and select *Database*.
+[#Figure 4-12]##*_Preferences – Mappings – Database Preferences Dialog
+Box_* image:pref_map_db.gif[Preferences – Mappings – Database
+Preferences Dialog
+Box,title="Preferences – Mappings – Database Preferences Dialog Box"]
+. Enter data in each field on the *Preferences – Mappings – Database*
+dialog box and click *OK*.
+
+Use the following information to enter data in each field:
+
+[cols="<,<",options="header",]
+|===
+|*Field* |*Description*
+|*Database Driver* |Enter the custom database driver class name.
+|*Connection URL* |Enter the custom database connection URL.
+|===
+
+=== How to Use Sessions Configuration Preferences
+
+Use the Sessions preferences to specify default classpaths to be added
+to each newly created EclipseLink sessions configuration for features
+that require an external Java class (for example, session event
+listeners). The entries added here will automatically appear on the
+link:Creating%20a%20Session%20(ELUG)#Configuring_a_Sessions_Configuration[Sessions
+Configuration property sheet]. Follow these steps to set the Sessions
+Configuration preferences:
+
+[arabic]
+. Select *Tools > Preferences* from the menu. The *Preferences* dialog
+box appears.
+. Select *Sessions Configuration* in the *Category* window.
+[#Figure 4-13]##*_Preferences – Sessions Configuration Dialog Box_*
+image:pref_ses.gif[Preferences – Sessions Configuration Dialog
+Box,title="Preferences – Sessions Configuration Dialog Box"]
+
+To add a JAR or ZIP file, click *Add Entry* or *Browse* and add the JAR
+or ZIP files that contain the default compiled Java classes for this
+sessions configuration.
+
+To remove a JAR or ZIP file, select the file and click *Remove*.
+
+To change the order in which EclipseLink searches these JAR or ZIP
+files, select a file and click *Up* to move it up, or click *Down* to
+move it down in the list.
+
+=== How to Use New Names Preferences
+
+Use the New Names preferences to specify the default values and names of
+newly created sessions, session brokers, and connection pools. Follow
+these steps to set the New Names preferences:
+
+[arabic]
+. Select *Tools > Preferences* from the menu. The *Preferences* dialog
+box appears.
+. Expand *Sessions Configuration* in the *Category* window and select
+*New Names*. [#Figure 4-14]##*_Preferences – Sessions Configuration –
+New Names Dialog Box_* image:pref_ses_new.gif[Preferences – Sessions
+Configuration – New Names Dialog
+Box,title="Preferences – Sessions Configuration – New Names Dialog Box"]
+. Complete each field on the *Preferences – Sessions Configuration – New
+Names dialog box* and click *OK*.
+
+Use the following information to enter data in each field:
+
+[width="100%",cols="<10%,<90%",options="header",]
+|===
+|*Field* |*Description*
+|*Sessions Configuration* |Specify the default name for newly created
+sessions configuration files (default, `+sessions.xml+`). See
+link:Creating%20a%20Session%20(ELUG)#Creating_a_Sessions_Configuration[Creating
+a Sessions Configuration] for more information.
+
+|*Session* |Specify the default name for newly created sessions
+(default, `+Session+`). See
+link:Creating%20a%20Session%20(ELUG)#Introduction_to_the_Session_Creation[Introduction
+to the Session Creation] for more information.
+
+|*Broker* |Specify the default name for newly created session brokers
+(default, `+SessionBroker+`). See
+link:Creating%20a%20Session%20(ELUG)#Creating_Session_Broker_and_Client_Sessions[Creating
+Session Broker and Client Sessions] for more information.
+
+|*Connection Pool* |Specify the default name for newly created
+connection pools (default, `+ConnectionPool+`). See
+link:Creating%20an%20Internal%20Connection%20Pool%20(ELUG)#Creating_an_Internal_Connection_Pool[Creating
+an Internal Connection Pool] for more information.
+|===
+
+=== How to Use Session Platform Preferences
+
+Use the Platform preferences to specify the default data source type for
+newly created sessions. The type selected here will automatically appear
+on the Create New Session dialog box. Follow these steps to set the
+Platform preferences:
+
+[arabic]
+. Select *Tools > Preferences* from the menu. The *Preferences* dialog
+box appears.
+. Expand *Sessions Configuration* in the *Category* window and select
+*Platform*. [#Figure 4-15]##*_Preferences – Sessions Configuration –
+Platform Preferences Dialog Box_* image:pref_ses_plat.gif[Preferences –
+Sessions Configuration – Platform Preferences Dialog
+Box,title="Preferences – Sessions Configuration – Platform Preferences Dialog Box"]
+. Complete each field on the *Preferences – Sessions Configuration –
+Platform dialog box* and click *OK*.
+
+Use the following information to enter data in each field:
+
+[width="100%",cols="<11%,<89%",options="header",]
+|===
+|*Field* |*Description*
+|*Use Server Platform* |Specify the default application server platform
+for newly created sessions configuration files (default,
+`+sessions.xml+`). See
+link:Creating%20a%20Session%20(ELUG)#Creating_a_Sessions_Configuration[Creating
+a Sessions Configuration] for more information.
+
+|*Default Data Source Type* |Select the default data source type
+(*Database*, *EIS*, or *XML*) and platform for newly created sessions.
+See
+link:Configuring%20a%20Session%20(ELUG)#Configuring_the_Server_Platform[Configuring
+the Server Platform] for more information.
+|===
+
+== Using Databases
+
+In relational projects, when you expand the database object in the
+*Navigator*, Workbench displays the database tables associated with the
+project. You can associate tables by importing them from the database,
+or by creating them within Workbench.
+
+[#Figure 4-17]## *_Sample Database Tables_*
+
+.Sample Database Tables
+image::dbtable.gif[Sample Database
+Tables,title="Sample Database Tables"]
+
+The following numbered callouts identify the following database icons.
+
+[arabic]
+. Project
+. Database
+. Database table
+
+Each database table property sheet contains the following tabs in the
+*Editor*:
+
+* *Columns* – Add or modify the table’s fields, and specify each field’s
+properties.
+* *References* – Specify references between tables.
+
+This section includes information on the following topics:
+
+* link:#How_to_Use_Database_Tables_in_the_Navigator_Window[How to Use
+Database Tables in the Navigator Window]
+* link:#How_to_Use_Database_Tables_in_the_Editor_Window[How to Use
+Database Tables in the Editor Window]
+* link:#How_to_Generate_Data_from_Database_Tables[How to Generate Data
+from Database Tables]
+
+=== How to Use Database Tables in the Navigator Window
+
+This section describes the following options:
+
+* link:#Logging_In_and_Out_of_a_Database[Logging In and Out of a
+Database]
+* link:#Creating_New_Tables[Creating New Tables]
+* link:#Importing_Tables_from_a_Database[Importing Tables from a
+Database]
+* link:#Removing_Tables[Removing Tables]
+* link:#Renaming_Tables[Renaming Tables]
+* link:#Refreshing_Tables_from_the_Database[Refreshing Tables from the
+Database]
+
+See link:#How_to_Use_Database_Tables_in_the_Editor_Window[How to Use
+Database Tables in the Editor Window] for more information.
+
+==== Logging In and Out of a Database
+
+To log in or out of a relational database, do the following:
+
+[arabic]
+. Create a database login (see
+link:Configuring%20a%20Database%20Login%20(ELUG)#Introduction_to_Database_Login_Configuration[Introduction
+to Database Login Configuration]).
+. To log in to a relational database, right-click the database object in
+the *Navigator*, and choose *Log In to Database* from the context menu
+or choose *Selected* > *Log In to Database* from the menu.
+. To log out of a relational database, right-click the database object
+in the *Navigator* and choose *Log Out of Database* from the context
+menu or choose *Selected* > *Log Out of Database* from the menu.
+
+==== Creating New Tables
+
+To create a new database table within Workbench, use the following
+procedure:
+
+[arabic]
+. Select the database object in the *Navigator* window and click *Add
+New Table* image:addtable.gif[Add a New Table
+button,title="Add a New Table button"]. The *New Table* dialog box
+appears. You can also right-click the database object and choose *Add
+New Table* from the context menu, or choose *Selected* > *Add New Table*
+from the menu. [#Figure4-18]##*_New Table Dialog Box_*
+image:newtble.gif[New Table Dialog Box,title="New Table Dialog Box"]
+. Complete each field on the *New Table* dialog box and click *OK*.
+
+Use the following information to enter data in each field:
+
+[width="100%",cols="<12%,<88%",options="header",]
+|===
+|*Field* |*Description*
+|*Catalog* |Use to identify specific database information for the table.
+Consult your database administrator for more information.
+
+|*Schema* |Use to identify specific database information for the table.
+Consult your database administrator for more information.
+
+|*Table Name* |Specify the name of this database table.
+|===
+
+Workbench adds the database table to the project.
+
+Although the database table has been added to the project, it has not
+been written to the actual database. See
+link:#Generating_Tables_on_the_Database[Generating Tables on the
+Database] for more information on creating the table in the database.
+
+Continue with link:#How_to_Use_Database_Tables_in_the_Editor_Window[How
+to Use Database Tables in the Editor Window] to use these tables in your
+project.
+
+==== Importing Tables from a Database
+
+Workbench can automatically read the schema for a relational database
+and import the table data into the project as long as your JDBC driver
+supports the following JDBC methods:
+
+* `+getTables+`
+* `+getTableTypes+`
+* `+getImportedKeys+`
+* `+getCatalogs+`
+* `+getPrimaryKeys+`
+
+The JDBC driver must be on the Workbench classpath (see
+link:#Configuring_the_Workbench_Environment[Configuring the Workbench
+Environment]).
+
+To import tables from the database, use the following procedure:
+
+[arabic]
+. Select the database object in the *Navigator,* and click *Add or
+Update Existing Tables from Database* image:addtbldb.gif[Add/Update
+Existing Tables from
+Database,title="Add/Update Existing Tables from Database"]. The *Import
+Tables from Database* dialog box appears. You can also right-click on
+the database object in the *Navigator* and choose *Add or Update
+Existing Tables from Database* from the context menu or choose
+*Selected* > *Add/Update Existing Tables from Database* from the menu.
+[#Figure 4-19]##*_Import Tables from Database Dialog Box_*
+image:importdb.gif[Import Tables from Database Dialog
+Box,title="Import Tables from Database Dialog Box"]
++
+The following numbered callouts identify the following user interface
+components:
+[arabic]
+.. Filters
+.. Database tables that match the filters
+. Complete each field on the *Import Tables from Database* dialog box
+and click *OK*.
+
+Use the following information to enter data in each field of the dialog
+box:
+
+[width="100%",cols="<13%,<87%",options="header",]
+|===
+|*Field* |*Description*
+|*Table Name Pattern* |Specify the name of database table(s) to import.
+Use percent character (*%*) as a wildcard. Tables that match the *Table
+Name Pattern* can be imported.
+
+|*Catalog* |Specify the catalog of database table(s) to import.
+
+|*Schema Pattern* |Specify the schema of database table(s) to import.
+
+|*Table Type* |Specify the type of database table(s) to import.
+
+|*Available Tables* |Click *Get Table Names* to make EclipseLink display
+tables that match *Table Name Pattern*, *Catalog*, *Schema Pattern*, and
+*Table Type* settings.
+
+|*Selected Tables* |Select the tables in the *Available Tables* area to
+import, and click the right-arrow button. EclipseLink adds the table to
+the *Selected Tables* field. Click *OK* to import the tables from the
+database into the Workbench project.
+
+|*Import Fully Qualified Names* |Specify whether or not the tables’
+names are fully qualified against the schema and catalog.
+|===
+
+Examine each table’s properties to verify that the imported tables
+contain the correct information. See
+link:#How_to_Use_Database_Tables_in_the_Editor_Window[How to Use
+Database Tables in the Editor Window] for more information.
+
+==== Removing Tables
+
+To remove a database table from the project, use the following
+procedure:
+
+[arabic]
+. Select a database table in the *Navigator,* and click *Remove Selected
+Item* image:remtable.gif[Remove Table
+button,title="Remove Table button"] on the toolbar. Workbench prompts
+for confirmation. You can also right-click on the database object and
+choose *Remove* from the context menu or choose *Selected* > *Remove*
+from the menu.
+. Click *OK*. Workbench removes the table from the project.
+
+[width="100%",cols="<100%",]
+|===
+|*Note*: Although you have removed the table from the Workbench project,
+the table remains in the database.
+|===
+
+==== Renaming Tables
+
+To rename a database table in the Workbench project, use the following
+procedure:
+
+[arabic]
+. Select a database table in the *Navigator,* and click *Rename* on the
+toolbar. The Rename dialog box appears. You can also right-click on the
+table and choose *Rename* from the context menu or choose *Selected* >
+*Rename* from the menu.
+. Enter a new name and click *OK*. Workbench renames the table.
+
+[width="100%",cols="<100%",]
+|===
+|*Note*: Although you have renamed the table in the Workbench project,
+the original table name remains in the database.
+|===
+
+==== Refreshing Tables from the Database
+
+To refresh (that is, reload) the database tables in the Workbench
+project, use the following procedure:
+
+[arabic]
+. Select the database table in the *Navigator,* and click *Refresh from
+Database* on the toolbar. You can also right-click on the database table
+and choose *Refresh from Database* from the context menu or choose
+*Selected* > *Refresh from Database* from the menu. Workbench reloads
+the database table.
+. When refreshing tables from the database, if there are multiple
+database tables with similar names, the *Duplicate Tables* dialog box
+appears. [#Figure 4-20]## *_Duplicate Table Dialog Box_*
+image:duptable.gif[Duplicate Table Dialog
+Box,title="Duplicate Table Dialog Box"]
+. Select the specific database table to update, and then click *OK*.
+
+=== How to Use Database Tables in the Editor Window
+
+When you select a database table in the *Navigator*, its properties
+appear in the *Editor*. Each database table contains the following
+property tabs:
+
+* *Columns* – Add or modify the table fields, and specify each field
+properties.
+* *References* – Specify references between tables.
+
+This section describes how to use these tabs to configure the following:
+
+* link:#Working_with_Column_Properties[Working with Column Properties]
+* link:#Setting_a_Primary_Key_for_Database_Tables[Setting a Primary Key
+for Database Tables]
+* link:#Creating_Table_References[Creating Table References]
+* link:#Creating_Field_Associations[Creating Field Associations]
+
+==== Working with Column Properties
+
+Use the database table’s *Column* tab to specify properties for the
+database table’s fields.
+
+To specify a table’s column properties, use this procedure:
+
+[arabic]
+. Select a database table in the *Navigator*. The table’s property sheet
+displays in the *Editor*.
+. Click the Columns tab. [#Figure 4-21]##*_Fields Properties_*
+image:fields.gif[Fields Properties,title="Fields Properties"]
+. Enter data in each field on the Columns tab. Use the scroll bar to
+display the additional field.
+
+Use the following information to fill each column on the Columns tab:
+
+[width="100%",cols="<9%,<91%",options="header",]
+|===
+|*Field* |*Description*
+|*Name* |Specify the name of the field.
+
+|*Type* |Use the drop-down list to select the field’s type. Note: The
+valid values will vary, depending on the database.
+
+|*Size* |Specify the size of the field.
+
+|*Sub-Size* |Specify the sub-size of the field.
+
+|*Allows Null* |Specify if this field can be null.
+
+|*Unique* |Specify whether the value must be unique within the table.
+
+|*Primary Key* |Specify whether or not this field is a primary key for
+the table (see link:#Setting_a_Primary_Key_for_Database_Tables[Setting a
+Primary Key for Database Tables]).
+
+|*Identity* |Use to indicate a Sybase, SQL Server or Informix identity
+field.
+|===
+
+[width="100%",cols="<100%",]
+|===
+|*Note*: Some properties may be unavailable, depending on your database
+type.
+|===
+
+To add a new field, click *Add*.
+
+To remove a field, select the field and click *Remove*.
+
+To rename a field, select the field and click *Rename*.
+
+==== Setting a Primary Key for Database Tables
+
+To set a primary key(s) for a database table, use this procedure:
+
+[width="100%",cols="<100%",]
+|===
+|*Note*: Workbench can automatically import primary key information if
+supported by the JDBC driver.
+|===
+
+[arabic]
+. Select a database table in the *Navigator*. Its property sheet appears
+in the *Editor*.
+. Click the *Columns* tab.Click the *Columns* tab. *_Setting Primary Key
+for a Database Table [#Figure 4-22]##_* image:fieldspk.gif[Setting
+Primary Key for a Database
+Table,title="Setting Primary Key for a Database Table"]
+. Select the *Primary Key* field(s) for the table.
+
+==== Creating Table References
+
+References are table properties that contain the foreign key; they may
+or may not correspond to an actual constraint that exists on the
+database. Workbench uses these references when you define relationship
+mappings and multiple table associations.
+
+When importing tables from the database, Workbench can automatically
+create references (if the driver supports this), or you can define
+references from the workbench. See
+link:#Importing_Tables_from_a_Database[Importing Tables from a
+Database].
+
+To create a new table reference, use this procedure:
+
+[arabic]
+. Select a database table in the *Navigator*. The table’s properties
+display in the *Editor*.
+. Click the *References* tab. [#Figure 4-23]##*_References Tab_*
+image:reftab.gif[Description of Figure 4-23
+follows,title="Description of Figure 4-23 follows"] The following
+numbered callouts identify the following user interface components:
+[arabic]
+.. Table References area
+.. Key Pairs area
+. In the *References* area, click *Add*. The *New Reference* dialog box
+appears. [#Figure 4-24]##*_New Reference Dialog Box_*
+image:newref.gif[New Reference Dialog
+Box,title="New Reference Dialog Box"]
+. Complete each field on the new Reference dialog box and click *OK.*
+
+Use the following information to enter data in each field of the dialog
+box:
+
+[width="100%",cols="<18%,<82%",options="header",]
+|===
+|*Field* |*Description*
+|*Enter Name of New Reference* |Specify the name of the reference table.
+If you leave this field blank, Workbench automatically creates a name
+based on the format: SOURCETABLE_TARGETTABLE.
+
+|*Select the Source Table* |Specify the name of the source database
+table (the currently selected table in the Navigator).
+
+|*Select the Target Table* |Use the list to specify the target table for
+this reference.
+
+|*On Database* |Specify if you want to create the reference on the
+database when you create the table. Not all database drivers support
+this option.
+|===
+
+Continue with link:#Creating_Field_Associations[Creating Field
+Associations].
+
+==== Creating Field Associations
+
+For each table reference, you can specify one or more field associations
+that define how fields in the source table relate to fields in the
+target table. See link:#Creating_Table_References[Creating Table
+References].
+
+To create new field references, use this procedure:
+
+[arabic]
+. Select a database table in the Navigator. The table’s properties
+display in the *Editor*.
+. Click the *References* tab. [#Figure 4-25]##*_References Tab_*
+image:reftab.gif[References Tab,title="References Tab"]
++
+The following numbered callouts identify the following user interface
+components:
+[arabic]
+.. Table references area
+.. Key pairs area
+. Select a table reference from the references area.
+. To create a new key pair, click *Add* in the key pairs area and
+complete each field in the key pairs area using the following
+information:
+
+Field
+
+Description
+
+Table References Area
+
+Name
+
+Specify the name of this table reference
+
+Target Table
+
+Specify the database table that is the target of this reference.
+
+On Database
+
+Specify if the reference exists on the database.
+
+Key Pairs Area
+
+Source Column
+
+Select the database field from the source table.
+
+Target Column
+
+Select the database field from the target table.
+
+=== How to Generate Data from Database Tables
+
+Workbench can automatically generate a variety of information from the
+database tables. This section describes the following:
+
+* link:#Generating_SQL_Creation_Scripts[Generating SQL Creation Scripts]
+* link:#Generating_Classes_and_Descriptors_from_Database_Tables[Generating
+Classes and Descriptors from Database Tables]
+* link:#Generating_Tables_on_the_Database[Generating Tables on the
+Database]
+
+==== Generating SQL Creation Scripts
+
+Using the Workbench, you can generate SQL scripts that you can use to
+create tables in a relational database.
+
+To automatically generate SQL scripts to create the tables in a project,
+use this procedure:
+
+[arabic]
+. Select the database table(s) in the *Navigator*.
+. Right-click the table(s) and choose *Generate Creation Script for* >
+*Selected Tables* or *All Tables* from the context menu. The SQL
+Creation Script dialog box appears. You can also choose *Selected* >
+*Generate Creation Script for* > *Selected Tables* or *All Tables* from
+the menu. [#Figure 4-26]##*_SQL Creation Script Dialog Box_*
+image:sqlscrip.gif[Creation Script Dialog
+Box,title="Creation Script Dialog Box"]
+
+Copy the script and paste it into a file. You may need to edit the file
+to include additional SQL information that Workbench could not generate.
+If the database table or column name is an SQL reserved word, you must
+edit the SQL script and enclose the database table or column in quotes.
+
+[width="100%",cols="<100%",]
+|===
+|*Note*: If EclipseLink cannot determine how a particular table feature
+should be implemented in SQL, it generates a descriptive message in the
+script.
+|===
+
+==== Generating Classes and Descriptors from Database Tables
+
+Workbench can automatically generate Java class definitions, descriptor
+definitions, and associated mappings from the information in database
+tables. You can later edit the generated information if necessary.
+
+For each table, Workbench does the following:
+
+* Creates a class definition and a descriptor definition.
+* Adds attributes to the class for each column in the table.
+* Automatically generates access methods, if specified.
+* Creates direct-to-field mappings for all direct (nonforeign key)
+fields in the table.
+* Creates relationship mappings (one-to-one and one-to-many) if there is
+sufficient foreign key information. You may be required to determine the
+exact mapping type.
+
+[width="100%",cols="<100%",]
+|===
+|*Note*: Class and attribute names are generated based on the table and
+column names. You can edit the class properties to change their names.
+|===
+
+*To generate classes and descriptors from database tables, use the
+following procedure:*
+
+[arabic]
+. Select the database table(s) in the *Navigator*.
+. Right-click the table(s) and choose *Generate Classes and Descriptors
+from* > *Selected Tables* or *All Tables* from the context menu.
+Workbench prompts you to save your project. You can also choose
+*Selected* > *Generate Classes and Descriptors from* > *Selected Tables*
+or *All Tables* from the menu.
+. Click *Yes*. The Generate Classes and Descriptors dialog box appears.
+<span id= Figure 4-27”>*’’Generate Classes and Descriptors Dialog Box*’’
+image:generateclasses.gif[Generate Classes and Descriptors Dialog
+Box,title="Generate Classes and Descriptors Dialog Box"]
++
+Complete each field on the Generate Classes and Descriptors dialog box
+and click *OK*. Use the following information to enter data in each
+field: | *Field* | *Description* |
+|:——————————-|:————————————————————————————————–| | *Package Name* |
+Specify the name of package to generate. The package name must comply
+with Java naming standards. | | *Generate Accessing Methods* | Specify
+if Workbench generates accessing methods for each class and descriptor.
+|
+. If the table contains foreign key fields that may represent
+relationship mappings, then the Choose Relationships to Generate dialog
+box appears. [#Figure 4-28]## *_Choose Relationships to Generate Dialog
+Box_* image:choose.gif[Choose Relationships to Generate Dialog
+Box,title="Choose Relationships to Generate Dialog Box"]
+. Select an entry from *Potential Relationships* and click the *1:1
+Mapping* image:onetoone_map_btn.gif[One to One mapping
+button,title="One to One mapping button"] or *1:M Mapping*
+image:onetomany_map_btn.gif[One to Many mapping
+button,title="One to Many mapping button"] button, located between the
+Potential Relationships and Selected Relationships windows. See
+link:Introduction%20to%20Relational%20Mappings%20(ELUG)#CHDCBEDB[Introduction
+to Relational Mappings] for more information on mappings. You can also
+specify whether the relationships are bidirectional. See
+link:Configuring%20a%20Mapping%20(ELUG)#Configuring_Bidirectional_Relationship[Configuring
+Bidirectional Relationship] for more information.
+. Click *OK* to automatically create the relationships.
+
+The newly created descriptors appear in the *Navigator* of Workbench.
+
+==== Generating Tables on the Database
+
+To create a table in the database, based on the information in
+Workbench, use this procedure:
+
+[width="100%",cols="<100%",]
+|===
+|*Note*: You must log in the database before creating tables. See
+link:Configuring%20a%20Relational%20Project%20(ELUG)#Logging_In_to_the_Database[Logging
+In to the Database] for more information.
+|===
+
+[arabic]
+. Select the database table(s) in the *Navigator*.
+. Right-click the table(s) and choose *Create on Database* > *Selected
+Tables* or *All Tables* from the context menu. You can also create
+tables by selecting *Selected* > *Create on Database* > *Selected
+Tables* or *All Tables* from the menu.
+
+Workbench creates the tables on the database.
+
+Alternatively, you can generate tables at run time by exporting the
+information in Workbench to a `+TableCreator+` class (see
+link:Using%20the%20Schema%20Manager%20(ELUG)#Introduction_to_the_Schema_Manager[Introduction
+to the Schema Manager]).
+
+== Using XML Schemas
+
+For XML and EIS projects, Workbench maps each EclipseLink descriptor to
+your XML schema.
+
+This section includes information on the following topics:
+
+* link:#How_to_Use_XML_Schemas_in_the_Navigator[How to Use XML Schemas
+in the Navigator]
+* link:#How_to_Use_an_XML_Schema_Structure[How to Use an XML Schema
+Structure]
+* link:#How_to_Import_an_XML_Schema[How to Import an XML Schema]
+* link:#How_to_Configure_an_XML_Schema_Reference[How to Configure an XML
+Schema Reference]
+* link:#How_to_Configure_XML_Schema_Namespace[How to Configure XML
+Schema Namespace]
+
+=== How to Use XML Schemas in the Navigator
+
+After you import one or more XML schemas into your project (see
+link:#How_to_Import_an_XML_Schema[How to Import an XML Schema]) and you
+expand the schema object in the *Navigator*, Workbench displays the
+schemas associated with the project.
+
+[#Figure 4-29]## *_Sample XML Schemas_*
+
+.Sample XML Schemas
+image::navschem.gif[Sample XML Schemas,title="Sample XML Schemas"]
+
+The following numbered callouts identify the following schema icons:
+
+[arabic]
+. Project
+. Schemas object
+. Specific schema
+
+For more information, see the following:
+
+* link:#How_to_Use_an_XML_Schema_Structure[How to Use an XML Schema
+Structure]
+* link:#How_to_Configure_an_XML_Schema_Reference[How to Configure an XML
+Schema Reference]
+* link:#How_to_Configure_XML_Schema_Namespace[How to Configure XML
+Schema Namespace]
+
+=== How to Use an XML Schema Structure
+
+When you select a specific XML schema in the *Navigator*, you can
+display the structure and details of the schema using the Schema
+Structure tab.
+
+To display the structure and details of a schema, use this procedure:
+
+[arabic]
+. Select a schema element in the *Navigator*. Its properties appear in
+the *Editor*.
+. Click the *Schema Structure* tab. The Schema Structure tab appears.
+. Select an element in the schema. The element’s details appear.
+[#Figure 4-30]##*_Schema Structure Tab_* image:schstruc.gif[Schema
+Structure Tab,title="Schema Structure Tab"]
+. Review the fields on the *Schema Structure* tab.
+
+Use the following information to verify data in each field in the Schema
+Document Info tab:
+
+[width="100%",cols="<16%,<84%",options="header",]
+|===
+|*Field* |*Description*
+|*Schema Structure* |Displays the elements of the schema, listed in
+alphabetical order, in an expandable or collapsible tree structure.
+
+|*Details* |Displays detailed information (such as name and type) for
+the currently selected element in the *Schema Structure* area.
+|===
+
+These fields are for display only and cannot be changed in Workbench.
+
+=== How to Import an XML Schema
+
+The first step in configuring an EIS project (using XML records) or XML
+project is importing the XML schema(s) that your project uses.
+
+When you import a schema, you define a schema reference that gives
+EclipseLink the information it needs to locate the schema itself.
+Anytime after you import an XML schema, you can update the schema
+reference (see link:#How_to_Configure_an_XML_Schema_Reference[How to
+Configure an XML Schema Reference]) if necessary.
+
+After importing an XML schema, you can configure XML schema namespaces
+(see link:#How_to_Configure_XML_Schema_Namespace[How to Configure XML
+Schema Namespace]).
+
+To import an XML schema into an EIS project (using XML records) or an
+EIS project, use this procedure:
+
+[arabic]
+. Right-click the schemas element in the *Navigator* and select *Import
+Schema* from the context menu. The Import Schema dialog box appears.*_
+[#Figure 4-31]## Import Schema Dialog Box_* image:schema.gif[Import
+Schema Dialog Box,title="Import Schema Dialog Box"]
+. Fill the Import Schema dialog box with data, and then click *OK*.
+Workbench will add the schema to the project.
+
+Use the following information to enter data in each field in the Import
+Schema dialog box:
+
+Field
+
+Description
+
+Name
+
+Specify the name of this schema. This is the display name that Workbench
+uses. It can be different than the name you specify when you configure
+Source.
+
+Source
+
+Select how Workbench should import the schema.
+
+File
+
+Specify that Workbench should import the schema from a file. Enter the
+fully qualified directory path and filename of the schema file.
+
+URL
+
+Specify that Workbench should import the schema using a URL. Enter the
+complete URL of the schema file.
+
+Note: When importing schemas by URL, ensure you have set your proxy
+information correctly.
+
+See How to Use General Preferences for more information.
+
+Classpath
+
+Specify that Workbench should import the schema from the project
+classpath.
+
+Resource Name
+
+Enter the fully qualified name of the XML schema file including the name
+of the package of which it is a part. For example, if your XML schema
+mySchema.xsd is in C: and you add this directory to your project
+classpath (see Project Support for Project Classpath), specify a
+resource name of project.config.mySchema.xsd.
+
+To reimport _a specific schema_, right-click on the specific schema in
+the *Navigator* and select *Reimport Schema* from the context menu.
+
+To reimport _all schemas in a project_, right-click on *Schemas* in the
+*Navigator* and select *Reimport All Schemas* from the context menu.
+
+To change a schema’s source, right-click on the specific schema in the
+Navigator window and select *Properties* from the context menu. The
+Schema Properties dialog appears.
+
+=== How to Configure an XML Schema Reference
+
+After you import an XML schema (see
+link:#How_to_Import_an_XML_Schema[How to Import an XML Schema]), you can
+update its source by configuring the schema reference.
+
+==== How to Configure an XML Schema Reference Using Workbench
+
+To specify the source of a schema, use this procedure:
+
+[arabic]
+. Select a schema element in the *Navigator*. Its properties appear in
+the *Editor*.
+. Click the *Schema Document Info* tab. The Schema Document Info tab
+appears. [#Figure 4-32]##*_Schema Document Info Tab – Source Field_*
+image:schsrc.gif[Schema Document Info Tab – Source
+Field,title="Schema Document Info Tab – Source Field"]
+. Click *Edit* to select a new source for the selected schema. The
+Schema Properties dialog box appears. [#Figure 4-33]##*_Schema
+Properties Dialog Box_* image:schemapr.gif[Schema Properties Dialog
+Box,title="Schema Properties Dialog Box"]
+
+Complete the *Schema Properties* dialog box and click *OK*. Workbench
+adds the schema to the project.
+
+Use the following information to complete each field in the Schema
+Properties dialog box:
+
+Field
+
+Description
+
+Name
+
+Specify the name of this schema. This is the display name that Workbench
+uses. It can be different than the name you specify when you configure
+Source.
+
+Source
+
+Select how Workbench should import the schema.
+
+File
+
+Specify that Workbench should import the schema from a file. Enter the
+fully qualified directory path and filename of the schema file.
+
+URL
+
+Specify that Workbench should import the schema using a URL.
+
+Enter the complete URL of the schema file.
+
+Note: When importing schemas by URL, ensure you have set your proxy
+information correctly. See How to Use General Preferences for more
+information.
+
+Classpath
+
+Specify that Workbench should import the schema from the project
+classpath.
+
+Resource Name
+
+Enter the fully qualified name of the XML schema file including the name
+of the package of which it is a part. For example, if your XML schema
+mySchema.xsd is in C: and you add this directory to your project
+classpath (see Configuring Project Classpath, specify a resource name of
+project.config.mySchema.xsd.
+
+==== How to Configure an XML Schema Reference Using Java
+
+Use Java to configure schema reference. Create a descriptor amendment
+method (see
+link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Amendment_Methods[Configuring
+Amendment Methods]) that instantiates the appropriate type of
+`+XMLSchemaReference+` (`+XMLSchemaClassPathReference+`,
+`+XMLSchemaFileReference+`, or `+XMLSchemaURLReference+`) and configures
+the descriptor with it, as follows:
+
+* If you are using `+EISDescriptors+`, the EclipseLink runtime does not
+use the schema reference; no further configuration is required.
+* If you are using `+XMLDescriptors+`, configure the descriptor with the
+`+XMLSchemaReference+` using `+XMLDescriptor+` method
+`+setSchemaReference+`.
+
+=== How to Configure XML Schema Namespace
+
+As defined in
+http://www.w3.org/TR/REC-xml-names/[`+http://www.w3.org/TR/REC-xml-names/+`],
+an *XML namespace* is a collection of names, identified by a URI
+reference, which are used in XML documents as element types and
+attribute names. To promote reusability and modularity, XML document
+constructs should have universal names, whose scope extends beyond their
+containing document. XML namespaces are the mechanism which accomplishes
+this.
+
+When you import an XML schema (see link:#How_to_Import_an_XML_Schema[How
+to Import an XML Schema]) such as the one that the link:#Example_4-3[XML
+Schema with Namespace Options example] shows, Workbench organizes the
+various namespaces that the XML schema identifies, as
+link:#Table_4-3[the Workbench XML Schema Categories table] shows.
+
+[#Example 4-3]## *_XML Schema with Namespace Options_*
+
+`+<xsd:schema+`
+`+    xmlns:+``+="+``+"             <! –  Workbench Built-in Namespace  – >+`
+`+    targetNamespace="+``+"            <! –  Workbench Target Namespace  – >+`
+
+`+    elementFormDefault="qualified"+`
+`+    attributeFormDefault="unqualified"+` `+    version="10.1.3">+`
+`+    <xsd:import                        <! –  Workbench Imported Namespace  – >+`
+`+        namespace="+`http://xmlns.oracle.com/ias/xsds/opm[`+http://xmlns.oracle.com/ias/xsds/opm+`]`+"+`
+`+        schemaLocation="object-persistence_1_0.xsd"+` `+    />+`
+`+...+`
+
+[#Table 4-3]## *_Workbench XML Schema Categories_*
+
+[width="100%",cols="<6%,<6%,<38%,<50%",options="header",]
+|===
+|*Workbench Category* |*Defined By* |*Purpose* |*When Needed*
+|Built-in |`+xmlns:+``+="+``+"+` |Provides access to types defined in
+other XML schemas for use as is. |If your project uses more than one XML
+schema or if you want to use `+xsi+` or `+xsd+` types.
+
+|Target |`+targetNamespace="+``+"+` |The namespace you use to qualify
+the types you define for your application. If set, all XML documents
+that use these types must use this namespace qualifier. |You may need to
+specify a target namespace depending on how element and attribute form
+options are set (see
+link:Introduction%20to%20Projects_(ELUG)#Element_and_Attribute_Form_Options[Element
+and Attribute Form Options]).
+
+|Imported |`+xsd:import+` |Provides access to types defined in the
+corresponding built-in XML schema so that you can extend the built-in
+types. Extended types must be qualified by the target namespace. |If
+your project uses more than one XML schema and you want to extend one or
+more built-in types.
+|===
+
+For more information, see
+link:Introduction%20to%20Projects_(ELUG)#XML_Namespaces_Overview[XML
+Namespaces Overview].
+
+==== How to Configure XML Schema Namespace Using Workbench
+
+To specify the namespaces of a schema, use this procedure:
+
+[arabic]
+. Select a schema element in the *Navigator*. Its properties appear in
+the *Editor*.
+. Click the *Schema Document Info* tab. The Schema Document Info tab
+appears. [#Figure 4-34]##*_Schema Document Info Tab – Namespaces Field_*
+image:schnmsp.gif[Schema Document Info Tab – Namespaces
+Field,title="Schema Document Info Tab – Namespaces Field"]
+. Complete the Namespaces fields on the Schema Document Info tab.
+
+Use the following information to complete each Namespaces field in the
+tab:
+
+Field
+
+Description
+
+Built-in Namespaces
+
+All namespaces defined by xmlns:="``".
+
+Note that when a schema is imported to the Workbench (see How to Import
+an XML Schema), none of the built-in namespaces’ URLs are selected. If
+you are using inheritance, declare the built-in namespace with xsi
+prefix. Otherwise, EclipseLink will throw exceptions.
+
+Target Namespaces
+
+All namespaces defined by targetNamespace="``".
+
+Imported Namespaces
+
+All namespaces defined by xsd:import.
+
+Prefix
+
+Double-click in the Prefix field to specify the prefix that corresponds
+to the given namespace.
+
+When the EclipseLink runtime marshalls (writes) an object to an XML
+document, it uses the namespace prefixes you specify here.
+
+When the EclipseLink runtime unmarshalls (reads) an XML document, the
+document may use any prefix value as long as it corresponds to the
+appropriate namespace. For more information, see EclipseLink Runtime
+Namespace Resolution.
+
+Declare
+
+When selected, XML documents must use the corresponding URI qualifier
+when referring to types from this namespace. XML documents may use a
+different prefix value as long as that value is associated with the
+appropriate namespace URI. For more information, see EclipseLink Runtime
+Namespace Resolution.
+
+==== How to Configure XML Schema Namespace Using Java
+
+Using Java, to configure XML schema namespaces for an EIS descriptor
+(with XML records) or an XML descriptor, create a descriptor amendment
+method (see
+link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Amendment_Methods[Configuring
+Amendment Methods]) that uses `+EISDescriptor+` or `+XMLDescriptor+`
+method `+getNamespaceResolver+` to configure the descriptor’s
+`+NamespaceResolver+` accordingly, as this example shows.
+
+[#Example 4-4]## *_Configuring Namespaces_*
+
+`+public void addToDescriptor(ClassDescriptor descriptor) {+`
+`+    descriptor.getNamespaceResolver.put(+` `+        prefix,+`
+`+        namespaceURI+` `+    );+` `+}+`
+
+== Using Classes
+
+Using Workbench, you can create Java classes and packages. This section
+includes information on the following:
+
+* link:#How_to_Create_Classes[How to Create Classes]
+* link:#How_to_Configure_Classes[How to Configure Classes]
+* link:#How_to_Import_and_Update_Classes[How to Import and Update
+Classes]
+* link:#How_to_Manage_Nondescriptor_Classes[How to Manage Nondescriptor
+Classes]
+* link:#How_to_Rename_Packages[How to Rename Packages]
+
+=== How to Create Classes
+
+We recommend that you develop your Java classes using an IDE such as
+Eclipse and import these existing classes into Workbench (see
+link:#How_to_Import_and_Update_Classes[How to Import and Update
+Classes])
+
+However, it is sometimes convenient to create and configure classes in
+Workbench: for example, when generating an object model from a database
+schema.
+
+This section includes information on using Workbench to create Java
+classes.
+
+For more information on using Workbench to edit classes, see
+link:#How_to_Create_Classes[How to Create Classes].
+
+==== How to Create Classes Using Workbench
+
+To create new classes and packages from within Workbench, use this
+procedure:
+
+[arabic]
+. Select the project in the *Navigator* and click *Create New Class*
+image:creatcls.gif[Create New Class
+button,title="Create New Class button"]. You can also right-click the
+project in the *Navigator* and choose *Create New Class* from the
+context menu or choose *Selected* > *Create New Class* from the menu.
+[#Figure 4-35]##*_Add Class Dialog Box_* image:addclass.gif[Add Class
+Dialog Box,title="Add Class Dialog Box"]
+. Enter data in each field on the Add Class dialog box and click *OK*.
+Workbench will add the new class to the project in the *Navigator*.
+
+Use the following information to enter data in each field on the Add
+Class dialog box:
+
+[width="100%",cols="<16%,<84%",options="header",]
+|===
+|*Field* |*Description*
+|*Package Name* |Choose an existing package or enter a new package name.
+If blank, Workbench uses the default package name.
+
+|*New Class Name* |Enter a class name. The *New Class Name* must be
+unique within the package.
+|===
+
+For more information on using Workbench to edit classes, see
+link:#How_to_Configure_Classes[How to Configure Classes].
+
+=== How to Configure Classes
+
+We recommend that you develop your Java classes using an IDE such as
+Eclipse and import these existing classes into Workbench (see
+link:#How_to_Import_and_Update_Classes[How to Import and Update
+Classes])
+
+However, it is sometimes convenient to create (see
+link:#How_to_Create_Classes[How to Create Classes]) and configure
+classes in Workbench: for example, when generating an object model from
+a database schema.
+
+This section describes using Workbench to edit classes, including the
+following:
+
+* link:#Configuring_Class_Information[Configuring Class Information]
+* link:#Configuring_Class_Modifiers[Configuring Class Modifiers]
+* link:#Configuring_Class_Interfaces[Configuring Class Interfaces]
+* link:#Adding_Attributes[Adding Attributes]
+* link:#Configuring_Attribute_Modifiers[Configuring Attribute Modifiers]
+* link:#Configuring_Attribute_Type_Declaration[Configuring Attribute
+Type Declaration]
+* link:#Configuring_Attribute_Accessing_Methods[Configuring Attribute
+Accessing Methods]
+* link:#Adding_Methods[Adding Methods]
+* link:#Configuring_Method_Modifiers[Configuring Method Modifiers]
+* link:#Configuring_Method_Return_Type[Configuring Method Return Type]
+* link:#Configuring_Method_Parameters[Configuring Method Parameters]
+
+==== Configuring Class Information
+
+This section includes information on using the workbench to configure
+class information.
+
+===== Using Workbench
+
+To configure class and superclass information, use this procedure:
+
+[arabic]
+. Select a class in the *Navigator*. Its properties appear in the
+*Editor*.
+. Click the *Class Info* tab in the *Editor*.
+. Click the *Class* tab. [#Figure 4-36]##*_Class Tab, Class Information
+Fields_* image:classinfo.gif[Class Tab, Class Information
+Fields,title="Class Tab, Class Information Fields"]
+. Complete the class information fields on the Class Info tab.
+
+Use the following information to enter data in each field on the tab:
+
+[width="100%",cols="<14%,<86%",options="header",]
+|===
+|*Field* |*Description*
+|*Name* |The name of the class. This field is for display only.
+
+|*Superclass* |Click *Browse* and select a class and package that
+contains the class (that is, the superclass).
+|===
+
+==== Configuring Class Modifiers
+
+This section includes information on using the workbench to configure
+class modifiers.
+
+===== Using Workbench
+
+To configure class modifiers, use this procedure:
+
+[arabic]
+. Select a class in the *Navigator*. Its properties appear in the
+*Editor*.
+. Click the *Class Info* tab in the *Editor*.
+. Click the *Class* tab.[#Figure 4-37]## *_Class Tab, Class Modifiers
+Fields_* image:clclmodi.gif[Class Tab, Class Modifiers
+Fields,title="Class Tab, Class Modifiers Fields"]
+. Complete the Modifiers fields on the Class tab.
+
+Use the following information to enter data in each field on the tab:
+
+[width="100%",cols="<13%,<87%",options="header",]
+|===
+|*Field* |*Description*
+|*Access Modifiers* |Use to specify whether the class is accessible
+publicly or not. Only public classes are visible to the Workbench.
+
+|*Other Modifiers* |Specify if the class is *Final* or *Abstract*, or
+both. Final classes are not included in the superclass selection lists
+for other classes to extend.
+|===
+
+==== Configuring Class Interfaces
+
+This section includes information on using the workbnech to specify the
+interfaces implemented by a class. You can choose any interface in the
+Workbench classpath (see
+link:Configuring%20a%20Project%20(ELUG)#Configuring_Project_Classpath[Configuring
+Project Classpath]).
+
+Although you may add interfaces to a project directly (see
+link:#How_to_Import_and_Update_Classes[How to Import and Update
+Classes]), you do not need to do so in order to configure a class to
+implement an interface.
+
+===== Using Workbench
+
+To implement interfaces, use this procedure:
+
+[arabic]
+. Select a class in the *Navigator*. Its properties appear in the
+*Editor*.
+. Click the *Class Info* tab in the *Editor*.
+. Click the *Class* tab. [#Figure 4-38]##*_Class Tab, Interfaces
+Implemented Fields_* image:clclintr.gif[Class Tab, Interfaces
+Implemented Fields,title="Class Tab, Interfaces Implemented Fields"]
+. Complete the Iterfaces Implemented field on the tab.
+
+Use the following information to enter data in the Interfaces
+Implemented field on the Class tab:
+
+[width="100%",cols="<13%,<87%",options="header",]
+|===
+|*Field* |*Description*
+|*Interfaces Implemented* |To add an interface, click *Add*. The Choose
+Class dialog box appears. In the dialog box, select the interface and
+package. To remove an interface, select the interface and click
+*Remove*.
+|===
+
+==== Adding Attributes
+
+This section includes information on using the workbench to add an
+attribute to a class.
+
+===== Using Workbench
+
+* To add a new attribute (field) to the descriptor, click *Add.*
+* To delete an existing attribute, select the attribute and click
+*Remove*.
+* To rename an existing attribute, select the attribute and click
+*Rename*.
+
+The *Attributes* tab contains the following tabs:
+
+* General
+* Accessors
+
+==== Configuring Attribute Modifiers
+
+This section includes information on using the workbench to configure
+attribute modifiers.
+
+===== Using Workbench
+
+To specify access modifiers, use this procedure:
+
+[arabic]
+. Select a class in the *Navigator*. Its properties appear in the
+*Editor*.
+. Click the *Class Info* tab in the *Editor*.
+. Click the *Attributes* tab. The Attributes tab contains two sub-tabs.
+. Click the *General* tab. [#Figure 4-39]##*_Attributes Tab, Modifiers
+Fields_* image:clatgenmod.gif[Attributes Tab, Modifiers
+Fields,title="Attributes Tab, Modifiers Fields"]
+. Complete the Modifiers fields on the Attributes tab.
+
+Use the following information to enter data in the Modifiers fields on
+the Attributes tab:
+
+Field
+
+Description
+
+Access Modifiers
+
+Specify how the attribute is accessible:
+
+Public
+
+Protected –only visible within its own package and subclasses.
+
+Private – not visible for subclasses
+
+Default – only visible within its own package
+
+Other Modifiers
+
+Specify whether the attribute is Final, Static, Transient, or Volatile.
+
+Note: Selecting some modifiers may disable others.
+
+==== Configuring Attribute Type Declaration
+
+This section includes information on using the workbench to configure
+attribute type declaration.
+
+===== Using Workbench
+
+To specify attribute type declaration, use this procedure:
+
+[arabic]
+. Select a class in the *Navigator*. Its properties appear in the
+*Editor*.
+. Click the *Class Info* tab in the *Editor*.
+. Click the *Attributes* tab. The Attributes tab contains two sub-tabs.
+. Click the *General* tab. [#Figure 4-40]##*_Attributes Tab, Type
+Declaration Fields_* image:clatgentyp.gif[Attributes Tab, Type
+Declaration Fields,title="Attributes Tab, Type Declaration Fields"]
+. Complete the Type Declaration fields on the Attributes tab.
+
+Use the following information to enter data in Type Declaration fields
+on the Attributes tab:
+
+[width="100%",cols="<14%,<86%",options="header",]
+|===
+|*Field* |*Description*
+|*Type* |Click *Browse* and select a class and package for the
+attribute.
+
+|*Dimensionality* |Specify the length of an array. This field applies
+only if *Type* is an array.
+
+|*Value Type* |Click *Browse* and select a class and package for the
+attribute. This field applies for `+ValueHolderInterface+` types only.
+
+|*Map Key Type* |Click *Browse* and select a class and package for the
+attribute. This field applies for `+Map+` types only.
+
+|*Map Value Type* |Click *Browse* and select a class and package for the
+attribute. This field applies for `+Map+` types only.
+
+|*Element Type* |Click *Browse* and select a class and package for the
+attribute. This field applies for `+List+` types only.
+|===
+
+==== Configuring Attribute Accessing Methods
+
+This section includes information on using the workbench to configure
+attribute accessing methods. If you change an attribute and regenerate
+the accessing methods, EclipseLink _does not_ remove any previously
+generated methods.
+
+===== Using Workbench
+
+To specify attribute accessing methods, use this procedure:
+
+[arabic]
+. Select a class in the *Navigator*. Its properties appear in the
+*Editor*.
+. Click the *Class Info* tab in the *Editor*.
+. Click the *Attributes* tab. The Attributes tab contains two sub-tabs.
+. Click the *Accessors* tab. [#Figure 4-41]##*_Attributes Tab, Accessors
+Fields_* image:clataccs.gif[Attributes Tab, Accessors
+Fields,title="Attributes Tab, Accessors Fields"]
+. Complete the Accessors fields on the Attributes tab. Click *Generate
+Methods* to automatically create the required method.
+
+Use the following information to complete the Accessors fields on the
+Attributes tab:
+
+[width="100%",cols="<19%,<81%",options="header",]
+|===
+|*Field* |*Description*
+|*Get Method* |Choose the `+get+` method for the attribute. This field
+applies for non-`+Collection+` types only.
+
+|*Set Method* |Choose the `+set+` method for the attribute. This field
+applies for non-`+Collection+` types only.
+
+|*Add Method* |Choose the `+add+` method for the attribute. This field
+applies for `+List+` and `+Map+` types only.
+
+|*Remove Method* |Choose the `+remove+` method for the attribute. This
+field applies for `+List+` and `+Map+` types only.
+
+|*Value Holder Get Method* |Choose the method used to return the
+`+ValueHolderInterface+` type. This field applies for
+`+ValueHolderInterface+` types only.
+
+|*Value Holder Set Method* |Choose the method used to set the
+`+ValueHolderInterface+` type. This field applies for
+`+ValueHolderInterface+` types only.
+
+|*Value Get Method* |Choose the method used to return the actual value.
+This field applies for `+ValueHolderInterface+` types only.
+
+|*Value Set Method* |Choose the method used to set the actual value.
+This field applies for `+ValueHolderInterface+` types only.
+|===
+
+==== Adding Methods
+
+This section includes information on the workbench to add a method to a
+class.
+
+===== Using Workbench
+
+To add or remove methods, use this procedure:
+
+[arabic]
+. Select a class in the *Navigator*. Its properties appear in the
+*Editor*.
+. Click the *Class Info* tab in the *Editor*.
+. Click the *Methods* tab.[#Figure 4-42]## *_Class Info – Methods Tab_*
+image:clmethod.gif[Class Info – Methods
+Tab,title="Class Info – Methods Tab"]
+
+To add a new method to the descriptor, click *Add.*
+
+To delete an existing method, select the method and click *Remove*.
+
+To rename an existing method, select the method and click *Rename*.
+
+==== Configuring Method Modifiers
+
+This section includes information on using the workbench to configure
+method modifiers.
+
+===== Using Workbench
+
+To specify access modifiers, use this procedure:
+
+[arabic]
+. Select a class in the *Navigator*. Its properties appear in the
+*Editor*.
+. Click the *Class Info* tab in the *Editor*.
+. Click the *Methods* tab. [#Figure 4-43]##*_Methods Tab, Modifiers
+Fields_* image:clmemod.gif[DMethods Tab, Modifiers
+Fields,title="DMethods Tab, Modifiers Fields"]
+. Complete the Modifiers fields on the Methods tab.
+
+Use the following information to enter data in Modifiers fields on the
+Methods tab:
+
+Field
+
+Description
+
+Access Modifiers
+
+Specify how the method can be accessed:
+
+Public
+
+Protected – only visible within its own package and subclasses.
+
+Private – not visible for subclasses.
+
+Default – only visible within its own package.
+
+Other Modifiers
+
+Specify whether the method is Abstract, Final, Synchronized, Static, or
+Native.
+
+Note: Selecting some modifiers may disable others.
+
+==== Configuring Method Return Type
+
+This section includes information on using the workbench to configure
+method return type.
+
+===== Using Workbench
+
+To specify method return type, use this procedure:
+
+[arabic]
+. Select a class in the *Navigator*. Its properties appear in the
+*Editor*.
+. Click the *Class Info* tab in the *Editor*.
+. Click the *Methods* tab. [#Figure 4-44]##*_Methods Tab, Return Type
+Fields_* image:clmetyp.gif[Methods Tab, Return Type
+Fields,title="Methods Tab, Return Type Fields"]
+. Complete the Return Type fields on the Methods tab.
+
+Use the following information to enter data in Return Type fields on the
+Methods tab:
+
+[width="100%",cols="<20%,<80%",options="header",]
+|===
+|*Field* |*Description*
+|*Type* |Click *Browse* and select a class and package for the method.
+
+|*Dimensionality* |Specify the length of an array. This field applies
+only if *Type* is an array.
+|===
+
+==== Configuring Method Parameters
+
+This section includes information on using the workbench to configure
+method parameters.
+
+===== Using Workbench
+
+To specify additional method parameters, use this procedure:
+
+[arabic]
+. Select a class in the *Navigator*. Its properties appear in the
+*Editor*.
+. Click the *Class Info* tab in the *Editor*.
+. Click the *Methods* tab. [#Figure 4-45]##*_Methods Tab, Method
+Parameters Fields_* image:clmeparm.gif[Methods Tab, Method Parameters
+Fields,title="Methods Tab, Method Parameters Fields"]
+. Complete the Parameters fields on the Methods tab.
+
+Use the following information to enter data in Parameters fields on the
+Methods tab:
+
+[width="100%",cols="<20%,<80%",options="header",]
+|===
+|*Field* |*Description*
+|*Type* |Click *Browse* and select a class and package for the method.
+
+|*Dimensionality* |Specify the length of an array. This field applies
+only if *Type* is an array.
+|===
+
+=== How to Import and Update Classes
+
+This section includes information on
+link:#Importing_and_Updating_Classes_Using_Workbench[Importing and
+Updating Classes Using Workbench] to import and update Java classes.
+
+You can import Java classes and interfaces created in any IDE.
+
+[cols="<",]
+|===
+|*Note*: You can import interfaces only in relational projects.
+|===
+
+You can import any class on the system classpath or project classpath.
+
+If a class exists on both the system classpath and the project
+classpath, Workbench will update the class from the system classpath. To
+update or refresh from the project classpath, remove the class from the
+system classpath and restart Workbench.
+
+For more information, see
+link:Configuring%20a%20Project%20(ELUG)#Configuring_Project_Classpath[Configuring
+Project Classpath].
+
+==== Importing and Updating Classes Using Workbench
+
+Use this procedure to update or refresh the classes in the Workbench
+project.
+
+[arabic]
+. Define the available classes and packages for the project on the
+*General* tab. See
+link:Configuring%20a%20Project%20(ELUG)#Configuring_Project_Classpath[Configuring
+Project Classpath] for information on classes and packages.
+. Click *Add or Refresh Class* image:creatcls.gif[Add or Refresh Class
+button,title="Add or Refresh Class button"]. The Select Classes dialog
+box appears. You can also update the classes by choosing *Selected* >
+*Add or Refresh Classes* from the menu. [#Figure 4-46]##*_Select Classes
+Dialog Box_* image:select.gif[Select Classes Dialog
+Box,title="Select Classes Dialog Box"]
+
+Select the packages or classes (or both) to import into the project and
+click *OK*. Workbench adds the new classes to your project in the
+*Navigator*.
+
+By default, Workbench creates the following descriptor types for each
+package and class (depending on your project type):
+
+* link:Creating%20a%20Relational%20Descriptor%20(ELUG)#Creating_Relational_Class_Descriptors[Relational
+projects – Relational class descriptors]
+* link:Creating%20an%20EIS%20Descriptor%20(ELUG)#EIS_Composite_Descriptors[EIS
+projects – EIS composite descriptors]
+* link:Introduction%20to%20XML%20Descriptors%20(ELUG)#Composite_Descriptors_in_XML_Projects[XML
+projects – XML descriptors]
+
+See
+link:Creating%20a%20Descriptor%20(ELUG)#Creating_a_Descriptor[Creating a
+Descriptor] for more information.
+
+[width="100%",cols="<100%",]
+|===
+|*Note*: If the class exists on both the system classpath and the
+project classpath, Workbench will update the class from the system
+classpath. To update or refresh from the project classpath, remove the
+class from the system classpath and restart Workbench.
+|===
+
+*To Remove a Class from a Project, do the following:*
+
+Select the descriptor and click *Remove* image:remclass.gif[Remove Class
+button,title="Remove Class button"], or choose *Selected* > *Remove*
+from the menu.
+
+=== How to Manage Nondescriptor Classes
+
+Some of the mappings in your EclipseLink project may reference classes
+that do not have EclipseLink descriptors or are not included in the
+project.
+
+To add, remove, or refresh Java classes that do not have EclipseLink
+descriptors, use this procedure:
+
+From the menu, select *Workbench > Manage Non-Descriptor Classes*. The
+Manage Non-Descriptor Classes dialog box appears.
+
+You can access the dialog box by right-clicking the EclipseLink project
+icon in the *Navigator* and selecting *Manage Non-Descriptor Classes*
+from the context menu.
+
+[#Figure 4-47]## *_Manage Non-Descriptor Classes Dialog Box_*
+
+.Manage Non-Descriptor Classes Dialog Box
+image::nondescriptor.gif[Manage Non-Descriptor Classes Dialog
+Box,title="Manage Non-Descriptor Classes Dialog Box"]
+
+Select one of the following options:
+
+* To add new classes, click *Add*. The Select Classes dialog box appears
+(see link:#Figure_4-46[the Select Classes Dialog Box]). Only classes
+that have been added to the
+link:Configuring%20a%20Project%20(ELUG)#Configuring_Project_Classpath[project’s
+classpath] can be added as nondescriptor classes.
+* To delete an existing class, select the class and click *Remove*.
+* To refresh the classes (for example, if you edited the classes in an
+IDE), click *Refresh*.
+
+=== How to Rename Packages
+
+When you add classes to a project, Workbench shows the classes contained
+in the package to which they belong (see
+link:#How_to_Use_the_Navigator[How to Use the Navigator]).
+
+You can use Workbench to change the package statements in all the Java
+classes of a selected package (to move the all the classes contained by
+the selected package to a new package). This is useful if you are
+refactoring an existing Workbench project.
+
+Note: The Workbench package rename feature is not intended for migrating
+projects to this release of EclipseLink: for this, you must still use
+the EclipseLink Package Renamer. The Package Renamer updates import
+statements for EclipseLink classes – it does not change the package
+statements in user application classes.
+
+For information on the EclipseLink Package Renamer, see "`Running the
+Package Renamer`" in the Migration Guide.
+
+For more information on using Workbench to edit classes, see
+link:#How_to_Configure_Classes[How to Configure Classes].
+
+==== Renaming Packages Using Workbench
+
+To change the package of an existing class in Workbench, use this
+procedure:
+
+[arabic]
+. Right-click the package in the *Navigator* and select *Rename*. You
+can also select the package and choose *Selected* > *Rename* from the
+menu.* *_Rename Package Dialog Box_’’’
+[#Figure 4-48]##image:changpkg.gif[Rename Package Dialog
+Box,title="Rename Package Dialog Box"]
+. Enter the package name on the Rename Package dialog box and click
+*OK*. Workbench will change the name of the package in the Navigator.
+
+Enter the package name and click *OK*. Workbench changes the name of the
+package in the Navigator window.
+
+For more information on using Workbench to edit classes, see
+link:#How_to_Configure_Classes[How to Configure Classes].
+
+== Integrating Workbench with Apache Ant
+
+If you use the Apache Ant Java-based build tool, you can use the Ant
+task and type definitions that EclipseLink provides to invoke certain
+Workbench functions from an Ant build file. Using these tasks, you can
+integrate Workbench into your automated build process.
+
+This section describes the following:
+
+* link:#How_to_Configure_Ant_to_Use_Workbench_Tasks[How to Configure Ant
+to Use Workbench Tasks]
+* link:#What_You_May_Need_to_Know_About_Workbench_Ant_Task_API[What You
+May Need to Know About Workbench Ant Task API]
+* link:#How_to_Create_Workbench_Ant_Tasks[How to Create Workbench Ant
+Tasks]
+
+For more information about Ant, see
+http://ant.apache.org/manual/[`+http://ant.apache.org/manual/+`].
+
+=== How to Configure Ant to Use Workbench Tasks
+
+Before you can use Workbench tasks in your Ant build files, you must
+consider their library dependencies (see
+link:#Creating_Library_Dependencies[Creating Library Dependencies]).
+
+To declare Workbench tasks in your Ant `+build.xml+` file, declare them
+directly (see link:#Declaring_Workbench_Tasks[Declaring Workbench
+Tasks]).
+
+==== Creating Library Dependencies
+
+In addition to the Ant library dependencies (see
+http://ant.apache.org/manual/installl#librarydependencies[`+http://ant.apache.org/manual/installl#librarydependencies+`]),
+the following table lists the EclipseLink-specific JAR files that must
+be in your Ant classpath.
+
+[#table_4_4]##[#Table 4-4]## *_Workbench Ant Task Library Dependencies_*
+
+[width="100%",cols="<20%,<37%,<43%",options="header",]
+|===
+|*JAR Name* |*Needed For…* |*Available At…*
+|`+eclipselinkmw.jar+` |Workbench Ant task and type definitions.
+|`+<+`_`+ECLIPSELINK_HOME+`_`+>/utils/workbench/jlib+`
+|===
+
+==== Declaring Workbench Tasks
+
+After you declare the Workbench task definitions (see
+link:#table_4_6[the Workbench Ant Type Definitions]) table and data
+definitions (see link:#table_4_4[the Workbench Ant Task Library
+Dependencies]) table in the `+eclipselink-ant-lib.xml+` file (see
+link:#example_4_5[Declaring Workbench Ant Task and Data Types in an
+eclipselink-ant-lib.xml File]) example, you can use a Workbench task in
+a `+build.xml+` file, as the link:#example_4_6[Specifying the
+eclipselink-ant-lib.xml File in the build.xml File] example shows:
+
+[#example4_5]## *_Declaring Workbench Ant Task and Data Types in an
+eclipselink-ant-lib.xml File_*
+
+`+    +`
+
+`+    +`
+
+`+    +`
+
+`+ +` `+    +`
+
+`+    +`
+
+`+    +`
+
+[#example_4_6]## *_Specifying the eclipselink-ant-lib.xml File in the
+build.xml File_*
+
+`+   +` `+   ...+`
+
+=== What You May Need to Know About Workbench Ant Task API
+
+The following lists the Workbench Ant task definitions that EclipseLink
+provides.
+
+[#Table 4-5]## *_Workbench Ant Task Definitions_*
+
+Task Name
+
+EclipseLink Class
+
+mappings.validate Task
+
+org.eclipse.persistence.tools.workbench.ant.taskdefs.MappingsValidateTask
+
+session.validate Task
+
+org.eclipse.persistence.tools.workbench.ant.taskdefs.SessionValidateTask
+
+mappings.export Task
+
+org.eclipse.persistence.tools.workbench.ant.taskdefs.ExportDeploymentXMLTask
+
+The following lists the Workbench Ant type definitions that EclipseLink
+provides.
+
+[#Table 4-6]## *_Workbench Ant Type Definitions_*
+
+Type Name
+
+EclipseLink Class
+
+ignoreerror Task
+
+org.eclipse.persistence.tools.workbench.ant.typedefs.IgnoreError
+
+ignoreerrorset Task
+
+org.eclipse.persistence.tools.workbench.ant.typedefs.IgnoreErrorSet
+
+loginspec Task
+
+org.eclipse.persistence.tools.workbench.ant.typedefs.LoginSpec
+
+=== How to Create Workbench Ant Tasks
+
+The following shows a typical Ant `+build.+`xml file that declares and
+uses the Workbench Ant task and type definitions.
+
+[#Example 4-7]## *_Example Ant Build File with Workbench Ant Tasks_*
+
+`+    <! –  =====================================================  – >+`
+`+    <! –   Properties                                            – >+`
+
+`+    <! –  =====================================================  – >+`
+`+    +` `+        +`
+
+`+        +` `+        +` `+        +`
+
+`+        +` `+            +` `+            +` `+        +` `+        +`
+`+            +` `+            +` `+        +` `+        +`
+`+            +`
+
+`+            +` `+        +` `+        +` `+            +` `+        +`
+
+`+        +`
+
+`+    +`
+`+    <! –  =====================================================  – >+`
+`+    <! –   Define task parameter                                 – >+`
+`+    <! –  =====================================================  – >+`
+`+    +` `+        +`
+
+`+        +` `+        +`
+
+`+        +` `+    +`
+`+    <! –  ====================================================  – >+`
+`+    <! –   Validate the MW Project                               – >+`
+
+`+    <! –  =====================================================  – >+`
+`+    +`
+
+`+        <eclipselnk:mappings.validate+`
+`+            projectfile = "${eclipselink.mwp.dir}/myProject.mwp"+`
+`+            reportfile = "${eclipselink.mwp.dir}/problem-reportl"+`
+`+            reportformat = l"+` `+            property = "mw-valid"+`
+`+            classpathref = "mwplatforms.classpath" >+`
+
+`+            +` `+            +`
+
+`+            +`
+
+`+        </eclipselink:mappings.validate>+` `+    +`
+`+    <! –  =====================================================  – >+`
+`+    <! –   EclipseLink deployment descriptor XML generation          – >+`
+
+`+    <! –  =====================================================  – >+`
+`+    +`
+
+`+        <eclipselink:mappings.export +`
+`+            projectfile = "${eclipselink.mwp.dir}/myProject.mwp"+`
+`+            deploymentfile = "${eclipselink.sessions.dir}/sessions.xml"+`
+`+            property = "export-completed"+`
+`+            failonerror = "true"+`
+`+            classpathref = "eclipselink.classpath">+`
+
+`+            +` `+            +`
+
+`+            +` `+            +`
+`+        </eclipselink:mappings.export>+` `+    +`
+`+    <! –  =====================================================  – >+`
+`+    <! –   EclipseLink Session Validate                              – >+`
+
+`+    <! –  =====================================================  – >+`
+`+    +`
+
+`+        <eclipselink:session.validate+`
+`+            sessionsfile = "${eclipselink.sessions.dir}/sessions.xml"+`
+`+            sessionname = "ThreeTierEmployee"+`
+`+            property = "session-valid"+`
+`+            classpathref = "eclipselink.classpath"+`
+`+            classpath = "${ myProject.classes}" >+`
+
+`+            +` `+            +`
+
+`+            +` `+        </eclipselink:session.validate>+` `+    +`
+
+=== How to Create the mappings.validate Task
+
+The `+mapings.validate+` task is a testing task that you use to list of
+all the problems in a Workbench project (`+.mwp+`) file.
+
+This task lets you do the following:
+
+* log all the problems to a file in text orL format;
+* set an Ant property to indicate that the Workbench project is valid
+(has no errors).
+
+==== Using Parameters
+
+[#Table 4-7]## *_mappings.validate Task Parameters_*
+
+[width="100%",cols="<15%,<61%,<24%",options="header",]
+|===
+|*Attribute* |*Description* |*Required*
+|projectfile |Fully qualified Workbench projects file name (.mwp). |Yes
+
+|reportfile |Fully qualified file name to which to write the output. |No
+
+|reportformat |The format of the generated output. Must be `+codel+` or
+`+text+`. |No – default to `+text+`.
+
+|classpath |Project classpath. |No
+
+|classpathref |Reference to a path defined elsewhere. |No
+
+|property |The name of the property to set (true if there is no
+problem). |No
+|===
+
+==== Specifying Parameters Specified as Nested Elements
+
+You can specify the following parameters as nested elements of this
+task:
+
+* classpath
+* link:#How_to_Create_the_ignoreerror_Task[ignoreerror]
+* link:#How_to_Create_the_ignoreerrorset_Task[ignorerrorset]
+
+==== Examples
+
+The following shows a typical `+mappings.validate+` task.
+
+[#Example 4-8]## *_A mappings.validate Task_*
+
+`+<eclipselink:mappings.validate+`
+`+    projectfile = "${eclipselink.mwp.dir}/myProject.mwp"+`
+`+    reportfile = "${eclipselink.mwp.dir}/problem-reportl"+`
+`+    reportformat = l"+` `+    property = "mw-valid"+`
+`+    classpath = "${mwplatforms.classpath}" >+`
+
+`+    +` `+    +`
+
+`+    +` `+    +`
+
+`+</eclipselink:mappings.validate>+`
+
+=== How to Create the session.validate Task
+
+The `+session.validate+` task is a testing task that you use to test
+your EclipseLink deployment XML by running EclipseLink.
+
+This task provides the ability to do the following:
+
+* specify the test type using a nested element;
+* set an Ant property to indicate that the Workbench project is valid
+(has no errors).
+
+==== Using Parameters
+
+[#Table 4-8]## *_session.validate Task Parameters_*
+
+[width="100%",cols="<14%,<43%,<43%",options="header",]
+|===
+|*Attribute* |*Description* |*Required*
+|sessionsfile |Fully qualified `+sessions.xml+` file. |No – default to
+`+sessions.xml+` and to classpath.
+
+|sessionname |Name of the session to test. |Yes
+
+|classpath |Project classpath. |No
+
+|classpathref |Reference to a path defined elsewhere. |No
+
+|property |The name of the property to set (true if valid). |No
+|===
+
+==== Specifying Parameters Specified as Nested Elements
+
+You can specify the following parameters as nested elements of this
+task:
+
+* classpath;
+* link:#How_to_Create_the_loginspec_Task[loginspec].
+
+==== Examples
+
+The following shows a typical `+session.validate+` task.
+
+[#Example 4-9]## *_A session.validate Task_*
+
+`+<eclipselink:session.validate      +`
+`+    sessionsfile = "${eclipselink.sessions.dir}/sessions.xml"+`
+`+    sessionname = "ThreeTierEmployee"+`
+`+    property = "session-valid"+`
+`+    classpathref = "eclipselink.classpath"+`
+`+    classpath = "${ myProject.classes}" >+`
+
+`+    +` `+    +`
+
+`+    +`
+
+`+</eclipselink:session.validate>+`
+
+=== How to Create the mappings.export Task
+
+The `+mappings.export+` task is a generation task that you use to
+generate an EclipseLink deployment XML file for a given Workbench
+project (`+.mwp+`). The `+mappings.export+` task executes a
+link:#How_to_Create_the_mappings.validate_Task[H`+mappings.validate+`
+task] before executing. A `+BuildException+` is thrown if validation
+fails.
+
+This task provides the ability to override the Workbench project
+database login information.
+
+==== Using Parameters
+
+[#Table 4-9]## *_mappings.export Task Parameters_*
+
+[width="100%",cols="<9%,<51%,<40%",options="header",]
+|===
+|*Attribute* |*Description* |*Required*
+|projectfile |Fully qualified Workbench projects file name (`+.mwp+`).
+|Yes
+
+|deploymentfile |Fully qualified EclipseLink project deployment file
+name (`+.xml+`). |No – default to the name specified in the Workbench
+project (`+.mwp+`).
+
+|ejbjarxmldir |The directory that contains the `+ejb-jar.xml+` file
+(only applicable to Java EE project). |No – default to the directory
+specified in the Workbench project (`+.mwp+`).
+
+|classpath |Project classpath. |No
+
+|classpathref |Reference to a path defined elsewhere. |No
+
+|failonerror |Indicates whether the build will continue even if there
+are export errors; defaults to `+true+`. |No
+
+|property |The name of the property to set (`+true+` if export completed
+successfully). |No
+|===
+
+==== Specifying Parameters Specified as Nested Elements
+
+You can specify the following parameters as nested elements of this
+task:
+
+* classpath;
+* link:#How_to_Create_the_loginspec_Task[loginspec];
+* link:#How_to_Create_the_ignoreerrorTask[ignorerror];
+* link:#How_to_Create_the_ignoreerrorset_Task[ignorerrorset].
+
+==== Examples
+
+The following example shows a typical `+mappings.export+` task.
+
+[#Example 4-10]## *_A mappings.export Task_*
+
+`+<eclipselink:mappings.export +`
+`+    projectfile = "${eclipselink.mwp.dir}/myProject.mwp"+`
+`+    deploymentfile = "${eclipselink.sessions.dir}/sessions.xml"+`
+`+    property = "export-completed"+` `+    failonerror = "true"+`
+`+    classpathref = "eclipselink.classpath">+`
+
+`+    +`
+
+`+    +`
+
+`+    +` `+    +` `+    +` `+</eclipselink:mappings.export>+`
+
+=== How to Create the classpath Task
+
+Use the classpath element to define the Java classpath necessary to run
+a task. For more information, see
+http://ant.apache.org/manual/usingl#path[`+http://ant.apache.org/manual/usingl#path+`].
+
+==== Using Parameters
+
+[#Table 4-10]## *_classpath Element Parameters_*
+
+[width="100%",cols="<12%,<78%,<10%",options="header",]
+|===
+|*Attribute* |*Description* |*Required*
+|location |Specifies a single file or directory relative to the
+project’s base directory (or an absolute filename). |No
+
+|path |Specifies one or multiple files or directories separated by a
+colon or semicolon. |No
+
+|refid |Reference to a path defined elsewhere. |No
+|===
+
+==== Specifying Parameters Specified as Nested Elements
+
+You can specify the following parameters as nested elements of this
+task:
+
+* pathelement
+* fileset
+* dirset
+* filelist
+
+==== Examples
+
+The following example shows a typical `+classpath+` element.
+
+*_A classpath Element_*
+
+`+   +` `+       +` `+           +` `+       +` `+   +` `+       +`
+`+           +` `+           +` `+       +` `+   +`
+
+=== How to Create the ignoreerror Task
+
+Use the `+ignoreerror+` element to instruct an EclipseLink Ant task to
+ignore a specific EclipseLink Foundation Library or Workbench (see
+link:Troubleshooting_an_EclipseLink_Application_(ELUG)[Troubleshooting
+an EclipseLink Application (ELUG)]) run-time error code.
+
+To instruct an EclipseLink Ant task to ignore multiple error codes,
+consider using an
+link:#How_to_Create_the_ignoreerrorset_Task[`+ignoreerrorset+` element].
+
+==== Using Parameters
+
+[#Table 4-11]## *_ignoreerror Element Parameters_*
+
+[cols="<,<,<",options="header",]
+|===
+|*Attribute* |*Description* |*Required*
+|code |Error code of the problem to ignore. |Yes
+|===
+
+==== Specifying Parameters Specified as Nested Elements
+
+You cannot specify parameters as nested elements of this element.
+
+==== Examples
+
+The following example shows a typical `+ignoreerror+` element. This
+element instructs a `+mappings.export+` task to ignore Workbench error
+code 0545.
+
+*_An ignoreerror Element_*
+
+`+<eclipselink:mappings.export+`
+`+    projectfile = "${eclipselink.mwp.dir}/myProject.mwp"+`
+`+   deploymentfile = "${eclipselink.sessions.dir}/sessions.xml"+`
+`+   classpathref = "eclipselink.classpath">+` `+   +` `+   +` `+   +`
+`+</eclipselink:mappings.export>+`
+
+=== How to Create the ignoreerrorset Task
+
+Use the `+ignoreerrorset+` element to instruct an EclipseLink Ant task
+to ignore any of multiple EclipseLink Foundation Library or Workbench
+run-time error codes.
+
+==== Using Parameters
+
+[#Table 4-12]## *_ignoreerrorset Element Parameters_*
+
+[width="100%",cols="<14%,<75%,<11%",options="header",]
+|===
+|*Attribute* |*Description* |*Required*
+|id |Unique identifier for this type instance, can be used to reference
+this type in scripts. |No
+
+|refid |Reference to a ignoreerrorset defined elsewhere. |No
+|===
+
+==== Specifying Parameters Specified as Nested Elements
+
+You can specify the following parameter as nested elements of this
+element:
+
+* link:#How_to_Create_the_ignoreerror_Task[ignorerror]
+
+==== Examples
+
+The following example shows a typical `+ignoreerrorset+` element. This
+element instructs a `+mappings.export+` task to ignore all of Workbench
+error codes 0402 and 0570. Note that the `+mappings.export+` task also
+uses an explicitly `+ignoreerror+` element: this means that the
+`+mappings.export+` task will ignore all of error codes 0402, 0570, and
+0545.
+
+[#Example 4-13]## *_An ignoreerrorset Element_*
+
+`+   +` `+   +` `+   ...+` `+   <eclipselink:mappings.export+`
+`+    projectfile = "${eclipselink.mwp.dir}/myProject.mwp"+`
+`+    deploymentfile = "${eclipselink.sessions.dir}/sessions.xml"+`
+`+    classpathref = "eclipselink.classpath">+` `+   +` `+   +` `+   +`
+`+   +` `+</eclipselink:mappings.export>+`
+
+=== How to Create the loginspec Task
+
+Use the `+loginspec+` element to instruct an EclipseLink Ant task to
+override the project database login information in a Workbench project.
+For more information, see
+link:Introduction%20to%20Data%20Access%20(ELUG)[Introduction to Data
+Access].
+
+[width="100%",cols="<100%",]
+|===
+|*Note:* You can only use this element with
+link:Introduction%20to%20Relational%20Projects%20(ELUG)[Relational
+Projects]. You cannot use this element with a Java EE project.
+|===
+
+==== Using Parameters
+
+[#Table 4-13]## *_loginspec Element Parameters_*
+
+[width="100%",cols="<6%,<72%,<22%",options="header",]
+|===
+|*Attribute* |*Description* |*Required*
+|id |Unique identifier for this type instance, can be used to reference
+this type in scripts. |No
+
+|refid |Reference to a loginspec defined elsewhere. |No
+
+|driverclass |Fully qualified class of the data source driver (see
+link:Configuring%20a%20Database%20Login%20(ELUG)#Configuring_Database_Login_Connection_Options[Configuring
+Database Login Connection Options]). |No – default to the class that the
+Workbench project specifies.
+
+|url |URL of the driver (see
+link:Configuring%20a%20Database%20Login%20(ELUG)#Configuring_Database_Login_Connection_Options[Configuring
+Database Login Connection Options]). |Yes
+
+|user |Login user name (see
+link:Configuring%20a%20Data%20Source%20Login%20(ELUG)#Configuring_User_Name_and_Password[Configuring
+User Name and Password]). |No – default to the value that the Workbench
+project specifies
+
+|password |Login password (see
+link:Configuring%20a%20Data%20Source%20Login%20(ELUG)#Configuring_User_Name_and_Password[Configuring
+User Name and Password]). |No – default to the value that the Workbench
+project specifies
+|===
+
+==== Specifying Parameters Specified as Nested Elements
+
+You cannot specify parameters as nested elements of this element.
+
+==== Examples
+
+The following example shows a typical `+loginspec+` element.
+
+[#Example 4-14]## *_A loginspec Element_*
+
+`+<eclipselink:mappings.export +`
+`+    projectfile = "${eclipselink.mwp.dir}/myProject.mwp"+`
+`+    deploymentfile = "${eclipselink.sessions.dir}/sessions.xml"+`
+`+    classpathref = "eclipselink.classpath">+`
+
+`+    +` `+    +`
+
+`+    +`
+
+`+</eclipselink:mappings.export>+`
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Release_1[Category: Release 1] Category:_Concept[Category:
+Concept] Category:_Task[Category: Task]

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -39,9 +39,9 @@ import static java.sql.Types.VARCHAR;
 import static javax.xml.XMLConstants.DEFAULT_NS_PREFIX;
 import static javax.xml.XMLConstants.NULL_NS_URI;
 import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
-import static org.eclipse.persistence.internal.helper.ClassConstants.BIGDECIMAL;
-import static org.eclipse.persistence.internal.helper.ClassConstants.BOOLEAN;
-import static org.eclipse.persistence.internal.helper.ClassConstants.STRING;
+import static org.eclipse.persistence.internal.core.helper.CoreClassConstants.BIGDECIMAL;
+import static org.eclipse.persistence.internal.core.helper.CoreClassConstants.BOOLEAN;
+import static org.eclipse.persistence.internal.core.helper.CoreClassConstants.STRING;
 import static org.eclipse.persistence.internal.oxm.Constants.BASE_64_BINARY_QNAME;
 import static org.eclipse.persistence.internal.oxm.Constants.COLON;
 import static org.eclipse.persistence.internal.oxm.Constants.DATE_QNAME;
@@ -334,78 +334,31 @@ public class Util {
      * Return the JDBC type name for a given JDBC type code.
      */
     public static String getJDBCTypeNameFromType(int jdbcType) {
-        String typeName = null;
-        switch (jdbcType) {
-            case Types.NUMERIC:
-                typeName = NUMERIC_STR;
-                break;
-            case Types.VARCHAR:
-                typeName = VARCHAR_STR;
-                break;
-            case Types.NVARCHAR:
-                typeName = NVARCHAR_STR;
-                break;
-            case Types.DECIMAL:
-                typeName = DECIMAL_STR;
-                break;
-            case Types.CHAR:
-                typeName = CHAR_STR;
-                break;
-            case Types.NCHAR:
-                typeName = NCHAR_STR;
-                break;
-            case Types.FLOAT:
-                typeName = FLOAT_STR;
-                break;
-            case Types.REAL:
-                typeName = REAL_STR;
-                break;
-            case Types.DOUBLE:
-                typeName = DOUBLE_STR;
-                break;
-            case Types.BINARY:
-                typeName = BINARY_STR;
-                break;
-            case Types.BLOB:
-                typeName = BLOB_STR;
-                break;
-            case Types.CLOB:
-                typeName = CLOB_STR;
-                break;
-            case Types.NCLOB:
-                typeName = NCLOB_STR;
-                break;
-            case Types.VARBINARY:
-                typeName = VARBINARY_STR;
-                break;
-            case Types.LONGVARBINARY:
-                typeName = LONGVARBINARY_STR;
-                break;
-            case Types.DATE:
-                typeName = DATE_STR;
-                break;
-            case Types.TIME:
-                typeName = TIME_STR;
-                break;
-            case Types.TIMESTAMP:
-                typeName = TIMESTAMP_STR;
-                break;
-            case Types.BIGINT:
-                typeName = BIGINT_STR;
-                break;
-            case Types.ARRAY:
-                typeName = ARRAY_STR;
-                break;
-            case Types.STRUCT:
-                typeName = STRUCT_STR;
-                break;
-            case Types.ROWID:
-                typeName = ROWID_STR;
-                break;
-            default:
-                typeName = OTHER_STR;
-                break;
-        }
+        String typeName = switch (jdbcType) {
+            case Types.NUMERIC -> NUMERIC_STR;
+            case Types.VARCHAR -> VARCHAR_STR;
+            case Types.NVARCHAR -> NVARCHAR_STR;
+            case Types.DECIMAL -> DECIMAL_STR;
+            case Types.CHAR -> CHAR_STR;
+            case Types.NCHAR -> NCHAR_STR;
+            case Types.FLOAT -> FLOAT_STR;
+            case Types.REAL -> REAL_STR;
+            case Types.DOUBLE -> DOUBLE_STR;
+            case Types.BINARY -> BINARY_STR;
+            case Types.BLOB -> BLOB_STR;
+            case Types.CLOB -> CLOB_STR;
+            case Types.NCLOB -> NCLOB_STR;
+            case Types.VARBINARY -> VARBINARY_STR;
+            case Types.LONGVARBINARY -> LONGVARBINARY_STR;
+            case Types.DATE -> DATE_STR;
+            case Types.TIME -> TIME_STR;
+            case Types.TIMESTAMP -> TIMESTAMP_STR;
+            case Types.BIGINT -> BIGINT_STR;
+            case Types.ARRAY -> ARRAY_STR;
+            case Types.STRUCT -> STRUCT_STR;
+            case Types.ROWID -> ROWID_STR;
+            default -> OTHER_STR;
+        };
         return typeName;
     }
 
@@ -439,38 +392,17 @@ public class Util {
      * given JDBC type.
      */
     public static QName getXMLTypeFromJDBCType(int jdbcType) {
-        switch (jdbcType) {
-            case CHAR:
-            case NCHAR:
-            case LONGVARCHAR:
-            case VARCHAR:
-            case NVARCHAR:
-            case CLOB:
-            case NCLOB:
-            case ROWID:
-                return STRING_QNAME;
-            case BIGINT:
-                return INTEGER_QNAME;
-            case INTEGER:
-            case SMALLINT:
-            case TINYINT:
-                return INT_QNAME;
-            case NUMERIC:
-            case DECIMAL:
-                return DECIMAL_QNAME;
-            case DOUBLE:
-            case FLOAT:
-            case REAL:
-                return DOUBLE_QNAME;
-            case DATE:
-                return DATE_QNAME;
-            case TIME:
-                return TIME_QNAME;
-            case TIMESTAMP:
-                return DATE_TIME_QNAME;
-        default:
-            return BASE_64_BINARY_QNAME;
-        }
+        return switch (jdbcType) {
+            case CHAR, NCHAR, LONGVARCHAR, VARCHAR, NVARCHAR, CLOB, NCLOB, ROWID -> STRING_QNAME;
+            case BIGINT -> INTEGER_QNAME;
+            case INTEGER, SMALLINT, TINYINT -> INT_QNAME;
+            case NUMERIC, DECIMAL -> DECIMAL_QNAME;
+            case DOUBLE, FLOAT, REAL -> DOUBLE_QNAME;
+            case DATE -> DATE_QNAME;
+            case TIME -> TIME_QNAME;
+            case TIMESTAMP -> DATE_TIME_QNAME;
+            default -> BASE_64_BINARY_QNAME;
+        };
     }
 
     public static QName qNameFromString(String qNameAsString, Schema schema) {
@@ -529,66 +461,26 @@ public class Util {
      *
      */
     public static String getClassNameForType(int jdbcType) {
-        String typeName = null;
-        switch (jdbcType) {
-            case Types.NUMERIC:
-                typeName = ClassConstants.NUMBER.getName();
-                break;
-            case Types.DECIMAL:
-                typeName = ClassConstants.BIGDECIMAL.getName();
-                break;
-            case Types.CHAR:
-                typeName = ClassConstants.CHAR.getName();
-                break;
-            case Types.FLOAT:
-                typeName = ClassConstants.FLOAT.getName();
-                break;
-            case Types.DOUBLE:
-            case Types.REAL:
-                typeName = ClassConstants.DOUBLE.getName();
-                break;
-            case Types.BINARY:
-            case Types.VARBINARY:
-            case Types.LONGVARBINARY:
-                typeName = ClassConstants.ABYTE.getName();
-                break;
-            case Types.BLOB:
-                typeName = ClassConstants.BLOB.getName();
-                break;
-            case Types.CLOB:
-                typeName = ClassConstants.CLOB.getName();
-                break;
-            case Types.NCLOB:
-                typeName = "java.sql.NClob";
-                break;
-            case Types.DATE:
-                typeName = ClassConstants.SQLDATE.getName();
-                break;
-            case Types.TIME:
-                typeName = ClassConstants.TIME.getName();
-                break;
-            case Types.TIMESTAMP:
-                typeName = ClassConstants.TIMESTAMP.getName();
-                break;
-            case Types.BIGINT:
-                typeName = ClassConstants.BIGINTEGER.getName();
-                break;
-            case Types.ARRAY:
-                typeName = ARRAY_CLS_STR;
-                break;
-            case Types.STRUCT:
-                typeName = STRUCT_CLS_STR;
-                break;
-            case Types.ROWID:
-                typeName = ROWID_CLS_STR;
-                break;
-            case OPAQUE:
-                typeName = OPAQUE_CLS_STR;
-                break;
-            default:
-                typeName = ClassConstants.STRING.getName();
-                break;
-        }
+        String typeName = switch (jdbcType) {
+            case Types.NUMERIC -> CoreClassConstants.NUMBER.getName();
+            case Types.DECIMAL -> CoreClassConstants.BIGDECIMAL.getName();
+            case Types.CHAR -> CoreClassConstants.CHAR.getName();
+            case Types.FLOAT -> CoreClassConstants.FLOAT.getName();
+            case Types.DOUBLE, Types.REAL -> CoreClassConstants.DOUBLE.getName();
+            case Types.BINARY, Types.VARBINARY, Types.LONGVARBINARY -> CoreClassConstants.ABYTE.getName();
+            case Types.BLOB -> ClassConstants.BLOB.getName();
+            case Types.CLOB -> ClassConstants.CLOB.getName();
+            case Types.NCLOB -> "java.sql.NClob";
+            case Types.DATE -> ClassConstants.SQLDATE.getName();
+            case Types.TIME -> ClassConstants.TIME.getName();
+            case Types.TIMESTAMP -> ClassConstants.TIMESTAMP.getName();
+            case Types.BIGINT -> CoreClassConstants.BIGINTEGER.getName();
+            case Types.ARRAY -> ARRAY_CLS_STR;
+            case Types.STRUCT -> STRUCT_CLS_STR;
+            case Types.ROWID -> ROWID_CLS_STR;
+            case OPAQUE -> OPAQUE_CLS_STR;
+            default -> CoreClassConstants.STRING.getName();
+        };
         return typeName;
     }
 
@@ -599,61 +491,25 @@ public class Util {
      *
      */
     public static DatabaseType buildTypeForJDBCType(int jdbcType, int precision, int scale) {
-        DatabaseType type = null;
-        switch (jdbcType) {
-            case Types.BINARY:
-                type = new BinaryType();
-                break;
-            case Types.BLOB:
-                type = new BlobType();
-                break;
-            case Types.CHAR:
-                type = new CharType();
-                break;
-            case Types.CLOB:
-                type = new ClobType();
-                break;
-            case Types.DATE:
-                type = ScalarDatabaseTypeEnum.DATE_TYPE;
-                break;
-            case Types.BIGINT:
-                type = ScalarDatabaseTypeEnum.BIGINT_TYPE;
-                break;
-            case Types.DECIMAL:
-            case Types.NUMERIC:
-                type = new DecimalType(precision, scale);
-                break;
-            case Types.DOUBLE:
-                type = new DoubleType(precision, scale);
-                break;
-            case Types.FLOAT:
-                type = new FloatType(precision, scale);
-                break;
-            case Types.LONGVARBINARY:
-                type = new LongRawType();
-                break;
-            case Types.NCHAR:
-                type = new NCharType();
-                break;
-            case Types.NCLOB:
-                type = new NClobType();
-                break;
-            case Types.REAL:
-                type = new RealType(precision, scale);
-                break;
-            case Types.TIME:
-                type = ScalarDatabaseTypeEnum.TIME_TYPE;
-                break;
-            case Types.TIMESTAMP:
-                type = new TimeStampType();
-                break;
-            case Types.VARBINARY:
-                type = new RawType();
-                break;
-            default:
-                type = new VarChar2Type();
-                break;
-        }
+        DatabaseType type = switch (jdbcType) {
+            case Types.BINARY -> new BinaryType();
+            case Types.BLOB -> new BlobType();
+            case Types.CHAR -> new CharType();
+            case Types.CLOB -> new ClobType();
+            case Types.DATE -> ScalarDatabaseTypeEnum.DATE_TYPE;
+            case Types.BIGINT -> ScalarDatabaseTypeEnum.BIGINT_TYPE;
+            case Types.DECIMAL, Types.NUMERIC -> new DecimalType(precision, scale);
+            case Types.DOUBLE -> new DoubleType(precision, scale);
+            case Types.FLOAT -> new FloatType(precision, scale);
+            case Types.LONGVARBINARY -> new LongRawType();
+            case Types.NCHAR -> new NCharType();
+            case Types.NCLOB -> new NClobType();
+            case Types.REAL -> new RealType(precision, scale);
+            case Types.TIME -> ScalarDatabaseTypeEnum.TIME_TYPE;
+            case Types.TIMESTAMP -> new TimeStampType();
+            case Types.VARBINARY -> new RawType();
+            default -> new VarChar2Type();
+        };
         return type;
     }
 
@@ -667,7 +523,7 @@ public class Util {
                 return BIGDECIMAL;
             }
             if (INTEGER_STR.equals(typeName)) {
-                return org.eclipse.persistence.internal.helper.ClassConstants.INTEGER;
+                return CoreClassConstants.INTEGER;
             }
             if (BOOLEAN_STR.equals(typeName)) {
                 return BOOLEAN;
@@ -709,7 +565,7 @@ public class Util {
 
         boolean noOutArguments = true;
         if (storedProcedure.getArguments() != null &&
-             storedProcedure.getArguments().size() > 0) {
+                !storedProcedure.getArguments().isEmpty()) {
             for (ArgumentType arg : storedProcedure.getArguments()) {
                 if (arg.getDirection() ==  INOUT || arg.getDirection() == OUT) {
                     noOutArguments = false;
@@ -721,7 +577,7 @@ public class Util {
     }
 
     public static String escapePunctuation(String originalName) {
-        if (originalName == null || originalName.length() == 0) {
+        if (originalName == null || originalName.isEmpty()) {
             return originalName;
         }
         // escape all punctuation except SQL 'LIKE' meta-characters:
@@ -853,8 +709,7 @@ public class Util {
     public static boolean requiresSimpleXMLFormat(XRServiceModel serviceModel) {
         boolean requiresSimpleXMLFormat = false;
         for (Operation operation : serviceModel.getOperationsList()) {
-            if (operation instanceof QueryOperation) {
-                QueryOperation qo = (QueryOperation)operation;
+            if (operation instanceof QueryOperation qo) {
                 if (qo.getResult().isSimpleXMLFormat()) {
                     requiresSimpleXMLFormat = true;
                     break;
@@ -865,7 +720,7 @@ public class Util {
     }
 
     public static boolean sqlMatch(String pattern, String input) {
-        if (pattern != null && pattern.length() > 0) {
+        if (pattern != null && !pattern.isEmpty()) {
             //add support for positive 'empty' pattern matching
             String tmp = "\\A\\Z|" + pattern.replace('_', '.').replace("%", ".*");
             Pattern p = Pattern.compile(tmp, Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
@@ -1063,7 +918,7 @@ public class Util {
      *
      */
     public static boolean shouldSetJavaType(String typeName) {
-        if (typeName.equals(ClassConstants.STRING.getName())) {
+        if (typeName.equals(CoreClassConstants.STRING.getName())) {
             return false;
         }
         return true;

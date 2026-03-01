@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -38,6 +38,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
+import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.config.TargetDatabase;
 import org.eclipse.persistence.internal.jpa.EntityManagerSetupImpl.TableCreationType;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
@@ -59,7 +60,7 @@ public class EntityManagerFactoryProvider {
     // TEMPORARY - WILL BE REMOVED.
     // Used to warn users about deprecated property name and suggest the valid name.
     // TEMPORARY the old property names will be translated to the new ones and processed.
-    protected static final String oldPropertyNames[][] = {
+    protected static final String[][] oldPropertyNames = {
         {PersistenceUnitProperties.CONNECTION_POOL_MAX, "eclipselink.max-write-connections"},
         {PersistenceUnitProperties.CONNECTION_POOL_MIN, "eclipselink.min-write-connections"},
         {PersistenceUnitProperties.CONNECTION_POOL_MAX, "eclipselink.max-read-connections"},
@@ -85,7 +86,9 @@ public class EntityManagerFactoryProvider {
         {PersistenceUnitProperties.JDBC_PASSWORD , "eclipselink.jdbc.password"},
         {PersistenceUnitProperties.WEAVING , "persistence.tools.weaving"},
         {PersistenceUnitProperties.LOGGING_LEVEL + "." + SessionLog.METAMODEL, PersistenceUnitProperties.LOGGING_LEVEL + ".jpa_" + SessionLog.METAMODEL},
-        {PersistenceUnitProperties.LOGGING_LEVEL + "." + SessionLog.METADATA, PersistenceUnitProperties.LOGGING_LEVEL + ".ejb_or_" + SessionLog.METADATA}
+        {PersistenceUnitProperties.LOGGING_LEVEL + "." + SessionLog.METADATA, PersistenceUnitProperties.LOGGING_LEVEL + ".ejb_or_" + SessionLog.METADATA},
+        {QueryHints.CACHE_RETRIEVE_MODE, "jakarta.persistence.cacheRetrieveMode"},
+        {QueryHints.CACHE_STORE_MODE, "jakarta.persistence.cacheStoreMode"}
     };
 
     /**
@@ -132,8 +135,16 @@ public class EntityManagerFactoryProvider {
      *         {@link System} property or {@code null} if property identified by {@code propertyKey} does not exist.
      */
     public static String getConfigPropertyAsString(final String propertyKey, final Map overrides) {
-        final String value = overrides != null ? (String)overrides.get(propertyKey) : null;
-        return value != null ? value : PrivilegedAccessHelper.getSystemProperty(propertyKey);
+        Object value = overrides != null ? overrides.get(propertyKey) : null;
+        if (value != null) {
+            if (value instanceof String strValue) {
+                return strValue;
+            } else {
+                return value.toString();
+            }
+        } else {
+            return PrivilegedAccessHelper.getSystemProperty(propertyKey);
+        }
     }
 
     /**
@@ -170,20 +181,10 @@ public class EntityManagerFactoryProvider {
     }
 
     protected static Object getConfigPropertyLogDebug(String propertyKey, Map overrides, AbstractSession session, boolean useSystemAsDefault){
-        Object value = null;
-        if (overrides != null){
-            value = overrides.get(propertyKey);
-        }
-        if ((value == null) && useSystemAsDefault){
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                value = AccessController.doPrivileged(new PrivilegedGetSystemProperty(propertyKey));
-            } else {
-                value = System.getProperty(propertyKey);
-            }
-        }
+        Object value = getConfigProperty(propertyKey, overrides, useSystemAsDefault);
         if ((value != null) && (session !=  null)) {
             if (session.shouldLog(SessionLog.FINEST, SessionLog.PROPERTIES)) {
-                String overrideValue = PersistenceUnitProperties.getOverriddenLogStringForProperty(propertyKey);;
+                String overrideValue = PersistenceUnitProperties.getOverriddenLogStringForProperty(propertyKey);
                 Object logValue = (overrideValue == null) ? value : overrideValue;
                 session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "property_value_specified", new Object[]{propertyKey, logValue});
             }

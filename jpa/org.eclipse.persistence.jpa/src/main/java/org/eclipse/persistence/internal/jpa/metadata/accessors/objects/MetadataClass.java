@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -39,7 +39,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.internal.libraries.asm.Opcodes;
 
 /**
  * INTERNAL:
@@ -180,15 +179,15 @@ public class MetadataClass extends MetadataAnnotatedElement {
             return true;
         }
 
-        if (getSuperclassName() == null) {
-            return false;
-        }
-
-        if (getSuperclassName().equals(className)) {
+        if (getSuperclassName() != null && getSuperclassName().equals(className)) {
             return true;
         }
 
-        return getSuperclass().extendsClass(className);
+        if (getSuperclass() != null && getSuperclass().extendsClass(className)) {
+            return true;
+        }
+
+        return m_factory.extendsClass(this, className);
     }
 
     /**
@@ -222,11 +221,15 @@ public class MetadataClass extends MetadataAnnotatedElement {
             }
         }
 
-        if (getSuperclassName() == null) {
-            return false;
+        if (getSuperclassName() != null && getSuperclassName().equals(className)) {
+            return true;
         }
 
-        return getSuperclass().extendsInterface(className);
+        if (getSuperclass() != null && getSuperclass().extendsInterface(className)) {
+            return true;
+        }
+
+        return m_factory.implementsInterface(this, className);
     }
 
     /**
@@ -420,22 +423,31 @@ public class MetadataClass extends MetadataAnnotatedElement {
         if (isArray()) {
             return getName().replace('.', '/');
         } else if (isPrimitive()) {
-            if (getName().equals("int")) {
-                return "I";
-            } else if (getName().equals("long")) {
-                return "J";
-            } else if (getName().equals("short")) {
-                return "S";
-            } else if (getName().equals("boolean")) {
-                return "Z";
-            } else if (getName().equals("float")) {
-                return "F";
-            } else if (getName().equals("double")) {
-                return "D";
-            } else if (getName().equals("char")) {
-                return "C";
-            } else if (getName().equals("byte")) {
-                return "B";
+            switch (getName()) {
+                case "int" -> {
+                    return "I";
+                }
+                case "long" -> {
+                    return "J";
+                }
+                case "short" -> {
+                    return "S";
+                }
+                case "boolean" -> {
+                    return "Z";
+                }
+                case "float" -> {
+                    return "F";
+                }
+                case "double" -> {
+                    return "D";
+                }
+                case "char" -> {
+                    return "C";
+                }
+                case "byte" -> {
+                    return "B";
+                }
             }
         }
         return "L" + getName().replace('.', '/') + ";";
@@ -454,12 +466,12 @@ public class MetadataClass extends MetadataAnnotatedElement {
      * Return if this class is an array type.
      */
     public boolean isArray() {
-        return (getName() != null) && (getName().charAt(0) == '[');
+        return getName() != null && (getName().charAt(0) == '[' || getName().contains("[]"));
     }
 
     /**
      * INTERNAL:
-     * Return if this is extends Collection.
+     * Return if this class extends Collection.
      */
     public boolean isCollection() {
         return extendsInterface(Collection.class);
@@ -467,7 +479,7 @@ public class MetadataClass extends MetadataAnnotatedElement {
 
     /**
      * INTERNAL:
-     * Return if this is extends Enum.
+     * Return if this class extends Enum.
      */
     public boolean isEnum() {
         return extendsClass(Enum.class);
@@ -478,7 +490,7 @@ public class MetadataClass extends MetadataAnnotatedElement {
      * Return if this is an interface (super is null).
      */
     public boolean isInterface() {
-        return (Opcodes.ACC_INTERFACE & m_modifiers) != 0;
+        return m_factory.isInterface(this);
     }
 
     /**
@@ -498,7 +510,7 @@ public class MetadataClass extends MetadataAnnotatedElement {
 
     /**
      * INTERNAL:
-     * Return if this is extends List.
+     * Return if this class extends List.
      */
     public boolean isList() {
         return extendsInterface(List.class);
@@ -506,7 +518,7 @@ public class MetadataClass extends MetadataAnnotatedElement {
 
     /**
      * INTERNAL:
-     * Return if this is extends Map.
+     * Return if this class extends Map.
      */
     public boolean isMap() {
         return extendsInterface(Map.class);
@@ -541,7 +553,7 @@ public class MetadataClass extends MetadataAnnotatedElement {
     }
 
     /**
-     * INTENAL:
+     * INTERNAL:
      * Return true is this class is the Serializable.class interface.
      */
     public boolean isSerializableInterface() {

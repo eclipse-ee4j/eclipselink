@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,10 +14,12 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.sessions;
 
-import java.io.StringWriter;
-import java.util.*;
-import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.sessions.DatabaseRecord;
+
+import java.io.StringWriter;
+import java.util.Vector;
 
 /**
  * PERF: Optimized record implementation using arrays instead of Vector.
@@ -337,18 +339,18 @@ public class ArrayRecord extends DatabaseRecord {
     public String toString() {
         if (this.valuesArray != null) {
             StringWriter writer = new StringWriter();
-            writer.write(Helper.getShortClassName(getClass()));
+            writer.write(getClass().getSimpleName());
             writer.write("(");
             writer.write(toStringAditional());
             for (int index = 0; index < this.fieldsArray.length; index++) {
-                writer.write(Helper.cr());
+                writer.write(System.lineSeparator());
                 writer.write("\t");
                 writer.write(String.valueOf(this.fieldsArray[index]));
                 writer.write(" => ");
                 writer.write(String.valueOf(this.valuesArray[index]));
             }
             if (this.sopObject != null) {
-                writer.write(Helper.cr());
+                writer.write(System.lineSeparator());
                 writer.write(" sopObject = ");
                 writer.write(this.sopObject.toString());
             }

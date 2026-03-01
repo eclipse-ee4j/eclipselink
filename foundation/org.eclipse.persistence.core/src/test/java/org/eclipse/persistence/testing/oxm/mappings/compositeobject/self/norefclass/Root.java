@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,19 +14,13 @@
 //     Denise Smith - May 8/2009
 package org.eclipse.persistence.testing.oxm.mappings.compositeobject.self.norefclass;
 
-import java.io.ByteArrayOutputStream;
-import java.io.StringWriter;
+import org.eclipse.persistence.platform.xml.XMLComparer;
+import org.w3c.dom.Node;
 
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-
-import org.eclipse.persistence.platform.xml.XMLComparer;
-import org.eclipse.persistence.testing.oxm.mappings.compositeobject.self.Employee;
-import org.w3c.dom.Node;
+import java.io.ByteArrayOutputStream;
 
 public class Root {
     Object theObject;

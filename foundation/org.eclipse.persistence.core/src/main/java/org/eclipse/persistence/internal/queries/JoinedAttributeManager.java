@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -13,15 +13,6 @@
 // Contributors:
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.queries;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Vector;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.QueryException;
@@ -43,6 +34,15 @@ import org.eclipse.persistence.queries.FetchGroup;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.sessions.DatabaseRecord;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Vector;
 
 /**
  * <p><b>Purpose</b>:
@@ -259,7 +259,7 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
                 Expression expression = partialAttributes.next();
                 if (expression.isQueryKeyExpression()){
                     if (!getJoinedMappingExpressions().contains(expression) && ! getJoinedAttributeExpressions().contains(expression)){
-                        fieldIndex += ((QueryKeyExpression)expression).getFields().size();
+                        fieldIndex += expression.getFields().size();
                     }
                 }
             }
@@ -347,7 +347,7 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
             // Only store the index if this is the local expression to avoid it being added multiple times.
             // This means the base local expression must be first on the list, followed by nested expressions.
             final ObjectExpression localExpression = objectExpression
-                    .getFirstNonAggregateExpressionAfterExpressionBuilder(new ArrayList(1));
+                    .getFirstNonAggregateExpressionAfterExpressionBuilder(new ArrayList<>(1));
             if ((localExpression == objectExpression) && (mapping != null) && mapping.isForeignReferenceMapping()) {
                 getJoinedMappingIndexes_().put(mapping, currentIndex);
             }
@@ -627,7 +627,7 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
      */
     protected boolean isMappingInJoinedExpressionList(DatabaseMapping attributeMapping, List joinedExpressionList) {
         for (Iterator joinEnum = joinedExpressionList.iterator(); joinEnum.hasNext();) {
-            List aggregateMappings = new ArrayList();
+            List<DatabaseMapping> aggregateMappings = new ArrayList<>();
             ObjectExpression expression = ((ObjectExpression)joinEnum.next()).getFirstNonAggregateExpressionAfterExpressionBuilder(aggregateMappings);
             if (attributeMapping.isAggregateObjectMapping() && aggregateMappings.contains(attributeMapping)) {
                 return true;
@@ -844,6 +844,13 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
             }
         }
         objectExpression.getBuilder().setSession(session.getRootSession(null));
+
+        // Sometimes current expression builder does not support expression class mapping.
+        // Try ExpressionBuilder for the descriptor's class
+        if (objectExpression.getMapping() == null && objectExpression.getBuilder().getQueryClass() != descriptor.getJavaClass()) {
+            objectExpression = (QueryKeyExpression)objectExpression.rebuildOn(new ExpressionBuilder(descriptor.getJavaClass()));
+            objectExpression.getBuilder().setSession(session.getRootSession(null));
+        }
 
         // Can only join relationships.
         if ((objectExpression.getMapping() == null) || (!objectExpression.getMapping().isJoiningSupported())) {

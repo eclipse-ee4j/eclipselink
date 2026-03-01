@@ -14,6 +14,7 @@ package jpql.query;
 
 import java.util.Date;
 import java.util.Map;
+
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -42,6 +43,7 @@ public class Alias {
     private String alias;
     @ElementCollection
     @Temporal(TemporalType.DATE)
+    @SuppressWarnings("deprecation")
     private Map<String, Date> ids;
     private Customer customer;
     @JoinColumn(name="ID", referencedColumnName="ALIAS.ALIAS")

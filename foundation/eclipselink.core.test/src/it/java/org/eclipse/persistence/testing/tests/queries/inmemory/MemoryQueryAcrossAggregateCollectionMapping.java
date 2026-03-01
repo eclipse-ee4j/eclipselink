@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,13 +14,16 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.queries.inmemory;
 
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.queries.ReadAllQuery;
+import org.eclipse.persistence.queries.ReadObjectQuery;
+import org.eclipse.persistence.testing.framework.TestCase;
+import org.eclipse.persistence.testing.models.aggregate.Customer;
+import org.eclipse.persistence.testing.tests.aggregate.AgentBuilderHelper;
+
 import java.util.List;
 import java.util.Vector;
-import org.eclipse.persistence.testing.framework.*;
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.testing.models.aggregate.*;
-import org.eclipse.persistence.testing.tests.aggregate.AgentBuilderHelper;
 
 public class MemoryQueryAcrossAggregateCollectionMapping extends TestCase {
     protected Class<?> cls;
@@ -55,8 +58,8 @@ public class MemoryQueryAcrossAggregateCollectionMapping extends TestCase {
         getSession().removeQuery("getAllCustomers");
         getSession().addQuery("getAllCustomers", queryAll);
         allCustomers = (Vector)getSession().executeQuery("getAllCustomers");
-        for(int i=0; i < allCustomers.size(); i++) {
-            List eachCustomer = AgentBuilderHelper.getCustomers(allCustomers.get(i));
+        for (Object allCustomer : allCustomers) {
+            List eachCustomer = AgentBuilderHelper.getCustomers(allCustomer);
             customers.addAll(eachCustomer);
             //trigger all the value holders of customers
         }

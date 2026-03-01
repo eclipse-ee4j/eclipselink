@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -132,17 +132,15 @@ public class DriverWrapper implements Driver {
     public static void breakOldConnections(String exceptionString) {
         oldConnectionsBroken = true;
         oldConnectionsBrokenExceptionString = exceptionString;
-        Iterator<ConnectionWrapper> it = connections.iterator();
-        while(it.hasNext()) {
-            it.next().breakConnection(oldConnectionsBrokenExceptionString);
+        for (ConnectionWrapper connection : connections) {
+            connection.breakConnection(oldConnectionsBrokenExceptionString);
         }
     }
     public static void repairOldConnections() {
         oldConnectionsBroken = false;
         oldConnectionsBrokenExceptionString = null;
-        Iterator<ConnectionWrapper> it = connections.iterator();
-        while(it.hasNext()) {
-            it.next().repairConnection();
+        for (ConnectionWrapper connection : connections) {
+            connection.repairConnection();
         }
     }
 

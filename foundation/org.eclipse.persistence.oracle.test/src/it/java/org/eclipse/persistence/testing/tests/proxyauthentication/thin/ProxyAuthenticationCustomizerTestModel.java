@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,7 +36,7 @@ public class ProxyAuthenticationCustomizerTestModel extends TestModel {
     static String getProperty(String property, String defaultValue) {
         String propertyValue = System.getProperty(property);
 
-        if (propertyValue == null || propertyValue.equals("")) {
+        if (propertyValue == null || propertyValue.isEmpty()) {
             return defaultValue;
         } else {
             return propertyValue;
@@ -52,7 +52,7 @@ public class ProxyAuthenticationCustomizerTestModel extends TestModel {
         ProxyAuthenticationUsersAndProperties.initialize();
         // verifies that all the users correctly setup in the db.
         String errorMsg = ProxyAuthenticationUsersAndProperties.verify((DatabaseSession)getSession());
-        if(errorMsg.length() > 0) {
+        if(!errorMsg.isEmpty()) {
             throw new TestProblemException(errorMsg);
         }
     }

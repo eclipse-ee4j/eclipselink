@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,9 +14,14 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.sessions;
 
-import java.util.*;
-
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
+
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+import java.util.Vector;
 
 /**
  * <p>
@@ -187,9 +192,9 @@ public class DirectCollectionChangeRecord extends DeferrableChangeRecord impleme
      * once for each object type.
      */
     public void setCommitAddition(Hashtable additions){
-        Enumeration enumtr = additions.keys();
-        while (enumtr.hasMoreElements()) {
-            Object object = enumtr.nextElement();
+        Iterator iterator = additions.keySet().iterator();
+        while (iterator.hasNext()) {
+            Object object = iterator.next();
             getCommitAddMap().put(object, additions.get(object));
         }
     }

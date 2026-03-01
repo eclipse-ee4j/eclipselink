@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -16,7 +16,6 @@
 package org.eclipse.persistence.testing.framework;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.SessionEvent;
@@ -24,7 +23,6 @@ import org.eclipse.persistence.sessions.SessionEventListener;
 import org.eclipse.persistence.sessions.SessionEventManager;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -127,11 +125,11 @@ public class SessionEventTracker implements SessionEventListener {
         SessionEvent event;
         String error = "";
         public String toString() {
-            return listener.name + " -> " + eventToString(event) + (error.length()==0 ? "" : " Error: " + error);
+            return listener.name + " -> " + eventToString(event) + (error.isEmpty() ? "" : " Error: " + error);
         }
         public void setError(String error) {
             this.error = error;
-            if (error.length() > 0) {
+            if (!error.isEmpty()) {
                 synchronized (errors) {
                     errors.add(this);
                 }
@@ -416,6 +414,17 @@ public class SessionEventTracker implements SessionEventListener {
     }
 
     /**
+     * PUBLIC: This event is raised on the unit of work after a flush.
+     */
+    @Override
+    public void postFlushUnitOfWork(SessionEvent event) {
+        if (!isTrackingEvent(event)) {
+            return;
+        }
+        log(event);
+    }
+
+    /**
      * PUBLIC:
      * This event is raised after the session connects to the database.
      * In a server session this event is raised on every new connection established.
@@ -563,6 +572,17 @@ public class SessionEventTracker implements SessionEventListener {
      */
     @Override
     public void preCommitUnitOfWork(SessionEvent event) {
+        if (!isTrackingEvent(event)) {
+            return;
+        }
+        log(event);
+    }
+
+    /**
+     * PUBLIC: This event is raised on the unit of work before a flush.
+     */
+    @Override
+    public void preFlushUnitOfWork(SessionEvent event) {
         if (!isTrackingEvent(event)) {
             return;
         }
@@ -746,19 +766,17 @@ public class SessionEventTracker implements SessionEventListener {
             return;
         }
         Handling handling = log(event);
-        String errorMsg = "";
-        Iterator<ClassDescriptor> it = event.getSession().getDescriptors().values().iterator();
-        while (it.hasNext()) {
-            ClassDescriptor descriptor = it.next();
+        StringBuilder errorMsg = new StringBuilder();
+        for (ClassDescriptor descriptor : event.getSession().getDescriptors().values()) {
             if (!descriptor.isAggregateDescriptor()) {
                 if (!descriptor.isFullyInitialized()) {
-                    errorMsg += descriptor.getJavaClass().getName() + "; ";
+                    errorMsg.append(descriptor.getJavaClass().getName()).append("; ");
                 }
             }
         }
-        if (errorMsg.length() > 0) {
-            errorMsg = "Some descriptors are not initialized: " + errorMsg;
-            handling.setError(errorMsg);
+        if (!errorMsg.isEmpty()) {
+            errorMsg.insert(0, "Some descriptors are not initialized: ");
+            handling.setError(errorMsg.toString());
         }
     }
 
@@ -771,7 +789,7 @@ public class SessionEventTracker implements SessionEventListener {
     }
 
     public String toString() {
-        return Helper.getShortClassName(this) + "(" + (name != null ? name : "") + ")";
+        return getClass().getSimpleName() + "(" + (name != null ? name : "") + ")";
     }
 
     public static String eventToString(SessionEvent event) {
@@ -788,6 +806,6 @@ public class SessionEventTracker implements SessionEventListener {
     }
 
     public static String sessionToString(Session session) {
-        return Helper.getShortClassName(session) + "(" + session.getName() + ")";
+        return session.getClass().getSimpleName() + "(" + session.getName() + ")";
     }
 }

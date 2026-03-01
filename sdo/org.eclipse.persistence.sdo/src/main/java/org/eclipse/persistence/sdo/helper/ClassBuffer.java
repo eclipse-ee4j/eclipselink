@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,7 +25,7 @@ import org.eclipse.persistence.sdo.SDOType;
  * </ul>
  */
 public class ClassBuffer {
-    private static final String lsep = System.getProperty("line.separator");
+    private static final String lsep = System.lineSeparator();
     private static final String lsep2 = lsep + lsep;
     private String indent = "";
     private StringBuffer attributeBuffer;

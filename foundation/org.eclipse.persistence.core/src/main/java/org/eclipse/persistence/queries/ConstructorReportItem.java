@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,23 +16,22 @@
 //       - #253: Add support for embedded constructor results with CriteriaBuilder
 package org.eclipse.persistence.queries;
 
+import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
+import org.eclipse.persistence.internal.expressions.ConstantExpression;
+import org.eclipse.persistence.internal.expressions.MapEntryExpression;
+import org.eclipse.persistence.internal.queries.ReportItem;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.internal.security.PrivilegedGetConstructorFor;
+import org.eclipse.persistence.mappings.DatabaseMapping;
+
 import java.lang.reflect.Constructor;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import org.eclipse.persistence.exceptions.QueryException;
-import org.eclipse.persistence.expressions.Expression;
-import org.eclipse.persistence.internal.expressions.ConstantExpression;
-import org.eclipse.persistence.internal.expressions.MapEntryExpression;
-import org.eclipse.persistence.internal.helper.ClassConstants;
-import org.eclipse.persistence.internal.helper.StringHelper;
-import org.eclipse.persistence.internal.queries.ReportItem;
-import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedGetConstructorFor;
-import org.eclipse.persistence.mappings.DatabaseMapping;
 
 
 /**
@@ -177,6 +176,9 @@ public class ConstructorReportItem extends ReportItem  {
                             constructorArgTypes[index] = (Class) mapping.getContainerPolicy().getKeyType();
                         }
                     } else {
+                        if (mapping.isDirectCollectionMapping()) {
+                            throw QueryException.exceptionWhileUsingConstructorWrongTypeExpression(mapping.getContainerPolicy().getContainerClass(), query);
+                        }
                         constructorArgTypes[index] = mapping.getAttributeClassification();
                     }
                 } else if (argumentItem.getResultType() != null) {
@@ -187,7 +189,7 @@ public class ConstructorReportItem extends ReportItem  {
                     constructorArgTypes[index] = ((ConstantExpression)argumentItem.getAttributeExpression()).getValue().getClass();
                 } else {
                     // Use Object.class by default.
-                    constructorArgTypes[index] = ClassConstants.OBJECT;
+                    constructorArgTypes[index] = CoreClassConstants.OBJECT;
                 }
             }
         }
@@ -233,14 +235,14 @@ public class ConstructorReportItem extends ReportItem  {
 
     @Override
     public String toString() {
-        String name = StringHelper.nonNullString(getName());
+        String name = String.valueOf(getName());
         // Calculate string length
         int length = TO_STR_PREFIX.length() + name.length()
                 + TO_STR_ARRAY.length() + TO_STR_SUFFIX.length();
         int size = reportItems != null ? reportItems.size() : 0;
         String[] items = new String[size];
         for (int i=0; i < size; i++) {
-            items[i] = StringHelper.nonNullString(reportItems.get(i).toString());
+            items[i] = String.valueOf(reportItems.get(i).toString());
             length += items[i].length();
         }
         // Build string

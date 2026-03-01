@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,11 +14,16 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.aggregate;
 
-import java.util.*;
+import org.eclipse.persistence.sessions.UnitOfWork;
+import org.eclipse.persistence.testing.framework.TestWarningException;
+import org.eclipse.persistence.testing.framework.WriteObjectTest;
+import org.eclipse.persistence.testing.models.aggregate.Company;
+import org.eclipse.persistence.testing.models.aggregate.Customer;
+import org.eclipse.persistence.testing.models.aggregate.Dependant;
+import org.eclipse.persistence.testing.models.aggregate.House;
+import org.eclipse.persistence.testing.models.aggregate.SingleHouse;
 
-import org.eclipse.persistence.sessions.*;
-import org.eclipse.persistence.testing.framework.*;
-import org.eclipse.persistence.testing.models.aggregate.*;
+import java.util.List;
 
 public class AggregateCollectionMultipleUoWTest extends WriteObjectTest {
     public Object unitOfWorkWorkingCopy;
@@ -67,7 +72,7 @@ public class AggregateCollectionMultipleUoWTest extends WriteObjectTest {
         AgentBuilderHelper.setFirstName(object, "Johnie");
         Customer customer1 = (Customer)AgentBuilderHelper.getCustomers(object).get(2);
         customer1.setName("James");
-        customer1.removeDependant(customer1.getDependants().firstElement());
+        customer1.removeDependant(customer1.getDependants().get(0));
         customer1.addDependant(new Dependant("Stevenson", 14));
         AgentBuilderHelper.removeHouse(object, (House)AgentBuilderHelper.getHouses(object).get(AgentBuilderHelper.getHouses(object).size()-1));
         House newHouse = new House();

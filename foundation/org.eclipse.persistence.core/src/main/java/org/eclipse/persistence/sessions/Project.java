@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,6 +40,27 @@
 //       - 533148 : Add the eclipselink.jpa.sql-call-deferral property
 package org.eclipse.persistence.sessions;
 
+import org.eclipse.persistence.annotations.CacheIsolationType;
+import org.eclipse.persistence.annotations.IdValidation;
+import org.eclipse.persistence.core.sessions.CoreProject;
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.MultitenantPolicy;
+import org.eclipse.persistence.descriptors.partitioning.PartitioningPolicy;
+import org.eclipse.persistence.internal.helper.ConcurrentFixedCache;
+import org.eclipse.persistence.internal.identitymaps.AbstractIdentityMap;
+import org.eclipse.persistence.internal.identitymaps.IdentityMap;
+import org.eclipse.persistence.internal.localization.ExceptionLocalization;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
+import org.eclipse.persistence.queries.AttributeGroup;
+import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.JPAQueryBuilder;
+import org.eclipse.persistence.queries.QueryResultsCachePolicy;
+import org.eclipse.persistence.queries.SQLResultSetMapping;
+import org.eclipse.persistence.sessions.server.ConnectionPolicy;
+import org.eclipse.persistence.sessions.server.Server;
+import org.eclipse.persistence.sessions.server.ServerSession;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -47,28 +68,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
-
-import org.eclipse.persistence.annotations.IdValidation;
-import org.eclipse.persistence.config.CacheIsolationType;
-import org.eclipse.persistence.core.sessions.CoreProject;
-import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.descriptors.MultitenantPolicy;
-import org.eclipse.persistence.descriptors.partitioning.PartitioningPolicy;
-import org.eclipse.persistence.internal.helper.ConcurrentFixedCache;
-import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
-import org.eclipse.persistence.internal.identitymaps.AbstractIdentityMap;
-import org.eclipse.persistence.internal.identitymaps.IdentityMap;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
-import org.eclipse.persistence.queries.AttributeGroup;
-import org.eclipse.persistence.queries.DatabaseQuery;
-import org.eclipse.persistence.queries.QueryResultsCachePolicy;
-import org.eclipse.persistence.queries.SQLResultSetMapping;
-import org.eclipse.persistence.sessions.server.ConnectionPolicy;
-import org.eclipse.persistence.sessions.server.Server;
-import org.eclipse.persistence.sessions.server.ServerSession;
+import java.util.Objects;
+import java.util.function.Supplier;
 
 /**
  * <b>Purpose</b>: Maintain all of the EclipseLink configuration information for a system.
@@ -92,7 +93,7 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
     protected MultitenantPolicy multitenantPolicy;
 
     /** Holds the default set of read-only classes that apply to each UnitOfWork. */
-    protected Vector<Class<?>> defaultReadOnlyClasses;
+    protected List<Class<?>> defaultReadOnlyClasses;
 
     /** Cache the EJBQL descriptor aliases. */
     protected Map<String, ClassDescriptor> aliasDescriptors;
@@ -110,7 +111,7 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
     protected Map<String, SQLResultSetMapping> sqlResultSetMappings;
 
     /** PERF: Provide an JPQL parse cache to optimize dynamic JPQL. */
-    protected transient ConcurrentFixedCache jpqlParseCache;
+    protected transient ConcurrentFixedCache<String, DatabaseQuery> jpqlParseCache;
 
     /** Define the default setting for configuring if dates and calendars are mutable. */
     protected boolean defaultTemporalMutable = false;
@@ -168,6 +169,9 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
     /** Flag that allows add to extended thread logging output thread stack trace or not.*/
     protected boolean allowExtendedThreadLoggingThreadDump = false;
 
+    /** Flag that allows query result cache validation or not.*/
+    protected boolean allowQueryResultsCacheValidation = false;
+
     /**
      * Mapped Superclasses (JPA 2) collection of parent non-relational descriptors keyed on MetadataClass
      * without creating a compile time dependency on JPA.
@@ -203,6 +207,9 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
      /** Force all queries and relationships to use deferred lock strategy during object building and L2 cache population. */
     protected boolean queryCacheForceDeferredLocks = false;
 
+    /** {@link JPAQueryBuilder} instance factory. */
+    private Supplier<? extends JPAQueryBuilder> queryBuilderSupplier;
+
     /**
      * PUBLIC:
      * Create a new project.
@@ -210,16 +217,17 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
     public Project() {
         this.name = "";
         this.descriptors = new HashMap<>();
-        this.defaultReadOnlyClasses = NonSynchronizedVector.newInstance();
+        this.defaultReadOnlyClasses = new ArrayList<>();
         this.orderedDescriptors = new ArrayList<>();
         this.hasIsolatedClasses = false;
         this.hasGenericHistorySupport = false;
         this.hasProxyIndirection = false;
-        this.jpqlParseCache = new ConcurrentFixedCache(200);
+        this.jpqlParseCache = new ConcurrentFixedCache<>(200);
         this.queries = new ArrayList<>();
         this.mappedSuperclassDescriptors = new HashMap<>(2);
         this.metamodelIdClassMap = new HashMap<>();
         this.attributeGroups = new HashMap<>();
+        this.queryBuilderSupplier = new DefaultQueryBuilderSupplier<>();
     }
 
     /**
@@ -327,9 +335,9 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
      * Return the JPQL parse cache.
      * This is used to optimize dynamic JPQL.
      */
-    public ConcurrentFixedCache getJPQLParseCache() {
+    public ConcurrentFixedCache<String, DatabaseQuery> getJPQLParseCache() {
         if (jpqlParseCache==null) {
-            jpqlParseCache = new ConcurrentFixedCache(200);
+            jpqlParseCache = new ConcurrentFixedCache<>(200);
         }
         return jpqlParseCache;
     }
@@ -340,7 +348,7 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
      * This is used to optimize dynamic JPQL.
      */
     public void setJPQLParseCacheMaxSize(int maxSize) {
-        setJPQLParseCache(new ConcurrentFixedCache(maxSize));
+        setJPQLParseCache(new ConcurrentFixedCache<>(maxSize));
     }
 
     /**
@@ -357,7 +365,7 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
      * Set the JPQL parse cache.
      * This is used to optimize dynamic JPQL.
      */
-    protected void setJPQLParseCache(ConcurrentFixedCache jpqlParseCache) {
+    protected void setJPQLParseCache(ConcurrentFixedCache<String, DatabaseQuery> jpqlParseCache) {
         this.jpqlParseCache = jpqlParseCache;
     }
 
@@ -407,7 +415,7 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
      * Add the read-only class which apply to each UnitOfWork created by default.
      */
     public void addDefaultReadOnlyClass(Class<?> readOnlyClass) {
-        getDefaultReadOnlyClasses().addElement(readOnlyClass);
+        getDefaultReadOnlyClasses().add(readOnlyClass);
     }
 
     /**
@@ -695,7 +703,7 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
      * PUBLIC:
      * Returns the default set of read-only classes.
      */
-    public Vector getDefaultReadOnlyClasses() {
+    public List<Class<?>> getDefaultReadOnlyClasses() {
         return defaultReadOnlyClasses;
     }
 
@@ -905,8 +913,8 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
      * PUBLIC:
      * Set the read-only classes which apply to each UnitOfWork create by default.
      */
-    public void setDefaultReadOnlyClasses(Collection newValue) {
-        this.defaultReadOnlyClasses = new Vector(newValue);
+    public void setDefaultReadOnlyClasses(Collection<Class<?>> newValue) {
+        this.defaultReadOnlyClasses = new ArrayList<>(newValue);
     }
 
     /**
@@ -1126,7 +1134,7 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
      */
     @Override
     public String toString() {
-        return Helper.getShortClassName(getClass()) + "(" + getName() + ")";
+        return getClass().getSimpleName() + "(" + getName() + ")";
     }
 
     /**
@@ -1357,6 +1365,14 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
     }
 
     /**
+     * INTERNAL:
+     * Flag that allows query result cache validation or not. If true result is presented via log messages.
+     */
+    public boolean isAllowQueryResultsCacheValidation() {
+        return allowQueryResultsCacheValidation;
+    }
+
+    /**
      * PUBLIC:
      * Return the descriptor for  the alias
      */
@@ -1433,6 +1449,14 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
      */
     public void setAllowExtendedThreadLoggingThreadDump(boolean allowExtendedThreadLoggingThreadDump) {
         this.allowExtendedThreadLoggingThreadDump = allowExtendedThreadLoggingThreadDump;
+    }
+
+    /**
+     * INTERNAL:
+     * Set to true to enable query result cache validation or not. Result is presented via log messages.
+     */
+    public void setAllowQueryResultsCacheValidation(boolean allowQueryResultsCacheValidation) {
+        this.allowQueryResultsCacheValidation = allowQueryResultsCacheValidation;
     }
 
     /**
@@ -1605,5 +1629,47 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
         }
         return this.partitioningPolicies.get(name);
     }
-}
 
+    /**
+     * Set new {@link JPAQueryBuilder} instance factory.
+     *
+     * @param queryBuilderSupplier the new {@link JPAQueryBuilder} instance factory
+     */
+    public void setQueryBuilderSupplier(Supplier<? extends JPAQueryBuilder> queryBuilderSupplier) {
+        Objects.requireNonNull(queryBuilderSupplier, "Value of queryBuilderSupplier is null");
+        this.queryBuilderSupplier = queryBuilderSupplier;
+    }
+
+    /**
+     * Create new instance of {@link JPAQueryBuilder}.
+     *
+     * @return the JPA query builder
+     */
+    @SuppressWarnings("unchecked")
+    public <T extends JPAQueryBuilder> T getQueryBuilder() {
+        return (T) queryBuilderSupplier.get();
+    }
+
+    // Default JPAQueryBuilder factory.
+    // Returns new instance of HermesParser. Based on buildDefaultQueryBuilder() method of AbstractSession.
+    private static final class DefaultQueryBuilderSupplier<T extends JPAQueryBuilder> implements Supplier<T> {
+
+        private static final String DEFAULT_BUILDER_CLASS_NAME = "org.eclipse.persistence.internal.jpa.jpql.HermesParser";
+
+        private DefaultQueryBuilderSupplier() {
+        }
+
+        @Override
+        public T get() {
+            try {
+                @SuppressWarnings({"unchecked"})
+                Class<T> parserClass = (Class<T>) Class.forName(DEFAULT_BUILDER_CLASS_NAME);
+                return parserClass.getDeclaredConstructor().newInstance();
+            } catch (Exception e) {
+                throw new IllegalStateException(ExceptionLocalization.buildMessage("missing_jpql_parser_class"), e);
+            }
+        }
+
+    }
+
+}

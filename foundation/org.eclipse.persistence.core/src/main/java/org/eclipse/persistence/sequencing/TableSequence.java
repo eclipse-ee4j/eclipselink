@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,13 +17,14 @@
 //       - 389090: JPA 2.1 DDL Generation Support (index metadata support)
 package org.eclipse.persistence.sequencing;
 
-import java.io.StringWriter;
-import java.util.List;
-
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.tools.schemaframework.IndexDefinition;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.queries.DataModifyQuery;
+import org.eclipse.persistence.queries.ValueReadQuery;
+import org.eclipse.persistence.tools.schemaframework.IndexDefinition;
+
+import java.io.StringWriter;
+import java.util.List;
 
 /**
  * <p>
@@ -116,8 +118,7 @@ public class TableSequence extends QuerySequence {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof TableSequence) {
-            TableSequence other = (TableSequence)obj;
+        if (obj instanceof TableSequence other) {
             if (equalNameAndSize(this, other)) {
                 return getTableName().equals(other.getTableName()) && getCounterFieldName().equals(other.getCounterFieldName()) && getNameFieldName().equals(other.getNameFieldName());
             } else {
@@ -165,7 +166,7 @@ public class TableSequence extends QuerySequence {
     }
 
     public String getTableName() {
-        return getTable().getQualifiedName();
+        return getTable().getName();
     }
 
     public String getQualifiedTableName() {
@@ -182,11 +183,11 @@ public class TableSequence extends QuerySequence {
 
     @Override
     public void onConnect() {
-        if(this.table.getName().length() == 0) {
+        if(this.table.getName().isEmpty()) {
             this.table.setName(((DatabasePlatform)getDatasourcePlatform()).getDefaultSequenceTableName());
         }
-        if ((this.qualifier == null || this.qualifier.length() == 0) &&
-                (this.table.getTableQualifier() != null && this.table.getTableQualifier().length() != 0)) {
+        if ((this.qualifier == null || this.qualifier.isEmpty()) &&
+                (this.table.getTableQualifier() != null && !this.table.getTableQualifier().isEmpty())) {
             this.qualifier = this.table.getTableQualifier();
         }
         super.onConnect();

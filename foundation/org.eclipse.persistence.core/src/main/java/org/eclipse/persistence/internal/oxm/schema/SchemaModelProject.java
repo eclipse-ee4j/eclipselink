@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,17 +14,43 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.oxm.schema;
 
-import java.util.ArrayList;
-
 import org.eclipse.persistence.internal.oxm.Constants;
-import org.eclipse.persistence.internal.oxm.schema.model.*;
+import org.eclipse.persistence.internal.oxm.schema.model.All;
+import org.eclipse.persistence.internal.oxm.schema.model.Annotation;
+import org.eclipse.persistence.internal.oxm.schema.model.Any;
+import org.eclipse.persistence.internal.oxm.schema.model.AnyAttribute;
+import org.eclipse.persistence.internal.oxm.schema.model.Attribute;
+import org.eclipse.persistence.internal.oxm.schema.model.AttributeGroup;
+import org.eclipse.persistence.internal.oxm.schema.model.Choice;
+import org.eclipse.persistence.internal.oxm.schema.model.ComplexContent;
+import org.eclipse.persistence.internal.oxm.schema.model.ComplexType;
+import org.eclipse.persistence.internal.oxm.schema.model.Element;
+import org.eclipse.persistence.internal.oxm.schema.model.Extension;
+import org.eclipse.persistence.internal.oxm.schema.model.Group;
+import org.eclipse.persistence.internal.oxm.schema.model.Import;
+import org.eclipse.persistence.internal.oxm.schema.model.Include;
+import org.eclipse.persistence.internal.oxm.schema.model.Occurs;
+import org.eclipse.persistence.internal.oxm.schema.model.Restriction;
+import org.eclipse.persistence.internal.oxm.schema.model.Schema;
+import org.eclipse.persistence.internal.oxm.schema.model.Sequence;
+import org.eclipse.persistence.internal.oxm.schema.model.SimpleContent;
+import org.eclipse.persistence.internal.oxm.schema.model.SimpleType;
+import org.eclipse.persistence.internal.oxm.schema.model.Union;
 import org.eclipse.persistence.mappings.converters.ObjectTypeConverter;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
-import org.eclipse.persistence.oxm.mappings.*;
+import org.eclipse.persistence.oxm.mappings.XMLAnyAttributeMapping;
+import org.eclipse.persistence.oxm.mappings.XMLAnyCollectionMapping;
+import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
+import org.eclipse.persistence.oxm.mappings.XMLCompositeDirectCollectionMapping;
+import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
+import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
+import org.eclipse.persistence.oxm.mappings.XMLFragmentCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.NullPolicy;
 import org.eclipse.persistence.sessions.Project;
+
+import java.util.ArrayList;
 
 /**
  * <p><b>Purpose</b>: TopLink OX project to map org.eclipse.persistence.internal.schema.model.*

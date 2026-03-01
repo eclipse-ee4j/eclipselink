@@ -1,0 +1,264 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[QCN002]]
+=== Implementing the Solution
+
+This section contains the following tasks to enable shared caching in a
+JPA environment:
+
+* link:#CHDBAJED[Task 1: Set up the Database and Tables]
+* link:#CHDDJAIE[Task 2: Grant User Permissions]
+* link:#CHDFIGGJ[Task 3: Set the Classpath]
+* link:#CHDJCFDD[Task 4: Identify Classes that will Participate in Change Notification]
+* link:#CHDBCIIE[Task 5: Add the Database Event Listener]
+* link:#CHDIIICG[Task 6: Edit the Java Files]
+
+[[CHDBAJED]]
+
+==== Task 1: Set up the Database and Tables
+
+The solution presumes that you are working with an Oracle 11gR2 (11.2)
+or higher database that contains the tables that you are interested in.
+
+[[CHDDJAIE]]
+
+==== Task 2: Grant User Permissions
+
+Among other permissions, the database user must be granted the `CHANGE`
+`NOTIFICATION` privilege. To do this, you must have a DBA privilege,
+such as `SYS`, or have your database administrator apply it:
+
+`grant change notification to` _`user`_
+
+The following example illustrates granting the change notification
+privilege to user `SCOTT`.
+
+[source,oac_no_warn]
+----
+...
+define user="SCOTT"
+define pass="tiger"
+grant create session, alter session to &&user
+/
+grant resource, connect to &&user                               
+/
+grant select any dictionary to &&user
+/
+grant select any table to &&user
+/
+grant change notification to &&user
+/
+...
+----
+
+[[CHDFIGGJ]]
+
+==== Task 3: Set the Classpath
+
+Ensure that the `eclipselink.jar` EclipseLink library, the `ojdbc6.jar`
+JDBC library, the `persistence.jar` JPA library, and the domain classes
+are present on the classpath.
+
+[[CHDJCFDD]]
+
+==== Task 4: Identify Classes that will Participate in Change Notification
+
+By default, all entities in the domain will participate in change
+notification. There are several different ways to limit the entities
+that will participate. For example, the entity classes can be indicated
+by the `<entity class ...>` element in the `orm.xml` file, indicated
+with the `<exclude-unlisted-classes>` element in the `persistence.xml`
+file, or contained in a JAR file.
+
+NOTE: The `<exclude-unlisted-classes>` element is not intended for use in the
+Java SE environment.
+
+Entity classes can also be excluded by using a `Cache` annotation
+attribute in the Java files. For more information, see
+link:#CHDGBGAG[Exclude Classes from Change Notification (Optional).]
+
+Another way to identify the entity classes is to use the `<class>`
+element in the `persistence.xml` file. The following example indicates
+that the `Order`, `OrderLine`, and `Customer` classes in the `model`
+package will participate in change notification. For an example of a
+complete `persistence.xml` file, see link:#CHDECAAF[Example 20-1].
+
+[source,oac_no_warn]
+----
+...
+<class>model.Order</class>
+<class>model.OrderLine</class>
+<class>model.Customer</class>
+...
+----
+
+[[CHDBCIIE]]
+
+==== Task 5: Add the Database Event Listener
+
+Use the `eclipselink.cache.database-event-listener` property to identify
+the database event listener. The
+`org.eclipse.persistence.platform.database.oracle.dcn.OracleChangeNotificationListener`
+class is the listener for EclipseLink Database Change Notification. This
+allows the EclipseLink cache to be invalidated by database events.
+
+The following example illustrates the
+`eclipselink.cache.database-event-listener` property configured with the
+`OracleChangeNotificationListener` class. For an example of a complete
+`persistence.xml` file, see link:#CHDECAAF[Example 20-1].
+
+[source,oac_no_warn]
+----
+...
+   <properties>
+      <property name="eclipselink.cache.database-event-listener" value="org.eclipse.persistence.platform.database.oracle.dcn.OracleChangeNotificationListener"/>
+   </properties>
+...
+----
+
+Note that you can also use:
+
+[source,oac_no_warn]
+----
+<property name="eclipselink.cache.database-event-listener" value="DCN"> 
+----
+
+link:#CHDECAAF[Example 20-1] illustrates an example of a complete
+`persistence.xml` file. The classes that will participate in change
+notification are the `Order`, `OrderLine`, and `Customer` classes from
+the `model` package. The `eclipselink.cache.database-event-listener`
+property is set to the full path of the
+`OracleChangeNotificationListener` class.
+
+NOTE: A `<provider>` tag is optional if running in a container where
+EclipseLink is the default provider.
+
+
+[[CHDECAAF]]
+
+*_Example 20-1 Sample persistence.xml File_*
+
+[source,oac_no_warn]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence xmlns="http://java.sun.com/xml/ns/persistence"
+                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xsi:schemaLocation="http://java.sun.com/xml/ns/persistence persistence_2_0.xsd"
+                version="2.0">
+    <persistence-unit name="acme" transaction-type="RESOURCE_LOCAL">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <class>model.Order</class>
+        <class>model.OrderLine</class>
+        <class>model.Customer</class>
+        <exclude-unlisted-classes>false</exclude-unlisted-classes>
+        <properties>
+            <property name="eclipselink.cache.database-event-listener" value="DCN"/>
+        </properties>
+    </persistence-unit>
+</persistence>
+----
+
+[[CHDIIICG]]
+
+==== Task 6: Edit the Java Files
+
+Typically, to participate in change notification, no changes are needed
+to the Java classes which correspond to database tables. However,
+setting optimistic locking with the `@Version` annotation is strongly
+suggested.
+
+If you want to exclude classes that are listed in the persistence unit,
+you can tag them in the Java files. EclipseLink tracks changes only to
+the primary table. If you want changes to secondary tables to also be
+tracked, you can indicate this in the Java files.
+
+===== Set Optimistic Locking
+
+Oracle strongly suggests that you use optimistic locking: writes on
+stale data will fail and automatically invalidate the cache. Include an
+`@Version` annotation in your entity; the version column in the primary
+table will always be updated, and the older version of the object will
+always be invalidated.
+
+In link:#CHDJGCBF[Example 20-2] the `@Version` annotation is defined for
+the entity `Customer`. Note that getters and setters are defined for the
+`version` variable.
+
+[[CHDJGCBF]]
+
+*_Example 20-2 Defining the @Version Annotation_*
+
+[source,oac_no_warn]
+----
+...
+@Entity
+@Table(name="DBE_CUSTOMER")
+public class Customer implements Serializable {
+    @Id
+    @GeneratedValue(generator="CUST_SEQ")
+    @TableGenerator(name="CUST_SEQ")
+    @Column(name="CUST_NUMBER")
+    private long id;
+
+ @Version
+    private long version;
+ 
+ ...
+    public long getVersion() {
+        return version;
+    }
+ 
+    public void setVersion(long version) {
+        this.version = version;
+    }
+...
+----
+
+[[CHDGBGAG]]
+
+===== Exclude Classes from Change Notification (Optional)
+
+Use the `databaseChangeNotificationType` attribute of the `Cache`
+annotation to identify the classes for which you do not want change
+notifications. To exclude a class from change notification, set the
+attribute to `DatabaseChangeNotificationType.NONE`, as illustrated in
+the following example.
+
+[source,oac_no_warn]
+----
+...
+@Entity
+@Cache(databaseChangeNotificationType=DatabaseChangeNotificationType.NONE)
+public class Order {
+...
+----
+
+===== Track Changes in Secondary Tables (Optional)
+
+EclipseLink tracks changes only to the primary table. If any updates
+occur in a secondary table, EclipseLink will not invalidate the object.
+If you want changes to secondary tables to be tracked as well, add the
+`@Version` annotation to the entity.
+
+Oracle DCN listens only for events from the primary table. It does not
+track changes in secondary tables, or relationships tables. The reason
+for this is that Oracle DCN only tracks the `ROWID`, so there is no
+correlation from the `ROWID` of the primary, secondary and relationship
+tables. Thus, to receive events when a secondary or relationship table
+changes, the version in the primary table must change so that the event
+is returned.

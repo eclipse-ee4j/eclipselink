@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,27 +20,28 @@
 package org.eclipse.persistence.testing.tests.dynamic.dynamicclassloader;
 
 //javase imports
-import static org.eclipse.persistence.exceptions.DynamicException.INCOMPATIBLE_DYNAMIC_CLASSWRITERS;
+
+import org.eclipse.persistence.dynamic.DynamicClassLoader;
+import org.eclipse.persistence.dynamic.DynamicClassWriter;
+import org.eclipse.persistence.dynamic.DynamicEntity;
+import org.eclipse.persistence.dynamic.EclipseLinkClassWriter;
+import org.eclipse.persistence.dynamic.DynamicException;
+import org.eclipse.persistence.internal.dynamic.DynamicEntityImpl;
+import org.eclipse.persistence.internal.helper.ConversionManager;
+import org.eclipse.persistence.internal.helper.SerializationHelper;
+import org.junit.Test;
+
+import java.io.ObjectStreamException;
+import java.io.Serializable;
+import java.lang.reflect.Constructor;
+
+import static org.eclipse.persistence.dynamic.DynamicException.INCOMPATIBLE_DYNAMIC_CLASSWRITERS;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-
-import java.io.ObjectStreamException;
-import java.io.Serializable;
-import java.lang.reflect.Constructor;
-
-import org.eclipse.persistence.dynamic.DynamicClassLoader;
-import org.eclipse.persistence.dynamic.DynamicClassWriter;
-import org.eclipse.persistence.dynamic.DynamicEntity;
-import org.eclipse.persistence.dynamic.EclipseLinkClassWriter;
-import org.eclipse.persistence.exceptions.DynamicException;
-import org.eclipse.persistence.internal.dynamic.DynamicEntityImpl;
-import org.eclipse.persistence.internal.helper.ConversionManager;
-import org.eclipse.persistence.internal.helper.SerializationHelper;
-import org.junit.Test;
 
 public class DynamicClassLoaderTestSuite {
 
@@ -60,7 +61,7 @@ public class DynamicClassLoaderTestSuite {
     public void loadCoreClass() throws Exception {
         DynamicClassLoader dcl = new DynamicClassLoader(null);
         Class<?> stringClass = dcl.loadClass("java.lang.String");
-        assertTrue("core class java.lang.String not found", String.class == stringClass);
+        assertSame("core class java.lang.String not found", String.class, stringClass);
     }
 
     @Test(expected=NoClassDefFoundError.class)

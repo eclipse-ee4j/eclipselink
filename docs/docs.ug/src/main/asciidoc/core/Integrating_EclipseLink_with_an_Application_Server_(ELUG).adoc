@@ -1,0 +1,922 @@
+image:Elug_draft_icon.png[Image:Elug draft
+icon.png,title="Image:Elug draft icon.png"] *For the latest EclipseLink
+documentation, please see
+http://www.eclipse.org/eclipselink/documentation/*
+
+'''''
+
+*TOC*
+Special:Whatlinkshere_Integrating_EclipseLink_with_an_Application_Server_(ELUG)[Related
+Topics]
+
+This section describes how to configure EclipseLink for use with Java EE
+containers and application servers.
+
+For more information, see the following:
+
+* link:Creating%20EclipseLink%20Files%20for%20Deployment%20(ELUG)[Creating
+EclipseLink Files for Deployment]
+* link:Packaging%20a%20EclipseLink%20Application%20(ELUG)[Packaging a
+EclipseLink Application]
+* link:Deploying%20a%20EclipseLink%20Application%20(ELUG)[Deploying a
+EclipseLink Application]
+
+== Introduction to the Application Server Support
+
+EclipseLink can be used with _any_ Java EE application server that meets
+the link:#What_Are_the_Software_Requirements[software requirements]
+through the EclipseLink API.
+
+There is EclipseLink-specific integration support for the following
+servers:
+
+* link:#Integrating_EclipseLink_with_Oracle_WebLogic_Server[Oracle
+WebLogic Server]
+* link:#Integrating_EclipseLink_with_Oracle_Containers_for_J2EE_(OC4J)[Oracle
+Containers for J2EE (OC4J)]
+* link:#Integrating_EclipseLink_with_IBM_WebSphere_Application_Server[IBM
+WebSphere Application Server]
+* link:#Integrating_EclipseLink_with_Sun_Application_Server[Sun
+Application Server]
+* link:#Integrating_EclipseLink_with_JBoss_Application_Server[JBoss
+Application Server]
+* link:#Integrating_EclipseLink_with_SAP_NetWeaver_Application_Server[SAP
+NetWeaver Application Server]
+
+== Integrating EclipseLink with an Application Server
+
+This section describes concepts unique to EclipseLink application server
+integration, including the following:
+
+* link:#What_Are_the_Software_Requirements[What Are the Software
+Requirements]
+* link:#How_to_Configure_the_XML_Parser_Platform[How to Configure the
+XML Parser Platform]
+* link:#How_to_Set_Security_Permissions[How to Set Security Permissions]
+* link:#How_to_Integrate_Clustering[How to Integrate Clustering]
+
+=== What Are the Software Requirements
+
+To run a EclipseLink application within a Java EE container, your system
+must meet the following software requirements:
+
+* An application server or Java EE container
+* XML parser (see link:#How_to_Configure_the_XML_Parser_Platform[How to
+Configure the XML Parser Platform]);
+* A JDBC driver configured to connect with your local database system
+(for more information, see your database administrator);
+* A Java development environment, such as the following:
+** Eclipse IDE;
+** Oracle JDeveloper;
+** IBM WebSphere Studio Application Developer (WSAD);
+** Sun Java Development Kit (JDK) 1.5 or later;
+* Any other Java environment that is compatible with the Sun JDK 1.5 or
+later;
+* A command-line JVM executable (such as `+java.exe+` or `+jre.exe+`).
+
+=== How to Configure the XML Parser Platform
+
+The EclipseLink run-time environment uses an XML parser to do the
+following:
+
+* Read and write XML configuration files (see
+link:Creating%20EclipseLink%20Files%20for%20Deployment%20(ELUG)#project.xml_File[project.xml
+File] "`wikilink`") and
+link:Creating%20EclipseLink%20Files%20for%20Deployment%20(ELUG)#sessions.xml_File[sessions.xml
+File]);
+* Read and write Workbench project files (see
+link:Using%20Workbench%20(ELUG)#Introduction_to_Workbench[Introduction
+to Workbench]);
+* Perform object-to-XML transformations in EIS projects using XML
+records (see
+link:Introduction%20to%20EIS%20Mappings%20(ELUG)[Introduction to EIS
+Mappings]);
+* Perform object-to-XML transformations in XML projects (see
+link:Introduction%20to%20XML%20Mappings%20(ELUG)[Introduction to XML
+Mappings]);
+
+Application servers use an XML parser to read deployment files, such as
+`+ejb-jar.xml+` and `+<+`__`+Java EE container+`__>`+-ejb-jar.xml+`
+files (see
+link:Creating%20EclipseLink%20Files%20for%20Deployment%20(ELUG)[Creating
+EclipseLink Files for Deployment]).
+
+To avoid XML parser conflicts, you must configure your EclipseLink
+application to use the same XML parser as that used by the application
+server on which you deploy your application.
+
+Internally, EclipseLink accesses its XML parser using an instance of
+`+org.eclipse.persistence.platform.xml.XMLPlatform+` class.
+
+You can configure EclipseLink to use any XML parser for which an
+`+XMLPlatform+` class exists (see
+link:#Configuring_XML_Parser_Platform[Configuring XML Parser Platform]).
+
+You can also create your own `+XMLPlatform+` to provide access to an XML
+parser not currently supported by EclipseLink (see
+link:#Creating_an_XML_Parser_Platform[Creating an XML Parser Platform]).
+
+==== Configuring XML Parser Platform
+
+EclipseLink provides the `+XMLPlatform+` instances shown in the
+following table.
+
+[#table_7_1]## *_Supported XML Platforms_*
+
+XMLPlatform…
+
+Provides Access to…
+
+Use with…
+
+org.eclipse.persistence.platform.xml.xdk.XDKPlatform
+
+XDKParser: this class provides access to the Oracle XML Developer’s Kit
+(XDK) XML parser (see
+http://www.oracle.com/technology/tech/xml/xdkhome.html).
+
+Integrating EclipseLink with Oracle Containers for J2EE (OC4J)
+
+org.eclipse.persistence.platform.xml.jaxp.JAXPPlatform1
+
+JAXPParser: this class provides access to the Java SDK XML parser in the
+javax.xml.parsers package (see
+http://java.sun.com/j2ee/1.4/docs/tutorial/doc/JAXPIntro2.html).
+
+See the following:
+
+Integrating EclipseLink with Oracle WebLogic Server
+
+Integrating EclipseLink with IBM WebSphere Application Server
+
+1Default.
+
+[width="100%",cols="<100%",]
+|===
+|*Note*: To use an XML parser not listed in this table, create your own
+`+XMLPlatform+` (see link:#Creating_an_XML_Parser_Platform[Creating an
+XML Parser Platform]).
+|===
+
+To configure your EclipseLink application to use a particular instance
+of the `+XMLPlatform+` class, set system property
+`+eclipse.persistence.xml.platform+` to the fully qualified name of your
+`+XMLPlatform+` class, as the following example shows.
+
+[#Example 7-1]## *_Configuring XML Platform_*
+
+`+eclipse.persistence.xml.platform=org.eclipse.persistence.platform.xml.jaxp.JAXPPlatform+`
+
+==== Creating an XML Parser Platform
+
+Using the `+org.eclipse.persistence.internal.xml+` classes you can
+create your own instance of the
+`+org.eclipse.persistence.platform.xml.XMLPlatform+` class to specify an
+XML parser not listed in the link:#table_7_1[Supported XML Platforms]
+table.
+
+After creating your `+XMLPlatform+`, configure EclipseLink to use it
+(see link:#Configuring_XML_Parser_Platform[Configuring XML Parser
+Platform]).
+
+==== XML Parser Limitations
+
+Crimson
+(http://xml.apache.org/crimson/[`+http://xml.apache.org/crimson/+`]) is
+the XML parser supplied in the Java Platform, Standard Edition (Java SE)
+and in some JAXP reference implementations.
+
+If you use Crimson with the JAXP API to parse XML files whose system
+identifier is not a fully qualified URL, then XML parsing will fail with
+a _not valid URL_ exception.
+
+Other XML parsers defer validation of the system identifier URL until it
+is specifically referenced.
+
+If you are experiencing this problem, consider one of the following
+alternatives:
+
+* Ensure that your XML files use a fully qualified system identifier
+URL.
+* Use another XML parser (such as the OracleAS XML Parser for Java v2).
+
+=== How to Set Security Permissions
+
+By default, when you run a EclipseLink-enabled application in a JVM
+configured with a nondefault `+java.lang.SecurityManager+`, the
+EclipseLink run-time environment executes certain internal functions by
+executing a `+PrivilegedAction+` with `+java.security.AccessController+`
+method `+doPrivileged+`. This ensures that you do not need to grant many
+permissions to EclipseLink for it to perform its most common operations.
+You need only grant certain permissions depending on the types of
+optional EclipseLink features you use.
+
+For more information, see link:#Defining_Security_Permissions[Defining
+Security Permissions].
+
+If you run a EclipseLink-enabled application in a JVM without a
+nondefault `+SecurityManager+`, you do not need to set any permissions.
+
+=== How to Integrate Clustering
+
+Most application servers include a clustering service that you can use
+with your EclipseLink application.
+
+To use EclipseLink with an application server cluster, use this general
+procedure:
+
+[arabic]
+. Install the `+eclipselink.jar+` file (and include it in the classpath)
+on each application server in the cluster to which you deploy
+EclipseLink applications.
+. Configure EclipseLink cache consistency options appropriate for your
+application. For more information, see
+link:Introduction%20to%20Cache%20(ELUG)[Introduction to Cache].
+. Configure clustering on each application server. For more information,
+see your application server documentation.
+
+== Integrating EclipseLink with Oracle WebLogic Server
+
+To integrate an EclipseLink application with Oracle WebLogic Server, you
+must consider the following:
+
+* link:#How_to_Configure_the_WebLogic_Classpath[How to Configure the
+WebLogic Classpath]
+* link:#How_to_Integrate_with_the_WebLogic_JTA[How to Integrate with the
+WebLogic JTA]
+
+* link:#How_to_Integrate_the_Security_Manager[How to Integrate the
+Security Manager]
+
+In addition to configuring these Oracle WebLogic Server-specific
+options, you must also consider the general application server
+integration issues in
+link:#Integrating_EclipseLink_with_an_Application_Server[Integrating
+EclipseLink with an Application Server].
+
+=== How to Configure the WebLogic Classpath
+
+EclipseLink works out of the box in Oracle WebLogic Server 10.3. The
+EclipseLink library resides in the following location on the server:
+
+`+$BEA_HOME/modules/org.eclipse.persistence_*.jar+`
+
+Ensure that your EclipseLink application defines an XML parser platform
+(see link:#How_to_Configure_the_XML_Parser_Platform[How to Configure the
+XML Parser Platform]).
+
+=== How to Integrate with the WebLogic JTA
+
+For applications that require JTA integration, specify the external
+transaction controller when you configure the server platform in your
+session (see
+link:Configuring%20a%20Session%20(ELUG)#Configuring_the_Server_Platform[Configuring
+the Server Platform]).
+
+For more information, see
+link:Using%20Advanced%20Unit%20of%20Work%20API%20(ELUG)#Integrating_the_Unit_of_Work_with_an_External_Transaction_Service[Integrating
+the Unit of Work with an External Transaction Service].
+
+=== How to Integrate JMX
+
+By default, when you deploy an EclipseLink application to Oracle
+WebLogic Server, the EclipseLink runtime deploys the following Java
+Management Extensions (JMX) MBeans to the Oracle WebLogic Server JMX
+service for each EclipseLink session:
+
+* `+org.eclipse.persistence.services.DevelopmentServices+` - This class
+is meant to provide facilities for managing an EclipseLink session
+internal to EclipseLink over JMX.
+* `+org.eclipse.persistence.services.RuntimeServices+` - This class is
+meant to provide facilities for managing an EclipseLink session external
+to EclipseLink over JMX.
+
+Use the API that this JMX MBean exposes to access and configure your
+EclipseLink sessions at run time using JMX code that you write, or to
+integrate your EclipseLink application with a third-party JMX management
+application, such as JConsole.
+
+==== Setting Up the Environment for EclipseLink JMX MBeans
+
+Perform the following steps:
+
+[arabic]
+. *Set breakpoints:* the `+eclipselink.jar+` deployed in the
+`+$WEBLOGIC_HOME/modules/org.eclipse.persistence_n.n.n.jar+` needs a
+source attachment. You set a breakpoint on the `+undeploy+` method of
+the `+org.eclipse.persistence.internal.jpa.EntityManagerSetupImpl+`
+pointing to the source JAR file or your workspace projects, and then
+redeploy. This will result in any breakpoints set in the `+predeploy+`
+method or prior to the first login to be hit.
+. *Enable remote access on the Oracle WebLogic Server JVM* by adding the
+following JVM option to your WebLogic startup script:
+`+C:\opt\wls103\user_projects\domains\base_domain\bin\startWebLogic.cmd+`
+`+set JAVA_OPTIONS=%JAVA_OPTIONS% -Dcom.sun.management.jmxremote+`
+. *Enable MBean registration (deployment)* by adding one or both of the
+two MBean system properties, as follows:
+`+rem set JAVA_OPTIONS=%JAVA_OPTIONS% -Declipselink.register.dev.mbean=true+`
+`+rem set JAVA_OPTIONS=%JAVA_OPTIONS% -Declipselink.register.run.mbean=true+`
+By default, EclipseLink does not register MBeans for Oracle WebLogic
+Server. If you enable the registration, it will occur as a post step
+during the first login to the session (see
+link:Configuring%20a%20Session%20(ELUG)#Configuring_a_Session_Login[Configuring
+a Session Login]). If both `+eclipselink.register.dev.mbean+` and
+`+eclipselink.register.run.mbean+` properties are missing, MBean
+registration will not proceed for that bean.
+. *Configure Oracle WebLogic Server domain security*. For more
+information, see
+_http://wiki.eclipse.org/EclipseLink/Examples/JPA/WebLogic_Web_Tutorial[EclipseLink
+JMX MBean Support in Oracle WebLogic Server tutorial]_.
+
+==== Accessing EclipseLink JMX MBeans Using a Third-Party JMX Management Application
+
+After you deploy your EclipseLink application, you can use any
+JMX-compliant management application to access and use the full public
+API that EclipseLink MBeans provide.
+
+*To access EclipseLink JMX MBeans using a third-party JMX management
+application:*
+
+[arabic]
+. Package and deploy your EclipseLink application to Oracle WebLogic
+Server. For more information, see
+link:Deploying%20a%20EclipseLink%20Application%20(ELUG)[Deploying an
+EclipseLink Application].
+. Optionally, examine Oracle WebLogic Server logs and look for the
+appropriate log messages. Note that for a JPA application, EclipseLink
+session instantiation and login occurs at `+EntityManager+`
+instantiation time.
+. Launch your third-party JMX management application. For example,
+launch JConsole (`+JDK_HOME\bin\jconsole.exe+`) using the command
+prompt, and then select the running `+weblogic.Server+` local process,
+as the following figure shows.
++
+.Image:Jconsole_attach_to_weblogic_server_jvm.jpg
+image::Jconsole_attach_to_weblogic_server_jvm.jpg[Image:Jconsole_attach_to_weblogic_server_jvm.jpg,title="Image:Jconsole_attach_to_weblogic_server_jvm.jpg"]
+
+[arabic]
+. Optionally, launch JRockit Mission Control *JMC.exe*, attach to the
+JVM process and navigate to the MBeans tab - you will see the following
+screen showing the EclipsLink MBeans for your session.
+
+.Image:Jrockit_jconsole_mbeans_via_non_jndi_generic_spec_lookup.JPG
+image::Jrockit_jconsole_mbeans_via_non_jndi_generic_spec_lookup.JPG[Image:Jrockit_jconsole_mbeans_via_non_jndi_generic_spec_lookup.JPG,title="Image:Jrockit_jconsole_mbeans_via_non_jndi_generic_spec_lookup.JPG"]
+
+==== Disabling EclipseLink JMX Support
+
+There are a number of ways to disable EclipseLink JMX support.
+
+*To disable deployment of MBeans to Oracle WebLogic Server for your
+EclipseLink application using system properties*, remove, disable, or do
+not add in the first place `+eclipselink.register.dev.mbean+` and
+`+eclipselink.register.run.mbean+` MBean system properties. The
+following example shows how to disable these properties:
+`+rem set JAVA_OPTIONS=%JAVA_OPTIONS% -Declipselink.register.dev.mbean=false+`
+`+rem set JAVA_OPTIONS=%JAVA_OPTIONS% -Declipselink.register.run.mbean=false+`.
+
+*To disable deployment of MBeans to Oracle WebLogic Server for your
+EclipseLink application using deployment XML*, use an EclipseLink
+`+sessions.xml+` file (assuming your application has one):
+
+[arabic]
+. Undeploy your EclipseLink application on Oracle WebLogic Server.
+. Edit your EclipseLink application’s Oracle WebLogic Server platform to
+disable run-time services. For more information, see
+link:Configuring%20a%20Session%20(ELUG)#Configuring_the_Server_Platform[Configuring
+the Server Platform].
+. Package your EclipseLink application and redeploy on Oracle WebLogic
+Server. For more information, see
+link:Deploying%20a%20EclipseLink%20Application%20(ELUG)[Deploying an
+EclipseLink Application].
+. Confirm that EclipseLink JMX MBean instances for your application no
+longer exist.
+
+If your application does not include an EclipseLink `+sessions.xml+`
+file, you can use a `+preLogin+` event handler to disable this feature
+(see the following section).
+
+*To disable deployment of MBeans to Oracle WebLogic Server for your
+EclipseLink application using the EclipseLink session preLogin event
+handler*:
+
+[arabic]
+. Undeploy your EclipseLink application on Oracle WebLogic Server.
+. Create an EclipseLink session customizer. For more information, see
+link:Configuring%20a%20Session%20(ELUG)#Configuring_a_Session_Customizer_Class[Configuring
+a Session Customizer Class].
+. In your session customizer, create a session event listener for the
+`+preLogin+` session event and register the listener with the session
+event manager, as the following example shows.
++
+`+import oracle.eclipselink.tools.sessionconfiguration.SessionCustomizer;+`
+`+import oracle.eclipselink.sessions.Session;+`
+`+import oracle.eclipselink.sessions.SessionEvent;+`
+`+import oracle.eclipselink.sessions.SessionEventAdapter;+`
+`+import oracle.eclipselink.platform.server.ServerPlatform;+`
+`+public class EmployeeSessionCustomizer implements SessionCustomizer {+`
+`+  +` `+  public void customize(Sesssion session) {+`
+`+      SessionEventAdapter myEventListener = new SessionEventAdapter() {+`
+`+          +`*`+//\'\' \'\'Listen\'\' \'\'for\'\' \'\'preLogin\'\' \'\'event+`*
+`+          public void preLogin(SessionEvent event) {+`
+`+              +`*`+//\'\' \'\'Disable\'\' \'\'runtime\'\' \'\'services+`*
+`+              Session session event.getSession();+`
+`+              ServerPlatform serverPlatform = session.getServerPlatform();+`
+`+              serverPlatform.disableRuntimeServices();+`
+`+          }+` `+      };+`
+`+      +`*`+//\'\' \'\'Register\'\' \'\'session\'\' \'\'event\'\' \'\'listener+`*
+`+      session.getEventManager().addListener(myEventListener);+`
+`+  }+` `+}+`
++
+For more information, see
+link:Configuring%20a%20Session%20(ELUG)#Configuring_Session_Event_Listeners[Configuring
+Session Event Listeners].
+. Package your EclipseLink application, including your session
+customizer, and redeploy on Oracle WebLogic Server. For more
+information, see
+link:Packaging%20a%20EclipseLink%20Application%20(ELUG)[Packaging an
+EclipseLink Application] and
+link:Deploying%20a%20EclipseLink%20Application%20(ELUG)[Deploying an
+EclipseLink Application].
+. Confirm that EclipseLink JMX MBean instances for your application are
+not deployed.
+
+[width="100%",cols="<100%",]
+|===
+|*Note*: Follow the preceding procedure if you EclipseLink application
+does not include an Oracle WebLogic Server `+sessions.xml+` file (such
+as a EclipseLink JPA application).
+|===
+
+==== What You May Need to Know About EclipseLink JMX Support
+
+For more information on EclipseLink and Oracle WebLogic Server JMX
+support, see the following:
+
+* Oracle WebLogic Server: Developing Manageable Applications with JMX
+* Oracle WebLogic Server: Developing Custom Management Utilities with
+JMX
+
+For more information on JMX in general, see
+http://java.sun.com/docs/books/tutorial/jmx/index.html
+
+=== How to Integrate the Security Manager
+
+If you use a security manager, specify a security policy file in the
+`+weblogic.policy+` file (normally located in the WebLogic install
+directory), as follows:
+
+`+-Djava.security.manager+`
+`+-Djava.security.policy==c:\weblogic\weblogic.policy+`
+
+The WebLogic installation procedure includes a sample security policy
+file. You need to edit the `+weblogic.policy+` file to grant permission
+for EclipseLink to use reflection.
+
+The following example illustrates only the permissions that EclipseLink
+requires, but most `+weblogic.policy+` files contain more permissions
+than are shown in this example.
+
+[#Example 7-5]## *_A Subset of a "`Grant`" Section from a
+WebLogic.policy File_*
+
+[source,java]
+----
+ grant {
+ '''// "enableSubstitution" required to run the WebLogic console'''
+ permission java.io.SerializablePermission "enableSubstitution";
+ '''// "modifyThreadGroup" required to run the WebLogic Server'''
+ permission java.lang.RuntimePermission "modifyThreadGroup";
+ '''// grant permission for EclipseLink to use reflection'''
+
+     permission java.lang.reflect.ReflectPermission "suppressAccessChecks";
+ };
+----
+
+== Integrating EclipseLink with Oracle Containers for J2EE (OC4J)
+
+To integrate a EclipseLink application with OC4J, you must consider
+link:#How_to_Integrate_with_the_OC4J_JTA[integration with the OC4J JTA].
+
+In addition to configuring these OC4J-specific options, you must also
+consider the general application server integration issues described in
+link:#Integrating_EclipseLink_with_an_Application_Server[Integrating
+EclipseLink with an Application Server].
+
+=== How to Integrate with the OC4J JTA
+
+For applications that require JTA integration, specify the external
+transaction controller when you configure the server platform in your
+session (see
+link:Configuring%20a%20Session%20(ELUG)#Configuring_the_Server_Platform[Configuring
+the Server Platform]).
+
+For more information, see
+link:Using%20Advanced%20Unit%20of%20Work%20API%20(ELUG)#Integrating_the_Unit_of_Work_with_an_External_Transaction_Service[Integrating
+the Unit of Work with an External Transaction Service].
+
+=== How to Configure the OC4J Application Server Classpath
+
+To configure EclipseLink support for OC4J, add the `+eclipselink.jar+`
+file to the application server classpath in the global `+applib+`
+directory. Place the `+eclipselink.jar+` as noted by the element element
+in the `+$OC4J_HOME/config/server.xml+` file in the
+`+$OC4J_HOME/applib+` directory, as follows:
+
+`+/oc4j/j2ee/home/applib/eclipselink.jar+`
+
+== Integrating EclipseLink with IBM WebSphere Application Server
+
+To integrate a EclipseLink application with IBM WebSphere Application
+Server, you must consider the following:
+
+* link:#How_to_Configure_the_WebSphere_Classpath[How to Configure the
+WebSphere Classpath]
+* link:#How_to_Configure_Class_Loader_Order[How to Configure Class
+Loader Order]
+* link:#How_to_Integrate_with_the_WebSphere_JTA[How to Integrate with
+the WebSphere JTA]
+
+In addition to configuring these IBM WebSphere application
+server-specific options, you must also consider the general application
+server integration issues in
+link:#Integrating_EclipseLink_with_an_Application_Server[Integrating
+EclipseLink with an Application Server].
+
+=== How to Configure the WebSphere Classpath
+
+You configure the IBM WebSphere application server classpath differently
+depending on what version of this server you are using:
+
+==== Configuring Classpath for IBM WebSphere Application Server 6.1 and Later
+
+EclipseLink provides JTA and general integration support for IBM
+WebSphere application server 6.1 and later. To configure the classpath
+for this version, do the following:
+
+[arabic]
+. Create a shared library that contains the
+__`+\jlib\eclipselink.jar''+` file and associate the shared library with
+the application.
+. Ensure that your EclipseLink application defines an XML parser
+platform (see link:#How_to_Configure_the_XML_Parser_Platform[How to
+Configure the XML Parser Platform]).
+
+=== How to Configure Class Loader Order
+
+If you are deploying a EclipseLink enabled application that uses
+EclipseLink `+sessions.xml+` or XML project deployment, you must use the
+WebSphere Application Server Administrative Console to set *Class loader
+order* to *Class loaded with application class loader first*.
+
+=== How to Integrate with the WebSphere JTA
+
+For applications that require JTA integration, specify the external
+transaction controller when you configure the server platform in your
+session (see
+link:Configuring%20a%20Session%20(ELUG)#Configuring_the_Server_Platform[Configuring
+the Server Platform]).
+
+For more information, see
+link:Using%20Advanced%20Unit%20of%20Work%20API%20(ELUG)#Integrating_the_Unit_of_Work_with_an_External_Transaction_Service[Integrating
+the Unit of Work with an External Transaction Service].
+
+=== How to Configure Clustering on IBM WebSphere Application Server
+
+For information on integrating a EclipseLink application with an
+application server cluster, see link:#How_to_Integrate_Clustering[How to
+Integrate Clustering].
+
+== Integrating EclipseLink with Sun Application Server
+
+To integrate a EclipseLink application with Sun Application Server
+(SunAS), you must consider the following:
+
+* link:#How_to_Configure_the_Sun_Application_Server_Classpath[How to
+Configure the Sun Application Server Classpath]
+* link:#How_to_Integrate_with_the_Sun_Application_Server_JTA[How to
+Integrate with the Sun Application Server JTA]
+
+In addition to configuring these SunAS-specific options, you must also
+consider the general application server integration issues in
+link:#Integrating_EclipseLink_with_an_Application_Server[Integrating
+EclipseLink with an Application Server].
+
+=== How to Configure the Sun Application Server Classpath
+
+To configure EclipseLink support for SunAS, do the following:
+
+[arabic]
+. Add the __`+\jlib\eclipselink.jar+` file to the application server
+classpath.
+. Ensure that your EclipseLink application defines an XML parser
+platform (see link:#How_to_Configure_the_XML_Parser_Platform[How to
+Configure the XML Parser Platform]).
+
+=== How to Integrate with the Sun Application Server JTA
+
+For applications that require JTA integration, specify the external
+transaction controller when you configure the server platform in your
+session (see link:Configuring%20a%20Session%20(ELUG)[Configuring the
+Server Platform]).
+
+For more information, see
+link:Using%20Advanced%20Unit%20of%20Work%20API%20(ELUG)#Integrating_the_Unit_of_Work_with_an_External_Transaction_Service[Integrating
+the Unit of Work with an External Transaction Service].
+
+== Integrating EclipseLink with JBoss Application Server
+
+These instructions apply to JBoss AS versions prior to AS7. AS7 changes
+the setup quite dramatically; the best available documentation is
+currently here:
+https://community.jboss.org/wiki/HowToUseEclipseLinkWithAS7
+
+To integrate a EclipseLink application with JBoss Application Server,
+you must consider the following:
+
+* link:#How_to_Configure_the_JBoss_Classpath[How to Configure the JBoss
+Classpath]
+* link:#How_to_Integrate_with_the_JBoss_JTA[How to Integrate with the
+JBoss JTA]
+
+In addition to configuring these JBoss-specific options, you must also
+consider the general application server integration issues in
+link:#Integrating_EclipseLink_with_an_Application_Server[Integrating
+EclipseLink with an Application Server].
+
+=== How to Configure the JBoss Classpath
+
+To configure EclipseLink support for JBoss, do the following:
+
+[arabic]
+. Add the __`+\jlib\eclipselink.jar+` file to the application server
+classpath.
+. Ensure that your EclipseLink application defines an XML parser
+platform (see link:#How_to_Configure_the_XML_Parser_Platform[How to
+Configure the XML Parser Platform]).
+
+=== How to Integrate with the JBoss JTA
+
+For applications that require JTA integration, specify the external
+transaction controller when you configure the server platform in your
+session (see
+link:Configuring%20a%20Session%20(ELUG)#Configuring_the_Server_Platform[Configuring
+the Server Platform]).
+
+For more information, see
+link:Using%20Advanced%20Unit%20of%20Work%20API%20(ELUG)#Integrating_the_Unit_of_Work_with_an_External_Transaction_Service[Integrating
+the Unit of Work with an External Transaction Service].
+
+=== How to Configure JPA Application Deployment to JBoss 4.2 Application Server
+
+For JPA applications, to enable the container to manage entities,
+statically weave the entities and reference JBoss as the target server
+in the `+persistence.xml+` file.
+
+Perform the following deployment changes:
+
+[arabic]
+. If weaving is required, statically weave the entities before EAR
+packaging. Use either the command-line weaver or the weaving Ant task
+(see
+link:Using%20EclipseLink%20JPA%20Extensions%20(ELUG)#How_to_Configure_Static_Weaving_for_JPA_Entities[How
+to Configure Static Weaving for JPA Entities]).
+. Ensure that the `+eclipselink.target-server+` property (see
+link:Using%20EclipseLink%20JPA%20Extensions%20(ELUG)#Using_EclipseLink_JPA_Extensions_for_Session,_Target_Database_and_Target_Application_Server[Using
+EclipseLink JPA Extensions for Session&#44; Target Database and Target
+Application Server]) is set in the `+persistence.xml+` file of all
+persistence units deployed to the JBoss container:
++
++
+Otherwise, even though the container-managed entities are predeployed,
+they will not be managed at run time.
+
+For more information and examples, see the following:
+
+* http://wiki.eclipse.org/EclipseLink/Examples/JPA/Migration/JBoss
+* link:Packaging%20and%20Deploying%20EclipseLink%20JPA%20Applications%20(ELUG)#How_to_Deploy_an_Application_to_Generic_Java_EE_5_Application_Servers[How
+to Deploy an Application to Generic Java EE 5 Application Servers]
+
+== Integrating EclipseLink with SAP NetWeaver Application Server
+
+To integrate a EclipseLink application with SAP NetWeaver Application
+Server, you must consider the following:
+
+* link:#How_to_Configure_the_NetWeaver_Classpath[How to Configure the
+NetWeaver Classpath]
+* link:#How_to_Integrate_with_the_NetWeaver_JTA[How to Integrate with
+the NetWeaver JTA]
+
+In addition to configuring these NetWeaver-specific options, you must
+also consider the general application server integration issues in
+link:#Integrating_EclipseLink_with_an_Application_Server[Integrating
+EclipseLink with an Application Server].
+
+=== How to Configure the NetWeaver Classpath
+
+To configure EclipseLink support for NetWeaver, do the following:
+
+[arabic]
+. Create and deploy a standard library (i.e. an SDA file) that contains
+the __`+\jlib\eclipselink.jar+` file and associate the library with the
+application.
+. Ensure that your EclipseLink application defines an XML parser
+platform (see link:#How_to_Configure_the_XML_Parser_Platform[How to
+Configure the XML Parser Platform]).
+
+=== How to Integrate with the NetWeaver JTA
+
+For applications that require JTA integration, specify the external
+transaction controller when you configure the server platform in your
+session. See
+link:Configuring%20a%20Session%20(ELUG)#Configuring_the_Server_Platform[Configuring
+the Server Platform] for general information on configuring the server
+platform and
+link:EclipseLink_Development_ServerPlatform_NetweaverPlatform[EclipseLink/Development/ServerPlatform/NetweaverPlatform]
+for a description of the NetWeaver server platform.
+
+For more information, see
+link:Using%20Advanced%20Unit%20of%20Work%20API%20(ELUG)#Integrating_the_Unit_of_Work_with_an_External_Transaction_Service[Integrating
+the Unit of Work with an External Transaction Service].
+
+== Defining Security Permissions
+
+By default, when you run a EclipseLink-enabled application in a JVM
+configured with a nondefault `+java.lang.SecurityManager+`, the
+EclipseLink run time executes certain internal functions by executing a
+`+PrivilegedAction+` with `+java.security.AccessController+` method
+`+doPrivileged+`. This ensures that you do not need to grant many
+permissions to EclipseLink for it to perform its most common operations.
+You need only grant certain permissions depending on the types of
+optional EclipseLink features you use (see
+link:#How_to_Define_Permissions_Required_by_EclipseLink_Features[How to
+Define Permissions Required by EclipseLink Features]).
+
+While using `+doPrivileged+` method provides enhanced security, it will
+severely impact overall performance. Alternatively, you can configure
+EclipseLink to disable the use of `+doPrivileged+` method even when a
+nondefault `+SecurityManager+` is present (see
+link:#How_to_Disable_doPrivileged_Operation[How to Disable doPrivileged
+Operation]). In this case, you must grant EclipseLink all required
+permissions (see
+link:#How_to_Define_Permissions_Required_by_EclipseLink_Features[How to
+Define Permissions Required by EclipseLink Features] and
+link:#How_to_Define_Permissions_Required_when_doPrivileged_Is_Disabled[How
+to Define Permissions Required when doPrivileged Is Disabled]).
+
+[width="100%",cols="<100%",]
+|===
+|*Note*: While enabling the use of `+doPriviledged+` method enhances
+EclipseLink application security, it does not guarantee that secure code
+cannot be called by application code in ways that the system did not
+intend. You must consider the use of `+doPriviledged+` method within the
+context of your overall application security strategy. For more
+information, see
+http://java.sun.com/security/index.jsp[`+http://java.sun.com/security/index.jsp+`].
+|===
+
+If you run a EclipseLink-enabled application in a JVM without a
+nondefault `+SecurityManager+`, you do not need to grant any
+permissions.
+
+=== How to Define Permissions Required by EclipseLink Features
+
+When you run a EclipseLink-enabled application in a JVM configured with
+a nondefault `+java.lang.SecurityManager+` and `+doPrivileged+`
+operation is enabled, you may need to grant additional permissions if
+your application requires any of the following:
+
+* link:#Defining_System_Properties[Defining System Properties]
+* link:#Loading_project.xml_or_sessions.xml_Files[Loading project.xml or
+sessions.xml Files]
+* link:#Defining_Cache_Coordination[Defining Cache Coordination]
+* link:#Accessing_a_Data_Source_by_Port[Accessing a Data Source by Port]
+* link:#Logging_with_java.util.logging[Logging with java.util.logging]
+* link:#Granting_Permissions_for_Java_EE_Application_Deployment[Granting
+Permissions for Java EE Application Deployment]
+
+==== Defining System Properties
+
+By default, a EclipseLink-enabled application requires access to the
+system properties granted in the default
+`+<+`_`+JAVA_HOME+`_`+>/lib/security/java.policy+` file. If your
+application requires access to other platform-specific, environment, or
+custom properties, then grant further `+PropertyPermission+`
+permissions, as the following example shows.
+
+[#Example 7-6]## *_Permissions for System Properties_*
+
+`+permission java.util.PropertyPermission "my.property", "read";+`
+
+==== Loading project.xml or sessions.xml Files
+
+Most EclipseLink-enabled applications read in `+project.xml+` and
+`+sessions.xml+` files directly. Grant permissions to the specific files
+or file locations, as the following example shows. This example assumes
+that both `+project.xml+` and `+sessions.xml+` files are located in the
+same directory (given by application-specific system property
+`+deployment.xml.home+`). Alternatively, you can specify a separate
+`+FilePermission+` for each file.
+
+[#Example 7-7]## *_Permissions for Loading Deployment XML Files_*
+
+`+permission java.io.FilePermission "${deployment.xml.home}/*.xml", "read";+`
+
+For information on `+FilePermission+` settings for Java EE applications,
+see
+link:#Granting_Permissions_for_Java_EE_Application_Deployment[Granting
+Permissions for Java EE Application Deployment].
+
+==== Defining Cache Coordination
+
+If your application uses cache coordination (see
+link:Introduction%20to%20Cache%20(ELUG)#Cache_Coordination[Cache
+Coordination]), then grant `+accept+`, `+connect+`, `+listen+`, and
+`+resolve+` permissions to the specific sockets used by your coordinated
+cache, as the following example shows. This example assumes that the
+coordinated cache multicast port (see
+link:Configuring%20a%20Coordinated%20Cache%20(ELUG)#Configuring_a_Multicast_Port[Configuring
+a Multicast Port]) is 1024.
+
+[#Example 7-8]## *_Permissions for Cache Coordination_*
+
+`+permission java.net.SocketPermission "localhost:1024-", "accept, connect, listen, resolve";+`
+
+==== Accessing a Data Source by Port
+
+If your EclipseLink-enabled application accesses a data source using a
+socket, then grant `+connect+` and `+resolve+` permissions for that
+socket, as the following example shows. This example assumes that the
+host name (or IP address) of the remote host that provides the data
+source (such as a relational database server host) is given by
+application-specific system property `+remote.data.source.host+` and
+that this host accepts data source connections on port 1025.
+
+[#Example 7-9]## *_Permissions for non-Java EE Data Source Connections_*
+
+`+permission java.net.SocketPermission "${remote.data.source.host}:1025-", "connect, resolve";+`
+
+For Java EE applications, data source socket permissions are usually
+handled by the application server.
+
+==== Logging with java.util.logging
+
+If you configure your EclipseLink-enabled application to use
+`+java.util.logging+` package (see
+link:Configuring%20a%20Session%20(ELUG)#Configuring_Logging[Configuring
+Logging]), then grant your application `+control+` permissions, as this
+example shows.
+
+[#Example 7-10]## *_Permissions for java.util.logging_*
+
+`+permission java.util.logging.LoggingPermission "control"+`
+
+==== Granting Permissions for Java EE Application Deployment
+
+If you are deploying a EclipseLink-enabled Java EE application, you must
+grant permissions for the following:
+
+* The `+eclipselink.jar+` file. For example:
+
+`+grant codeBase "file:+``+/jlib/eclipselink.jar" {+`
+`+    permission java.security.AllPermission;+` `+};+`
+
+If you are using an XML platform, you must also grant the following
+permissions:
+
+* The `+eclipse.persistence.xml.platform+` system property. For Example:
+
+`+permission java.util.PropertyPermission "eclipse.persistence.xml.platform", "read"+`
+
+=== How to Define Permissions Required when doPrivileged Is Disabled
+
+If you disable `+doPrivileged+` operation when you run a
+EclipseLink-enabled application in a JVM configured with a nondefault
+`+java.lang.SecurityManager+`, you must grant the following permissions:
+
+* `+java.lang.reflect.RelectPermission "suppressAccessChecks"+`
+* `+java.lang.RuntimePermission "accessDeclaredMembers"+`
+* `+java.lang.RuntimePermission "getClassLoader"+`
+
+You may also have to grant additional permissions depending on the
+EclipseLink features your application uses. For more information, see
+link:#How_to_Define_Permissions_Required_by_EclipseLink_Features[How to
+Define Permissions Required by EclipseLink Features].
+
+=== How to Disable doPrivileged Operation
+
+To disable `+doPrivileged+` operation when you run a EclipseLink-enabled
+application in a JVM configured with a nondefault
+`+java.lang.SecurityManager+`, set system property
+`+oracle.j2ee.security.usedoprivileged+` to `+false+`. If you are using
+OC4J, set system property `+oracle.j2ee.security.usedoprivileged+` to
+`+false+`.
+
+To enable `+doPrivileged+` operation, set these system properties to
+`+true+`.
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Task[Category: Task] Category:_Concept[Category: Concept]

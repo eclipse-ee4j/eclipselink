@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,21 +16,36 @@
 //       - 349424: persists during an preCalculateUnitOfWorkChangeSet event are lost
 package org.eclipse.persistence.internal.sessions.remote;
 
-import java.util.*;
-
 import org.eclipse.persistence.config.ReferenceMode;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.DescriptorQueryManager;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.internal.sessions.*;
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.databaseaccess.Platform;
-import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.internal.helper.ConcurrencyManager;
+import org.eclipse.persistence.internal.helper.InvalidObject;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sessions.CommitManager;
+import org.eclipse.persistence.internal.sessions.MergeManager;
+import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
+import org.eclipse.persistence.internal.sessions.RepeatableWriteUnitOfWork;
+import org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet;
+import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
+import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.platform.database.DatabasePlatform;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.sessions.SessionProfiler;
-import org.eclipse.persistence.sessions.remote.*;
-import org.eclipse.persistence.logging.SessionLog;
+import org.eclipse.persistence.sessions.remote.DistributedSession;
+
+import java.util.ArrayList;
+import java.util.IdentityHashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 
 /**
  * Counter part of the unit of work which exists on the client side.
@@ -210,6 +225,9 @@ public class RemoteUnitOfWork extends RepeatableWriteUnitOfWork {
             return;
         }
         log(SessionLog.FINER, SessionLog.TRANSACTION, "begin_unit_of_work_flush");
+        if(eventManager != null) {
+            eventManager.preFlushUnitOfWork();
+        }
 
         // PERF: If this is an empty unit of work, do nothing (but still may need to commit SQL changes).
         boolean hasChanges = (this.unitOfWorkChangeSet != null) || hasCloneMapping() || hasDeletedObjects() || hasModifyAllQueries() || hasDeferredModifyAllQueries();
@@ -223,6 +241,9 @@ public class RemoteUnitOfWork extends RepeatableWriteUnitOfWork {
         }
         if (!hasChanges) {
             log(SessionLog.FINER, SessionLog.TRANSACTION, "end_unit_of_work_flush");
+            if(eventManager != null) {
+                eventManager.postFlushUnitOfWork();
+            }
             return;
         }
 
@@ -253,6 +274,9 @@ public class RemoteUnitOfWork extends RepeatableWriteUnitOfWork {
         remoteUnitOfWork.commitIntoRemoteUnitOfWork();
 
         log(SessionLog.FINER, SessionLog.TRANSACTION, "end_unit_of_work_flush");
+        if(eventManager != null) {
+            eventManager.postFlushUnitOfWork();
+        }
 
         resumeUnitOfWork();
         log(SessionLog.FINER, SessionLog.TRANSACTION, "resume_unit_of_work");
@@ -305,20 +329,13 @@ public class RemoteUnitOfWork extends RepeatableWriteUnitOfWork {
                 setWasNonObjectLevelModifyQueryExecuted(false);
                 try {
                     commitTransaction();
-                } catch (RuntimeException commitFailed) {
+                } catch (RuntimeException | Error commitFailed) {
                     try {
                         rollbackTransaction();
                     } catch (RuntimeException ignore) {
                         // Ignore
                     }
                     throw commitFailed;
-                } catch (Error error) {
-                    try {
-                        rollbackTransaction();
-                    } catch (RuntimeException ignore) {
-                        // Ignore
-                    }
-                    throw error;
                 }
             }
             return;
@@ -659,6 +676,7 @@ public class RemoteUnitOfWork extends RepeatableWriteUnitOfWork {
 
         this.newObjectsOriginalToClone = originalToClone;
         this.newObjectsCloneToOriginal = cloneToOriginal;
+        setupPrimaryKeyToNewObjects();
     }
 
     /**
@@ -781,7 +799,7 @@ public class RemoteUnitOfWork extends RepeatableWriteUnitOfWork {
      */
     @Override
     public String toString() {
-        return Helper.getShortClassName(getClass()) + "()";
+        return getClass().getSimpleName() + "()";
     }
 
     /**

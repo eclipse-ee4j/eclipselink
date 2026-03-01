@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,10 +25,9 @@ public class Simple {
   public int thing2;
 
    public boolean equals(Object obj){
-       if(!(obj instanceof Simple)){
+       if(!(obj instanceof Simple simpleObject)){
            return false;
        }
-       Simple simpleObject = (Simple)obj;
        return thing1 == simpleObject.thing1 && thing2 == simpleObject.thing2;
    }
 }

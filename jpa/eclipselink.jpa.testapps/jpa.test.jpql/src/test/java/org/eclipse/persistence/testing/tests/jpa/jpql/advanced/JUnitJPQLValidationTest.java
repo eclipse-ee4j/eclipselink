@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -517,7 +517,7 @@ public class JUnitJPQLValidationTest extends JUnitTestCase
     public void noAliasWithWHEREAndParameterExceptionTest()
     {
 
-        String ejbqlString =  "FROM Employee WHERE firstName = ?1";
+        String ejbqlString =  "FROM Employee e WHERE firstName = ?1";
 
         try
         {

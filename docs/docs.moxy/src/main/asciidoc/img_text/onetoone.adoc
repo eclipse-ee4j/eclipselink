@@ -1,0 +1,2 @@
+:nofooter:
+This figures shows a one-to-one relationship between two complex types.

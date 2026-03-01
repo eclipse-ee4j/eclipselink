@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,27 +15,9 @@
 package org.eclipse.persistence.sessions.factories;
 
 // javase imports
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
 
-import org.w3c.dom.Document;
-import org.xml.sax.EntityResolver;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-
-// EclipseLink imports
 import org.eclipse.persistence.exceptions.ValidationException;
-import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.oxm.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.sessions.factories.EclipseLinkObjectPersistenceRuntimeXMLProject;
 import org.eclipse.persistence.internal.sessions.factories.MissingDescriptorListener;
@@ -48,6 +30,22 @@ import org.eclipse.persistence.platform.xml.XMLParser;
 import org.eclipse.persistence.platform.xml.XMLPlatform;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.eclipse.persistence.sessions.Project;
+import org.w3c.dom.Document;
+import org.xml.sax.EntityResolver;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 
 /**
  * <p><b>Purpose</b>: Allow for a EclipseLink Mapping Workbench generated deployment XML project file to be read.
@@ -159,7 +157,7 @@ public class XMLProjectReader {
 
                     String version = document.getDocumentElement().getAttribute("version");
                     // If 10.1.3 format use old format read.
-                    if ((version == null) || (version.indexOf("1.0") == -1)) {
+                    if ((version == null) || (!version.contains("1.0"))) {
                         throw parseException;
                     }
                 }
@@ -171,12 +169,12 @@ public class XMLProjectReader {
         String version = document.getDocumentElement().getAttribute("version");
         // If 10.1.3 format use old format read.
         if (version != null) {
-            if (version.indexOf("10.1.3") != -1) {
+            if (version.contains("10.1.3")) {
                 return read1013Format(document, classLoader);
-            } else if (version.indexOf("11.1.1") != -1) {
+            } else if (version.contains("11.1.1")) {
                    return read1111Format(document, classLoader);
             }
-            if (version.indexOf("TopLink") != -1) {
+            if (version.contains("TopLink")) {
                 //default to read 11.1.1
                 return read1111Format(document, classLoader);
             }
@@ -213,7 +211,7 @@ public class XMLProjectReader {
      * Note the file must be the deployment XML, not the Mapping Workbench project file.
      */
     public static Project read(String fileOrResourceName, ClassLoader classLoader) {
-        if (fileOrResourceName.toLowerCase().indexOf(".mwp") != -1) {
+        if (fileOrResourceName.toLowerCase().contains(".mwp")) {
             throw ValidationException.invalidFileName(fileOrResourceName);
         }
         InputStream fileStream = null;

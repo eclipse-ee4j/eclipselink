@@ -1,7 +1,7 @@
 /*
- * Copyright (c) 2009, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2022 IBM Corporation. All rights reserved.
- * Copyright (c) 2009, 2022 Markus Karg, SAP. All rights reserved.
+ * Copyright (c) 2009, 2024 Markus Karg, SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,6 +17,14 @@
 // SAP AG      - finalized implementation (bug 327778)
 package org.eclipse.persistence.platform.database;
 
+import org.eclipse.persistence.expressions.ExpressionOperator;
+import org.eclipse.persistence.expressions.ListExpressionOperator;
+import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
+import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.queries.ValueReadQuery;
+import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
+
 import java.io.IOException;
 import java.io.Writer;
 import java.math.BigDecimal;
@@ -27,17 +35,9 @@ import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.List;
-
-import org.eclipse.persistence.expressions.ExpressionOperator;
-import org.eclipse.persistence.expressions.ListExpressionOperator;
-import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
-import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
-import org.eclipse.persistence.internal.helper.ClassConstants;
-import org.eclipse.persistence.internal.helper.DatabaseTable;
-import org.eclipse.persistence.queries.ValueReadQuery;
-import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
+import java.util.Map;
 
 /**
  * <b>Database Platform for SAP MaxDB.</b>
@@ -64,12 +64,12 @@ import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
  * <br>
  * <ul>
  * <li>The platform class must not be used with XA transactions - see bug 329773.</li>
- * <li>SetQueryTimeout or the hint "jakarta.persistence.query.timeout" do not work on MaxDB - see bug 326503.</li>
- * <li>The hint "jakarta.persistence.lock.timeout" has no effect with a positive value; a value of 0 is translated to NOWAIT.</li>
+ * <li>SetQueryTimeout or the hint {@code jakarta.persistence.query.timeout} do not work on MaxDB - see bug 326503.</li>
+ * <li>The hint {@code jakarta.persistence.lock.timeout} has no effect with a positive value; a value of 0 is translated to NOWAIT.</li>
  * <li>The maximum width of an index is 1024 bytes on MaxDB. This also limits the size of a primary key. Moreover the primary key of join tables must not exceed this limit either. As it is composed of the primary key of the two tables that are joined, the combined width of the PKs of these two tables must not exceed this limit. See bug bug 326968.</li>
  * <li>VARCHAR [UNICODE] columns do not preserve trailing spaces - see bug 327435.</li>
  * <li>VARCHAR BYTE columns do not preserve trailing 0 bytes.</li>
- * <li>The hint "jakarta.persistence.lock.timeout=0" (NOWAIT) has no effect when atempting to pessimistically lock an entity with inheritance type JOINED - see bug 326799.</li>
+ * <li>The hint {@code jakarta.persistence.lock.timeout=0} (NOWAIT) has no effect when atempting to pessimistically lock an entity with inheritance type JOINED - see bug 326799.</li>
  * <li>Pessimistic locking with lock scope EXTENDED should be used cautiously in the presence of foreign key constraints - see bug 327472.</li>
 
  * </ul>
@@ -83,13 +83,13 @@ import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
 @SuppressWarnings("serial")
 public final class MaxDBPlatform extends DatabasePlatform {
 
-    private static final FieldTypeDefinition FIELD_TYPE_DEFINITION_CLOB = new FieldTypeDefinition("LONG UNICODE", false);
+    private static final FieldDefinition.DatabaseType FIELD_TYPE_DEFINITION_CLOB = new FieldDefinition.DatabaseType("LONG UNICODE", false);
 
-    private static final FieldTypeDefinition FIELD_TYPE_DEFINITION_BLOB = new FieldTypeDefinition("LONG BYTE", false);
+    private static final FieldDefinition.DatabaseType FIELD_TYPE_DEFINITION_BLOB = new FieldDefinition.DatabaseType("LONG BYTE", false);
 
     /**
      * Maximum length of type VARCHAR UNICODE
-     *
+     * <p>
      * (<a href="http://maxdb.sap.com/doc/7_8/45/33337d9faf2b34e10000000a1553f7/content.htm">link</a>)
      */
     private static final int MAX_VARCHAR_UNICODE_LENGTH = 4000; //
@@ -115,33 +115,33 @@ public final class MaxDBPlatform extends DatabasePlatform {
     }
 
     @Override
-    protected Hashtable<Class<?>, FieldTypeDefinition> buildFieldTypes() {
-        final Hashtable<Class<?>, FieldTypeDefinition> fieldTypeMapping = new Hashtable<>();
-        fieldTypeMapping.put(Boolean.class, new FieldTypeDefinition("SMALLINT", false)); // TODO boolean
-        fieldTypeMapping.put(Number.class, new FieldTypeDefinition("DOUBLE PRECISION", false));
-        fieldTypeMapping.put(Short.class, new FieldTypeDefinition("SMALLINT", false));
-        fieldTypeMapping.put(Integer.class, new FieldTypeDefinition("INTEGER", false));
-        fieldTypeMapping.put(Long.class, new FieldTypeDefinition("FIXED", 19));
-        fieldTypeMapping.put(Float.class, new FieldTypeDefinition("FLOAT", false));
-        fieldTypeMapping.put(Double.class, new FieldTypeDefinition("DOUBLE PRECISION", false));
+    protected Map<Class<?>, FieldDefinition.DatabaseType> buildDatabaseTypes() {
+        final Map<Class<?>, FieldDefinition.DatabaseType> fieldTypeMapping = new HashMap<>();
+        fieldTypeMapping.put(Boolean.class, new FieldDefinition.DatabaseType("SMALLINT", false)); // TODO boolean
+        fieldTypeMapping.put(Number.class, new FieldDefinition.DatabaseType("DOUBLE PRECISION", false));
+        fieldTypeMapping.put(Short.class, new FieldDefinition.DatabaseType("SMALLINT", false));
+        fieldTypeMapping.put(Integer.class, new FieldDefinition.DatabaseType("INTEGER", false));
+        fieldTypeMapping.put(Long.class, new FieldDefinition.DatabaseType("FIXED", 19));
+        fieldTypeMapping.put(Float.class, new FieldDefinition.DatabaseType("FLOAT", false));
+        fieldTypeMapping.put(Double.class, new FieldDefinition.DatabaseType("DOUBLE PRECISION", false));
 
-        fieldTypeMapping.put(BigInteger.class, new FieldTypeDefinition("FIXED",19));
-        fieldTypeMapping.put(BigDecimal.class, new FieldTypeDefinition("FIXED", 38));
+        fieldTypeMapping.put(BigInteger.class, new FieldDefinition.DatabaseType("FIXED",19));
+        fieldTypeMapping.put(BigDecimal.class, new FieldDefinition.DatabaseType("FIXED", 38));
 
-        fieldTypeMapping.put(Character.class, new FieldTypeDefinition("CHAR", 1, "UNICODE"));
-        fieldTypeMapping.put(Character[].class, new FieldTypeDefinition("VARCHAR", 255, "UNICODE"));
-        fieldTypeMapping.put(char[].class, new FieldTypeDefinition("VARCHAR", 255, "UNICODE"));
-        fieldTypeMapping.put(String.class, new FieldTypeDefinition("VARCHAR", 255, "UNICODE"));
+        fieldTypeMapping.put(Character.class, new FieldDefinition.DatabaseType("CHAR", 1, "UNICODE"));
+        fieldTypeMapping.put(Character[].class, new FieldDefinition.DatabaseType("VARCHAR", 255, "UNICODE"));
+        fieldTypeMapping.put(char[].class, new FieldDefinition.DatabaseType("VARCHAR", 255, "UNICODE"));
+        fieldTypeMapping.put(String.class, new FieldDefinition.DatabaseType("VARCHAR", 255, "UNICODE"));
 
-        fieldTypeMapping.put(Byte.class, new FieldTypeDefinition("SMALLINT", false)); // can't be mapped to CHAR(1) BYTE as byte in java is signed
+        fieldTypeMapping.put(Byte.class, new FieldDefinition.DatabaseType("SMALLINT", false)); // can't be mapped to CHAR(1) BYTE as byte in java is signed
         fieldTypeMapping.put(Byte[].class, FIELD_TYPE_DEFINITION_BLOB);
         fieldTypeMapping.put(byte[].class, FIELD_TYPE_DEFINITION_BLOB);
         fieldTypeMapping.put(Blob.class, FIELD_TYPE_DEFINITION_BLOB);
         fieldTypeMapping.put(Clob.class, FIELD_TYPE_DEFINITION_CLOB);
 
-        fieldTypeMapping.put(Date.class, new FieldTypeDefinition("DATE", false));
-        fieldTypeMapping.put(Time.class, new FieldTypeDefinition("TIME", false));
-        fieldTypeMapping.put(Timestamp.class, new FieldTypeDefinition("TIMESTAMP", false));
+        fieldTypeMapping.put(Date.class, new FieldDefinition.DatabaseType("DATE", false));
+        fieldTypeMapping.put(Time.class, new FieldDefinition.DatabaseType("TIME", false));
+        fieldTypeMapping.put(Timestamp.class, new FieldDefinition.DatabaseType("TIMESTAMP", false));
         return fieldTypeMapping;
     }
 
@@ -150,15 +150,15 @@ public final class MaxDBPlatform extends DatabasePlatform {
         return false;
     }
 
-    @Override
     /**
      * EclipseLink does not support length dependent type mapping.
      * Map VARCHAR types with length > MAX_VARCHAR_UNICODE_LENGTH to LONG UNICODE (i.e clob); shorter types to VARCHAR (n) UNICODE
-     * See also bugs 317597, 317448
+     * See also bugs 317597, 202448
      */
-    protected void printFieldTypeSize(Writer writer, FieldDefinition field, FieldTypeDefinition fieldType) throws IOException {
-        String typeName = fieldType.getName();
-        if ("VARCHAR".equals(typeName) && "UNICODE".equals(fieldType.getTypesuffix())) {
+    @Override
+    public void printFieldTypeSize(Writer writer, FieldDefinition field, FieldDefinition.DatabaseType fieldType) throws IOException {
+        String typeName = fieldType.name();
+        if ("VARCHAR".equals(typeName) && "UNICODE".equals(fieldType.suffix())) {
             if (field.getSize() > MAX_VARCHAR_UNICODE_LENGTH) {
                 fieldType = FIELD_TYPE_DEFINITION_CLOB;
             }
@@ -166,8 +166,8 @@ public final class MaxDBPlatform extends DatabasePlatform {
 
 
         super.printFieldTypeSize(writer, field, fieldType);
-        if (fieldType.getTypesuffix() != null) {
-            writer.append(" " + fieldType.getTypesuffix());
+        if (fieldType.suffix() != null) {
+            writer.append(" " + fieldType.suffix());
         }
     }
 

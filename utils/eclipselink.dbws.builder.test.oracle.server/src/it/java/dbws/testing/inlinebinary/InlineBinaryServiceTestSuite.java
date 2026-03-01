@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,6 +34,7 @@ import static dbws.testing.inlinebinary.InlineBinaryBuilderTestSuite.CREATE_TABL
 import static dbws.testing.inlinebinary.InlineBinaryBuilderTestSuite.DROP_TABLE;
 import static dbws.testing.inlinebinary.InlineBinaryBuilderTestSuite.POPULATE_TABLE;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import static org.junit.Assert.assertTrue;
 
@@ -77,8 +78,8 @@ public class InlineBinaryServiceTestSuite extends DBWSTestSuite {
             runDdl(conn, CREATE_TABLE, ddlDebug);
             try {
                 Statement stmt = conn.createStatement();
-                for (int i = 0; i < POPULATE_TABLE.length; i++) {
-                    stmt.addBatch(POPULATE_TABLE[i]);
+                for (String s : POPULATE_TABLE) {
+                    stmt.addBatch(s);
                 }
                 stmt.executeBatch();
             } catch (SQLException e) {
@@ -108,7 +109,7 @@ public class InlineBinaryServiceTestSuite extends DBWSTestSuite {
             SOAPMessage response = sourceDispatch.invoke(request);
 
             NodeList elements = response.getSOAPBody().getElementsByTagName("b");
-            assertTrue("findAll failed:  wrong number of inline binary elements returned - expected [3] but was [" + elements.getLength() + "]", elements.getLength() == 3);
+            assertEquals("findAll failed:  wrong number of inline binary elements returned - expected [3] but was [" + elements.getLength() + "]", 3, elements.getLength());
 
             String inlineBinary = elements.item(0).getTextContent();
             assertTrue("findAll failed:  unexpected inline binary - expected [" + b0 + "] but was [" + inlineBinary + "]", (inlineBinary != null && inlineBinary.equals(b0)));
@@ -123,7 +124,7 @@ public class InlineBinaryServiceTestSuite extends DBWSTestSuite {
             request = createSOAPMessage(SOAP_FINDBYPK_REQUEST);
             response = sourceDispatch.invoke(request);
             elements = response.getSOAPBody().getElementsByTagName("b");
-            assertTrue("findByPk failed:  wrong number of inline binary elements returned - expected [1] but was [" + elements.getLength() + "]", elements.getLength() == 1);
+            assertEquals("findByPk failed:  wrong number of inline binary elements returned - expected [1] but was [" + elements.getLength() + "]", 1, elements.getLength());
 
             inlineBinary = elements.item(0).getTextContent();
             assertTrue("findByPk failed:  unexpected inline binary - expected [" + b1 + "] but was [" + inlineBinary + "]", (inlineBinary != null && inlineBinary.equals(b1)));

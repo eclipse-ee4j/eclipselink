@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,24 +28,23 @@ public class MyObject {
 
     @Override
     public String toString() {
-        String toString = "MyObject #" + hashCode() + " {";
+        StringBuilder toString = new StringBuilder("MyObject #" + hashCode() + " {");
 
         if (value != null) {
             for (int i = 0; i < value.length; i++) {
-                toString += value[i];
-                toString += (i == value.length - 1) ? "" : ", ";
+                toString.append(value[i]);
+                toString.append((i == value.length - 1) ? "" : ", ");
             }
 
-            toString += "}";
+            toString.append("}");
         }
 
-        return toString;
+        return toString.toString();
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof MyObject) {
-            MyObject myObj = (MyObject) obj;
+        if (obj instanceof MyObject myObj) {
             if (myObj.value == null && this.value != null) {
                 return false;
             }

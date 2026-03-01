@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,11 +15,14 @@
 package org.eclipse.persistence.internal.jpa.parsing;
 
 // Java imports
-import java.util.*;
 
 import org.eclipse.persistence.exceptions.JPQLException;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReportQuery;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * INTERNAL
@@ -49,7 +52,7 @@ public class ConstructorNode extends Node implements AliasableNode {
      */
     @Override
     public void applyToQuery(ObjectLevelReadQuery theQuery, GenerationContext context) {
-        if (theQuery instanceof ReportQuery) {
+        if (theQuery.isReportQuery()) {
             SelectGenerationContext selectContext = (SelectGenerationContext)context;
             ReportQuery reportQuery = (ReportQuery)theQuery;
             reportQuery.beginAddingConstructorArguments(

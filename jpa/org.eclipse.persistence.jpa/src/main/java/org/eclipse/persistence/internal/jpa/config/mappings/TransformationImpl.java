@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import org.eclipse.persistence.internal.jpa.config.transformers.ReadTransformerImpl;
 import org.eclipse.persistence.internal.jpa.config.transformers.WriteTransformerImpl;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.TransformationAccessor;
-import org.eclipse.persistence.internal.jpa.metadata.transformers.WriteTransformerMetadata;
 import org.eclipse.persistence.jpa.config.ReadTransformer;
 import org.eclipse.persistence.jpa.config.Transformation;
 import org.eclipse.persistence.jpa.config.WriteTransformer;
@@ -35,7 +34,7 @@ public class TransformationImpl extends AbstractDirectMappingImpl<Transformation
     public TransformationImpl() {
         super(new TransformationAccessor());
 
-        getMetadata().setWriteTransformers(new ArrayList<WriteTransformerMetadata>());
+        getMetadata().setWriteTransformers(new ArrayList<>());
     }
 
     @Override

@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2021 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,7 +15,6 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.helper;
 
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,7 +27,6 @@ import java.util.regex.PatternSyntaxException;
 
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.logging.SessionLog;
-
 
 /**
  * @author Mitesh Meswani
@@ -171,19 +169,25 @@ public class DBPlatformHelper {
      */
     private static InputStream openResourceInputStream(final String resourceName) throws IOException {
         return PrivilegedAccessHelper.callDoPrivilegedWithException(
-                () -> DBPlatformHelper.class.getModule().getResourceAsStream(resourceName),
+                () -> {
+                    InputStream inputStream = DBPlatformHelper.class.getModule().getResourceAsStream(resourceName);
+                    if (inputStream == null) {
+                        inputStream = DBPlatformHelper.class.getClassLoader().getResourceAsStream(resourceName);
+                    }
+                    return inputStream;
+                    },
                 (ex) -> (IOException) ex);
     }
 
     private static String[] validateLineForReturnAsKeyValueArray(String line) {
-        if (line == null || line.length() == 0) {
+        if (line == null || line.isEmpty()) {
             return null;
         }
         // trim leading AND trailing space
         line = line.trim();
 
         // check for comment and empty line
-        if (line.length() == 0 || line.startsWith("#")) {
+        if (line.isEmpty() || line.startsWith("#")) {
             return null;
         }
 

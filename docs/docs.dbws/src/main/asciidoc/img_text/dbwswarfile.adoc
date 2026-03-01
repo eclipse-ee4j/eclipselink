@@ -1,0 +1,32 @@
+:nofooter:
+This figure shows the typical contents of an EclipseLink DBWS
+service `.war` file.
+
+[source,oac_no_warn]
+----
+root of war file
+    \---web-inf
+    |
+    |   web.xml
+    |
+    +---classes
+    |   +---foo                               -- optional domain classes (typically not required)
+    |   |   \---bar                              
+    |   |           Address.class
+    |   |           Employee.class
+    |   |           PhoneNumber.class
+    |   |
+    |   +---META-INF
+    |   |       eclipselink-dbws.xml
+    |   |       eclipselink-dbws-or.xml
+    |   |       eclipselink-dbws-ox.xml
+    |   |       eclipselink-dbws-sessions.xml -- name can be overridden by <sessions-file> entry in eclipselink-dbws.xml
+    |   |
+    |   \---_dbws
+    |           DBWSProvider.class            -- auto-generated JAX-WS 2.0 Provider
+    |
+    \---wsdl
+            eclipselink-dbws-schema.xsd
+            eclipselink-dbws.wsdl
+            swaref.xsd
+----

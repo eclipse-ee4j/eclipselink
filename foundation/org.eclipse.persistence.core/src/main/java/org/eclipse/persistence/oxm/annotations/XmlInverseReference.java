@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,41 +21,41 @@ import java.lang.annotation.Target;
 
 /**
  * This annotation is used to map a back-pointer during the unmarshal operation.
- * When configuring an &#64;XmlInverseReference, the "mappedBy" attribute must
- * be set to the field on the reference class that maps to this field.  For
- * example:<br><br>
+ * When configuring an {@literal @XmlInverseReference}, the "<em>mappedBy</em>" attribute must
+ * be set to the field on the reference class that maps to this field.
  *
- * <code>
- * &nbsp;@XmlRootElement<br>
- * &nbsp;public class Employee {<br>
- * &nbsp;&nbsp;&nbsp;&nbsp;...<br>
- * &nbsp;&nbsp;&nbsp;&nbsp;@XmlElementWrapper(name="phone-numbers")<br>
- * &nbsp;&nbsp;&nbsp;&nbsp;@XmlElement(name="number")<br>
- * &nbsp;&nbsp;&nbsp;&nbsp;public List&lt;PhoneNumber&gt; phoneNumbers;<br>
- * &nbsp;&nbsp;&nbsp;&nbsp;...<br>
- * &nbsp;}<br><br>
+ * <p><b>Example:</b>
+ * {@snippet :
+ *  @XmlRootElement
+ *  public class Employee {
+ *      ...
+ *      @XmlElementWrapper(name="phone-numbers")
+ *      @XmlElement(name="number")
+ *      public List<PhoneNumber> phoneNumbers;
+ *      ...
+ *  }
  *
- * &nbsp;public class PhoneNumber {<br>
- * &nbsp;&nbsp;&nbsp;&nbsp;...<br>
- * &nbsp;&nbsp;&nbsp;&nbsp;@XmlInverseReference(mappedBy="phoneNumbers")<br>
- * &nbsp;&nbsp;&nbsp;&nbsp;public Employee owningEmployee;<br>
- * &nbsp;&nbsp;&nbsp;&nbsp;...<br>
- * &nbsp;}<br>
- * </code>
+ *  public class PhoneNumber {
+ *      ...
+ *      @XmlInverseReference(mappedBy="phoneNumbers")
+ *      public Employee owningEmployee;
+ *      ...
+ *  }
+ * }
  *
- * <p>By default using &#64;XmlInverseReference will make the property act the
- * same as &#64;XmlTransient for the marshal operation.  You can make the
- * property writeable by combining it will &#64;XmlElement.</p>
+ * <p>By default, using {@literal @XmlInverseReference} will make the property act the
+ * same as {@literal @XmlTransient} for the marshal operation. You can make the
+ * property writeable by combining it with {@literal @XmlElement}:</p>
 
- * <code>
- * &nbsp;public class PhoneNumber {<br>
- * &nbsp;&nbsp;&nbsp;&nbsp;...<br>
- * &nbsp;&nbsp;&nbsp;&nbsp;@XmlInverseReference(mappedBy="phoneNumbers")<br>
- * &nbsp;&nbsp;&nbsp;&nbsp;@XmlElement<br>
- * &nbsp;&nbsp;&nbsp;&nbsp;public Employee owningEmployee;<br>
- * &nbsp;&nbsp;&nbsp;&nbsp;...<br>
- * &nbsp;}<br>
- * </code>
+ * {@snippet :
+ *  public class PhoneNumber {
+ *     ...
+ *     @XmlInverseReference(mappedBy="phoneNumbers")
+ *     @XmlElement
+ *     public Employee owningEmployee;
+ *     ...
+ *  }
+ * }
  */
 @Target({ElementType.FIELD, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)

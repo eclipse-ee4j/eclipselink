@@ -1,0 +1,347 @@
+image:Elug_draft_icon.png[Image:Elug draft
+icon.png,title="Image:Elug draft icon.png"] *For the latest EclipseLink
+documentation, please see
+http://www.eclipse.org/eclipselink/documentation/*
+
+'''''
+
+*TOC*
+Special:Whatlinkshere_Introduction_to_Java_Persistence_API_(ELUG)[Related
+Topics]
+
+This section introduces concepts of Java Persistence API and provides
+general information on it.
+
+== What Is Java Persistence API?
+
+The Java Persistence API (JPA) is a lightweight framework for Java
+persistence (see
+link:Introduction_to_EclipseLink%20Application%20Development%20(ELUG)#Persisting_Objects[Persisting
+Objects]) based on Plain Old Java Object (POJO). JPA is a part of EJB
+3.0 and 3.1 specifications. JPA provides an object relational mapping
+approach that lets you declaratively define how to map Java objects to
+relational database tables in a standard, portable way. You can use this
+API to create, remove and query across lightweight Java objects within
+both an EJB 3.0/3.1-compliant container and a standard Java SE 5/6
+environment.
+
+For more information, see the following:
+
+* link:Introduction_to_EclipseLink%20Application%20Development%20(ELUG)#Considering_JPA_Entity_Architecture[Considering
+JPA Entity Architecture]
+* http://jcp.org/en/jsr/detail?id=220[JSR 220 EJB 3.0 with JPA 1.0
+specifications]
+* http://jcp.org/en/jsr/detail?id=317[JSR 317 EJB 3.1 with JPA 2.0
+specifications]
+
+== What Do You Need to Develop with JPA
+
+To start developing with JPA, you need the following:
+
+* link:#Relational_Database[Relational Database]
+* link:#Domain_Model_Classes[Domain Model Classes]
+* link:#persistence.xml_File[persistence.xml File]
+* link:#Object_Relational_Mapping_Metadata[Object Relational Mapping
+Metadata]
+* link:#Persistence_Provider[Persistence Provider]
+* link:#Persistence_Application_Code[Persistence Application Code]
+
+=== Relational Database
+
+To develop your applications with JPA, you can use any relational
+database.
+
+=== Domain Model Classes
+
+Your domain model should consist of classes representing
+entities–lightweight persistent domain objects. The easiest way to
+define an entity class is by using the `+@Entity+` annotation (see
+link:Introduction%20to%20EclipseLink%20JPA%20(ELUG)#Using_Metadata_Annotations[Using
+Metadata Annotations]), as the following example shows:
+
+[source,java]
+----
+ @Entity
+ public class Employee implements Serializable {
+    private static final long serialVersionUID = -8865917134914502125L;
+ ...
+ }
+----
+
+For more information on entities, see the following:
+
+* Section 2.1 "`Requirements on the Entity Class`" of the
+http://jcp.org/en/jsr/detail?id=220[JPA Specification]
+* Section 8.1 "`Entity`" of the http://jcp.org/en/jsr/detail?id=220[JPA
+Specification]
+* link:Introduction_to_EclipseLink%20Application%20Development%20(ELUG)#Considering_JPA_Entity_Architecture[Considering
+JPA Entity Architecture]
+* link:Introduction%20to%20EclipseLink%20JPA%20(ELUG)#Configuring_an_Entity[Configuring
+an Entity]
+
+=== persistence.xml File
+
+Use the `+persistence.xml+` file to package your entities.
+
+For more information and examples, see the following:
+
+* Section 6.2.1 "`persistence.xml file`" of the
+http://jcp.org/en/jsr/detail?id=220[JPA Specification]
+* link:Using_EclipseLink_JPA_Extensions_(ELUG)#What_You_May_Need_to_Know_About_Using_EclipseLink_JPA_Persistence_Unit_Properties[What
+You May Need to Know About Using EclipseLink JPA Persistence Unit
+Properties]
+
+=== Object Relational Mapping Metadata
+
+Object relational mapping metadata specifies the mapping of your domain
+model classes to the database.
+
+You can express this metadata in the form of annotations and/or XML.
+
+==== Metadata Annotations and ORM.xml File
+
+A metadata annotation represents a Java language feature that lets you
+attach structured and typed metadata to the source code. Annotations
+alone are sufficient for the metadata specification–you do not need to
+use XML. Annotations for object relational mapping are in the
+`+javax.persistence+` package. For more information and examples, see
+Chapter 8 "`Metadata Annotations`" of the
+http://jcp.org/en/jsr/detail?id=220[JPA Specification]
+
+An object relational mapping XML file is optional. If you choose to
+provide one, then it should contain mapping information for the classes
+listed in it. The persistence provider loads an `+orm.xml+` file (or
+other mapping file) as a resource. If you provide a mapping file, the
+classes and mapping information specified in the mapping file will be
+used. For more information and examples, see the following:
+
+* link:Introduction%20to%20EclipseLink%20JPA%20(ELUG)#Using_XML[Using
+XML]
+* Section 6.2.1.6 "`mapping-file, jar-file, class,
+exclude-unlisted-classes`" of the
+http://jcp.org/en/jsr/detail?id=220[JPA Specification]
+
+==== Overriding Annotations with XML
+
+XML mapping metadata may combine with and override annotation metadata.
+For more information and examples, see the following:
+
+* Section 10.1 "`XML Overriding Rules`" of the
+http://jcp.org/en/jsr/detail?id=220[JPA Specification]
+* link:Using%20EclipseLink%20JPA%20Extensions%20(ELUG)#Overriding_Annotations_with_XML[Overriding
+Annotations with XML]
+
+===== Advantages and Disadvantages of Using Annotations
+
+Metadata annotations are relatively simple to use and understand. They
+provide in-line metadata located with the code that this metadata is
+describing–you do not need to replicate the source code context of where
+the metadata applies.
+
+On the other hand, annotations unnecessarily couple the metadata to the
+code. Thus, changes to metadata require changing the source code.
+
+===== Advantages and Disadvantages of Using XML
+
+The following are advantages of using XML:
+
+* no coupling between the metadata and the source code;
+* compliance with the existing, pre-EJB 3.0 development process;
+* support in IDEs and source control systems;
+
+The main disadvantages of mapping with XML are the complexity and the
+need for replication of the code context.
+
+=== Persistence Provider
+
+The persistence provider supplies the implementation of the JPA
+specification.
+
+The persistence provider handles the object relational mapping of the
+relationships, including their loading and storing to the database (as
+specified in the metadata of the entity class), and the referential
+integrity of the relationships (as specified in the database).
+
+For example, the EclipseLink persistence provider ensures that
+relational descriptors are created for annotated objects, as well as
+mappings are created based on annotations.
+
+=== Persistence Application Code
+
+To manage entities (see link:#Domain_Model_Classes[Domain Model
+Classes]) in your persistence application, you need to obtain an entity
+manager from an `+EntityManagerFactory+`. How you get the entity manager
+and its factory largely depends on the Java environment in which you are
+developing your application.
+
+==== Container-Managed Entity Manager
+
+In the Java EE environment, you acquire an entity manager by injecting
+it using the `+@PersistenceContext+` annotation (dependency injection),
+as the link:#Example_17-1[Obtaining an Entity Manager Through Dependency
+Injection] example shows, or using a direct lookup of the entity manager
+in the JNDI namespace, as the link:#Example_17-2[Performing JNDI Lookup
+of an Entity Manager] example shows.
+
+===== Example 17-1
+
+[#'Example 17-1]## *_Obtaining an Entity Manager Through Dependency
+Injection_*
+
+[source,java]
+----
+ @PersistenceContext
+ public EntityManager em;
+----
+
+[width="100%",cols="<100%",]
+|===
+|*Note:* You can only use the `+@PersistenceContext+` annotation
+injection on session beans, servlets and JSP.
+|===
+
+===== Example 17-2
+
+[#Example 17-2]## *_Performing JNDI Lookup of an Entity Manager_*
+
+[source,java]
+----
+ @Stateless
+ @PersistenceContext(name="ProjectEM", unitName="Project")
+ public class ProjectSessionBean implements Project {
+     @Resource
+     SessionContext ctx;
+
+     public void makeCurrent() {
+         try {
+            EntityManager em = (EntityManager)ctx.lookup("ProjectEM");
+            ...
+     }
+ }
+----
+
+See the following
+http://dev.eclipse.org/mhonarc/lists/eclipselink-users/msg04632.html[EclipseLink
+post] for concurrency issues when using an EntityManager directly on a
+servlet outside of a function local variable instead of a Statelss
+session bean.
+
+The container would manage the life cycle of this entity manager–your
+application does not have to create it or close it.
+
+For more information and examples, see the following sections of the
+http://jcp.org/en/jsr/detail?id=220[JPA Specification]:
+
+* Section 3.1 "`EntityManager`"
+* Section 5.2.1 "`Obtaining an Entity Manager in the Java EE
+Environment`"
+* Section 5.3.1 "`Obtaining an Entity Manager Factory in a Java EE
+Container`"
+
+==== Application-Managed Entity Manager
+
+In the Java SE environment, not the container but the application
+manages the life cycle of an entity manager. You would create this
+entity manager using the `+EntityManagerFactory+`’s method
+`+createEntityManager+`. You have to use the
+`+javax.persistence.Persistence+` class to bootstrap an
+`+EntityManagerFactory+` instance, as this example shows:
+
+[#Example 17-3]## *_Application-Managed Entity Manager in the Java SE
+Environment_*
+
+[source,java]
+----
+ public class Employee {
+
+     public static void main(String[] args) {
+         EntityManagerFactory emf =
+             Persistence.createEntityManagerFactory("EmpService");
+         EntityManager em = emf.createEntityManager();
+     ...
+         em.close();
+         emf.close();
+ }
+----
+
+Notice that you need to explicitly close the entity manager and the
+factory.
+
+In the Java EE environment, you can use the application-managed entity
+managers as well. You would create it using the `+@PersistenceUnit+`
+annotation to declare a reference to the `+EntityManagerFactory+` for a
+persistence unit, as the following example shows:
+
+[source,java]
+----
+ @PersistenceUnit
+ EntityManagerFactory emf;
+----
+
+[width="100%",cols="<100%",]
+|===
+|*Note:* You can only use the `+@PersistenceContext+` annotation
+injection on session beans, servlets and JSP.
+|===
+
+For more information and examples, see the following sections of the
+http://jcp.org/en/jsr/detail?id=220[JPA Specification]:
+
+* Section 5.2.2 "`Obtaining an Application-managed Entity Manager`"
+* Section 5.3.2 "`Obtaining an Entity Manager Factory in a Java SE
+Environment`"
+
+==== Transaction Management
+
+Transactions define when new, changed or removed entities are
+synchronized to the database.
+
+JPA supports the following two types of transaction management:
+
+* link:#JTA_Transaction_Management[JTA Transaction Management]
+* link:#Resource-Local_Transactions[Resource-Local Transactions]
+
+Container-managed entity managers always use JTA transactions.
+Application-managed entity managers may use JTA or resource-local
+transactions. The default transaction type for Java EE application is
+JTA.
+
+You define the transaction type for a persistence unit and configure it
+using the `+persistence.xml+` file (see
+link:#persistence.xml_File[persistence.xml File]).
+
+For more information, see Section 5.5 "`Controlling Transactions`" of
+the http://jcp.org/en/jsr/detail?id=220[JPA Specification].
+
+===== JTA Transaction Management
+
+JTA transactions are the transactions of the Java EE server.
+
+As section 5.5.1 "`JTA Entity Managers`" of the
+http://jcp.org/en/jsr/detail?id=220[JPA Specification] defines, "`An
+entity manager whose transactions are controlled through JTA is a JTA
+entity manager. A JTA entity manager participates in the current JTA
+transaction, which is begun and committed external to the entity manager
+and propagated to the underlying resource manager.`"
+
+===== Resource-Local Transactions
+
+Resource-local transactions are the native transactions of the JDBC
+drivers that are referenced by a persistence unit. Your application
+explicitly controls these transactions. Your application interacts with
+the resource-local transactions by acquiring an implementation of the
+`+EntityTransaction+` interface from the entity manager.
+
+For more information and examples, see the following sections of the
+http://jcp.org/en/jsr/detail?id=220[JPA Specification].
+
+* Section 5.5.2 "`Resource-local Entity Managers`"
+* Section 5.5.2.1 "`The EntityTransaction Interface`"
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Release_1[Category: Release 1] Category:_Concept[Category:
+Concept] Category:_JPA[Category: JPA]

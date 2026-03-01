@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -57,7 +57,7 @@ public interface MetadataSource {
      * unit is reloaded to allow customization of the persistence unit above and
      * beyond what is packaged in the persistence.xml and what is code into the
      * application.
-     *
+     * <p>
      * <b>IMPORTANT</b>: This method is called during the predeploy stage
      * that is used both for weaving and runtime EMF deployment.  Runtime
      * properties might not be available during weaving, and mapping options

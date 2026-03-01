@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -196,24 +197,10 @@ public final class ExpressionTools {
      */
     public static boolean isJavaEscapedCharacter(char character) {
 
-        switch (character) {
-            case '\b':
-            case '\t':
-            case '\n':
-            case '\f':
-            case '\r':
-            case '\"':
-            case '\\':
-            case '\0':
-            case '\1':
-            case '\2':
-            case '\3':
-            case '\4':
-            case '\5':
-            case '\6':
-            case '\7': return true;
-            default:   return false;
-        }
+        return switch (character) {
+            case '\b', '\t', '\n', '\f', '\r', '\"', '\\', '\0', '\1', '\2', '\3', '\4', '\5', '\6', '\7' -> true;
+            default -> false;
+        };
     }
 
     /**
@@ -237,6 +224,17 @@ public final class ExpressionTools {
     public static boolean isQuote(char character) {
         return character == '\'' ||
                character == '\"';
+    }
+
+    /**
+     * Determines whether the given character is whitespace. Supports non-breaking space characters
+     *
+     * @param character The character to check if it's whitespace
+     * @return <code>true</code> if the given character is either whitespace or non-breaking space; <code>false</code> otherwise
+     */
+    public static boolean isWhiteSpace(char character) {
+        return Character.isWhitespace(character) ||
+               Character.isSpaceChar(character);
     }
 
     /**
@@ -292,8 +290,8 @@ public final class ExpressionTools {
             char character1 = Character.toUpperCase(query1.charAt(index1));
             char character2 = Character.toUpperCase(query2.charAt(index2));
 
-            boolean whitespace1 = Character.isWhitespace(character1);
-            boolean whitespace2 = Character.isWhitespace(character2);
+            boolean whitespace1 = ExpressionTools.isWhiteSpace(character1);
+            boolean whitespace2 = ExpressionTools.isWhiteSpace(character2);
 
             if (character1 != character2) {
 
@@ -396,7 +394,7 @@ public final class ExpressionTools {
      */
     public static void repositionJava(CharSequence query, int[] positions) {
 
-        if ((query == null) || (query.length() == 0)) {
+        if ((query == null) || (query.isEmpty())) {
             return;
         }
 
@@ -454,12 +452,12 @@ public final class ExpressionTools {
      */
     public static boolean stringIsEmpty(CharSequence text) {
 
-        if ((text == null) || (text.length() == 0)) {
+        if ((text == null) || (text.isEmpty())) {
             return true;
         }
 
         for (int i = text.length(); i-- > 0;) {
-            if (!Character.isWhitespace(text.charAt(i))) {
+            if (!ExpressionTools.isWhiteSpace(text.charAt(i))) {
                 return false;
             }
         }
@@ -644,7 +642,7 @@ public final class ExpressionTools {
     public static String unquote(String text) {
 
         // Nothing to unquote
-        if ((text == null) || (text.length() == 0)) {
+        if ((text == null) || (text.isEmpty())) {
             return text;
         }
 

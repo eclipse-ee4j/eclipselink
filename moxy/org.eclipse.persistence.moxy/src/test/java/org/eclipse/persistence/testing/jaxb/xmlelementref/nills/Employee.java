@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -12,8 +12,6 @@
 
 package org.eclipse.persistence.testing.jaxb.xmlelementref.nills;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -37,20 +35,18 @@ public class Employee {
 
         @Override
         public boolean equals(Object obj) {
-            if (!(obj instanceof Task)) {
+            if (!(obj instanceof Task t)) {
                 return false;
             }
-            Task t = (Task) obj;
             return t.id.equals(this.id);
         }
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof Employee)) {
+        if (!(obj instanceof Employee e)) {
             return false;
         }
-        Employee e = (Employee) obj;
         if (!isEqual(e.address, this.address)) {
             return false;
         }

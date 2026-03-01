@@ -126,7 +126,7 @@ public class TestNestedEmbeddable {
     }
 
     @Test
-    public void JPQLNestedEmbeddableTests() {
+    public void JPQLNestedEmbeddableSelectTests() {
         EntityManager em = emf2.createEntityManager();
         try {
             // Test to make sure that moving around the dot notation for nested embeddables is valid and doesn't change the query
@@ -141,6 +141,63 @@ public class TestNestedEmbeddable {
             queryEmbed.getResultList();
             Assert.assertEquals(1, _sql.size());
             Assert.assertEquals("SELECT CITY FROM SPECEMPLOYEE WHERE (ZIPCODE = ?)", _sql.remove(0));
+        } finally {
+            if (em.isOpen()) {
+                em.close();
+            }
+        }
+    }
+
+    @Test
+    public void JPQLNestedEmbeddableUpdateTest() {
+        if (emf == null)
+            return;
+        EntityManager em = emf.createEntityManager();
+        try {
+            //Prepare data for a test
+            em.getTransaction().begin();
+            Order o = new Order();
+
+            String billingZip = "6789";
+            String shippingZip ="9876";
+
+            OrderPK opk = new OrderPK();
+            opk.setBillingAddress(new Address(new Zipcode(billingZip)));
+            opk.setShippingAddress(new Address(new Zipcode(shippingZip)));
+
+            o.setId(opk);
+
+            em.persist(o);
+            em.getTransaction().commit();
+            em.clear();
+
+            Order foundOrder = em.find(Order.class, o.getId());
+            Assert.assertNotNull(foundOrder);
+
+            em.getTransaction().begin();
+
+            String newBillingZip = "1111";
+            String newShippingZip ="2222";
+
+            OrderPK opkNew = new OrderPK();
+            opkNew.setBillingAddress(new Address(new Zipcode(newBillingZip)));
+            opkNew.setShippingAddress(new Address(new Zipcode(newShippingZip)));
+            //Tests nested Embedables as JPQL parameter in UPDATE query
+            int updatedCount = em.createQuery("UPDATE Order o SET o.id = :newId WHERE o.id = :id")
+                    .setParameter("newId", opkNew)
+                    .setParameter("id", foundOrder.getId())
+                    .executeUpdate();
+            Assert.assertEquals(1, updatedCount);
+            em.getTransaction().commit();
+            em.clear();
+
+            //Tests nested Embedables as JPQL parameter in SELECT query
+            Order orderResult = em.createQuery("SELECT o FROM Order o WHERE o.id = :newId", Order.class)
+                    .setParameter("newId", opkNew)
+                    .getSingleResult();
+            Assert.assertNotNull(orderResult);
+            Assert.assertEquals(opkNew, orderResult.getId());
+
         } finally {
             if (em.isOpen()) {
                 em.close();

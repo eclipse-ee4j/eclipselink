@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -81,6 +81,6 @@ public class CciJMSSendInteractionSpec extends CciJMSInteractionSpec {
      * @return true if a replyTo destination URL has been specified, false otherwise
      */
     public boolean hasReplyToDestinationURL() {
-        return (replyToDestinationURL != null) && (replyToDestinationURL.length() > 0);
+        return (replyToDestinationURL != null) && (!replyToDestinationURL.isEmpty());
     }
 }

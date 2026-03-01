@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -59,7 +59,6 @@ import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -347,7 +346,7 @@ public class EntityMappingsInheritedJUnitTestCase extends JUnitTestCase {
 
             Record record2 = new Record();
             record2.setDescription("Most beers consumed in a second - 5");
-            record2.setDate(Helper.dateFromYearMonthDate(2005, 12, 12));
+            record2.setDate(Helper.dateFromYearMonthDate(2005, 11, 12));
             record2.setLocation(new Location("Miami", "USA"));
             beerConsumer.getRecords().add(record2);
 
@@ -738,8 +737,7 @@ public class EntityMappingsInheritedJUnitTestCase extends JUnitTestCase {
             BeerConsumer cm = em.find(BeerConsumer.class, beerConsumerId);
             Collection<TelephoneNumber> phones = cm.getTelephoneNumbers().values();
             assertEquals("Wrong phonenumbers associated with BeerConsumer", 2, phones.size());
-            for (Iterator<TelephoneNumber> iterator = phones.iterator(); iterator.hasNext();){
-                    TelephoneNumber phone = iterator.next();
+            for (TelephoneNumber phone : phones) {
                 assertSame("Wrong owner of the telephone", phone.getBeerConsumer().getId(), beerConsumerId);
             }
 

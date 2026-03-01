@@ -84,8 +84,7 @@ public class EntityManagerHelper {
                 final EntityManagerFactory emf = serverPlatform.getEntityManagerFactory(puName);
                 return emf.createEntityManager(emProperties);
             } else {
-                LOG.log(SessionLog.WARNING, String.format(
-                        "ServerPlatform is unknown, using default EntityManagerFactory to create EntityManager"));
+                LOG.log(SessionLog.WARNING, "ServerPlatform is unknown, using default EntityManagerFactory to create EntityManager");
                 return JUnitTestCase.getEntityManagerFactory(puName, emProperties, descriptors)
                         .createEntityManager(null, emProperties);            }
         } else {

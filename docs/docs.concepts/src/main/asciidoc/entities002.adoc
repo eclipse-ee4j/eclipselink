@@ -1,0 +1,43 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[ENTITIES002]]
+=== Entities and Persistent Identity
+
+Every entity must have a persistent identity, which is an equivalent of
+a primary key in a database table that stores the entity state.
+
+By default, the EclipseLink persistence provider assumes that each
+entity has at least one field or property that serves as a primary key.
+
+You can generate and/or configure the identity of your entities by using
+the following annotations:
+
+* `@Id`
+* `@IdClass`
+* `@EmbeddedId`
+* `@GeneratedValue`
+* `@TableGenerator`
+* `@SequenceGenerator`
+* `@UuidGenerator`
+
+You can also use these annotations to fine-tune how your database
+maintains the identity of your entities. For more information on these
+annotations, see http://jcp.org/en/jsr/detail?id=338["Metadata for
+Object/Relational Mapping" in the JPA Specification].
+
+`http://jcp.org/en/jsr/detail?id=338`

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,13 +15,9 @@
 package org.eclipse.persistence.oxm.mappings;
 
 import jakarta.activation.DataHandler;
-
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.exceptions.XMLMarshalException;
-import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.oxm.exceptions.XMLMarshalException;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.oxm.XMLBinaryDataHelper;
@@ -44,6 +40,8 @@ import org.eclipse.persistence.oxm.record.DOMRecord;
 import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.eclipse.persistence.sessions.Session;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 /**
  * <p><b>Purpose:</b>Provide a mapping for binary data that can be treated as either inline or as
@@ -222,9 +220,9 @@ public class XMLBinaryDataMapping extends XMLDirectMapping implements BinaryData
                     namespaceUri = domRecord.getDOM().getNamespaceURI();
                 }
             }
-            if ((getAttributeClassification() == ClassConstants.ABYTE) || (getAttributeClassification() == ClassConstants.APBYTE)) {
-                if (getAttributeClassification() == ClassConstants.ABYTE) {
-                    attributeValue = session.getDatasourcePlatform().getConversionManager().convertObject(attributeValue, ClassConstants.APBYTE);
+            if ((getAttributeClassification() == CoreClassConstants.ABYTE) || (getAttributeClassification() == CoreClassConstants.APBYTE)) {
+                if (getAttributeClassification() == CoreClassConstants.ABYTE) {
+                    attributeValue = session.getDatasourcePlatform().getConversionManager().convertObject(attributeValue, CoreClassConstants.APBYTE);
                 }
                 bytes = (byte[])attributeValue;
                 c_id = marshaller.getAttachmentMarshaller().addMtomAttachment(//
@@ -338,7 +336,7 @@ public class XMLBinaryDataMapping extends XMLDirectMapping implements BinaryData
             }
             textField.setNamespaceResolver(field.getNamespaceResolver());
             textField.setSchemaType(field.getSchemaType());
-            if ((getAttributeClassification() == ClassConstants.ABYTE) || (getAttributeClassification() == ClassConstants.APBYTE)) {
+            if ((getAttributeClassification() == CoreClassConstants.ABYTE) || (getAttributeClassification() == CoreClassConstants.APBYTE)) {
                 record.put(textField, attributeValue);
             } else {
                 byte[] bytes = XMLBinaryDataHelper.getXMLBinaryDataHelper().getBytesForBinaryValue(//
@@ -402,7 +400,7 @@ public class XMLBinaryDataMapping extends XMLDirectMapping implements BinaryData
                 field.setNamespaceResolver(tempResolver);
                 String includeValue = (String) record.get(field);
                 if (includeValue != null) {
-                    if ((getAttributeClassification() == ClassConstants.ABYTE) || (getAttributeClassification() == ClassConstants.APBYTE)) {
+                    if ((getAttributeClassification() == CoreClassConstants.ABYTE) || (getAttributeClassification() == CoreClassConstants.APBYTE)) {
                         fieldValue = unmarshaller.getAttachmentUnmarshaller().getAttachmentAsByteArray(includeValue);
                     } else {
                         fieldValue = unmarshaller.getAttachmentUnmarshaller().getAttachmentAsDataHandler(includeValue);

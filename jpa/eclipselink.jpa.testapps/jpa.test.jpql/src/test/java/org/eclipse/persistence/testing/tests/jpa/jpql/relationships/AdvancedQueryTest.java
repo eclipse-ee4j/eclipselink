@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2022 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -82,6 +82,9 @@ public class AdvancedQueryTest extends JUnitTestCase {
         suite.addTest(new AdvancedQueryTest("testMapJoinFetching"));
         suite.addTest(new AdvancedQueryTest("testLoadGroup"));
         suite.addTest(new AdvancedQueryTest("testConcurrentLoadGroup"));
+        suite.addTest(new AdvancedQueryTest("testSelectOnNames"));
+        suite.addTest(new AdvancedQueryTest("testSelectOnRecipientInfo"));
+        suite.addTest(new AdvancedQueryTest("testSelectOnEmbeddable"));
         suite.addTest(new AdvancedQueryTest("testTearDown"));
         return suite;
     }
@@ -179,7 +182,7 @@ public class AdvancedQueryTest extends JUnitTestCase {
             for (Customer customer : results) {
                 customer.getCSInteractions().size();
             }
-            if (counter.getSqlStatements().size() > 0) {
+            if (!counter.getSqlStatements().isEmpty()) {
                 fail("Load group should have loaded attributes.");
             }
             clearCache();
@@ -215,7 +218,7 @@ public class AdvancedQueryTest extends JUnitTestCase {
             for (Customer customer : results) {
                 customer.getCSInteractions().size();
             }
-            if (counter.getSqlStatements().size() > 0) {
+            if (!counter.getSqlStatements().isEmpty()) {
                 fail("Load group should have loaded attributes.");
             }
             clearCache();
@@ -267,6 +270,42 @@ public class AdvancedQueryTest extends JUnitTestCase {
             if (counter != null) {
                 counter.remove();
             }
+        }
+    }
+
+    // Issue #2414 test: IS NOT EMPTY on @ElementCollection of @Entity class
+    public void testSelectOnNames() {
+        EntityManager em = createEntityManager();
+        try {
+            List<?> result = em.createQuery("SELECT o FROM ShippingAddress o WHERE (o.names IS NOT EMPTY)")
+                    .getResultList();
+            assertEquals(1, result.size());
+        } finally {
+            closeEntityManager(em);
+        }
+    }
+
+    // Issue #2414 test: IS NOT EMPTY on @ElementCollection of @Embeddable class with single value (String in this case)
+    public void testSelectOnRecipientInfo() {
+        EntityManager em = createEntityManager();
+        try {
+            List<?> result = em.createQuery("SELECT o FROM ShippingAddress o WHERE (o.streetAddress.recipientInfo IS NOT EMPTY)")
+                    .getResultList();
+            assertEquals(1, result.size());
+        } finally {
+            closeEntityManager(em);
+        }
+    }
+
+    // Issue #2477 test: IS NOT EMPTY on @ElementCollection of @Embeddable class with multiple attributes
+    public void testSelectOnEmbeddable() {
+        EntityManager em = createEntityManager();
+        try {
+            List<?> result = em.createQuery("SELECT o FROM ShippingAddress o WHERE (o.alternateAddresses IS NOT EMPTY)")
+                    .getResultList();
+            assertEquals(1, result.size());
+        } finally {
+            closeEntityManager(em);
         }
     }
 }

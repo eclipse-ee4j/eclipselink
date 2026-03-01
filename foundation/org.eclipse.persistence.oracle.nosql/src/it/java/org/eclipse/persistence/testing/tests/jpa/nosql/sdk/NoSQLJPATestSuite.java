@@ -24,7 +24,8 @@ import org.junit.runners.Suite.SuiteClasses;
 @RunWith(Suite.class)
 @SuiteClasses({
     NoSQLJPATest.class,
-    NoSQLJPAMappedTest.class
+    NoSQLJPAMappedTest.class,
+    NoSQLJPADataTypesTest.class
 })
 public class NoSQLJPATestSuite {
 

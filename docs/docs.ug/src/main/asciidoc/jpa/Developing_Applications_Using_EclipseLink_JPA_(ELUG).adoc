@@ -1,0 +1,962 @@
+image:Elug_draft_icon.png[Image:Elug draft
+icon.png,title="Image:Elug draft icon.png"] *For the latest EclipseLink
+documentation, please see
+http://www.eclipse.org/eclipselink/documentation/*
+
+'''''
+
+*TOC*
+Special:Whatlinkshere_Developing_Applications_Using_EclipseLink_JPA_(ELUG)[Related
+Topics]
+
+== Using Application Components
+
+When developing an application with EclipseLink JPA, you need to know
+how to use the following application components:
+
+* link:#How_to_Obtain_an_Entity_Manager_Factory[Entity manager factory]
+* link:#How_to_Obtain_an_Entity_Manager[Entity manager]
+* link:#How_to_Use_a_Persistence_Context[Persistence context]
+
+=== How to Obtain an Entity Manager Factory
+
+How you obtain the entity manager factory depends on the Java
+environment in which you are developing your application:
+
+* link:#Obtaining_an_Entity_Manager_Factory_in_Java_EE_Application_Server_Environment[Obtaining
+an Entity Manager Factory in Java EE Application Server Environment]
+* link:#Obtaining_an_Entity_Manager_Factory_in_Java_SE_Environment[Obtaining
+an Entity Manager Factory in Java SE Environment]
+
+==== Obtaining an Entity Manager Factory in Java EE Application Server Environment
+
+You can inject an entity manager factory using the `+@PersistenceUnit+`
+annotation, as the following example shows, or you can obtain it through
+JNDI lookup. You may choose to specify the `+unitName+` element to
+designate the persistence unit whose factory you are using.
+
+`+@PersistenceUnit+` `+EntityManagerFactory emf;+`
+
+For more information, see the following:
+
+* Section 8.4.2 "`PersistenceUnit Annotation`" of the
+http://jcp.org/en/jsr/detail?id=220[JPA Specification]
+* Section 5.3.1 "`Obtaining an Entity Manager Factory in a Java EE
+Container`" of the http://jcp.org/en/jsr/detail?id=220[JPA
+Specification]
+* link:Introduction%20to%20Java%20Persistence%20API%20(ELUG)#Container-Managed_Entity_Manager[Container-Managed
+Entity Manager]
+
+==== Obtaining an Entity Manager Factory in Java SE Environment
+
+In Java SE environment, use the `+javax.persistence.Persistence+`
+bootstrap class to get access to an entity manager factory. In your
+application, create an entity manager factory by calling the
+`+javax.persistence.Persistence+` class’ `+createEntityManagerFactory+`
+method (see Section 7.2.1 "`javax.persistence.Persistence Class`" of the
+http://jcp.org/en/jsr/detail?id=220[JPA Specification]), as the
+following example shows:
+
+[source,java]
+----
+ EntityManagerFactory emf = javax.persistence.Persistence.createEntityManagerFactory("Order");
+ EntityManager em = emf.createEntityManager();
+----
+
+For more information, see the following:
+
+* Section 7.2.1 "`javax.persistence.Persistence Class`" of the
+http://jcp.org/en/jsr/detail?id=220[JPA Specification]
+* Section 5.3.2 "`Obtaining an Entity Manager Factory in a Java SE
+Container`" of the http://jcp.org/en/jsr/detail?id=220[JPA
+Specification]
+* link:Introduction%20to%20Java%20Persistence%20API%20(ELUG)#Application-Managed_Entity_Manager[Application-Managed
+Entity Manager]
+
+=== How to Obtain an Entity Manager
+
+All entity managers come from factories of type
+`+EntityManagerFactory+`. The configuration for an entity manager is
+bound to the `+EntityManagerFactory+` that created it, but it is defined
+separately as a persistence unit. A persistence unit dictates either
+implicitly or explicitly the settings and entity classes used by all
+entity managers obtained from the unique `+EntityManagerFactory+`
+instance bound to that persistence unit. There is, therefore, a
+one-to-one correspondence between a persistence unit and its concrete
+`+EntityManagerFactory+`.Persistence units are named to allow
+differentiation of one `+EntityManagerFactory+` from another. This gives
+the application control over which configuration or persistence unit is
+to be used for operating on a particular entity.
+
+How you obtain the entity manager and its factory depends on the Java
+environment in which you are developing your application:
+
+* link:#Obtaining_an_Entity_Manager_in_Java_EE_Application_Server_Environment[Obtaining
+an Entity Manager in Java EE Application Server Environment]
+* link:#Obtaining_an_Entity_Manager_in_Java_SE_Environment[Obtaining an
+Entity Manager in Java SE Environment]
+
+==== Obtaining an Entity Manager in Java EE Application Server Environment
+
+In the Java EE environment, you can inject an entity manager using the
+`+@PersistenceContext+` annotation, as the following example shows, or
+you can obtain it through a direct JNDI lookup. You may choose to
+specify the `+unitName+` element of the `+@PersistenceContext+`
+annotation to designate the persistence unit whose factory the container
+is using (see Section 8.4.2 "`PersistenceUnit Annotation`" of the
+http://jcp.org/en/jsr/detail?id=220[JPA Specification]). You can also
+specify the `+type+` element to indicate whether a transaction-scoped
+(default) or extended persistence context is to be used (see Section 5.6
+"`Container-managed Persistence Contexts`" of the
+http://jcp.org/en/jsr/detail?id=220[JPA Specification]).
+
+[source,java]
+----
+ @PersistenceContext
+ EntityManager em;
+
+ @PersistenceContext(type=PersistenceContextType.EXTENDED)
+ EntityManager orderEM;
+----
+
+The container manages the life cycle of the persistence context, as well
+as the creation and closing of the entity manager–your application does
+not have to be involved in this process.
+
+For more information, see the following:
+
+* Section 8.4.2 "`PersistenceUnit Annotation`" of the
+http://jcp.org/en/jsr/detail?id=220[JPA Specification]
+* Section 5.6 "`Container-managed Persistence Contexts`" of the
+http://jcp.org/en/jsr/detail?id=220[JPA Specification]
+* Section 5.2.1 "`Obtaining an Entity Manager in a Java EE Container`"
+of the http://jcp.org/en/jsr/detail?id=220[JPA Specification]
+* link:Introduction%20to%20Java%20Persistence%20API%20(ELUG)#Container-Managed_Entity_Manage[Container-Managed
+Entity Manager]
+
+==== Obtaining an Entity Manager in Java SE Environment
+
+You obtain an application-managed entity manager from an entity manager
+factory.
+
+For more information and examples, see the following:
+
+* Section 5.2.2 "`Obtaining an Entity Manager in a Java SE Container`"
+of the http://jcp.org/en/jsr/detail?id=220[JPA Specification]
+* link:#How_to_Obtain_an_Entity_Manager_Factory[How to Obtain an Entity
+Manager Factory]
+* link:Introduction%20to%20Java%20Persistence%20API%20(ELUG)#Application-Managed_Entity_Manager[Application-Managed
+Entity Manager]
+
+=== What You May Need to Know About Entity Managers and Their Factories
+
+An entity manager persists and manages specific types of objects,
+enables reading from and writing to a given database. You have to
+configure the entity manager to do so. You are also responsible for
+configuring the entity manager to be implemented by a particular
+persistence provider, such as EclipseLink. The provider supplies the
+backing implementation engine for the entire Java Persistence API, which
+includes an entity manager, a `+Query+` implementation, and SQL
+generation.
+
+An entity manager implements the API enabling operations on entities. It
+is encapsulated almost entirely within a single interface called
+`+EntityManager+`. Until you use an entity manager to create, read, or
+write an entity, the entity is nothing more than a regular nonpersistent
+Java object.
+
+For more information, see Chapter 5 "`Entity Managers and Persistence
+Contexts`" of the http://jcp.org/en/jsr/detail?id=220[JPA
+Specification].
+
+Applications use the `+EntityManagerFactory+` interface for creating an
+application-managed entity manager (see
+link:#Obtaining_an_Entity_Manager_in_Java_SE_Environment[Obtaining an
+Entity Manager in Java SE Environment]).
+
+Each entity manager factory provides entity manager instances that are
+all configured in the same manner (for example, configured to connect to
+the same database or use the same initial settings as defined by the
+implementation).
+
+=== How to Use a Persistence Context
+
+Information pending
+
+==== Using an Extended Persistence Context
+
+Information pending
+
+=== What You May Need to Know About Persistence Contexts and Persistence Units
+
+When an entity manager (see
+link:#What_You_May_Need_to_Know_About_Entity_Managers_and_Their_Factories[What
+You May Need to Know About Entity Managers and Their Factories]) obtains
+a reference to an entity (either by having it explicitly passed in or
+because it was read from the database) that object becomes managed by
+the entity manager. The set of managed entity instances within an entity
+manager at any given time is called this entity manager’s persistence
+context. Only one Java instance with the same persistent identity may
+exist in a persistence context at any time. For example, if an Employee
+with a persistent identity (or id) of 158 exists in the persistence
+context, then no other object with its id set to 158 may exist within
+that same persistence context.
+
+An `+EntityManager+` instance is associated with a persistence context.
+A persistence context is a set of entity instances in which for any
+persistent entity identity there is a unique entity instance. The entity
+instances and their life cycle are managed within the persistence
+context. The `+EntityManager+` interface defines the methods for
+interacting with the persistence context. The `+EntityManager+` API is
+used to create and remove persistent entity instances, to find entities
+by their primary key, and to query over entities.
+
+For more information, see Section 5.1 "`Persistence Contexts`" of the
+http://jcp.org/en/jsr/detail?id=220[JPA Specification].
+
+==== Persistence Unit
+
+The set of entities that a given `+EntityManager+` instance manages is
+defined by a persistence unit. A persistence unit defines the set of all
+classes that are related or grouped by your application, and which must
+be collocated in their mapping to a single database.
+
+A persistence unit includes the following:
+
+* An entity manager factory and its entity managers, together with their
+configuration information.
+* The set of classes managed by the entity managers.
+* Mapping metadata (in the form of metadata annotations and/or XML
+metadata) that specifies the mapping of the classes to the database.
+
+== Querying for an Entity
+
+=== How to Use the Entity Manager find Method
+
+Information pending
+
+=== What You May Need to Know About Querying with Java Persistence Query Language
+
+You can use the Java Persistence query language (JP QL) to define
+queries over entities and their persistent state.
+
+JP QL is an extension of EJB QL, and adds the following features:
+
+* Single and multiple value result types;
+* Aggregate functions with sorting and grouping clauses;
+* A more natural jon syntax, including support for both inner and outer
+joins;
+* Conditional expressions involving subqueries;
+* Update and delete queries for bulk data changes;
+* Result projection into nonpersistent classes.
+
+JP QL supports the use of dynamic queries and the use of named
+parameters. You can use it to define queries over the persistent
+entities, as well as their persistent state and relationships
+
+You may define queries in metadata annotations or the XML descriptor.
+
+A JP QL statement may be either a select statement, an update statement,
+or a delete statement. All statement types may have parameters. Any
+statement may be constructed dynamically or may be statically defined in
+a metadata annotation or XML descriptor element.
+
+This example demonstrates how to create a simple query that finds all
+orders using JP QL.
+
+[#Example 21-1]## *_Simple Query to Find All Objects_*
+
+[source,sql]
+----
+ SELECT order
+ FROM Order order
+----
+
+This example demonstrates how to create a simple query that finds all
+orders to ship to California using JP QL.
+
+[#Example 21-2]## *_Simple Query to Find Some Objects_*
+
+[source,sql]
+----
+ SELECT order
+ FROM Order order
+ WHERE order.shippingAddress.state = 'CA'
+----
+
+For more information and examples, see the following:
+
+* Chapter 4 "`Query Language`" of the
+http://jcp.org/en/jsr/detail?id=220[JPA Specification]
+* Section 3.6 "`Query API`" of the
+http://jcp.org/en/jsr/detail?id=220[JPA Specification]
+* link:#What_You_May_Need_to_Know_About_Named_and_Dynamic_Queries[What
+You May Need to Know About Named and Dynamic Queries]
+* link:#What_You_May_Need_to_Know_About_Persisting_with_JP_QL[What You
+May Need to Know About Persisting with JP QL]
+
+=== What You May Need to Know About Named and Dynamic Queries
+
+You can use the `+Query+` API to define both named and dynamic queries.
+
+Named queries are static and expressed in metadata. You can define named
+queries using JP QL or SQL, scoping their names to the persistence unit.
+
+[width="100%",cols="<100%",]
+|===
+|*Note:* The query name must be unique within the scope of the
+persistence unit.
+|===
+
+These queries are efficient to execute as the persistence provider can
+translate JP QL to SQL once, when you application starts, as opposed to
+every time the query is executed. You define a named query using the
+`+@NamedQuery+` annotation (see Section 8.3.1 "`NamedQuery Annotation`"
+of the http://jcp.org/en/jsr/detail?id=220[JPA Specification]), which
+you may place on the class definition for any entity. The annotation
+defines the name of the query, as well as the query text, as this
+example shows:
+
+[#Example 21-3]## *_Defining a Named Query_*
+
+[source,java]
+----
+ @NamedQuery(name="findSalaryForNameAndDepartment",
+             query="SELECT e.salary " +
+                   "FROM Employee.e " +
+                   "WHERE e.department.name = :deptName AND " +
+                   "      e.name = :empName")
+----
+
+Place your named query on the entity class that most directly
+corresponds to the query result. In the preceding example, that would be
+the `+Employee+` entity.
+
+If you need to define more than one named query for a class, place them
+inside of a `+@NamedQueries+` annotation (see Section 8.3.1 "`NamedQuery
+Annotation`" of the http://jcp.org/en/jsr/detail?id=220[JPA
+Specification]) that accepts an array of `+@NamedQuery+` annotations, as
+this example shows:
+
+[#Example 21-4]## *_Defining Multiple Named Queries for an Entity_*
+
+[source,java]
+----
+ @NamedQueries({
+     @NamedQuery(name="Employee.findAll",
+                 query="SELECT e FROM Employee.e"),
+     @NamedQuery(name="Employee.findByPrimaryKey",
+                 query="SELECT e FROM Employee.e WHERE e.id = :id"),
+     @NamedQuery(name="Employee.findByName",
+                 query="SELECT e FROM Employee.e WHERE e.name = :name"),
+ })
+----
+
+Because the query string is defined in the annotation, your application
+cannot alter it at run time. If you need to specify additional criteria,
+you must do it using query parameters. This example shows how you can
+use the `+createNamedQuery+` method of the `+EntityManager+` to create a
+named query that requires a query parameter.
+
+[#Example 21-5]##
+
+[source,java]
+----
+''''' Creating a Named Query with Parameters'''''
+ @PersistenceContext
+ public EntityManager em;
+ ...
+ customers = em.createNamedQuery("findAllCustomersWithName")
+               .setParameter("custName", "Smith").getResultList();
+----
+
+You may choose to define named queries in an XML mapping file (see
+link:Introduction%20to%20EclipseLink%20JPA%20(ELUG)#Using_XML[Using
+XML]) using the `+named-query+` element. A `+named-query+` element in
+the mapping file may also override an existing query of the same name
+that was defined as an annotation. A `+named-query+` element may appear
+as a subelement of `+entity-mapping+` or `+entity+` elements. Regardless
+of where you defined it, it will be keyed by its name in the persistence
+unit query namespace. You may provide
+link:#What_You_May_Need_to_Know_About_Query_Hints[query hints] as
+`+hint+` subelements.
+
+This example shows the definition a named query in an XML mapping file.
+This query uses `+eclipselink.cache-usage+` hint to bypass the cache.
+
+[#Example 21-6]## *_Defining a Named Query in an XML Mapping File_*
+
+[source,xml]
+----
+ <entity-mapping>
+     ...
+     <named-query name="findEmployeesWithName">
+
+         <query>SELECT e FROM Employee e WHERE e.name LIKE :empName</query>
+         <hint name="eclipselink.cache-usage" value="DoNotCheckCache"/>
+     </named-query>
+     ...
+ <entity-mapping>
+----
+
+[cols="<",]
+|===
+|*Note:* We recommend using named queries with query parameters.
+|===
+
+Dynamic queries are strings. You generate these queries at run time by
+passing the JP QL query string to the `+createQuery+` method of the
+`+EntityManager+`. There are no restrictions on the query definition;
+all JP QL query types are supported, as well as the use of parameters.
+
+You may consider using dynamic queries in your application, if there
+might be a need to specify complex criteria and the exact shape of the
+query cannot be known in advance. However, note that if your application
+issues many queries, the use of dynamic queries will have a negative
+impact on performance.
+
+For more information and examples, see the following:
+
+* Section 3.6.4 "`Named Queries`" of the
+http://jcp.org/en/jsr/detail?id=220[JPA Specification]
+* Section 3.6 "`Query API`" of the
+http://jcp.org/en/jsr/detail?id=220[JPA Specification]
+* link:Using%20EclipseLink%20JPA%20Extensions%20(ELUG)#Using_EclipseLink_JPA_Query_Customization_Extensions[Using
+EclipseLink JPA Query Customization Extensions]
+* link:EclipseLink_UserGuide_Caching_with_EclipseLink_(ELUG)#Cache[Cache]
+* link:Introduction%20to%20EclipseLink%20Queries%20(ELUG)#Named_Queries[Named
+Queries]
+* link:#What_You_May_Need_to_Know_About_Query_Hints[What You May Need to
+Know About Query Hints]
+
+== Persisting Domain Model Changes
+
+=== How to Use JTA
+
+Information pending
+
+=== How to Use RESOURCE_LOCAL
+
+Information pending
+
+=== How to Configure Flushing and Set Flush Modes
+
+Information pending
+
+=== How to Manage a Life Cycle of an Entity
+
+Information pending
+
+==== Merging Detached Entity State
+
+Information pending
+
+==== Using Detached Entities and Lazy Loading
+
+Information pending
+
+For more information, see the following:
+
+* Section 3.2.4.2 "`Detached Entities and Lazy Loading`" of JPA
+specification
+* link:Introduction%20to%20Mappings%20(ELUG)[Indirection&#44;
+Serialization&#44; and Detachment]
+
+=== What You May Need to Know About Persisting with JP QL
+
+You may define queries in metadata annotations or the XML descriptor.
+
+You can use update and delete queries to persist your changes with JP
+QL.
+
+You can perform bulk update of entities with the `+UPDATE+` statement.
+This statement operates on a single entity type and sets one or more
+single-valued properties of the entity subject to the condition in the
+`+WHERE+` clause. Update queries provide an equivalent to the
+`+SQL UPDATE+` statement, but with JP QL conditional expressions.
+
+This example demonstrates how to use an update query to give employees a
+raise. The `+WHERE+` clause contains the conditional expression.
+
+[#Example 21-7]## *_Update Query_*
+
+[source,sql]
+----
+ UPDATE Employee e
+ SET e.salary = 60000
+ WHERE e.salary = 50000
+----
+
+You can perform bulk removal of entities with the `+DELETE+` statement.
+Delete queries provide an equivalent to the `+SQL DELETE+` statement,
+but with JP QL conditional expressions.
+
+This example demonstrates how to use a delete query to remove all
+employees who are not assigned to a department. The `+WHERE+` clause
+contains the conditional expression.
+
+[#Example 21-8]## *_Delete Query_*
+
+[source,sql]
+----
+ DELETE FROM Employee e
+ WHERE e.department IS NULL
+----
+
+[width="100%",cols="<100%",]
+|===
+|*Note:* Delete queries are polymorphic: any entity subclass instances
+that meet the criteria of the delete query will be deleted. However,
+delete queries do not honor cascade rules: no entities other than the
+type referenced in the query and its subclasses will be removed, even if
+the entity has relationships to other entities with cascade removes
+enabled.
+|===
+
+The persistence context is not updated to reflect results of update and
+delete operations. If you use a transaction-scoped persistence context,
+you should either execute the bulk operation in a transaction all by
+itself, or be the first operation in the transaction (see
+link:Introduction%20to%20EclipseLink%20Transactions_(ELUG)[Introduction
+to EclipseLink Transactions]). That is because any entity actively
+managed by the persistence context will remain unaware of the actual
+changes occurring at the database level.
+
+For more information and examples, see the following:
+
+* Section 4.10 "`Bulk Update and Delete Operations`" of the
+http://jcp.org/en/jsr/detail?id=220[JPA Specification]
+* Chapter 4 "`Query Language`" of the
+http://jcp.org/en/jsr/detail?id=220[JPA Specification]
+* link:#What_You_May_Need_to_Know_About_Querying_with_Java_Persistence_Query_Language[What
+You May Need to Know About Querying with Java Persistence Query
+Language]
+* link:EclipseLink_UserGuide_Queries_(ELUG)[Queries]
+* link:Introduction%20to%20EclipseLink%20Queries%20(ELUG)#Named_Queries[Named
+Queries]
+
+=== What You May Need to Know About Persisting Results of Named and Dynamic Queries
+
+Expressions listed in the `+SELECT+` clause of a query determine the
+result type of the query. The following are some of the type that may
+result from JP QL queries:
+
+* Basic types: `+String+`, primitive types, JDBC types
+* Entity types
+* An array of `+Object+` instances
+* User-defined types created from a constructor-expressions
+
+The collection or single result corresponds directly to the result type
+of the query.
+
+The `+Query+` interface provides three different ways to execute a
+query, depending on whether or not the query returns results and how
+many results are expected. For queries that return values, you can call
+either the following methods:
+
+* `+getResultList+`–use this method if you expect the query to return
+more than one result. This method returns a collection (`+List+`)
+containing query results. If there are no results to return, this method
+returns an empty collection.
+* `+getSingleResult+`–use this method if you expect the query to return
+a single result. In case of unexpected results, such as there are no
+results to return or multiple results are available, this method throws
+an exception.
+
+Use the `+executeUpdate+` method of the `+Query+` interface to invoke
+bulk update and delete queries (see
+link:#What_You_May_Need_to_Know_About_Persisting_with_JP_QL[What You May
+Need to Know About Persisting with JP QL]).
+
+The active persistence context manages a returned entity instance. If
+that entity instance is modified and the persistence context is part of
+a transaction, then the changes will be persisted to the database.
+
+[width="100%",cols="<100%",]
+|===
+|*Note:* If you use a transaction-scoped entity manager outside of a
+transaction, then the executed query will return detached entity
+instances instead of managed entity instances. To make changes to these
+detached entities, you must merge them into a persistence context before
+synchronizing with the database.
+|===
+
+You can reuse `+Query+` objects as often as you need so long as the same
+persistence context that you used to create the query is active. For
+transaction-scoped entity managers, this limits the lifetime of the
+`+Query+` object to the life of the transaction. Other entity manager
+types may reuse `+Query+` objects until you close or remove the entity
+manager.
+
+For more information, see the following:
+
+* Section 3.6 "`Query API`" of the
+http://jcp.org/en/jsr/detail?id=220[JPA Specification]
+* Section 3.6.4 "`Named Queries`" of the
+http://jcp.org/en/jsr/detail?id=220[JPA Specification]
+* link:Using%20EclipseLink%20JPA%20Extensions%20(ELUG)#Using_EclipseLink_JPA_Query_Customization_Extensions[Using
+EclipseLink JPA Query Customization Extensions]
+* link:EclipseLink_UserGuide_Queries_(ELUG)[Queries]
+* link:Introduction%20to%20EclipseLink%20Queries%20(ELUG)#Named_Queries[Named
+Queries]
+* Section 5.6.4.1 "`Container-managed Transaction-scoped Persistence
+Context`" of the http://jcp.org/en/jsr/detail?id=220[JPA Specification]
+
+== Using EclipseLink JPA Extensions in Your Application Development
+
+This section describes the following:
+
+* link:#How_to_Use_Extensions_for_Query[How to Use Extensions for Query]
+* link:#How_to_Configure_Lazy_Loading[How to Configure Lazy Loading]
+* link:#How_to_Configure_Change_Tracking[How to Configure Change
+Tracking]
+* link:#How_to_Configure_Fetch_Groups[How to Configure Fetch Groups]
+* link:#How_to_Use_Extensions_for_Caching[What You May Need to Know
+About EclipseLink Caching]
+* link:#What_You_May_Need_to_Know_About_EclipseLink_Caching[What You May
+Need to Know About EclipseLink Caching]
+* link:#What_You_May_Need_to_Know_About_Cache_Coordination[What You May
+Need to Know About Cache Coordination]
+* link:#How_to_Configure_Cascading[How to Configure Cascading]
+* link:#What_You_May_Need_to_Know_About_Cascading_Entity_Manager_Operations[What
+You May Need to Know About Cascading Entity Manager Operations]
+* link:#How_to_Use_EclipseLink_Metadata[How to Use EclipseLink Metadata]
+* link:#How_to_Use_Events_and_Listeners[How to Use Events and Listeners]
+* link:#What_You_May_Need_to_Know_About_Database_Platforms[What You May
+Need to Know About Database Platforms]
+* link:#What_You_May_Need_to_Know_About_Server_Platforms[What You May
+Need to Know About Server Platforms]
+* link:#How_to_Optimize_a_JPA_Application[How to Optimize a JPA
+Application]
+* link:#How_to_Perform_Diagnostics[How to Perform Diagnostics]
+
+=== How to Use Extensions for Query
+
+Information pending
+
+==== Using Query Hints
+
+Information pending
+
+==== What You May Need to Know About Query Hints
+
+Query hints are the JPA extension point for vendor-specific query
+features. Hints are the only feature in the query API that are not a
+standard usage: a hint is a string name and object value.
+
+You may associate your queries with hints by either setting them in the
+persistence unit metadata as part of the `+@NamedQuery+` annotation (see
+Section 8.3.1 "`NamedQuery Annotation`" of the
+http://jcp.org/en/jsr/detail?id=220[JPA Specification]), or by using the
+`+setHint+` method of the `+Query+`.
+
+The link:#Example_21-9[Using Query Hints] example shows how to use the
+`+eclipselink.cache-usage+` hint to indicate that the cache should not
+be checked when reading an `+Employee+` for the database.
+
+[width="100%",cols="<100%",]
+|===
+|*Note:* Unlike the `+refresh+` method of the `+EntityManager+`, the
+`+eclipselink.cache-usage+` hint will not cause the query result to
+override the current cached value.
+|===
+
+[#Example 21-9]## *_Using Query Hints_*
+
+[source,java]
+----
+ public Employee findEmployeeNoCache(int empId) {
+     Query q = em.createQuery("SELECT e FROM Employee e WHERE e.id = ?1");
+     // force read from database
+     q.setHint("eclipselink.cache-usage", "DoNotCheckCache");
+     q.setParameter(1, empId);
+     try {
+         return (Employee)q.getSingleResult();
+     }
+     catch(NoResultException e) {
+         return null;
+     }
+ }
+----
+
+If you need execute this query frequently, you should use a named query.
+The following named query definition incorporates the cache hint from
+the link:#Example_21-9[Using Query Hints] example.
+
+`+@NamedQuery(name="findEmployeeNoCache",+`
+`+            query="SELECT e FROM Employee e WHERE e.id = :empId",+`
+`+            hints={@QueryHint(name="eclipselink.cache-usage", +`
+`+                              value="DoNotCheckCache")})+`
+
+The `+hints+` element accepts an array of `+@QueryHint+` annotations
+(see Section 8.3 "`Annotations for Queries`" of the
+http://jcp.org/en/jsr/detail?id=220[JPA Specification]), allowing you to
+set any number of hints for a query.
+
+For more information, see the following:
+
+* Section 3.6 "`Query API`" of the
+http://jcp.org/en/jsr/detail?id=220[JPA Specification]
+* link:Using%20EclipseLink%20JPA%20Extensions%20(ELUG)#Using_EclipseLink_JPA_Query_Customization_Extensions[Using
+EclipseLink JPA Query Customization Extensions]
+* link:EclipseLink_UserGuide_Caching_with_EclipseLink_(ELUG)#Cache[Cache]
+* link:Using%20Advanced%20Query%20API%20(ELUG)#How_to_Use_Oracle_Hints[How
+to Use Oracle Hints]
+
+==== Using the Expression API
+
+Information pending
+
+=== How to Configure Lazy Loading
+
+By default, the EclipseLink persistence provider will use dynamic
+weaving to configure all applicable mappings with lazy loading
+(indirection).
+
+For JPA entities or POJO classes that you configure for weaving,
+EclipseLink weaves value holder indirection for one-to-one mappings. If
+you want EclipseLink to weave change tracking and your application
+includes collection mappings (one-to-many and many-to-many), then you
+must configure all collection mappings to use transparent indirect
+container indirection only (you may not configure your collection
+mappings to use eager loading, nor value holder indirection).
+
+For more information, see the following:
+
+* link:Using%20EclipseLink%20JPA%20Extensions%20(ELUG)[Using EclipseLink
+JPA Extensions for Customization and Optimization]
+* link:Using%20EclipseLink%20JPA%20Extensions%20(ELUG)[What You May Need
+to Know About EclipseLink JPA Lazy Loading]
+* link:Using%20EclipseLink%20JPA%20Extensions%20(ELUG)[Using EclipseLink
+JPA Weaving]
+* link:Configuring%20a%20Mapping%20(ELUG)[Configuring Indirection (Lazy
+Loading)]
+
+=== How to Configure Change Tracking
+
+By default, the EclipseLink persistence provider will use dynamic
+weaving to configure all applicable mappings with attribute level change
+tracking.
+
+For JPA entities or POJO classes that you configure for weaving,
+EclipseLink weaves value holder indirection for one-to-one mappings. If
+you want EclipseLink to weave change tracking and your application
+includes collection mappings (one-to-many and many-to-many), then you
+must configure all collection mappings to use transparent indirect
+container indirection only (you may not configure your collection
+mappings to use eager loading, nor value holder indirection).
+
+For more information, see the following:
+
+* link:Using%20EclipseLink%20JPA%20Extensions%20(ELUG)#Using_EclipseLink_JPA_Extensions_for_Tracking_Changes[Using
+EclipseLink JPA Extensions for Tracking Changes]
+* link:Using%20EclipseLink%20JPA%20Extensions%20(ELUG)#Using_EclipseLink_JPA_Weaving[Using
+EclipseLink JPA Weaving]
+* link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Change_Policy[Configuring
+Change Policy]
+
+=== How to Configure Fetch Groups
+
+By default, the EclipseLink persistence provider will use dynamic
+weaving to configure all applicable mappings to use fetch groups.
+
+For more information, see the following:
+
+* link:Using%20EclipseLink%20JPA%20Extensions%20(ELUG)[Using EclipseLink
+JPA Extensions for Customization and Optimization]
+* link:Using%20EclipseLink%20JPA%20Extensions%20(ELUG)[Using EclipseLink
+JPA Weaving]
+* link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Fetch_Groups[Configuring
+Fetch Groups]
+
+=== How to Use Extensions for Caching
+
+Information pending
+
+=== What You May Need to Know About EclipseLink Caching
+
+The EclipseLink cache is an in-memory repository that stores recently
+read or written objects based on class and primary key values.
+EclipseLink uses the cache to do the following:
+
+* Improve performance by holding recently read or written objects and
+accessing them in-memory to minimize database access.
+* Manage locking and isolation level.
+* Manage object identity.
+
+EclipseLink uses the following two types of cache:
+
+* the session cache maintains objects retrieved from and written to the
+data source;
+* the unit of work cache holds objects while they participate in
+transactions.
+
+When a unit of work successfully commits to the data source, EclipseLink
+updates the session cache accordingly.
+
+For more information, see
+link:EclipseLink_UserGuide_Caching_with_EclipseLink_(ELUG)[Cache].
+
+=== What You May Need to Know About Cache Coordination
+
+EclipseLink provides a distributed cache coordination feature that
+ensures data in distributed applications remains current.
+
+For more information, see the following:
+
+* link:Introduction%20to%20Cache%20(ELUG)#Cache_Coordination[Cache
+Coordination]
+* link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Locking_Policy[Configuring
+Locking Policy] "`wikilink`")
+* link:Introduction%20to%20Cache%20(ELUG)#Querying_and_the_Cache[Querying
+and the Cache]
+* link:EclipseLink_UserGuide_Queries_(ELUG)[Cache]
+
+=== How to Configure Cascading
+
+Information pending
+
+For more information, see the following:
+
+* link:#What_You_May_Need_to_Know_About_Cascading_Entity_Manager_Operations[What
+You May Need to Know About Cascading Entity Manager Operations]
+* link:Introduction%20to%20EclipseLink%20JPA%20(ELUG)[Mapping
+Relationships]
+* link:Using%20EclipseLink%20JPA%20Extensions%20(ELUG)[Using EclipseLink
+JPA Extensions for Optimistic Locking]
+* link:Using%20EclipseLink%20JPA%20Extensions%20(ELUG)[How to Use the
+@PrivateOwned Annotation]
+
+=== What You May Need to Know About Cascading Entity Manager Operations
+
+Typically, you use cascading in parent-child relationships.
+
+By default, every entity manager operation applies only to the entity
+that you supplied as an argument to the operation. The operation will
+not cascade to other entities that have a relationship with the entity
+under operation. For some operations, such as `+remove+`, this is
+usually the desired behavior. For other operations, such as `+persist+`,
+it is not: in most cases, if you have a new entity that has a
+relationship to another new entity, you would want to persist both
+entities together.
+
+Using the `+cascade+` element of relationship annotations (see
+link:Introduction%20to%20EclipseLink%20JPA%20(ELUG)#Mapping_Relationships[Mapping
+Relationships]), you can define whether or not to cascade operations
+across relationships.
+
+When listed as a part of the `+cascade+` element, you can identify the
+entity manager operations with the following constant values using the
+`+javax.persitence.CascadeType+` enumerated type:
+
+* `+PERSIST+`–corresponds to the entity manager `+persist+` operation;
+* `+REFRESH+`–corresponds to the entity manager `+refresh+` operation;
+* `+REMOVE+`–corresponds to the entity manager `+remove+` operation;
+* `+MERGE+`–corresponds to the entity manager `+merge+` operation;
+* `+ALL+`–indicates that all four operations should be cascaded.
+
+[width="100%",cols="<100%",]
+|===
+|*Note:* Cascade sessions are unidirectional: you must set them on both
+sides of a relationship if you plan for the same behavior for both
+situations.
+|===
+
+For more information, see the following:
+
+* link:Introduction%20to%20EclipseLink%20JPA%20(ELUG)#Mapping_Relationships[Mapping
+Relationships]
+* link:#How_to_Configure_Cascading[How to Configure Cascading]
+* link:Using%20EclipseLink%20JPA%20Extensions%20(ELUG)#How_to_Use_the_@OptimisticLocking_Annotation[How
+to Use the @OptimisticLocking Annotation]
+* link:Using%20EclipseLink%20JPA%20Extensions%20(ELUG)#How_to_Use_the_@PrivateOwned_Annotation[How
+to Use the @PrivateOwned Annotation]
+
+=== How to Use EclipseLink Metadata
+
+Information pending
+
+==== Using EclipseLink Project
+
+Information pending
+
+==== Using sessions.xml File
+
+Information pending
+
+=== How to Use Events and Listeners
+
+Information pending
+
+<org.eclipse.persistence.sessions.SessionEventListener
+(eclipselink.session.event-listener)>
+
+<Configure a descriptor event listener to be added during bootstrap.>
+
+==== Using Session Events
+
+Information pending
+
+==== Using an Exception Handler
+
+Information pending
+
+=== What You May Need to Know About Database Platforms
+
+EclipseLink interacts with databases using SQL. The type of database
+platform you choose determines the specific means by which the
+EclipseLink runtime accesses the database.
+
+For more information, see
+link:Introduction%20to%20Data%20Access%20(ELUG)#Database_Platforms[Database
+Platforms].
+
+=== What You May Need to Know About Server Platforms
+
+You deploy your application to a specific Java EE application server.
+
+EclipseLink supports most versions of WebLogic, OC4J, SunAS, and
+WebSphere application servers.
+
+For more information, see the following:
+
+* link:Configuring%20a%20Session%20(ELUG)#Configuring_the_Server_Platform[Configuring
+the Server Platform]
+* link:Integrating%20EclipseLink%20with%20an%20Application%20Server%20(ELUG)[Integrating
+EclipseLink with an Application Server]
+
+=== How to Optimize a JPA Application
+
+Information pending
+
+==== Using Statement Caching
+
+Information pending
+
+==== Using Batch Reading and Writing
+
+Information pending
+
+=== How to Perform Diagnostics
+
+Information pending
+
+==== Using Logging
+
+Information pending
+
+==== Using Profiling
+
+Information pending
+
+==== Using JMX
+
+Information pending
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Release_1[Category: Release 1] Category:_Task[Category: Task]
+Category:_JPA[Category: JPA]

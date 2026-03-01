@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,14 +14,20 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.readonly;
 
-import java.io.*;
-import java.util.*;
-import org.eclipse.persistence.sessions.*;
-import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.testing.models.readonly.Country;
-import org.eclipse.persistence.testing.models.readonly.Address;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.testing.framework.AutoVerifyTestCase;
 import org.eclipse.persistence.testing.framework.TestErrorException;
+import org.eclipse.persistence.testing.models.readonly.Address;
+import org.eclipse.persistence.testing.models.readonly.Country;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.ArrayList;
+import java.util.Vector;
 
 /**
  * <p>
@@ -41,7 +47,7 @@ public class ReadOnlyClassDeepMergeCloneTest extends AutoVerifyTestCase {
 
     @Override
     public void reset() {
-        getSession().getProject().setDefaultReadOnlyClasses(new Vector());
+        getSession().getProject().setDefaultReadOnlyClasses(new ArrayList<>());
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
     }
 
@@ -52,7 +58,7 @@ public class ReadOnlyClassDeepMergeCloneTest extends AutoVerifyTestCase {
 
         // Acquire a unit of work with a class read-only.
         Vector readOnlyClasses = new Vector();
-        readOnlyClasses.addElement(Country.class);
+        readOnlyClasses.add(Country.class);
         UnitOfWork uow = getSession().acquireUnitOfWork();
         uow.removeAllReadOnlyClasses();
         uow.addReadOnlyClasses(readOnlyClasses);
@@ -71,7 +77,7 @@ public class ReadOnlyClassDeepMergeCloneTest extends AutoVerifyTestCase {
             ObjectInputStream in = new ObjectInputStream(inArray);
             serializedAddress = (Address)in.readObject();
         } catch (Exception ex) {
-            throw new TestErrorException("Test not run failed to serialize objects:" + ex.toString());
+            throw new TestErrorException("Test not run failed to serialize objects:" + ex);
         }
         uow.deepMergeClone(serializedAddress);
         if (addressClone.getCountry() == serializedAddress.getCountry()) {

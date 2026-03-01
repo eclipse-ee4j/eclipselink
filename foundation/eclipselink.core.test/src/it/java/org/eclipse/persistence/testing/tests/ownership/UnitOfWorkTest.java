@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,10 +14,17 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.ownership;
 
-import java.util.*;
-import org.eclipse.persistence.sessions.*;
-import org.eclipse.persistence.testing.framework.*;
-import org.eclipse.persistence.testing.models.ownership.*;
+import org.eclipse.persistence.sessions.UnitOfWork;
+import org.eclipse.persistence.testing.framework.TestErrorException;
+import org.eclipse.persistence.testing.framework.WriteObjectTest;
+import org.eclipse.persistence.testing.models.ownership.ObjectA;
+import org.eclipse.persistence.testing.models.ownership.ObjectB;
+import org.eclipse.persistence.testing.models.ownership.ObjectC;
+import org.eclipse.persistence.testing.models.ownership.ObjectD;
+import org.eclipse.persistence.testing.models.ownership.ObjectE;
+
+import java.util.Enumeration;
+import java.util.Vector;
 
 /**
  * <p>
@@ -42,9 +49,9 @@ public class UnitOfWorkTest extends WriteObjectTest {
     public void changeObjectC(ObjectC objectC) {
         ObjectD objectD = (ObjectD)objectC.getOneToOne().getValue();
         Vector objectECollection = (Vector)objectD.getOneToMany().getValue();
-        objectECollection.removeElement(objectECollection.firstElement());
+        objectECollection.remove(objectECollection.get(0));
 
-        objectECollection.addElement(new ObjectE(objectD));
+        objectECollection.add(new ObjectE(objectD));
     }
 
     protected void changeUnitOfWorkWorkingCopy() {
@@ -58,8 +65,8 @@ public class UnitOfWorkTest extends WriteObjectTest {
             this.changeObjectC(objectC);
         }
 
-        objectCCollection.addElement(ObjectC.example4(objectB));
-        objectCCollection.addElement(ObjectC.example5(objectB));
+        objectCCollection.add(ObjectC.example4(objectB));
+        objectCCollection.add(ObjectC.example5(objectB));
     }
 
     @Override

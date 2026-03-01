@@ -1,0 +1,152 @@
+[#sdo-example-metadata]
+=== Convert an XML Schema to SDO Metadata
+
+* <<sdo-example-metadata-overview>>
+* <<sdo-example-metadata-define>>
+* <<sdo-example-metadata-lookup>>
+** <<sdo-example-metadata-lookup-open>>
+** <<sdo-example-metadata-lookup-ct>>
+** <<sdo-example-metadata-lookup-gae>>
+* <<sdo-example-metadata-info>>
+** <<sdo-example-metadata-info-prop>>
+** <<sdo-example-metadata-info-type>>
+
+[#sdo-example-metadata-overview]
+==== Overview
+
+The following example will demonstrate how to use EclipseLink's SDO
+functionality to:
+
+* Define SDO Types and Properties from an XML Schema
+* Lookup SDO Types and Properties
+* Get XML Schema Information about SDO Types and Properties
+
+[#sdo-example-metadata-define]
+==== Define SDO Types and Properties from XML Schema
+
+The first thing that needs to be done in a SDO application is to set up
+the metadata for the Types and Properties. This is most commonly done by
+loading an XML schema, although it may also be done programmatically.
+
+[source,java]
+----
+FileInputStream xsdInputStream = new FileInputStream("Customer.xsd");
+XSDHelper.INSTANCE.define(xsdInputStream, null);
+----
+
+[#sdo-example-metadata-lookup]
+==== Lookup SDO Types and Properties
+
+[#sdo-example-metadata-lookup-open]
+===== Get a SDO Open Content Property corresponding to a Global Attribute/Element
+
+Once the XML schema has been processed the global attributes and
+elements are available as open content properties.
+
+[source,java]
+----
+Property phoneNumberProperty =
+     TypeHelper.INSTANCE.getOpenContentProperty("http://www.example.org/customer-example", "phone-number");
+----
+
+You can also use XSDHelper to get the open content properties using XML
+information. This is useful when you have a global element and attribute
+in the same namspace with the same name.
+
+[source,java]
+----
+Property phoneNumberProperty =
+     XSDHelper.INSTANCE.getGlobalProperty("http://www.example.org/customer-example", "phone-number", true);
+----
+
+[#sdo-example-metadata-lookup-ct]
+===== Get a SDO Type corresponding to a Global Complex Type
+
+When the SDO Type corresponds to a global complex type like the
+following:
+
+[source,xml]
+----
+<xs:complexType name="address-type">
+    <xs:sequence>
+        <xs:element name="street" type="xs:string" maxOccurs="2"/>
+        <xs:element name="city" type="xs:string"/>
+        <xs:element name="state" type="xs:string"/>
+        <xs:element name="zip-code" type="xs:string"/>
+    </xs:sequence>
+</xs:complexType>
+----
+
+Then the corresponding SDO Type can be looked up as follows:
+
+[source,java]
+----
+Type addressType = TypeHelper.INSTANCE.getType("http://www.example.org/customer-example", "address-type");
+----
+
+[#sdo-example-metadata-lookup-gae]
+===== Get a SDO Type corresponding to a Global Attribute/Element
+
+When the SDO Type corresponds to a global element like the following:
+
+[source,xml]
+----
+<xs:element name="phone-number">
+    <xs:complexType>
+        <xs:simpleContent>
+            <xs:extension base="xs:string">
+                <xs:attribute name="number-type" type="xs:string"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+</xs:element>
+----
+
+Then the corresponding SDO Type can be looked up as follows:
+
+[source,java]
+----
+Property phoneNumberProperty =
+    TypeHelper.INSTANCE.getOpenContentProperty("http://www.example.org/customer-example", "phone-number");
+Type phoneNumberType = phoneNumberProperty.getType();
+----
+
+[#sdo-example-metadata-info]
+==== Get XML Schema Information about SDO Types and Properties
+
+[#sdo-example-metadata-info-prop]
+===== SDO Property XML Schema Info
+
+You can determine if the SDO property corresponds to an XML attribute or
+XML element:
+
+[source,java]
+----
+XSDHelper.INSTANCE.isAttribute(phoneNumberProperty);
+XSDHelper.INSTANCE.isElement(phoneNumberProperty);
+----
+
+You can get XML name/URI information:
+
+[source,java]
+----
+XSDHelper.INSTANCE.getLocalName(phoneNumberProperty);
+XSDHelper.INSTANCE.getNamespaceURI(phoneNumberProperty);
+----
+
+[#sdo-example-metadata-info-type]
+===== SDO Type XML Schema Info
+
+You can get the XML name information:
+
+[source,java]
+----
+XSDHelper.INSTANCE.getLocalName(addressType);
+----
+
+You can determine if the corresponding XML type is mixed:
+
+[source,java]
+----
+XSDHelper.INSTANCE.isMixed(addressType);
+----

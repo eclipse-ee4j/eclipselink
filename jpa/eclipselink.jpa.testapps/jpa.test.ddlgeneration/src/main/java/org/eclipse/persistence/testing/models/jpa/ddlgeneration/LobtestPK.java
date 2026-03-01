@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2011, 2022 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2011, 2022 Kristian Rye Vennesland. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Kristian Rye Vennesland. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -71,10 +71,9 @@ public class LobtestPK implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof LobtestPK)) {
+        if (!(object instanceof LobtestPK other)) {
             return false;
         }
-        LobtestPK other = (LobtestPK) object;
         if ((this.versionid == null && other.versionid != null) || (this.versionid != null && !this.versionid.equals(other.versionid))) {
             return false;
         }

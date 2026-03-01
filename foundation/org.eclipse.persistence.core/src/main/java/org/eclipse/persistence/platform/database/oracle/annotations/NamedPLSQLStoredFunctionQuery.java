@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,56 +14,58 @@
 //     Oracle - initial API and implementation
 package org.eclipse.persistence.platform.database.oracle.annotations;
 
+import jakarta.persistence.QueryHint;
+
+import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-import jakarta.persistence.QueryHint;
-
 /**
  * A NamedPLSQLStoredFunctionQuery annotation allows the definition of queries that
  * call PLSQL stored functions as named queries.
+ * <p>
  * The PLSQL support adds support for complex PLSQL types such as RECORD and TABLE types,
  * that are not accessible from JDBC.
- *
- * A NamedPLSQLStoredFunctionQuery annotation may be defined on an Entity or
- * MappedSuperclass.
+ * <p>
+ * A NamedPLSQLStoredFunctionQuery annotation may be defined on an Entity or MappedSuperclass.
  *
  * @author James Sutherland
  * @since EclipseLink 2.3
  */
 @Target({TYPE})
 @Retention(RUNTIME)
+@Repeatable(NamedPLSQLStoredFunctionQueries.class)
 public @interface NamedPLSQLStoredFunctionQuery {
     /**
-     * (Required) Unique name that references this stored procedure query.
+     * Unique name that references this stored function query.
      */
     String name();
 
     /**
-     * (Optional) Query hints.
+     * Query hints.
      */
     QueryHint[] hints() default {};
 
     /**
-     * (Optional) The name of the SQLResultMapping.
+     * The name of the {@linkplain jakarta.persistence.SqlResultSetMapping}.
      */
     String resultSetMapping() default "";
 
     /**
-     * (Required) The name of the stored procedure.
+     * The name of the stored function.
      */
     String functionName();
 
     /**
-     * (Optional) Defines the parameters to the stored procedure.
+     * Defines the parameters to the stored function.
      */
     PLSQLParameter[] parameters() default {};
 
     /**
-     * (Required) Defines the return value of the stored function.
+     * Defines the return value of the stored function.
      */
     PLSQLParameter returnParameter();
 }

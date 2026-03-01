@@ -1,0 +1,217 @@
+image:Elug_draft_icon.png[Image:Elug draft
+icon.png,title="Image:Elug draft icon.png"] *For the latest EclipseLink
+documentation, please see
+http://www.eclipse.org/eclipselink/documentation/*
+
+'''''
+
+*TOC*
+Special:Whatlinkshere_Introduction_to_EclipseLink_Support_for_Oracle_Spatial_(ELUG)[Related
+Topics]
+
+This section provides an overview of the EclipseLink support for Oracle
+Spatial, as well as demonstrates the ways to extend EclipseLink to
+support the mapping and querying of Oracle Spatial columns
+(`+MDSYS.SDO_GEOMETRY+`).
+
+For more information about Oracle Spatial, see
+http://www.oracle.com/technology/products/spatial/index.html[`+http://www.oracle.com/technology/products/spatial/index.html+`]
+
+== EclipseLink Support for Oracle Spatial
+
+EclipseLink provides support for direct mappings of database columns of
+type `+MDSYS.SDO_GEOMETRY+` to attributes of the
+`+oracle.spatial.geometry.JGeometry+` data type.
+
+EclipseLink also provides support for spatial operators (see
+link:#How_to_Perform_Queries_Using_Spatial_Operator_Expressions[How to
+Perform Queries Using Spatial Operator Expressions]) through the
+EclipseLink expression framework (see
+link:Introduction%20to%20EclipseLink%20Expressions%20(ELUG)#Introduction_to_EclipseLink_Expressions[Introduction
+to EclipseLink Expressions]), as well as for custom object types that
+wrap `+SDO_GEOMETRY+`.
+
+For information on using EclipseLink structure converter with
+application servers (for example, Oracle WebLogic Server, JBoss, or
+SunAS), see the relevant server documentation.
+
+== Using Structure Converters
+
+In EclipseLink, a
+`+org.eclipse.persistence.platform.database.DatabasePlatform+` (see
+link:Introduction%20to%20Data%20Access%20(ELUG)#Database_Platforms[Database
+Platforms]) stores a list of structure converters.
+
+To create a custom converter, implement the
+`+org.eclipse.persistence.platform.database.converters.StructConverter+`
+interface and register it on your direct-to-field mapping (see
+link:Introduction%20to%20Relational%20Mappings%20(ELUG)#Direct-to-Field_Mapping[Direct-to-Field
+Mapping]).
+
+To use the `+StructConverter+`, do the following:
+
+[arabic]
+. Configure the database platform (see
+link:#How_to_Configure_the_Database_Platform_to_Use_Structure_Convertes[How
+to Configure the Database Platform to Use Structure Convertes]).
+. Set up a mapping (see
+link:#How_to_Set_Up_Mappings_Using_Structure_Converters[How to Set Up
+Mappings Using Structure Converters]).
+
+=== How to Configure the Database Platform to Use Structure Converters
+
+EclipseLink uses a database platform (see
+link:Introduction%20to%20Data%20Access%20(ELUG)#Database_Platforms[Database
+Platforms]) to control the usage of database vendor-specific and
+version-specific operations such as SQL dialect, stored procedure calls,
+sequencing, as well as platform-specific type handling. You need to
+configure the platform to allow EclipseLink to use the advanced features
+of the database.
+
+To add your structure converter to the `+DatabasePlatform+`, call
+`+addStructConverter(StructConverter converter)+` method of the
+`+DatabasePlatform+`. Call this method within your EclipseLink session
+(server or database) prior to the session login (see
+link:Configuring%20a%20Session%20(ELUG)#Configuring_a_Session_Login[Configuring
+a Session Login]).
+
+=== How to Set Up Mappings Using Structure Converters
+
+Use direct-to-field mappings (see
+link:Introduction%20to%20Relational%20Mappings%20(ELUG)#Direct-to-Field_Mapping[Direct-to-Field
+Mapping]) to map your `+STRUCT+` types. For each mapping that maps to
+the type defined by the structure converter, set its field type to the
+`+STRUCT+` data type, as follows:
+
+`+mapping.setFieldType(java.sql.Types.STRUCT);+`
+
+== Using JGeometry
+
+To use the `+oracle.spatial.geometry.JGeometry+`, do the following:
+
+[arabic]
+. Configure the database platform (see
+link:#How_to_Configure_the_Database_Platform_to_Use_JGeometry[How to
+Configure the Database Platform to Use JGeometry]).
+. Set up a mapping (see link:#How_to_Map_JGeometry_Attributes[How to Map
+JGeometry Attributes]).
+
+You can query your mapped entities with expressions that use Spatial
+operators. For more information, see
+link:#How_to_Perform_Queries_Using_Spatial_Operator_Expressions[How to
+Perform Queries Using Spatial Operator Expressions].
+
+=== How to Configure the Database Platform to Use JGeometry
+
+To configure the database platform, add a structure converter in a form
+of the
+`+org.eclipse.persistence.platform.database.oracle.converters.JGeometryConverter+`
+as follows:
+
+`+databasePlatform.addStructConverter(new JGeometryConverter());+`
+
+You must configure this platform within your EclipseLink session prior
+to the session login (see
+link:Configuring%20a%20Session%20(ELUG)[Configuring a Session Login]).
+
+=== How to Map JGeometry Attributes
+
+Use direct-to-field mappings (see
+link:Introduction%20to%20Relational%20Mappings%20(ELUG)#Direct-to-Field_Mapping[Direct-to-Field
+Mapping]) to map your `+STRUCT+` types. For each mapping that maps to
+the type defined by the structure converter (`+JGeometry+`), set its
+field type to the `+STRUCT+` data type, as follows:
+
+`+mapping.setFieldType(java.sql.Types.STRUCT);+`
+
+=== How to Perform Queries Using Spatial Operator Expressions
+
+With the configured database platform, you can read and write persistent
+entities with `+JGeometry+` attributes mapped to `+SDO_GEOMETRY+`
+columns. With this support, you can query for these mapped entities with
+native SQL queries using Oracle Spatial operators.
+
+Spatial operators are special SQL functions supported by the Oracle
+Database to enable querying and comparison of columns containing
+geometry types. The spatial operators take the following format:
+
+`+(geometry1, geometry2, parameters) = 'TRUE' +`
+
+For more information on spatial operators, see _Oracle Spatial API
+Documentation_ at
+http://download.oracle.com/docs/cd/B28359_01/appdev.111/b28401/toc.htm[`+http://download.oracle.com/docs/cd/B28359_01/appdev.111/b28401/toc.htm+`].
+
+EclipseLink provides the expression support for the following Spatial
+operators:
+
+* `+SDO_WITHIN_DISTANCE+`
+* `+SDO_RELATE+`
+* `+SDO_FILTER+`
+* `+SDO_NN+`
+
+Use the following methods of the
+`+org.eclipse.persistence.expressions.spatial.SpatialExpressionFactory+`
+class to build expressions that use Spatial operators:
+
+* `+withinDistance+`
+* `+relate+`
+* `+filter+`
+* `+nearestNeighbor+`
+
+All these methods have the following common set of parameters:
+
+[arabic]
+. an expression (`+org.eclipse.persistence.expressions.Expression+`)
+that points to `+JGeometry+`;
+. `+JGeometry+` object or an `+Expression+`;
+. an `+org.eclipse.persistence.expressions.spatial.SpatialParameters+`
+object that defines the parameters to the function call.
+
+The `+SpatialParameters+` class provides convenience methods that let
+you set the parameters representing the following:
+
+* minimum resolution;
+* maximum resolution;
+* units;
+* distance;
+* query type;
+* masks;
+* `+String+` of parameters.
+
+The following example demonstrates how to construct a Spatial operator
+expression, and then relate it to an existing `+JGeometry+` with
+`+SpatialParameters+` created using a `+String+`. [#Example 108-1]##
+
+*_Relating an Expression Using String of Spatial Parameters_*
+
+`+SpatialParameters parameters = new SpatialParameters("MASK=ANYINTERACT QUERYTYPE=WINDOW");+`
+`+Expression selectionCriteria = SpatialExpressionFactory.relate(expressionBuilder.get("geometry"),+`
+`+                                                               rectangle,+`
+`+                                                               parameters);+`
+
+The following example demonstrates how to relate two expressions with
+`+SpatialParameters+` constructed using convenience methods.
+[#Example 108-2]##
+
+*_Relating Two Expressions_*
+
+`+SpatialParameters parameters = new SpatialParameters();+`
+`+parameters.setQueryType(SpatialParameters.QueryType.WINDOW.setMask(Mask.ANYINTERACT);+`
+`+Expression selectionCriteria = SpatialExpressionFactory.relate(expressionBuilder1.get("geometry"),+`
+`+                                                               expressionBuilder2.get("geometry"),+`
+`+                                                               parameters);+`
+
+[#Example 108-3]##
+
+*_Using Nearest Neighbor_*
+
+`+SpatialParameters parameters = new SpatialParameters();+`
+`+parameters.setParams("sdo_num_res=10");+`
+`+Expression expression = SpatialExpressionFactory.nearestNeighbor(expressionBuilder.get("geometry"), geom, parameters);+`
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Release_1[Category: Release 1] Category:_Task[Category: Task]

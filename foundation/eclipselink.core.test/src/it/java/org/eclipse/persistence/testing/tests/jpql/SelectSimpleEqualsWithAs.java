@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,8 +14,9 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.jpql;
 
-import java.util.*;
-import org.eclipse.persistence.testing.models.employee.domain.*;
+import org.eclipse.persistence.testing.models.employee.domain.Employee;
+
+import java.util.Vector;
 
 /**
  * Tests Simple OR clause
@@ -25,8 +26,8 @@ class SelectSimpleEqualsWithAs extends org.eclipse.persistence.testing.tests.jpq
     public void setup() {
         Employee emp1;
         Employee emp2;
-        emp1 = (Employee)getSomeEmployees().firstElement();
-        emp2 = (Employee)getSomeEmployees().elementAt(1);
+        emp1 = (Employee)getSomeEmployees().get(0);
+        emp2 = (Employee)getSomeEmployees().get(1);
         Vector employeesUsed = new Vector();
         employeesUsed.add(emp1);
 

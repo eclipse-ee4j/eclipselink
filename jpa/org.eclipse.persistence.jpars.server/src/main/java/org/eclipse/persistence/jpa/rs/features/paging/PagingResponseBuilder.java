@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -74,8 +74,7 @@ public class PagingResponseBuilder extends FeatureResponseBuilderImpl {
     private Object populatePagedReadAllQueryItemLinks(PersistenceContext context, Object result) {
         // populate links for the entity
         ClassDescriptor descriptor = context.getJAXBDescriptorForClass(result.getClass());
-        if ((result instanceof PersistenceWeavedRest) && (descriptor != null)) {
-            final PersistenceWeavedRest entity = (PersistenceWeavedRest) result;
+        if ((result instanceof PersistenceWeavedRest entity) && (descriptor != null)) {
             final String href = HrefHelper.buildEntityHref(context, descriptor.getAlias(), IdHelper.stringifyId(result, descriptor.getAlias(), context));
 
             final ItemLinks itemLinks = (new ItemLinksBuilder())

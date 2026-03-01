@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,25 +14,23 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.expressions;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.querykeys.ForeignReferenceQueryKey;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReadQuery;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Superclass for any object type expressions.
@@ -70,7 +68,7 @@ public abstract class ObjectExpression extends DataExpression {
      * Return an expression that allows you to treat its base as if it were a subclass of the class returned by the base
      * This can only be called on an ExpressionBuilder, the result of expression.get(String), expression.getAllowingNull(String),
      * the result of expression.anyOf("String") or the result of expression.anyOfAllowingNull("String")
-     *
+     * <p>
      * downcast uses Expression.type() internally to guarantee the results are of the specified class.
      * <p>Example:
      * <pre>
@@ -117,7 +115,7 @@ public abstract class ObjectExpression extends DataExpression {
      */
     public synchronized void addDerivedExpression(Expression addThis) {
         if (this.derivedExpressions == null) {
-            this.derivedExpressions = new ArrayList();
+            this.derivedExpressions = new ArrayList<>();
         }
         this.derivedExpressions.add(addThis);
     }
@@ -153,14 +151,14 @@ public abstract class ObjectExpression extends DataExpression {
      * Used in case outer joins should be printed in FROM clause.
      * Each of the additional tables mapped to expressions that joins it.
      */
-    public Map additionalExpressionCriteriaMap() {
+    public Map<DatabaseTable, Expression> additionalExpressionCriteriaMap() {
         if (getDescriptor() == null) {
             return null;
         }
 
-        HashMap tablesJoinExpressions = null;
+        Map<DatabaseTable, Expression> tablesJoinExpressions = null;
         if(isUsingOuterJoinForMultitableInheritance()) {
-            tablesJoinExpressions = new HashMap();
+            tablesJoinExpressions = new HashMap<>();
             List<DatabaseTable> childrenTables = getDescriptor().getInheritancePolicy().getChildrenTables();
             for( int i=0; i < childrenTables.size(); i++) {
                 DatabaseTable table = childrenTables.get(i);
@@ -324,15 +322,15 @@ public abstract class ObjectExpression extends DataExpression {
         throw QueryException.couldNotFindCastDescriptor(castClass, getBaseExpression());
     }
 
-    public List<Expression> copyDerivedExpressions(Map alreadyDone) {
+    public List<Expression> copyDerivedExpressions(Map<Expression, Expression> alreadyDone) {
         if (this.derivedExpressions == null) {
             return null;
         }
         List<Expression> derivedExpressionsCopy;
         synchronized(this) {
-            derivedExpressionsCopy = new ArrayList(this.derivedExpressions);
+            derivedExpressionsCopy = new ArrayList<>(this.derivedExpressions);
         }
-        List<Expression> result = new ArrayList(derivedExpressionsCopy.size());
+        List<Expression> result = new ArrayList<>(derivedExpressionsCopy.size());
         for (Expression exp : derivedExpressionsCopy) {
             result.add(exp.copiedVersionFrom(alreadyDone));
         }
@@ -371,7 +369,7 @@ public abstract class ObjectExpression extends DataExpression {
         }
         List<Expression> derivedExpressionsCopy;
         synchronized(this) {
-            derivedExpressionsCopy = new ArrayList(this.derivedExpressions);
+            derivedExpressionsCopy = new ArrayList<>(this.derivedExpressions);
         }
         for (Expression derivedExpression : derivedExpressionsCopy) {
             QueryKeyExpression exp = (QueryKeyExpression)derivedExpression;
@@ -409,7 +407,7 @@ public abstract class ObjectExpression extends DataExpression {
      */
     @Override
     public Expression join(Expression target, Expression onClause) {
-        if (target instanceof ObjectExpression) {
+        if (target.isObjectExpression()) {
             ((ObjectExpression)target).setJoinSource(this);
             ((ObjectExpression)target).setOnClause(onClause);
         } else {
@@ -449,9 +447,27 @@ public abstract class ObjectExpression extends DataExpression {
         return new ClassTypeExpression(this);
     }
 
+    /**
+     * INTERNAL:
+     * Get persistence class descriptor of this expression.
+     * Aggregate mapping will not be resolved.
+     *
+     * @return the persistence class descriptor
+     */
     @Override
     public ClassDescriptor getDescriptor() {
-        if (isAttribute()) {
+        return getDescriptor(false);
+    }
+
+    // Package local only, should not be exposed as API.
+    /**
+     * Get persistence class descriptor of this expression.
+     *
+     * @param resolveAggregate trigger resolution of aggregate mapping
+     * @return the persistence class descriptor
+     */
+    ClassDescriptor getDescriptor(boolean resolveAggregate) {
+        if (isAttribute(resolveAggregate)) {
             return null;
         }
         if (descriptor == null) {
@@ -462,7 +478,7 @@ public abstract class ObjectExpression extends DataExpression {
                 descriptor = convertToCastDescriptor(getSession().getDescriptor(queryKey.getReferenceClass()), getSession());
                 return descriptor;
             }
-            if (getMapping() == null) {
+            if (getMapping(resolveAggregate) == null) {
                 throw QueryException.invalidQueryKeyInExpression(this);
             }
 
@@ -483,13 +499,13 @@ public abstract class ObjectExpression extends DataExpression {
      * only applies to query keys representing an object or to expression builders.
      */
     @Override
-    public Vector getFields() {
+    public List<DatabaseField> getFields() {
         if (getDescriptor() == null) {
             DatabaseMapping mapping = getMapping();
             if (mapping != null) {
                 return mapping.getSelectFields();
             }
-            return new NonSynchronizedVector(0);
+            return new ArrayList<>(0);
         }
         if (descriptor.hasInheritance() && descriptor.getInheritancePolicy().shouldReadSubclasses()
                 && (!descriptor.getInheritancePolicy().hasMultipleTableChild()) || shouldUseOuterJoinForMultitableInheritance()) {
@@ -534,10 +550,10 @@ public abstract class ObjectExpression extends DataExpression {
      * Returns the first field from each of the owned tables, used for
      * fine-grained pessimistic locking.
      */
-    protected Vector getForUpdateOfFields() {
-        Vector allFields = getFields();
+    protected List<DatabaseField> getForUpdateOfFields() {
+        List<DatabaseField> allFields = getFields();
         int expected = getTableAliases().size();
-        Vector firstFields = new Vector(expected);
+        List<DatabaseField> firstFields = new ArrayList<>(expected);
         DatabaseTable lastTable = null;
         DatabaseField field = null;
         int i = 0;
@@ -548,18 +564,18 @@ public abstract class ObjectExpression extends DataExpression {
         // take O(n) time.
         // An even faster way may be to go getDescriptor().getAdditionalPrimaryKeyFields.
         while ((i < allFields.size()) && (firstFields.size() < expected)) {
-            field = (DatabaseField)allFields.elementAt(i++);
+            field = allFields.get(i++);
             if ((lastTable == null) || !field.getTable().equals(lastTable)) {
                 lastTable = field.getTable();
                 int j = 0;
                 while (j < firstFields.size()) {
-                    if (lastTable.equals(((DatabaseField)firstFields.elementAt(j)).getTable())) {
+                    if (lastTable.equals(firstFields.get(j).getTable())) {
                         break;
                     }
                     j++;
                 }
                 if (j == firstFields.size()) {
-                    firstFields.addElement(field);
+                    firstFields.add(field);
                 }
             }
         }
@@ -589,7 +605,7 @@ public abstract class ObjectExpression extends DataExpression {
             if (additionalTables == null) {
                 return null;
             } else {
-                return new ArrayList(additionalTables);
+                return new ArrayList<>(additionalTables);
             }
         } else if (descriptor.isAggregateDescriptor()) {
             return null;
@@ -602,7 +618,7 @@ public abstract class ObjectExpression extends DataExpression {
         }
         List<DatabaseTable> additionalTables = getAdditionalTables();
         if (additionalTables != null) {
-            tables = new Vector(tables);
+            tables = new ArrayList<>(tables);
             Helper.addAllUniqueToList(tables, additionalTables);
             return tables;
         }
@@ -662,7 +678,7 @@ public abstract class ObjectExpression extends DataExpression {
      * Used for cloning.
      */
     @Override
-    protected void postCopyIn(Map alreadyDone) {
+    protected void postCopyIn(Map<Expression, Expression> alreadyDone) {
         super.postCopyIn(alreadyDone);
         this.derivedExpressions = copyDerivedExpressions(alreadyDone);
         if (this.onClause != null) {
@@ -693,7 +709,7 @@ public abstract class ObjectExpression extends DataExpression {
      * protected.
      * @see org.eclipse.persistence.expressions.ExpressionBuilder#registerIn(Map alreadyDone)
      */
-    public void postCopyIn(Map alreadyDone, List<Expression> oldDerivedFields, List<Expression> oldDerivedTables) {
+    public void postCopyIn(Map<Expression, Expression> alreadyDone, List<Expression> oldDerivedFields, List<Expression> oldDerivedTables) {
         // bug  2637484 INVALID QUERY KEY EXCEPTION THROWN USING BATCH READS AND PARALLEL EXPRESSIONS
         if (oldDerivedFields != null) {
             if (this.derivedFields == null) {
@@ -745,8 +761,8 @@ public abstract class ObjectExpression extends DataExpression {
      * fine-grained pessimistic locking.
      */
     protected void writeForUpdateOfFields(ExpressionSQLPrinter printer, SQLSelectStatement statement) {
-        for (Iterator iterator = getForUpdateOfFields().iterator(); iterator.hasNext();) {
-            DatabaseField field = (DatabaseField)iterator.next();
+        for (Iterator<DatabaseField> iterator = getForUpdateOfFields().iterator(); iterator.hasNext();) {
+            DatabaseField field = iterator.next();
             if (printer.getPlatform().shouldPrintAliasForUpdate()) {
                 writeAlias(printer, field, statement);
             } else {
@@ -779,7 +795,7 @@ public abstract class ObjectExpression extends DataExpression {
      *  between the first expression and the ExpressionBuilder
      * @return first non-AggregateObjectMapping expression after the base ExpressionBuilder from the fullExpression
      */
-    public ObjectExpression getFirstNonAggregateExpressionAfterExpressionBuilder(List aggregateMappingsEncountered) {
+    public ObjectExpression getFirstNonAggregateExpressionAfterExpressionBuilder(List<DatabaseMapping> aggregateMappingsEncountered) {
         boolean done = false;
         ObjectExpression baseExpression = this;
         ObjectExpression prevExpression = this;

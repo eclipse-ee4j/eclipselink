@@ -1,0 +1,188 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[SHAREDREFERENCERELATIONS003]]
+=== Using the Embedded Key Class
+
+With JAXB, you can derive an XML representation from a set of JPA
+entities, when a JPA entity has an embedded ID class.
+
+In link:#BABIJHJI[Example 7-4], the `EmployeeId` is the embedded ID of
+the *Employee* class:
+
+[[BABIJHJI]]
+
+*_Example 7-4 Sample Embedded ID_*
+
+[source,oac_no_warn]
+----
+@Entity
+public class PhoneNumber {
+ 
+    @ManyToOne
+    @JoinColumns({
+        @JoinColumn(name="E_ID", referencedColumnName = "E_ID"),
+        @JoinColumn(name="E_COUNTRY", referencedColumnName = "COUNTRY")
+    })
+    private Employee contact;
+ 
+}
+ 
+@Entity
+@IdClass(EmployeeId.class)
+public class Employee {
+ 
+    @EmbeddedId
+    private EmployeeId id;
+ 
+    @OneToMany(mappedBy="contact")
+    private List<PhoneNumber> contactNumber;
+ 
+}
+ 
+@Embeddable
+public class EmployeeId {
+ 
+    @Column(name="E_ID")
+    private BigDecimal eId;
+ 
+    private String country;
+ 
+}
+ 
+----
+
+For the JAXB bindings, the XML accessor type will be set to *FIELD* for
+all the model classes. This can be set as a package level JAXB
+annotation, as shown here:
+
+[source,oac_no_warn]
+----
+@XmlAccessorType(XmlAccessType.FIELD)
+package com.example.model;
+ 
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+ 
+----
+
+link:#BABHCDEJ[Example 7-5] uses the EclipseLink extension
+`@XmlCustomizer` which extends the JAXB specification. Because the
+contact attribute is a bidirectional relationship, it includes the
+EclipseLink extension `@XmlInverseReference`.
+
+[[BABHCDEJ]]
+
+*_Example 7-5 Using the @XmlCustomizer Annotation_*
+
+[source,oac_no_warn]
+----
+@Entity
+@IdClass(EmployeeId.class)
+@XmlCustomizer(EmployeeCustomizer.class)
+public class Employee {
+ 
+    @EmbeddedId
+    private EmployeeId id;
+ 
+    @OneToMany(mappedBy="contact")
+    @XmlInverseReference(mappedBy="contact")
+    private List<PhoneNumber> contactNumber;
+ 
+}
+ 
+----
+
+To embed the content of the *EmployeeId* class in the complex type
+corresponding to the *Employee* class, change the XPath on the mapping
+for the `id` property to be _self_ or** . **. Then specify the XPath to
+the XML nodes which represent the ID.
+
+[[sthref133]]
+
+*_Example 7-6 Changing the XPath_*
+
+[source,oac_no_warn]
+----
+import org.eclipse.persistence.config.DescriptorCustomizer;
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
+ 
+public class EmployeeCustomizer implements DescriptorCustomizer {
+ 
+    public void customize(ClassDescriptor descriptor) throws Exception {
+        XMLCompositeObjectMapping idMapping = 
+            (XMLCompositeObjectMapping) descriptor.getMappingForAttributeName("id");
+        idMapping.setXPath(".");
+ 
+        descriptor.addPrimaryKeyFieldName("eId/text()");
+        descriptor.addPrimaryKeyFieldName("country/text()");
+    }
+ 
+}
+ 
+----
+
+If the target object had a single ID then we would use `@XmlIDREF`.
+Since the target object has a compound key, we will mark the field
+`@XmlTransient`, and use the EclipseLink extension `@XmlCustomizer` to
+set up the mapping.
+
+[[sthref134]]
+
+*_Example 7-7 Using the @XmlTransient Annotation_*
+
+[source,oac_no_warn]
+----
+@Entity
+@XmlCustomizer(PhoneNumberCustomizer.class)
+public class PhoneNumber {
+ 
+    @ManyToOne
+    @JoinColumns({
+        @JoinColumn(name="E_ID", referencedColumnName = "E_ID"),
+        @JoinColumn(name="E_COUNTRY", referencedColumnName = "COUNTRY")
+    })
+    @XmlTransient
+    private Employee contact;
+ 
+}
+ 
+----
+
+An `XMLObjectReferenceMapping` will be created. The mapping will include
+multiple key mappings.
+
+[source,oac_no_warn]
+----
+import org.eclipse.persistence.config.DescriptorCustomizer;
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.oxm.mappings.XMLObjectReferenceMapping;
+ 
+public class PhoneNumberCustomizer implements DescriptorCustomizer {
+ 
+    public void customize(ClassDescriptor descriptor) throws Exception {
+        XMLObjectReferenceMapping contactMapping = new XMLObjectReferenceMapping();
+        contactMapping.setAttributeName("contact");
+        contactMapping.setReferenceClass(Employee.class);
+        contactMapping.addSourceToTargetKeyFieldAssociation("contact/@eID", "eId/text()");
+        contactMapping.addSourceToTargetKeyFieldAssociation("contact/@country", "country/text()");
+        descriptor.addMapping(contactMapping);
+    }
+ 
+}
+----

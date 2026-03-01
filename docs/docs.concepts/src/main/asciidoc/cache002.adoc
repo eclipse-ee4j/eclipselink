@@ -1,0 +1,215 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[CACHE002]]
+=== About Cache Type and Size
+
+EclipseLink provides several different cache types which have different
+memory requirements. The size of the cache (in number of cached objects)
+can also be configured. The cache type and size to use depends on the
+application, the possibility of stale data, the amount of memory
+available in the JVM and on the machine, the garbage collection cost,
+and the amount of data in the database.
+
+The cache type of the shared object cache and its size can be configured
+with the `type` and `size` attributes of the `@Cache` annotation. In
+addition, the cache type for the query results cache can be configured
+with the `eclipselink.query-results-cache.type` persistence unit
+property. For more information, see the `@Cache` annotation and
+`eclipselink.query-results-cache.type` persistence unit property
+descriptions in the _Jakarta Persistence API (JPA) Extensions Reference
+for EclipseLink_.
+
+By default, EclipseLink uses a `SOFT_WEAK` with an initial size of 100
+objects. The cache size is not fixed, but just the initial size,
+EclipseLink will never eject an object from the cache until it has been
+garbage collected from memory. It will eject the object if the `CACHE`
+type is used, but this is not recommended. The cache size of the
+`SOFT_WEAK` and `HARD_WEAK` is also the size of the soft or hard
+sub-cache that can determine a minimum number of objects to hold in
+memory.
+
+You can configure how object identity is managed on a class-by-class
+basis. The `ClassDescriptor` object provides the cache and identity map
+options described in link:#CHEJBDHH[Table 8-1].
+
+[[OTLCG93799]][[sthref59]][[CHEJBDHH]]
+
+*_Table 8-1 Cache and Identity Map Options_*
+
+|========================================================
+|*Option* |*Caching* |*Guaranteed Identity* |*Memory Use*
+a|link:#CHEHGEEB[FULL Cache Type]|Yes |Yes |Very High
+a|link:#CHEGIBAC[WEAK Cache Type]|Yes |Yes |Low
+a|link:#CACHBJGE[SOFT Cache Type]|Yes |Yes |High
+a|link:#CHEJDCBH[SOFT_WEAK and HARD_WEAK Cache Type]|Yes |Yes |Medium-high
+|========================================================
+
+There are two other options, `NONE`, and `CACHE`. These options are not
+recommend.
+
+The value of the `type` attribute can be overridden with these
+persistence unit properties: `eclipselink.cache.type.<`__ENTITY__`>` and
+`eclipselink.cache.type.default`.
+
+[[CHEHGEEB]][[OTLCG00180]]
+
+==== FULL Cache Type
+
+This option provides full caching and guaranteed identity: objects are
+never flushed from memory unless they are deleted.
+
+It caches all objects and does not remove them. Cache size doubles
+whenever the maximum size is reached. This method may be
+memory-intensive when many objects are read. Do not use this option on
+batch operations.
+
+Oracle recommends using this identity map when the data set size is
+small and memory is in large supply.
+
+[[CHEGIBAC]][[OTLCG00181]]
+
+==== WEAK Cache Type
+
+This option only caches objects that have not been garbage collected.
+Any object still referenced by the application will still be cached.
+
+The weak cache type uses less memory than full identity map but also
+does not provide a durable caching strategy across client/server
+transactions. Objects are available for garbage collection when the
+application no longer references them on the server side (that is, from
+within the server JVM).
+
+[[CACHBJGE]][[OTLCG93800]]
+
+==== SOFT Cache Type
+
+This option is similar to the weak cache type, except that the cache
+uses soft references instead of weak references. Any object still
+referenced by the application will still be cached, and objects will
+only be removed from the cache when memory is low.
+
+The soft identity map allows for optimal caching of the objects, while
+still allowing the JVM to garbage collect the objects if memory is low.
+
+[[CHEJDCBH]][[OTLCG00182]]
+
+==== SOFT_WEAK and HARD_WEAK Cache Type
+
+These options are similar to the weak cache except that they maintain a
+most frequently used sub-cache. The sub-cache uses soft or hard
+references to ensure that these objects are not garbage collected, or
+only garbage collected only if the JVM is low on memory.
+
+The soft cache and hard cache provide more efficient memory use. They
+release objects as they are garbage-collected, except for a fixed number
+of most recently used objects. Note that weakly cached objects might be
+flushed if the transaction spans multiple client/server invocations. The
+size of the sub-cache is proportional to the size of the cache as
+specified by the `@Cache` `size` attribute. You should set the cache
+size to the number of objects you wish to hold in your transaction.
+
+Oracle recommends using this cache in most circumstances as a means to
+control memory used by the cache.
+
+[[CHEEBFCI]][[OTLCG00183]]
+
+==== NONE and CACHE
+
+`NONE` and `CACHE` options do not preserve object identity and should
+only be used in very specific circumstances. `NONE` does not cache any
+objects. `CACHE` only caches a fixed number of objects in an `LRU`
+fashion. These cache types should only be used if there are no
+relationships to the objects.Oracle does not recommend using these
+options. To disable caching, set the cache isolation to `ISOLATED`
+instead.
+
+[[OTLCG94332]]
+
+[[sthref60]]
+
+==== Guidelines for Configuring the Cache and Identity Maps
+
+Use the following guidelines when configuring your cache type:
+
+* For objects with a long life span, use a `SOFT`, `SOFT_WEAK` or
+`HARD_WEAK` cache type. For more information on when to choose one or
+the other, see link:#CDEJFBEH[About the Internals of Weak, Soft, and
+Hard Cache Types.].
+* For objects with a short life span, use a `WEAK` cache type.
+* For objects with a long life span, that have few instances, such as
+reference data, use a `FULL` cache type.
+
+NOTE: Use the `FULL` cache type only if the class has a small number of finite
+instances. Otherwise, a memory leak will occur.
+
+* If caching is not required or desired, disable the shared cache by
+setting the cache isolation to `ISOLATED`.
+
+NOTE: Oracle does not recommend the use of `CACHE` and `NONE` cache types.
+
+See link:#CDEJFBEH[About the Internals of Weak, Soft, and Hard Cache
+Types.]
+
+[[CDEJFBEH]][[OTLCG94333]]
+
+===== About the Internals of Weak, Soft, and Hard Cache Types
+
+The `WEAK` and `SOFT` cache types use JVM weak and soft references to
+ensure that any object referenced by the application is held in the
+cache. Once the application releases its reference to the object, the
+JVM is free to garbage collection the objects. When a weak or a soft
+reference is garbage collected is determined by the JVM. In general,
+expect a weak reference to be garbage collected with each JVM
+garbage-collection operation.
+
+The `SOFT_WEAK` and `HARD_WEAK` cache types contain the following two
+caches:
+
+* Reference cache: implemented as a `LinkedList` that contains soft or
+hard references, respectively.
+* Weak cache: implemented as a `Map` that contains weak references.
+
+When you create a `SOFT_WEAK` or `HARD_WEAK` cache with a specified
+size, the reference cache `LinkedList` is exactly this size. The weak
+cache `Map` has the size as its initial size: the weak cache will grow
+when more objects than the specified size are read in. Because
+EclipseLink does not control garbage collection, the JVM can reap the
+weakly held objects whenever it sees fit.
+
+Because the reference cache is implemented as a `LinkedList`, new
+objects are added to the end of the list. Because of this, it is by
+nature a least recently used (LRU) cache: fixed size, object at the top
+of the list is deleted, provided the maximum size has been reached.
+
+The `SOFT_WEAK` and `HARD_WEAK` are essentially the same type of cache.
+The `HARD_WEAK` was constructed to work around an issue with some JVMs.
+
+If your application reaches a low system memory condition frequently
+enough, or if your platform's JVM treats weak and soft references the
+same, the objects in the reference cache may be garbage-collected so
+often that you will not benefit from the performance improvement
+provided by it. If this is the case, Oracle recommends that you use the
+`HARD_WEAK`. It is identical to the `SOFT_WEAK` except that it uses hard
+references in the reference cache. This guarantees that your application
+will benefit from the performance improvement provided by it.
+
+When an object in a `HARD_WEAK` or `SOFT_WEAK` is pushed out of the
+reference cache, it gets put in the weak cache. Although it is still
+cached, EclipseLink cannot guarantee that it will be there for any
+length of time because the JVM can decide to garbage-collect weak
+references at anytime.

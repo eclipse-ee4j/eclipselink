@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,8 +16,6 @@ package org.eclipse.persistence.internal.sessions.cdi;
 
 import javax.naming.NamingException;
 
-import org.eclipse.persistence.internal.sessions.AbstractSession;
-
 /**
  * Interface to control CDI-based injection in EntityListeners
  * Any references to CDI specific classes should be reserved for implementers to allow this
@@ -29,5 +27,5 @@ public interface InjectionManager<T> {
 
     T createManagedBeanAndInjectDependencies(Class<T> managedBeanClass) throws NamingException;
 
-    void cleanUp(AbstractSession session);
+    void cleanUp();
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,12 +14,6 @@
 //     Matt MacIvor - 2.5.1 - Initial Implementation
 package org.eclipse.persistence.testing.jaxb.annotations.xmlinlinebinarydata;
 
-import java.io.StringWriter;
-
-import jakarta.xml.bind.JAXBContext;
-import jakarta.xml.bind.Marshaller;
-
-import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 public class InlineHexBinaryTestCases extends JAXBWithJSONTestCases {

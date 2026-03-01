@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,6 +22,8 @@ import jakarta.persistence.metamodel.EmbeddableType;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 
+import java.io.Serial;
+
 /**
  * <p>
  * <b>Purpose</b>: Provides the implementation for the EmbeddableType interface
@@ -39,6 +41,7 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 public class EmbeddableTypeImpl<X> extends ManagedTypeImpl<X> implements EmbeddableType<X> {
 
     /** Item 54: DI 89: explicit UID will avoid performance hit runtime generation of one */
+    @Serial
     private static final long serialVersionUID = 8089664013641473274L;
 
     protected EmbeddableTypeImpl(MetamodelImpl metamodel, ClassDescriptor descriptor) {

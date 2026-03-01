@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Vector;
 
+import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.junit.Assert;
 import org.junit.Test;
@@ -37,9 +38,6 @@ public class HelperTest {
 
         Assert.assertEquals("Failed to replace single slash with double slashes from the String.",
                 "c:\\\\test1\\\\test2\\\\test3\\\\", Helper.doubleSlashes("c:\\test1\\test2\\test3\\"));
-
-        Assert.assertEquals("Failed to remove vowels from String.",
-                "llllll", Helper.removeVowels("lalelilolule"));
 
         Assert.assertEquals("Failed to remove Character to fit String.",
                 "123x", Helper.removeCharacterToFit("1x2x3x", 'x', 4));
@@ -59,8 +57,8 @@ public class HelperTest {
         Assert.assertTrue("Failed to check if Float.class is a primitive wrapper.", Helper.isPrimitiveWrapper(Float.class));
         Assert.assertTrue("Failed to check if Double.class is a primitive wrapper.", Helper.isPrimitiveWrapper(Double.class));
 
-        Vector<Object> aVector = new Vector<Object>();
-        Object elem = new String("dummy");
+        Vector<Object> aVector = new Vector<>();
+        Object elem = "dummy";
         aVector.addElement(elem);
         Assert.assertEquals("Failed to make a java.util.Vector from a java.util.Vector.",
                 aVector, Helper.makeVectorFromObject(aVector));
@@ -122,21 +120,13 @@ public class HelperTest {
     }
 
     @Test
-    public void checkCompareByteArraysWithDifferentElementsTest() {
-        byte[] b1 = "12345".getBytes();
-        byte[] b2 = "12346".getBytes();
-        Assert.assertFalse("Helper.compareByteArrays(b1,b2) when comparing byte arrays with different elements.",
-                Helper.compareByteArrays(b1, b2));
-    }
-
-    @Test
     public void compareArrayContentTest() {
         Integer[] array1 = new Integer[3];
         Integer[] array2 = new Integer[3];
         Integer[] array3 = new Integer[3];
         for (int count = 0; count < 3; count++) {
-            Integer counter = count;
-            Integer counter2 = count + 9;
+            int counter = count;
+            int counter2 = count + 9;
             array1[count] = counter;
             array2[count] = counter;
             array3[count] = counter2;
@@ -154,7 +144,7 @@ public class HelperTest {
         Integer[] array2 = new Integer[2];
         Integer[] array3 = new Integer[3];
         for (int count = 0; count < 2; count++) {
-            Integer counter = count;
+            int counter = count;
             array1[count] = counter;
             array2[count] = counter;
             array3[count] = counter;
@@ -165,30 +155,6 @@ public class HelperTest {
                 Helper.compareArrays(array1, array2));
         Assert.assertFalse("Helper.compareArrays(Object[] array1, Object[] array2) does not recognize that object arrays are of different length.",
                 Helper.compareArrays(array1, array3));
-    }
-
-    @Test
-    public void compareCharArrayContentTest() {
-        char[] array1 = { 'a', 'b', 'c' };
-        char[] array2 = { 'a', 'b', 'c' };
-        char[] array3 = { 'x', 'y', 'z' };
-
-        Assert.assertTrue("Helper.compareCharArrays(char[] array1, char[] array2) does not recognize that arrays contain the same elements.",
-                Helper.compareCharArrays(array1, array2));
-        Assert.assertFalse("Helper.compareCharArrays(char[] array1, char[] array2) does not recognize that arrays contain different elements.",
-                Helper.compareCharArrays(array1, array3));
-    }
-
-    @Test
-    public void compareCharArrayLengthTest() {
-        char[] array1 = { 'a', 'b' };
-        char[] array2 = { 'a', 'b' };
-        char[] array3 = { 'a', 'b', 'c' };
-
-        Assert.assertTrue("Helper.compareCharArrays(char[] array1, char[] array2) does not recognize that arrays are of same length.",
-                Helper.compareCharArrays(array1, array2));
-        Assert.assertFalse("Helper.compareCharArrays(char[] array1, char[] array2) does not recognize that arrays are of different length.",
-                Helper.compareCharArrays(array1, array3));
     }
 
     @Test
@@ -313,6 +279,25 @@ public class HelperTest {
 
         } finally {
             Helper.setShouldOptimizeDates(optimizedDatesState);
+        }
+    }
+
+    @Test
+    public void dateFromYearMonthDateTest() {
+        //1950-02-20 //valid month is 0-11 0-January
+        java.sql.Date date = Helper.dateFromYearMonthDate(1950, 1, 20);
+        Assert.assertEquals("1950-02-20", date.toString());
+    }
+
+    @Test
+    public void dateFromYearMonthDateInvalidValueTest() {
+        //1950-02-30 //valid month is 0-11 0-January
+        //Invalid day value 30
+        try {
+            java.sql.Date date = Helper.dateFromYearMonthDate(1950, 1, 30);
+            Assert.assertEquals("1950-02-30", date.toString());
+        } catch (ConversionException e) {
+            Assert.assertEquals("The incorrect exception was thrown", ConversionException.INCORRECT_DATE_VALUE, e.getErrorCode());
         }
     }
 }

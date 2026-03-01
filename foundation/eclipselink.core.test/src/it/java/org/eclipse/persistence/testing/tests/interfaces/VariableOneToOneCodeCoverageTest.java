@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,18 +14,23 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.interfaces;
 
-import java.util.Vector;
-import java.util.Enumeration;
-
-import org.eclipse.persistence.testing.framework.*;
-import org.eclipse.persistence.sessions.Session;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.Association;
 import org.eclipse.persistence.mappings.TypedAssociation;
 import org.eclipse.persistence.mappings.VariableOneToOneMapping;
-import org.eclipse.persistence.testing.models.interfaces.*;
+import org.eclipse.persistence.sessions.Session;
+import org.eclipse.persistence.testing.framework.TestCase;
+import org.eclipse.persistence.testing.framework.TestErrorException;
+import org.eclipse.persistence.testing.models.interfaces.Actor;
+import org.eclipse.persistence.testing.models.interfaces.Broadcastor;
+import org.eclipse.persistence.testing.models.interfaces.Employee;
+import org.eclipse.persistence.testing.models.interfaces.Secretary;
+
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
 
 public class VariableOneToOneCodeCoverageTest extends TestCase {
     VariableOneToOneMapping mapping;
@@ -39,7 +44,7 @@ public class VariableOneToOneCodeCoverageTest extends TestCase {
 
     @Override
     public void verify() {
-        if (testFailures.length() > 0) {
+        if (!testFailures.isEmpty()) {
             throw new TestErrorException("Tests failures from VariableOneToOneMapping: " + testFailures);
         }
     }
@@ -56,10 +61,10 @@ public class VariableOneToOneCodeCoverageTest extends TestCase {
         if (mapping.getClassIndicatorAssociations().isEmpty()) {
             testFailures += "addClassIndicator = null did not add a null wrapper type indicator";
         } else {
-            Enumeration e = mapping.getClassIndicatorAssociations().elements();
+            Iterator e = mapping.getClassIndicatorAssociations().iterator();
 
-            while (e.hasMoreElements()) {
-                TypedAssociation association = (TypedAssociation)e.nextElement();
+            while (e.hasNext()) {
+                TypedAssociation association = (TypedAssociation)e.next();
 
                 if (association.getKey() == Employee.class) {
                     if (!(association.getValue() instanceof Helper)) {
@@ -71,13 +76,13 @@ public class VariableOneToOneCodeCoverageTest extends TestCase {
 
         /**************************************************************************/
         Vector vectorIn = new Vector();
-        vectorIn.add(new Association(Actor.class, new String("ASHLEY JUDD")));
-        vectorIn.add(new Association(Secretary.class, new String("DARTH VADER")));
-        vectorIn.add(new Association(Broadcastor.class, new String("RED KELLY")));
+        vectorIn.add(new Association(Actor.class, "ASHLEY JUDD"));
+        vectorIn.add(new Association(Secretary.class, "DARTH VADER"));
+        vectorIn.add(new Association(Broadcastor.class, "RED KELLY"));
 
         mapping.setClassIndicatorAssociations(vectorIn);
 
-        Vector vectorOut = mapping.getClassIndicatorAssociations();
+        List vectorOut = mapping.getClassIndicatorAssociations();
 
         if (vectorOut.size() != 3) {
             testFailures += "setClassIndicatorAssociations - the set failed";
@@ -85,7 +90,7 @@ public class VariableOneToOneCodeCoverageTest extends TestCase {
             int foundCount = 0;
 
             for (int i = 0; i < vectorOut.size(); i++) {
-                Association ass = (Association)vectorOut.elementAt(i);
+                Association ass = (Association)vectorOut.get(i);
 
                 if (ass.getKey() == Actor.class.getName() && ass.getValue().equals("ASHLEY JUDD")) {
                     foundCount++;
@@ -104,16 +109,16 @@ public class VariableOneToOneCodeCoverageTest extends TestCase {
         }
 
         /**************************************************************************/
-        Association assoc = new Association(new String("key"), new String("value"));
+        Association assoc = new Association("key", "value");
         Vector in = new Vector();
         in.add(assoc);
         mapping.setSourceToTargetQueryKeyFieldAssociations(in);
-        Vector out = mapping.getSourceToTargetQueryKeyFieldAssociations();
+        List out = mapping.getSourceToTargetQueryKeyFieldAssociations();
 
         if (out.size() != 1) {
             testFailures += "setSourceToTargetQueryFieldAssociations - the set failed";
         } else {
-            Association a = (Association)out.elementAt(0);
+            Association a = (Association)out.get(0);
 
             if (!(a.getKey().equals("key") && a.getValue().equals("value"))) {
                 testFailures += "setSourceToTargetQueryFieldAssociations - value in the set failed";
@@ -127,7 +132,7 @@ public class VariableOneToOneCodeCoverageTest extends TestCase {
         foreignKeyNames.add("fkey3");
         mapping.setForeignKeyFieldNames(foreignKeyNames);
 
-        Vector fieldNames = mapping.getForeignKeyFieldNames();
+        List fieldNames = mapping.getForeignKeyFieldNames();
 
         if (!(mapping.getForeignKeyFieldNames().contains("fkey1"))) {
             testFailures += "addForeignQueryKeyName - fkey1";

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,10 +14,12 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.validation;
 
+import java.util.List;
+
 import org.eclipse.persistence.exceptions.DescriptorException;
+import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.exceptions.IntegrityChecker;
 import org.eclipse.persistence.exceptions.IntegrityException;
-import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.sessions.Project;
 
 
@@ -61,7 +63,7 @@ public class ConstructorTest extends ExceptionTest {
     @Override
     protected void verify() {
         if (caughtException == null) {
-            throwError("The proper exception was not thrown:" + org.eclipse.persistence.internal.helper.Helper.cr() + "caught exception was null! " + org.eclipse.persistence.internal.helper.Helper.cr() + org.eclipse.persistence.internal.helper.Helper.cr() + "[EXPECTING] " + expectedException + " or " + secondExpectedException);
+            throwError("The proper exception was not thrown:" + System.lineSeparator() + "caught exception was null! " + System.lineSeparator() + System.lineSeparator() + "[EXPECTING] " + expectedException + " or " + secondExpectedException);
         }
 
         if (caughtException instanceof IntegrityException) {
@@ -71,25 +73,25 @@ public class ConstructorTest extends ExceptionTest {
 
             IntegrityChecker ic = new IntegrityChecker();
             ic = ((IntegrityException)caughtException).getIntegrityChecker();
-            java.util.Vector exceptionList = ic.getCaughtExceptions();
+            List<Exception> exceptionList = ic.getCaughtExceptions();
 
             for (int i = 0; i < exceptionList.size(); i++) {
-                if (exceptionList.elementAt(i) instanceof DescriptorException) {
-                    if (((DescriptorException)(exceptionList.elementAt(i))).getErrorCode() == DescriptorException.ILLEGAL_ACCESS_WHILE_CONSTRUCTOR_INSTANTIATION) {
+                if (exceptionList.get(i) instanceof DescriptorException) {
+                    if (((DescriptorException)(exceptionList.get(i))).getErrorCode() == DescriptorException.ILLEGAL_ACCESS_WHILE_CONSTRUCTOR_INSTANTIATION) {
                         illegalAccessConstructorInit = true;
                     }
 
-                    if (((DescriptorException)(exceptionList.elementAt(i))).getErrorCode() == DescriptorException.NO_SUCH_METHOD_WHILE_CONSTRUCTOR_INSTANTIATION) {
+                    if (((DescriptorException)(exceptionList.get(i))).getErrorCode() == DescriptorException.NO_SUCH_METHOD_WHILE_CONSTRUCTOR_INSTANTIATION) {
                         noSuchMethodConstructorInit = true;
                     }
 
-                    if (((DescriptorException)(exceptionList.elementAt(i))).getErrorCode() == DescriptorException.NO_SUCH_METHOD_WHILE_INITIALIZING_INSTANTIATION_POLICY) {
+                    if (((DescriptorException)(exceptionList.get(i))).getErrorCode() == DescriptorException.NO_SUCH_METHOD_WHILE_INITIALIZING_INSTANTIATION_POLICY) {
                         noSuchMethodInstantiationInit = true;
                     }
                 }
             }
 
-            String cr = org.eclipse.persistence.internal.helper.Helper.cr();
+            String cr = System.lineSeparator();
 
             if (!illegalAccessConstructorInit && !noSuchMethodConstructorInit && !noSuchMethodInstantiationInit) {
                 throw new org.eclipse.persistence.testing.framework.TestErrorException("The proper exception was not thrown:" + cr + "[CAUGHT] " + caughtException + cr + cr + "[EXPECTING] " + expectedException.getMessage() + cr + " or " + secondExpectedException.getMessage() + cr + " or " + thirdExpectedException.getMessage());

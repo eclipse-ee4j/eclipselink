@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,7 +38,7 @@ import org.eclipse.persistence.annotations.MultitenantType;
 import org.eclipse.persistence.annotations.TenantDiscriminatorColumn;
 import org.eclipse.persistence.annotations.TenantDiscriminatorColumns;
 import org.eclipse.persistence.annotations.TenantTableDiscriminator;
-import org.eclipse.persistence.config.CacheIsolationType;
+import org.eclipse.persistence.annotations.CacheIsolationType;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.MultitenantPolicy;
 import org.eclipse.persistence.descriptors.SingleTableMultitenantPolicy;
@@ -58,7 +58,7 @@ import org.eclipse.persistence.sessions.server.ServerSession;
 
 /**
  * Object to hold onto multi-tenant metadata.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -74,7 +74,7 @@ import org.eclipse.persistence.sessions.server.ServerSession;
  */
 public class MultitenantMetadata extends ORMetadata {
     private Boolean m_includeCriteria;
-    private List<TenantDiscriminatorColumnMetadata> m_tenantDiscriminatorColumns = new ArrayList<TenantDiscriminatorColumnMetadata>();
+    private List<TenantDiscriminatorColumnMetadata> m_tenantDiscriminatorColumns = new ArrayList<>();
     private String m_type;
     private TenantTableDiscriminatorMetadata m_tenantTableDiscriminator;
 
@@ -119,8 +119,7 @@ public class MultitenantMetadata extends ORMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (objectToCompare instanceof MultitenantMetadata) {
-            MultitenantMetadata multitenant = (MultitenantMetadata) objectToCompare;
+        if (objectToCompare instanceof MultitenantMetadata multitenant) {
 
             if (! valuesMatch(m_type, multitenant.getType())) {
                 return false;
@@ -142,7 +141,8 @@ public class MultitenantMetadata extends ORMetadata {
 
     @Override
     public int hashCode() {
-        int result = m_includeCriteria != null ? m_includeCriteria.hashCode() : 0;
+        int result = super.hashCode();
+        result = 31 * result + (m_includeCriteria != null ? m_includeCriteria.hashCode() : 0);
         result = 31 * result + (m_tenantDiscriminatorColumns != null ? m_tenantDiscriminatorColumns.hashCode() : 0);
         result = 31 * result + (m_type != null ? m_type.hashCode() : 0);
         result = 31 * result + (m_tenantTableDiscriminator != null ? m_tenantTableDiscriminator.hashCode() : 0);

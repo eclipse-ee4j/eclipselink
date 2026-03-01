@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,18 +14,10 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.oxm.mappings;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
-
-import javax.xml.namespace.QName;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.DescriptorException;
-import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.oxm.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.Helper;
@@ -62,6 +54,13 @@ import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
+
+import javax.xml.namespace.QName;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 
 /**
  * <p><b>Purpose</b>:The XMLAnyAttributeMapping is used to map to an attribute in an object to any xml attributes contained
@@ -256,7 +255,7 @@ public class XMLAnyAttributeMapping extends DatabaseMapping implements XMLMappin
             //Get the nested row represented by this field to build the collection from
             Object nested = record.get(getField());
             if (nested instanceof Vector) {
-                nested = ((Vector) nested).firstElement();
+                nested = ((Vector) nested).get(0);
             }
             if (!(nested instanceof XMLRecord)) {
                 return null;
@@ -342,7 +341,7 @@ public class XMLAnyAttributeMapping extends DatabaseMapping implements XMLMappin
     }
 
     @Override
-    public Vector getFields() {
+    public List<DatabaseField> getFields() {
         return this.collectFields();
     }
 
@@ -375,17 +374,16 @@ public class XMLAnyAttributeMapping extends DatabaseMapping implements XMLMappin
         for (Object iter = cp.iteratorFor(attributeValue); cp.hasNext(iter);) {
             Map.Entry entry = (Map.Entry)cp.nextEntry(iter, session);
             Object key = entry.getKey();
-            if ((key != null) && key instanceof QName) {
+            if ((key != null) && key instanceof QName attributeName) {
                 Object value = entry.getValue();
-                QName attributeName = (QName) key;
                 String namespaceURI = attributeName.getNamespaceURI();
                 String qualifiedName = attributeName.getLocalPart();
 
                 if (nr != null) {
                     String prefix = nr.resolveNamespaceURI(attributeName.getNamespaceURI());
-                    if ((prefix != null) && prefix.length() > 0) {
+                    if ((prefix != null) && !prefix.isEmpty()) {
                         qualifiedName = prefix + XMLConstants.COLON + qualifiedName;
-                    } else if (attributeName.getNamespaceURI() != null && attributeName.getNamespaceURI().length() > 0) {
+                    } else if (attributeName.getNamespaceURI() != null && !attributeName.getNamespaceURI().isEmpty()) {
                         String generatedPrefix = nr.generatePrefix();
                         qualifiedName = generatedPrefix + XMLConstants.COLON + qualifiedName;
                         nr.put(generatedPrefix, attributeName.getNamespaceURI());

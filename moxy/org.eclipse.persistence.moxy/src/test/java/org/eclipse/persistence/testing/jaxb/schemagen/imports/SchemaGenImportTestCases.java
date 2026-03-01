@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -161,7 +161,7 @@ public class SchemaGenImportTestCases extends TestCase {
         MyStreamSchemaOutputResolver resolver = new MyStreamSchemaOutputResolver(outDir);
         jctx.generateSchema(resolver);
         Map<String, File> map = resolver.schemaFiles;
-        assertTrue("No schemas were generated", map.size() > 0);
+        assertTrue("No schemas were generated", !map.isEmpty());
         File fooFile = map.get(FOO_URI);
         File barFile = map.get(BAR_URI);
         assertTrue("No schema was generated for Foo", fooFile != null);

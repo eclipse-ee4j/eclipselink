@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -77,11 +77,11 @@ import jakarta.persistence.metamodel.SetAttribute;
 import jakarta.persistence.metamodel.SingularAttribute;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.descriptors.InstanceVariableAttributeAccessor;
 import org.eclipse.persistence.internal.descriptors.MethodAttributeAccessor;
 import org.eclipse.persistence.internal.dynamic.ValuesAccessor;
 import org.eclipse.persistence.internal.helper.BasicTypeHelperImpl;
-import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
@@ -161,7 +161,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
     @Override
     public Set<Attribute<? super X, ?>> getAttributes() {
         // We return a new Set instead of directly returning the Collection of values from the members HashMap
-        return new LinkedHashSet<Attribute<? super X, ?>>(this.members.values());
+        return new LinkedHashSet<>(this.members.values());
     }
 
 
@@ -226,7 +226,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
         // Get all attributes and filter only for PluralAttributes
         Set<Attribute<? super X, ?>> allAttributes = this.getAttributes();
         // Is it better to add to a new Set or remove from an existing Set without a concurrentModificationException
-        Set<PluralAttribute<? super X, ?, ?>> pluralAttributes = new LinkedHashSet<PluralAttribute<? super X, ?, ?>>();
+        Set<PluralAttribute<? super X, ?, ?>> pluralAttributes = new LinkedHashSet<>();
         for(Attribute<? super X, ?> anAttribute : allAttributes) {
             // Add only CollectionType attributes
             if(anAttribute.isCollection()) {
@@ -290,7 +290,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
         return getDeclaredAttribute(name, false);
     }
 
-    /**
+    /*
      * All getDeclared*(name, *) function calls require navigation up the superclass tree
      * in order to determine if the member name is declared on the current managedType.<p>
      * If the attribute is found anywhere above on the superclass tree - then throw an IAE.
@@ -299,11 +299,11 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
             - attribute positioning(none, current, 1st parent, Nth parent)
             - attribute type (right, wrong type)
             - attribute classification for current and parents (Entity, MappedSuperclass, embeddable?, Basic?)
-            UC1) Attribute is not found on current attribute (regardless of what is on its' superclasses)
+            UC1) Attribute is not found on current attribute (regardless of what is on its superclasses)
                     - throw IAException
             UC2) Attribute is found on current attribute but is of the wrong type
                     - throw IAException
-            UC3) Attribute is found on on current managedType Entity/MappedSuperclass
+            UC3) Attribute is found on the current managedType Entity/MappedSuperclass
                     (but not found anywhere on the supertype hierarchy - declared above)
                     In this case we do the reverse - keep checking only when attribute is null
                     - return attribute
@@ -326,9 +326,9 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
     public Set<Attribute<X, ?>> getDeclaredAttributes() {
         // return only the set of attributes declared on this class - not via inheritance
         // Get all attributes and filter only for declared attributes
-        Set<Attribute<X, ?>> allAttributes = new LinkedHashSet<Attribute<X, ?>>(this.members.values());;
+        Set<Attribute<X, ?>> allAttributes = new LinkedHashSet<>(this.members.values());
         // Is it better to add to a new Set or remove from an existing Set without a concurrentModificationException
-        Set<Attribute<X, ?>> declaredAttributes = new LinkedHashSet<Attribute<X, ?>>();
+        Set<Attribute<X, ?>> declaredAttributes = new LinkedHashSet<>();
         for(Attribute<X, ?> anAttribute : allAttributes) {
             // Check the inheritance hierarchy for higher declarations
             if(this.isAttributeDeclaredOnlyInLeafType(anAttribute.getName())) {
@@ -394,7 +394,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
         // Get all collection attribute and filter only on declared ones
         Set<PluralAttribute<? super X, ?, ?>> pluralAttributes = this.getPluralAttributes();
         // Is it better to add to a new Set or remove from an existing Set without a concurrentModificationException
-        Set<PluralAttribute<X, ?, ?>> declaredAttributes = new LinkedHashSet<PluralAttribute<X, ?, ?>>();
+        Set<PluralAttribute<X, ?, ?>> declaredAttributes = new LinkedHashSet<>();
         // The set is a copy of the underlying metamodel attribute set - we will remove all SingularAttribute(s)
         for(PluralAttribute<? super X, ?, ?>  anAttribute :pluralAttributes) {
                 // check for declarations in the hierarchy and don't add if declared above
@@ -641,9 +641,9 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
     public Set<SingularAttribute<X, ?>> getDeclaredSingularAttributes() {
         // return the set of SingularAttributes declared on this class - not via inheritance
         // Get all attributes and filter only for declared attributes
-        Set<Attribute<X, ?>> allAttributes = new LinkedHashSet<Attribute<X, ?>>(this.members.values());;
+        Set<Attribute<X, ?>> allAttributes = new LinkedHashSet<>(this.members.values());
         // Is it better to add to a new Set or remove from an existing Set without a concurrentModificationException
-        Set<SingularAttribute<X, ?>> declaredAttributes = new LinkedHashSet<SingularAttribute<X, ?>>();
+        Set<SingularAttribute<X, ?>> declaredAttributes = new LinkedHashSet<>();
         for(Attribute<X, ?> anAttribute : allAttributes) {
             if(!anAttribute.isCollection()) {
                 declaredAttributes.add((SingularAttribute<X, ?>)anAttribute);
@@ -769,7 +769,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
         // Get the superType if it exists (without using IdentifiableType.superType)
         Class<? super X> aSuperClass = this.getJavaType().getSuperclass();
         // The superclass for top-level types will be Object - which we will leave as a null supertype on the type
-        if(null != aSuperClass && aSuperClass != ClassConstants.OBJECT &&
+        if(null != aSuperClass && aSuperClass != CoreClassConstants.OBJECT &&
                 this.getMetamodel().getType(aSuperClass).isManagedType()) { // 315287: return null for BasicType
                 aSuperType = (ManagedTypeImpl<?>)this.getMetamodel().managedType(aSuperClass);
         }
@@ -910,7 +910,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
     /**
      * INTERNAL:
      * This function returns whether the Object class passed in can be autoboxed
-     * (a primitive wrapped in its' object type) or the reverse - an autoboxed object
+     * (a primitive wrapped in its object type) or the reverse - an autoboxed object
      * that wraps a primitive type).
      * It answers the question of whether the two classes can be considered to be essentially the same<br>
      * This function is used by the metamodel to determine whether the
@@ -930,7 +930,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
             return false;
         }
 
-        /**
+        /*
          * We return true for any of the following combinations.
          * boolean:Boolean byte:Byte short:Short char:Character int:Integer long:Long float:Float double:Double
          */
@@ -1139,12 +1139,12 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
             return;
         }
 
-        this.members = new HashMap<String, Attribute<X, ?>>();
+        this.members = new HashMap<>();
         // Get and process all mappings on the relationalDescriptor
         for (DatabaseMapping mapping : getDescriptor().getMappings()) {
             AttributeImpl<X, ?> member = null;
 
-            /**
+            /*
              * The following section will determine the plural attribute type for each mapping on the managedType.
              * Special handling is required for differentiation of List and Collection
              * beyond their shared IndirectList ContainerPolicy,
@@ -1162,9 +1162,8 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
              * using the getMethodName on the accessor.
              */
             // Tie into the collection hierarchy at a lower level
-            if (mapping instanceof CollectionMapping) {
+            if (mapping instanceof CollectionMapping colMapping) {
                 // Handle 1:m, n:m collection mappings
-                CollectionMapping colMapping = (CollectionMapping) mapping;
                 ContainerPolicy collectionContainerPolicy = colMapping.getContainerPolicy();
                 if (collectionContainerPolicy.isMapPolicy()) {
                     // Handle the 3 Map type mappings (policy.isMappedKeyMapPolicy()) is handled by isMapPolicy())
@@ -1174,7 +1173,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
                     // check mapping.attributeAcessor.attributeField.type=Collection
                 } else if (collectionContainerPolicy.isListPolicy()) {
                     // This seems very over complex...
-                    /**
+                    /*
                      * Handle lazy Collections and Lists and the fact that both return an IndirectList policy.
                      * We check the type on the attributeField of the attributeAccessor on the mapping
                      */
@@ -1216,7 +1215,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
                     } else {
                         // handle variations of missing get/set methods - only for Collection vs List
                         if(colMapping.getAttributeAccessor() instanceof MethodAttributeAccessor) {
-                            /**
+                            /*
                              * The following call will perform a getMethod call for us.
                              * If no getMethod exists, we will secondarily check the getMethodName below.
                              */
@@ -1226,7 +1225,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
                             } else if((aType != null) && Collection.class.isAssignableFrom(aType)) {
                                 member = new CollectionAttributeImpl(this, colMapping, true);
                             } else {
-                                /**
+                                /*
                                  * In this block we have the following scenario:
                                  * 1) The access type is "field"
                                  * 2) The get method is not set on the entity
@@ -1266,7 +1265,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
                                         member = initializePluralAttributeTypeNotFound(this, colMapping, true);
                                     }
                                 } else {
-                                    /**
+                                    /*
                                      * Field access Handling:
                                      * If a get method name exists, we check the return type on the method directly
                                      * using reflection.
@@ -1336,7 +1335,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
      * directly on the containing java class associated with this managedType.
      */
     protected Class<?> getTypeClassFromAttributeOrMethodLevelAccessor(DatabaseMapping mapping) {
-        /**
+        /*
          * In this block we have the following scenario:
          * 1) The access type is "method" or "field"
          * 1a) The get method is set on the entity (method access)
@@ -1372,13 +1371,12 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
                     aField = PrivilegedAccessHelper.getDeclaredField(
                         this.getJavaType(), mapping.getAttributeName(), false);
                 }
-            } catch (PrivilegedActionException pae) {
-            } catch (NoSuchFieldException nsfe) {
+            } catch (PrivilegedActionException | NoSuchFieldException pae) {
             }
         }
 
         // 4) If method level access - perform a getDeclaredMethod call
-        /**
+        /*
          * Field access Handling:
          * If a get method name exists, we check the return type on the method directly
          * using reflection.
@@ -1394,8 +1392,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
                     aMethod = PrivilegedAccessHelper.getDeclaredMethod(
                             this.getJavaType(), getMethodName, null);
                 }
-            } catch (PrivilegedActionException pae) {
-            } catch (NoSuchMethodException nsfe) {
+            } catch (PrivilegedActionException | NoSuchMethodException pae) {
             } catch (NullPointerException npe) {
                 // case: null name arg to Class.searchMethods from getDeclaredMethod if getMethodName is null
                 // because we do not know the javaType on the Type (descriptor.javaClass was null)

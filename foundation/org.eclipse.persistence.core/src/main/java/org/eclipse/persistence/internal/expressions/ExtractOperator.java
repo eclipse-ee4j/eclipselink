@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2022, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,12 +14,12 @@
 //     07/29/2022-4.0.0 Tomas Kraus - 1573: Fixed types returned by JPQL EXTRACT()
 package org.eclipse.persistence.internal.expressions;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.internal.helper.ClassConstants;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Expression operator customization for {@code EXTRACT(<date-time-part> FROM <date-time>)}.
@@ -202,9 +202,33 @@ public class ExtractOperator extends ExpressionOperator {
         printPartSql(first, second, printer);
     }
 
+    /**
+     * Printer for DATE ({@code <date-time-part>} argument.
+     * This method shall be overriden to implement platform specific SQL printer.
+     *
+     * @param first first expression ({@code <date-time>} argument)
+     * @param second second expression ({@code <date-time-part>} argument)
+     * @param printer target printer
+     */
+    protected void printDateSQL(final Expression first, Expression second, final ExpressionSQLPrinter printer) {
+        printPartSql(first, second, printer);
+    }
+
+    /**
+     * Printer for TIME ({@code <date-time-part>} argument.
+     * This method shall be overriden to implement platform specific SQL printer.
+     *
+     * @param first first expression ({@code <date-time>} argument)
+     * @param second second expression ({@code <date-time-part>} argument)
+     * @param printer target printer
+     */
+    protected void printTimeSQL(final Expression first, Expression second, final ExpressionSQLPrinter printer) {
+        printPartSql(first, second, printer);
+    }
+
     @Override
     public void printDuo(Expression first, Expression second, ExpressionSQLPrinter printer) {
-        if (second instanceof LiteralExpression) {
+        if (second.isLiteralExpression()) {
             switch (((LiteralExpression) second).getValue().toUpperCase()) {
                 case "YEAR":
                     printYearSQL(first, second, printer);
@@ -230,6 +254,12 @@ public class ExtractOperator extends ExpressionOperator {
                 case "SECOND":
                     printSecondSQL(first, second, printer);
                     return;
+                case "DATE":
+                    printDateSQL(first, second, printer);
+                    return;
+                case "TIME":
+                    printTimeSQL(first, second, printer);
+                    return;
                 default:
                     throw new IllegalArgumentException("Unknown EXTRACT function datetime_field: "
                             + ((LiteralExpression) second).getValue().toUpperCase());
@@ -242,7 +272,7 @@ public class ExtractOperator extends ExpressionOperator {
     public void printCollection(List<Expression> items, ExpressionSQLPrinter printer) {
         if (items.size() == 2) {
             final Expression second = items.get(1);
-            if (second instanceof LiteralExpression) {
+            if (second.isLiteralExpression()) {
                 switch (((LiteralExpression) second).getValue().toUpperCase()) {
                     case "YEAR":
                         printYearSQL(items.get(0), second, printer);
@@ -267,6 +297,12 @@ public class ExtractOperator extends ExpressionOperator {
                         return;
                     case "SECOND":
                         printSecondSQL(items.get(0), second, printer);
+                        return;
+                    case "DATE":
+                        printDateSQL(items.get(0), second, printer);
+                        return;
+                    case "TIME":
+                        printTimeSQL(items.get(0), second, printer);
                         return;
                     default:
                         throw new IllegalArgumentException("Unknown EXTRACT function datetime_field: "
@@ -414,10 +450,33 @@ public class ExtractOperator extends ExpressionOperator {
         printPartJava(first, second, printer);
     }
 
+    /**
+     * Printer for DATE ({@code <date-time-part>} argument.
+     * This method shall be overriden to implement platform specific Java printer.
+     *
+     * @param first first expression ({@code <date-time>} argument)
+     * @param second second expression ({@code <date-time-part>} argument)
+     * @param printer target printer
+     */
+    protected void printDateJava(final Expression first, Expression second, final ExpressionJavaPrinter printer) {
+        printPartJava(first, second, printer);
+    }
+
+    /**
+     * Printer for TIME ({@code <date-time-part>} argument.
+     * This method shall be overriden to implement platform specific Java printer.
+     *
+     * @param first first expression ({@code <date-time>} argument)
+     * @param second second expression ({@code <date-time-part>} argument)
+     * @param printer target printer
+     */
+    protected void printTimeJava(final Expression first, Expression second, final ExpressionJavaPrinter printer) {
+        printPartJava(first, second, printer);
+    }
 
     @Override
     public void printJavaDuo(Expression first, Expression second, ExpressionJavaPrinter printer) {
-        if (second instanceof LiteralExpression) {
+        if (second.isLiteralExpression()) {
             switch (((LiteralExpression) second).getValue().toUpperCase()) {
                 case "YEAR":
                     printYearJava(first, second, printer);
@@ -443,6 +502,12 @@ public class ExtractOperator extends ExpressionOperator {
                 case "SECOND":
                     printSecondJava(first, second, printer);
                     return;
+                case "DATE":
+                    printDateJava(first, second, printer);
+                    return;
+                case "TIME":
+                    printTimeJava(first, second, printer);
+                    return;
                 default:
                     throw new IllegalArgumentException("Unknown EXTRACT function datetime_field: "
                             + ((LiteralExpression) second).getValue().toUpperCase());
@@ -455,7 +520,7 @@ public class ExtractOperator extends ExpressionOperator {
     public void printJavaCollection(List<Expression> items, ExpressionJavaPrinter printer) {
         if (items.size() == 2) {
             final Expression second = items.get(1);
-            if (second instanceof LiteralExpression) {
+            if (second.isLiteralExpression()) {
                 switch (((LiteralExpression) second).getValue().toUpperCase()) {
                     case "YEAR":
                         printYearJava(items.get(0), second, printer);
@@ -480,6 +545,12 @@ public class ExtractOperator extends ExpressionOperator {
                         return;
                     case "SECOND":
                         printSecondJava(items.get(0), second, printer);
+                        return;
+                    case "DATE":
+                        printDateJava(items.get(0), second, printer);
+                        return;
+                    case "TIME":
+                        printTimeJava(items.get(0), second, printer);
                         return;
                     default:
                         throw new IllegalArgumentException("Unknown EXTRACT function datetime_field: "

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,6 +18,7 @@ package org.eclipse.persistence.testing.models.jpa.advanced;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
@@ -42,8 +43,11 @@ public class Material {
     @OneToOne
     private MaterialHist lastHist;
 
-    @OneToMany(mappedBy = "material", cascade = { CascadeType.PERSIST, CascadeType.DETACH })
+    @OneToMany(mappedBy = "material", cascade = { CascadeType.PERSIST, CascadeType.DETACH }, fetch = FetchType.LAZY)
     private List<PlanArbeitsgang> restproduktionsweg = new ArrayList<>();
+
+    @OneToMany(mappedBy = "material", cascade = { CascadeType.PERSIST }, fetch = FetchType.LAZY)
+    private List<PlanArbeitsgang> restproduktionswegNoCascadeDetach = new ArrayList<>();
 
     private String ident;
 
@@ -95,6 +99,14 @@ public class Material {
 
     public void setRestproduktionsweg(List<PlanArbeitsgang> restproduktionsweg) {
         this.restproduktionsweg = restproduktionsweg;
+    }
+
+    public List<PlanArbeitsgang> getRestproduktionswegNoCascadeDetach() {
+        return restproduktionswegNoCascadeDetach;
+    }
+
+    public void setRestproduktionswegNoCascadeDetach(List<PlanArbeitsgang> restproduktionswegDetach) {
+        this.restproduktionswegNoCascadeDetach = restproduktionswegDetach;
     }
 
     @Override

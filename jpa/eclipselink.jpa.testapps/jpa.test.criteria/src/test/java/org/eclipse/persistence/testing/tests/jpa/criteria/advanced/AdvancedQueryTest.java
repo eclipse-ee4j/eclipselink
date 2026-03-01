@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -168,7 +168,7 @@ public class AdvancedQueryTest extends JUnitTestCase {
             if (queryResult != employee) {
                 fail("Employees are not equal: " + employee + ", " + queryResult);
             }
-            if (counter.getSqlStatements().size() > 0) {
+            if (!counter.getSqlStatements().isEmpty()) {
                 fail("Cache hit do not occur: " + counter.getSqlStatements());
             }
         } finally {
@@ -448,7 +448,7 @@ public class AdvancedQueryTest extends JUnitTestCase {
             if (queryResult != employee) {
                 fail("Employees are not equal: " + employee + ", " + queryResult);
             }
-            if (counter.getSqlStatements().size() > 0) {
+            if (!counter.getSqlStatements().isEmpty()) {
                 fail("Cache hit do not occur: " + counter.getSqlStatements());
             }
         } finally {
@@ -487,7 +487,7 @@ public class AdvancedQueryTest extends JUnitTestCase {
             if (!queryResult.getFirstName().equals(employee.getFirstName())) {
                 fail("Employees are not equal: " + employee + ", " + queryResult);
             }
-            if (counter.getSqlStatements().size() > 0) {
+            if (!counter.getSqlStatements().isEmpty()) {
                 fail("Cache hit do not occur: " + counter.getSqlStatements());
             }
         } finally {
@@ -524,7 +524,7 @@ public class AdvancedQueryTest extends JUnitTestCase {
             query.setParameter("firstName", employee.getFirstName());
             // Test that list works as well.
             query.getResultList();
-            if (counter.getSqlStatements().size() > 0) {
+            if (!counter.getSqlStatements().isEmpty()) {
                 fail("Cache hit do not occur: " + counter.getSqlStatements());
             }
         } finally {
@@ -567,7 +567,7 @@ public class AdvancedQueryTest extends JUnitTestCase {
             if (query.getSingleResult() == null) {
                 fail("Query did not check session cache.");
             }
-            if (counter.getSqlStatements().size() > 0) {
+            if (!counter.getSqlStatements().isEmpty()) {
                 fail("Cache hit do not occur: " + counter.getSqlStatements());
             }
             rollbackTransaction(em);
@@ -583,7 +583,7 @@ public class AdvancedQueryTest extends JUnitTestCase {
             if (query.getResultList().size() != 1) {
                 fail("Query did not check session cache.");
             }
-            if (counter.getSqlStatements().size() > 0) {
+            if (!counter.getSqlStatements().isEmpty()) {
                 fail("Cache hit do not occur: " + counter.getSqlStatements());
             }
         } finally {

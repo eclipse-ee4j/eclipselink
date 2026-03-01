@@ -1,0 +1,67 @@
+*TOC* Special:Whatlinkshere_Configuring_an_XML_Project_(ELUG)[Related
+Topics]
+
+For information on how to create XML projects, see
+link:Creating%20an%20XML%20Project%20(ELUG)[Creating an XML Project].
+
+This table lists the configurable options for XML projects.
+
+[#Table 54-1]##
+
+[width="100%",cols="<61%,<19%,<20%",options="header",]
+|===
+|*Option to Configure* |*EclipseLink Workbench* |*Java*
+|link:Configuring%20a%20Project%20(ELUG)#Configuring_Project_Save_Location[Project
+save location] |image:support.gif[Supported,title="Supported"]
+|image:unsupport.gif[Unsupported,title="Unsupported"]
+
+|link:Configuring%20a%20Project%20(ELUG)#Configuring_Project_Classpath[Project
+classpath] |image:support.gif[Supported,title="Supported"]
+|image:unsupport.gif[Unsupported,title="Unsupported"]
+
+|link:Configuring%20a%20Project%20(ELUG)#Configuring_Project_Comments[Project
+comments] |image:support.gif[Supported,title="Supported"]
+|image:unsupport.gif[Unsupported,title="Unsupported"]
+
+|link:Configuring%20a%20Project%20(ELUG)#Configuring_Method_or_Direct_Field_Access_at_the_Project_Level[Method
+or direct field access] |image:support.gif[Supported,title="Supported"]
+|image:unsupport.gif[Unsupported,title="Unsupported"]
+
+|link:Configuring%20a%20Project%20(ELUG)#Configuring_Project_Deployment_XML_Options[Project
+deployment XML options] |image:support.gif[Supported,title="Supported"]
+|image:unsupport.gif[Unsupported,title="Unsupported"]
+
+|link:Integrating%20EclipseLink%20with%20an%20Application%20Server%20(ELUG)#Configuring_XML_Parser_Platform[XML
+parser platform] |image:unsupport.gif[Unsupported,title="Unsupported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Using%20Workbench%20(ELUG)#How_to_Import_an_XML_Schema[Importing
+an XML schema] |image:support.gif[Supported,title="Supported"]
+|image:unsupport.gif[Unsupported.,title="Unsupported."]
+
+|link:Using%20Workbench%20(ELUG)#How_to_Configure_XML_Schema_Namespace[XML
+schema namespace] |image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Project%20(ELUG)#Configuring_Model_Java_Source_Code_Options[Model
+Java source code options]
+|image:support.gif[Supported,title="Supported"]
+|image:unsupport.gif[Unsupported,title="Unsupported"]
+
+|link:Configuring%20a%20Project%20(ELUG)#Configuring_Default_Descriptor_Advanced_Properties[Default
+descriptor advanced properties]
+|image:support.gif[Supported,title="Supported"]
+|image:unsupport.gif[Unsupported,title="Unsupported"]
+|===
+
+For more information, see
+link:Introduction%20to%20XML%20Projects%20(ELUG)[Introduction to XML
+Projects].
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Release_1[Category: Release 1] Category:_Task[Category: Task]
+Category:_XML[Category: XML]

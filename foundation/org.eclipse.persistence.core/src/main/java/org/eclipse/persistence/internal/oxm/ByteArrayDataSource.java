@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,6 +15,7 @@
 package org.eclipse.persistence.internal.oxm;
 
 import jakarta.activation.DataSource;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStreamReader;
@@ -50,7 +51,7 @@ public class ByteArrayDataSource implements DataSource {
 
     @Override
     public String getContentType() {
-        if(contentType.startsWith("multipart") && contentType.indexOf("boundary") == -1) {
+        if(contentType.startsWith("multipart") && !contentType.contains("boundary")) {
             //parse the bytes for the header and extract the boundary. Add it into the content type.
             StringBuilder buffer = new StringBuilder();
             InputStreamReader reader = new InputStreamReader(new ByteArrayInputStream(bytes));
@@ -60,7 +61,7 @@ public class ByteArrayDataSource implements DataSource {
                     if(next == -1) {
                         break;
                     } else if(((char)next) == '\n') {
-                        if(!(buffer.length() == 0)) {
+                        if(!(buffer.isEmpty())) {
                             break;
                         }
                     } else {

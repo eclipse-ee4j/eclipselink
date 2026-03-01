@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,7 +17,6 @@
 package org.eclipse.persistence.jpa.rs.features;
 
 import org.eclipse.persistence.internal.jaxb.SessionEventListener;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jaxb.metadata.MetadataSource;
 import org.eclipse.persistence.jpa.rs.features.core.selflinks.SelfLinksResponseBuilder;
 import org.eclipse.persistence.jpa.rs.features.paging.PagingResponseBuilder;
@@ -52,24 +51,18 @@ public class FeatureSetV2 implements FeatureSet {
 
     @Override
     public boolean isSupported(Feature feature) {
-        switch (feature) {
-            case NO_PAGING:
-            case PAGING:
-            case FIELDS_FILTERING:
-                return true;
-            default:
-                return false;
-        }
+        return switch (feature) {
+            case NO_PAGING, PAGING, FIELDS_FILTERING -> true;
+            default -> false;
+        };
     }
 
     @Override
     public FeatureResponseBuilder getResponseBuilder(Feature feature) {
-        switch (feature) {
-            case PAGING:
-                return new PagingResponseBuilder();
-            default:
-                return new SelfLinksResponseBuilder();
-        }
+        return switch (feature) {
+            case PAGING -> new PagingResponseBuilder();
+            default -> new SelfLinksResponseBuilder();
+        };
     }
 
     @Override

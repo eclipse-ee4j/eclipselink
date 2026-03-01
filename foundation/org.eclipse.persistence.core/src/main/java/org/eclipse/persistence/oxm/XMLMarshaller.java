@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,13 +14,7 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.oxm;
 
-import java.util.Collection;
-import java.util.Properties;
-
-import javax.xml.transform.Result;
-import javax.xml.transform.sax.SAXResult;
-
-import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.oxm.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.FragmentContentHandler;
@@ -41,6 +35,11 @@ import org.eclipse.persistence.sessions.DatabaseSession;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+
+import javax.xml.transform.Result;
+import javax.xml.transform.sax.SAXResult;
+import java.util.Collection;
+import java.util.Properties;
 
 /**
  * <p>Class used to marshal object to XML.
@@ -381,7 +380,7 @@ public class XMLMarshaller extends org.eclipse.persistence.internal.oxm.XMLMarsh
 
         String localRootName = descriptor.getDefaultRootElement();
         if (null == localRootName) {
-            throw XMLMarshalException.defaultRootElementNotSpecified(descriptor);
+            throw XMLMarshalException.defaultRootElementNotSpecified(descriptor.getJavaClassName());
         }
 
         if(docPresPolicy == null) {

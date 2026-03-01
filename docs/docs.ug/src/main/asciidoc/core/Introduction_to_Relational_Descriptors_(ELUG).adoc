@@ -1,0 +1,298 @@
+*TOC*
+Special:Whatlinkshere_Introduction_to_Relational_Descriptors_(ELUG)[Related
+Topics]
+
+This section provides an overview of relational descriptors, as well as
+explains the role of inheritance and various types of descriptors in
+relational projects.
+
+For information on descriptor concepts and features common to more than
+one type of EclipseLink descriptors, see
+link:Introduction%20to%20Descriptors%20(ELUG)[Introduction to
+Descriptors].
+
+Relational descriptors describe Java objects that you map to tables in a
+relational database. You use them in
+link:Introduction%20to%20Relational%20Projects%20(ELUG)[relational
+projects].
+
+Using relational descriptors in a relational project, you can configure
+link:Introduction%20to%20Relational%20Mappings%20(ELUG)[relational
+mappings].
+
+For more information, see the following:
+
+* link:Creating%20a%20Relational%20Descriptor%20(ELUG)[Creating a
+Relational Descriptor]
+* link:Configuring%20a%20Relational%20Descriptor%20(ELUG)[Configuring a
+Relational Descriptor]
+
+== Aggregate and Composite Descriptors in Relational Projects
+
+In a relational project, you can designate the descriptor
+link:Creating%20a%20Relational%20Descriptor%20(ELUG)#Creating_Relational_Aggregate_Descriptors[as
+an aggregate].
+
+This lets you configure
+link:Configuring%20a%20Relational%20Aggregate%20Object%20Mapping_(ELUG)[an
+aggregate mapping] to associate data members in the target object with
+fields in the source object’s underlying database tables.
+
+When you designate a relational descriptor as an aggregate, EclipseLink
+lets you specify a mapping type for each field in the target class, but
+defers associating the field with a database table until you configure
+the aggregate object mapping in the source descriptor. In other words,
+the target class descriptor defines _how_ each target class field is
+mapped, but the source class descriptor defines _where_ each target
+class field is mapped. This lets you share an aggregate object among
+many parent descriptors mapped to different tables.
+
+When you designate a relational descriptor as an aggregate, you tell
+EclipseLink that the class will be a target of an aggregate object
+mapping, and this ensures that the EclipseLink runtime handles the
+target class as follows:
+
+* It inserts, updates, and deletes the target class in parallel with its
+source class.
+* It does not cache the target class on its own; instead, it caches the
+target class as part of its source class.
+* It does not allow the target class to be read, written, deleted, or
+registered in a unit of work.
+
+When working with aggregate relational descriptors, consider the
+following:
+
+* link:#Relational_Aggregates_and_Nesting[Relational Aggregates and
+Nesting]
+* link:#Relational_Aggregates_and_Inheritance[Relational Aggregates and
+Inheritance]
+
+For more information, see
+link:Configuring%20a%20Relational%20Descriptor%20(ELUG)#Configuring_a_Relational_Descriptor_as_a_Class_or_Aggregate_Type[Configuring
+a Relational Descriptor as a Class or Aggregate Type].
+
+=== Relational Aggregates and Nesting
+
+EclipseLink supports nested aggregates. In the link:#Figure_26-1[Nested
+Aggregates] figure, source class `+HockeyPlayer+` is a normal
+nonaggregate class descriptor. It owns target class `+Info+` which is
+designated as an aggregate. The `+Info+` class itself owns target
+classes `+PersonalInfo+` and `+TeamInfo+` which are each designated as
+aggregates.
+
+[#Figure 26-1]## *_Nested Aggregates_*
+
+.Nested Aggregates
+image::nestagg.gif[Nested Aggregates,title="Nested Aggregates"]
+
+In EJB 3.0, an aggregate is known as an embeddable. In the EJB 3.0
+specification, an embeddable may not contain another embeddable (that
+is, the EJB 3.0 specification does not support nested aggregates).
+
+However, if you deploy an EclipseLink-enabled EJB 3.0 application with
+persistence to OC4J, you can take advantage of an EclipseLink extension
+of the EJB 3.0 specification to configure nested embeddables. Note that
+if you do so, your application will not be strictly EJB 3.0-compliant.
+The link:#Example_26-1[Nested Embeddables] example shows the classes
+from the link:#Figure_26-1[Nested Aggregates] figure, using EJB 3.0
+annotations to take advantage of the EclipseLink extension of the EJB
+3.0 specification to allow `+Info+` (an embeddable) to own embeddables
+`+TeamInfo+` and `+PersonalInfo+`.
+
+[#Example 26-1]## *_Nested Embeddables_*
+
+[source,java]
+----
+ public class HockeyPlayer implements Serializable {
+     private int playerId;
+     private Info Info;
+     private String lastName;
+     private String firstName;
+     ...
+     @Embedded
+     public Info getInfo() {
+         return Info;
+     }
+ }
+
+ @Embeddable
+ public class Info implements Serializable {
+     TeamInfo teamInfo; // EclipseLink extension of EJB 3.0 allows Embeddable with Embeddable
+     PersonalInfo personalInfo;
+
+     public Info() {}
+
+     @Embedded
+     public PersonalInfo getPersonalInfo() {
+         return personalInfo;
+     }
+
+     public void setPersonalInfo(PersonalInfo personalInfo) {
+         this.personalInfo = personalInfo;
+     }
+
+     @Embedded
+     public TeamInfo getTeamInfo() {
+         return teamInfo;
+     }
+
+     public void setTeamInfo(TeamInfo teamInfo) {
+         this.teamInfo = teamInfo;
+     }
+ }
+
+ @Embeddable
+ public class PersonalInfo implements Serializable {
+     private int age;
+     private double weight;
+     private double height;
+     ...
+ }
+
+ @Embeddable
+ public class TeamInfo implements Serializable {
+     private String position;
+     private int jerseyNumber;
+     private HockeyTeam hockeyTeam;
+     ...
+ }
+----
+
+=== Relational Aggregates and Inheritance
+
+You can configure inheritance for a relational descriptor designated as
+an aggregate (see
+link:Introduction%20to%20Descriptors%20(ELUG)[Descriptors and
+Inheritance]), however, in this case, _all_ the descriptors in the
+inheritance tree must be aggregates. Aggregate and class descriptors
+cannot exist in the same inheritance tree.
+
+== Descriptors and Inheritance in Relational Projects
+
+Inheritance describes how a derived class inherits the characteristics
+of its superclass. You can use descriptors to describe the inheritance
+relationships between classes in your relational projects.
+
+This section includes information on the following topics:
+
+* link:#Inheritance_and_Primary_Keys_in_Relational_Projects[Inheritance
+and Primary Keys in Relational Projects]
+* link:#Single-_and_Multi-Table_Inheritance_in_Relational_Projects[Single-
+and Multi-Table Inheritance in Relational Projects]
+
+For more information, see
+link:Introduction%20to%20Descriptors%20(ELUG)[Descriptors and
+Inheritance].
+
+=== Inheritance and Primary Keys in Relational Projects
+
+For relational projects, EclipseLink assumes that all of the classes in
+an inheritance hierarchy have the same primary key, as set in the root
+descriptor. Child descriptors associated with data source
+representations that have different primary keys must define the mapping
+between the root primary key and the local one.
+
+For more information, see
+link:Configuring%20a%20Descriptor%20(ELUG)[Configuring Primary Keys].
+
+=== Single- and Multi-Table Inheritance in Relational Projects
+
+In a relational project, you can map your inheritance hierarchy to
+link:#Single-Table_Inheritance[a single table] or to
+link:#Multi-Table_Inheritance[multiple tables]. Use these options to
+achieve the balance between storage efficiency and access efficiency
+that is appropriate for your application.
+
+==== Single-Table Inheritance
+
+In this example, you store classes with multiple levels of inheritance
+in a single table to optimize database access speeds.
+
+The entire inheritance hierarchy shown in the link:#Figure_26-1[Nested
+Aggregates] figure can share the same table, as in the
+link:#Figure_26-2[Inheritance Using a Superclass Table with Optional
+Fields] figure. The `+FueledVehicle+` and `+NonFueledVehicle+`
+subclasses can share the same table even though `+FueledVehicle+` has
+some attributes that `+NonFueledVehicle+` does not. The
+`+NonFueledVehicle+` instances waste database resources because the
+database must still allocate space for the unused portion of its row.
+However, this approach saves on accessing time because there is no need
+to join to another table to get the additional `+FueledVehicle+`
+information.
+
+As this figure shows, this approach uses a class indicator field. For
+more information, see
+link:Introduction%20to%20Descriptors%20(ELUG)#How_to_Specify_a_Class_Indicator[How
+to Specify a Class Indicator].
+
+[#'Figure 26-2]## *_Inheritance Using a Superclass Table with Optional
+Fields_*
+
+.Inheritance Using a Superclass Table with Optional Fields
+image::inhtable.gif[Inheritance Using a Superclass Table with Optional
+Fields,title="Inheritance Using a Superclass Table with Optional Fields"]
+
+==== Multi-Table Inheritance
+
+In this example, you store classes with multiple levels of inheritance
+in multiple tables to optimize database storage space.
+
+In the inheritance hierarchy shown in the link:#Figure_26-1[Nested
+Aggregates] figure, for subclasses that require additional attributes,
+you use multiple tables instead of a single superclass table. This
+optimizes storage space because there are no unused fields in the
+database. However, this may affect performance because EclipseLink must
+read from more than one table before it can instantiate the object.
+EclipseLink first looks at
+link:Introduction%20to%20Descriptors%20(ELUG)#How_to_Specify_a_Class_Indicator[the
+class indicator field] to determine the class of object to create, then
+uses the descriptor for that class to read from the subclass tables.
+
+The link:#Figure_26-3[Inheritance Using Separate Tables for Each
+Subclass] figure illustrates the EclipseLink implementation of the
+`+FUELEDVHCL+`, `+CAR+`, and `+BICYCLE+` tables. All objects are stored
+in the `+VEHICLE+` table. `+FueledVehicle+`, `+Car+`, and `+Bicycle+`
+information are also stored in secondary tables. Note that because the
+`+NonFueledVehicle+` class does not hold any attributes or
+relationships, it does not need a secondary table.
+
+[#Figure 26-3]## *_Inheritance Using Separate Tables for Each Subclass_*
+
+.Inheritance Using Separate Tables for Each Subclass
+image::inhsepar.gif[Inheritance Using Separate Tables for Each
+Subclass,title="Inheritance Using Separate Tables for Each Subclass"]
+
+[width="100%",cols="<100%",]
+|===
+|*_Note_*: In general, using multitable inheritance is inefficient
+because it can require excessive joins and multiple table fetching.
+|===
+
+===== Inheritance Outer-Joins
+
+If a root or branch inheritance descriptor has subclasses that span
+multiple tables, you can configure a database view to optimize the
+performance of queries against the parent descriptor by outer-joining
+all of the subclass tables. This allows EclipseLink to fetch all of the
+subclass instances in one query, instead of multiple queries. It also
+allows queries for the parent class that use cursors or ordering.
+
+By default, EclipseLink executes multiple queries to read in a multiple
+table inheritance hierarchy, which, in some cases, is the most efficient
+way to query. In addition, EclipseLink supports querying the inheritance
+hierarchy using
+link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Reading_Subclasses_on_Queries[a
+single outer-join query].
+
+You can also set a database view on the descriptor that outer-joins or
+unions all of the tables. For more information, see
+link:Configuring%20a%20Relational%20Descriptor%20(ELUG)#Configuring_Multitable_Information[Configuring
+Multitable Information].
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Release_1[Category: Release 1] Category:_Concept[Category:
+Concept] Category:_ORM[Category: ORM]

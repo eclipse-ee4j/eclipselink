@@ -1,0 +1,121 @@
+image:Elug_draft_icon.png[Image:Elug draft
+icon.png,title="Image:Elug draft icon.png"] *For the latest EclipseLink
+documentation, please see
+http://www.eclipse.org/eclipselink/documentation/*
+
+'''''
+
+*TOC*
+Special:Whatlinkshere_Introduction_to_EIS_Descriptors_(ELUG)[Related
+Topics]
+
+This section introduces options specific to an EIS descriptor.
+
+For information on descriptor concepts and features common to more than
+one type of EclipseLink descriptors, see
+link:Introduction%20to%20Descriptors%20(ELUG)[Introduction to
+Descriptors].
+
+== EIS Descriptor Concepts
+
+EIS descriptors describe Java objects that you map to an EIS data source
+by way of a JCA adapter.
+
+Using EIS descriptors in an EIS project created with Workbench, you can
+configure EIS mappings (see
+link:Introduction%20to%20EIS%20Mappings%20(ELUG)[EIS Mapping Types]) to
+XML records.
+
+Using EIS descriptors in an EIS project that you create in Java, you can
+configure EIS mappings to any supported EIS record type: XML, mapped, or
+indexed.
+
+See link:Creating_and_Configuring_Descriptors_(ELUG)[Creation and
+Configuration of Descriptors] for information on how to create and
+configure descriptors regardless of their type.
+
+For information specific to creation and configuration of EIS
+descriptors, see the following:
+
+* link:Creating%20an%20EIS%20Descriptor%20(ELUG)[Creating an EIS
+Descriptor]
+* link:Configuring%20an%20EIS%20Descriptor%20(ELUG)[Configuring an EIS
+Descriptor]
+
+== EIS Descriptors and Aggregation
+
+When working with descriptors for a parent (source) and a child (target)
+objects, you have to accomplish the following:
+
+* if the source object exists, then you must ensure that the target
+object also exists;
+* if the source object is destroyed, then you must ensure that the
+target object is also destroyed.
+
+For more information, see
+link:Introduction%20to%20Descriptors%20(ELUG)#Descriptors_and_Aggregation[Descriptors
+and Aggregation].
+
+In your EIS project, designate the descriptors for the source and target
+objects to reflect this relationship as
+link:#Root_and_Composite_Descriptors_in_EIS_Projects[Root and Composite
+Descriptors in EIS Projects].
+
+=== Root and Composite Descriptors in EIS Projects
+
+In an EIS project, you can designate the descriptor as a composites (see
+link:Creating%20an%20EIS%20Descriptor%20(ELUG)#EIS_Composite_Descriptors[EIS
+Composite Descriptors]).
+
+The type of EIS mapping you whish to create will determine whether you
+configure an EIS descriptor as a composite or root (see
+link:Introduction%20to%20EIS%20Mappings%20(ELUG)#Composite_and_Reference_EIS_Mappings[Composite
+and Reference EIS Mappings]).
+
+For more information, see
+link:Configuring%20an%20EIS%20Descriptor%20(ELUG)#Configuring_an_EIS_Descriptor_as_a_Root_or_Composite_Type[Configuring
+an EIS Descriptor as a Root or Composite Type].
+
+You can configure inheritance for an EIS descriptor designated as a
+composite (see
+link:Introduction%20to%20Descriptors%20(ELUG)#Descriptors_and_Inheritance[Descriptors
+and Inheritance]), however, in this case, _all_ the descriptors in the
+inheritance tree must be composites. Composite and root descriptors
+cannot exist in the same inheritance tree.
+
+== EIS Descriptors and Inheritance
+
+You can use descriptors to describe the inheritance relationships
+between classes in your EIS project. For more information, see the
+following:
+
+* link:Introduction%20to%20Descriptors%20(ELUG)#Descriptors_and_Inheritance[Descriptors
+and Inheritance]
+* link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Inheritance_for_a_Child_(Branch_or_Leaf)_Class_Descriptor[Configuring
+Inheritance for a Child (Branch or Leaf) Class Descriptor]
+* link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Inheritance_for_a_Parent_(Root)_Descriptor[Configuring
+Inheritance for a Parent (Root) Descriptor]
+* link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Inheritance_Expressions_for_a_Parent_(Root)_Class_Descriptor[Configuring
+Inheritance Expressions for a Parent (Root) Class Descriptor]
+* link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Inherited_Attribute_Mapping_in_a_Subclass[Configuring
+Inherited Attribute Mapping in a Subclass]
+
+=== Inheritance and Primary Keys in EIS Projects
+
+For EIS projects, EclipseLink assumes that all of the classes in an
+inheritance hierarchy have the same primary key, as set in the root
+descriptor. Child descriptors associated with data source
+representations that have different primary keys must define the mapping
+between the root primary key and the local one.
+
+For more information, see
+link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Primary_Keys[Configuring
+Primary Keys].
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Release_1[Category: Release 1] Category:_EIS[Category: EIS]
+Category:_Concept[Category: Concept]

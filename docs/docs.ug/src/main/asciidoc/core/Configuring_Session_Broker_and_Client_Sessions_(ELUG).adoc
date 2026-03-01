@@ -1,0 +1,86 @@
+*TOC*
+Special:Whatlinkshere_Configuring_Session_Broker_and_Client_Sessions_(ELUG)[Related
+Topics]
+
+This table lists the configurable options for session broker sessions.
+
+[#Table 90-1]##
+
+Option to Configure
+
+Workbench
+
+Java
+
+Removing, renaming, or adding sessions
+
+Primary mapping project
+
+Session login
+
+Logging
+
+Multiple mapping projects
+
+Performance profiler
+
+Exception handler
+
+Session customizer class
+
+Server platform
+
+Session event listeners
+
+Coordinated cache
+
+Integrity checker
+
+Named queries
+
+== Removing, Renaming, or Adding Sessions
+
+You can manage the sessions contained by a session broker with the
+Workbench.
+
+[width="100%",cols="<100%",]
+|===
+|*Note*: Add only sessions of the same type to any given session broker.
+Do not mix sessions of different types within a session broker.
+|===
+
+=== How to Use Workbench to Remove, Rename, or Add Sessions
+
+To add sessions to, remove sessions from, or rename sessions in a
+session broker, use this procedure:
+
+[arabic]
+. Select a session broker in the *Navigator*. Its properties appear in
+the Editor.
+. Click the *General* tab. The General tab appears.
+. Click the *Sessions* subtab. The Sessions subtab
+appears.[#Figure 90-1]## *_General Tab, Sessions Subtab_*
+image:sesbk.gif[General Tab, Sessions
+Subtab,title="General Tab, Sessions Subtab"]
+. To manage the sessions in this session broker, choose one of the
+following:
+* To remove a session, select the session in the Sessions tab’s list and
+click *Remove*.
+* To rename a session, select the session in the Sessions tab’s list and
+click *Rename*. The Rename dialog box appears. Enter a new name and
+click *OK*.
+* To add a session, click *Add Session*. The Sessions dialog box appears
+showing a list of all the sessions currently configured in the session
+configuration that owns this session broker. [#Figure 90-2]##*’’
+Sessions Dialog Box*’’ image:sesbkadd.gif[Sessions Dialog
+Box,title="Sessions Dialog Box"]
++
+Check the sessions in the Session dialog that you want to add to the
+session broker and click *OK*.
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Release_1[Category: Release 1] Category:_Task[Category: Task]

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,14 +14,9 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.oxm;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.xml.namespace.QName;
-
 import org.eclipse.persistence.core.queries.CoreAttributeGroup;
 import org.eclipse.persistence.core.queries.CoreAttributeItem;
-import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.oxm.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.mappings.AnyCollectionMapping;
@@ -42,6 +37,10 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
+
+import javax.xml.namespace.QName;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * INTERNAL:
@@ -117,7 +116,7 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
 
                  }
             }
-            if(mixedValues.size() >0){
+            if(!mixedValues.isEmpty()){
                 frags.add(SIMPLE_FRAGMENT);
                 values.add(mixedValues);
             }
@@ -156,18 +155,16 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
     }
 
     private XPathFragment getXPathFragmentForValue(Object value, MarshalRecord marshalRecord, Marshaller marshaller){
-         if (xmlAnyCollectionMapping.usesXMLRoot() && (value instanceof Root)) {
+         if (xmlAnyCollectionMapping.usesXMLRoot() && (value instanceof Root xmlRootValue)) {
 
-             Root xmlRootValue = (Root)value;
              XPathFragment xmlRootFragment = new XPathFragment(xmlRootValue.getLocalName(), marshalRecord.getNamespaceSeparator(), marshalRecord.isNamespaceAware());
              xmlRootFragment.setNamespaceURI(xmlRootValue.getNamespaceURI());
              return xmlRootFragment;
          }
 
-         if(value instanceof Node){
+         if(value instanceof Node n){
             XPathFragment frag = null;
-            Node n = (Node)value;
-            if(n.getNodeType() == Node.ELEMENT_NODE){
+             if(n.getNodeType() == Node.ELEMENT_NODE){
                 Element elem = (Element)n;
                 String local = elem.getLocalName();
                 if(local == null){
@@ -308,7 +305,7 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
     private void startElementProcessText(UnmarshalRecord unmarshalRecord, Object collection) {
         String value = unmarshalRecord.getCharacters().toString();
         unmarshalRecord.resetStringBuffer();
-        if (value.length() > 0 && xmlAnyCollectionMapping.isMixedContent()) {
+        if (!value.isEmpty() && xmlAnyCollectionMapping.isMixedContent()) {
             unmarshalRecord.addAttributeValue(this, value);
         }
     }
@@ -353,7 +350,7 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
         if (originalValue.getNamespaceURI() != null) {
             xmlRootFragment.setNamespaceURI((originalValue).getNamespaceURI());
             String prefix = marshalRecord.getNamespaceResolver().resolveNamespaceURI((originalValue).getNamespaceURI());
-            if (prefix == null || prefix.length() == 0) {
+            if (prefix == null || prefix.isEmpty()) {
                 prefix = marshalRecord.getNamespaceResolver().generatePrefix();
                 generatedNamespace = new Namespace(prefix, xmlRootFragment.getNamespaceURI());
                 xmlRootFragment.setGeneratedPrefix(true);

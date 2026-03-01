@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,15 +14,15 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.oxm;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.internal.databaseaccess.DatasourceAccessor;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.queries.Call;
 import org.eclipse.persistence.sessions.Login;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 /**
  * INTERNAL:
@@ -122,7 +122,7 @@ public class XMLAccessor extends DatasourceAccessor {
     public String toString() {
         StringWriter sw = new StringWriter();
         PrintWriter writer = new PrintWriter(sw);
-        writer.write(Helper.getShortClassName(this));
+        writer.write(getClass().getSimpleName());
         writer.write("(");
         this.toString(writer);
         writer.write(")");

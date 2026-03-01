@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,10 +14,11 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.helper;
 
+import org.eclipse.persistence.mappings.DatabaseMapping;
+
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Comparator;
-
-import org.eclipse.persistence.mappings.DatabaseMapping;
 
 /**
  * INTERNAL:
@@ -28,6 +29,7 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
  */
 public class MappingCompare implements Comparator<DatabaseMapping>, Serializable {
 
+    @Serial
     private static final long serialVersionUID = -2749222441763925989L;
 
     @Override

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,10 +28,9 @@ public class Employee {
     public String nestedCData;
 
     public boolean equals(Object obj) {
-        if(!(obj instanceof Employee)) {
+        if(!(obj instanceof Employee emp)) {
             return false;
         }
-        Employee emp = (Employee) obj;
         return emp.firstName.equals(firstName) && emp.lastName.equals(lastName)
                 && emp.data.trim().equals(data.trim())
                 && emp.nestedCData.trim().equals(nestedCData.trim());

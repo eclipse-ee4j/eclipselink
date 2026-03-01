@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,16 +14,16 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.indirection;
 
+import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.indirection.ValueHolderInterface;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+
 import java.io.Serializable;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-
-import org.eclipse.persistence.exceptions.QueryException;
-import org.eclipse.persistence.exceptions.ValidationException;
-import org.eclipse.persistence.indirection.ValueHolderInterface;
-import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 
 /**
  * <H2>ProxyIndirectionHandler</H2>
@@ -43,7 +43,7 @@ public class ProxyIndirectionHandler<T> implements InvocationHandler, Serializab
 
     /**
      * INTERNAL:
-     *
+     * <p>
      * Just in here to allow for Serialization.
      */
     public ProxyIndirectionHandler() {
@@ -53,7 +53,7 @@ public class ProxyIndirectionHandler<T> implements InvocationHandler, Serializab
 
     /**
      * INTERNAL:
-     *
+     * <p>
      * Store the value holder.
      */
     private ProxyIndirectionHandler(ValueHolderInterface<T> valueHolder) {
@@ -64,7 +64,7 @@ public class ProxyIndirectionHandler<T> implements InvocationHandler, Serializab
 
     /**
      * INTERNAL:
-     *
+     * <p>
      * Handle the method calls on the proxy object.
      */
     @Override
@@ -114,7 +114,7 @@ public class ProxyIndirectionHandler<T> implements InvocationHandler, Serializab
 
     /**
      * INTERNAL:
-     *
+     * <p>
      * Utility method to create a new proxy object.
      */
     public static <T> Object newProxyInstance(final Class<?> anInterface, final Class<?>[] interfaces, final ValueHolderInterface<T> valueHolder) {
@@ -128,7 +128,7 @@ public class ProxyIndirectionHandler<T> implements InvocationHandler, Serializab
 
     /**
      * INTERNAL:
-     *
+     * <p>
      * Get the ValueHolder associated with this handler.
      */
     public ValueHolderInterface<T> getValueHolder() {
@@ -139,7 +139,7 @@ public class ProxyIndirectionHandler<T> implements InvocationHandler, Serializab
 
     /**
      * INTERNAL:
-     *
+     * <p>
      * Set the ValueHolder associated with this handler.
      */
     public void setValueHolder(ValueHolderInterface<T> value) {

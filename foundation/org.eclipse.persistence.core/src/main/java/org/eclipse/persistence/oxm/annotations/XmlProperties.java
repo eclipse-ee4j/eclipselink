@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,21 +14,24 @@
 //     Oracle = 2.2 - Initial contribution
 package org.eclipse.persistence.oxm.annotations;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
 import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-
 /**
  * Annotation for user defined properties.
- * A single Property may be specified directly on a mapped attribute or its get/set method.
- * Multiple Properties should be wrapped into Properties annotation.
+ * A single {@linkplain XmlProperty} may be specified directly on a mapped attribute or its get/set method.
+ * Multiple occurrences of {@linkplain XmlProperty} annotation can be wrapped into {@linkplain XmlProperties} annotation.
  */
 @Target({METHOD, FIELD, TYPE})
 @Retention(RUNTIME)
 public @interface XmlProperties {
+    /**
+     * An array of XmlProperty annotations.
+     */
     XmlProperty[] value();
 }

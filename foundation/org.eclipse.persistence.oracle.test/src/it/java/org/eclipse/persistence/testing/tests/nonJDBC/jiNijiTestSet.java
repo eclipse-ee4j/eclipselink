@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,8 +16,9 @@ package org.eclipse.persistence.testing.tests.nonJDBC;
 import java.io.FileInputStream;
 import java.io.StringReader;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
-import java.util.Vector;
 import org.w3c.dom.Document;
 
 // JUnit imports
@@ -27,7 +28,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 // EclipseLink imports
-import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.sessions.factories.ObjectPersistenceWorkbenchXMLProject;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLMarshaller;
@@ -37,7 +37,6 @@ import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLStoredProcedu
 import org.eclipse.persistence.queries.DataModifyQuery;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.Project;
-import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.factories.XMLProjectReader;
 
 // Domain imports
@@ -182,7 +181,7 @@ public class jiNijiTestSet {
         DatabaseSession s = project.createDatabaseSession();
         s.dontLogMessages();
         s.login();
-        Vector queryArgs = new NonSynchronizedVector();
+        List<Object> queryArgs = new ArrayList<>();
         queryArgs.add("test");
         queryArgs.add(0);
         queryArgs.add(Float.parseFloat("11.25"));

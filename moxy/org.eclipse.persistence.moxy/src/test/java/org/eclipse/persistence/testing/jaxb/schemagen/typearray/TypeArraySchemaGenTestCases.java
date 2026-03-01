@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,30 +14,13 @@
 // dmccann - June 11/2009 - 2.0 - Initial implementation
 package org.eclipse.persistence.testing.jaxb.schemagen.typearray;
 
-import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import jakarta.xml.bind.JAXBException;
-import jakarta.xml.bind.SchemaOutputResolver;
 import javax.xml.namespace.QName;
-import javax.xml.transform.Result;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;
-import javax.xml.validation.Validator;
 
-import junit.framework.TestCase;
-
-import org.eclipse.persistence.jaxb.JAXBContext;
-import org.eclipse.persistence.jaxb.JAXBContextFactory;
-import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.testing.jaxb.schemagen.SchemaGenTestCases;
 import org.eclipse.persistence.testing.jaxb.schemagen.deploymentxml.Employee;
 
@@ -81,15 +64,15 @@ public class TypeArraySchemaGenTestCases extends SchemaGenTestCases {
                 additionalGlobalElements.put(new QName("example.com", "AListOfEmployees"), employeesField.getGenericType());
                 additionalGlobalElements.put(new QName("AnEmployeeArray"), Employee[].class);
             } catch (Exception x) {
-                fail("Type[] and additional global element Map setup failed: " + x.toString());
+                fail("Type[] and additional global element Map setup failed: " + x);
             }
             try {
                 generateSchema(typesToBeBound, outputResolver, additionalGlobalElements);
             } catch (Exception ex) {
                 ex.printStackTrace();
-                fail("Schema generation failed unexpectedly: " + ex.toString());
+                fail("Schema generation failed unexpectedly: " + ex);
             }
-            assertTrue("No schemas were generated", outputResolver.schemaFiles.size() > 0);
+            assertTrue("No schemas were generated", !outputResolver.schemaFiles.isEmpty());
             assertTrue("Expected two schemas to be generated, but there were [ " + outputResolver.schemaFiles.size()  + "]", outputResolver.schemaFiles.size() == 2);
             shouldGenerateSchema = false;
         }

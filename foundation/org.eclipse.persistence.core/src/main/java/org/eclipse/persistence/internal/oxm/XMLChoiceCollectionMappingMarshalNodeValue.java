@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -13,13 +13,6 @@
 // Contributors:
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.oxm;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
@@ -37,6 +30,13 @@ import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 public class XMLChoiceCollectionMappingMarshalNodeValue extends MappingNodeValue implements ContainerValue {
     private ChoiceCollectionMapping xmlChoiceCollectionMapping;
     private Map<Field, NodeValue> fieldToNodeValues;
@@ -52,7 +52,7 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends MappingNodeValue
      * This class is needed to hold field and nodeValue relationship.
      * If we have choice with different fields with the same (java class) type (e.g. via XmlAdapter),
      * there is need to know to which field we are holding the nodeValue.
-     *
+     * <p>
      * It is used in getNodeValueForValue method. If we knew only class relationship to nodeValue,
      * there is no way how to say that this nodeValue is related to the first or second field (or any other field with given java class).
      */
@@ -318,8 +318,7 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends MappingNodeValue
 
         Field associatedField = null;
         NodeValue nodeValue = null;
-        if(value instanceof Root) {
-            Root rootValue = (Root)value;
+        if(value instanceof Root rootValue) {
             String localName = rootValue.getLocalName();
             String namespaceUri = rootValue.getNamespaceURI();
             Object fieldValue = rootValue.getObject();
@@ -359,7 +358,7 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends MappingNodeValue
                         }
                     }
 
-                    if (null == nodeValue && fieldNodes.size() > 0) {
+                    if (null == nodeValue && !fieldNodes.isEmpty()) {
                         nodeValue = fieldNodes.get(0).getNodeValue();
                     }
                 }

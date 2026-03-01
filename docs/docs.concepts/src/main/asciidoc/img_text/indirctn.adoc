@@ -1,0 +1,11 @@
+:nofooter:
+This illustration shows an `Order` class that contains attributes
+`orderId`, `lineItems`, and `customerId`. The `lineItems` attribute is a
+reference to a collection of dependent `LineItem` objects. Without
+indirection, reading the `Order` object also reads the dependent
+collection of `LineItem` objects. With indirection, reading the `Order`
+object does not read the dependent collection of `LineItem` objects: the
+`lineItems` attribute refers to an indirection object. You can access
+other attributes (such as `customerId`), but EclipseLink reads the
+dependent `LineItem` objects only if and when you access the `lineItems`
+attribute.

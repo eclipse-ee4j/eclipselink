@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,8 +14,10 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.aggregate;
 
+import org.eclipse.persistence.descriptors.DescriptorEvent;
+import org.eclipse.persistence.descriptors.DescriptorEventAdapter;
+
 import java.util.Vector;
-import org.eclipse.persistence.descriptors.*;
 
 /**
  * Used to test events on aggregate objects.
@@ -34,36 +36,36 @@ public class AggregateEventListener extends DescriptorEventAdapter {
 
     @Override
     public void postDelete(DescriptorEvent event) {
-        this.events.addElement(event);
+        this.events.add(event);
     }
 
     @Override
     public void postInsert(DescriptorEvent event) {
-        this.events.addElement(event);
+        this.events.add(event);
     }
 
     @Override
     public void postUpdate(DescriptorEvent event) {
-        this.events.addElement(event);
+        this.events.add(event);
     }
 
     @Override
     public void postWrite(DescriptorEvent event) {
-        this.events.addElement(event);
+        this.events.add(event);
     }
 
     @Override
     public void preDelete(DescriptorEvent event) {
-        this.events.addElement(event);
+        this.events.add(event);
     }
 
     @Override
     public void preInsert(DescriptorEvent event) {
-        this.events.addElement(event);
+        this.events.add(event);
     }
 
     @Override
     public void preUpdate(DescriptorEvent event) {
-        this.events.addElement(event);
+        this.events.add(event);
     }
 }

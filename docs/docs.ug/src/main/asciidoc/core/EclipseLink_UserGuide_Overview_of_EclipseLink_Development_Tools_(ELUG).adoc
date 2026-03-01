@@ -1,0 +1,25 @@
+The following sections describe the development tools and tool support
+EclipseLink provides:
+
+* link:Introduction_to_EclipseLink_Development_Tools_(ELUG)[Introduction
+to EclipseLink Development Tools] – describes the development tools and
+tool support EclipseLink provides.
+
+* link:Using_Workbench_(ELUG)[Using Workbench] – describes how to use
+Workbench including working with databases, generating data from
+database tables, and creating and editing a sessions.xml file.
+
+* link:Using_the_Schema_Manager_(ELUG)[Using the Schema Manager] –
+explains how to use the EclipseLink schema manager to create databases,
+tables, stored procedures, and to populate database tables.
+
+* link:Using_an_Integrated_Development_Environment_(ELUG)[Using an
+Integrated Development Environment] – explains how to integrate
+EclipseLink with an IDE.
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Concept[Category: Concept]

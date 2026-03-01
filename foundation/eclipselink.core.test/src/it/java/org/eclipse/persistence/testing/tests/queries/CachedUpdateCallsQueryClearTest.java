@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,15 +14,18 @@
 //     dminsky - initial API and implementation
 package org.eclipse.persistence.testing.tests.queries;
 
-import java.util.*;
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.DescriptorQueryManager;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.internal.databaseaccess.DatasourceCall;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.sessions.UnitOfWork;
+import org.eclipse.persistence.testing.framework.TestCase;
+import org.eclipse.persistence.testing.framework.TestErrorException;
+import org.eclipse.persistence.testing.models.employee.domain.Employee;
 
-import org.eclipse.persistence.internal.databaseaccess.*;
-import org.eclipse.persistence.descriptors.*;
-import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.sessions.*;
-
-import org.eclipse.persistence.testing.models.employee.domain.*;
-import org.eclipse.persistence.testing.framework.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Test to ensure that DescriptorQueryManager's cached update calls do not have their
@@ -57,18 +60,15 @@ public class CachedUpdateCallsQueryClearTest extends TestCase {
         ClassDescriptor descriptor = getSession().getDescriptor(Employee.class);
         DescriptorQueryManager descriptorQueryManager = descriptor.getDescriptorQueryManager();
         // in the update transaction in test(), the lastName and the version fields are updated
-        Vector fields = new Vector(2);
+        List<DatabaseField> fields = new ArrayList<>(2);
         fields.add(descriptor.getMappingForAttributeName("lastName").getField());
         fields.add(descriptor.getOptimisticLockingPolicy().getWriteLockField());
 
-        Vector cachedUpdateCalls = descriptorQueryManager.getCachedUpdateCalls(fields);
+        List<DatasourceCall> cachedUpdateCalls = descriptorQueryManager.getCachedUpdateCalls(fields);
         assertNotNull(cachedUpdateCalls);
         assertFalse(cachedUpdateCalls.isEmpty());
 
-        Iterator<DatasourceCall> iterator = cachedUpdateCalls.iterator();
-
-        while (iterator.hasNext()) {
-            DatasourceCall call = iterator.next();
+        for (DatasourceCall call : cachedUpdateCalls) {
             // calls should not cache a query
             if (call.getQuery() != null) {
                 throw new TestErrorException("DatasourceCall's query is not null: " + call);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,14 +17,13 @@ package org.eclipse.persistence.testing.oxm;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-
 import org.eclipse.persistence.testing.oxm.converter.ConverterTestSuite;
 import org.eclipse.persistence.testing.oxm.descriptor.rootelement.RootElementTestSuite;
 import org.eclipse.persistence.testing.oxm.documentpreservation.DocumentPreservationTestSuite;
 import org.eclipse.persistence.testing.oxm.inheritance.InheritanceTestSuite;
 import org.eclipse.persistence.testing.oxm.readonly.ReadOnlyTestSuite;
-import org.eclipse.persistence.testing.oxm.xmlmarshaller.*;
-import org.eclipse.persistence.testing.oxm.mappings.DeploymentXMLMappingTestSuite;
+import org.eclipse.persistence.testing.oxm.xmlmarshaller.XMLMarshalTestCases;
+import org.eclipse.persistence.testing.oxm.xmlmarshaller.XMLUnmarshalTestCases;
 
 public class DeploymentXMLOXTestSuite extends TestCase
 {

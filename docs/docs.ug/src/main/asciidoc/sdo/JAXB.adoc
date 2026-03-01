@@ -1,0 +1,223 @@
+[#sdo-example-xmlbinding]
+=== SDO-XML Integration
+
+* <<sdo-example-xmlbinding-overview>>
+* <<sdo-example-xmlbinding-create>>
+** <<sdo-example-xmlbinding-define>>
+** <<sdo-example-xmlbinding-instantiate>>
+** <<sdo-example-xmlbinding-metadata>>
+* <<sdo-example-xmlbinding-get-type>>
+* <<sdo-example-xmlbinding-to-sdo>>
+* <<sdo-example-xmlbinding-to-pojo>>
+* <<sdo-example-xmlbinding-unmarshall>>
+* <<sdo-example-xmlbinding-marshall>>
+* <<sdo-example-xmlbinding-limitations>>
+
+[#sdo-example-xmlbinding-overview]
+==== [#Overview .mw-headline]#Overview#
+
+The JAXBHelperContext is a bridge between POJOs and SDO DataObjects.
+This bridge allows POJO data to be exposed as SDO DataObjects, this is
+useful when using POJO data with SDO aware applications. The bridge is
+based on their corresponding XML representations.
+
+[#sdo-example-xmlbinding-create]
+==== [#Create_the_POJO.2FSDO_Bridge .mw-headline]#Create the POJO/SDO Bridge#
+
+JAXBHelperContext is the bridge between POJOs and DataObjects. This
+bridge allows POJOs to be converted to/from SDO DataObjects. It also
+provides a mechanism to determine the SDO type corresponding to a POJO
+class.
+
+[#sdo-example-xmlbinding-define]
+===== [#Define_an_XML_Representation_for_the_POJOs .mw-headline]#Define an XML Representation for the POJOs#
+
+This XML representation can be defined either by applying JAXB
+annotations to the POJOs, or by using an existing XML schema and mapping
+to it using EclipseLink MOXy. Programmatically this XML binding is
+represented as a javax.xml.bind.JAXBContext.
+
+[source,java]
+----
+JAXBContext jaxbContext = JAXBContext.newInstance("com.example.customer");
+----
+
+For help on creating a JAXBContext see:
+
+* link:/EclipseLink/Examples/MOXy/JAXB#Creating_a_JAXBContext_using_jaxb.properties[Creating
+a JAXBContext using jaxb.properties]
+* link:/EclipseLink/Examples/MOXy/NativeOxmJaxbContext[Creating a Native
+OXM aware JAXBContext]
+
+[#sdo-example-xmlbinding-instantiate]
+===== Instantiate the JAXBHelperContext
+
+The JAXBHelperContext is instantiated using a JAXBContext. This
+JAXBContext represents the object-to-XML mapping for the POJOs. If
+static DataObjects are being used, a second constructor is offered that
+takes a ClassLoader as a parameter.
+
+[source,java]
+----
+JAXBHelperContext jaxbHelperContext = new JAXBHelperContext(jaxbContext);
+----
+
+[#sdo-example-xmlbinding-metadata]
+===== Define the SDO Side of the Metadata
+
+An XML schema can be used to create the SDO metadata. This is the same
+schema that the POJOs are mapped to. This step has been separated so
+that SDO annotations could be added to the XML schema.
+
+[source,java]
+----
+jaxbHelperContext.getXSDHelper().define(xmlSchema);
+----
+
+For help on creating an XML Schema from POJOs using JAXB see:
+
+* link:/EclipseLink/Examples/MOXy/JAXB#Using_JAXBContext_to_Generate_an_XML_Schema[Generating
+an XSD using a JAXBContext]
+
+[#sdo-example-xmlbinding-get-type]
+==== Get the SDO Type for a POJO
+
+From the JAXBHelperContext you can determine the SDO type from a POJO
+class. This provides quick access to the necessary SDO metadata, to work
+with the data as SDO DataObjects.
+
+[source,java]
+----
+Type customerType = jaxbHelperContext.getType(Customer.class);
+DataObject customerDO = jaxbHelperContext.getDataFactory().create(customerType);
+----
+
+[#sdo-example-xmlbinding-to-sdo]
+==== Convert a POJO to a SDO DataObject
+
+POJOs corresponding to the types in the JAXBContext, can be converted to
+SDO DataObjects using the "wrap" operation on JAXBHelperContext. This
+operation should be called on the root POJO.
+
+[source,java]
+----
+Customer customer = new Customer();
+Address address new Address();
+address.setStreet("123 Any Street");
+customer.set(address);
+
+DataObject customerDO = jaxbHelperContext.wrap(customer);
+customerDO.getString("address/street");  // returns "123 Any Street"
+----
+
+Multiple calls to wrap for the same instance POJO return the same
+instance of DataObject, in other words the following is always true:
+
+[source,java]
+----
+jaxbHelperContext.wrap(customer123) == jaxbHelperContext.wrap(customer123)
+jaxbHelperContext.wrap(customer123) != jaxbHelperContext.wrap(customer456)
+----
+
+The wrap operation may also be called on a collection POJOS.
+
+[source,java]
+----
+List<DataObject> dataObjects = jaxbHelperContext.wrap(pojoCollection);
+----
+
+[#sdo-example-xmlbinding-to-pojo]
+==== Convert a SDO DataObject to a POJO
+
+SDO DataObjects corresponding to POJOs with types in the JAXBContext,
+can be converted to POJOs using the "unwrap" operation on
+JAXBHelperContext.
+
+[source,java]
+----
+Type customerType = jaxbHelperContext.getType(Customer.class);
+DataObject customerDO = jaxbHelperContext.getDataFactory().create(customerType);
+DataObject addressDO = customerDO.create("address");
+addressDO.set("street", "123 Any Street");
+
+Customer customer = (Customer) jaxbHelperContext.unwrap(customerDO);
+customer.getAddress().getStreet();  // returns "123 Any Street"
+----
+
+Multiple calls to unwrap for the same DataObject must return the same
+instance of Object, in other words the following is always true:
+
+[source,java]
+----
+jaxbHelperContext.unwrap(customerDO123) == jaxbHelperContext.unwrap(customerDO123)
+jaxbHelperContext.unwrap(customerDO123) != jaxbHelperContext.unwrap(customerDO456)
+customer123 == jaxbHelperContext.unwrap(jaxbHelperContext.wrap(customer123))
+----
+
+The unwrap operation may also be called on a collection of SDO
+DataObjects.
+
+[source,java]
+----
+List<Object> objects = jaxbHelperContext.unwrap(dataObjectCollection);
+----
+
+[#sdo-example-xmlbinding-unmarshall]
+==== Unmarshalling from XML (SDO load)
+
+JAXBHelperContext can be used to unmarshal the POJOs from XML.
+
+[source,java]
+----
+FileInputStream xml = new FileInputStream("customer.xml");
+XMLDocument xmlDocument = jaxbHelperContext.getXMLHelper().load(xml);
+DataObject customerDO = xmlDocument.getRootObject();
+Customer customer = (Customer) jaxbHelperContext.unwrap(customerDO);
+----
+
+[#sdo-example-xmlbinding-marshall]
+==== Marshalling to XML (SDO save)
+
+JAXBHelperContext can be used to marshal the POJOs to XML.
+
+[source,java]
+----
+DataObject customerDO = jaxbHelperContext.wrap(customer);
+XMLDocument xmlDocument =jaxbHelperContext.getXMLHelper().createDocment(customerDO, "urn:customer", "root");
+jaxbHelperContext.getXMLHelper().save(xmlDocument, System.out, null);
+----
+
+[NOTE]
+====
+With the exception of the ChangeSummary property (if any), the
+output of the SDO save operation will be identical to the output
+produced by JAXB marshalling the entities directly.
+====
+
+[#sdo-example-xmlbinding-limitations]
+==== Limitations
+
+The following are known limitations of the current implementation.
+
+* All entities must be mapped to global XML elements or global complex
+types.
+* The schema context for a OXM descriptor can only be set to a global
+element if that element has an anonymous complex type. Otherrwise the
+schema context must be set to be the corresponding global complex type
+instead.
+* Path and position based MOXy mappings are currently not supported with
+the SDO integration. The following are compatible "address" and
+"name/text()", and the following are not currently compatible
+"contact-info/address" and "phone-number[2]".
+* Only the following MOXy mappings are supported (either through native
+mapping or JAXB equivalents):
+** XML Direct Mapping
+** XML Direct Collection Mapping
+** XML Composite Object Mapping
+** XML Compoiste Collection Mapping
+** XML Object Reference Mapping
+** XML Collection Reference Mapping
+* The current implementation does not support ChangeSummary
+* The current implementation does not support open content properties
+* The current implementation does not support inheritance
+

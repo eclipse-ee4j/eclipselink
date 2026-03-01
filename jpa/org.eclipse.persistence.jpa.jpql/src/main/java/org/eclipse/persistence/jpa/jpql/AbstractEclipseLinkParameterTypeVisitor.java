@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,9 +16,7 @@
 package org.eclipse.persistence.jpa.jpql;
 
 import org.eclipse.persistence.jpa.jpql.parser.AsOfClause;
-import org.eclipse.persistence.jpa.jpql.parser.CastExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ConnectByClause;
-import org.eclipse.persistence.jpa.jpql.parser.DatabaseType;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkExpressionVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.Expression;
 import org.eclipse.persistence.jpa.jpql.parser.ExtractExpression;
@@ -28,7 +26,6 @@ import org.eclipse.persistence.jpa.jpql.parser.RegexpExpression;
 import org.eclipse.persistence.jpa.jpql.parser.StartWithClause;
 import org.eclipse.persistence.jpa.jpql.parser.TableExpression;
 import org.eclipse.persistence.jpa.jpql.parser.TableVariableDeclaration;
-import org.eclipse.persistence.jpa.jpql.parser.UnionClause;
 
 /**
  * This visitor calculates the type of an input parameter.
@@ -58,17 +55,7 @@ public abstract class AbstractEclipseLinkParameterTypeVisitor extends ParameterT
     }
 
     @Override
-    public void visit(CastExpression expression) {
-        type = Object.class;
-    }
-
-    @Override
     public void visit(ConnectByClause expression) {
-        type = Object.class;
-    }
-
-    @Override
-    public void visit(DatabaseType expression) {
         type = Object.class;
     }
 
@@ -113,11 +100,6 @@ public abstract class AbstractEclipseLinkParameterTypeVisitor extends ParameterT
 
     @Override
     public void visit(TableVariableDeclaration expression) {
-        type = Object.class;
-    }
-
-    @Override
-    public void visit(UnionClause expression) {
         type = Object.class;
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,7 +30,7 @@ import org.eclipse.persistence.sequencing.TableSequence;
 
 /**
  * A wrapper class to a table generator metadata.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -47,6 +47,7 @@ public class TableGeneratorMetadata extends TableMetadata {
     private Integer m_initialValue;
 
     private String m_generatorName;
+    private String m_options;
     private String m_pkColumnValue;
     private String m_pkColumnName;
     private String m_valueColumnName;
@@ -74,6 +75,7 @@ public class TableGeneratorMetadata extends TableMetadata {
         m_pkColumnName = tableGenerator.getAttributeString("pkColumnName");
         m_pkColumnValue = tableGenerator.getAttributeString("pkColumnValue");
         m_valueColumnName = tableGenerator.getAttributeString("valueColumnName");
+        m_options = tableGenerator.getAttributeString("options");
 
         setName(tableGenerator.getAttributeString("table"));
     }
@@ -92,8 +94,7 @@ public class TableGeneratorMetadata extends TableMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (super.equals(objectToCompare) && objectToCompare instanceof TableGeneratorMetadata) {
-            TableGeneratorMetadata generator = (TableGeneratorMetadata) objectToCompare;
+        if (super.equals(objectToCompare) && objectToCompare instanceof TableGeneratorMetadata generator) {
 
             if (! valuesMatch(m_allocationSize, generator.getAllocationSize())) {
                 return false;
@@ -104,6 +105,10 @@ public class TableGeneratorMetadata extends TableMetadata {
             }
 
             if (! valuesMatch(m_generatorName, generator.getGeneratorName())) {
+                return false;
+            }
+
+            if (! valuesMatch(m_options, generator.getOptions())) {
                 return false;
             }
 
@@ -123,9 +128,11 @@ public class TableGeneratorMetadata extends TableMetadata {
 
     @Override
     public int hashCode() {
-        int result = m_allocationSize != null ? m_allocationSize.hashCode() : 0;
+        int result = super.hashCode();
+        result = 31 * result + (m_allocationSize != null ? m_allocationSize.hashCode() : 0);
         result = 31 * result + (m_initialValue != null ? m_initialValue.hashCode() : 0);
         result = 31 * result + (m_generatorName != null ? m_generatorName.hashCode() : 0);
+        result = 31 * result + (m_options != null ? m_options.hashCode() : 0);
         result = 31 * result + (m_pkColumnValue != null ? m_pkColumnValue.hashCode() : 0);
         result = 31 * result + (m_pkColumnName != null ? m_pkColumnName.hashCode() : 0);
         result = 31 * result + (m_valueColumnName != null ? m_valueColumnName.hashCode() : 0);
@@ -185,6 +192,14 @@ public class TableGeneratorMetadata extends TableMetadata {
      * INTERNAL:
      * Used for OX mapping.
      */
+    public String getOptions() {
+        return m_options;
+    }
+
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public String getPkColumnName() {
         return m_pkColumnName;
     }
@@ -216,13 +231,14 @@ public class TableGeneratorMetadata extends TableMetadata {
     /**
      * INTERNAL:
      */
-    public TableSequence process(MetadataLogger logger) {
+    public TableSequence process(MetadataLogger logger, String generatedName) {
         TableSequence sequence = new TableSequence();
+        String name = (m_generatorName != null) ? m_generatorName : generatedName;
 
         // Process the sequence name.
-        if (m_pkColumnValue == null || m_pkColumnValue.equals("")) {
-            logger.logConfigMessage(MetadataLogger.TABLE_GENERATOR_PK_COLUMN_VALUE, m_generatorName, getAccessibleObject(), getLocation());
-            sequence.setName(m_generatorName);
+        if (m_pkColumnValue == null || m_pkColumnValue.isEmpty()) {
+            logger.logConfigMessage(MetadataLogger.TABLE_GENERATOR_PK_COLUMN_VALUE, name, getAccessibleObject(), getLocation());
+            sequence.setName(name);
         } else {
             sequence.setName(m_pkColumnValue);
         }
@@ -240,12 +256,12 @@ public class TableGeneratorMetadata extends TableMetadata {
         //sequence.setQualifier(getDatabaseTable().getTableQualifier());
 
         // Process the pk column name
-        if (m_pkColumnName != null && ! m_pkColumnName.equals("")) {
+        if (m_pkColumnName != null && !m_pkColumnName.isEmpty()) {
             sequence.setNameFieldName(m_pkColumnName);
         }
 
         // Process the pk volumn column name
-        if (m_valueColumnName != null && ! m_valueColumnName.equals("")) {
+        if (m_valueColumnName != null && !m_valueColumnName.isEmpty()) {
             sequence.setCounterFieldName(m_valueColumnName);
         }
 
@@ -274,6 +290,14 @@ public class TableGeneratorMetadata extends TableMetadata {
      */
     public void setInitialValue(Integer initialValue) {
         m_initialValue = initialValue;
+    }
+
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setOptions(String options) {
+        m_options = options;
     }
 
     /**

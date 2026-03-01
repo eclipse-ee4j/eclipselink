@@ -1,0 +1,73 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[TESTINGJPA002]]
+=== Configuring the persistence.xml File
+
+The `persistence.xml` file is the deployment descriptor file for
+persistence using JPA. It specifies the persistence units and declares
+the managed persistence classes, the object/relation mapping, and the
+database connection details.
+
+==== Main Tasks
+
+To configure the `persistence.xml` file, the following tasks:
+
+* link:#CHDBEAJF[Task 1: Use the persistence.xml File]
+* link:#CHDFFBDI[Task 2: Instantiate EntityManagerFactory]
+
+[[CHDBEAJF]]
+
+===== Task 1: Use the persistence.xml File
+
+link:#CHDFFCIE[Example 17-2] illustrates a `persistence.xml` file for a
+Java SE platform configuration (that is, outside a container).
+
+[[CHDFFCIE]]
+
+*_Example 17-2 A persistence.xml File Specifying the Java SE Platform
+Configuration_*
+
+[source,oac_no_warn]
+----
+<persistence xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence persistence_1_0.xsd" version="1.0">
+    <persistence-unit name="my-app" transaction-type="RESOURCE_LOCAL">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <exclude-unlisted-classes>false</exclude-unlisted-classes>
+        <properties>
+            <property name="jakarta.persistence.jdbc.driver" value="oracle.jdbc.OracleDriver"/>
+            <property name="jakarta.persistence.jdbc.url" value="jdbc:oracle:thin:@localhost:1521:orcl"/>
+            <property name="jakarta.persistence.jdbc.user" value="scott"/>
+            <property name="jakarta.persistence.jdbc.password" value="tiger"/>
+        </properties>
+    </persistence-unit>
+</persistence>
+----
+
+[[CHDFFBDI]]
+
+===== Task 2: Instantiate EntityManagerFactory
+
+An `EntityManagerFactory` provides an efficient way to construct
+`EntityManager` instances for a database. You can instantiate the
+`EntityManagerFactory` for the application (illustrated in
+link:#CHDFFCIE[Example 17-2]) by using:
+
+[source,oac_no_warn]
+----
+Persistence.createEntityManagerFactory("my-app");
+----

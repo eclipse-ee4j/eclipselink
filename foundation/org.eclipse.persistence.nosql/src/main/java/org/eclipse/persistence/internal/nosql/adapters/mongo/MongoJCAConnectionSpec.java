@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,15 +33,18 @@ public class MongoJCAConnectionSpec implements ConnectionSpec {
     /** Mongo database name. */
     protected String db = "mydb";
 
+    /** Optional authSource https://www.mongodb.com/docs/manual/reference/connection-string/#mongodb-urioption-urioption.authSource */
+    protected String authSource;
+
     /** Optional user name. */
     protected String user;
     /** Optional password. */
     protected char[] password;
 
     /** Hosts. */
-    protected List<String> hosts = new ArrayList<String>();
+    protected List<String> hosts = new ArrayList<>();
     /** Ports. */
-    protected List<Integer> ports = new ArrayList<Integer>();
+    protected List<Integer> ports = new ArrayList<>();
 
     /** Database default query options. */
     protected int options;
@@ -157,5 +160,13 @@ public class MongoJCAConnectionSpec implements ConnectionSpec {
 
     public void setServerSelectionTimeout(int serverSelectionTimeout) {
         this.serverSelectionTimeout = serverSelectionTimeout;
+    }
+
+    public String getAuthSource() {
+        return authSource;
+    }
+
+    public void setAuthSource(String authSource) {
+        this.authSource = authSource;
     }
 }

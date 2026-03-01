@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -13,11 +13,6 @@
 // Contributors:
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.oxm.record;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.helper.DatabaseField;
@@ -40,6 +35,10 @@ import org.eclipse.persistence.oxm.documentpreservation.DocumentPreservationPoli
 import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
+
+import javax.xml.namespace.QName;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * PUBLIC:
@@ -64,7 +63,7 @@ public abstract class XMLRecord extends AbstractRecord implements AbstractMarsha
 
     protected XMLRecord() {
         super(null, null, 0);
-        abstractMarshalRecord = new AbstractMarshalRecordImpl(this);
+        abstractMarshalRecord = new AbstractMarshalRecordImpl<>(this);
         // Required for subclasses.
     }
 
@@ -93,7 +92,7 @@ public abstract class XMLRecord extends AbstractRecord implements AbstractMarsha
     @Override
     public void attributeWithoutQName(String namespaceURI, String localName, String prefix, String value){
         String qualifiedName = localName;
-        if(prefix != null && prefix.length() >0){
+        if(prefix != null && !prefix.isEmpty()){
             qualifiedName = prefix + getNamespaceSeparator() + qualifiedName;
         }
         attribute(namespaceURI, localName, qualifiedName, value);

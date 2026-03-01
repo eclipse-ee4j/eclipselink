@@ -1,0 +1,153 @@
+image:Elug_draft_icon.png[Image:Elug draft
+icon.png,title="Image:Elug draft icon.png"] *For the latest EclipseLink
+documentation, please see
+http://www.eclipse.org/eclipselink/documentation/*
+
+'''''
+
+*TOC*
+Special:Whatlinkshere_Introduction_to_Persistence_Layer_(ELUG)[Related
+Topics]
+
+This section provides the conceptual overview of the persistence layer
+of an EclipseLink application.
+
+[#Persistence Layer Concepts]## The purpose of your application’s
+persistence layer is to use link:#transactions-sessions[a session] at
+run time to associate
+link:Introduction_to_EclipseLink_Application_Development_(ELUG)#Mapping_Metatdata[mapping
+metadata] and a link:#transactions-data-access[data source] in order to
+create, read, update, and delete persistent objects using the
+link:#transactions-cache[EclipseLink cache],
+link:#transactions-queries-and-expressions[queries and expressions], as
+well as link:#transactions-transactions[transactions].
+
+This section introduces the following persistence layer concepts:
+
+* link:#transactions-sessions[Sessions]
+* link:#transactions-data-access[Data Access]
+* link:#transactions-cache[Cache]
+* link:#transactions-queries-and-expressions[Queries and Expressions]
+* link:#transactions-transactions[Transactions]
+
+== [#transactions-sessions]#Sessions#
+
+A session is the primary interface between the client application and
+the EclipseLink runtime, and represents the connection to the underlying
+data source.
+
+For POJO projects, EclipseLink offers several different
+link:Introduction%20to%20EclipseLink%20Sessions%20(ELUG)[session types],
+each optimized for different design requirements and architectures. The
+most commonly used session is the server session–a session that clients
+access on the server through a client session. The server session
+provides a shared cache and shared connection resources.
+
+In JPA projects, sessions are used internally as follows:
+
+* an `+EntityManagerFactory+` wraps an
+`+org.eclipse.persistence.threetier.ServerSession+`;
+* an `+EntityManager+` wraps an
+`+org.eclipse.persistence.sessions.UnitOfWork+` and an
+`+org.eclipse.persistence.threetier.ClientSession+`.
+
+== [#transactions-data-access]#Data Access#
+
+The login (if any) associated with a session determines how the
+EclipseLink runtime connects to the project’s data source.
+
+A login includes details of data source access, such as authentication,
+use of connection pools, and use of external transaction controllers. A
+login (an instance of `+Login+` interface) owns a data source platform.
+
+A platform includes options, such as binding, use of native SQL, use of
+batch writing, and sequencing, that are specific to a particular data
+source. For more information, see
+link:Introduction%20to%20Data%20Access%20(ELUG)#Data_Source_Platform_Types[Data
+Source Platform Types].
+
+For projects that do not persist to a data source, a login is not
+required. For projects that do persist to a data source, a login is
+always required.
+
+For more information, see
+link:Introduction%20to%20Data%20Access%20(ELUG)[Introduction to Data
+Access]
+
+== [#transactions-cache]#Cache#
+
+By default, an EclipseLink session provides an object level cache that
+guarantees object identity and enhances performance by reducing the
+number of times the application needs to access the data source.
+EclipseLink provides a variety of cache options, including locking,
+refresh, invalidation, isolation, and coordination. Using cache
+coordination, you can configure EclipseLink to synchronize changes with
+other instances of the deployed application. You configure most cache
+options at the session level. You can also configure cache options on a
+per-query basis, or on a descriptor to apply to all queries on the
+reference class.
+
+For more information, see
+link:Introduction%20to%20Cache%20(ELUG)[Introduction to Cache].
+
+== [#transactions-queries-and-expressions]#Queries and Expressions#
+
+EclipseLink provides several object and data query types, and offers
+flexible options for query selection criteria, including the following:
+
+* EclipseLink expressions
+* JP QL
+* SQL
+* Stored procedures
+* Query by example
+
+With these options, you can build any type of query. We recommend using
+predefined queries to define application queries. Predefined queries are
+held in the project metadata and referenced by name. This simplifies
+application development and encapsulates the queries to reduce
+maintenance costs.
+
+Regardless of the architecture or persistent entity type, you are free
+to use any of the query options. The Workbench provides the simplest way
+to define queries. Alternatively, you can build queries in code, using
+the EclipseLink API.
+
+For more information, see the following:
+
+* link:Introduction%20to%20EclipseLink%20Queries%20(ELUG)[Introduction
+to EclipseLink Queries]
+* link:Introduction%20to%20EclipseLink%20Expressions%20(ELUG)[Introduction
+to EclipseLink Expressions]
+
+== [#transactions-transactions]#Transactions#
+
+EclipseLink provides the ability to write transactional code isolated
+from the underlying database and schema by using a *unit of work*.
+
+The unit of work isolates changes in a transaction from other threads
+until it successfully commits the changes to the database. Unlike other
+transaction mechanisms, the unit of work automatically manages changes
+to the objects in the transaction, the order of the changes, and changes
+that might invalidate other EclipseLink caches. The unit of work manages
+these issues by calculating a minimal change set, ordering the database
+calls to comply with referential integrity rules and deadlock avoidance,
+and merging changed objects into the shared cache. In a clustered
+environment, the unit of work also synchronizes changes with the other
+servers in the coordinated cache.
+
+If an application uses EJB entity beans, you do not access the unit of
+work API directly, but you still benefit from its features: the
+integration between the EclipseLink runtime and the Java EE container
+automatically uses the unit of work.
+
+For more information, see
+link:Introduction%20to%20EclipseLink%20Transactions_(ELUG)[Introduction
+to EclipseLink Transactions].
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Release_1[Category: Release 1] Category:_Concept[Category:
+Concept]

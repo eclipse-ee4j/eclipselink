@@ -16,7 +16,6 @@ package org.eclipse.persistence.jpa.metadata;
 
 import java.io.ObjectInputFilter;
 
-import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.sessions.Project;
 
 /**

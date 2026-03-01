@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,7 +28,7 @@ public class Employee {
     protected String name;
     protected boolean active;
     protected Address address;
-    protected List<Phone> phones = new ArrayList<Phone>();
+    protected List<Phone> phones = new ArrayList<>();
 
     public BigDecimal getId() {
         return id;
@@ -56,20 +56,16 @@ public class Employee {
     }
 
     public boolean equals(Object object) {
-        if (!(object instanceof Employee)) {
+        if (!(object instanceof Employee employee)) {
             return false;
         }
-        Employee employee = (Employee)object;
         if (this.id != null && !this.id.equals(employee.id)) {
             return false;
         }
         if (this.name != null && !this.name.equals(employee.name)) {
             return false;
         }
-        if (this.address != null && !this.address.equals(employee.address)) {
-            return false;
-        }
-        return true;
+        return this.address == null || this.address.equals(employee.address);
     }
     public boolean isActive() {
         return active;

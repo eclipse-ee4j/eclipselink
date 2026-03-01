@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,13 +14,13 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.security;
 
-import java.lang.reflect.Field;
-
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.exceptions.IntegrityChecker;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.testing.framework.TestErrorException;
 import org.eclipse.persistence.testing.tests.validation.ExceptionTest;
+
+import java.lang.reflect.Field;
 
 
 //Created By Ian Reid
@@ -40,12 +40,11 @@ public class ExceptionTestSaveSecurityManager extends ExceptionTest {
     public ExceptionTestSaveSecurityManager(String description, Class<?> cls) {
         super();
         if (cls != null) {
-            StringBuilder sb = new StringBuilder();
-            sb.append(super.getName());
-            sb.append("(");
-            sb.append(cls.getSimpleName());
-            sb.append(")");
-            setName(sb.toString());
+            String sb = super.getName() +
+                    "(" +
+                    cls.getSimpleName() +
+                    ")";
+            setName(sb);
         }
         setDescription(description);
         this.cls = cls;

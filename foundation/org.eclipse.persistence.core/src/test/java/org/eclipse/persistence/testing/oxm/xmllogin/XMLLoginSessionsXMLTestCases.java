@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -12,10 +12,7 @@
 
 package org.eclipse.persistence.testing.oxm.xmllogin;
 
-import java.io.File;
-
 import junit.framework.TestCase;
-
 import org.eclipse.persistence.internal.sessions.factories.XMLSessionConfigWriter;
 import org.eclipse.persistence.internal.sessions.factories.model.SessionConfigs;
 import org.eclipse.persistence.internal.sessions.factories.model.login.AppendNewElementsOrderingPolicyConfig;
@@ -29,6 +26,8 @@ import org.eclipse.persistence.internal.sessions.factories.model.session.Databas
 import org.eclipse.persistence.oxm.platform.DOMPlatform;
 import org.eclipse.persistence.oxm.platform.SAXPlatform;
 import org.eclipse.persistence.sessions.factories.XMLSessionConfigLoader;
+
+import java.io.File;
 
 public class XMLLoginSessionsXMLTestCases extends TestCase {
 
@@ -62,7 +61,7 @@ public class XMLLoginSessionsXMLTestCases extends TestCase {
 
         // DatasourcePlatform = SAXPlatform
         // ================================
-        m_loginConfig.setPlatformClass(new SAXPlatform().getClass().getName());
+        m_loginConfig.setPlatformClass(SAXPlatform.class.getName());
 
         roundTrippedConfig = writeAndReadSessionsXML();
         roundTrippedLoginConfig = (XMLLoginConfig) roundTrippedConfig.getLoginConfig();
@@ -71,7 +70,7 @@ public class XMLLoginSessionsXMLTestCases extends TestCase {
 
         // DatasourcePlatform = DOMPlatform
         // ================================
-        m_loginConfig.setPlatformClass(new DOMPlatform().getClass().getName());
+        m_loginConfig.setPlatformClass(DOMPlatform.class.getName());
 
         roundTrippedConfig = writeAndReadSessionsXML();
         roundTrippedLoginConfig = (XMLLoginConfig) roundTrippedConfig.getLoginConfig();
@@ -160,7 +159,7 @@ public class XMLLoginSessionsXMLTestCases extends TestCase {
         SessionConfigs readConfigs = sessionLoader.loadConfigsForMappingWorkbench(this.getClass().getClassLoader());
 
         // There is only one session in this sessions.xml
-        return (DatabaseSessionConfig) readConfigs.getSessionConfigs().firstElement();
+        return (DatabaseSessionConfig) readConfigs.getSessionConfigs().get(0);
     }
 
     @Override

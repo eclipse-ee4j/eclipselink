@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -13,9 +13,6 @@
 // Contributors:
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.oxm.mappings;
-
-import java.util.Enumeration;
-import java.util.Vector;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DatabaseException;
@@ -40,6 +37,9 @@ import org.eclipse.persistence.sessions.Session;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 import org.w3c.dom.Text;
+
+import java.util.Iterator;
+import java.util.Vector;
 
 /**
  * <p><b>Purpose: </b>This mapping provides a means to keep a part of the xml tree as a collection
@@ -150,8 +150,8 @@ public class XMLFragmentCollectionMapping extends AbstractCompositeDirectCollect
             result = cp.containerInstance();
         }
 
-        for (Enumeration stream = nestedRows.elements(); stream.hasMoreElements();) {
-            Object next = stream.nextElement();
+        for (Iterator iterator = nestedRows.iterator(); iterator.hasNext();) {
+            Object next = iterator.next();
             if (next instanceof Element) {
                 XMLPlatformFactory.getInstance().getXMLPlatform().namespaceQualifyFragment((Element)next);
             }
@@ -181,7 +181,7 @@ public class XMLFragmentCollectionMapping extends AbstractCompositeDirectCollect
         for (Object iter = cp.iteratorFor(attributeValue); cp.hasNext(iter);) {
             Object element = cp.next(iter, session);
             if (element != null) {
-                elements.addElement(element);
+                elements.add(element);
             }
         }
 

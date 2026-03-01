@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -99,7 +99,7 @@ public class Util {
     public static final String DEFAULT_RAW_LEN = "1000";
     public static final String DEFAULT_LONG_LEN = "32767";
 
-    private static Map<String, String> m_defaultTypeLen = new HashMap<String, String>();
+    private static Map<String, String> m_defaultTypeLen = new HashMap<>();
     static {
         m_defaultTypeLen.put("VARCHAR", DEFAULT_VARCHAR_LEN);
         m_defaultTypeLen.put("VARCHAR2", DEFAULT_VARCHAR_LEN);
@@ -179,7 +179,7 @@ public class Util {
     }
 
     private static void initWrappedTypes() {
-        m_wrappedTypes = new HashMap<Object, Object>();
+        m_wrappedTypes = new HashMap<>();
         m_wrappedTypes.put("java.lang.Boolean", "boolean");
         m_wrappedTypes.put("Boolean", "boolean");
         m_wrappedTypes.put(Boolean.class, "boolean");
@@ -210,7 +210,7 @@ public class Util {
     /*
      * Common utilities
      */
-    private static Map<String, String> uniqueResultTypeNames = new HashMap<String, String>();
+    private static Map<String, String> uniqueResultTypeNames = new HashMap<>();
     public static String uniqueResultTypeName(String methodName, String suffix) {
         String resultTypeName = methodName + suffix;
         int count = 0;
@@ -229,26 +229,26 @@ public class Util {
         if (text == null) {
             return text;
         }
-        String textQuoted = "";
+        StringBuilder textQuoted = new StringBuilder();
         if (text.startsWith("\"")) {
-            textQuoted += "\\\"";
+            textQuoted.append("\\\"");
         }
         StringTokenizer stn = new StringTokenizer(text, "\"");
         while (stn.hasMoreTokens()) {
             String token = stn.nextToken();
-            textQuoted += token;
+            textQuoted.append(token);
             if (stn.hasMoreTokens()) {
-                textQuoted += "\\\"";
+                textQuoted.append("\\\"");
             }
         }
         if (text.endsWith("\"")) {
-            textQuoted += "\\\"";
+            textQuoted.append("\\\"");
         }
-        return textQuoted;
+        return textQuoted.toString();
     }
 
     public static String getSchema(String schema, String type) {
-        if (schema == null || schema.equals("")) {
+        if (schema == null || schema.isEmpty()) {
             if (type.indexOf('.') >= 0) {
                 return type.substring(0, type.indexOf('.'));
             }
@@ -257,7 +257,7 @@ public class Util {
     }
 
     public static String getType(String schema, String type) {
-        if (schema == null || schema.equals("")) {
+        if (schema == null || schema.isEmpty()) {
             if (type.indexOf('.') >= 0) {
                 return type.substring(type.indexOf('.') + 1);
             }
@@ -298,10 +298,10 @@ public class Util {
         "WORK", "WRITE", "YEAR", "ZONE"};
     private static Map<String, String> m_sqlReservedMap;
     static {
-        m_sqlReservedMap = new HashMap<String, String>();
-        for (int i = 0; i < SQL_RESERVED.length; i++) {
+        m_sqlReservedMap = new HashMap<>();
+        for (String s : SQL_RESERVED) {
             m_sqlReservedMap
-                .put(SQL_RESERVED[i].toUpperCase(), SQL_RESERVED[i].toUpperCase() + "_");
+                    .put(s.toUpperCase(), s.toUpperCase() + "_");
         }
     }
 

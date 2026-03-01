@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -44,110 +44,112 @@ import dbws.testing.DBWSTestSuite;
 public class NonAssociativePLSQLCollectionTestSuite extends DBWSTestSuite {
 
     static final String CREATE_NONASSOC_PACKAGE =
-        "CREATE OR REPLACE PACKAGE NONASSOC_PACKAGE AS" +
-            "\nTYPE NONASSO_ARRAY IS TABLE OF VARCHAR2(20);" +
-            "\nTYPE ASSO_ARRAY IS TABLE OF VARCHAR2(20) INDEX BY BINARY_INTEGER;" +
-            "\nPROCEDURE GETARRAYCOUNT(NAMES IN NONASSO_ARRAY, CNT OUT NUMERIC);" +
-            "\nPROCEDURE GETITEMCOUNTFORINDEX(NAMES IN NONASSO_ARRAY, CNT IN OUT NUMERIC);" +
-            "\nPROCEDURE CREATEARRAY(ITEM1 IN VARCHAR2, ITEM2 IN VARCHAR2, ITEM3 IN VARCHAR2, OUTARRAY OUT NONASSO_ARRAY);" +
-            "\nPROCEDURE COPYARRAY(INARRAY IN NONASSO_ARRAY, OUTARRAY OUT NONASSO_ARRAY);" +
-            "\nPROCEDURE COPYTOINDEXEDARRAY(INARRAY IN NONASSO_ARRAY, OUTARRAY OUT ASSO_ARRAY);" +
-            "\nPROCEDURE COPYFROMINDEXEDARRAY(INARRAY IN ASSO_ARRAY, OUTARRAY OUT NONASSO_ARRAY);" +
-            "\nPROCEDURE ADDNAMETOARRAY(NAMETOADD IN VARCHAR2, NAMES IN OUT NONASSO_ARRAY);" +
-            "\nFUNCTION GETARRAYCOUNTFUNC(NAMES IN NONASSO_ARRAY) RETURN NUMERIC;" +
-            "\nFUNCTION CREATEARRAYFUNC(ITEM1 IN VARCHAR2, ITEM2 IN VARCHAR2, ITEM3 IN VARCHAR2) RETURN NONASSO_ARRAY;" +
-            "\nFUNCTION COPYARRAYFUNC(INARRAY IN NONASSO_ARRAY) RETURN NONASSO_ARRAY;" +
-            "\nFUNCTION COPYTOINDEXEDARRAYFUNC(INARRAY IN NONASSO_ARRAY) RETURN ASSO_ARRAY;" +
-            "\nFUNCTION COPYFROMINDEXEDARRAYFUNC(INARRAY IN ASSO_ARRAY) RETURN NONASSO_ARRAY;" +
-        "\nEND NONASSOC_PACKAGE;" ;
+            """
+                    CREATE OR REPLACE PACKAGE NONASSOC_PACKAGE AS
+                    TYPE NONASSO_ARRAY IS TABLE OF VARCHAR2(20);
+                    TYPE ASSO_ARRAY IS TABLE OF VARCHAR2(20) INDEX BY BINARY_INTEGER;
+                    PROCEDURE GETARRAYCOUNT(NAMES IN NONASSO_ARRAY, CNT OUT NUMERIC);
+                    PROCEDURE GETITEMCOUNTFORINDEX(NAMES IN NONASSO_ARRAY, CNT IN OUT NUMERIC);
+                    PROCEDURE CREATEARRAY(ITEM1 IN VARCHAR2, ITEM2 IN VARCHAR2, ITEM3 IN VARCHAR2, OUTARRAY OUT NONASSO_ARRAY);
+                    PROCEDURE COPYARRAY(INARRAY IN NONASSO_ARRAY, OUTARRAY OUT NONASSO_ARRAY);
+                    PROCEDURE COPYTOINDEXEDARRAY(INARRAY IN NONASSO_ARRAY, OUTARRAY OUT ASSO_ARRAY);
+                    PROCEDURE COPYFROMINDEXEDARRAY(INARRAY IN ASSO_ARRAY, OUTARRAY OUT NONASSO_ARRAY);
+                    PROCEDURE ADDNAMETOARRAY(NAMETOADD IN VARCHAR2, NAMES IN OUT NONASSO_ARRAY);
+                    FUNCTION GETARRAYCOUNTFUNC(NAMES IN NONASSO_ARRAY) RETURN NUMERIC;
+                    FUNCTION CREATEARRAYFUNC(ITEM1 IN VARCHAR2, ITEM2 IN VARCHAR2, ITEM3 IN VARCHAR2) RETURN NONASSO_ARRAY;
+                    FUNCTION COPYARRAYFUNC(INARRAY IN NONASSO_ARRAY) RETURN NONASSO_ARRAY;
+                    FUNCTION COPYTOINDEXEDARRAYFUNC(INARRAY IN NONASSO_ARRAY) RETURN ASSO_ARRAY;
+                    FUNCTION COPYFROMINDEXEDARRAYFUNC(INARRAY IN ASSO_ARRAY) RETURN NONASSO_ARRAY;
+                    END NONASSOC_PACKAGE;""";
     static final String CREATE_NONASSOC_PACKAGE_BODY =
-        "CREATE OR REPLACE PACKAGE BODY NONASSOC_PACKAGE AS" +
-            "\nPROCEDURE GETARRAYCOUNT(NAMES IN NONASSO_ARRAY, CNT OUT NUMERIC) AS" +
-            "\nBEGIN" +
-                "\nCNT := NAMES.COUNT;" +
-            "\nEND GETARRAYCOUNT;" +
-            "\nPROCEDURE GETITEMCOUNTFORINDEX(NAMES IN NONASSO_ARRAY, CNT IN OUT NUMERIC) AS" +
-            "\nBEGIN" +
-                "\nCNT := LENGTH(NAMES(CNT));" +
-            "\nEND GETITEMCOUNTFORINDEX;" +
-            "\nPROCEDURE CREATEARRAY(ITEM1 IN VARCHAR2, ITEM2 IN VARCHAR2, ITEM3 IN VARCHAR2, OUTARRAY OUT NONASSO_ARRAY) AS" +
-            "\nBEGIN" +
-                "\nOUTARRAY := NONASSO_ARRAY(ITEM1, ITEM2, ITEM3);" +
-            "\nEND CREATEARRAY;" +
-            "\nPROCEDURE COPYARRAY(INARRAY IN NONASSO_ARRAY, OUTARRAY OUT NONASSO_ARRAY) AS" +
-            "\nBEGIN" +
-                "\nOUTARRAY := NONASSO_ARRAY();" +
-                "\nFOR I IN INARRAY.FIRST .. INARRAY.LAST" +
-                "\nLOOP" +
-                    "\nOUTARRAY.EXTEND;" +
-                    "\nOUTARRAY(I) := INARRAY(I);" +
-                "\nEND LOOP;" +
-            "\nEND COPYARRAY;" +
-            "\nPROCEDURE COPYTOINDEXEDARRAY(INARRAY IN NONASSO_ARRAY, OUTARRAY OUT ASSO_ARRAY) AS" +
-            "\nBEGIN" +
-                "\nFOR I IN INARRAY.FIRST .. INARRAY.LAST" +
-                "\nLOOP" +
-                    "\nOUTARRAY(I) := INARRAY(I);" +
-                "\nEND LOOP;" +
-            "\nEND COPYTOINDEXEDARRAY;" +
-            "\nPROCEDURE COPYFROMINDEXEDARRAY(INARRAY IN ASSO_ARRAY, OUTARRAY OUT NONASSO_ARRAY) AS" +
-            "\nBEGIN" +
-                "\nOUTARRAY := NONASSO_ARRAY();" +
-                "\nFOR I IN INARRAY.FIRST .. INARRAY.LAST" +
-                "\nLOOP" +
-                    "\nOUTARRAY.EXTEND;" +
-                    "\nOUTARRAY(I) := INARRAY(I);" +
-                "\nEND LOOP;" +
-            "\nEND COPYFROMINDEXEDARRAY;" +
-            "\nPROCEDURE ADDNAMETOARRAY(NAMETOADD IN VARCHAR2, NAMES IN OUT NONASSO_ARRAY) AS" +
-            "\nBEGIN" +
-                "\nNAMES.EXTEND;" +
-                "\nNAMES(NAMES.COUNT) := NAMETOADD;" +
-            "\nEND ADDNAMETOARRAY;" +
-            "\nFUNCTION GETARRAYCOUNTFUNC(NAMES IN NONASSO_ARRAY) RETURN NUMERIC AS" +
-            "\nCNT NUMERIC;" +
-            "\nBEGIN" +
-                "\nCNT := NAMES.COUNT;" +
-                "\nRETURN CNT;" +
-            "\nEND GETARRAYCOUNTFUNC;" +
-            "\nFUNCTION CREATEARRAYFUNC(ITEM1 IN VARCHAR2, ITEM2 IN VARCHAR2, ITEM3 IN VARCHAR2) RETURN NONASSO_ARRAY AS" +
-            "\nOUTARRAY NONASSO_ARRAY;" +
-            "\nBEGIN" +
-                "\nOUTARRAY := NONASSO_ARRAY(ITEM1, ITEM2, ITEM3);" +
-                "\nRETURN OUTARRAY;" +
-            "\nEND CREATEARRAYFUNC;" +
-            "\nFUNCTION COPYARRAYFUNC(INARRAY IN NONASSO_ARRAY) RETURN NONASSO_ARRAY AS" +
-            "\nOUTARRAY NONASSO_ARRAY;" +
-            "\nBEGIN" +
-                "\nOUTARRAY := NONASSO_ARRAY();" +
-                "\nFOR I IN INARRAY.FIRST .. INARRAY.LAST" +
-                "\nLOOP" +
-                    "\nOUTARRAY.EXTEND;" +
-                    "\nOUTARRAY(I) := INARRAY(I);" +
-                "\nEND LOOP;" +
-                "\nRETURN OUTARRAY;" +
-            "\nEND COPYARRAYFUNC;" +
-            "\nFUNCTION COPYTOINDEXEDARRAYFUNC(INARRAY IN NONASSO_ARRAY) RETURN ASSO_ARRAY AS" +
-            "\nOUTARRAY ASSO_ARRAY;" +
-            "\nBEGIN" +
-                "\nFOR I IN INARRAY.FIRST .. INARRAY.LAST" +
-                "\nLOOP" +
-                    "\nOUTARRAY(I) := INARRAY(I);" +
-                "\nEND LOOP;" +
-                "\nRETURN OUTARRAY;" +
-            "\nEND COPYTOINDEXEDARRAYFUNC;" +
-            "\nFUNCTION COPYFROMINDEXEDARRAYFUNC(INARRAY IN ASSO_ARRAY) RETURN NONASSO_ARRAY AS" +
-            "\nOUTARRAY NONASSO_ARRAY;" +
-            "\nBEGIN" +
-                "\nOUTARRAY := NONASSO_ARRAY();" +
-                "\nFOR I IN INARRAY.FIRST .. INARRAY.LAST" +
-                "\nLOOP" +
-                    "\nOUTARRAY.EXTEND;" +
-                    "\nOUTARRAY(I) := INARRAY(I);" +
-                "\nEND LOOP;" +
-                "\nRETURN OUTARRAY;" +
-            "\nEND COPYFROMINDEXEDARRAYFUNC;" +
-        "\nEND NONASSOC_PACKAGE;" ;
+            """
+                    CREATE OR REPLACE PACKAGE BODY NONASSOC_PACKAGE AS
+                    PROCEDURE GETARRAYCOUNT(NAMES IN NONASSO_ARRAY, CNT OUT NUMERIC) AS
+                    BEGIN
+                    CNT := NAMES.COUNT;
+                    END GETARRAYCOUNT;
+                    PROCEDURE GETITEMCOUNTFORINDEX(NAMES IN NONASSO_ARRAY, CNT IN OUT NUMERIC) AS
+                    BEGIN
+                    CNT := LENGTH(NAMES(CNT));
+                    END GETITEMCOUNTFORINDEX;
+                    PROCEDURE CREATEARRAY(ITEM1 IN VARCHAR2, ITEM2 IN VARCHAR2, ITEM3 IN VARCHAR2, OUTARRAY OUT NONASSO_ARRAY) AS
+                    BEGIN
+                    OUTARRAY := NONASSO_ARRAY(ITEM1, ITEM2, ITEM3);
+                    END CREATEARRAY;
+                    PROCEDURE COPYARRAY(INARRAY IN NONASSO_ARRAY, OUTARRAY OUT NONASSO_ARRAY) AS
+                    BEGIN
+                    OUTARRAY := NONASSO_ARRAY();
+                    FOR I IN INARRAY.FIRST .. INARRAY.LAST
+                    LOOP
+                    OUTARRAY.EXTEND;
+                    OUTARRAY(I) := INARRAY(I);
+                    END LOOP;
+                    END COPYARRAY;
+                    PROCEDURE COPYTOINDEXEDARRAY(INARRAY IN NONASSO_ARRAY, OUTARRAY OUT ASSO_ARRAY) AS
+                    BEGIN
+                    FOR I IN INARRAY.FIRST .. INARRAY.LAST
+                    LOOP
+                    OUTARRAY(I) := INARRAY(I);
+                    END LOOP;
+                    END COPYTOINDEXEDARRAY;
+                    PROCEDURE COPYFROMINDEXEDARRAY(INARRAY IN ASSO_ARRAY, OUTARRAY OUT NONASSO_ARRAY) AS
+                    BEGIN
+                    OUTARRAY := NONASSO_ARRAY();
+                    FOR I IN INARRAY.FIRST .. INARRAY.LAST
+                    LOOP
+                    OUTARRAY.EXTEND;
+                    OUTARRAY(I) := INARRAY(I);
+                    END LOOP;
+                    END COPYFROMINDEXEDARRAY;
+                    PROCEDURE ADDNAMETOARRAY(NAMETOADD IN VARCHAR2, NAMES IN OUT NONASSO_ARRAY) AS
+                    BEGIN
+                    NAMES.EXTEND;
+                    NAMES(NAMES.COUNT) := NAMETOADD;
+                    END ADDNAMETOARRAY;
+                    FUNCTION GETARRAYCOUNTFUNC(NAMES IN NONASSO_ARRAY) RETURN NUMERIC AS
+                    CNT NUMERIC;
+                    BEGIN
+                    CNT := NAMES.COUNT;
+                    RETURN CNT;
+                    END GETARRAYCOUNTFUNC;
+                    FUNCTION CREATEARRAYFUNC(ITEM1 IN VARCHAR2, ITEM2 IN VARCHAR2, ITEM3 IN VARCHAR2) RETURN NONASSO_ARRAY AS
+                    OUTARRAY NONASSO_ARRAY;
+                    BEGIN
+                    OUTARRAY := NONASSO_ARRAY(ITEM1, ITEM2, ITEM3);
+                    RETURN OUTARRAY;
+                    END CREATEARRAYFUNC;
+                    FUNCTION COPYARRAYFUNC(INARRAY IN NONASSO_ARRAY) RETURN NONASSO_ARRAY AS
+                    OUTARRAY NONASSO_ARRAY;
+                    BEGIN
+                    OUTARRAY := NONASSO_ARRAY();
+                    FOR I IN INARRAY.FIRST .. INARRAY.LAST
+                    LOOP
+                    OUTARRAY.EXTEND;
+                    OUTARRAY(I) := INARRAY(I);
+                    END LOOP;
+                    RETURN OUTARRAY;
+                    END COPYARRAYFUNC;
+                    FUNCTION COPYTOINDEXEDARRAYFUNC(INARRAY IN NONASSO_ARRAY) RETURN ASSO_ARRAY AS
+                    OUTARRAY ASSO_ARRAY;
+                    BEGIN
+                    FOR I IN INARRAY.FIRST .. INARRAY.LAST
+                    LOOP
+                    OUTARRAY(I) := INARRAY(I);
+                    END LOOP;
+                    RETURN OUTARRAY;
+                    END COPYTOINDEXEDARRAYFUNC;
+                    FUNCTION COPYFROMINDEXEDARRAYFUNC(INARRAY IN ASSO_ARRAY) RETURN NONASSO_ARRAY AS
+                    OUTARRAY NONASSO_ARRAY;
+                    BEGIN
+                    OUTARRAY := NONASSO_ARRAY();
+                    FOR I IN INARRAY.FIRST .. INARRAY.LAST
+                    LOOP
+                    OUTARRAY.EXTEND;
+                    OUTARRAY(I) := INARRAY(I);
+                    END LOOP;
+                    RETURN OUTARRAY;
+                    END COPYFROMINDEXEDARRAYFUNC;
+                    END NONASSOC_PACKAGE;""";
     static final String CREATE_NONASSO_ARRAY_TYPE =
         "CREATE OR REPLACE TYPE NONASSOC_PACKAGE_NONASSO_ARRAY AS TABLE OF VARCHAR2(20)";
     static final String CREATE_ASSO_ARRAY_TYPE =

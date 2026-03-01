@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,12 +14,8 @@
 //     Denise Smith - 2.5.1 - Initial Implementation
 package org.eclipse.persistence.internal.oxm;
 
-import java.util.List;
-
-import javax.xml.namespace.QName;
-
 import org.eclipse.persistence.core.mappings.CoreAttributeAccessor;
-import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.oxm.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.mappings.CompositeObjectMapping;
@@ -34,6 +30,9 @@ import org.eclipse.persistence.internal.oxm.record.MarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
+
+import javax.xml.namespace.QName;
+import java.util.List;
 
 public abstract class XMLVariableXPathMappingNodeValue extends XMLRelationshipMappingNodeValue{
 
@@ -155,7 +154,7 @@ public abstract class XMLVariableXPathMappingNodeValue extends XMLRelationshipMa
         if(!variableAttributeAccessor.isWriteOnly()){
         Object value = null;
          if(getMapping().getVariableAttributeAccessor().getAttributeClass() == CoreClassConstants.QNAME){
-                 if(uri != null && uri.length() > 0) {
+                 if(uri != null && !uri.isEmpty()) {
                      value =  new QName(uri, localName);
                  }else{
                      value =  new QName( localName);

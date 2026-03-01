@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -42,7 +42,7 @@ import org.eclipse.persistence.mappings.converters.TypeConversionConverter;
 /**
  * INTERNAL:
  * Object to hold onto a type converter metadata.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -92,8 +92,7 @@ public class TypeConverterMetadata extends AbstractConverterMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (super.equals(objectToCompare) && objectToCompare instanceof TypeConverterMetadata) {
-            TypeConverterMetadata typeConverter = (TypeConverterMetadata) objectToCompare;
+        if (super.equals(objectToCompare) && objectToCompare instanceof TypeConverterMetadata typeConverter) {
 
             if (! valuesMatch(getName(), typeConverter.getName())) {
                 return false;

@@ -1,0 +1,425 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[ADVANCEDCONCEPTS003]]
+=== Using Virtual Access Methods
+
+In addition to standard JAXB properties (represented by Java fields and
+accessor methods), EclipseLink MOXy 2.3 introduced the concept of
+virtual properties and virtual access methods, which instead rely on
+special `get()` and `set()` methods to maintain mapping data. For
+example, you might want to use a `HashMap` as the underlying structure
+to hold data for certain mappings. The mappings that use virtual method
+access must be defined in EclipseLink OXM metadata.
+
+In order to add virtual properties to an entity:
+
+* the Java class must be marked with an `@XmlVirtualAccessMethods`
+annotation, or `<xml-virtual-access-methods>` element in OXM
+* the Java class must contain getter and setter methods to access
+virtual property values:
+** `public <ValueType> get(String propertyName)`
+** `public void set(String propertyName, <ValueType> value)`
+*** method names are configurable
+*** `<ValueType>` can be `Object`, or any other Java type (if you would
+like to use a particular type of value class in the method signature)
+
+NOTE: By default, EclipseLink will look for methods named `set` and `get`. To
+customize accessor method names, see link:#CHDBDGHA["Specifying
+Alternate Accessor Methods"].
+
+For an example of using virtual properties in a multi-tenant
+architecture, see link:advanced_concepts004.htm#CHDIHFEE["Using
+Extensible MOXy"].
+
+==== Configuring Virtual Access Methods
+
+Virtual Access Methods can be configured either by through Java
+annotations (see link:#CIHHFHBH[Example 8-5]) or EclipseLink OXM
+metadata (see link:#CIHIIIFB[Example 8-6]).
+
+[[CIHHFHBH]]
+
+*_Example 8-5 Using Java Annotations_*
+
+[source,oac_no_warn]
+----
+package example;
+ 
+import java.util.Map;
+import java.util.HashMap;
+ 
+import jakarta.xml.bind.annotation.*;
+ 
+import org.eclipse.persistence.oxm.annotations.XmlVirtualAccessMethods;
+ 
+@XmlRootElement
+@XmlVirtualAccessMethods
+@XmlAccessorType(XmlAccessType.PROPERTY)
+public class Customer {
+ 
+   private int id;
+ 
+   private String name;
+ 
+   private Map<String, Object> extensions = new HashMap<String, Object>();
+ 
+   public Object get(String name) {
+      return extensions.get(name);
+   }
+ 
+   public void set(String name, Object value) {
+      extensions.put(name, value);
+   }
+ 
+   @XmlAttribute
+   public int getId() {
+   ...
+ 
+}
+ 
+----
+
+[[CIHIIIFB]]
+
+*_Example 8-6 Using OXM Metadata_*
+
+[source,oac_no_warn]
+----
+...
+<java-types>
+   <java-type name="Customer">
+      <xml-virtual-access-methods />
+      <java-attributes>
+         <xml-attribute java-attribute="id" />
+         <xml-element java-attribute="name" />
+      </java-attributes>
+   </java-type>
+...
+ 
+----
+
+==== Example
+
+For this example we will use the *Customer* class
+(xref:{relativedir}/advanced_concepts002.adoc#CHDEEICC[Example 8-3]), along with an
+EclipseLink OXM file to define our virtual mappings. Any property
+encountered in this file that does not have a corresponding Java
+attribute will be considered a virtual property and will be accessed
+through the virtual access methods. Because there is no associated Java
+field, the `type` information must also be provided.
+
+[[sthref146]]
+
+*_Example 8-7 The virtualprops-oxm.xml File_*
+
+[source,oac_no_warn]
+----
+...
+<java-types>
+    <java-type name="Customer">
+        <java-attributes>
+            <xml-element java-attribute="discountCode" name="discount-code"
+                type="java.lang.String" />
+        </java-attributes>
+    </java-type>
+</java-types>
+...
+ 
+----
+
+When creating the `JAXBContext`, we pass in the `virtualprops` metadata
+along with our *Customer* class.
+
+To set the values for virtual properties, we will use the aforementioned
+`set()` method.
+
+[source,oac_no_warn]
+----
+InputStream oxm = classLoader.getResourceAsStream("virtualprops-oxm.xml");
+Map<String, Object> properties = new HashMap<String, Object>();
+properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, oxm);
+ 
+Class[] classes = new Class[] { Customer.class };
+JAXBContext ctx = JAXBContext.newInstance(classes, properties);
+ 
+Customer c = new Customer();
+c.setId(7761);
+c.setName("Bob Smith");
+c.set("discountCode", "SIUB372JS7G2IUDS7");
+ 
+ctx.createMarshaller().marshal(e, System.out);
+ 
+----
+
+This will produce the following XML:
+
+[source,oac_no_warn]
+----
+<customer id="7761">
+   <name>Bob Smith</name>
+   <discount-code>SIUB372JS7G2IUDS7</discount-code>
+</customer>
+ 
+----
+
+Conversely, we use the `get(String)` method to access virtual
+properties:
+
+[source,oac_no_warn]
+----
+...
+Customer c = (Customer) ctx.createUnmarshaller().unmarshal(CUSTOMER_URL);
+ 
+// Populate UI
+customerWindow.getTextField(ID).setText(String.valueOf(c.getId()));
+customerWindow.getTextField(NAME).setText(c.getName());
+customerWindow.getTextField(DCODE).setText(c.get("discountCode"));
+...
+ 
+----
+
+==== Using XmlAccessType.FIELD and XmlTransient
+
+If you are using an `@XmlAccessorType` of `XmlAccessType.FIELD`, you
+will need to mark your virtual properties `Map` attribute to be
+`@XmlTransient`, to prevent the `Map` itself from being bound to XML:
+
+[[sthref148]]
+
+*_Example 8-8 Marking the Map Attribute_*
+
+[source,oac_no_warn]
+----
+package example;
+ 
+import jakarta.xml.bind.annotation.*;
+ 
+import org.eclipse.persistence.oxm.annotations.XmlVirtualAccessMethods;
+ 
+@XmlRootElement
+@XmlVirtualAccessMethods
+@XmlAccessorType(XmlAccessType.FIELD)
+public class Customer {
+ 
+   @XmlTransient
+   private Map<String, Object> extensions;
+   ...
+ 
+----
+
+==== Options
+
+* link:#CHDBDGHA[Specifying Alternate Accessor Methods]
+* link:#CHDJDAJF[Specifying Schema Generation Options]
+
+[[CHDBDGHA]]
+
+===== Specifying Alternate Accessor Methods
+
+To use different method names as your virtual method accessors, specify
+them using the `getMethodName` and `setMethodName` attributes on
+`@XmlVirtualAccessMethods`:
+
+[[sthref150]]
+
+*_Example 8-9 Using Alternate Accessor Methods_*
+
+[source,oac_no_warn]
+----
+package example;
+ 
+import java.util.Properties;
+ 
+import jakarta.xml.bind.annotation.*;
+ 
+import org.eclipse.persistence.oxm.annotations.XmlVirtualAccessMethods;
+ 
+@XmlRootElement
+@XmlVirtualAccessMethods(getMethod = "getCustomProps", setMethod = "putCustomProps")
+@XmlAccessorType(XmlAccessType.FIELD)
+public class Customer {
+ 
+   @XmlAttribute
+   private int id;
+ 
+   private String name;
+ 
+   @XmlTransient
+   private Properties<String, Object> props = new Properties<String, Object>();
+ 
+   public Object getCustomProps(String name) {
+      return props.getProperty(name);
+   }
+ 
+   public void putCustomProps(String name, Object value) {
+      props.setProperty(name, value);
+   }
+ 
+}
+ 
+----
+
+In OXM:
+
+[[sthref151]]
+
+*_Example 8-10 Using the xml-virtual-access-methods Element_*
+
+[source,oac_no_warn]
+----
+...
+<java-types>
+  <java-type name="Customer">
+    <xml-virtual-access-methods get-method="getCustomProps" set-method="putCustomProps" />
+    <java-attributes>
+      <xml-attribute java-attribute="id" />
+      <xml-element java-attribute="name" />
+      <!-- virtual -->
+      <xml-element java-attribute="discountCode" name="discount-code"
+        type="java.lang.String" />
+    </java-attributes>
+  </java-type>
+...
+ 
+----
+
+[[CHDJDAJF]]
+
+===== Specifying Schema Generation Options
+
+You can configure how virtual properties should appear in generated
+schemas using the `schema` attribute on `@XmlVirtualAccessMethods`.
+EclipseLink offers two options. Virtual properties can be:
+
+* written as individual nodes, or
+* consolidated into a single `<any>` element.
+
+====== Virtual Properties as Individual Nodes
+
+This is EclipseLink's default behavior, or can be specified explicitly
+as an override as follows:
+
+[[sthref153]]
+
+*_Example 8-11 Mapping as Individual Nodes_*
+
+[source,oac_no_warn]
+----
+package example;
+ 
+@XmlRootElement
+@XmlVirtualAccessMethods(schema = XmlVirtualAccessMethodsSchema.NODES)
+@XmlAccessorType(XmlAccessType.FIELD)
+public class Customer {
+ 
+   ...
+ 
+----
+
+For example:
+
+[[sthref154]]
+
+*_Example 8-12 Original Customer Schema_*
+
+[source,oac_no_warn]
+----
+<xs:schema ...>
+ 
+    <xs:element name="customer">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="first-name" type="xs:string" />
+                <xs:element name="last-name" type="xs:string" />
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+ 
+</xs:schema>
+ 
+----
+
+[[sthref155]]
+
+*_Example 8-13 Generated Schema (After adding middle-initial and
+phone-number)_*
+
+[source,oac_no_warn]
+----
+<xs:schema ...>
+ 
+    <xs:element name="customer">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="first-name" type="xs:string" />
+                <xs:element name="last-name" type="xs:string" />
+                <xs:element name="middle-initial" type="xs:string" />
+                <xs:element name="phone-number" type="xs:string" />
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+ 
+</xs:schema>
+ 
+----
+
+====== Virtual Properties in an `<any>` Element
+
+EclipseLink can also use an `<any>` element to hold all of the virtual
+properties in one node:
+
+[[CHDBFAEB]]
+
+*_Example 8-14 Using an `<any>` Element_*
+
+[source,oac_no_warn]
+----
+package example;
+ 
+@XmlRootElement
+@XmlVirtualAccessMethods(schema = XmlVirtualAccessMethodsSchema.ANY)
+@XmlAccessorType(XmlAccessType.FIELD)
+public class Customer {
+ 
+   ...
+ 
+----
+
+From link:#CHDBFAEB[Example 8-14], a newly generated schema using this
+approach would look like:
+
+[[sthref157]]
+
+*_Example 8-15 Generated Schema_*
+
+[source,oac_no_warn]
+----
+<xs:schema ...>
+ 
+    <xs:element name="customer">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="first-name" type="xs:string" />
+                <xs:element name="last-name" type="xs:string" />
+                <xs:any minOccurs="0" />
+            </xs:sequence>
+        </xs:complexType>
+   </xs:element>
+ 
+</xs:schema>
+----

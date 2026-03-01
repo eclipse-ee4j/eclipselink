@@ -1,0 +1,231 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[ADVANCEDCONCEPTS007]]
+=== Using XML Transformations
+
+In many cases, you can use MOXy's `@XmlTransformation` annotation to
+give you considerably more control over the marshalling and
+unmarshalling of your objects. `@XmlTransformation` can be used to
+create a custom mapping where one or more XML nodes can be used to
+create the value for the Java attribute.
+
+To handle the custom requirements at marshal (write) and unmarshall
+(read) time, `@XmlTransformation` uses instances of
+`org.eclipse.persistence.mappings.transformers` (such as
+`AttributeTransformer` and `FieldTransformer`), providing a
+non-intrusive solution that avoids the need for domain objects to
+implement any 'special' interfaces.
+
+For example, if you wanted to map the following XML to objects and
+combine the values of `DATE` and `TIME` into a `single java.util.Date`
+object, you can use an `@XmlTransformation:`
+
+[source,oac_no_warn]
+----
+<ELEM_B>
+   <B_DATE>20100825</B_DATE>
+   <B_TIME>153000</B_TIME>
+   <NUM>123</NUM>
+   <C_DATE>20100825</C_DATE>
+   <C_TIME>154500</C_TIME>
+</ELEM_B>
+----
+
+[NOTE]
+====
+Ordinarily, you would use `@XmlAdapter`. However:
+
+* Although the *DATE*/*TIME* pairings are repeated throughout the
+document, the element name changes each time (such as *B_DATE*/*B_TIME*,
+*C_DATE*/*C_TIME*, and so on).
+* Because each pairing is missing a grouping element, you would need to
+adapt the _entire_ *ElemB* class.
+
+Because of these issues, MOXy's transformation mapping is much easier to
+implement:
+====
+
+[[sthref187]]
+
+*_Example 8-38 Mapping Example_*
+
+[source,oac_no_warn]
+----
+ 
+package example;
+ 
+import java.util.Date;
+ 
+import jakarta.xml.bind.annotation.*;
+import org.eclipse.persistence.oxm.annotations.*;
+ 
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlRootElement(name="ELEM_B")
+public class ElemB {
+ 
+    @XmlTransformation
+    @XmlReadTransformer(transformerClass=DateAttributeTransformer.class)
+    @XmlWriteTransformers({
+        @XmlWriteTransformer(xmlPath="B_DATE/text()", transformerClass=DateFieldTransformer.class),
+        @XmlWriteTransformer(xmlPath="B_TIME/text()", transformerClass=TimeFieldTransformer.class),
+    })
+    private Date bDate;
+ 
+    @XmlElement(name="NUM")
+    private int num;
+ 
+    @XmlTransformation
+    @XmlReadTransformer(transformerClass=DateAttributeTransformer.class)
+    @XmlWriteTransformers({
+        @XmlWriteTransformer(xmlPath="C_DATE/text()", transformerClass=DateFieldTransformer.class),
+        @XmlWriteTransformer(xmlPath="C_TIME/text()", transformerClass=TimeFieldTransformer.class),
+    })
+    private Date cDate;
+ 
+}
+ 
+----
+
+==== Using an AttributeTransformer
+
+Use an `AttributeTransformer` to construct the Java attribute value:
+
+[[sthref189]]
+
+*_Example 8-39 Sample AttributeTransfomer_*
+
+[source,oac_no_warn]
+----
+package example;
+ 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+ 
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.mappings.foundation.AbstractTransformationMapping;
+import org.eclipse.persistence.mappings.transformers.AttributeTransformer;
+import org.eclipse.persistence.sessions.Record;
+import org.eclipse.persistence.sessions.Session;
+ 
+public class DateAttributeTransformer implements AttributeTransformer {
+ 
+    private AbstractTransformationMapping mapping;
+    private SimpleDateFormat yyyyMMddHHmmss = new SimpleDateFormat("yyyyMMddHHmmss");
+ 
+    public void initialize(AbstractTransformationMapping mapping) {
+        this.mapping = mapping;
+    }
+ 
+    public Object buildAttributeValue(Record record, Object instance, Session session) {
+        try {
+            String dateString = null;
+            String timeString = null;
+ 
+            for (DatabaseField field : mapping.getFields()) {
+                if (field.getName().contains("DATE")) {
+                    dateString = (String) record.get(field);
+                } else {
+                    timeString = (String) record.get(field);
+                }
+            }
+            return yyyyMMddHHmmss.parseObject(dateString + timeString);
+        } catch(ParseException e) {
+            throw new RuntimeException(e);
+        }
+    }
+ 
+}
+ 
+----
+
+==== Using a FieldTransformer
+
+Use a `FieldTransformer` to construct the XML field value from the Java
+object.
+
+Each transformation mapping may have multiple write transformers. In
+this example, you will need two:
+
+* The first write transformer writes the year, month, and day in
+*yyMMdd* format:
++
+[[sthref191]]
+
+*_Example 8-40 First Write Transformer_*
+
+[source,oac_no_warn]
+----
+package example;
+ 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+ 
+import org.eclipse.persistence.mappings.foundation.AbstractTransformationMapping;
+import org.eclipse.persistence.mappings.transformers.FieldTransformer;
+import org.eclipse.persistence.sessions.Session;
+ 
+public class DateFieldTransformer implements FieldTransformer {
+ 
+    private AbstractTransformationMapping mapping;
+    private SimpleDateFormat yyyyMMdd = new SimpleDateFormat("yyyyMMdd");
+ 
+    public void initialize(AbstractTransformationMapping mapping) {
+        this.mapping = mapping;
+    }
+ 
+    public Object buildFieldValue(Object instance, String xPath, Session session) {
+        Date date = (Date) mapping.getAttributeValueFromObject(instance);
+        return yyyyMMdd.format(date);
+    }
+ 
+}
+----
+* The second write transformer writes out the hour, minutes, and seconds
+in *HHmmss* format.
++
+[[sthref192]]
+
+*_Example 8-41 Second Write Transformer_*
+
+[source,oac_no_warn]
+----
+package example;
+ 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+ 
+import org.eclipse.persistence.mappings.foundation.AbstractTransformationMapping;
+import org.eclipse.persistence.mappings.transformers.FieldTransformer;
+import org.eclipse.persistence.sessions.Session;
+ 
+public class TimeFieldTransformer implements FieldTransformer {
+ 
+    private AbstractTransformationMapping mapping;
+    private SimpleDateFormat HHmmss = new SimpleDateFormat("HHmmss");
+ 
+    public void initialize(AbstractTransformationMapping mapping) {
+        this.mapping = mapping;
+    }
+ 
+    public Object buildFieldValue(Object instance, String xPath, Session session) {
+        Date date = (Date) mapping.getAttributeValueFromObject(instance);
+        return HHmmss.format(date);
+    }
+ 
+}
+----

@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2006, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2024, 2026 Contributors to the Eclipse Foundation. All rights reserved.
+ * Copyright (c) 2006, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,13 +15,13 @@
 //     Oracle - initial API and implementation
 //     04/21/2022: Tomas Kraus
 //       - Issue 1474: Update JPQL Grammar for Jakarta Persistence 2.2, 3.0 and 3.1
+//     06/02/2023: Radek Felcman
+//       - Issue 1885: Implement new JPQLGrammar for upcoming Jakarta Persistence 3.2
+//     07/24/2024: Ondro Mihalyi
+//       - Issues 2197, 2198, and 2199: JPQL query incorrectly parsed when "this" variable used explicitly in path expressions
 package org.eclipse.persistence.internal.jpa.jpql;
 
-import java.text.MessageFormat;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.ResourceBundle;
+import org.eclipse.persistence.Version;
 import org.eclipse.persistence.config.ParserValidationType;
 import org.eclipse.persistence.exceptions.JPQLException;
 import org.eclipse.persistence.expressions.Expression;
@@ -28,6 +29,7 @@ import org.eclipse.persistence.internal.expressions.ParameterExpression;
 import org.eclipse.persistence.internal.queries.JPQLCallQueryMechanism;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jpa.jpql.EclipseLinkGrammarValidator;
+import org.eclipse.persistence.jpa.jpql.EclipseLinkVersion;
 import org.eclipse.persistence.jpa.jpql.JPQLQueryProblem;
 import org.eclipse.persistence.jpa.jpql.JPQLQueryProblemResourceBundle;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractExpressionVisitor;
@@ -43,6 +45,8 @@ import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar2_1;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar2_2;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar3_0;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar3_1;
+import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar3_2;
+import org.eclipse.persistence.jpa.jpql.parser.JPQLStatementBNF;
 import org.eclipse.persistence.jpa.jpql.parser.SelectStatement;
 import org.eclipse.persistence.jpa.jpql.parser.UpdateStatement;
 import org.eclipse.persistence.queries.DatabaseQuery;
@@ -53,7 +57,17 @@ import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReportQuery;
 import org.eclipse.persistence.queries.UpdateAllQuery;
-import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.*;
+
+import java.text.MessageFormat;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.ResourceBundle;
+
+import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.HermesParser_GrammarValidator_ErrorMessage;
+import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.HermesParser_SemanticValidator_ErrorMessage;
+import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.HermesParser_UnexpectedException_ErrorMessage;
 
 /**
  * This class compiles a JPQL query into a {@link DatabaseQuery}. If validation is not turned off,
@@ -95,15 +109,39 @@ public final class HermesParser implements JPAQueryBuilder {
     private void addArguments(JPQLQueryContext queryContext, DatabaseQuery databaseQuery) {
 
         if (queryContext.inputParameters != null) {
-
             for (Map.Entry<InputParameter, Expression> entry : queryContext.inputParameters.entrySet()) {
                 ParameterExpression parameter = (ParameterExpression) entry.getValue();
-
                 databaseQuery.addArgument(
-                    parameter.getField().getName(),
-                    (Class<?>) parameter.getType(),
-                    entry.getKey().isPositional() ? ParameterType.POSITIONAL : ParameterType.NAMED
+                        parameter.getField().getName(),
+                        (Class<?>) parameter.getType(),
+                        entry.getKey().isPositional() ? ParameterType.POSITIONAL : ParameterType.NAMED
                 );
+            }
+        }
+    }
+
+    private static final class ParameterInfo {
+        private Class<?> type;
+        private ParameterType parameterType;
+
+        private ParameterInfo(Class<?> type, ParameterType parameterType) {
+            this.type = type == null ? Object.class : type;
+            this.parameterType = parameterType;
+        }
+
+        private void merge(Class<?> nextType) {
+            if (nextType == null) {
+                return;
+            }
+            if (this.type == Object.class) {
+                this.type = nextType;
+                return;
+            }
+            if (nextType == Object.class) {
+                return;
+            }
+            if (!this.type.equals(nextType)) {
+                this.type = Object.class;
             }
         }
     }
@@ -152,6 +190,9 @@ public final class HermesParser implements JPAQueryBuilder {
             sb.append(problem.getEndPosition());
             sb.append("] ");
             sb.append(message);
+            String rootExpressionText = problem.getExpression().getRoot().toActualText();
+            sb.append(" (" + rootExpressionText.substring(0, problem.getStartPosition())
+                    + " [ " + problem.getExpression().toActualText() + " ] ...");
         }
 
         String errorMessage = bundle.getString(messageKey);
@@ -227,21 +268,26 @@ public final class HermesParser implements JPAQueryBuilder {
      * of EclipseLink
      */
     private JPQLGrammar jpqlGrammar() {
-        switch(validationLevel) {
-            case ParserValidationType.JPA10:
-                return JPQLGrammar1_0.instance();
-            case ParserValidationType.JPA20:
-                return JPQLGrammar2_0.instance();
-            case ParserValidationType.JPA21:
-                return JPQLGrammar2_1.instance();
-            case ParserValidationType.JPA22:
-                return JPQLGrammar2_2.instance();
-            case ParserValidationType.JPA30:
-                return JPQLGrammar3_0.instance();
-            case ParserValidationType.JPA31:
-                return JPQLGrammar3_1.instance();
-            default:
-                return DefaultEclipseLinkJPQLGrammar.instance();
+        return switch (validationLevel) {
+            case ParserValidationType.JPA10 -> JPQLGrammar1_0.instance();
+            case ParserValidationType.JPA20 -> JPQLGrammar2_0.instance();
+            case ParserValidationType.JPA21 -> JPQLGrammar2_1.instance();
+            case ParserValidationType.JPA22 -> JPQLGrammar2_2.instance();
+            case ParserValidationType.JPA30 -> JPQLGrammar3_0.instance();
+            case ParserValidationType.JPA31 -> JPQLGrammar3_1.instance();
+            case ParserValidationType.JPA32 -> JPQLGrammar3_2.instance();
+            default -> DefaultEclipseLinkJPQLGrammar.instance();
+        };
+    }
+
+    private boolean isJakartaDataValidationLevel() {
+        if (validationLevel != null) {
+            return switch (validationLevel) {
+                case ParserValidationType.JPA32, ParserValidationType.None -> true;
+                default -> false;
+            };
+        } else {
+            return false;
         }
     }
 
@@ -255,13 +301,7 @@ public final class HermesParser implements JPAQueryBuilder {
                                            AbstractSession session) {
 
         try {
-            // Parse the JPQL query with the most recent JPQL grammar
-            JPQLExpression jpqlExpression = new JPQLExpression(
-                jpqlQuery,
-                DefaultEclipseLinkJPQLGrammar.instance(),
-                isTolerant()
-            );
-
+            JPQLExpression jpqlExpression = buildJPQLExpression(jpqlQuery);
             // Create a context that caches the information contained in the JPQL query
             // (especially from the FROM clause)
             JPQLQueryContext queryContext = new JPQLQueryContext(jpqlGrammar());
@@ -439,5 +479,21 @@ public final class HermesParser implements JPAQueryBuilder {
             UpdateQueryVisitor visitor = new UpdateQueryVisitor(queryContext, query);
             expression.accept(visitor);
         }
+    }
+
+    JPQLExpression buildJPQLExpression(CharSequence jpqlQuery) {
+        String version = Version.getVersion();
+        String majorMinorVersion = version.substring(0, version.indexOf(".", version.indexOf(".") + 1));
+        EclipseLinkVersion elVersion = EclipseLinkVersion.value(majorMinorVersion);
+        boolean isJakartaDataVersion = elVersion.isNewerThanOrEqual(EclipseLinkVersion.VERSION_5_0) || isJakartaDataValidationLevel();
+        // Parse the JPQL query with the most recent JPQL grammar
+        JPQLExpression jpqlExpression = new JPQLExpression(
+                jpqlQuery,
+                DefaultEclipseLinkJPQLGrammar.instance(),
+                JPQLStatementBNF.ID,
+                isTolerant(),
+                isJakartaDataVersion
+        );
+        return jpqlExpression;
     }
 }

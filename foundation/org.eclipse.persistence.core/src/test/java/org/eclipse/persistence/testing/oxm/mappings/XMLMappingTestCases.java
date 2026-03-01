@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -13,28 +13,6 @@
 // Contributors:
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.oxm.mappings;
-
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.util.Calendar;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-import javax.xml.stream.XMLEventReader;
-import javax.xml.stream.XMLEventWriter;
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamReader;
-import javax.xml.stream.XMLStreamWriter;
-import javax.xml.transform.Result;
-import javax.xml.validation.Schema;
-import javax.xml.validation.TypeInfoProvider;
-import javax.xml.validation.Validator;
-import javax.xml.validation.ValidatorHandler;
 
 import org.eclipse.persistence.internal.oxm.record.XMLEventReaderInputSource;
 import org.eclipse.persistence.internal.oxm.record.XMLEventReaderReader;
@@ -61,6 +39,27 @@ import org.xml.sax.InputSource;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+import javax.xml.stream.XMLEventReader;
+import javax.xml.stream.XMLEventWriter;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamWriter;
+import javax.xml.transform.Result;
+import javax.xml.validation.Schema;
+import javax.xml.validation.TypeInfoProvider;
+import javax.xml.validation.Validator;
+import javax.xml.validation.ValidatorHandler;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.util.Calendar;
 
 public abstract class XMLMappingTestCases extends OXTestCase {
 
@@ -269,9 +268,7 @@ public abstract class XMLMappingTestCases extends OXTestCase {
             log(testObject.toString());
         }
 
-        if ((getReadControlObject() instanceof XMLRoot) && (testObject instanceof XMLRoot)) {
-            XMLRoot controlObj = (XMLRoot)getReadControlObject();
-            XMLRoot testObj = (XMLRoot)testObject;
+        if ((getReadControlObject() instanceof XMLRoot controlObj) && (testObject instanceof XMLRoot testObj)) {
             compareXMLRootObjects(controlObj, testObj);
         } else {
             assertEquals(getReadControlObject(), testObject);
@@ -282,7 +279,7 @@ public abstract class XMLMappingTestCases extends OXTestCase {
         assertEquals(controlObj.getLocalName(), testObj.getLocalName());
         assertEquals(controlObj.getNamespaceURI(), testObj.getNamespaceURI());
         if (null != controlObj.getObject() && null != testObj.getObject() && controlObj.getObject() instanceof java.util.Calendar && testObj.getObject() instanceof java.util.Calendar) {
-            assertTrue(((Calendar)controlObj.getObject()).getTimeInMillis() == ((Calendar)testObj.getObject()).getTimeInMillis());
+            assertEquals(((Calendar) controlObj.getObject()).getTimeInMillis(), ((Calendar) testObj.getObject()).getTimeInMillis());
         } else {
             assertEquals(controlObj.getObject(), testObj.getObject());
         }
@@ -301,8 +298,7 @@ public abstract class XMLMappingTestCases extends OXTestCase {
     public void testObjectToXMLDocument() throws Exception {
         Object objectToWrite = getWriteControlObject();
         XMLDescriptor desc = null;
-        if (objectToWrite instanceof XMLRoot) {
-            XMLRoot xmlRoot = (XMLRoot) objectToWrite;
+        if (objectToWrite instanceof XMLRoot xmlRoot) {
             if(null != xmlRoot.getObject()) {
                 desc = (XMLDescriptor)xmlContext.getSession(0).getProject().getDescriptor(((XMLRoot)objectToWrite).getObject().getClass());
             }
@@ -330,8 +326,7 @@ public abstract class XMLMappingTestCases extends OXTestCase {
         StringWriter writer = new StringWriter();
         Object objectToWrite = getWriteControlObject();
         XMLDescriptor desc = null;
-        if (objectToWrite instanceof XMLRoot) {
-            XMLRoot xmlRoot = (XMLRoot) objectToWrite;
+        if (objectToWrite instanceof XMLRoot xmlRoot) {
             if(null != xmlRoot.getObject()) {
                 desc = (XMLDescriptor)xmlContext.getSession(0).getProject().getDescriptor(((XMLRoot)objectToWrite).getObject().getClass());
             }
@@ -369,8 +364,7 @@ public abstract class XMLMappingTestCases extends OXTestCase {
         StringWriter writer = new StringWriter();
         Object objectToWrite = getWriteControlObject();
         XMLDescriptor desc = null;
-        if (objectToWrite instanceof XMLRoot) {
-            XMLRoot xmlRoot = (XMLRoot) objectToWrite;
+        if (objectToWrite instanceof XMLRoot xmlRoot) {
             if(null != xmlRoot.getObject()) {
                 desc = (XMLDescriptor)xmlContext.getSession(0).getProject().getDescriptor(((XMLRoot)objectToWrite).getObject().getClass());
             }
@@ -406,8 +400,7 @@ public abstract class XMLMappingTestCases extends OXTestCase {
     public void testObjectToOutputStream() throws Exception {
         Object objectToWrite = getWriteControlObject();
         XMLDescriptor desc = null;
-        if (objectToWrite instanceof XMLRoot) {
-            XMLRoot xmlRoot = (XMLRoot) objectToWrite;
+        if (objectToWrite instanceof XMLRoot xmlRoot) {
             if(null != xmlRoot.getObject()) {
                 desc = (XMLDescriptor)xmlContext.getSession(0).getProject().getDescriptor(((XMLRoot)objectToWrite).getObject().getClass());
             }
@@ -443,8 +436,7 @@ public abstract class XMLMappingTestCases extends OXTestCase {
     public void testObjectToOutputStreamASCIIEncoding() throws Exception {
         Object objectToWrite = getWriteControlObject();
         XMLDescriptor desc = null;
-        if (objectToWrite instanceof XMLRoot) {
-            XMLRoot xmlRoot = (XMLRoot) objectToWrite;
+        if (objectToWrite instanceof XMLRoot xmlRoot) {
             if(null != xmlRoot.getObject()) {
                 desc = (XMLDescriptor)xmlContext.getSession(0).getProject().getDescriptor(((XMLRoot)objectToWrite).getObject().getClass());
             }
@@ -490,8 +482,7 @@ public abstract class XMLMappingTestCases extends OXTestCase {
 
             Object objectToWrite = getWriteControlObject();
             XMLDescriptor desc = null;
-            if (objectToWrite instanceof XMLRoot) {
-                XMLRoot xmlRoot = (XMLRoot) objectToWrite;
+            if (objectToWrite instanceof XMLRoot xmlRoot) {
                 if(null != xmlRoot.getObject()) {
                     desc = (XMLDescriptor)xmlContext.getSession(0).getProject().getDescriptor(((XMLRoot)objectToWrite).getObject().getClass());
                 }
@@ -535,8 +526,7 @@ public abstract class XMLMappingTestCases extends OXTestCase {
 
             Object objectToWrite = getWriteControlObject();
             XMLDescriptor desc = null;
-            if (objectToWrite instanceof XMLRoot) {
-                XMLRoot xmlRoot = (XMLRoot) objectToWrite;
+            if (objectToWrite instanceof XMLRoot xmlRoot) {
                 if(null != xmlRoot.getObject()) {
                     desc = (XMLDescriptor)xmlContext.getSession(0).getProject().getDescriptor(((XMLRoot)objectToWrite).getObject().getClass());
                 }
@@ -588,8 +578,7 @@ public abstract class XMLMappingTestCases extends OXTestCase {
         SAXDocumentBuilder builder = new SAXDocumentBuilder();
         Object objectToWrite = getWriteControlObject();
         XMLDescriptor desc = null;
-        if (objectToWrite instanceof XMLRoot) {
-            XMLRoot xmlRoot = (XMLRoot) objectToWrite;
+        if (objectToWrite instanceof XMLRoot xmlRoot) {
             if(null != xmlRoot.getObject()) {
                 desc = (XMLDescriptor)xmlContext.getSession(0).getProject().getDescriptor(((XMLRoot)objectToWrite).getObject().getClass());
             }

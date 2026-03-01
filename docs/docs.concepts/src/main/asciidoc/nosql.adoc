@@ -1,0 +1,65 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+
+:description: EclipseLink
+:keywords: eclipselink, java, jpa, persistence, non-relational, nosql
+
+==  Understanding Non-relational Data Sources
+
+This chapter describes how to set up your JPA applications to work with
+a non-relational data source. There are many types of non-relational
+data sources. These include document databases, key-value stores, and
+various other non-standard databases, such as MongoDB, Cassandra, and
+Google BigTable. This chapter focuses on the NoSQL data source. NoSQL is
+a classification of database systems that do not support the SQL
+standard. EclipseLink supports persistence of Java objects to NoSQL
+databases through the Jakarta Persistence API (JPA). EclipseLink native
+API is also supported with NoSQL databases.
+
+This chapter includes the following sections:
+
+* link:#NOSQL001[NoSQL Platform Concepts]
+* link:#NOSQL002[About NoSQL Persistence Units]
+* link:#NOSQL003[About JPA Applications on the NoSQL Platform]
+* link:#NOSQL004[About Mapping NoSQL Objects]
+* link:#NOSQL005[About Queries and the NoSQL Platform]
+* link:#NOSQL006[About Transactions and the NoSQL Platform]
+
+//NoSQL Platform Concepts
+:sectnums:
+include::{rootdir}/nosql001.adoc[]
+
+//About NoSQL Persistence Units
+:sectnums:
+include::{rootdir}/nosql002.adoc[]
+
+//About JPA Applications on the NoSQL Platform
+:sectnums:
+include::{rootdir}/nosql003.adoc[]
+
+//About Mapping NoSQL Objects
+:sectnums:
+include::{rootdir}/nosql004.adoc[]
+
+//About Queries and the NoSQL Platform
+:sectnums:
+include::{rootdir}/nosql005.adoc[]
+
+//About Transactions and the NoSQL Platform
+:sectnums:
+include::{rootdir}/nosql006.adoc[]

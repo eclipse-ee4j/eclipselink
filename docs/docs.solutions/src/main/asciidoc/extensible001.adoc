@@ -1,0 +1,437 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[EXTENSIBLE001]]
+=== Making JPA Entities Extensible
+
+Use the `@VirtualAccessMethods` annotation to specify that an entity is
+extensible. By using virtual properties in an extensible entity, you can
+specify mappings external to the entity. This allows you to modify the
+mappings without modifying the entity source file and without
+redeploying the entity's persistence unit.
+
+Extensible entities are useful in a multi-tenant (or SaaS) architecture
+where a shared, generic application can be used by multiple clients
+(tenants). Tenants have private access to their own data, and to data
+shared with other tenants.
+
+Using extensible entities, you can:
+
+* Build an application where some mappings are common to all users and
+some mappings are user-specific.
+* Add mappings to an application after it is made available to a
+customer (even post-deployment).
+* Use the same `EntityManagerFactory` interface to work with data after
+mappings have changed.
+* Provide an additional source of metadata to be used by an application.
+
+==== Main Tasks for Creating and Supporting an Extensible JPA Entity
+
+To create and support an extensible JPA entity:
+
+* link:#CIAHBEAJ[Task 1: Configure the Entity]
+* link:#CIAIJJDH[Task 2: Design the Schema]
+* link:#CIAECEAE[Task 3: Provide Additional Mappings]
+* link:#CIAIJHAG[Task 4: Externalizing Extensions Using a
+MetaDataSource]
+
+[[CIAHBEAJ]]
+
+===== Task 1: Configure the Entity
+
+Configure the entity by annotating the entity class with
+`@VirtualAccessMethods` (or using the XML `<access-methods>`), adding
+`get` and `set` methods for the property values, and adding a data
+structure to store the extended attributes and values, as described in
+the following sections:
+
+* link:#CIAGGIHJ[Annotate the Entity Class with @VirtualAccessMethods]
+* link:#CIAJFEFA[Add get and set Methods to the Entity]
+* link:#CIAHBEBF[Define Virtual Attribute Storage]
+* link:#CIAIFCJE[Use XML]
+
+[[CIAGGIHJ]]
+
+====== Annotate the Entity Class with @VirtualAccessMethods
+
+Annotate the entity with `@VirtualAccessMethods` to specify that it is
+extensible and to define virtual properties.
+
+link:#CIAHBGHB[Table 12-1] describes the attributes available to the
+`@VirtualAccessMethods` annotation.
+
+[[CIAHBGHB]]
+
+*_Table 12-1 Attributes for the @VirtualAccessMethods Annotation_*
+
+|===
+|*Attribute* |*Description*
+|`get` a|
+The name of the `get`ter method to use for the virtual property. This
+method must take a single `java.lang.String` parameter and return a
+`java.lang.Object` parameter.
+
+Default: `get`
+
+Required? No
+
+|`set` a|
+The name of the `set`ter method to use for the virtual property. This
+method must take a `java.lang.String` and a `java.lang.Object` parameter
+and return a `java.lang.Object` parameter.
+
+Default: `set`
+
+Required? No
+
+|===
+
+[[CIAJFEFA]]
+
+====== Add get and set Methods to the Entity
+
+Add `get(String)` and `set(String, Object)` methods to the entity. The
+`get()` method returns a value by property name and the `set()` method
+stores a value by property name. The default names for these methods are
+`get` and `set`, and they can be overridden with the
+`@VirtualAccessMethods` annotation.
+
+EclipseLink weaves these methods if weaving is enabled, which provides
+support for lazy loading, change tracking, fetch groups, and internal
+optimizations.
+
+NOTE: Weaving is not supported when using virtual access methods with
+`OneToOne` mappings. If attempted, an exception will be thrown.
+
+[[CIAHBEBF]]
+
+====== Define Virtual Attribute Storage
+
+Add a data structure to store the extended attributes and values, that
+is, the virtual mappings. These can then be mapped to the database. See
+link:#CIAECEAE[Task 3: Provide Additional Mappings.]
+
+A common way to store the virtual mappings is in a `Map` object (as
+shown in link:#BABJBFGB[Example 12-1]), but you can also use other
+strategies.
+
+When using field-based access, annotate the data structure with
+`@Transient` so the structure cannot be used for another mapping. When
+using property-based access, `@Transient` is unnecessary.
+
+link:#BABJBFGB[Example 12-1] illustrates an entity class that uses
+property access.
+
+[[BABJBFGB]]
+
+*_Example 12-1 Entity Class that Uses Property Access_*
+
+[source,oac_no_warn]
+----
+@Entity
+@VirtualAccessMethods
+public class Customer{
+ 
+    @Id
+    private int id;
+    ...
+ 
+    @Transient
+    private Map<String, Object> extensions;
+ 
+    public <T> T get(String name) {
+        return (T) extentions.get(name);
+    }
+ 
+    public Object set(String name, Object value) {
+        return extensions.put(name, value);
+    }
+----
+
+[[CIAIFCJE]]
+
+====== Use XML
+
+As an alternative to, or in addition to, using the
+`@VirtualAccessMethods` annotation, you can use an `access="VIRTUAL"`
+attribute on a mapping element (such as `<basic>`), for example:
+
+[source,oac_no_warn]
+----
+<basic name="idNumber" access="VIRTUAL" attribute-type="String">
+    <column name="FLEX_COL1"/>
+</basic>
+----
+
+To set virtual access methods as the defaults for the persistence unit,
+use the `<access>` and `<access-methods>` elements, for example:
+
+[source,oac_no_warn]
+----
+<persistence-unit-metadata>
+           <xml-mapping-metadata-complete/>
+           <exclude-default-mappings/>
+           <persistence-unit-defaults>
+                <access>VIRTUAL</access>
+                <access-methods set-method="get" get-method="set"/>
+              </persistence-unit-defaults>
+   </persistence-unit-metadata>
+----
+
+[[CIAIJJDH]]
+
+===== Task 2: Design the Schema
+
+Provide database tables with extra columns to store virtual attribute
+values. For example, the following `Customer` table includes two
+predefined columns, `ID` and `NAME`, and three columns for storing the
+attribute values, `EXT_1`, `EXT_2`, `EXT_3`:
+
+`CUSTOMER` table
+
+* `INTEGER` `ID`
+* `VARCHAR` `NAME`
+* `VARCHAR` `EXT_1`
+* `VARCHAR` `EXT_2`
+* `VARCHAR` `EXT_3`
+
+You can then specify which of the `FLEX` columns should be used to
+persist an extended attribute, as described in link:#CIAECEAE["Task 3:
+Provide Additional Mappings"].
+
+[[CIAECEAE]]
+
+===== Task 3: Provide Additional Mappings
+
+To provide additional mappings, add the mappings with the `column` and
+`access-methods` attributes to the `eclipselink-orm.xml` file, for
+example:
+
+[source,oac_no_warn]
+----
+<basic name="idNumber" access="VIRTUAL" attribute-type="String">
+  <column name="FLEX_COL1"/>
+</basic>
+----
+
+[[CIAIJHAG]]
+
+===== Task 4: Externalizing Extensions Using a MetaDataSource
+
+Configure persistence unit properties to indicate that the application
+should retrieve the flexible mappings from the `eclipselink-orm.xml`
+file. You can set persistence unit properties using the
+`persistence.xml` file or by setting properties on the
+`EntityManagerFactory` interface, as described in the following
+sections.
+
+For more information about external mappings, see
+xref:{relativedir}/metadatasource.htm#METADATASOURCE[Chapter 13, "Using an External MetaData Source."]
+
+====== Configure the persistence.xml File
+
+In the `persistence.xml` file, use the `eclipselink.metadata-source`
+property to use the default `eclipselink-orm.xml` file. Use the
+`eclipselink.metadata-source.xml.url` property to use a different file
+at the specified location, for example:
+
+[source,oac_no_warn]
+----
+<property name="eclipselink.metadata-source" value="XML"/>
+<property name="eclipselink.metadata-source.xml.url" value="foo://bar"/>
+----
+
+====== Configure EntityManagerFactory and the Metadata Repository
+
+Extensions are added at bootstrap time through access to a metadata
+repository. The metadata repository is accessed through a class that
+provides methods to retrieve the metadata it holds. EclipseLink includes
+a metadata repository implementation that supports XML repositories.
+
+Specify the class to use and any configuration information for the
+metadata repository through persistence unit properties. The
+`EntityManagerFactory` interface integrates additional mapping
+information from the metadata repository into the metadata it uses to
+bootstrap.
+
+You can provide your own implementation of the class to access the
+metadata repository. Each metadata repository access class must specify
+an individual set of properties to use to connect to the repository.
+
+You can subclass either of the following classes:
+
+* `org.eclipse.persistence.internal.jpa.extensions.MetadataRepository`
+* `org.eclipse.persistence.internal.jpa.extensions.XMLMetadataRepository`
+
+In the following example, the properties that begin with `com.foo` are
+subclasses defined by the developer.
+
+[source,oac_no_warn]
+----
+<property name="eclipselink.metadata-source" value="com.foo.MetadataRepository"/>
+<property name="com.foo.MetadataRepository.location" value="foo://bar"/>
+<property name="com.foo.MetadataRepository.extra-data" value="foo-bar"/>
+----
+
+====== Refresh the Metadata Repository
+
+If you change the metadata and you want an `EntityManager` instance
+based on the new metadata, you must call the `refreshMetadata()` method
+on the `EntityManagerFactory` interface to refresh the data. The next
+`EntityManager` instance will be based on the new metadata.
+
+The `refreshMetadata()` method takes a map of properties that can be
+used to override the properties previously defined for the
+`metadata-source` element.
+
+==== Code Examples
+
+link:#CIADHIHE[Example 12-2] illustrates the following:
+
+* Field access is used for non-extension fields.
+* Virtual access is used for extension fields, using defaults
+(`get(String)` and `set(String, Object)`).
+* The `get(String)` and `set(String, Object)` methods will be woven,
+even if no mappings use them, because of the presence of
+`@VirtualAccessMethods`.
+
+These items are illustrated in bold font.
+
+[[CIADHIHE]]
+
+*_Example 12-2 Virtual Access Using Default get and set Method Names_*
+
+[source,oac_no_warn]
+----
+@Entity
+@VirtualAccessMethods
+public class Address {
+ 
+    @Id
+    private int id;
+ 
+    @Transient
+    private Map<String, Object> extensions;
+ 
+    public int getId(){
+        return id;
+    }
+ 
+    public <T> T get(String name) {
+        return (T) extentions.get(name);
+    }
+ 
+    public Object set(String name, Object value) {
+        return extensions.put(name, value);
+    }
+. 
+.
+.
+ 
+----
+
+link:#CIAHGIEJ[Example 12-3] illustrates the following:
+
+* Field access is used for non-extension fields.
+* The `@VirtualAccessMethods` annotation overrides methods to be used
+for getting and setting.
+* The `get(String)` and `set(String, Object)` methods will be woven,
+even if no mappings use them, because of the presence of
+`@VirtualAccessMethods`.
+* The XML for extended mapping indicates which `get()` and `set()`
+method to use.
+
+These items are illustrated in bold font.
+
+[[CIAHGIEJ]]
+
+*_Example 12-3 Overriding get and set Methods_*
+
+[source,oac_no_warn]
+----
+@Entity
+@VirtualAccessMethods(get="getExtension", set="setExtension")
+public class Address {
+ 
+    @Id
+    private int id;
+ 
+    @Transient
+    private Map<String, Object> extensions;
+ 
+    public int getId(){
+        return id;
+    }
+ 
+    public <T> T getExtension(String name) {
+        return (T) extensions.get(name);
+    }
+ 
+    public Object setExtension(String name, Object value) {
+        return extensions.put(name, value);
+    }
+ 
+    ...
+ 
+    <basic name="name"  access="VIRTUAL" attribute-type="String">
+      <column name="FLEX_1"/>
+    </basic>
+ 
+----
+
+link:#CIADJCIB[Example 12-4] illustrates the following:
+
+* Property access is used for non-extension fields.
+* Virtual access is used for extension fields, using defaults
+(`get(String)` and `set(String, Object)`).
+* The extensions are mapped in a portable way. `@Transient` is not
+required, because property access is used.
+* The `get(String)` and `set(String, Object)` methods will be woven,
+even if no mappings use them, because of the presence of
+`@VirtualAccessMethods`.
+
+These items are illustrated in bold font.
+
+[[CIADJCIB]]
+
+*_Example 12-4 Using Property Access_*
+
+[source,oac_no_warn]
+----
+@Entity
+@VirtualAccessMethods
+public class Address {
+ 
+    private int id;
+ 
+    private Map<String, Object> extensions;
+ 
+    @Id
+    public int getId(){
+        return id;
+    }
+ 
+    public <T> T get(String name) {
+        return (T) extensions.get(name);
+    }
+ 
+    public Object set(String name, Object value) {
+        return extensions.put(name, value);
+    }
+ 
+...
+----

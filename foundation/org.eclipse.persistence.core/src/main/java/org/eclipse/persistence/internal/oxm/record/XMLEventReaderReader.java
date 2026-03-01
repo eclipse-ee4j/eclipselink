@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,11 +14,12 @@
 //     mmacivor - September 14/2009 - 2.0 - Initial implementation
 package org.eclipse.persistence.internal.oxm.record;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import org.eclipse.persistence.internal.oxm.Constants;
+import org.eclipse.persistence.internal.oxm.Unmarshaller;
+import org.xml.sax.InputSource;
+import org.xml.sax.Locator;
+import org.xml.sax.SAXException;
+import org.xml.sax.ext.Locator2;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventReader;
@@ -30,13 +31,11 @@ import javax.xml.stream.events.Namespace;
 import javax.xml.stream.events.ProcessingInstruction;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
-
-import org.eclipse.persistence.internal.oxm.Constants;
-import org.eclipse.persistence.internal.oxm.Unmarshaller;
-import org.xml.sax.InputSource;
-import org.xml.sax.Locator;
-import org.xml.sax.SAXException;
-import org.xml.sax.ext.Locator2;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Convert and XMLEventReader into SAX events.
@@ -84,10 +83,9 @@ public class XMLEventReaderReader extends XMLReaderAdapter {
     private void parse(XMLEventReader xmlEventReader) throws SAXException {
         try {
             contentHandler.startDocument();
-            parseEvent(xmlEventReader.nextEvent());
-            while(depth > 0) {
+            do {
                 parseEvent(xmlEventReader.nextEvent());
-            }
+            } while (depth > 0);
             contentHandler.endDocument();
         } catch(XMLStreamException ex) {
             throw new RuntimeException(ex);
@@ -136,7 +134,7 @@ public class XMLEventReaderReader extends XMLReaderAdapter {
 
                 QName name = endElement.getName();
                 String prefix = endElement.getName().getPrefix();
-                if(null == prefix || prefix.length() == 0) {
+                if(null == prefix || prefix.isEmpty()) {
                     contentHandler.endElement(name.getNamespaceURI(), name.getLocalPart(), name.getLocalPart());
                 } else {
                     contentHandler.endElement(name.getNamespaceURI(), name.getLocalPart(), prefix + Constants.COLON + name.getLocalPart());
@@ -195,7 +193,7 @@ public class XMLEventReaderReader extends XMLReaderAdapter {
                 QName qName = startElement.getName();
                 String prefix = qName.getPrefix();
                 indexedAttributeList.setIterators(startElement.getAttributes(), startElement.getNamespaces());
-                if(null == prefix || prefix.length() == 0) {
+                if(null == prefix || prefix.isEmpty()) {
                     contentHandler.startElement(qName.getNamespaceURI(), qName.getLocalPart(), qName.getLocalPart(), indexedAttributeList);
                 } else {
                     contentHandler.startElement(qName.getNamespaceURI(), qName.getLocalPart(), prefix + Constants.COLON + qName.getLocalPart(), indexedAttributeList);
@@ -229,7 +227,7 @@ public class XMLEventReaderReader extends XMLReaderAdapter {
                     String uri = javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI;
                     String localName = next.getPrefix();
                     String qName;
-                    if(null == localName || localName.length() == 0) {
+                    if(null == localName || localName.isEmpty()) {
                         localName = javax.xml.XMLConstants.XMLNS_ATTRIBUTE;
                         qName = javax.xml.XMLConstants.XMLNS_ATTRIBUTE;
                     } else {
@@ -245,7 +243,7 @@ public class XMLEventReaderReader extends XMLReaderAdapter {
                     String localName = next.getName().getLocalPart();
                     String prefix = next.getName().getPrefix();
                     String qName;
-                    if(null == prefix || prefix.length() == 0) {
+                    if(null == prefix || prefix.isEmpty()) {
                         qName = localName;
                     } else {
                         qName = prefix + Constants.COLON + localName;
@@ -254,7 +252,7 @@ public class XMLEventReaderReader extends XMLReaderAdapter {
                     attributesList.add(new Attribute(uri, localName, qName, value));
                 }
 
-                attributes = attributesList.toArray(new Attribute[attributesList.size()]);
+                attributes = attributesList.toArray(new Attribute[0]);
             }else{
                 attributes = NO_ATTRIBUTES;
 

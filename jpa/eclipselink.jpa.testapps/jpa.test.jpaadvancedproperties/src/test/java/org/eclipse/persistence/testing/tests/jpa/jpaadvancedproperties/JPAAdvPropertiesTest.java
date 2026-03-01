@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -63,6 +63,7 @@ public class JPAAdvPropertiesTest extends JUnitTestCase {
         suite.addTest(new JPAAdvPropertiesTest("testBatchwritingProperty"));
         suite.addTest(new JPAAdvPropertiesTest("testCopyDescriptorNamedQueryToSessionProperty"));
         suite.addTest(new JPAAdvPropertiesTest("testLoggingTyperProperty"));
+        suite.addTest(new JPAAdvPropertiesTest("testLoginEncryptorProperty"));
 
         return suite;
     }
@@ -95,11 +96,9 @@ public class JPAAdvPropertiesTest extends JUnitTestCase {
 
             List<SessionEventListener> listeners = session.getEventManager().getListeners();
             boolean doseCustomizedSessionEventListenerExists=false;
-            for (int i =0;i<listeners.size();i++){
-                Object aListener = listeners.get(i);
-                if(aListener instanceof CustomizedSessionEventListener){
-                    doseCustomizedSessionEventListenerExists=true;
-                    CustomizedSessionEventListener requiredListener = ((CustomizedSessionEventListener)aListener);
+            for (Object aListener : listeners) {
+                if (aListener instanceof CustomizedSessionEventListener requiredListener) {
+                    doseCustomizedSessionEventListenerExists = true;
                     if (!requiredListener.preCommitTransaction) {
                         fail(" The preCommitTransaction event did not fire");
                     }
@@ -180,7 +179,7 @@ public class JPAAdvPropertiesTest extends JUnitTestCase {
     public void testCacheStatementsAndItsSizeProperty() {
         EntityManager em = createEntityManager();
         ServerSession session = em.unwrap(ServerSession.class);
-        if(session.getConnectionPools().size()>0){//And if connection pooling is configured,
+        if(!session.getConnectionPools().isEmpty()){//And if connection pooling is configured,
             if(!session.getProject().getLogin().shouldCacheAllStatements()){
                 fail("Caching all statements flag set equals to true by property eclipselink.jdbc.cache-statements in persistence.xml, it however read as false.");
             }
@@ -195,7 +194,8 @@ public class JPAAdvPropertiesTest extends JUnitTestCase {
     public void testLoggingTyperProperty(){
         EntityManager em = createEntityManager();
         ServerSession session = em.unwrap(ServerSession.class);
-        if(!(session.getSessionLog() instanceof org.eclipse.persistence.logging.JavaLog)){
+        if(!"org.eclipse.persistence.logging.jul.JavaLog".equals(session.getSessionLog().getClass().getName())) {
+
             fail("Logging type set to JavaLog, it however has been detected as different type logger.");
         }
         closeEntityManager(em);
@@ -298,5 +298,30 @@ public class JPAAdvPropertiesTest extends JUnitTestCase {
         }
         assertNull("Error deleting Customer", em.find(Customer.class, customerId));
 
+    }
+
+    public void testLoginEncryptorProperty() {
+        EntityManager em = createEntityManager();
+        try {
+            //Create new customer
+            beginTransaction(em);
+            Customer customer = ModelExamples.customerExample1();
+            em.persist(customer);
+            em.flush();
+            Integer customerId = customer.getCustomerId();
+            commitTransaction(em);
+
+            customer = em.find(org.eclipse.persistence.testing.models.jpa.jpaadvancedproperties.Customer.class, customerId);
+            //Purge it
+            beginTransaction(em);
+            em.remove(customer);
+            commitTransaction(em);
+
+            assertNotNull(customer);
+            assertTrue("CustomizedEncryptor.encryptPassword() method wasn't called.", CustomizedEncryptor.encryptPasswordCounter > 0);
+            assertTrue("CustomizedEncryptor.decryptPassword() method wasn't called.", CustomizedEncryptor.decryptPasswordCounter > 0);
+        } finally {
+            closeEntityManager(em);
+        }
     }
 }

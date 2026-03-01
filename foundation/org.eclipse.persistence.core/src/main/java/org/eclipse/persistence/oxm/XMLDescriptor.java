@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,28 +16,16 @@
 //       - 376603: Provide for table per tenant support for multitenant applications
 package org.eclipse.persistence.oxm;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map.Entry;
-import java.util.StringTokenizer;
-import java.util.Vector;
-
-import javax.xml.namespace.QName;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.InheritancePolicy;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.DescriptorException;
-import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.oxm.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.descriptors.InstantiationPolicy;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.oxm.Root;
 import org.eclipse.persistence.internal.oxm.TreeObjectBuilder;
 import org.eclipse.persistence.internal.oxm.Unmarshaller;
@@ -63,24 +51,33 @@ import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
 import org.eclipse.persistence.queries.AttributeGroup;
 import org.eclipse.persistence.queries.DoesExistQuery;
 
+import javax.xml.namespace.QName;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.StringTokenizer;
+import java.util.Vector;
+
 /**
  * Use an XML project for nontransactional, nonpersistent (in-memory) conversions between Java objects and XML documents.
- *
+ * <p>
  * An XMLDescriptor is a set of mappings that describe how an objects's data is to be represented in an
  * XML document. XML descriptors describe Java objects that you map to simple and complex types defined
  * by an XML schema document (XSD). Using XML descriptors in an EclipseLink XML project, you can configure XML mappings.
  *
  * @see org.eclipse.persistence.oxm.mappings
  */
-public class XMLDescriptor extends ClassDescriptor implements Descriptor<AttributeAccessor, DatabaseMapping, DatabaseField, InheritancePolicy, InstantiationPolicy, NamespaceResolver, ObjectBuilder, DatabaseTable, UnmarshalRecord, XMLUnmarshaller>{
+public class XMLDescriptor extends ClassDescriptor implements Descriptor<AttributeAccessor, DatabaseMapping, DatabaseField,
+        InheritancePolicy, InstantiationPolicy, NamespaceResolver, ObjectBuilder, DatabaseTable, UnmarshalRecord, XMLUnmarshaller>,
+        XMLNamespaceAware {
 
     /*
      * Character used to separate individual xPath elements.
      * TODO: Use some global value reference.
      */
     private static final char XPATH_FRAGMENT_SEPARATOR = '/';
-
-    private static final Vector EMPTY_VECTOR = NonSynchronizedVector.newInstance(1);
 
     private NamespaceResolver namespaceResolver;
     private XMLSchemaReference schemaReference;
@@ -99,14 +96,14 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
      * Return a new XMLDescriptor.
      */
     public XMLDescriptor() {
-        this.tables = NonSynchronizedVector.newInstance(3);
-        this.mappings = NonSynchronizedVector.newInstance();
+        this.tables = new ArrayList<>(3);
+        this.mappings = new ArrayList<>();
         this.primaryKeyFields = null;
-        this.fields = NonSynchronizedVector.newInstance();
-        this.allFields = NonSynchronizedVector.newInstance();
-        this.constraintDependencies = EMPTY_VECTOR;
-        this.multipleTableForeignKeys = Collections.EMPTY_MAP;
-        this.queryKeys = Collections.EMPTY_MAP;
+        this.fields = new ArrayList<>();
+        this.allFields = new ArrayList<>();
+        this.constraintDependencies = Collections.emptyList();
+        this.multipleTableForeignKeys = Collections.emptyMap();
+        this.queryKeys = Collections.emptyMap();
         this.initializationStage = UNINITIALIZED;
         this.interfaceInitializationStage = UNINITIALIZED;
         this.descriptorType = NORMAL;
@@ -116,8 +113,8 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
         this.shouldAcquireCascadedLocks = false;
         this.hasSimplePrimaryKey = false;
         this.idValidation = null;
-        this.derivesIdMappings = Collections.EMPTY_MAP;
-        this.additionalWritableMapKeyFields = Collections.EMPTY_LIST;
+        this.derivesIdMappings = Collections.emptyMap();
+        this.additionalWritableMapKeyFields = Collections.emptyList();
 
         // Policies
         this.objectBuilder = new TreeObjectBuilder(this);
@@ -138,7 +135,7 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
         if (getTables().isEmpty()) {
             return null;
         }
-        return getTables().firstElement().getName();
+        return getTables().get(0).getName();
     }
 
     /**
@@ -302,9 +299,9 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
     }
 
     @Override
-    public Vector<String> getPrimaryKeyFieldNames() {
+    public List<String> getPrimaryKeyFieldNames() {
         if(null == primaryKeyFields) {
-            return new Vector<>(0);
+            return new ArrayList<>(0);
         }
         return super.getPrimaryKeyFieldNames();
     }
@@ -316,7 +313,7 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
         }
     }
 
-    /**
+    /*
      * INTERNAL:
      * Avoid SDK initialization.
 
@@ -338,19 +335,18 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
         }
 
         // BUG#2667762 - If the tag was empty this could be a string of whitespace.
-        if (!(fieldValue instanceof Vector)) {
+        if (!(fieldValue instanceof Vector nestedRows)) {
             return getObjectBuilder().createRecord(null);
         }
 
-        Vector nestedRows = (Vector) fieldValue;
         if (nestedRows.isEmpty()) {
             return getObjectBuilder().createRecord(null);
         } else {
             // BUG#2667762 - If the tag was empty this could be a string of whitespace.
-            if (!(nestedRows.firstElement() instanceof AbstractRecord)) {
+            if (!(nestedRows.get(0) instanceof AbstractRecord)) {
                 return getObjectBuilder().createRecord(null);
             }
-            return (XMLRecord) nestedRows.firstElement();
+            return (XMLRecord) nestedRows.get(0);
         }
     }
 
@@ -360,12 +356,12 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
     * The field value should be a Vector, an XMLRecord, or an XMLElement
     */
     @Override
-    public Vector buildNestedRowsFromFieldValue(Object fieldValue, AbstractSession session) {
+    public List<AbstractRecord> buildNestedRowsFromFieldValue(Object fieldValue, AbstractSession session) {
         // BUG#2667762 - If the tag was empty this could be a string of whitespace.
         if (!(fieldValue instanceof Vector)) {
-            return new Vector(0);
+            return new Vector<>(0);
         }
-        return (Vector) fieldValue;
+        return (Vector<AbstractRecord>) fieldValue;
     }
 
     /**
@@ -485,13 +481,13 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
      * The field value could be a vector or could be a text value if only a single value.
      */
     @Override
-    public Vector buildDirectValuesFromFieldValue(Object fieldValue) throws DatabaseException {
+    public List<Object> buildDirectValuesFromFieldValue(Object fieldValue) throws DatabaseException {
         if (!(fieldValue instanceof Vector)) {
-            Vector fieldValues = new Vector(1);
+            List<Object> fieldValues = new Vector(1);
             fieldValues.add(fieldValue);
             return fieldValues;
         }
-        return (Vector) fieldValue;
+        return (List<Object>) fieldValue;
     }
 
     /**
@@ -554,9 +550,9 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
     }
 
     @Override
-    public void setTableNames(Vector tableNames) {
-        if (null != tableNames && tableNames.size() > 0) {
-            setDefaultRootElementField((String) tableNames.get(0));
+    public void setTableNames(List<String> tableNames) {
+        if (null != tableNames && !tableNames.isEmpty()) {
+            setDefaultRootElementField(tableNames.get(0));
         }
         super.setTableNames(tableNames);
     }
@@ -566,7 +562,7 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
      * Sets the tables
      */
     @Override
-    public void setTables(Vector<DatabaseTable> theTables) {
+    public void setTables(List<DatabaseTable> theTables) {
          super.setTables(theTables);
     }
 
@@ -583,9 +579,8 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
         setInitializationStage(PREINITIALIZED);
 
         // Allow mapping pre init, must be done before validate.
-        for (Enumeration<DatabaseMapping> mappingsEnum = getMappings().elements(); mappingsEnum.hasMoreElements();) {
+        for (DatabaseMapping mapping: getMappings()) {
             try {
-                DatabaseMapping mapping = mappingsEnum.nextElement();
                 mapping.preInitialize(session);
             } catch (DescriptorException exception) {
                 session.getIntegrityChecker().handleError(exception);
@@ -692,7 +687,7 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
         // this can come through a 1:1 so requires all descriptors to be initialized (mappings).
         // May 02, 2000 - Jon D.
         for (int index = 0; index < getFields().size(); index++) {
-            DatabaseField field = getFields().elementAt(index);
+            DatabaseField field = getFields().get(index);
             if (field.getType() == null) {
                 DatabaseMapping mapping = getObjectBuilder().getMappingForField(field);
                 if (mapping != null) {
@@ -764,23 +759,20 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
             }
         }
 
-        for (Enumeration<DatabaseMapping> mappingsEnum = getMappings().elements(); mappingsEnum.hasMoreElements();) {
-            DatabaseMapping mapping = mappingsEnum.nextElement();
+        for (DatabaseMapping mapping: getMappings()) {
             validateMappingType(mapping);
             mapping.initialize(session);
             if(mapping.isObjectReferenceMapping()) {
                 this.hasReferenceMappings = true;
             }
-            if(mapping instanceof XMLChoiceObjectMapping) {
-                XMLChoiceObjectMapping choiceMapping = ((XMLChoiceObjectMapping)mapping);
+            if(mapping instanceof XMLChoiceObjectMapping choiceMapping) {
                 for(XMLMapping next : choiceMapping.getChoiceElementMappings().values()) {
                     if(((DatabaseMapping)next).isObjectReferenceMapping()) {
                         this.hasReferenceMappings = true;
                     }
                 }
             }
-            if(mapping instanceof XMLChoiceCollectionMapping) {
-                XMLChoiceCollectionMapping choiceMapping = ((XMLChoiceCollectionMapping)mapping);
+            if(mapping instanceof XMLChoiceCollectionMapping choiceMapping) {
                 for(XMLMapping next : choiceMapping.getChoiceElementMappings().values()) {
                     if(((DatabaseMapping)next).isObjectReferenceMapping()) {
                         this.hasReferenceMappings = true;
@@ -788,7 +780,7 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
                 }
             }
             // Add all the fields in the mapping to myself.
-            Helper.addAllUniqueToVector(getFields(), mapping.getFields());
+            Helper.addAllUniqueToList(getFields(), mapping.getFields());
         }
 
         // If this has inheritance then it needs to be initialized before all fields is set.
@@ -797,7 +789,7 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
         }
 
         // Initialize the allFields to its fields, this can be done now because the fields have been computed.
-        setAllFields((Vector) getFields().clone());
+        setAllFields((List<DatabaseField>) ((ArrayList<DatabaseField>) getFields()).clone());
 
         getObjectBuilder().initialize(session);
         if (hasInterfacePolicy()) {
@@ -955,7 +947,7 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
             // root element, return the object as per usual
 
             if(isNamespaceAware){
-                if ((((defaultRootNamespaceUri == null) && (elementNamespaceUri == null)) || ((defaultRootNamespaceUri == null) && (elementNamespaceUri.length() == 0)) || ((elementNamespaceUri == null) && (defaultRootNamespaceUri.length() == 0)) || (((defaultRootNamespaceUri != null) && (elementNamespaceUri != null)) && (defaultRootNamespaceUri
+                if ((((defaultRootNamespaceUri == null) && (elementNamespaceUri == null)) || ((defaultRootNamespaceUri == null) && (elementNamespaceUri.isEmpty())) || ((elementNamespaceUri == null) && (defaultRootNamespaceUri.isEmpty())) || (((defaultRootNamespaceUri != null) && (elementNamespaceUri != null)) && (defaultRootNamespaceUri
                         .equals(elementNamespaceUri))))
                         && (defaultRootName.equals(elementLocalName))) {
                     return false;
@@ -978,7 +970,7 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
      * @return true if a new default root element field was created, else false.
      */
     private boolean setDefaultRootElementField(String newDefaultRootElement) {
-        if (null == newDefaultRootElement || 0 == newDefaultRootElement.length()) {
+        if (null == newDefaultRootElement || newDefaultRootElement.isEmpty()) {
             setDefaultRootElementField((XMLField) null);
             return false;
         }

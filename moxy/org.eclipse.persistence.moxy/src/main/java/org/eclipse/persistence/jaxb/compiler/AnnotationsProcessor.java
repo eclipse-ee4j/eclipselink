@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,8 +14,6 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.jaxb.compiler;
 
-import java.awt.Image;
-import java.beans.Introspector;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -80,8 +78,17 @@ import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapters;
 import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
 
+import org.eclipse.persistence.asm.AnnotationVisitor;
+import org.eclipse.persistence.asm.ASMFactory;
+import org.eclipse.persistence.asm.ClassWriter;
+import org.eclipse.persistence.asm.EclipseLinkASMClassWriter;
+import org.eclipse.persistence.asm.FieldVisitor;
+import org.eclipse.persistence.asm.Label;
+import org.eclipse.persistence.asm.MethodVisitor;
+import org.eclipse.persistence.asm.Opcodes;
+import org.eclipse.persistence.asm.Type;
 import org.eclipse.persistence.exceptions.ConversionException;
-import org.eclipse.persistence.exceptions.JAXBException;
+import org.eclipse.persistence.jaxb.JAXBException;
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.ConversionManager;
@@ -92,14 +99,6 @@ import org.eclipse.persistence.internal.jaxb.many.CollectionValue;
 import org.eclipse.persistence.internal.jaxb.many.ManyValue;
 import org.eclipse.persistence.internal.jaxb.many.MultiDimensionalArrayValue;
 import org.eclipse.persistence.internal.jaxb.many.MultiDimensionalCollectionValue;
-import org.eclipse.persistence.internal.libraries.asm.AnnotationVisitor;
-import org.eclipse.persistence.internal.libraries.asm.ClassWriter;
-import org.eclipse.persistence.internal.libraries.asm.EclipseLinkASMClassWriter;
-import org.eclipse.persistence.internal.libraries.asm.FieldVisitor;
-import org.eclipse.persistence.internal.libraries.asm.Label;
-import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
-import org.eclipse.persistence.internal.libraries.asm.Opcodes;
-import org.eclipse.persistence.internal.libraries.asm.Type;
 import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.Namespace;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
@@ -131,8 +130,6 @@ import org.eclipse.persistence.jaxb.xmlmodel.XmlAccessType;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlTransformation;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlTransformation.XmlReadTransformer;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlTransformation.XmlWriteTransformer;
-import org.eclipse.persistence.mappings.transformers.AttributeTransformer;
-import org.eclipse.persistence.mappings.transformers.FieldTransformer;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLNameTransformer;
@@ -199,6 +196,7 @@ public final class AnnotationsProcessor {
     static final String ARRAY_PACKAGE_NAME = "jaxb.dev.java.net.array";
     static final String JAVAX_ACTIVATION_DATAHANDLER = "jakarta.activation.DataHandler";
     static final String JAVAX_MAIL_INTERNET_MIMEMULTIPART = "jakarta.mail.internet.MimeMultipart";
+    private static final String AWT_IMAGE = "java.awt.Image";
     private static final String JAVAX_XML_BIND_JAXBELEMENT = "jakarta.xml.bind.JAXBElement";
     private static final String JAVAX_XML_BIND_ANNOTATION = "jakarta.xml.bind.annotation";
     private static final String OXM_ANNOTATIONS = "org.eclipse.persistence.oxm.annotations";
@@ -304,7 +302,7 @@ public final class AnnotationsProcessor {
         init(classes, typeMappingInfos);
         preBuildTypeInfo(classes);
         postBuildTypeInfo(classes);
-        processPropertyTypes(this.typeInfoClasses.toArray(new JavaClass[this.typeInfoClasses.size()]));
+        processPropertyTypes(this.typeInfoClasses.toArray(new JavaClass[0]));
         finalizeProperties();
         createElementsForTypeMappingInfo();
         checkForCallbackMethods();
@@ -328,8 +326,7 @@ public final class AnnotationsProcessor {
                         if (annotations != null) {
                             for (Annotation nextAnnotation : annotations) {
                                 if (nextAnnotation != null) {
-                                    if (nextAnnotation instanceof XmlMimeType) {
-                                        XmlMimeType javaAnnotation = (XmlMimeType) nextAnnotation;
+                                    if (nextAnnotation instanceof XmlMimeType javaAnnotation) {
                                         xmlMimeType = javaAnnotation.value();
                                     } else if (nextAnnotation instanceof XmlAttachmentRef) {
                                         xmlAttachmentRef = true;
@@ -362,13 +359,13 @@ public final class AnnotationsProcessor {
                         } else {
                             qname = getUserDefinedSchemaTypes().get(nextClassName);
                             if (qname == null) {
-                                if (nextClassName.equals(ClassConstants.APBYTE.getName()) || nextClassName.equals(Image.class.getName()) || nextClassName.equals(Source.class.getName()) || nextClassName.equals("jakarta.activation.DataHandler")) {
+                                if (nextClassName.equals(CoreClassConstants.APBYTE.getName()) || nextClassName.equals(AWT_IMAGE) || nextClassName.equals(Source.class.getName()) || nextClassName.equals(JAVAX_ACTIVATION_DATAHANDLER)) {
                                     if (xmlAttachmentRef) {
                                         qname = Constants.SWA_REF_QNAME;
                                     } else {
                                         qname = Constants.BASE_64_BINARY_QNAME;
                                     }
-                                } else if (nextClassName.equals(ClassConstants.OBJECT.getName())) {
+                                } else if (nextClassName.equals(CoreClassConstants.OBJECT.getName())) {
                                     qname = Constants.ANY_TYPE_QNAME;
                                 } else if (nextClassName.equals(ClassConstants.XML_GREGORIAN_CALENDAR.getName())) {
                                     qname = Constants.ANY_SIMPLE_TYPE_QNAME;
@@ -476,7 +473,7 @@ public final class AnnotationsProcessor {
                 annotations.add(AnnotationProxy.getProxy(components, XmlJavaTypeAdapter.class, loader, cMgr));
             }
             // return the newly created array of dynamic proxy objects
-            return annotations.toArray(new Annotation[annotations.size()]);
+            return annotations.toArray(new Annotation[0]);
         }
         // no xml-element set on the info, (i.e. no xml overrides) so return the
         // array of Annotation objects
@@ -586,7 +583,7 @@ public final class AnnotationsProcessor {
             processXmlSeeAlso(javaClass, info);
 
             PackageInfo packageInfo = getPackageInfoForPackage(javaClass);
-            if(packageInfo != null && packageInfo.getPackageLevelAdaptersByClass().size() > 0){
+            if(packageInfo != null && !packageInfo.getPackageLevelAdaptersByClass().isEmpty()){
                 for(String adapterClass :packageInfo.getPackageLevelAdaptersByClass().keySet()){
                     JavaClass boundType = packageInfo.getPackageLevelAdaptersByClass().get(adapterClass);
                     info.getPackageLevelAdaptersByClass().put(adapterClass, boundType);
@@ -778,7 +775,7 @@ public final class AnnotationsProcessor {
                     newClasses.add(next);
                 }
             }
-            postBuildTypeInfo(newClasses.toArray(new JavaClass[newClasses.size()]));
+            postBuildTypeInfo(newClasses.toArray(new JavaClass[0]));
         }
         return javaClasses;
     }
@@ -816,7 +813,8 @@ public final class AnnotationsProcessor {
                     info.setXmlNameTransformer(nsInfoXmlNameTransformer);
                 } else if (helper.isAnnotationPresent(javaClass, XmlNameTransformer.class)) {
                     XmlNameTransformer xmlNameTransformer = (XmlNameTransformer) helper.getAnnotation(javaClass, XmlNameTransformer.class);
-                    Class<? extends XMLNameTransformer> nameTransformerClass = xmlNameTransformer.value();
+                    @SuppressWarnings({"unchecked"})
+                    Class<? extends XMLNameTransformer> nameTransformerClass = (Class<? extends XMLNameTransformer>) xmlNameTransformer.value();
                     try {
                         info.setXmlNameTransformer(nameTransformerClass.getConstructor().newInstance());
                     } catch (ReflectiveOperationException ex) {
@@ -824,7 +822,8 @@ public final class AnnotationsProcessor {
                     }
                 } else if (helper.isAnnotationPresent(javaClass.getPackage(), XmlNameTransformer.class)) {
                     XmlNameTransformer xmlNameTransformer = (XmlNameTransformer) helper.getAnnotation(javaClass.getPackage(), XmlNameTransformer.class);
-                    Class<? extends XMLNameTransformer> nameTransformerClass = xmlNameTransformer.value();
+                    @SuppressWarnings({"unchecked"})
+                    Class<? extends XMLNameTransformer> nameTransformerClass = (Class<? extends XMLNameTransformer>) xmlNameTransformer.value();
                     try {
                         info.setXmlNameTransformer(nameTransformerClass.getConstructor().newInstance());
                     } catch (ReflectiveOperationException ex) {
@@ -957,7 +956,7 @@ public final class AnnotationsProcessor {
                             tInfo.setTransient(true);
                         } else {
                             if(!referencedByTransformer.contains(jClass.getName())){
-                                throw org.eclipse.persistence.exceptions.JAXBException.factoryMethodOrConstructorRequired(jClass.getName());
+                                throw org.eclipse.persistence.jaxb.JAXBException.factoryMethodOrConstructorRequired(jClass.getName());
                             }
                         }
                     }
@@ -1174,7 +1173,7 @@ public final class AnnotationsProcessor {
         ArrayList<JavaClass> classesToProcess = new ArrayList<>();
         for (JavaClass jClass : classes) {
             List<TypeMappingInfo> infos = this.javaClassToTypeMappingInfos.get(jClass);
-            if(infos != null && infos.size() > 0) {
+            if(infos != null && !infos.isEmpty()) {
                 for(TypeMappingInfo next:infos) {
                     processAdditionalClasses(jClass, next, extraClasses, classesToProcess);
                 }
@@ -1187,7 +1186,7 @@ public final class AnnotationsProcessor {
             processClass(javaClass, classesToProcess);
         }
 
-        return classesToProcess.toArray(new JavaClass[classesToProcess.size()]);
+        return classesToProcess.toArray(new JavaClass[0]);
     }
 
     private void processAdditionalClasses(JavaClass cls, TypeMappingInfo tmi, ArrayList<JavaClass> extraClasses, ArrayList<JavaClass> classesToProcess) {
@@ -1218,8 +1217,7 @@ public final class AnnotationsProcessor {
             java.lang.annotation.Annotation[] annotations = getAnnotations(tmi);
             if (annotations != null) {
                 for (Annotation nextAnnotation : annotations) {
-                    if (nextAnnotation != null && nextAnnotation instanceof XmlElement) {
-                        XmlElement javaAnnotation = (XmlElement) nextAnnotation;
+                    if (nextAnnotation != null && nextAnnotation instanceof XmlElement javaAnnotation) {
                         if (javaAnnotation.type() != XmlElement.DEFAULT.class) {
                             xmlElementType = javaAnnotation.type();
                         }
@@ -1228,7 +1226,7 @@ public final class AnnotationsProcessor {
             }
         }
 
-        if (areEquals(javaClass, byte[].class) || areEquals(javaClass, JAVAX_ACTIVATION_DATAHANDLER) || areEquals(javaClass, Source.class) || areEquals(javaClass, Image.class) || areEquals(javaClass, JAVAX_MAIL_INTERNET_MIMEMULTIPART)) {
+        if (areEquals(javaClass, byte[].class) || areEquals(javaClass, JAVAX_ACTIVATION_DATAHANDLER) || areEquals(javaClass, Source.class) || areEquals(javaClass, AWT_IMAGE) || areEquals(javaClass, JAVAX_MAIL_INTERNET_MIMEMULTIPART)) {
             if (tmi == null || tmi.getXmlTagName() == null) {
                 ElementDeclaration declaration = new ElementDeclaration(null, javaClass, javaClass.getQualifiedName(), false, XmlElementDecl.GLOBAL.class);
                 declaration.setTypeMappingInfo(tmi);
@@ -1536,13 +1534,13 @@ public final class AnnotationsProcessor {
                 // exists
                 JavaMethod method = javaClass.getDeclaredMethod(factoryMethodName, new JavaClass[] {});
                 if (method == null) {
-                    throw org.eclipse.persistence.exceptions.JAXBException.factoryMethodNotDeclared(factoryMethodName, javaClass.getName());
+                    throw org.eclipse.persistence.jaxb.JAXBException.factoryMethodNotDeclared(factoryMethodName, javaClass.getName());
                 }
                 info.setFactoryMethodName(factoryMethodName);
             }
         } else {
             if (factoryMethodName == null || factoryMethodName.equals(EMPTY_STRING)) {
-                throw org.eclipse.persistence.exceptions.JAXBException.factoryClassWithoutFactoryMethod(javaClass.getName());
+                throw JAXBException.factoryClassWithoutFactoryMethod(javaClass.getName());
             }
             info.setObjectFactoryClassName(factoryClassName);
             info.setFactoryMethodName(factoryMethodName);
@@ -1554,7 +1552,7 @@ public final class AnnotationsProcessor {
             try {
                 typeName = info.getXmlNameTransformer().transformTypeName(javaClass.getName());
             } catch (Exception ex) {
-                throw org.eclipse.persistence.exceptions.JAXBException.exceptionDuringNameTransformation(javaClass.getName(), info.getXmlNameTransformer().getClass().getName(), ex);
+                throw org.eclipse.persistence.jaxb.JAXBException.exceptionDuringNameTransformation(javaClass.getName(), info.getXmlNameTransformer().getClass().getName(), ex);
             }
         }
         info.setSchemaTypeName(typeName);
@@ -1562,12 +1560,12 @@ public final class AnnotationsProcessor {
         // set propOrder
         if (xmlType.isSetPropOrder()) {
             List<String> props = xmlType.getPropOrder();
-            if (props.size() == 0) {
+            if (props.isEmpty()) {
                 info.setPropOrder(new String[0]);
             } else if (props.get(0).equals(EMPTY_STRING)) {
                 info.setPropOrder(new String[] { EMPTY_STRING });
             } else {
-                info.setPropOrder(xmlType.getPropOrder().toArray(new String[xmlType.getPropOrder().size()]));
+                info.setPropOrder(xmlType.getPropOrder().toArray(new String[0]));
             }
         }
 
@@ -1961,9 +1959,7 @@ public final class AnnotationsProcessor {
                             property.setTransient(true);
                         }
                         properties.add(property);
-                    } catch (ClassCastException e) {
-                        // do Nothing
-                    } catch (IllegalAccessException e) {
+                    } catch (ClassCastException | IllegalAccessException e) {
                         // do Nothing
                     } catch (JAXBException ex) {
                         if (ex.getErrorCode() != JAXBException.INVALID_INTERFACE || !helper.isAnnotationPresent(javaField, XmlTransient.class)) {
@@ -2111,7 +2107,7 @@ public final class AnnotationsProcessor {
                     }
                     Property predicateProperty = new Property(helper);
                     predicateProperty.setType(helper.getJavaClass("java.lang.String"));
-                    if(predicatePath.length() > 0) {
+                    if(!predicatePath.isEmpty()) {
                         predicatePath += "/";
                     }
                     predicatePath += fragment.getPredicate().getXPathFragment().getXPath();
@@ -2240,7 +2236,7 @@ public final class AnnotationsProcessor {
                     xmlJoinNode.setReferencedXmlPath(xmlJN.referencedXmlPath());
                     xmlJoinNodeList.add(xmlJoinNode);
                 }
-                if (xmlJoinNodeList.size() > 0) {
+                if (!xmlJoinNodeList.isEmpty()) {
                     xmlJoinNodes = new org.eclipse.persistence.jaxb.xmlmodel.XmlJoinNodes();
                     xmlJoinNodes.setXmlJoinNode(xmlJoinNodeList);
                     xmlJoinNodesList.add(xmlJoinNodes);
@@ -2263,7 +2259,7 @@ public final class AnnotationsProcessor {
         org.eclipse.persistence.oxm.annotations.XmlReadTransformer readTransformer = (org.eclipse.persistence.oxm.annotations.XmlReadTransformer) helper.getAnnotation(javaHasAnnotations, org.eclipse.persistence.oxm.annotations.XmlReadTransformer.class);
         if (readTransformer != null) {
             org.eclipse.persistence.jaxb.xmlmodel.XmlTransformation.XmlReadTransformer xmlReadTransformer = new org.eclipse.persistence.jaxb.xmlmodel.XmlTransformation.XmlReadTransformer();
-            if (!(readTransformer.transformerClass() == AttributeTransformer.class)) {
+            if (!(readTransformer.transformerClass() == void.class)) {
                 xmlReadTransformer.setTransformerClass(readTransformer.transformerClass().getName());
             } else if (!(readTransformer.method().equals(EMPTY_STRING))) {
                 xmlReadTransformer.setMethod(readTransformer.method());
@@ -2284,7 +2280,7 @@ public final class AnnotationsProcessor {
         if (transformers != null) {
             for (org.eclipse.persistence.oxm.annotations.XmlWriteTransformer next : transformers) {
                 org.eclipse.persistence.jaxb.xmlmodel.XmlTransformation.XmlWriteTransformer xmlWriteTransformer = new org.eclipse.persistence.jaxb.xmlmodel.XmlTransformation.XmlWriteTransformer();
-                if (!(next.transformerClass() == FieldTransformer.class)) {
+                if (!(next.transformerClass() == void.class)) {
                     xmlWriteTransformer.setTransformerClass(next.transformerClass().getName());
                 } else if (!(next.method().equals(EMPTY_STRING))) {
                     xmlWriteTransformer.setMethod(next.method());
@@ -2554,7 +2550,7 @@ public final class AnnotationsProcessor {
                 if (referencedElement != null) {
                     addReferencedElement(property, referencedElement);
                 } else {
-                    throw org.eclipse.persistence.exceptions.JAXBException.invalidElementRef(property.getPropertyName(), cls.getName());
+                    throw org.eclipse.persistence.jaxb.JAXBException.invalidElementRef(property.getPropertyName(), cls.getName());
                 }
             }
         }
@@ -2574,7 +2570,7 @@ public final class AnnotationsProcessor {
 
             if(JAVAX_XML_BIND_JAXBELEMENT.equals(typeName)){
                 Collection args = type.getActualTypeArguments();
-                if(args.size() > 0){
+                if(!args.isEmpty()){
                     JavaClass theType = (JavaClass) args.iterator().next();
                     processReferencedClass(theType);
                 }
@@ -2649,10 +2645,10 @@ public final class AnnotationsProcessor {
 
         if (helper.isAnnotationPresent(propertyElement, XmlAnyAttribute.class)) {
             if (info.isSetAnyAttributePropertyName() && !info.getAnyAttributePropertyName().equals(property.getPropertyName())) {
-                throw org.eclipse.persistence.exceptions.JAXBException.multipleAnyAttributeMapping(cls.getName());
+                throw org.eclipse.persistence.jaxb.JAXBException.multipleAnyAttributeMapping(cls.getName());
             }
             if (!helper.isMapType(property.getType())) {
-                throw org.eclipse.persistence.exceptions.JAXBException.anyAttributeOnNonMap(property.getPropertyName());
+                throw org.eclipse.persistence.jaxb.JAXBException.anyAttributeOnNonMap(property.getPropertyName());
             }
             property.setIsAnyAttribute(true);
             info.setAnyAttributePropertyName(property.getPropertyName());
@@ -2976,7 +2972,7 @@ public final class AnnotationsProcessor {
 
                 // use the JavaBean API to correctly decapitalize the first
                 // character, if necessary
-                propertyName = Introspector.decapitalize(propertyName);
+                propertyName = org.eclipse.persistence.internal.helper.Helper.decapitalize(propertyName);
 
                 JavaClass[] paramTypes = { getMethod.getReturnType() };
                 setMethod = cls.getDeclaredMethod(setMethodName, paramTypes);
@@ -3078,7 +3074,7 @@ public final class AnnotationsProcessor {
                 }
                 // use the JavaBean API to correctly decapitalize the first
                 // character, if necessary
-                propertyName = Introspector.decapitalize(propertyName);
+                propertyName = org.eclipse.persistence.internal.helper.Helper.decapitalize(propertyName);
             }
 
             JavaClass ptype = null;
@@ -3127,7 +3123,7 @@ public final class AnnotationsProcessor {
 
         // default to alphabetical ordering
         // RI compliancy
-        Collections.sort(properties, new PropertyComparitor());
+        properties.sort(new PropertyComparitor());
         return properties;
     }
 
@@ -3187,9 +3183,9 @@ public final class AnnotationsProcessor {
 
         // Not sure who should win if a property exists for both or the correct
         // order
-        if (!publicFieldProperties.isEmpty() && publicMethodProperties.size() == 0) {
+        if (!publicFieldProperties.isEmpty() && publicMethodProperties.isEmpty()) {
             return publicFieldProperties;
-        } else if (!publicMethodProperties.isEmpty() && publicFieldProperties.size() == 0) {
+        } else if (!publicMethodProperties.isEmpty() && publicFieldProperties.isEmpty()) {
             return publicMethodProperties;
         } else {
             // add any non-duplicate method properties to the collection.
@@ -3455,7 +3451,7 @@ public final class AnnotationsProcessor {
                 try {
                     name = info.getXmlNameTransformer().transformAttributeName(name);
                 } catch (Exception ex) {
-                    throw org.eclipse.persistence.exceptions.JAXBException.exceptionDuringNameTransformation(name, info.getXmlNameTransformer().getClass().getName(), ex);
+                    throw org.eclipse.persistence.jaxb.JAXBException.exceptionDuringNameTransformation(name, info.getXmlNameTransformer().getClass().getName(), ex);
                 }
             }
 
@@ -3488,7 +3484,7 @@ public final class AnnotationsProcessor {
                 try {
                     name = info.getXmlNameTransformer().transformElementName(name);
                 } catch (Exception ex) {
-                    throw org.eclipse.persistence.exceptions.JAXBException.exceptionDuringNameTransformation(name, info.getXmlNameTransformer().getClass().getName(), ex);
+                    throw JAXBException.exceptionDuringNameTransformation(name, info.getXmlNameTransformer().getClass().getName(), ex);
                 }
             }
 
@@ -3790,9 +3786,9 @@ public final class AnnotationsProcessor {
             }
         }
 
-        if (classes.size() > 0) {
+        if (!classes.isEmpty()) {
             classesToProcessPropertyTypes.addAll(classes);
-            return classes.toArray(new JavaClass[classes.size()]);
+            return classes.toArray(new JavaClass[0]);
         } else {
             return new JavaClass[0];
         }
@@ -3870,7 +3866,7 @@ public final class AnnotationsProcessor {
             if (JAVA_UTIL_LIST.equals(type.getName())) {
                 isList = true;
                 Collection args = type.getActualTypeArguments();
-                if (args.size() > 0) {
+                if (!args.isEmpty()) {
                     type = (JavaClass) args.iterator().next();
                 }
             }
@@ -3947,7 +3943,7 @@ public final class AnnotationsProcessor {
                     try {
                         elementName = transformer.transformRootElementName(javaClass.getName());
                     } catch (Exception ex) {
-                        throw org.eclipse.persistence.exceptions.JAXBException.exceptionDuringNameTransformation(javaClass.getName(), info.getXmlNameTransformer().getClass().getName(), ex);
+                        throw JAXBException.exceptionDuringNameTransformation(javaClass.getName(), info.getXmlNameTransformer().getClass().getName(), ex);
                     }
 
                 }
@@ -3995,7 +3991,7 @@ public final class AnnotationsProcessor {
 
     private void addReferencedElement(Property property, ElementDeclaration referencedElement) {
         property.addReferencedElement(referencedElement);
-        if (referencedElement.getSubstitutableElements() != null && referencedElement.getSubstitutableElements().size() > 0) {
+        if (referencedElement.getSubstitutableElements() != null && !referencedElement.getSubstitutableElements().isEmpty()) {
             for (ElementDeclaration substitutable : referencedElement.getSubstitutableElements()) {
                 if (substitutable != referencedElement) {
                     addReferencedElement(property, substitutable);
@@ -4111,7 +4107,7 @@ public final class AnnotationsProcessor {
                     String propName = property.getPropertyName();
                     String typeName = tInfo.getJavaClassName();
                     String refTypeName = refInfo.getJavaClassName();
-                    throw org.eclipse.persistence.exceptions.JAXBException.mustMapToText(propName, typeName, refTypeName);
+                    throw org.eclipse.persistence.jaxb.JAXBException.mustMapToText(propName, typeName, refTypeName);
                 }
             }
         }
@@ -4213,7 +4209,7 @@ public final class AnnotationsProcessor {
 
         Type mapType = Type.getType(L + mapClass.getRawName().replace(DOT_CHR, SLASH_CHR) + SEMI_COLON);
 
-        EclipseLinkASMClassWriter cw = new EclipseLinkASMClassWriter();
+        ClassWriter cw = new EclipseLinkASMClassWriter();
 
         String sig = "Lorg/eclipse/persistence/internal/jaxb/many/MapValue<L" + mapType.getInternalName() + "<L" + internalKeyName + ";L" + internalValueName + ";>;>;";
         cw.visit(Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER, qualifiedInternalClassName, sig, "org/eclipse/persistence/internal/jaxb/many/MapValue", null);
@@ -4263,13 +4259,13 @@ public final class AnnotationsProcessor {
         // TODO: Verify that we really want to put @XmlTranient on setItem
         // method
         mv.visitAnnotation("Ljakarta/xml/bind/annotation/XmlTransient;", true);
-        Label l0 = new Label();
+        Label l0 = ASMFactory.createLabel();
         mv.visitLabel(l0);
         mv.visitVarInsn(Opcodes.ALOAD, 0);
         mv.visitVarInsn(Opcodes.ALOAD, 1);
         mv.visitFieldInsn(Opcodes.PUTFIELD, qualifiedInternalClassName, "entry", L + mapType.getInternalName() + SEMI_COLON);
         mv.visitInsn(Opcodes.RETURN);
-        Label l1 = new Label();
+        Label l1 = ASMFactory.createLabel();
         mv.visitLabel(l1);
 
         // Replacement?:LocalVariableTypeTableAttribute cvAttr = new
@@ -4409,7 +4405,7 @@ public final class AnnotationsProcessor {
             componentClass = helper.getJavaClass(xmlElementType);
         } else{
             Collection args = collectionClass.getActualTypeArguments();
-            if(args.size() >0 ){
+            if(!args.isEmpty()){
                 componentClass = ((JavaClass) args.toArray()[0]);
             }else{
                 componentClass = helper.getJavaClass(Object.class);
@@ -4517,13 +4513,13 @@ public final class AnnotationsProcessor {
     }
 
     private byte[] generateManyValue(TypeMappingInfo typeMappingInfo, String namespace, Class<?> superType, String classNameSeparatedBySlash, JavaClass componentType, JavaClass containerType) {
-        EclipseLinkASMClassWriter cw = new EclipseLinkASMClassWriter();
+        ClassWriter cw = new EclipseLinkASMClassWriter();
         generateManyValueClass(cw, typeMappingInfo, namespace, superType, classNameSeparatedBySlash, componentType, containerType);
         cw.visitEnd();
         return cw.toByteArray();
     }
 
-    private void generateManyValueClass(EclipseLinkASMClassWriter cw, TypeMappingInfo typeMappingInfo, String namespace, Class<?> superType, String classNameSeparatedBySlash, JavaClass componentType, JavaClass containerType) {
+    private void generateManyValueClass(ClassWriter cw, TypeMappingInfo typeMappingInfo, String namespace, Class<?> superType, String classNameSeparatedBySlash, JavaClass componentType, JavaClass containerType) {
         String componentClassNameSeparatedBySlash = getObjectType(componentType).getQualifiedName().replace(DOT_CHR, SLASH_CHR);
         String containerClassNameSeperatedBySlash = containerType.getQualifiedName().replace(DOT_CHR, SLASH_CHR);
         if("[B".equals(componentClassNameSeparatedBySlash)) {
@@ -4567,7 +4563,7 @@ public final class AnnotationsProcessor {
             mv.visitCode();
             mv.visitVarInsn(Opcodes.ALOAD, 0);
             mv.visitFieldInsn(Opcodes.GETFIELD, classNameSeparatedBySlash, "adaptedValue", "Ljava/util/Collection;");
-            Label l0 = new Label();
+            Label l0 = ASMFactory.createLabel();;
             mv.visitJumpInsn(Opcodes.IFNONNULL, l0);
             mv.visitInsn(Opcodes.ACONST_NULL);
             mv.visitInsn(Opcodes.ARETURN);
@@ -4645,8 +4641,7 @@ public final class AnnotationsProcessor {
                                 nextValue = Type.getType(L + ((Class) nextValue).getName().replace(DOT_CHR, SLASH_CHR) + SEMI_COLON);
                             }
                             av.visit(next.getName(), nextValue);
-                        } catch (InvocationTargetException ex) {
-                        } catch (IllegalAccessException ex) {
+                        } catch (InvocationTargetException | IllegalAccessException ex) {
                         }
                     }
                     av.visitEnd();
@@ -4694,9 +4689,9 @@ public final class AnnotationsProcessor {
             mv.visitFieldInsn(Opcodes.GETSTATIC, getObjectType(componentType).getQualifiedName().replace(DOT_CHR, SLASH_CHR), "TYPE", "Ljava/lang/Class;");
         } else {
             if(containerClassNameSeperatedBySlash.contains(";")) {
-                mv.visitLdcInsn(Type.getType(containerClassNameSeperatedBySlash));
+                mv.visitLdcInsn(Type.getType(containerClassNameSeperatedBySlash).unwrap());
             } else {
-                mv.visitLdcInsn(Type.getType("L" + containerClassNameSeperatedBySlash + ";"));
+                mv.visitLdcInsn(Type.getType("L" + containerClassNameSeperatedBySlash + ";").unwrap());
             }
         }
         mv.visitInsn(Opcodes.ARETURN);
@@ -4705,7 +4700,7 @@ public final class AnnotationsProcessor {
     }
 
     private byte[] generateMultiDimensionalManyValueClass(TypeMappingInfo typeMappingInfo, String namespace, Class<?> superType, String classNameSeparatedBySlash, JavaClass componentType, JavaClass containerType) {
-        EclipseLinkASMClassWriter cw = new EclipseLinkASMClassWriter();
+        ClassWriter cw = new EclipseLinkASMClassWriter();
         generateManyValueClass(cw, typeMappingInfo, namespace, superType, classNameSeparatedBySlash, componentType, containerType);
         generateMultiDimensionalManyValueClass(cw, componentType);
         cw.visitEnd();
@@ -4719,7 +4714,7 @@ public final class AnnotationsProcessor {
         String componentClassNameSeparatedBySlash = componentType.getQualifiedName().replace(DOT_CHR, SLASH_CHR);
         MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PROTECTED, "componentClass", "()Ljava/lang/Class;", "()Ljava/lang/Class<L" + componentClassNameSeparatedBySlash + ";>;", null);
         mv.visitCode();
-        mv.visitLdcInsn(Type.getType("L" + componentClassNameSeparatedBySlash + ";"));
+        mv.visitLdcInsn(Type.getType("L" + componentClassNameSeparatedBySlash + ";").unwrap());
         mv.visitInsn(Opcodes.ARETURN);
         mv.visitMaxs(1, 1);
         mv.visitEnd();
@@ -4856,7 +4851,7 @@ public final class AnnotationsProcessor {
                 try {
                     elementName = info.getXmlNameTransformer().transformRootElementName(javaClass.getName());
                 } catch (Exception ex) {
-                    throw org.eclipse.persistence.exceptions.JAXBException.exceptionDuringNameTransformation(javaClass.getName(), info.getXmlNameTransformer().getClass().getName(), ex);
+                    throw org.eclipse.persistence.jaxb.JAXBException.exceptionDuringNameTransformation(javaClass.getName(), info.getXmlNameTransformer().getClass().getName(), ex);
                 }
             }
             String rootNamespace = xmlRE.getNamespace();
@@ -5013,7 +5008,7 @@ public final class AnnotationsProcessor {
      */
     public boolean isMtomAttachment(Property property) {
         JavaClass ptype = property.getActualType();
-        return (areEquals(ptype, JAVAX_ACTIVATION_DATAHANDLER) || areEquals(ptype, byte[].class) || areEquals(ptype, Image.class) || areEquals(ptype, Source.class) || areEquals(ptype, JAVAX_MAIL_INTERNET_MIMEMULTIPART));
+        return (areEquals(ptype, JAVAX_ACTIVATION_DATAHANDLER) || areEquals(ptype, byte[].class) || areEquals(ptype, AWT_IMAGE) || areEquals(ptype, Source.class) || areEquals(ptype, JAVAX_MAIL_INTERNET_MIMEMULTIPART));
     }
 
     public boolean hasSwaRef() {

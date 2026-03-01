@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,7 +19,6 @@ import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
 import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
-import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 public class XmlInverseRefBidirectionalList4TestCases extends XmlInverseRefBidirectionalList2TestCases {
 
@@ -63,8 +62,7 @@ public class XmlInverseRefBidirectionalList4TestCases extends XmlInverseRefBidir
         public List<Address> addrs;
 
         public boolean equals(Object obj) {
-            if (obj instanceof Person2) {
-                Person2 comparePerson = (Person2) obj;
+            if (obj instanceof Person2 comparePerson) {
                 if (!name.equals(comparePerson.name)) {
                     return false;
                 }
@@ -102,8 +100,7 @@ public class XmlInverseRefBidirectionalList4TestCases extends XmlInverseRefBidir
        public Person2 owner;
 
        public boolean equals(Object obj){
-           if(obj instanceof Address){
-               Address compareAddr = (Address)obj;
+           if(obj instanceof Address compareAddr){
                if(! street.equals(compareAddr.street)){
                    return false;
                }

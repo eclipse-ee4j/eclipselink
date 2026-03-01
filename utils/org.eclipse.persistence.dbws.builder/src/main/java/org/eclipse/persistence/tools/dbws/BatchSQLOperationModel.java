@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -68,7 +68,7 @@ public class BatchSQLOperationModel extends OperationModel {
      */
     public void addBatchSql(String sql) {
         if (batchSql == null) {
-            batchSql = new ArrayList<String>();
+            batchSql = new ArrayList<>();
         }
         batchSql.add(sql);
     }

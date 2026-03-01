@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -137,9 +137,15 @@ public class JUnitJPQLComplexTest extends JUnitTestCase
         tests.add("complexInTest3");
         tests.add("complexInTest4");
         tests.add("complexInTest5");
+        tests.add("complexInTest6NullParameter");
+        tests.add("complexInTest7EmptyCollectionParameter");
+        tests.add("complexInTest8NullPartialParameter");
+        tests.add("complexInTest9EmptyStringPartialParameter");
         tests.add("complexLengthTest");
         tests.add("complexLikeTest");
-        tests.add("complexNotInTest");
+        tests.add("complexNotInTest1");
+        tests.add("complexNotInTest2NullParameter");
+        tests.add("complexNotInTest3EmptyCollectionParameter");
         tests.add("complexNotLikeTest");
         tests.add("complexParameterTest");
         tests.add("complexReverseAbsTest");
@@ -341,6 +347,10 @@ public class JUnitJPQLComplexTest extends JUnitTestCase
         func.setName("StoredFunction_In");
         func.addArgument("P_IN", Long.class);
         func.setReturnType(Long.class);
+        // Works for Oracle and MySQL, MS SQL should use SCHEMABINDING keyword.
+        if (getPlatform().isOracle() || getPlatform().isMySQL()) {
+            func.addCharacteristic("DETERMINISTIC");
+        }
         func.addStatement("RETURN P_IN * 1000");
         return func;
     }
@@ -488,6 +498,62 @@ public class JUnitJPQLComplexTest extends JUnitTestCase
         closeEntityManager(em);
     }
 
+    public void complexInTest6NullParameter() {
+
+        EntityManager em = createEntityManager();
+        Query query = em.createQuery("SELECT e from Employee e WHERE e.lastName IN :lastName");
+
+        query.setParameter("lastName", null);
+
+        List<Employee> result = query.getResultList();
+        Assert.assertTrue(result.isEmpty());
+        closeEntityManager(em);
+    }
+
+    public void complexInTest7EmptyCollectionParameter() {
+
+        EntityManager em = createEntityManager();
+        Query query = em.createQuery("SELECT e from Employee e WHERE e.lastName IN :lastName");
+
+        query.setParameter("lastName", new ArrayList<>());
+
+        List<Employee> result = query.getResultList();
+        Assert.assertTrue(result.isEmpty());
+        closeEntityManager(em);
+    }
+
+    public void complexInTest8NullPartialParameter() {
+
+        EntityManager em = createEntityManager();
+        Query expectedQuery = em.createQuery("SELECT e from Employee e WHERE e.lastName IN ('Jones', 'Smith') ORDER BY e.id");
+        List<Employee> expectedResult = expectedQuery.getResultList();
+
+        Query query = em.createQuery("SELECT e from Employee e WHERE e.lastName IN ('Jones', 'Smith', :lastName) ORDER BY e.id");
+        query.setParameter("lastName", null);
+        List<Employee> result = query.getResultList();
+
+        Assert.assertTrue(result.size() > 0);
+        Assert.assertTrue("Complex IN with NULL test failed", comparer.compareObjects(result, expectedResult));
+
+        closeEntityManager(em);
+    }
+
+    public void complexInTest9EmptyStringPartialParameter() {
+
+        EntityManager em = createEntityManager();
+        Query expectedQuery = em.createQuery("SELECT e from Employee e WHERE e.lastName IN ('Jones', 'Smith') ORDER BY e.id");
+        List<Employee> expectedResult = expectedQuery.getResultList();
+
+        Query query = em.createQuery("SELECT e from Employee e WHERE e.lastName IN ('Jones', 'Smith', :lastName) ORDER BY e.id");
+        query.setParameter("lastName", "");
+        List<Employee> result = query.getResultList();
+
+        Assert.assertTrue(result.size() > 0);
+        Assert.assertTrue("Complex IN with NULL test failed", comparer.compareObjects(result, expectedResult));
+
+        closeEntityManager(em);
+    }
+
     public void complexLengthTest()
     {
         if ((getPersistenceUnitServerSession()).getPlatform().isSQLServer()) {
@@ -538,7 +604,7 @@ public class JUnitJPQLComplexTest extends JUnitTestCase
 
     }
 
-    public void complexNotInTest()
+    public void complexNotInTest1()
     {
         EntityManager em = createEntityManager();
 
@@ -572,6 +638,30 @@ public class JUnitJPQLComplexTest extends JUnitTestCase
 
         Assert.assertTrue("Complex Not IN test failed", comparer.compareObjects(result, expectedResult));
 
+    }
+
+    public void complexNotInTest2NullParameter() {
+
+        EntityManager em = createEntityManager();
+        Query query = em.createQuery("SELECT e from Employee e WHERE e.lastName NOT IN :lastName");
+
+        query.setParameter("lastName", null);
+
+        List<Employee> result = query.getResultList();
+        Assert.assertTrue(result.isEmpty());
+        closeEntityManager(em);
+    }
+
+    public void complexNotInTest3EmptyCollectionParameter() {
+
+        EntityManager em = createEntityManager();
+        Query query = em.createQuery("SELECT e from Employee e WHERE e.lastName NOT IN :lastName");
+
+        query.setParameter("lastName", List.of());
+
+        List<Employee> result = query.getResultList();
+        Assert.assertTrue(result.isEmpty());
+        closeEntityManager(em);
     }
 
     public void complexNotLikeTest()
@@ -983,8 +1073,8 @@ public class JUnitJPQLComplexTest extends JUnitTestCase
         Employee empWithManager = null;
         Employee empWithOutManager = null;
         // find an employee w/ and w/o manager
-        for (Iterator i = emps.iterator(); i.hasNext();) {
-            Employee e = (Employee)i.next();
+        for (Object emp : emps) {
+            Employee e = (Employee) emp;
             Employee manager = e.getManager();
             if (manager != null) {
                 if (empWithManager == null) {
@@ -1030,8 +1120,8 @@ public class JUnitJPQLComplexTest extends JUnitTestCase
         Employee empWithManager = null;
         Employee empWithOutManager = null;
         // find an employee w/ and w/o manager
-        for (Iterator i = emps.iterator(); i.hasNext();) {
-            Employee e = (Employee)i.next();
+        for (Object emp : emps) {
+            Employee e = (Employee) emp;
             Employee manager = e.getManager();
             if (manager != null) {
                 if (empWithManager == null) {
@@ -1202,8 +1292,8 @@ public class JUnitJPQLComplexTest extends JUnitTestCase
         Employee empWithManager = null;
         Employee empWithOutManager = null;
         // find an employee w/ and w/o manager
-        for (Iterator i = emps.iterator(); i.hasNext();) {
-            Employee e = (Employee)i.next();
+        for (Object emp : emps) {
+            Employee e = (Employee) emp;
             Employee manager = e.getManager();
             if (manager != null) {
                 if (empWithManager == null) {
@@ -1287,8 +1377,8 @@ public class JUnitJPQLComplexTest extends JUnitTestCase
         Employee empWithManager = null;
         Employee empWithOutManager = null;
         // find an employee w/ and w/o manager
-        for (Iterator i = emps.iterator(); i.hasNext();) {
-            Employee e = (Employee)i.next();
+        for (Object emp : emps) {
+            Employee e = (Employee) emp;
             Employee manager = e.getManager();
             if (manager != null) {
                 if (empWithManager == null) {
@@ -1332,10 +1422,10 @@ public class JUnitJPQLComplexTest extends JUnitTestCase
         Collection emps = getPersistenceUnitServerSession().readAllObjects(Employee.class);
         Employee emp = null;
         // find an employee with managed employees
-        for (Iterator i = emps.iterator(); i.hasNext();) {
-            Employee e = (Employee)i.next();
+        for (Object o : emps) {
+            Employee e = (Employee) o;
             Collection<Employee> managed = e.getManagedEmployees();
-            if ((managed != null) && (managed.size() > 0)) {
+            if ((managed != null) && (!managed.isEmpty())) {
                 emp = e;
                 break;
             }
@@ -1353,8 +1443,7 @@ public class JUnitJPQLComplexTest extends JUnitTestCase
         int sum = 0;
         if (managed != null) {
             count = managed.size();
-            for (Iterator<Employee> i = managed.iterator(); i.hasNext();) {
-                Employee e = i.next();
+            for (Employee e : managed) {
                 sum += e.getSalary();
             }
         }
@@ -1370,12 +1459,12 @@ public class JUnitJPQLComplexTest extends JUnitTestCase
         // find all employees with managed employees
         Collection emps = getPersistenceUnitServerSession().readAllObjects(Employee.class);
         List<EmployeeDetail> expectedResult = new ArrayList<>();
-        for (Iterator i = emps.iterator(); i.hasNext();) {
-            Employee e = (Employee)i.next();
+        for (Object emp : emps) {
+            Employee e = (Employee) emp;
             Collection<Employee> managed = e.getManagedEmployees();
-            if ((managed != null) && (managed.size() > 0)) {
+            if ((managed != null) && (!managed.isEmpty())) {
                 EmployeeDetail d = new EmployeeDetail(
-                    e.getFirstName(), e.getLastName(), Long.valueOf(managed.size()));
+                        e.getFirstName(), e.getLastName(), Long.valueOf(managed.size()));
                 expectedResult.add(d);
             }
         }
@@ -1584,10 +1673,9 @@ public class JUnitJPQLComplexTest extends JUnitTestCase
         Collection<Employee> allEmps = getPersistenceUnitServerSession().readAllObjects(Employee.class);
         List<Integer> expectedResult = new ArrayList<>();
         // find an employees with projects
-        for (Iterator<Employee> i = allEmps.iterator(); i.hasNext();) {
-            Employee e = i.next();
+        for (Employee e : allEmps) {
             Collection<Project> projects = e.getProjects();
-            if ((projects != null) && (projects.size() > 0)) {
+            if ((projects != null) && (!projects.isEmpty())) {
                 expectedResult.add(e.getId());
             }
         }
@@ -1607,10 +1695,9 @@ public class JUnitJPQLComplexTest extends JUnitTestCase
         Collection<Employee> allEmps = getPersistenceUnitServerSession().readAllObjects(Employee.class);
         List<Integer> expectedResult = new ArrayList<>();
         // find an employees with projects
-        for (Iterator<Employee> i = allEmps.iterator(); i.hasNext();) {
-            Employee e = i.next();
+        for (Employee e : allEmps) {
             Collection<Project> projects = e.getProjects();
-            if ((projects == null) || (projects.size() == 0)) {
+            if ((projects == null) || (projects.isEmpty())) {
                 expectedResult.add(e.getId());
             }
         }
@@ -1627,8 +1714,7 @@ public class JUnitJPQLComplexTest extends JUnitTestCase
         @SuppressWarnings({"unchecked"})
         Collection<Employee> allEmps = getPersistenceUnitServerSession().readAllObjects(Employee.class);
         List<Employee> expectedResult = new ArrayList<>();
-        for (Iterator<Employee> i = allEmps.iterator(); i.hasNext();) {
-            Employee e = i.next();
+        for (Employee e : allEmps) {
             if (e.getManager() != null) {
                 expectedResult.add(e);
             }
@@ -1650,18 +1736,15 @@ public class JUnitJPQLComplexTest extends JUnitTestCase
         Collection<Employee> allEmps = getPersistenceUnitServerSession().readAllObjects(Employee.class);
         List<Integer> expectedResult = new ArrayList<>();
         // find an employees with dealers having customers with budget greater than 0
-        for (Iterator<Employee> i = allEmps.iterator(); i.hasNext();) {
-            Employee e = i.next();
+        for (Employee e : allEmps) {
             // Get Dealers
             Collection<Dealer> dealers = e.getDealers();
-            if (dealers != null && dealers.size() > 0) {
-                for (Iterator<Dealer> dealerIter = dealers.iterator(); dealerIter.hasNext();) {
-                    Dealer d = dealerIter.next();
+            if (dealers != null && !dealers.isEmpty()) {
+                for (Dealer d : dealers) {
                     // Get Customers.
                     Collection<Customer> customers = d.getCustomers();
-                    if (customers != null && customers.size() > 0) {
-                        for (Iterator<Customer> custIter = customers.iterator(); custIter.hasNext();) {
-                            Customer c = custIter.next();
+                    if (customers != null && !customers.isEmpty()) {
+                        for (Customer c : customers) {
                             // Verify Budget
                             if (c.getBudget() > 0) {
                                 expectedResult.add(e.getId());
@@ -1721,10 +1804,9 @@ public class JUnitJPQLComplexTest extends JUnitTestCase
                           comparer.compareObjects(result, expectedResult));
 
         // find an employees with projects
-        for (Iterator<Employee> i = allEmps.iterator(); i.hasNext();) {
-            Employee e = i.next();
+        for (Employee e : allEmps) {
             Collection<Project> projects = e.getProjects();
-            if ((projects != null) && (projects.size() > 0)) {
+            if ((projects != null) && (!projects.isEmpty())) {
                 expectedResult.add(e);
             }
         }
@@ -2183,9 +2265,7 @@ public class JUnitJPQLComplexTest extends JUnitTestCase
 
         rollbackTransaction(em);
         assertEquals("complexConditionCaseInUpdateTest - wrong number of results", 2, results.size());
-        Iterator i = results.iterator();
-        while (i.hasNext()){
-            Employee e = (Employee)i.next();
+        for (Employee e : results) {
             assertEquals("complexConditionCaseInUpdateTest wrong last name for - " + e.getFirstName(), "Jones", e.getLastName());
         }
 
@@ -2385,8 +2465,8 @@ public class JUnitJPQLComplexTest extends JUnitTestCase
                 "SELECT LOWER(e.firstName) FROM Employee e",
         };
         String jpql = null;
-        for(int i=0; i < jpqlString.length; i++) {
-            jpql = jpqlString[i];
+        for (String s : jpqlString) {
+            jpql = s;
             if (getDatabaseSession().getPlatform().isSybase() || getDatabaseSession().getPlatform().isSQLServer()) {
                 if (jpql == "SELECT TRIM(LEADING 'A' FROM e.firstName) FROM Employee e" ||
                         jpql == "SELECT TRIM(TRAILING 'A' FROM e.firstName) FROM Employee e") {
@@ -2457,28 +2537,28 @@ public class JUnitJPQLComplexTest extends JUnitTestCase
                 "SELECT UPPER(e.firstName) FROM Employee e",
         };
 
-        String errorMsg = "";
+        StringBuilder errorMsg = new StringBuilder();
         String jpql = null;
-        for(int i=0; i < jpqlString.length; i++) {
+        for (String s : jpqlString) {
             try {
-                jpql = jpqlString[i];
+                jpql = s;
                 em.createQuery(jpql);
             } catch (Exception ex) {
-                if(shouldPrintJpql) {
+                if (shouldPrintJpql) {
                     System.out.println(jpql);
                 }
-                if(shouldPrintStackTrace) {
+                if (shouldPrintStackTrace) {
                     ex.printStackTrace();
                 }
-                errorMsg += '\t' + jpql + " - "+ex+'\n';
+                errorMsg.append('\t').append(jpql).append(" - ").append(ex).append('\n');
             }
         }
 
         closeEntityManager(em);
 
         if(errorMsg.length() > 0) {
-            errorMsg = "Failed:\n" + errorMsg;
-            fail(errorMsg);
+            errorMsg.insert(0, "Failed:\n");
+            fail(errorMsg.toString());
         }
     }
 
@@ -2502,7 +2582,7 @@ public class JUnitJPQLComplexTest extends JUnitTestCase
                 "SELECT e.id FROM Employee e WHERE CONCAT(FUNC('NVL', e.firstName, 'NoFirstName'), func('NVL', e.lastName, 'NoLastName')) = 'NoFirstNameNoLastName'"
         };
 
-        String errorMsg = "";
+        StringBuilder errorMsg = new StringBuilder();
         String jpql = null;
         Query query;
         for(int i=0; i < jpqlString.length; i++) {
@@ -2516,15 +2596,15 @@ public class JUnitJPQLComplexTest extends JUnitTestCase
                 query.getResultList();
             } catch (Exception ex) {
                 ex.printStackTrace();
-                errorMsg += '\t' + jpql + " - "+ex+'\n';
+                errorMsg.append('\t').append(jpql).append(" - ").append(ex).append('\n');
             }
         }
 
         closeEntityManager(em);
 
         if(errorMsg.length() > 0) {
-            errorMsg = "Failed:\n" + errorMsg;
-            fail(errorMsg);
+            errorMsg.insert(0, "Failed:\n");
+            fail(errorMsg.toString());
         }
     }
 
@@ -2718,7 +2798,7 @@ public class JUnitJPQLComplexTest extends JUnitTestCase
                 query.setHint(QueryHints.SERIALIZED_OBJECT, "false");
             }
             List result = query.getResultList();
-            if (result.size() > 0) {
+            if (!result.isEmpty()) {
                 fail("Expected no results: " + result);
             }
         } finally {
@@ -2777,21 +2857,21 @@ public class JUnitJPQLComplexTest extends JUnitTestCase
                                     "SELECT FUNC('CONCAT','GroupA', FUNC('SUBSTRING',e.firstName, 1, 2)) FROM Employee e WHERE TRIM(' ' FROM e.firstName) = e.firstName"
                                    };
             EntityManager em = createEntityManager();
-            String errorMsg = "";
+            StringBuilder errorMsg = new StringBuilder();
             Query query;
-            for (int i = 0; i < jpqlStrings.length; i++) {
+            for (String jpqlString : jpqlStrings) {
                 try {
-                    query = em.createQuery(jpqlStrings[i]);
+                    query = em.createQuery(jpqlString);
                     query.getResultList();
                 } catch (Exception ex) {
                     ex.printStackTrace();
-                    errorMsg += '\t' + jpqlStrings[i] + " - " + ex + '\n';
+                    errorMsg.append('\t').append(jpqlString).append(" - ").append(ex).append('\n');
                 }
             }
             closeEntityManager(em);
             if(errorMsg.length() > 0) {
-                errorMsg = "Failed:\n" + errorMsg;
-                fail(errorMsg);
+                errorMsg.insert(0, "Failed:\n");
+                fail(errorMsg.toString());
             }
         }
     }
@@ -3168,7 +3248,7 @@ public class JUnitJPQLComplexTest extends JUnitTestCase
         }
         EntityManager em = createEntityManager();
         Query query = em.createQuery("Select e from Employee e join e.phoneNumbers p group by e having count(p)   > 100");
-        if (query.getResultList().size() > 0) {
+        if (!query.getResultList().isEmpty()) {
             fail("Group by not included");
         }
         closeEntityManager(em);
@@ -3182,7 +3262,7 @@ public class JUnitJPQLComplexTest extends JUnitTestCase
         Query query = em.createQuery("Select e from Employee e group by e");
         List results = query.getResultList();
         assertNotNull("Results should be non-null", results);
-        assertTrue("Results should not be empty", results.size() != 0);
+        assertTrue("Results should not be empty", !results.isEmpty());
 
         String sql = query.unwrap(DatabaseQuery.class).getSQLString();
         if (sql.toUpperCase().contains("GROUP BY")) {
@@ -3564,7 +3644,7 @@ public class JUnitJPQLComplexTest extends JUnitTestCase
             CallQueryMechanism qm = rq != null ? (CallQueryMechanism) rq.getQueryMechanism() : null;
             DatasourceCall sc = qm != null ? qm.getDatabaseCall() : null;
             List params = sc != null ? sc.getParameters() : null;
-            ParameterExpression pe = params != null && params.size() > 0 ? (ParameterExpression) params.get(0) : null;
+            ParameterExpression pe = params != null && !params.isEmpty() ? (ParameterExpression) params.get(0) : null;
             QueryKeyExpression qke = pe != null ? (QueryKeyExpression) pe.getLocalBase() : null;
             if (qke != null) {
                 DatabaseMapping mapping = qke.getMapping();
@@ -3808,9 +3888,7 @@ public class JUnitJPQLComplexTest extends JUnitTestCase
     // Test JPQL with no select clause.
     public void testNoSelect() {
         EntityManager em = createEntityManager();
-        Query query = em.createQuery("from Employee e where e.firstName = 'Bob'");
-        query.getResultList();
-        query = em.createQuery("from Employee e join e.address a where a.city = 'Ottawa'");
+        Query query = em.createQuery("from Employee this where this.firstName = 'Bob'");
         query.getResultList();
         closeEntityManager(em);
     }

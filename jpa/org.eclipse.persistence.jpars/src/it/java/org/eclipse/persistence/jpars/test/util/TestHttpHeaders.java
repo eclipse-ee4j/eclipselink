@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,6 +19,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.function.Predicate;
 
 import jakarta.ws.rs.core.Cookie;
 import jakarta.ws.rs.core.HttpHeaders;
@@ -44,6 +45,11 @@ public class TestHttpHeaders implements HttpHeaders {
 
         headers.getRequestHeaders().put(HttpHeaders.CONTENT_TYPE, mediaTypes);
         return headers;
+    }
+
+    @Override
+    public boolean containsHeaderString(String s, String s1, Predicate<String> predicate) {
+        return false;
     }
 
     @Override

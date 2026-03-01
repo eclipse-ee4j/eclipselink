@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,18 +22,14 @@ public class Address {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof Address) {
-            Address addObj = (Address) obj;
+        if (obj instanceof Address addObj) {
             if (this.id != addObj.id) {
                 return false;
             }
             if (!(this.info.equals(addObj.info))) {
                 return false;
             }
-            if (!(this.type.equals(addObj.type))) {
-                return false;
-            }
-            return true;
+            return this.type.equals(addObj.type);
         } else {
             return false;
         }

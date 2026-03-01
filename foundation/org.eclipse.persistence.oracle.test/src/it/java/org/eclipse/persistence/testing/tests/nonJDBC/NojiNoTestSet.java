@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,18 +16,21 @@ package org.eclipse.persistence.testing.tests.nonJDBC;
 import java.io.FileInputStream;
 import java.io.StringReader;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
-import java.util.Vector;
+
 import org.w3c.dom.Document;
 
 // JUnit imports
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 // EclipseLink imports
-import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.sessions.factories.ObjectPersistenceWorkbenchXMLProject;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLMarshaller;
@@ -38,7 +41,6 @@ import org.eclipse.persistence.queries.DataReadQuery;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.Project;
-import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.factories.XMLProjectReader;
 
 // Domain imports
@@ -176,7 +178,7 @@ public class NojiNoTestSet {
         s.dontLogMessages();
         s.login();
         Object o = null;
-        Vector queryArgs = new NonSynchronizedVector();
+        List<Object> queryArgs = new ArrayList<>();
         queryArgs.add("test");
         boolean worked = false;
         String msg = null;
@@ -188,12 +190,12 @@ public class NojiNoTestSet {
           msg = e.getMessage();
         }
         assertTrue("invocation NojiNo failed: " + msg, worked);
-        Vector results = (Vector)o;
+        List<?> results = (List<?>) o;
         DatabaseRecord record = (DatabaseRecord)results.get(0);
         BigDecimal bint2bigdec = (BigDecimal)record.get("X");
-        assertTrue("wrong bint2bigdec value", bint2bigdec.intValue() == 42);
+        assertEquals("wrong bint2bigdec value", 42, bint2bigdec.intValue());
         Integer bool2int = (Integer)record.get("Z");
-        assertTrue("wrong bool2int value", bool2int == 1);
+        assertEquals("wrong bool2int value", 1, (int) bool2int);
         s.logout();
     }
 }

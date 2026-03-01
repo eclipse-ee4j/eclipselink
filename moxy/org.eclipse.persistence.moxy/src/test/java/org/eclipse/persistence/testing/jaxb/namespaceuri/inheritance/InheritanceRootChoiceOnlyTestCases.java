@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,18 +14,13 @@
 //     Oracle - December 2011
 package org.eclipse.persistence.testing.jaxb.namespaceuri.inheritance;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import jakarta.xml.bind.JAXBContext;
-import jakarta.xml.bind.Marshaller;
-
 import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.jaxb.UnmarshallerProperties;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 import org.eclipse.persistence.testing.jaxb.namespaceuri.inheritance.package2.AnotherPackageSubType;
@@ -60,11 +55,11 @@ public class InheritanceRootChoiceOnlyTestCases extends JAXBWithJSONTestCases {
         AnotherPackageSubType anotherPackageSubType = new AnotherPackageSubType();
 
         List choiceList = new ArrayList();
-        choiceList.add(new String("choice string test2"));
+        choiceList.add("choice string test2");
         choiceList.add(anotherPackageSubType);
         choiceList.add(400);
         choiceList.add(subTypeLevel2);
-        choiceList.add(new String("choice string test"));
+        choiceList.add("choice string test");
         choiceList.add(500);
         root.choiceList = choiceList;
         return root;

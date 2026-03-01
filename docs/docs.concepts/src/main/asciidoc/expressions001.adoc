@@ -1,0 +1,45 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[EXPRESSION001]]
+=== About the Expression Framework
+
+The EclipseLink expression framework provides methods through the
+following classes:
+
+* The `Expression` class provides most general functions, such as
+`toUpperCase`.
+* The `ExpressionMath` class supplies mathematical methods.
+
+This division of functionality enables EclipseLink expressions to
+provide similar mathematical functionality to the `java.lang.Math`
+class, but keeps both the `Expression` and `ExpressionMath` classes from
+becoming unnecessarily complex.
+
+Expressions offer the following advantages over SQL when you access a
+database:
+
+* Expressions are easier to maintain because the database is abstracted.
+* Changes to descriptors or database tables do not affect the querying
+structures in the application.
+* Expressions enhance readability by standardizing the `Query` interface
+so that it looks similar to traditional Java calling conventions.
+* Expressions allow read queries to transparently query between two
+classes that share a relationship. If these classes are stored in
+multiple tables in the database, EclipseLink automatically generates the
+appropriate join statements to return information from both tables.
+* Expressions simplify complex operations.

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,7 +40,7 @@ public class NestedUnitOfWorkNewObjectWithIndirectionTest extends AutoVerifyTest
         UnitOfWork nestedUow1 = uow.acquireUnitOfWork();
         Employee employeeClone = (Employee)uow.registerObject(original);
         Employee employeeNestedClone = (Employee)nestedUow1.registerObject(employeeClone);
-        if (((Employee)employeeNestedClone.getManagedEmployees().firstElement()).getManager() !=
+        if (((Employee)employeeNestedClone.getManagedEmployees().get(0)).getManager() !=
             employeeNestedClone) {
             throw new TestErrorException("Object Identity Lost when triggering indirection in nested UOW see BUG # 3228185");
         }

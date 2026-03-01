@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,7 +31,7 @@ import org.eclipse.persistence.tools.schemaframework.ForeignKeyConstraint;
 /**
  * INTERNAL:
  * Object to process JPA foreign key metadata.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -47,6 +47,7 @@ public class ForeignKeyMetadata extends ORMetadata {
     protected String m_name;
     protected String m_constraintMode;
     protected String m_foreignKeyDefinition;
+    private String m_options;
 
     /**
      * INTERNAL:
@@ -66,6 +67,7 @@ public class ForeignKeyMetadata extends ORMetadata {
         m_name = foreignKey.getName();
         m_constraintMode = foreignKey.getConstraintMode();
         m_foreignKeyDefinition = foreignKey.getForeignKeyDefinition();
+        m_options = foreignKey.getOptions();
     }
 
     /**
@@ -78,6 +80,7 @@ public class ForeignKeyMetadata extends ORMetadata {
         m_name = foreignKey.getAttributeString("name");
         m_constraintMode = foreignKey.getAttributeString("value");
         m_foreignKeyDefinition = foreignKey.getAttributeString("foreignKeyDefinition");
+        m_options = foreignKey.getAttributeString("options");
     }
 
     /**
@@ -93,14 +96,17 @@ public class ForeignKeyMetadata extends ORMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (objectToCompare instanceof ForeignKeyMetadata) {
-            ForeignKeyMetadata foreignKey = (ForeignKeyMetadata) objectToCompare;
+        if (objectToCompare instanceof ForeignKeyMetadata foreignKey) {
 
             if (! valuesMatch(m_name, foreignKey.getName())) {
                 return false;
             }
 
             if (! valuesMatch(m_foreignKeyDefinition, foreignKey.getForeignKeyDefinition())) {
+                return false;
+            }
+
+            if (! valuesMatch(m_options, foreignKey.getOptions())) {
                 return false;
             }
 
@@ -112,9 +118,11 @@ public class ForeignKeyMetadata extends ORMetadata {
 
     @Override
     public int hashCode() {
-        int result = m_name != null ? m_name.hashCode() : 0;
+        int result = super.hashCode();
+        result = 31 * result + (m_name != null ? m_name.hashCode() : 0);
         result = 31 * result + (m_constraintMode != null ? m_constraintMode.hashCode() : 0);
         result = 31 * result + (m_foreignKeyDefinition != null ? m_foreignKeyDefinition.hashCode() : 0);
+        result = 31 * result + (m_options != null ? m_options.hashCode() : 0);
         return result;
     }
 
@@ -140,6 +148,14 @@ public class ForeignKeyMetadata extends ORMetadata {
      */
     public String getName() {
         return m_name;
+    }
+
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public String getOptions() {
+        return m_options;
     }
 
     /**
@@ -170,7 +186,7 @@ public class ForeignKeyMetadata extends ORMetadata {
     public void process(DatabaseTable table) {
         process(table, null, null, null);
     }
- 
+
     /**
      * INTERNAL:
      * Process this JPA metadata into an EclipseLink ForeignKeyConstraint.
@@ -182,8 +198,8 @@ public class ForeignKeyMetadata extends ORMetadata {
             foreignKeyConstraint.setForeignKeyDefinition(getForeignKeyDefinition());
             foreignKeyConstraint.setDisableForeignKey(isNoConstraintMode());
             // Bug 441546 - Foreign Key attribute when used in JoinColumn generates wrong DDL statement
-            // If foreignKeyDefinition element is not specified, the provider will generate foreign 
-            // key constraints whose update and delete actions it determines most appropriate for 
+            // If foreignKeyDefinition element is not specified, the provider will generate foreign
+            // key constraints whose update and delete actions it determines most appropriate for
             // the join column(s) to which the foreign key annotation is applied.
             if (getForeignKeyDefinition() == null) {
                 if (sourceFields != null) {
@@ -222,5 +238,13 @@ public class ForeignKeyMetadata extends ORMetadata {
      */
     public void setName(String name) {
         m_name = name;
+    }
+
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setOptions(String options) {
+        m_options = options;
     }
 }

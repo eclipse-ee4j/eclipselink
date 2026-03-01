@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,17 +28,17 @@ import javax.xml.namespace.QName;
  * @author mmacivor
  *
  */
-public class WrappedValue extends JAXBElement {
+public class WrappedValue<T> extends JAXBElement<T> {
 
     private boolean setValue;
 
-    public WrappedValue(QName name, Class<?> declaredType, Object value) {
+    public WrappedValue(QName name, Class<T> declaredType, T value) {
         super(name, declaredType, value);
         this.setValue = false;
     }
 
     @Override
-    public void setValue(Object value) {
+    public void setValue(T value) {
         super.setValue(value);
         setValue = true;
     }

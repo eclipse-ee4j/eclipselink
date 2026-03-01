@@ -26,8 +26,7 @@ public class OwnerIntegerId {
     public String m_activityId;
 
     public boolean equals(Object obj){
-        if(obj instanceof OwnerIntegerId){
-            OwnerIntegerId ownerObject = (OwnerIntegerId)obj;
+        if(obj instanceof OwnerIntegerId ownerObject){
             if(!this.m_activityId.equals(ownerObject.m_activityId)){
                 return false;
             }

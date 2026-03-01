@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,13 +15,6 @@
 
 package org.eclipse.persistence.internal.helper;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
-import static java.lang.Integer.MIN_VALUE;
-
 import org.eclipse.persistence.internal.databaseaccess.DatasourceCall.ParameterType;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.platform.database.DatabasePlatform;
@@ -29,8 +22,16 @@ import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLStoredProcedu
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLargument;
 import org.eclipse.persistence.queries.StoredProcedureCall;
 import org.eclipse.persistence.sessions.DatabaseRecord;
+
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.HexFormat;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
+
+import static java.lang.Integer.MIN_VALUE;
 import static org.eclipse.persistence.internal.helper.Helper.NL;
-import static org.eclipse.persistence.internal.helper.Helper.buildHexStringFromBytes;
 
 /**
  * <b>PUBLIC</b>: Interface used to categorize arguments to Stored Procedures as either
@@ -98,7 +99,7 @@ public interface DatabaseType {
                 //TL;DR - probability of collision quite small
                 byte[] truncDigest = new byte[14];
                 System.arraycopy(digest, 0, truncDigest, 0, 14);
-                sb.append(buildHexStringFromBytes(truncDigest));
+                sb.append(HexFormat.of().formatHex(truncDigest));
             }
             catch (NoSuchAlgorithmException e) {
                 //ignore: should never happen

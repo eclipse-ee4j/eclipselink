@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,7 +29,7 @@ import org.eclipse.persistence.config.QueryHints;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
 
 @Entity
 @Table(name="CMP3_ROOM")
@@ -45,14 +45,32 @@ import java.util.Collection;
 })
 @Customizer(AdvancedHistoryCustomizer.class)
 public class Room implements Serializable, Cloneable {
+
+    public enum Status {
+        FREE, OCCUPIED;
+    }
+
     @Id
     private int id;
     private int width;
     private int length;
     private int height;
+    private Status status;
 
     @OneToMany(mappedBy="room", cascade=CascadeType.ALL, fetch=FetchType.LAZY)
-    private Collection<Door> doors;
+    private List<Door> doors;
+
+    public Room() {
+    }
+
+    public Room(int id, int width, int length, int height, Status status) {
+        this.id = id;
+        this.width = width;
+        this.length = length;
+        this.height = height;
+        this.status = status;
+        this.doors = doors;
+    }
 
     public int getId() {
         return id;
@@ -86,11 +104,19 @@ public class Room implements Serializable, Cloneable {
         this.height = height;
     }
 
-    public Collection<Door> getDoors() {
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
+    public List<Door> getDoors() {
         return doors;
     }
 
-    public void setDoors(Collection<Door> doors) {
+    public void setDoors(List<Door> doors) {
         this.doors = doors;
     }
 
@@ -102,11 +128,10 @@ public class Room implements Serializable, Cloneable {
     }
 
     public boolean equals(Object obj) {
-        if (obj == null || !(obj instanceof Room)) {
+        if (obj == null || !(obj instanceof Room r)) {
             return false;
         }
 
-        Room r = (Room) obj;
         if (this.id == r.id && this.width == r.width
                 && this.height == r.height && this.length == r.length) {
             return true;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,7 +30,6 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 
@@ -126,8 +125,7 @@ public class NativeAPITests extends JUnitTestCase {
 
     public void testFindAll() throws Exception {
         List<Employee> result = getEmployeeService().findAll();
-        for (Iterator<Employee> iterator = result.iterator(); iterator.hasNext();) {
-            Employee employee = iterator.next();
+        for (Employee employee : result) {
             employee.getFirstName();
             employee.getLastName();
             boolean caughtError = false;

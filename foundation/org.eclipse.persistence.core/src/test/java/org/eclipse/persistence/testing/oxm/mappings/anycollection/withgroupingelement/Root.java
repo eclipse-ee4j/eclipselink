@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,10 +14,11 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.oxm.mappings.anycollection.withgroupingelement;
 
-import java.util.Iterator;
-import java.util.List;
 import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
+
+import java.util.Iterator;
+import java.util.List;
 
 /**
  *  @version $Header: Root.java 21-jul-2005.14:29:07 dmahar Exp $
@@ -56,13 +57,13 @@ public class Root {
             List collection2 = ((Root)object).getAny();
             if ((collection1 == null) && (collection2 == null)) {
                 return true;
-            } else if ((collection1 == null) && (collection2.size() == 0)) {
+            } else if ((collection1 == null) && (collection2.isEmpty())) {
                 return true;
-            } else if ((collection2 == null) && (collection1.size() == 0)) {
+            } else if ((collection2 == null) && (collection1.isEmpty())) {
                 return true;
-            } else if ((collection1 == null) && (collection2.size() > 0)) {
+            } else if ((collection1 == null) && (!collection2.isEmpty())) {
                 return false;
-            } else if ((collection2 == null) && (collection1.size() > 0)) {
+            } else if ((collection2 == null) && (!collection1.isEmpty())) {
                 return false;
             } else if (any.size() != ((Root)object).getAny().size()) {
                 return false;
@@ -86,14 +87,14 @@ public class Root {
     }
 
     public String toString() {
-        String value = "Root:\n ";
+        StringBuilder value = new StringBuilder("Root:\n ");
         if (any == null) {
-            return value;
+            return value.toString();
         }
-        for (int i = 0; i < any.size(); i++) {
-            value += ("==> " + any.get(i) + "\n");
+        for (Object o : any) {
+            value.append("==> ").append(o).append("\n");
         }
-        return value;
+        return value.toString();
     }
 
     public void setDirectMapping(String directMapping) {

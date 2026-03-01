@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2021, 2022 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2021, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,19 +18,6 @@
 //     02/01/2022: Tomas Kraus
 //       - Issue 1442: Implement New Jakarta Persistence 3.1 Features
 package org.eclipse.persistence.expressions;
-
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.Serializable;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.IdentityHashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.StringTokenizer;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.QueryException;
@@ -61,6 +48,20 @@ import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.queries.ReportQuery;
 
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.Serial;
+import java.io.Serializable;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.IdentityHashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.StringTokenizer;
+
 /**
  * <p>
  * <b>Purpose</b>: Define an object-level representation of a database query where clause.</p>
@@ -82,7 +83,8 @@ import org.eclipse.persistence.queries.ReportQuery;
 public abstract class Expression implements Serializable, Cloneable {
 
     /** Required for serialization compatibility. */
-    static final long serialVersionUID = -5979150600092006081L;
+    @Serial
+    private static final long serialVersionUID = -5979150600092006081L;
 
     /** Temporary values for table aliasing */
     protected transient DatabaseTable lastTable;
@@ -94,6 +96,9 @@ public abstract class Expression implements Serializable, Cloneable {
     /** Use the upper() function for case insensitive expression operations (default).
         Seting this flag to false will use the lower() function instead. */
     public static boolean shouldUseUpperCaseForIgnoreCase = true;
+
+    //flag to control SQLSelectStatement generation
+    private boolean shouldCreateSQLSelectStatement = false;
 
     /**
      * Base Expression Constructor.  Not generally used by Developers
@@ -130,7 +135,7 @@ public abstract class Expression implements Serializable, Cloneable {
      */
     public Expression addDate(String datePart, Object numberToAdd) {
         ExpressionOperator anOperator = getOperator(ExpressionOperator.AddDate);
-        List args = new ArrayList(2);
+        List<Object> args = new ArrayList<>(2);
         args.add(Expression.fromLiteral(datePart, this));
         args.add(numberToAdd);
         return anOperator.expressionForArguments(this, args);
@@ -424,7 +429,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * Return an expression that allows you to treat its base as if it were a subclass of the class returned by the base
      * This can only be called on an ExpressionBuilder, the result of expression.get(String), expression.getAllowingNull(String),
      * the result of expression.anyOf("String") or the result of expression.anyOfAllowingNull("String")
-     *
+     * <p>
      *  downcast uses Expression.type() internally to guarantee the results are of the specified class.
      * <p>Example:
      * <blockquote><pre>
@@ -700,7 +705,7 @@ public abstract class Expression implements Serializable, Cloneable {
      */
     public Expression between(Object leftValue, Object rightValue) {
         ExpressionOperator anOperator = getOperator(ExpressionOperator.Between);
-        List args = new ArrayList(2);
+        List<Object> args = new ArrayList<>(2);
         args.add(leftValue);
         args.add(rightValue);
         return anOperator.expressionForArguments(this, args);
@@ -743,10 +748,10 @@ public abstract class Expression implements Serializable, Cloneable {
      * @param defaultItem java.lang.String  the default value that will be used if none of the keys in the
      * hashtable match
      */
-    public Expression caseStatement(Map caseItems, Object defaultItem) {
+    public Expression caseStatement(Map<?, ?> caseItems, Object defaultItem) {
         FunctionExpression expression = caseStatement();
         expression.addChild(this);
-        Iterator iterator = caseItems.keySet().iterator();
+        Iterator<?> iterator = caseItems.keySet().iterator();
         while (iterator.hasNext()) {
             Object key = iterator.next();
             expression.addChild(Expression.from(key, this));
@@ -767,7 +772,7 @@ public abstract class Expression implements Serializable, Cloneable {
      *
      * This expression must be manipulated to successfully build a case statement by adding appropriate
      * children to it.
-     *
+     * <p>
      * A child must be added for the "case expression" (name above), a pair of children must be added for
      * each "when then" expression and a child must be added for the else.
      *
@@ -838,7 +843,7 @@ public abstract class Expression implements Serializable, Cloneable {
      *
      * This expression must be manipulated to successfully build a case statement by adding appropriate
      * children to it.
-     *
+     * <p>
      * A pair of children must be added for  each "when then" expression and a child must be added for the else.
      *
      * @see ArgumentListFunctionExpression
@@ -868,7 +873,7 @@ public abstract class Expression implements Serializable, Cloneable {
      */
     public Expression nullIf(Object object) {
             ExpressionOperator anOperator = getOperator(ExpressionOperator.NullIf);
-            List args = new ArrayList(1);
+            List<Expression> args = new ArrayList<>(1);
             args.add(Expression.from(object, this));
             return anOperator.expressionForArguments(this, args);
     }
@@ -918,12 +923,12 @@ public abstract class Expression implements Serializable, Cloneable {
 
     /**
      * INTERNAL:
-     * Clone the expression maintaining clone identity in the inter-connected expression graph.
+     * Clone the expression maintaining clone identity in the interconnected expression graph.
      */
     @Override
-    public Object clone() {
+    public Expression clone() {
         // 2612538 - the default size of Map (32) is appropriate
-        Map alreadyDone = new IdentityHashMap();
+        Map<Expression, Expression> alreadyDone = new IdentityHashMap<>();
         return copiedVersionFrom(alreadyDone);
     }
 
@@ -1095,7 +1100,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * equality operations between two field nodes.
      */
     public Expression convertToUseOuterJoin() {
-        ExpressionIterator iterator = new ExpressionIterator() {
+        ExpressionIterator<Void> iterator = new ExpressionIterator<>() {
             @Override
             public void iterate(Expression each) {
                 each.convertNodeToUseOuterJoin();
@@ -1108,12 +1113,12 @@ public abstract class Expression implements Serializable, Cloneable {
     /**
      * INTERNAL:
      */
-    public Expression copiedVersionFrom(Map alreadyDone) {
+    public Expression copiedVersionFrom(Map<Expression, Expression> alreadyDone) {
         if (alreadyDone == null) {
             // For sub-selects no cloning is done.
             return this;
         }
-        Expression existing = (Expression)alreadyDone.get(this);
+        Expression existing = alreadyDone.get(this);
         if (existing == null) {
             return registerIn(alreadyDone);
         } else {
@@ -1150,7 +1155,7 @@ public abstract class Expression implements Serializable, Cloneable {
     /**
      * INTERNAL:
      */
-    public Expression create(Expression base, List arguments, ExpressionOperator anOperator) {
+    public Expression create(Expression base, List<?> arguments, ExpressionOperator anOperator) {
         // This is a replacement for real class methods in Java. Instead of returning a new instance we create it, then
         // mutate it using this method.
         return this;
@@ -1340,9 +1345,9 @@ public abstract class Expression implements Serializable, Cloneable {
      *  the default value that will be used if none of the keys in the
      * Map match
      **/
-    public Expression decode(Map decodeableItems, String defaultItem) {
+    public Expression decode(Map<?, ?> decodeableItems, String defaultItem) {
 
-        /**
+        /*
          * decode works differently than most of the functionality in the expression framework.
          * It takes a variable number of arguments and as a result, the printed strings for
          * a decode call have to be built when the number of arguments are known.
@@ -1369,7 +1374,7 @@ public abstract class Expression implements Serializable, Cloneable {
         FunctionExpression expression = new FunctionExpression();
         expression.setBaseExpression(this);
         expression.addChild(this);
-        Iterator iterator = decodeableItems.keySet().iterator();
+        Iterator<?> iterator = decodeableItems.keySet().iterator();
         while (iterator.hasNext()) {
             Object key = iterator.next();
             expression.addChild(Expression.from(key, this));
@@ -1665,8 +1670,7 @@ public abstract class Expression implements Serializable, Cloneable {
      */
     public static Expression from(Object value, Expression base) {
         //CR#... null value used to return null, must build a null constant expression.
-        if (value instanceof Expression) {
-            Expression exp = (Expression)value;
+        if (value instanceof Expression exp) {
             if (exp.isValueExpression() || base.isExpressionBuilder()) {
                 exp.setLocalBase(base);
             } else {
@@ -1676,8 +1680,8 @@ public abstract class Expression implements Serializable, Cloneable {
             }
             return exp;
         }
-        if (value instanceof ReportQuery) {
-            Expression exp = base.subQuery((ReportQuery)value);
+        if (value instanceof ReportQuery reportQuery) {
+            Expression exp = base.subQuery(reportQuery);
             exp.setLocalBase(base);// We don't know which side of the relationship cares about the other one, so notify both
             base.setLocalBase(exp);
             return exp;
@@ -1898,7 +1902,7 @@ public abstract class Expression implements Serializable, Cloneable {
      *  builder.get("name").getFunction(MyFunctions.FOO_BAR, arguments).greaterThan(100);
      * </pre></blockquote>
      */
-    public Expression getFunction(int selector, List arguments) {
+    public Expression getFunction(int selector, List<?> arguments) {
         ExpressionOperator anOperator = getOperator(selector);
         return anOperator.expressionForArguments(this, arguments);
     }
@@ -1915,7 +1919,7 @@ public abstract class Expression implements Serializable, Cloneable {
      *  builder.get("name").operator("FOO_BAR", arguments).greaterThan(100);
      * </pre></blockquote>
      */
-    public Expression operator(String name, List arguments) {
+    public Expression operator(String name, List<?> arguments) {
         Integer selector = ExpressionOperator.getPlatformOperatorSelectors().get(name);
         if (selector == null) {
             return getFunctionWithArguments(name, arguments);
@@ -1952,7 +1956,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * Return a user defined function accepting all of the arguments.
      * The function is assumed to be a normal prefix function like, CONCAT(base, value1, value2, value3, ...).
      */
-    public Expression getFunctionWithArguments(String functionName, List arguments) {
+    public Expression getFunctionWithArguments(String functionName, List<?> arguments) {
         ExpressionOperator anOperator = new ExpressionOperator();
         anOperator.setType(ExpressionOperator.FunctionOperator);
         List<String> v = new ArrayList<>(arguments.size());
@@ -1974,13 +1978,18 @@ public abstract class Expression implements Serializable, Cloneable {
      * using a custom operator that will print itself as the SQL.
      * Arguments are passed using '?', and must match the number of arguments.
      */
-    public Expression sql(String sql, List arguments) {
+    public Expression sql(String sql, List<?> arguments) {
         ExpressionOperator anOperator = new ExpressionOperator();
         anOperator.setType(ExpressionOperator.FunctionOperator);
         List<String> v = new ArrayList<>(arguments.size());
         int start = 0;
         int index = sql.indexOf('?');
         while (index != -1) {
+            // ? can be escaped as ?? to support ? as a native SQL operator (e.g. on Postgres)
+            if (index < sql.length() - 1 && sql.charAt(index + 1) == '?') {
+                index = sql.indexOf('?', index + 2);
+                continue;
+            }
             v.add(sql.substring(start, index));
             start = index + 1;
             index = sql.indexOf('?', start);
@@ -1989,6 +1998,14 @@ public abstract class Expression implements Serializable, Cloneable {
             v.add(sql.substring(start, sql.length()));
         }
         anOperator.printsAs(v);
+        //Postgres expects '??' as an escape mechanism for '?' in parameterized queries
+        //https://jdbc.postgresql.org/documentation/query/#using-the-statement-or-preparedstatement-interface
+        //On other platforms, replace ?? with ? in code which is passed as a part of SQL into DB
+        if (getSession() == null || !getSession().getPlatform().isPostgreSQL()) {
+            for (int i = 0; i < anOperator.getDatabaseStrings().length; i++) {
+                anOperator.getDatabaseStrings()[i] = anOperator.getDatabaseStrings()[i].replace("??", "?");
+            }
+        }
         anOperator.bePrefix();
         anOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
 
@@ -2383,7 +2400,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      */
     public Expression in(byte[] theBytes) {
-        List values = new ArrayList(theBytes.length);
+        List<Byte> values = new ArrayList<>(theBytes.length);
 
         for (int index = 0; index < theBytes.length; index++) {
             values.add(theBytes[index]);
@@ -2398,7 +2415,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      */
     public Expression in(char[] theChars) {
-        List values = new ArrayList(theChars.length);
+        List<Character> values = new ArrayList<>(theChars.length);
 
         for (int index = 0; index < theChars.length; index++) {
             values.add(theChars[index]);
@@ -2413,7 +2430,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      */
     public Expression in(double[] theDoubles) {
-        List values = new ArrayList(theDoubles.length);
+        List<Double> values = new ArrayList<>(theDoubles.length);
 
         for (int index = 0; index < theDoubles.length; index++) {
             values.add(theDoubles[index]);
@@ -2428,7 +2445,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      */
     public Expression in(float[] theFloats) {
-        List values = new ArrayList(theFloats.length);
+        List<Float> values = new ArrayList<>(theFloats.length);
 
         for (int index = 0; index < theFloats.length; index++) {
             values.add(theFloats[index]);
@@ -2443,7 +2460,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      */
     public Expression in(int[] theInts) {
-        List values = new ArrayList(theInts.length);
+        List<Integer> values = new ArrayList<>(theInts.length);
 
         for (int index = 0; index < theInts.length; index++) {
             values.add(theInts[index]);
@@ -2458,7 +2475,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      */
     public Expression in(long[] theLongs) {
-        List values = new ArrayList(theLongs.length);
+        List<Long> values = new ArrayList<>(theLongs.length);
 
         for (int index = 0; index < theLongs.length; index++) {
             values.add(theLongs[index]);
@@ -2473,7 +2490,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      */
     public Expression in(Object[] theObjects) {
-        List values = new ArrayList(theObjects.length);
+        List<Object> values = new ArrayList<>(theObjects.length);
 
         for (int index = 0; index < theObjects.length; index++) {
             values.add(theObjects[index]);
@@ -2488,7 +2505,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      */
     public Expression in(short[] theShorts) {
-        List values = new ArrayList(theShorts.length);
+        List<Short> values = new ArrayList<>(theShorts.length);
 
         for (int index = 0; index < theShorts.length; index++) {
             values.add(theShorts[index]);
@@ -2503,7 +2520,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      */
     public Expression in(boolean[] theBooleans) {
-        List values = new ArrayList(theBooleans.length);
+        List<Boolean> values = new ArrayList<>(theBooleans.length);
 
         for (int index = 0; index < theBooleans.length; index++) {
             values.add(theBooleans[index]);
@@ -2523,7 +2540,7 @@ public abstract class Expression implements Serializable, Cloneable {
      *     SQL: AGE IN (55, 18, 30)
      * </pre></blockquote>
      */
-    public Expression in(Collection theObjects) {
+    public Expression in(Collection<?> theObjects) {
         return in(new CollectionExpression(theObjects, this));
     }
 
@@ -2730,7 +2747,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * INTERNAL:
      * For iterating using an inner class
      */
-    public void iterateOn(ExpressionIterator iterator) {
+    public void iterateOn(ExpressionIterator<?> iterator) {
         iterator.iterate(this);
     }
 
@@ -2757,7 +2774,7 @@ public abstract class Expression implements Serializable, Cloneable {
      */
     public Expression leftPad(Object size, Object substring) {
         ExpressionOperator anOperator = getOperator(ExpressionOperator.LeftPad);
-        List args = new ArrayList(2);
+        List<Object> args = new ArrayList<>(2);
         args.add(size);
         args.add(substring);
         return anOperator.expressionForArguments(this, args);
@@ -3005,7 +3022,7 @@ public abstract class Expression implements Serializable, Cloneable {
      */
     public Expression like(String value, String escapeSequence) {
         ExpressionOperator anOperator = getOperator(ExpressionOperator.LikeEscape);
-        List args = new ArrayList(2);
+        List<String> args = new ArrayList<>(2);
         args.add(value);
         args.add(escapeSequence);
         return anOperator.expressionForArguments(this, args);
@@ -3066,6 +3083,37 @@ public abstract class Expression implements Serializable, Cloneable {
 
     /**
      * PUBLIC:
+     * Function return a given number of characters starting at the
+     * left of a string. Equivalent to the Sybase LEFT function
+     * <p>Example:
+     * <blockquote><pre>
+     * EclipseLink: employee.get("name").left(2)
+     * Java: NA
+     * SQL: LEFT(name, 2)
+     * </pre></blockquote>
+     */
+    public Expression left(int characters) {
+        return left(Integer.valueOf(characters));
+    }
+
+    /**
+     * PUBLIC:
+     * Function return a given number of characters starting at the
+     * left of a string. Equivalent to the Sybase LEFT function
+     * <p>Example:
+     * <blockquote><pre>
+     * EclipseLink: employee.get("name").left(2)
+     * Java: NA
+     * SQL: LEFT(name, 2)
+     * </pre></blockquote>
+     */
+    public Expression left(Object characters) {
+        ExpressionOperator anOperator = getOperator(ExpressionOperator.Left);
+        return anOperator.expressionFor(this, characters);
+    }
+
+    /**
+     * PUBLIC:
      * Return an expression that compares if the receivers value is like other value.
      * This is equivalent to the SQL "LIKE ESCAPE" operator that except wildcards.
      * The character "%" means any sequence of characters and the character "_" mean any character.
@@ -3081,7 +3129,7 @@ public abstract class Expression implements Serializable, Cloneable {
      */
     public Expression like(Expression value, Expression escapeSequence) {
         ExpressionOperator anOperator = getOperator(ExpressionOperator.LikeEscape);
-        List args = new ArrayList(2);
+        List<Expression> args = new ArrayList<>(2);
         args.add(value);
         args.add(escapeSequence);
         return anOperator.expressionForArguments(this, args);
@@ -3135,7 +3183,7 @@ public abstract class Expression implements Serializable, Cloneable {
      */
     public Expression locate(Object str) {
         ExpressionOperator anOperator = getOperator(ExpressionOperator.Locate);
-        List args = new ArrayList(1);
+        List<Object> args = new ArrayList<>(1);
         args.add(str);
         return anOperator.expressionForArguments(this, args);
     }
@@ -3176,7 +3224,7 @@ public abstract class Expression implements Serializable, Cloneable {
      */
     public Expression locate(Object str, Object fromIndex) {
         ExpressionOperator anOperator = getOperator(ExpressionOperator.Locate2);
-        List args = new ArrayList(2);
+        List<Object> args = new ArrayList<>(2);
         args.add(str);
         args.add(fromIndex);
         return anOperator.expressionForArguments(this, args);
@@ -3212,7 +3260,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * Return a Map.Entry containing the key and the value from a mapping that maps to a java.util.Map
      * This expression can only be used as a return value in a ReportQuery and cannot be used as part of
      * the WHERE clause in any query
-     *
+     * <p>
      * EclipseLink: eb.get("mapAttribute").mapEntry()
      */
     public Expression mapEntry(){
@@ -3225,7 +3273,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * PUBLIC:
      * Return the key from a mapping that maps to a java.util.Map
      * This expression can be used either in as a return value in a ReportQuery or in the WHERE clause in a query
-     *
+     * <p>
      * EclipseLink: eb.get("mapAttribute").mapKey()
      */
     public Expression mapKey(){
@@ -3244,7 +3292,7 @@ public abstract class Expression implements Serializable, Cloneable {
      */
     public Expression newTime(String timeZoneFrom, String timeZoneTo) {
         ExpressionOperator anOperator = getOperator(ExpressionOperator.NewTime);
-        List args = new ArrayList(2);
+        List<String> args = new ArrayList<>(2);
         args.add(timeZoneFrom);
         args.add(timeZoneTo);
         return anOperator.expressionForArguments(this, args);
@@ -3589,7 +3637,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      */
     public Expression notIn(byte[] theBytes) {
-        List values = new ArrayList(theBytes.length);
+        List<Byte> values = new ArrayList<>(theBytes.length);
 
         for (int index = 0; index < theBytes.length; index++) {
             values.add(theBytes[index]);
@@ -3604,7 +3652,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      */
     public Expression notIn(char[] theChars) {
-        List values = new ArrayList(theChars.length);
+        List<Character> values = new ArrayList<>(theChars.length);
 
         for (int index = 0; index < theChars.length; index++) {
             values.add(theChars[index]);
@@ -3619,7 +3667,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      */
     public Expression notIn(double[] theDoubles) {
-        List values = new ArrayList(theDoubles.length);
+        List<Double> values = new ArrayList<>(theDoubles.length);
 
         for (int index = 0; index < theDoubles.length; index++) {
             values.add(theDoubles[index]);
@@ -3634,7 +3682,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      */
     public Expression notIn(float[] theFloats) {
-        List values = new ArrayList(theFloats.length);
+        List<Float> values = new ArrayList<>(theFloats.length);
 
         for (int index = 0; index < theFloats.length; index++) {
             values.add(theFloats[index]);
@@ -3649,7 +3697,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      */
     public Expression notIn(int[] theInts) {
-        List values = new ArrayList(theInts.length);
+        List<Integer> values = new ArrayList<>(theInts.length);
 
         for (int index = 0; index < theInts.length; index++) {
             values.add(theInts[index]);
@@ -3664,7 +3712,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      */
     public Expression notIn(long[] theLongs) {
-        List values = new ArrayList(theLongs.length);
+        List<Long> values = new ArrayList<>(theLongs.length);
 
         for (int index = 0; index < theLongs.length; index++) {
             values.add(theLongs[index]);
@@ -3679,7 +3727,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      */
     public Expression notIn(Object[] theObjects) {
-        List values = new ArrayList(theObjects.length);
+        List<Object> values = new ArrayList<>(theObjects.length);
 
         for (int index = 0; index < theObjects.length; index++) {
             values.add(theObjects[index]);
@@ -3699,7 +3747,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      */
     public Expression notIn(short[] theShorts) {
-        List values = new ArrayList(theShorts.length);
+        List<Short> values = new ArrayList<>(theShorts.length);
 
         for (int index = 0; index < theShorts.length; index++) {
             values.add(theShorts[index]);
@@ -3714,7 +3762,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      */
     public Expression notIn(boolean[] theBooleans) {
-        List values = new ArrayList(theBooleans.length);
+        List<Boolean> values = new ArrayList<>(theBooleans.length);
 
         for (int index = 0; index < theBooleans.length; index++) {
             values.add(theBooleans[index]);
@@ -3735,7 +3783,7 @@ public abstract class Expression implements Serializable, Cloneable {
      *     SQL: AGE IN (55, 18, 30)
      * </pre></blockquote>
      */
-    public Expression notIn(Collection theObjects) {
+    public Expression notIn(Collection<?> theObjects) {
         return notIn(new CollectionExpression(theObjects, this));
     }
 
@@ -3775,7 +3823,7 @@ public abstract class Expression implements Serializable, Cloneable {
      */
     public Expression notLike(String value, String escapeSequence) {
         ExpressionOperator anOperator = getOperator(ExpressionOperator.NotLikeEscape);
-        List args = new ArrayList(2);
+        List<String> args = new ArrayList<>(2);
         args.add(value);
         args.add(escapeSequence);
         return anOperator.expressionForArguments(this, args);
@@ -3790,7 +3838,7 @@ public abstract class Expression implements Serializable, Cloneable {
      */
     public Expression notLike(Expression value, Expression escapeSequence) {
         ExpressionOperator anOperator = getOperator(ExpressionOperator.NotLikeEscape);
-        List args = new ArrayList(2);
+        List<Expression> args = new ArrayList<>(2);
         args.add(value);
         args.add(escapeSequence);
         return anOperator.expressionForArguments(this, args);
@@ -3847,11 +3895,11 @@ public abstract class Expression implements Serializable, Cloneable {
     /**
      * INTERNAL:
      */
-    public Expression performOperator(ExpressionOperator anOperator, List args) {
+    public Expression performOperator(ExpressionOperator anOperator, List<?> args) {
         return anOperator.expressionForArguments(this, args);
     }
 
-    protected void postCopyIn(Map alreadyDone) {
+    protected void postCopyIn(Map<Expression, Expression> alreadyDone) {
     }
 
     /**
@@ -3933,7 +3981,7 @@ public abstract class Expression implements Serializable, Cloneable {
         return getFunction(ExpressionOperator.Ref);
     }
 
-    protected Expression registerIn(Map alreadyDone) {
+    protected Expression registerIn(Map<Expression, Expression> alreadyDone) {
         Expression copy = shallowClone();
         alreadyDone.put(this, copy);
         copy.postCopyIn(alreadyDone);
@@ -3947,7 +3995,7 @@ public abstract class Expression implements Serializable, Cloneable {
      */
     public Expression replace(Object stringToReplace, Object stringToReplaceWith) {
         ExpressionOperator anOperator = getOperator(ExpressionOperator.Replace);
-        List args = new ArrayList(2);
+        List<Object> args = new ArrayList<>(2);
         args.add(stringToReplace);
         args.add(stringToReplaceWith);
         return anOperator.expressionForArguments(this, args);
@@ -4050,7 +4098,7 @@ public abstract class Expression implements Serializable, Cloneable {
      */
     public Expression rightPad(Object size, Object substring) {
         ExpressionOperator anOperator = getOperator(ExpressionOperator.RightPad);
-        List args = new ArrayList(2);
+        List<Object> args = new ArrayList<>(2);
         args.add(size);
         args.add(substring);
         return anOperator.expressionForArguments(this, args);
@@ -4203,7 +4251,7 @@ public abstract class Expression implements Serializable, Cloneable {
      */
     public Expression substring(Object startPosition, Object size) {
         ExpressionOperator anOperator = getOperator(ExpressionOperator.Substring);
-        List args = new ArrayList(2);
+        List<Object> args = new ArrayList<>(2);
         args.add(startPosition);
         args.add(size);
         return anOperator.expressionForArguments(this, args);
@@ -4229,7 +4277,7 @@ public abstract class Expression implements Serializable, Cloneable {
      */
     public Expression substring(Object startPosition) {
         ExpressionOperator anOperator = getOperator(ExpressionOperator.SubstringSingleArg);
-        List args = new ArrayList(1);
+        List<Object> args = new ArrayList<>(1);
         args.add(startPosition);
         return anOperator.expressionForArguments(this, args);
     }
@@ -4383,7 +4431,7 @@ public abstract class Expression implements Serializable, Cloneable {
      */
     public Expression translate(Object fromString, Object toString) {
         ExpressionOperator anOperator = getOperator(ExpressionOperator.Translate);
-        List args = new ArrayList(2);
+        List<Object> args = new ArrayList<>(2);
         args.add(fromString);
         args.add(toString);
         return anOperator.expressionForArguments(this, args);
@@ -4511,16 +4559,16 @@ public abstract class Expression implements Serializable, Cloneable {
      * We are given an expression that comes from a different context than the one in which this was built,
      * e.g. it is the selection criteria of a mapping, or the criteria on which multiple tables are joined in a descriptor.
      * We need to transform it so it refers to the objects we are dealing with, and AND it into the rest of our expression.
-     *
+     * <p>
      * We want to replace the original base expression with (newBase), and any parameters will be given values based
      * on the context which (this) provides.
-     *
+     * <p>
      * For example, suppose that the main expression is
      *      emp.address.streetName = 'something'
      * and we are trying to twist the selection criteria for the mapping 'address' in Employee. Because that mapping
      * selects addresses, we will use the 'address' node as the base. Values for any parameters will come from the 'emp' node,
      * which was the base of the original expression. Note that the values need not be constants, they can be fields.
-     *
+     * <p>
      * We do this by taking the tree we're trying to merge and traverse it more or less re-executing it
      * it with the appropriate initial receiver and context.
      * Return the root of the new expression tree. This will probably need to be AND'ed with the root of the old tree.
@@ -4753,7 +4801,7 @@ public abstract class Expression implements Serializable, Cloneable {
 
         //bug6070214: unique field aliases need to be generated when required.
         if (statement.getUseUniqueFieldAliases()){
-            printer.printString(" AS " + statement.generatedAlias(field.getNameDelimited(printer.getPlatform())));
+            printer.printString(" AS " + statement.generatedAlias(field));
         }
     }
 
@@ -4809,7 +4857,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * the search condition is FALSE
      */
     public Expression any(byte[] theBytes) {
-        List values = new ArrayList(theBytes.length);
+        List<Byte> values = new ArrayList<>(theBytes.length);
 
         for (int index = 0; index < theBytes.length; index++) {
             values.add(theBytes[index]);
@@ -4824,7 +4872,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      */
     public Expression any(char[] theChars) {
-        List values = new ArrayList(theChars.length);
+        List<Character> values = new ArrayList<>(theChars.length);
 
         for (int index = 0; index < theChars.length; index++) {
             values.add(theChars[index]);
@@ -4839,7 +4887,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      */
     public Expression any(double[] theDoubles) {
-        List values = new ArrayList(theDoubles.length);
+        List<Double> values = new ArrayList<>(theDoubles.length);
 
         for (int index = 0; index < theDoubles.length; index++) {
             values.add(theDoubles[index]);
@@ -4854,7 +4902,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      */
     public Expression any(float[] theFloats) {
-        List values = new ArrayList(theFloats.length);
+        List<Float> values = new ArrayList<>(theFloats.length);
 
         for (int index = 0; index < theFloats.length; index++) {
             values.add(theFloats[index]);
@@ -4869,7 +4917,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      */
     public Expression any(int[] theInts) {
-        List values = new ArrayList(theInts.length);
+        List<Integer> values = new ArrayList<>(theInts.length);
 
         for (int index = 0; index < theInts.length; index++) {
             values.add(theInts[index]);
@@ -4884,7 +4932,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      */
     public Expression any(long[] theLongs) {
-        List values = new ArrayList(theLongs.length);
+        List<Long> values = new ArrayList<>(theLongs.length);
 
         for (int index = 0; index < theLongs.length; index++) {
             values.add(theLongs[index]);
@@ -4899,7 +4947,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      */
     public Expression any(Object[] theObjects) {
-        List values = new ArrayList(theObjects.length);
+        List<Object> values = new ArrayList<>(theObjects.length);
 
         for (int index = 0; index < theObjects.length; index++) {
             values.add(theObjects[index]);
@@ -4914,7 +4962,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      */
     public Expression any(short[] theShorts) {
-        List values = new ArrayList(theShorts.length);
+        List<Short> values = new ArrayList<>(theShorts.length);
 
         for (int index = 0; index < theShorts.length; index++) {
             values.add(theShorts[index]);
@@ -4929,7 +4977,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      */
     public Expression any(boolean[] theBooleans) {
-        List values = new ArrayList(theBooleans.length);
+        List<Boolean> values = new ArrayList<>(theBooleans.length);
 
         for (int index = 0; index < theBooleans.length; index++) {
             values.add(theBooleans[index]);
@@ -4949,7 +4997,7 @@ public abstract class Expression implements Serializable, Cloneable {
      *     SQL: AGE IN (55, 18, 30)
      * </pre></blockquote>
      */
-    public Expression any(List theObjects) {
+    public Expression any(List<?> theObjects) {
         return any(new ConstantExpression(theObjects, this));
     }
 
@@ -5072,7 +5120,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * the search condition is FALSE
      */
     public Expression some(byte[] theBytes) {
-        List values = new ArrayList(theBytes.length);
+        List<Byte> values = new ArrayList<>(theBytes.length);
 
         for (int index = 0; index < theBytes.length; index++) {
             values.add(theBytes[index]);
@@ -5087,7 +5135,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      */
     public Expression some(char[] theChars) {
-        List values = new ArrayList(theChars.length);
+        List<Character> values = new ArrayList<>(theChars.length);
 
         for (int index = 0; index < theChars.length; index++) {
             values.add(theChars[index]);
@@ -5102,7 +5150,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      */
     public Expression some(double[] theDoubles) {
-        List values = new ArrayList(theDoubles.length);
+        List<Double> values = new ArrayList<>(theDoubles.length);
 
         for (int index = 0; index < theDoubles.length; index++) {
             values.add(theDoubles[index]);
@@ -5117,7 +5165,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      */
     public Expression some(float[] theFloats) {
-        List values = new ArrayList(theFloats.length);
+        List<Float> values = new ArrayList<>(theFloats.length);
 
         for (int index = 0; index < theFloats.length; index++) {
             values.add(theFloats[index]);
@@ -5132,7 +5180,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      */
     public Expression some(int[] theInts) {
-        List values = new ArrayList(theInts.length);
+        List<Integer> values = new ArrayList<>(theInts.length);
 
         for (int index = 0; index < theInts.length; index++) {
             values.add(theInts[index]);
@@ -5147,7 +5195,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      */
     public Expression some(long[] theLongs) {
-        List values = new ArrayList(theLongs.length);
+        List<Long> values = new ArrayList<>(theLongs.length);
 
         for (int index = 0; index < theLongs.length; index++) {
             values.add(theLongs[index]);
@@ -5162,7 +5210,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      */
     public Expression some(Object[] theObjects) {
-        List values = new ArrayList(theObjects.length);
+        List<Object> values = new ArrayList<>(theObjects.length);
 
         for (int index = 0; index < theObjects.length; index++) {
             values.add(theObjects[index]);
@@ -5177,7 +5225,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      */
     public Expression some(short[] theShorts) {
-        List values = new ArrayList(theShorts.length);
+        List<Short> values = new ArrayList<>(theShorts.length);
 
         for (int index = 0; index < theShorts.length; index++) {
             values.add(theShorts[index]);
@@ -5192,7 +5240,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      */
     public Expression some(boolean[] theBooleans) {
-        List values = new ArrayList(theBooleans.length);
+        List<Boolean> values = new ArrayList<>(theBooleans.length);
 
         for (int index = 0; index < theBooleans.length; index++) {
             values.add(theBooleans[index]);
@@ -5212,7 +5260,7 @@ public abstract class Expression implements Serializable, Cloneable {
      *     SQL: AGE IN (55, 18, 30)
      * </pre></blockquote>
      */
-    public Expression some(List theObjects) {
+    public Expression some(List<?> theObjects) {
         return some(new ConstantExpression(theObjects, this));
     }
 
@@ -5234,7 +5282,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * the search condition is FALSE
      */
     public Expression all(byte[] theBytes) {
-        List values = new ArrayList(theBytes.length);
+        List<Byte> values = new ArrayList<>(theBytes.length);
 
         for (int index = 0; index < theBytes.length; index++) {
             values.add(theBytes[index]);
@@ -5249,7 +5297,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      */
     public Expression all(char[] theChars) {
-        List values = new ArrayList(theChars.length);
+        List<Character> values = new ArrayList<>(theChars.length);
 
         for (int index = 0; index < theChars.length; index++) {
             values.add(theChars[index]);
@@ -5264,7 +5312,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      */
     public Expression all(double[] theDoubles) {
-        List values = new ArrayList(theDoubles.length);
+        List<Double> values = new ArrayList<>(theDoubles.length);
 
         for (int index = 0; index < theDoubles.length; index++) {
             values.add(theDoubles[index]);
@@ -5279,7 +5327,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      */
     public Expression all(float[] theFloats) {
-        List values = new ArrayList(theFloats.length);
+        List<Float> values = new ArrayList<>(theFloats.length);
 
         for (int index = 0; index < theFloats.length; index++) {
             values.add(theFloats[index]);
@@ -5294,7 +5342,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      */
     public Expression all(int[] theInts) {
-        List values = new ArrayList(theInts.length);
+        List<Integer> values = new ArrayList<>(theInts.length);
 
         for (int index = 0; index < theInts.length; index++) {
             values.add(theInts[index]);
@@ -5309,7 +5357,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      */
     public Expression all(long[] theLongs) {
-        List values = new ArrayList(theLongs.length);
+        List<Long> values = new ArrayList<>(theLongs.length);
 
         for (int index = 0; index < theLongs.length; index++) {
             values.add(theLongs[index]);
@@ -5324,7 +5372,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      */
     public Expression all(Object[] theObjects) {
-        List values = new ArrayList(theObjects.length);
+        List<Object> values = new ArrayList<>(theObjects.length);
 
         for (int index = 0; index < theObjects.length; index++) {
             values.add(theObjects[index]);
@@ -5339,7 +5387,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      */
     public Expression all(short[] theShorts) {
-        List values = new ArrayList(theShorts.length);
+        List<Short> values = new ArrayList<>(theShorts.length);
 
         for (int index = 0; index < theShorts.length; index++) {
             values.add(theShorts[index]);
@@ -5354,7 +5402,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is equivalent to the SQL "IN" operator and Java "contains" operator.
      */
     public Expression all(boolean[] theBooleans) {
-        List values = new ArrayList(theBooleans.length);
+        List<Boolean> values = new ArrayList<>(theBooleans.length);
 
         for (int index = 0; index < theBooleans.length; index++) {
             values.add(theBooleans[index]);
@@ -5374,7 +5422,7 @@ public abstract class Expression implements Serializable, Cloneable {
      *     SQL: AGE IN (55, 18, 30)
      * </pre></blockquote>
      */
-    public Expression all(List theObjects) {
+    public Expression all(List<?> theObjects) {
         return all(new ConstantExpression(theObjects, this));
     }
 
@@ -5404,4 +5452,17 @@ public abstract class Expression implements Serializable, Cloneable {
         return null;
     }
 
+    public boolean shouldCreateSQLSelectStatement() {
+        return shouldCreateSQLSelectStatement;
+    }
+
+    /**
+     * INTERNAL:<p>
+     * Flag to control SQLSelectStatement generation.<p>
+     * true - generate. Usually in case of nested select statement in update query.<p>
+     * false - don't generate (default)
+     */
+    public void setShouldCreateSQLSelectStatement(boolean shouldCreateSQLSelectStatement) {
+        this.shouldCreateSQLSelectStatement = shouldCreateSQLSelectStatement;
+    }
 }

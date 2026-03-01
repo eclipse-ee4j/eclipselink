@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2016, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,7 +40,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
-import oracle.AQ.AQDequeueOption;
+import oracle.jakarta.AQ.AQDequeueOption;
 
 /**
  * Tests based on {@link Order} and {@link Address} entities and {@code raw_order_queue} model.
@@ -142,7 +142,7 @@ public class OrderQueueTest {
                 }
             }
         }
-    };
+    }
 
     /**
      * Test reading with request and response and UOW transaction.

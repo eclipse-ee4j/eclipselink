@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2008, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,9 +15,9 @@
 //       - Bug 318187 - NegativeArraySizeException on JCEEncryptor.decryptPassword()
 package org.eclipse.persistence.testing.tests.simultaneous;
 
+import org.eclipse.persistence.internal.security.JCEEncryptor;
 import org.eclipse.persistence.testing.framework.AutoVerifyTestCase;
 import org.eclipse.persistence.testing.framework.TestErrorException;
-import org.eclipse.persistence.internal.security.JCEEncryptor;
 
 /**
  * @author Chris Delahunt

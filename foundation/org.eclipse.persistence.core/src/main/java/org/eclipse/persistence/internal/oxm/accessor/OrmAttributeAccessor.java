@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,15 +14,15 @@
 // mmacivor - Feb 06/2009 - Initial implementation
 package org.eclipse.persistence.internal.oxm.accessor;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-
 import org.eclipse.persistence.core.mappings.CoreAttributeAccessor;
 import org.eclipse.persistence.descriptors.changetracking.ChangeTracker;
 import org.eclipse.persistence.indirection.ValueHolder;
 import org.eclipse.persistence.indirection.ValueHolderInterface;
 import org.eclipse.persistence.indirection.WeavedAttributeValueHolderInterface;
 import org.eclipse.persistence.mappings.AttributeAccessor;
+
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 /**
  * INTERNAL:
  * A custom AttriuteAccessor to be used when the same object is mapped in both

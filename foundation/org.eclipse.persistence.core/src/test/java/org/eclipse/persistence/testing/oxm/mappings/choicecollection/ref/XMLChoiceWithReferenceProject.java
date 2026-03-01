@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,16 +14,15 @@
 // Oracle = 2.2 - Initial implementation
 package org.eclipse.persistence.testing.oxm.mappings.choicecollection.ref;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.mappings.XMLChoiceCollectionMapping;
-import org.eclipse.persistence.oxm.mappings.XMLCollectionReferenceMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 import org.eclipse.persistence.sessions.Project;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class XMLChoiceWithReferenceProject extends Project {
     public XMLChoiceWithReferenceProject() {
@@ -44,8 +43,8 @@ public class XMLChoiceWithReferenceProject extends Project {
 
         XMLChoiceCollectionMapping mapping = new XMLChoiceCollectionMapping();
         mapping.setAttributeName("contact");
-        List<XMLField> sourceFields = new ArrayList<XMLField>();
-        List<XMLField> targetFields = new ArrayList<XMLField>();
+        List<XMLField> sourceFields = new ArrayList<>();
+        List<XMLField> targetFields = new ArrayList<>();
 
         XMLField source = new XMLField("address/address-id/text()");
         sourceFields.add(source);
@@ -59,18 +58,18 @@ public class XMLChoiceWithReferenceProject extends Project {
 
         mapping.addChoiceElement(sourceFields, Address.class, targetFields);
 
-        sourceFields = new ArrayList<XMLField>();
+        sourceFields = new ArrayList<>();
         source = new XMLField("work-address/id/text()");
         sourceFields.add(source);
         source = new XMLField("work-address/zip/text()");
         sourceFields.add(source);
 
         mapping.addChoiceElement(sourceFields, Address.class, targetFields);
-        sourceFields = new ArrayList<XMLField>();
+        sourceFields = new ArrayList<>();
         source = new XMLField("phone/@id");
         sourceFields.add(source);
 
-        targetFields = new ArrayList<XMLField>();
+        targetFields = new ArrayList<>();
         target = new XMLField("@id");
         targetFields.add(target);
 

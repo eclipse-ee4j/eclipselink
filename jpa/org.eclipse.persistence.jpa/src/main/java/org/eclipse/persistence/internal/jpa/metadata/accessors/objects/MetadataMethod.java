@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -76,7 +76,7 @@ public class MetadataMethod extends MetadataAnnotatedElement {
     public MetadataMethod(MetadataFactory factory, MetadataClass metadataClass) {
         super(factory);
         m_metadataClass = metadataClass;
-        m_parameters = new ArrayList<String>();
+        m_parameters = new ArrayList<>();
     }
 
     /**
@@ -172,14 +172,14 @@ public class MetadataMethod extends MetadataAnnotatedElement {
      * INTERNAL:
      */
     public boolean hasAttributeName() {
-        return ! getAttributeName().equals("");
+        return !getAttributeName().isEmpty();
     }
 
     /**
      * INTERNAL:
      */
     public boolean hasParameters() {
-        return getParameters().size() > 0;
+        return !getParameters().isEmpty();
     }
 
     /**

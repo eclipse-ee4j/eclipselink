@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,6 +14,8 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.sessions.coordination.corba.sun;
 
+
+import java.io.Serial;
 
 /**
 * org/eclipse/persistence/internal/remotecommand/corba/sun/_SunCORBAConnectionStub.java .
@@ -51,6 +53,7 @@ public class _SunCORBAConnectionStub extends org.omg.CORBA.portable.ObjectImpl i
         return __ids.clone();
     }
 
+    @Serial
     private void readObject(java.io.ObjectInputStream s) throws java.io.IOException {
         String str = s.readUTF();
         String[] args = null;
@@ -60,6 +63,7 @@ public class _SunCORBAConnectionStub extends org.omg.CORBA.portable.ObjectImpl i
         _set_delegate(delegate);
     }
 
+    @Serial
     private void writeObject(java.io.ObjectOutputStream s) throws java.io.IOException {
         String[] args = null;
         java.util.Properties props = null;

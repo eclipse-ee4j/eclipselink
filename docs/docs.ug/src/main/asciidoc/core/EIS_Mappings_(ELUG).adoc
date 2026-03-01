@@ -1,0 +1,27 @@
+== Creating and Configuring EIS Mappings
+
+EclipseLink enterprise information system (EIS) mappings provide support
+for accessing legacy data sources and enterprise applications through
+Java EE Connector architecture (JCA) adapter. EclipseLink EIS mappings
+use the JCA Common Client Interface (CCI) to access the EIS through its
+resource adapter. This provides the ability to directly map from an
+existing Java object model to any transactional data source, such as
+mainframes with flat file/hierarchical data. An EIS mapping transforms
+object data members to the EIS record format defined by the object’s
+descriptor.
+
+Consider the following sections:
+
+* link:Introduction_to_EIS_Mappings_(ELUG)[Introduction to EIS Mappings]
+– describes each of the different EclipseLink EIS mapping types and
+important EIS mapping concepts.
+
+* link:Configuring_an_EIS_Mapping_(ELUG)[Configuring an EIS Mapping]
+
+*Special:Whatlinkshere_Relational_Mappings_(ELUG)[Related Topics]*
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]

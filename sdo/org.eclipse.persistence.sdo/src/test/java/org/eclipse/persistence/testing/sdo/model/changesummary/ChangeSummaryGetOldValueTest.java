@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,10 +20,8 @@ import commonj.sdo.Property;
 import java.util.ArrayList;
 import java.util.List;
 
-import junit.framework.TestCase;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOConstants;
-import org.eclipse.persistence.sdo.SDODataObject;
 import org.eclipse.persistence.sdo.SDOProperty;
 import org.eclipse.persistence.sdo.SDOType;
 
@@ -201,7 +199,7 @@ public class ChangeSummaryGetOldValueTest extends ChangeSummaryTestCases {
     // purpose: unmodified DataObject
     public void testGetOldValueReturnListWithUnmodifiedProperty() {
         changeSummary.beginLogging();
-        assertTrue(0 == changeSummary.getOldValues(root).size());
+        assertTrue(changeSummary.getOldValues(root).isEmpty());
     }
 
     // purpose: modified DataObject

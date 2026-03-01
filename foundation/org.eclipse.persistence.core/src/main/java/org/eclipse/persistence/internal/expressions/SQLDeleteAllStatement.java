@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -15,15 +15,20 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.expressions;
 
-import java.io.*;
-import java.util.*;
-import org.eclipse.persistence.exceptions.*;
+import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.expressions.Expression;
-import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
-import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.queries.SQLCall;
+
+import java.io.CharArrayWriter;
+import java.io.IOException;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * <p><b>Purpose</b>: Print DELETE statement with non trivial WHERE clause
@@ -44,10 +49,13 @@ public class SQLDeleteAllStatement extends SQLDeleteStatement {
     protected String tableAliasInSelectCallForNotExist;
 
     // A pair of Vectors for join expression
-    protected Vector aliasedFields;
-    protected Vector originalFields;
+    protected List<DatabaseField> aliasedFields;
+    protected List<DatabaseField> originalFields;
 
     protected boolean shouldExtractWhereClauseFromSelectCallForExist;
+
+    public SQLDeleteAllStatement() {
+    }
 
     public void setSelectCallForExist(SQLCall selectCallForExist) {
         this.selectCallForExist = selectCallForExist;
@@ -73,29 +81,30 @@ public class SQLDeleteAllStatement extends SQLDeleteStatement {
     public String getTableAliasInSelectCallForNotExist() {
         return tableAliasInSelectCallForNotExist;
     }
-    public void setPrimaryKeyFieldsForAutoJoin(Collection primaryKeyFields) {
+    @SuppressWarnings({"unchecked"})
+    public void setPrimaryKeyFieldsForAutoJoin(Collection<DatabaseField> primaryKeyFields) {
         if(primaryKeyFields != null) {
-            if(primaryKeyFields instanceof Vector) {
-                setOriginalFieldsForJoin((Vector)primaryKeyFields);
+            if(primaryKeyFields instanceof ArrayList<?>) {
+                setOriginalFieldsForJoin((ArrayList<DatabaseField>)primaryKeyFields);
             } else {
-                setOriginalFieldsForJoin(new Vector(primaryKeyFields));
+                setOriginalFieldsForJoin(new ArrayList<>(primaryKeyFields));
             }
-            setAliasedFieldsForJoin((Vector)getOriginalFieldsForJoin().clone());
+            setAliasedFieldsForJoin((List<DatabaseField>) ((ArrayList<DatabaseField>) getOriginalFieldsForJoin()).clone());
         } else {
             setOriginalFieldsForJoin(null);
             setAliasedFieldsForJoin(null);
         }
     }
-    public void setOriginalFieldsForJoin(Vector originalFields) {
+    public void setOriginalFieldsForJoin(List<DatabaseField> originalFields) {
         this.originalFields = originalFields;
     }
-    public Vector getOriginalFieldsForJoin() {
+    public List<DatabaseField> getOriginalFieldsForJoin() {
         return originalFields;
     }
-    public void setAliasedFieldsForJoin(Vector aliasedFields) {
+    public void setAliasedFieldsForJoin(List<DatabaseField> aliasedFields) {
         this.aliasedFields = aliasedFields;
     }
-    public Vector getAliasedFieldsForExpression() {
+    public List<DatabaseField> getAliasedFieldsForExpression() {
         return aliasedFields;
     }
     public void setInheritanceExpression(Expression inheritanceExpression) {
@@ -193,7 +202,7 @@ public class SQLDeleteAllStatement extends SQLDeleteStatement {
         String str = selectCall.getSQLString();
         writer.write(str);
 
-        boolean hasWhereClause = str.toUpperCase().indexOf(" WHERE ") >= 0;
+        boolean hasWhereClause = str.toUpperCase().contains(" WHERE ");
 
         // join aliased fields to original fields
         // Examples:
@@ -210,11 +219,11 @@ public class SQLDeleteAllStatement extends SQLDeleteStatement {
                 writer.write(tableAliasInSelectCall);
                 writer.write('.');
             }
-            writer.write(((DatabaseField)aliasedFields.elementAt(i)).getNameDelimited(platform));
+            writer.write(aliasedFields.get(i).getNameDelimited(platform));
             writer.write(" = ");
             writer.write(table.getQualifiedNameDelimited(platform));
             writer.write('.');
-            writer.write(((DatabaseField)originalFields.elementAt(i)).getNameDelimited(platform));
+            writer.write(originalFields.get(i).getNameDelimited(platform));
         }
 
         // add parameters

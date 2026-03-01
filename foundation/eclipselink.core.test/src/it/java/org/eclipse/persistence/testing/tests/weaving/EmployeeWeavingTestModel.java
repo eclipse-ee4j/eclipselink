@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -43,7 +43,6 @@ import org.eclipse.persistence.testing.models.performance.SmallProject;
 import org.eclipse.persistence.tools.schemaframework.PopulationManager;
 
 import java.lang.reflect.Field;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -381,8 +380,8 @@ public class EmployeeWeavingTestModel extends TestModel {
                 query.setFetchGroup(fetchGroup);
 
                 List result = (List)getSession().executeQuery(query);
-                for (Iterator iterator = result.iterator(); iterator.hasNext(); ) {
-                    Employee partial = (Employee)iterator.next();
+                for (Object o : result) {
+                    Employee partial = (Employee) o;
                     partial.getFirstName();
                     partial.getAddress().getCity();
                 }

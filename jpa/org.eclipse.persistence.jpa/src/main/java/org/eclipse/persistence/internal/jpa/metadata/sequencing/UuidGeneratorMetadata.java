@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,6 +15,7 @@
 package org.eclipse.persistence.internal.jpa.metadata.sequencing;
 
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
@@ -22,7 +23,7 @@ import org.eclipse.persistence.sequencing.UUIDSequence;
 
 /**
  * A wrapper class to the @UuidGenerator for its metadata values.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -52,6 +53,15 @@ public class UuidGeneratorMetadata extends ORMetadata {
     public UuidGeneratorMetadata(MetadataAnnotation uuidGenerator, MetadataAccessor accessor) {
         super(uuidGenerator, accessor);
         m_name = uuidGenerator.getAttributeString("name");
+    }
+
+    /**
+     * INTERNAL
+     * This constructor is used to create a default sequence generator.
+     * @see MetadataProject processSequencingAccesssors.
+     */
+    public UuidGeneratorMetadata(String sequenceName) {
+        m_name = sequenceName;
     }
 
     /**
@@ -92,8 +102,7 @@ public class UuidGeneratorMetadata extends ORMetadata {
      * INTERNAL:
      */
     public UUIDSequence process(MetadataLogger logger) {
-        UUIDSequence sequence = new UUIDSequence();
-        return sequence;
+        return new UUIDSequence(m_name);
     }
 
     /**

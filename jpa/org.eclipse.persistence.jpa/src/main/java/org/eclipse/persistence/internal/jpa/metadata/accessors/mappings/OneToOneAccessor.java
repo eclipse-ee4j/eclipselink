@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -55,7 +55,7 @@ import org.eclipse.persistence.mappings.RelationTableMechanism;
 /**
  * A one to one relationship accessor. A OneToOne annotation currently is not
  * required to be on the accessible object, that is, a 1-1 can default.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -137,8 +137,8 @@ public class OneToOneAccessor extends ObjectAccessor {
                     // If we are within a table per class strategy we have to update
                     // the primary key field to point to our own database table.
                     if (getDescriptor().usesTablePerClassInheritanceStrategy()) {
-                        targetToSourceKeyFields = new HashMap<DatabaseField, DatabaseField>();
-                        sourceToTargetKeyFields = new HashMap<DatabaseField, DatabaseField>();
+                        targetToSourceKeyFields = new HashMap<>();
+                        sourceToTargetKeyFields = new HashMap<>();
 
                         for (DatabaseField fkField : ownerMapping.getSourceToTargetKeyFields().keySet()) {
                             // We need to update the pk field to be to our table.

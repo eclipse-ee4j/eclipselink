@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,11 +22,9 @@ import java.util.List;
 import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.metamodel.Metamodel;
-
-import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.internal.jpa.metamodel.MetamodelImpl;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.internal.expressions.ConstantExpression;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
-import org.eclipse.persistence.sessions.Project;
 
 /**
  * <p>
@@ -45,35 +43,82 @@ public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X>
     protected boolean isLiteral;
     protected Object literal;
 
-    protected ExpressionImpl(Metamodel metamodel, Class<X> javaType, org.eclipse.persistence.expressions.Expression expressionNode){
+    // Non literal value
+    protected ExpressionImpl(Metamodel metamodel, Class<? extends X> javaType, org.eclipse.persistence.expressions.Expression expressionNode){
         super(javaType, expressionNode);
         this.metamodel = metamodel;
     }
 
-    public ExpressionImpl(Metamodel metamodel, Class<X> javaType, org.eclipse.persistence.expressions.Expression expressionNode, Object value){
-        super(javaType, expressionNode);
+    // Literal value
+    public ExpressionImpl(Metamodel metamodel, Class<? extends X> javaType, org.eclipse.persistence.expressions.Expression expressionNode, Object value) {
+        this(metamodel, javaType, expressionNode, value, true, null);
+    }
+
+    // Allows complete clone of the instance
+    private ExpressionImpl(
+            Metamodel metamodel,
+            Class<? extends X> javaType,
+            org.eclipse.persistence.expressions.Expression expressionNode,
+            Object value,
+            boolean isLiteral,
+            String alias) {
+        super(javaType, expressionNode, alias);
         this.metamodel = metamodel;
         this.literal = value;
-        this.isLiteral = true;
+        this.isLiteral = isLiteral;
     }
 
     @Override
     public <T> Expression<T> as(Class<T> type) {
-        Project project = ((MetamodelImpl)metamodel).getProject();
-        if (project != null){
-            ClassDescriptor descriptor = project.getClassDescriptor(javaType);
-            if (descriptor != null && descriptor.hasInheritance()){
-                descriptor = descriptor.getInheritancePolicy().getSubclassDescriptor(type);
-                if (descriptor != null){
-                    return buildExpressionForAs(type);
-                }
-            }
-        }
+        // JPA spec: This shall return new instance according to spec, but historical code does only cast
+        return buildExpressionForAs(type);
+    }
+
+    @Override
+    public <X1> Expression<X1> cast(Class<X1> type) {
+        // JPA spec: New instance with provided Java type
+        return new ExpressionImpl<>(metamodel, type, currentNode, literal, isLiteral, alias);
+    }
+
+    @SuppressWarnings("unchecked")
+    protected <T> Expression<T> buildExpressionForAs(Class<T> type) {
         return (Expression<T>) this;
     }
 
-    protected <T> Expression<T> buildExpressionForAs(Class<T> type) {
-        return (Expression<T>) this;
+    @Override
+    public Predicate equalTo(Expression<?> value) {
+        return new CompoundExpressionImpl(
+                this.metamodel,
+                this.currentNode.equal(currentNode(value)),
+                List.of(this, value),
+                "equals");
+    }
+
+    @Override
+    public Predicate equalTo(Object value) {
+        return new CompoundExpressionImpl(
+                this.metamodel,
+                this.currentNode.equal(value),
+                List.of(this, createLiteral(value, metamodel)),
+                "equals");
+    }
+
+    @Override
+    public Predicate notEqualTo(Expression<?> value) {
+        return new CompoundExpressionImpl(
+                this.metamodel,
+                this.currentNode.notEqual(currentNode(value)),
+                List.of(this, value),
+                "not equal");
+    }
+
+    @Override
+    public Predicate notEqualTo(Object value) {
+        return new CompoundExpressionImpl(
+                this.metamodel,
+                this.currentNode.notEqual(value),
+                List.of(this, createLiteral(value, metamodel)),
+                "not equal");
     }
 
     @Override
@@ -89,10 +134,11 @@ public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X>
      * @return predicate testing for membership
      */
     @Override
+    @SuppressWarnings("unchecked") // (Expression<Collection<?>>), values prototype in JPA is too common
     public Predicate in(Expression<?>... values) {
         if (values != null) {
             if (values.length == 1 && ((InternalExpression) values[0]).isParameter()
-                    && Collection.class.isAssignableFrom(((ParameterExpressionImpl) values[0]).getJavaType())) {
+                    && Collection.class.isAssignableFrom(((ParameterExpressionImpl<?>) values[0]).getJavaType())) {
                 // bug 349477 - Collection from Expression<Collection> was lost during compilation
                 // and if we know that Collection is there we should help the runtime
                 // and route the execution to the right method
@@ -102,10 +148,10 @@ public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X>
             list.add(this);
             if (values.length == 1 && ((InternalExpression) values[0]).isSubquery()) {
                 list.add(values[0]);
-                return new CompoundExpressionImpl(this.metamodel, this.currentNode.in(((SubQueryImpl) values[0]).subQuery), list, "in");
+                return new CompoundExpressionImpl(this.metamodel, this.currentNode.in(((SubQueryImpl<?>) values[0]).subQuery), list, "in");
             } else {
-                List<Object> inValues = new ArrayList<Object>();
-                for (Expression exp : values) {
+                List<Object> inValues = new ArrayList<>();
+                for (Expression<?> exp : values) {
                     if (!((InternalExpression) exp).isLiteral() && !((InternalExpression) exp).isParameter()) {
                         Object[] params = new Object[]{exp};
                         throw new IllegalArgumentException(ExceptionLocalization.buildMessage("CRITERIA_NON_LITERAL_PASSED_TO_IN",params));
@@ -131,7 +177,7 @@ public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X>
     public Predicate in(Collection<?> values) {
         List<Expression<?>> list = new ArrayList<>();
         list.add(this);
-        return new InImpl(this.metamodel, this, values, list);
+        return new InImpl<>(this.metamodel, this, values, list);
     }
     /**
      * Apply a predicate to test whether the expression is a member
@@ -144,7 +190,7 @@ public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X>
         List<Expression<?>> list = new ArrayList<>();
         list.add(values);
         list.add(this);
-        return new InImpl(metamodel, this, (ExpressionImpl)values, list);
+        return new InImpl<>(metamodel, this, (ExpressionImpl<?>)values, list);
     }
 
     @Override
@@ -153,7 +199,6 @@ public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X>
         list.add(this);
         return new CompoundExpressionImpl(this.metamodel, this.currentNode.notNull(), list, "not null");
     }
-
 
     @Override
     public Predicate isNull() {
@@ -195,8 +240,28 @@ public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X>
         return false;
     }
     @Override
-    public void findRootAndParameters(CommonAbstractCriteriaImpl criteriaQuery){
+    public void findRootAndParameters(CommonAbstractCriteriaImpl<?> criteriaQuery){
         //no-op because an expression will have no root
+    }
+
+    // Literal Expression factory method
+    static <T> Expression<T> createLiteral(T value, Metamodel metamodel, Class<T> resultClass) {
+        return new ExpressionImpl<>(
+                metamodel,
+                resultClass,
+                new ConstantExpression(value, new ExpressionBuilder()), value);
+
+    }
+
+    // Literal Expression factory method
+    @SuppressWarnings("unchecked")
+    static <T> Expression<T> createLiteral(T value, Metamodel metamodel) {
+        return createLiteral(value, metamodel, value == null ? null : (Class<T>) value.getClass());
+    }
+
+    // Shortcut to return current expression node
+    static org.eclipse.persistence.expressions.Expression currentNode(Expression<?> expression) {
+        return ((InternalSelection)expression).getCurrentNode();
     }
 
 }

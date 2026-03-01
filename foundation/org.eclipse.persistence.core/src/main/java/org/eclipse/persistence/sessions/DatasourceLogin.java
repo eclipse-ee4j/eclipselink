@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,15 +14,6 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.sessions;
 
-import java.io.PrintWriter;
-import java.io.Serializable;
-import java.io.StringWriter;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
-import java.text.MessageFormat;
-import java.util.Map;
-import java.util.Properties;
-
 import org.eclipse.persistence.Version;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.ValidationException;
@@ -30,7 +21,6 @@ import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
 import org.eclipse.persistence.internal.databaseaccess.Platform;
 import org.eclipse.persistence.internal.helper.ConversionManager;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.helper.NonSynchronizedProperties;
 import org.eclipse.persistence.internal.localization.ToStringLocalization;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
@@ -40,6 +30,15 @@ import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.platform.database.DatabasePlatform;
 import org.eclipse.persistence.queries.ValueReadQuery;
 import org.eclipse.persistence.sequencing.Sequence;
+
+import java.io.PrintWriter;
+import java.io.Serializable;
+import java.io.StringWriter;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
+import java.text.MessageFormat;
+import java.util.Map;
+import java.util.Properties;
 
 /**
  * <p>
@@ -62,7 +61,7 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
     /** Implementation of platform-specific behaviors. */
     protected Platform platform;
 
-    /** findbugs: removed the encrypted String that holds the expiry key */
+    /* findbugs: removed the encrypted String that holds the expiry key */
 
     /** The securable object holder and flag*/
     private boolean isEncryptedPasswordSet;
@@ -171,7 +170,7 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
     @Override
     public Object connectToDatasource(Accessor accessor, Session session) throws DatabaseException {
 
-        return getConnector().connect(prepareProperties(properties, session), session);
+        return getConnector().connect(prepareProperties(session), session);
     }
 
     /**
@@ -299,8 +298,7 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
      */
     public static String getVersion() {
         if (versionString == null) {
-            Object[] args = { Version.getProduct(), Version.getVersionString() };
-            versionString = MessageFormat.format(versionStringTemplate, args);
+            versionString = MessageFormat.format(versionStringTemplate, Version.getProduct(), Version.getVersionString());
         }
         return versionString;
     }
@@ -309,11 +307,11 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
      * SECURE:
      * The password in the login properties is encrypted. Return a clone
      * of the properties with the password decrypted.
-     * @param properties connection properties
+     * Also adds platform-specific properties needed for proper functioning.
      * @param session current session used for logging
      */
-    private Properties prepareProperties(Properties properties, Session session) {
-        Properties result = properties;
+    private Properties prepareProperties(Session session) {
+        Properties result = (Properties) properties.clone();
         Object passwordObject = result.get("password");
         if (passwordObject != null) {
             // Fix for bug # 2700529
@@ -329,7 +327,6 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
             // a securable object or the setEncryptedPassword flag is not true,
             // don't bother trying to decrypt.
             if (getSecurableObjectHolder().hasSecurableObject() || isEncryptedPasswordSet) {
-                result = (Properties)properties.clone();
                 // Bug 4117441 - Secure programming practices, store password in char[]
                 // If isEncryptedPasswordSet is true, or we have a SecurableObject then we stored
                 // the password as a char[], and we need to convert it into a String for the
@@ -506,46 +503,50 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
     public String getPlatformClassName() {
         return getDatasourcePlatform().getClass().getName();
     }
+
     /**
      * INTERNAL:
      * Set the name of the Platform to be used.
      * Creates a new instance of the specified Class.
      */
+    @SuppressWarnings({"unchecked"})
     public void setPlatformClassName(String platformClassName) throws ValidationException {
-        // Handle old Oracle platform conversion.
-        if (platformClassName.equals("org.eclipse.persistence.platform.database.oracle.OraclePlatform")) {
-            platformClassName = "org.eclipse.persistence.platform.database.OraclePlatform";
-        }
+        if (platform == null || !(platform.getClass().getName().equals(platformClassName))) {
+            // Handle old Oracle platform conversion.
+            if (platformClassName.equals("org.eclipse.persistence.platform.database.oracle.OraclePlatform")) {
+                platformClassName = "org.eclipse.persistence.platform.database.OraclePlatform";
+            }
 
-        Class<?> platformClass = null;
-        try {
-            //First try loading with the Login's class loader
-            platformClass = this.getClass().getClassLoader().loadClass(platformClassName);
-        } catch(Throwable cne) {
-            //next try using ConversionManager
+            Class<? extends Platform> platformClass = null;
             try {
-                platformClass = ConversionManager.loadClass(platformClassName);
-            } catch(Throwable cne2) {
-                //set the original exception
-                cne2.addSuppressed(cne);
-                //if still not found, throw exception
-                throw ValidationException.platformClassNotFound(cne2, platformClassName);
+                //First try loading with the Login's class loader
+                platformClass = (Class<? extends Platform>) this.getClass().getClassLoader().loadClass(platformClassName);
+            } catch (Throwable cne) {
+                //next try using ConversionManager
+                try {
+                    platformClass = ConversionManager.loadClass(platformClassName);
+                } catch (Throwable cne2) {
+                    //set the original exception
+                    cne2.addSuppressed(cne);
+                    //if still not found, throw exception
+                    throw ValidationException.platformClassNotFound(cne2, platformClassName);
+                }
             }
-        }
 
-        Platform platform = null;
-        try {
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                platform = (Platform)AccessController.doPrivileged(new PrivilegedNewInstanceFromClass<>(platformClass));
-            } else {
-                platform = (Platform)PrivilegedAccessHelper.newInstanceFromClass(platformClass);
+            Platform platform = null;
+            try {
+                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+                    platform = AccessController.doPrivileged(new PrivilegedNewInstanceFromClass<>(platformClass));
+                } else {
+                    platform = PrivilegedAccessHelper.newInstanceFromClass(platformClass);
+                }
+            } catch (PrivilegedActionException exception) {
+                throw ValidationException.platformClassNotFound(exception.getException(), platformClassName);
+            } catch (Throwable cne) {
+                throw ValidationException.platformClassNotFound(cne, platformClassName);
             }
-        } catch (PrivilegedActionException exception) {
-            throw ValidationException.platformClassNotFound(exception.getException(), platformClassName);
-        } catch(Throwable cne) {
-            throw ValidationException.platformClassNotFound(cne, platformClassName);
+            usePlatform(platform);
         }
-        usePlatform(platform);
     }
     /**
      * INTERNAL:
@@ -555,31 +556,33 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
      * setPlatformClassName method with no classloader.
      * @see #setPlatformClassName(String platformClassName)
      */
+    @SuppressWarnings({"unchecked"})
     public void setPlatformClassName(String platformClassName, ClassLoader loader) throws ValidationException {
-        boolean exceptionCaught = false;
-        Class<?> platformClass = null;
-        try {
-            Platform platform = null;
-            if (loader != null) {
-                platformClass = loader.loadClass(platformClassName);
-                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                    try {
-                       platform = (Platform)AccessController.doPrivileged(new PrivilegedNewInstanceFromClass<>(platformClass));
-                  } catch (PrivilegedActionException exception) {
-                      throw ValidationException.platformClassNotFound(exception.getException(), platformClassName);
-                  }
-                } else {
-                    platform = (Platform)PrivilegedAccessHelper.newInstanceFromClass(platformClass);
+        if (platform == null || !(platform.getClass().getName().equals(platformClassName))) {
+            boolean exceptionCaught = false;
+            Class<? extends Platform> platformClass = null;
+            try {
+                Platform platform = null;
+                if (loader != null) {
+                    platformClass = (Class<? extends Platform>) loader.loadClass(platformClassName);
+                    if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+                        try {
+                            platform = AccessController.doPrivileged(new PrivilegedNewInstanceFromClass<>(platformClass));
+                        } catch (PrivilegedActionException exception) {
+                            throw ValidationException.platformClassNotFound(exception.getException(), platformClassName);
+                        }
+                    } else {
+                        platform = PrivilegedAccessHelper.newInstanceFromClass(platformClass);
+                    }
                 }
+                usePlatform(platform);
+            } catch (Exception cne) {
+                exceptionCaught = true;
             }
-            usePlatform(platform);
-        } catch(Exception cne) {
-            exceptionCaught = true;
-        }
-        if (exceptionCaught || (loader == null))
-        {
-            //attempt to load with default classloader
-            this.setPlatformClassName(platformClassName);
+            if (exceptionCaught || (loader == null)) {
+                //attempt to load with default classloader
+                this.setPlatformClassName(platformClassName);
+            }
         }
     }
 
@@ -790,7 +793,7 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
     public String toString() {
         StringWriter stringWriter = new StringWriter();
         PrintWriter writer = new PrintWriter(stringWriter);
-        writer.write(Helper.getShortClassName(getClass()));
+        writer.write(getClass().getSimpleName());
         writer.println("(");
         writer.println("\t" + ToStringLocalization.buildMessage("platform", null) + "=> " + getDatasourcePlatform());
         if (!shouldUseExternalConnectionPooling()) {

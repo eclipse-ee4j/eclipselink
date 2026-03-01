@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,7 +33,7 @@ public class SqlStmtType extends SqlType {
 
     public static ResultSet rset = null;
 
-    protected List<ProcedureMethod> m_methods = new ArrayList<ProcedureMethod>();
+    protected List<ProcedureMethod> m_methods = new ArrayList<>();
 
     SqlStmtType(SqlName sqlName, SqlReflector reflector) throws SQLException {
         super(sqlName, OracleTypes.SQL_STATEMENTS, true, null, reflector);
@@ -50,7 +50,7 @@ public class SqlStmtType extends SqlType {
      */
     @Override
     public List<ProcedureMethod> getDeclaredMethods() {
-        List<ProcedureMethod> methods = new ArrayList<ProcedureMethod>(m_methods);
+        List<ProcedureMethod> methods = new ArrayList<>(m_methods);
         return methods;
     }
 
@@ -95,7 +95,7 @@ public class SqlStmtType extends SqlType {
     @Override
     public boolean hasMethods() throws SQLException, PublisherException {
         /* subclasses with methods override this */
-        return m_methods != null && m_methods.size() > 0;
+        return m_methods != null && !m_methods.isEmpty();
     }
 
 }

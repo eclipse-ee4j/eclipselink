@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,14 +14,17 @@
 //     Oracle - initial API and implementation
 package org.eclipse.persistence.internal.sessions.coordination.jgroups;
 
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.coordination.broadcast.BroadcastRemoteConnection;
 import org.eclipse.persistence.sessions.coordination.RemoteCommandManager;
 import org.eclipse.persistence.sessions.serializers.Serializer;
+import org.jgroups.BytesMessage;
+import org.jgroups.ObjectMessage;
 import org.jgroups.JChannel;
 import org.jgroups.Message;
-import org.jgroups.ReceiverAdapter;
+import org.jgroups.Receiver;
+
+import java.io.Serial;
 
 /**
  * <p>
@@ -34,6 +37,7 @@ import org.jgroups.ReceiverAdapter;
  */
 public class JGroupsRemoteConnection extends BroadcastRemoteConnection {
 
+    @Serial
     private static final long serialVersionUID = -2285543305296840902L;
 
     protected transient JChannel channel;
@@ -52,7 +56,7 @@ public class JGroupsRemoteConnection extends BroadcastRemoteConnection {
         try {
             if (isLocalConnectionBeingCreated) {
                 // it's a local connection
-                this.channel.setReceiver(new ReceiverAdapter() {
+                this.channel.setReceiver(new Receiver() {
                     @Override
                     public void receive(Message message) {
                         onMessage(message);
@@ -93,9 +97,9 @@ public class JGroupsRemoteConnection extends BroadcastRemoteConnection {
     protected Object executeCommandInternal(Object command) throws Exception {
         Message message = null;
         if (command instanceof byte[]) {
-            message = new Message(null, (byte[])command);
+            message = new BytesMessage(null, (byte[])command);
         } else {
-            message = new Message(null, command);
+            message = new ObjectMessage(null, command);
         }
 
         Object[] debugInfo = null;
@@ -128,8 +132,8 @@ public class JGroupsRemoteConnection extends BroadcastRemoteConnection {
         Object object = null;
         try {
             Serializer serializer = this.rcm.getSerializer();
-            if (serializer != null) {
-                object = serializer.deserialize(message.getBuffer(), (AbstractSession)this.rcm.getCommandProcessor());
+            if (message instanceof BytesMessage) {
+                object = serializer.deserialize(message.getArray(), (AbstractSession)this.rcm.getCommandProcessor());
             } else {
                 object = message.getObject();
             }
@@ -177,7 +181,7 @@ public class JGroupsRemoteConnection extends BroadcastRemoteConnection {
      */
     @Override
     protected void createDisplayString() {
-        this.displayString = Helper.getShortClassName(this) + "[" + serviceId.toString() + "]";
+        this.displayString = getClass().getSimpleName() + "[" + serviceId.toString() + "]";
     }
 
     /**

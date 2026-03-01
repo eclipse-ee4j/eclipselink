@@ -1,0 +1,141 @@
+image:Elug_draft_icon.png[Image:Elug draft
+icon.png,title="Image:Elug draft icon.png"] *For the latest EclipseLink
+documentation, please see
+http://www.eclipse.org/eclipselink/documentation/*
+
+'''''
+
+*TOC*
+Special:Whatlinkshere_Customizing_the_EclipseLink_Application_(ELUG)[Related
+Topics]
+
+There are multiple ways to customize your EclipseLink application,
+ranging from creating custom data types to using JPA extensions.
+
+[#Introduction to Customization]####By design, EclipseLink can adapt to
+a variety of relational and nonrelational data sources.
+
+To integrate EclipseLink with a data source that is not directly
+supported by the EclipseLink API,we recommend that you use an
+link:Introduction%20to%20EIS%20Projects%20(ELUG)[EIS project] or a
+link:Introduction%20to%20XML%20Projects%20(ELUG)[XML project]).
+
+Using an EIS project, you can integrate your EclipseLink-enabled
+application with any nonrelational data source that supports a JCA
+adapter and any supported EIS record type, including indexed, mapped, or
+XML. If no JCA adapter exists for your target data source, you can
+concentrate your integration efforts on creating an adapter.
+Simultaneously, you can build your application according to JCA
+specifications. Although this still requires custom development effort,
+it is more efficient than trying to extend EclipseLink classes and
+provides you with a JCA adapter that you can leverage in any other
+project (making it a better value).
+
+Using an XML project, you can integrate your EclipseLink-enabled
+application with Web services or other XML-message based designs.
+
+The remainder of this chapter describes other customization options
+provided by the EclipseLink API.
+
+== Creating Custom Data Types
+
+EclipseLink provides support for all the most common Java data types.
+This table lists the EclipseLink mapping extensions that you can use to
+support custom data types. You can also create your object converter to
+allow conversion between a data type and your own Java type.
+
+[#Table 15-1]## *_Mapping Extensions for Custom Data Types_*
+
+[width="100%",cols="<25%,<75%",options="header",]
+|===
+|*Extension* |*Description*
+|link:Introduction%20to%20Mappings%20(ELUG)[Object Type Converter] |An
+extension of direct and direct collection mappings that lets you match a
+fixed number of data values to Java objects. Use this converter when the
+values in the schema differ from those in Java
+
+|link:Introduction%20to%20Mappings%20(ELUG)[Serialized Object Converter]
+|An extension of direct and direct collection mappings that lets you map
+serializable objects, such as multimedia data, to a binary format in a
+data source, such as a base64 element in an XML document or Binary Large
+Object (BLOB) field in a database
+
+|link:Introduction%20to%20Mappings%20(ELUG)[Type Conversion Converter]
+|An extension of direct and direct collection mappings that lets you
+explicitly map a data source type to a Java type. For example, a
+`+java.util.Date+` in Java can be mapped to a `+java.sql.Date+` in the
+data source.
+
+|link:Introduction%20to%20Mappings%20(ELUG)[Simple Type Translator] |An
+extension of direct and direct collection mappings that lets you
+automatically translate an XML element value to an appropriate Java type
+based on the element’s attribute as defined in your XML schema.
+|===
+
+== Using the Session Customizer Class
+
+You can customize a session at run time by specifying a session
+customizer–a Java class that implements the
+`+org.eclipse.persistence.config.SessionCustomizer+` interface.
+
+For more information, see the following:
+
+* link:Introduction%20to%20EclipseLink%20Sessions%20(ELUG)#Session_Customization[Session
+Customization]
+* link:Configuring%20a%20Session%20(ELUG)#Configuring_a_Session_Customizer_Class[Configuring
+a Session Customizer Class]
+* Persistence unit property `+eclipselink.session.customizer+` in
+link:Using%20EclipseLink%20JPA%20Extensions%20(ELUG)#EclipseLink_JPA_Persistence_Unit_Properties_for_Customization_and_Validation[EclipseLink
+JPA Persistence Unit Properties for Customization and Validation]
+
+== Using the Descriptor Customizer Class
+
+You can customize a descriptor at run time by specifying a descriptor
+customizer–a Java class that implements the
+`+org.eclipse.persistence.config.DescriptorCustomizer+` interface.
+
+For more information, see the following:
+
+* link:Introduction%20to%20Descriptors%20(ELUG)#Descriptor_Customization[Descriptor
+Customization]
+* link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_a_Descriptor_Customizer_Class[Configuring
+a Descriptor Customizer Class]
+* link:Using%20EclipseLink%20JPA%20Extensions%20(ELUG)[How to Use the
+@Customizer Annotation]
+* Persistence unit property `+eclipselink.descriptor.customizer.+` in
+link:Using%20EclipseLink%20JPA%20Extensions%20(ELUG)#EclipseLink_JPA_Persistence_Unit_Properties_for_Customization_and_Validation[EclipseLink
+JPA Persistence Unit Properties for Customization and Validation]
+
+== Using the Descriptor Amendment Methods
+
+To customize descriptors, you can use their amendment methods.
+
+For more information, see the following:
+
+* link:Introduction%20to%20Descriptors%20(ELUG)#Amendment_and_After-Load_Methods[Amendment
+and After-Load Methods]
+* link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Amendment_Methods[Configuring
+Amendment Methods]
+
+== Using EclipseLink JPA Extensions
+
+If you are developing an EclipseLink JPA application, use EclipseLink
+JPA metadata annotations and XML extensions for customization.
+
+For more information, see
+link:Using%20EclipseLink%20JPA%20Extensions%20(ELUG)[Using EclipseLink
+JPA Extensions].
+
+== Using Oracle Database Proxy Authentication in JPA Applications
+
+For information, see
+link:Configuring%20a%20EclipseLink%20JPA%20Application%20(ELUG)#Configuring_Oracle_Database_Proxy_Authentication_for_a_JPA_Application[Configuring
+Oracle Database Proxy Authentication for a JPA Application].
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Release_1[Category: Release 1] Category:_Concept[Category:
+Concept] Category:_Task[Category: Task]

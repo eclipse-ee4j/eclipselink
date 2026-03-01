@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,8 +15,6 @@
 //     cdelahun - Bug 214534: added JMS Cache Coordination for publishing only
 package org.eclipse.persistence.internal.sessions.coordination.jms;
 
-import java.io.Serializable;
-
 import jakarta.jms.BytesMessage;
 import jakarta.jms.JMSException;
 import jakarta.jms.Message;
@@ -27,8 +25,7 @@ import jakarta.jms.TopicConnectionFactory;
 import jakarta.jms.TopicPublisher;
 import jakarta.jms.TopicSession;
 import jakarta.jms.TopicSubscriber;
-
-import org.eclipse.persistence.exceptions.RemoteCommandManagerException;
+import org.eclipse.persistence.sessions.coordination.RemoteCommandManagerException;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.coordination.broadcast.BroadcastRemoteConnection;
 import org.eclipse.persistence.sessions.coordination.RemoteCommandManager;
@@ -36,12 +33,14 @@ import org.eclipse.persistence.sessions.coordination.jms.JMSTopicTransportManage
 import org.eclipse.persistence.sessions.serializers.JavaSerializer;
 import org.eclipse.persistence.sessions.serializers.Serializer;
 
+import java.io.Serializable;
+
 /**
  * <p>
  * <b>Purpose</b>: Define the implementation of the abstract RemoteConnection for JMS.
  * <p>
  * <b>Description</b>:  Executing commands implementation of RemoteConnection is done via JMS Publisher.
- *
+ * <p>
  * Using a single TopicConnection for both publishing and subscribing would
  * allow subscriber to ignore messages sent through the same TopicConnection - and therefore
  * allow JMSTopicRemoteConnection to ignore messages that it has itself published.
@@ -210,8 +209,7 @@ public class JMSTopicRemoteConnection extends BroadcastRemoteConnection implemen
         try {
             if (message instanceof ObjectMessage) {
                 object = ((ObjectMessage)message).getObject();
-            } else if (message instanceof BytesMessage) {
-                BytesMessage byteMessage = (BytesMessage)message;
+            } else if (message instanceof BytesMessage byteMessage) {
                 byte[] bytes = new byte[(int)byteMessage.getBodyLength()];
                 byteMessage.readBytes(bytes);
                 Serializer serializer = this.rcm.getSerializer();
@@ -233,7 +231,7 @@ public class JMSTopicRemoteConnection extends BroadcastRemoteConnection implemen
                 return;
             }
         } catch (Exception exception) {
-            if (messageId.length() == 0) {
+            if (messageId.isEmpty()) {
                 try {
                     messageId = message.getJMSMessageID();
                 } catch (JMSException ex) {
@@ -269,6 +267,14 @@ public class JMSTopicRemoteConnection extends BroadcastRemoteConnection implemen
      */
     @Override
     protected void closeInternal() throws JMSException {
+        if (subscriber != null) {
+            try {
+                subscriber.close();
+            } catch (JMSException closeException) {
+                Object[] args = { displayString, closeException };
+                rcm.logWarning("broadcast_exception_thrown_when_attempting_to_close_subscriber", args);
+            }
+        }
         //this method should be a no-op now that external connections open/close TopicConnection when needed.  Close on Local
         //connections will eventually cause topicConnection.close() in their listening thread, so it should not be called here
         if(areAllResourcesFreedOnClose() && topicConnection!=null) {

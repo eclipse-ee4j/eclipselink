@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,12 +14,12 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.unitofwork;
 
-import java.util.Vector;
-
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.testing.framework.TestSystem;
 import org.eclipse.persistence.tools.schemaframework.SchemaManager;
+
+import java.util.Vector;
 
 
 public class UOWSystem extends TestSystem {
@@ -28,16 +28,16 @@ public class UOWSystem extends TestSystem {
     public void addDescriptors(DatabaseSession session) {
         Vector descriptors = new Vector();
 
-        descriptors.addElement(MailAddress.descriptor());
-        descriptors.addElement(Person.descriptor());
-        descriptors.addElement(Contact.descriptor());
-        descriptors.addElement(Weather.descriptor());
-        descriptors.addElement(ConcurrentAddress.descriptor());
-        descriptors.addElement(ConcurrentPerson.descriptor());
-        descriptors.addElement(ConcurrentProject.descriptor());
-        descriptors.addElement(ConcurrentPhoneNumber.descriptor());
-        descriptors.addElement(ConcurrentLargeProject.descriptor());
-        descriptors.addElement(MutableAttributeObject.descriptor());
+        descriptors.add(MailAddress.descriptor());
+        descriptors.add(Person.descriptor());
+        descriptors.add(Contact.descriptor());
+        descriptors.add(Weather.descriptor());
+        descriptors.add(ConcurrentAddress.descriptor());
+        descriptors.add(ConcurrentPerson.descriptor());
+        descriptors.add(ConcurrentProject.descriptor());
+        descriptors.add(ConcurrentPhoneNumber.descriptor());
+        descriptors.add(ConcurrentLargeProject.descriptor());
+        descriptors.add(MutableAttributeObject.descriptor());
 
         session.addDescriptors(descriptors);
     }

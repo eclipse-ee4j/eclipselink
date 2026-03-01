@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,7 +18,7 @@ import java.lang.annotation.Annotation;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.persistence.exceptions.JAXBException;
+import org.eclipse.persistence.jaxb.JAXBException;
 import org.eclipse.persistence.internal.jaxb.JaxbClassLoader;
 import org.eclipse.persistence.jaxb.javamodel.JavaAnnotation;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
@@ -131,7 +131,7 @@ public class JavaModelImpl implements JavaModel {
 
     public Map<String, JavaClassImpl> getCachedJavaClasses() {
         if(this.cachedJavaClasses == null) {
-            this.cachedJavaClasses = new HashMap<String, JavaClassImpl>();
+            this.cachedJavaClasses = new HashMap<>();
         }
         return this.cachedJavaClasses;
     }

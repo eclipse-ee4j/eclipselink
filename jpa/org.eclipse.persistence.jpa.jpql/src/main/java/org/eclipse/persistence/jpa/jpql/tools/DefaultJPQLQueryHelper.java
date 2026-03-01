@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -111,11 +111,11 @@ public class DefaultJPQLQueryHelper extends AbstractJPQLQueryHelper {
      * @return A new concrete instance of {@link IJPQLQueryBuilder}
      */
     protected IJPQLQueryBuilder buildQueryBuilder() {
-        switch (getGrammar().getJPAVersion()) {
-            case VERSION_1_0: return new JPQLQueryBuilder1_0();
-            case VERSION_2_0: return new JPQLQueryBuilder2_0();
-            default:          return new JPQLQueryBuilder2_1();
-        }
+        return switch (getGrammar().getJPAVersion()) {
+            case VERSION_1_0 -> new JPQLQueryBuilder1_0();
+            case VERSION_2_0 -> new JPQLQueryBuilder2_0();
+            default -> new JPQLQueryBuilder2_1();
+        };
     }
 
     @Override

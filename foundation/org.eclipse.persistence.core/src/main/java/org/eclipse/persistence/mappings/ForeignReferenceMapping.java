@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2020 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -25,19 +25,6 @@
 //       - 474752: Address NPE for Embeddable with 1-M association
 package org.eclipse.persistence.mappings;
 
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Vector;
-
 import org.eclipse.persistence.annotations.BatchFetchType;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.partitioning.PartitioningPolicy;
@@ -59,7 +46,6 @@ import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.helper.NonSynchronizedSubVector;
-import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.identitymaps.CacheId;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.indirection.BasicIndirectionPolicy;
@@ -95,6 +81,19 @@ import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.queries.ReportQuery;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.sessions.remote.DistributedSession;
+
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Vector;
 
 /**
  * <b>Purpose</b>: Abstract class for relationship mappings
@@ -421,7 +420,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
         super.convertClassNamesToClasses(classLoader);
 
         // DirectCollection mappings don't require a reference class.
-        if (getReferenceClassName() != null) {
+        if (getReferenceClass() == null && getReferenceClassName() != null) {
             Class<?> referenceClass = null;
             try{
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
@@ -515,7 +514,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      * Called if shouldExtendPessimisticLockScopeInSourceQuery is true.
      * Adds fields to be locked to the where clause of the source query.
      * Note that the sourceQuery must be ObjectLevelReadQuery so that it has ExpressionBuilder.
-     *
+     * <p>
      * This method must be implemented in subclasses that allow
      * setting shouldExtendPessimisticLockScopeInSourceQuery to true.
      */
@@ -646,7 +645,11 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
             } else if (batchQuery.isReadAllQuery() && ((ReadAllQuery)batchQuery).getBatchFetchPolicy().isIN()) {
                 throw QueryException.originalQueryMustUseBatchIN(this, originalQuery);
             }
-            executeBatchQuery(batchQuery, parentCacheKey, batchedObjects, session, translationRow);
+            // Execute each batch as a separate query so that nested batch relationships are not overwritten by the most
+            // recent batch fetched Issue #1998
+            ReadQuery batchQueryToExecute = (ReadQuery) batchQuery.clone();
+            executeBatchQuery(batchQueryToExecute, parentCacheKey, batchedObjects, session, translationRow);
+            batchQueryToExecute.setSession(null);
             batchQuery.setSession(null);
         }
         result = batchedObjects.get(sourceKey);
@@ -733,7 +736,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
             }
 
             List<Expression> nestedJoins = extractNestedNonAggregateExpressions(joinManager.getJoinedAttributeExpressions(), nestedQuery.getExpressionBuilder(), false);
-            if (nestedJoins.size() > 0) {
+            if (!nestedJoins.isEmpty()) {
                 // Recompute the joined indexes based on the nested join expressions.
                 nestedQuery.getJoinedAttributeManager().clear();
                 nestedQuery.getJoinedAttributeManager().setJoinedAttributeExpressions_(nestedJoins);
@@ -1041,10 +1044,10 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
     /**
      * INTERNAL:
      * Return source key fields for translation by an AggregateObjectMapping
-     * By default, return an empty NonSynchronizedVector
+     * By default, return an empty List
      */
-    public Collection getFieldsForTranslationInAggregate() {
-        return new NonSynchronizedVector(0);
+    public Collection<DatabaseField> getFieldsForTranslationInAggregate() {
+        return new ArrayList<>(0);
     }
 
     /**
@@ -1297,7 +1300,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
     @Override
     public void initialize(AbstractSession session) throws DescriptorException {
         super.initialize(session);
-        //474752 : InitializeReferenceDescriptor before 
+        //474752 : InitializeReferenceDescriptor before
         //addMappingsPostCalculateChanges
         initializeReferenceDescriptor(session);
         if (this.isPrivateOwned && (this.descriptor != null)) {
@@ -2200,7 +2203,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      * If isJoiningSupported()==true then this method must be overridden.
      */
     protected Object valueFromRowInternalWithJoin(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, CacheKey parentCacheKey, AbstractSession executionSession, boolean isTargetProtected) throws DatabaseException {
-        throw ValidationException.mappingDoesNotOverrideValueFromRowInternalWithJoin(Helper.getShortClassName(this.getClass()));
+        throw ValidationException.mappingDoesNotOverrideValueFromRowInternalWithJoin(getClass().getSimpleName());
     }
 
     /**
@@ -2270,7 +2273,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
             }
         }
 
-        // CR #4365, 3610825 - moved up from the block below, needs to be set with
+        // CR #4365, 2024825 - moved up from the block below, needs to be set with
         // indirection off. Clone the query and set its id.
         // All indirections are triggered in sopObject, therefore if sopObject is used then indirection on targetQuery to be triggered, too.
         if (!this.indirectionPolicy.usesIndirection() || shouldUseSopObject) {
@@ -2316,7 +2319,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
 
                 // For flashback: Read attributes as of the same time if required.
                 if (sourceQuery.isObjectLevelReadQuery() && ((ObjectLevelReadQuery)sourceQuery).hasAsOfClause()) {
-                    targetQuery.setSelectionCriteria((Expression)targetQuery.getSelectionCriteria().clone());
+                    targetQuery.setSelectionCriteria(targetQuery.getSelectionCriteria().clone());
                     ((ObjectLevelReadQuery)targetQuery).setAsOfClause(((ObjectLevelReadQuery)sourceQuery).getAsOfClause());
                 }
             }

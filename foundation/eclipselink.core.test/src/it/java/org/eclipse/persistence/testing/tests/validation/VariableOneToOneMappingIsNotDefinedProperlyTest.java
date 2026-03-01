@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,8 +14,6 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.validation;
 
-import java.util.Vector;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.EclipseLinkException;
@@ -24,12 +22,13 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.internal.sessions.ObjectReferenceChangeRecord;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet;
-import org.eclipse.persistence.mappings.VariableOneToOneMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
+import org.eclipse.persistence.mappings.VariableOneToOneMapping;
 import org.eclipse.persistence.queries.DeleteObjectQuery;
 import org.eclipse.persistence.sessions.DatabaseRecord;
-import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.testing.models.interfaces.Actor;
+
+import java.util.Vector;
 
 
 //Created by Ian Reid
@@ -66,9 +65,9 @@ public class VariableOneToOneMappingIsNotDefinedProperlyTest extends ExceptionTe
         mapping = (VariableOneToOneMapping)descriptor.getMappingForAttributeName("program");
 
         sourceField = new DatabaseField("ACTOR.PROGRAM_ID");
-        targetQueryKeyName = (String)mapping.getSourceToTargetQueryKeyNames().get(sourceField);
+        targetQueryKeyName = mapping.getSourceToTargetQueryKeyNames().get(sourceField);
         mapping.addForeignQueryKeyName("ACTOR.PROGRAM_ID", "name2");
-        mapping.getForeignKeyFields().removeElement(sourceField);
+        mapping.getForeignKeyFields().remove(sourceField);
 
         actor = Actor.example4();
         databaseRow = new DatabaseRecord();
@@ -91,7 +90,7 @@ public class VariableOneToOneMappingIsNotDefinedProperlyTest extends ExceptionTe
     @Override
     public void reset() {
         mapping.addForeignQueryKeyName("ACTOR.PROGRAM_ID", targetQueryKeyName);
-        mapping.getForeignKeyFields().removeElement(sourceField);
+        mapping.getForeignKeyFields().remove(sourceField);
     }
 
     @Override

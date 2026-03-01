@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,9 +14,10 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.oxm.mappings.namespaces;
 
+import org.eclipse.persistence.oxm.XMLRoot;
+
 import java.util.ArrayList;
 import java.util.List;
-import org.eclipse.persistence.oxm.XMLRoot;
 
 public class Department {
     List teams;
@@ -86,20 +87,20 @@ public class Department {
     }
 
     public String toString() {
-        String string = "Dept- name:";
-        string += this.getDeptName();
+        StringBuilder string = new StringBuilder("Dept- name:");
+        string.append(this.getDeptName());
         if(getTeams() != null){
           for (int i = 0; i < getTeams().size(); i++) {
               Object next = getTeams().get(i);
               if(next instanceof Team){
-                string += " " + getTeams().get(i).toString();
+                string.append(" ").append(getTeams().get(i).toString());
               }else if(next instanceof XMLRoot)
               {
-                string += " xmlRoot:" + ((XMLRoot)next).getLocalName() +" " + ((XMLRoot)next).getNamespaceURI();
+                string.append(" xmlRoot:").append(((XMLRoot) next).getLocalName()).append(" ").append(((XMLRoot) next).getNamespaceURI());
               }
           }
         }
 
-        return string;
+        return string.toString();
     }
 }

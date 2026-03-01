@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -66,7 +66,7 @@ public abstract class AbstractQueryResource extends AbstractResource {
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     protected Response namedQueryUpdateInternal(String version, String persistenceUnit, String queryName, HttpHeaders headers, UriInfo uriInfo) {
-        JPARSLogger.entering(CLASS_NAME, "namedQueryUpdateInternal", new Object[] { "POST", version, persistenceUnit, queryName, uriInfo.getRequestUri().toASCIIString() });
+        JPARSLogger.DEFAULT_LOGGER.entering(null, CLASS_NAME, "namedQueryUpdateInternal", new Object[] { "POST", version, persistenceUnit, queryName, uriInfo.getRequestUri().toASCIIString() });
         try {
             PersistenceContext context = getPersistenceContext(persistenceUnit, null, uriInfo.getBaseUri(), version, null);
             int result = context.queryExecuteUpdate(getMatrixParameters(uriInfo, persistenceUnit), queryName, getMatrixParameters(uriInfo, queryName), getQueryParameters(uriInfo));
@@ -88,7 +88,7 @@ public abstract class AbstractQueryResource extends AbstractResource {
      * @return the response
      */
     protected Response namedQueryInternal(String version, String persistenceUnit, String queryName, HttpHeaders headers, UriInfo uriInfo) {
-        JPARSLogger.entering(CLASS_NAME, "namedQueryInternal", new Object[] { "GET", version, persistenceUnit, queryName, uriInfo.getRequestUri().toASCIIString() });
+        JPARSLogger.DEFAULT_LOGGER.entering(null, CLASS_NAME, "namedQueryInternal", new Object[] { "GET", version, persistenceUnit, queryName, uriInfo.getRequestUri().toASCIIString() });
         try {
             final PersistenceContext context = getPersistenceContext(persistenceUnit, null, uriInfo.getBaseUri(), version, null);
             final Query query = context.buildQuery(getMatrixParameters(uriInfo, persistenceUnit), queryName, getMatrixParameters(uriInfo, queryName), getQueryParameters(uriInfo));
@@ -109,13 +109,13 @@ public abstract class AbstractQueryResource extends AbstractResource {
     }
 
     protected Response buildQueryOptionsResponse(String version, String persistenceUnit, String queryName, HttpHeaders httpHeaders, UriInfo uriInfo) {
-        JPARSLogger.entering(CLASS_NAME, "buildQueryOptionsResponse", new Object[]{"GET", version, persistenceUnit, queryName, uriInfo.getRequestUri().toASCIIString()});
+        JPARSLogger.DEFAULT_LOGGER.entering(null, CLASS_NAME, "buildQueryOptionsResponse", new Object[]{"GET", version, persistenceUnit, queryName, uriInfo.getRequestUri().toASCIIString()});
         final PersistenceContext context = getPersistenceContext(persistenceUnit, null, uriInfo.getBaseUri(), version, null);
 
         // We need to make sure that query with given name exists
         final DatabaseQuery query = context.getServerSession().getQuery(queryName);
         if (query == null) {
-            JPARSLogger.error(context.getSessionLog(), "jpars_could_not_find_query", new Object[] {queryName, persistenceUnit});
+            context.getLogger().error(context.getSessionId(), "jpars_could_not_find_query", new Object[] {queryName, persistenceUnit});
             throw JPARSException.responseCouldNotBeBuiltForNamedQueryRequest(queryName, context.getName());
         }
 

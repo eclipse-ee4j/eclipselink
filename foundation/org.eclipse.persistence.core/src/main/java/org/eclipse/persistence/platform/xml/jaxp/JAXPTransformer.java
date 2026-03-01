@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,9 +14,12 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.platform.xml.jaxp;
 
-import java.io.OutputStream;
-import java.io.Writer;
-import java.net.URL;
+import org.eclipse.persistence.internal.helper.XMLHelper;
+import org.eclipse.persistence.platform.xml.XMLPlatformException;
+import org.eclipse.persistence.platform.xml.XMLTransformer;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.xml.sax.ContentHandler;
 
 import javax.xml.transform.ErrorListener;
 import javax.xml.transform.OutputKeys;
@@ -31,13 +34,9 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
-
-import org.eclipse.persistence.internal.helper.XMLHelper;
-import org.eclipse.persistence.platform.xml.XMLPlatformException;
-import org.eclipse.persistence.platform.xml.XMLTransformer;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.xml.sax.ContentHandler;
+import java.io.OutputStream;
+import java.io.Writer;
+import java.net.URL;
 
 /**
  * <p><b>Purpose</b>:  An implementation of XMLTransformer using JAXP 1.3 APIs.</p>

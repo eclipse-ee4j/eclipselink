@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -15,13 +15,6 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.databaseaccess;
 
-import java.io.Serializable;
-import java.io.Writer;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.internal.core.databaseaccess.CorePlatform;
 import org.eclipse.persistence.internal.helper.ConversionManager;
@@ -30,7 +23,12 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.queries.Call;
 import org.eclipse.persistence.queries.ValueReadQuery;
 import org.eclipse.persistence.sequencing.Sequence;
-import org.eclipse.persistence.sessions.Session;
+
+import java.io.Serializable;
+import java.io.Writer;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Platform is private to TopLink. It encapsulates behavior specific to a datasource platform
@@ -69,6 +67,11 @@ public interface Platform extends CorePlatform<ConversionManager>, Serializable,
      * The platform hold its own instance of conversion manager to allow customization.
      */
     void setConversionManager(ConversionManager conversionManager);
+
+    /**
+     * Return the driver version.
+     */
+    String getDriverVersion();
 
     /**
      * Return the qualifier for the table. Required by some
@@ -131,6 +134,8 @@ public interface Platform extends CorePlatform<ConversionManager>, Serializable,
 
     boolean isOracle12();
 
+    boolean isOracle23();
+
     boolean isPointBase();
 
     boolean isSQLAnywhere();
@@ -165,11 +170,6 @@ public interface Platform extends CorePlatform<ConversionManager>, Serializable,
     void setTimestampQuery(ValueReadQuery tsQuery);
 
     /**
-     * Can override the default query for returning a UUID from the server.
-     */
-    void setUUIDQuery(ValueReadQuery uuidQuery);
-
-    /**
      * Add the parameter.
      * Convert the parameter to a string and write it.
      */
@@ -182,7 +182,7 @@ public interface Platform extends CorePlatform<ConversionManager>, Serializable,
 
     /**
      * Delimiter to use for fields and tables using spaces or other special values.
-     *
+     * <p>
      * Some databases use different delimiters for the beginning and end of the value.
      * This delimiter indicates the end of the value.
      */
@@ -190,7 +190,7 @@ public interface Platform extends CorePlatform<ConversionManager>, Serializable,
 
     /**
      * Delimiter to use for fields and tables using spaces or other special values.
-     *
+     * <p>
      * Some databases use different delimiters for the beginning and end of the value.
      * This delimiter indicates the start of the value.
      */
@@ -287,29 +287,6 @@ public interface Platform extends CorePlatform<ConversionManager>, Serializable,
      * Indicates whether defaultSequence is the same as platform default sequence.
      */
     boolean usesPlatformDefaultSequence();
-
-    /**
-     * INTERNAL:
-     * Initialize platform specific identity sequences.
-     * This method is called from {@code EntityManagerSetupImpl} after login and optional schema generation.
-     * Method is also called from {@code TableCreator} class during tables creation and update..
-     * @param session Active database session (in connected state).
-     * @param defaultIdentityGenerator Default identity generator sequence name.
-     * @since 2.7
-     */
-    void initIdentitySequences(final Session session, final String defaultIdentityGenerator);
-
-    /**
-     * INTERNAL:
-     * Remove platform specific identity sequences for specified tables. Default identity sequences are restored.
-     * Method is also called from {@code TableCreator} class during tables removal.
-     * @param session Active database session (in connected state).
-     * @param defaultIdentityGenerator Default identity generator sequence name.
-     * @param tableNames Set of table names to check for identity sequence removal.
-     * @since 2.7
-     */
-    void removeIdentitySequences(
-            final Session session, final String defaultIdentityGenerator, final Set<String> tableNames);
 
     /**
      * INTERNAL:

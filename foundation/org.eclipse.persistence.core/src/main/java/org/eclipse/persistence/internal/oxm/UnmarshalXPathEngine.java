@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,10 +14,7 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.oxm;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.oxm.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.oxm.mappings.Field;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType;
@@ -31,6 +28,9 @@ import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * INTERNAL:
@@ -205,7 +205,7 @@ public class UnmarshalXPathEngine <
                     }
                 }
             }
-            if(matchingFragments.size() > 0) {
+            if(!matchingFragments.isEmpty()) {
                 selectNodes(nextChild, matchingFragments, xmlNamespaceResolver, entries);
             }
         }
@@ -458,11 +458,11 @@ public class UnmarshalXPathEngine <
             return true;
         }
 
-        if ((nodeNamespaceURI == null) && namespaceURI.length() == 0) {
+        if ((nodeNamespaceURI == null) && namespaceURI.isEmpty()) {
             return true;
         }
 
-        if ((namespaceURI == null) && nodeNamespaceURI.length() == 0) {
+        if ((namespaceURI == null) && nodeNamespaceURI.isEmpty()) {
             return true;
         }
 

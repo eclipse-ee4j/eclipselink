@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,14 +14,20 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.feature;
 
+import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
+import org.eclipse.persistence.platform.database.OraclePlatform;
+import org.eclipse.persistence.sessions.Connector;
+import org.eclipse.persistence.sessions.DatabaseLogin;
+import org.eclipse.persistence.sessions.DefaultConnector;
+import org.eclipse.persistence.sessions.DirectConnector;
+import org.eclipse.persistence.sessions.Session;
+import org.eclipse.persistence.testing.framework.AutoVerifyTestCase;
+import org.eclipse.persistence.testing.framework.TestErrorException;
+
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.util.Properties;
-import org.eclipse.persistence.sessions.*;
-import org.eclipse.persistence.testing.framework.*;
-import org.eclipse.persistence.exceptions.ValidationException;
-import org.eclipse.persistence.internal.databaseaccess.*;
-import org.eclipse.persistence.platform.database.OraclePlatform;
 
 public class DatabaseLoginCodeCoverageTest extends AutoVerifyTestCase {
     private DatabaseLogin login;
@@ -40,7 +46,7 @@ public class DatabaseLoginCodeCoverageTest extends AutoVerifyTestCase {
 
     @Override
     public void verify() {
-        if (testFailures.length() > 0) {
+        if (!testFailures.isEmpty()) {
             throw new TestErrorException("Tests failures from DatabaseLogin: " + testFailures);
         }
     }
@@ -346,7 +352,7 @@ public class DatabaseLoginCodeCoverageTest extends AutoVerifyTestCase {
 
         ////////////////////////////////////////////////////
         login.useWebLogicJDBCConnectionPool("martinsPool");
-        if (login.getConnectionString().indexOf("martinsPool") == -1) {
+        if (!login.getConnectionString().contains("martinsPool")) {
             addToTestFailures("useWebLogicJDBCConnectionPool");
         }
 
@@ -482,7 +488,7 @@ public class DatabaseLoginCodeCoverageTest extends AutoVerifyTestCase {
             addToTestFailures("databaseName");
         }
 
-        if (login.toString().indexOf("oneCompleteLie") == -1) {
+        if (!login.toString().contains("oneCompleteLie")) {
             addToTestFailures("databaseName - toString failed");
         }
 
@@ -492,7 +498,7 @@ public class DatabaseLoginCodeCoverageTest extends AutoVerifyTestCase {
             addToTestFailures("serverName");
         }
 
-        if (login.toString().indexOf("homer") == -1) {
+        if (!login.toString().contains("homer")) {
             addToTestFailures("serverName - toString failed");
         }
 

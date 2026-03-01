@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2019, 2022 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,26 +16,17 @@
 //     IBM - Bug 537795: CASE THEN and ELSE scalar expression Constants should not be casted to CASE operand type
 package org.eclipse.persistence.internal.expressions;
 
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.history.AsOfClause;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
-import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.queries.ReportItem;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -47,18 +38,25 @@ import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.queries.ReportQuery;
 
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 /**
  * Used for expressions that have 0 to n children.
  * These include not, between and all functions.
  */
 public class FunctionExpression extends BaseExpression {
-    protected Vector<Expression> children;
+    protected List<Expression> children;
     protected ExpressionOperator operator;
     protected transient ExpressionOperator platformOperator;
     protected Class<?> resultType;
 
     public FunctionExpression() {
-        this.children = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(2);
+        this.children = new ArrayList<>(2);
         this.resultType = null;
     }
 
@@ -114,7 +112,7 @@ public class FunctionExpression extends BaseExpression {
     }
 
     public void addChild(Expression child) {
-        getChildren().addElement(child);
+        getChildren().add(child);
     }
 
     /**
@@ -129,7 +127,7 @@ public class FunctionExpression extends BaseExpression {
     @Override
     public Expression asOf(AsOfClause clause) {
         final AsOfClause finalClause = clause;
-        ExpressionIterator iterator = new ExpressionIterator() {
+        ExpressionIterator<Void> iterator = new ExpressionIterator<>() {
             @Override
             public void iterate(Expression each) {
                 if (each.isDataExpression()) {
@@ -191,7 +189,7 @@ public class FunctionExpression extends BaseExpression {
      * INTERNAL:
      */
     @Override
-    public Expression create(Expression base, List arguments, ExpressionOperator anOperator) {
+    public Expression create(Expression base, List<?> arguments, ExpressionOperator anOperator) {
         this.baseExpression = base;
         setOperator(anOperator);
         addChild(base);
@@ -243,7 +241,7 @@ public class FunctionExpression extends BaseExpression {
 
             // Extract the value from the arguments, skip the first child which is the base.
             int size = this.children.size();
-            Vector rightValue = new Vector(size);
+            List<Object> rightValue = new ArrayList<>(size);
             for (int index = 1; index < size; index++) {
                 Object valueFromRight;
                 Expression child = this.children.get(index);
@@ -254,8 +252,10 @@ public class FunctionExpression extends BaseExpression {
                 }
                 //If valueFromRight is a Vector, then there is only one child other than the base, e.g. valueFromRight is a collection of constants.
                 //Then it should be the vector to be compared with.  Don't add it to another collection.
-                if (valueFromRight instanceof Vector) {
-                    rightValue = (Vector)valueFromRight;
+                if (valueFromRight instanceof List<?> rightVector) {
+                    @SuppressWarnings({"unchecked"})
+                    List<Object> rv = (List<Object>) rightVector;
+                    rightValue = rv;
                 //Single values should be added to the rightValue, which will be compared with leftValue.
                 } else {
                     rightValue.add(valueFromRight);
@@ -264,8 +264,8 @@ public class FunctionExpression extends BaseExpression {
 
             // If left is anyof collection of values, check each one.
             // If the right had an anyof not supported will be thrown from the operator.
-            if (leftValue instanceof Vector) {
-                for (Object tempLeft : (Vector)leftValue) {
+            if (leftValue instanceof List<?> leftVector) {
+                for (Object tempLeft : leftVector) {
                     if (this.operator.doesRelationConform(tempLeft, rightValue)) {
                         return true;
                     }
@@ -281,8 +281,8 @@ public class FunctionExpression extends BaseExpression {
             Object leftValue = getBaseExpression().valueFromObject(object, session, translationRow, valueHolderPolicy, isObjectUnregistered);
 
             // If left is anyof collection of values, check each one.
-            if (leftValue instanceof Vector) {
-                for (Object tempLeft : (Vector)leftValue) {
+            if (leftValue instanceof List<?> leftVector) {
+                for (Object tempLeft : leftVector) {
                     if (this.operator.doesRelationConform(tempLeft, null)) {
                         return true;
                     }
@@ -300,7 +300,7 @@ public class FunctionExpression extends BaseExpression {
         throw QueryException.cannotConformExpression();
     }
 
-    public Vector<Expression> getChildren() {
+    public List<Expression> getChildren() {
         return this.children;
     }
 
@@ -388,10 +388,10 @@ public class FunctionExpression extends BaseExpression {
      * For iterating using an inner class
      */
     @Override
-    public void iterateOn(ExpressionIterator iterator) {
+    public void iterateOn(ExpressionIterator<?> iterator) {
         super.iterateOn(iterator);
-        for (Enumeration<Expression> childrenEnum = this.children.elements(); childrenEnum.hasMoreElements();) {
-            Expression child = childrenEnum.nextElement();
+        for (Iterator<Expression> iterator1 = this.children.iterator(); iterator1.hasNext();) {
+            Expression child = iterator1.next();
             child.iterateOn(iterator);
         }
     }
@@ -466,8 +466,8 @@ public class FunctionExpression extends BaseExpression {
                     && (!((OneToOneMapping)mapping).hasCustomSelectionQuery())) {
                 base = (ObjectExpression)base.getBaseExpression();
                 Map<DatabaseField, DatabaseField> targetToSourceKeyFields = ((OneToOneMapping)mapping).getTargetToSourceKeyFields();
-                sourceFields = new ArrayList(targetToSourceKeyFields.size());
-                targetFields = new ArrayList(targetToSourceKeyFields.size());
+                sourceFields = new ArrayList<>(targetToSourceKeyFields.size());
+                targetFields = new ArrayList<>(targetToSourceKeyFields.size());
                 for (Map.Entry<DatabaseField, DatabaseField> entry : targetToSourceKeyFields.entrySet()) {
                     sourceFields.add(entry.getValue());
                     targetFields.add(entry.getKey());
@@ -545,12 +545,12 @@ public class FunctionExpression extends BaseExpression {
      * Used for cloning.
      */
     @Override
-    protected void postCopyIn(Map alreadyDone) {
+    protected void postCopyIn(Map<Expression, Expression> alreadyDone) {
         super.postCopyIn(alreadyDone);
-        Vector<Expression> oldChildren = this.children;
-        this.children = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+        List<Expression> oldChildren = this.children;
+        this.children = new ArrayList<>();
         for (int i = 0; i < oldChildren.size(); i++) {
-            addChild((oldChildren.elementAt(i).copiedVersionFrom(alreadyDone)));
+            addChild((oldChildren.get(i).copiedVersionFrom(alreadyDone)));
         }
     }
 
@@ -599,9 +599,9 @@ public class FunctionExpression extends BaseExpression {
     @Override
     public Expression rebuildOn(Expression newBase) {
         Expression newLocalBase = getBaseExpression().rebuildOn(newBase);
-        Vector newChildren = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(this.children.size());
+        List<Expression> newChildren = new ArrayList<>(this.children.size());
         for (int i = 1; i < this.children.size(); i++) {// Skip the first one, since it's also the base
-            newChildren.addElement(this.children.elementAt(i).rebuildOn(newBase));
+            newChildren.add(this.children.get(i).rebuildOn(newBase));
         }
         newLocalBase.setSelectIfOrderedBy(getBaseExpression().selectIfOrderedBy());
         FunctionExpression rebuilt = (FunctionExpression) newLocalBase.performOperator(this.operator, newChildren);
@@ -619,7 +619,7 @@ public class FunctionExpression extends BaseExpression {
     public void resetPlaceHolderBuilder(ExpressionBuilder queryBuilder){
         getBaseExpression().resetPlaceHolderBuilder(queryBuilder);
         for (int i = this.children.size()-1; i > 0; i--) {// Skip the first one, since it's also the base
-            this.children.elementAt(i).resetPlaceHolderBuilder(queryBuilder);
+            this.children.get(i).resetPlaceHolderBuilder(queryBuilder);
         }
     }
     // Set the local base expression, ie the one on the other side of the operator
@@ -647,17 +647,17 @@ public class FunctionExpression extends BaseExpression {
     @Override
     public Expression twistedForBaseAndContext(Expression newBase, Expression context, Expression oldBase) {
         if (this.children.isEmpty()) {
-            return (Expression)clone();
+            return clone();
         }
-        Vector newChildren = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(this.children.size());
+        List<Expression> newChildren = new ArrayList<>(this.children.size());
 
         // For functions the base is the first child, we only want the arguments so start at the second.
         for (int index = 1; index < this.children.size(); index++) {
-            newChildren.addElement(this.children.elementAt(index).twistedForBaseAndContext(newBase, context, oldBase));
+            newChildren.add(this.children.get(index).twistedForBaseAndContext(newBase, context, oldBase));
         }
 
         // Aply the function to the twisted old base.
-        Expression oldBaseExp = this.children.elementAt(0);
+        Expression oldBaseExp = this.children.get(0);
         return oldBaseExp.twistedForBaseAndContext(newBase, context, oldBase).performOperator(this.operator, newChildren);
     }
 
@@ -669,23 +669,22 @@ public class FunctionExpression extends BaseExpression {
     @Override
     public Object valueFromObject(Object object, AbstractSession session, AbstractRecord translationRow, int valueHolderPolicy, boolean isObjectUnregistered) {
         Object baseValue = getBaseExpression().valueFromObject(object, session, translationRow, valueHolderPolicy, isObjectUnregistered);
-        Vector arguments = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(this.children.size());
+        List<Object> arguments = new ArrayList<>(this.children.size());
         for (int index = 1; index < this.children.size(); index++) {
-            if (this.children.elementAt(index) instanceof Expression) {
-                arguments.addElement(this.children.elementAt(index).valueFromObject(object, session, translationRow, valueHolderPolicy, isObjectUnregistered));
+            if (this.children.get(index) instanceof Expression) {
+                arguments.add(this.children.get(index).valueFromObject(object, session, translationRow, valueHolderPolicy, isObjectUnregistered));
             } else {
-                arguments.addElement(this.children.elementAt(index));
+                arguments.add(this.children.get(index));
             }
         }
-        if (baseValue instanceof Vector) {// baseValue might be a vector, so the individual values must be extracted before applying the function call to them
-            Vector baseVector = new Vector();
-            for (Enumeration valuesToCompare = ((Vector)baseValue).elements();
-                     valuesToCompare.hasMoreElements();) {
-                Object baseObject = valuesToCompare.nextElement();
+        if (baseValue instanceof List<?> base) {// baseValue might be a vector, so the individual values must be extracted before applying the function call to them
+            List<Object> baseVector = new ArrayList<>();
+            for (Iterator<?> iterator = base.iterator(); iterator.hasNext();) {
+                Object baseObject = iterator.next();
                 if (baseObject == null) {
-                    baseVector.addElement(null);
+                    baseVector.add(null);
                 } else {
-                    baseVector.addElement(this.operator.applyFunction(baseObject, arguments));
+                    baseVector.add(this.operator.applyFunction(baseObject, arguments));
                 }
             }
             return baseVector;
@@ -777,7 +776,7 @@ public class FunctionExpression extends BaseExpression {
      * If the descriptor has a single pk, it is used, otherwise any pk is used if distinct, otherwise a subselect is used.
      * If the object was obtained through an outer join, then the subselect also will not work, so an error is thrown.
      */
-    public void prepareObjectAttributeCount(ExpressionNormalizer normalizer, ReportItem item, ReportQuery query, Map clonedExpressions) {
+    public void prepareObjectAttributeCount(ExpressionNormalizer normalizer, ReportItem item, ReportQuery query, Map<Expression, Expression> clonedExpressions) {
         // ** Note that any of the arguments may be null depending on the caller.
         if (getOperator().getSelector() == ExpressionOperator.Count) {
             Expression baseExp = getBaseExpression();
@@ -798,7 +797,10 @@ public class FunctionExpression extends BaseExpression {
                 // now need to find out if it is a direct to field or something else.
                 ClassDescriptor descriptor = null;
                 if (query == null) {
-                    descriptor = ((QueryKeyExpression) baseExp).getDescriptor();
+                    // Trigger aggregate descriptors to be resolved for ReportQuery.
+                    // Unfortunately this ReadQuery is not visible from QueryKeyExpression,
+                    // that would make the solution more simple.
+                    descriptor = ((QueryKeyExpression) baseExp).getDescriptor(isAggregateReportQuery(normalizer));
                 } else {
                     descriptor = query.getDescriptor();
                 }
@@ -820,8 +822,8 @@ public class FunctionExpression extends BaseExpression {
                 }
             } else if (baseExp.isExpressionBuilder()) {
                 if (((ExpressionBuilder)baseExp).getQueryClass() == null) {
-                    if (item != null) {
-                        item.setResultType(ClassConstants.INTEGER);
+                    if (item != null && item.getResultType() == null) {
+                        item.setResultType(CoreClassConstants.INTEGER);
                     }
                 } else {
                     newDescriptor = session.getDescriptor(((ExpressionBuilder)baseExp).getQueryClass());
@@ -833,7 +835,13 @@ public class FunctionExpression extends BaseExpression {
                 if ((newDescriptor.getPrimaryKeyFields().size() == 1) || !distinctUsed) {
                     // case 1: single PK =>
                     // treat COUNT(entity) as COUNT(entity.pk)
-                    Expression countArg = baseExp.getField(newDescriptor.getPrimaryKeyFields().get(0));
+                    Expression countArg = null;
+                    if (newDescriptor.getPrimaryKeyFields().size() > 1 && !newDescriptor.getAdditionalAggregateCollectionKeyFields().isEmpty()) {
+                        // count foreign key if primary is not specified like @ElementCollection with @Embeddable
+                        countArg = baseExp.getField(newDescriptor.getAdditionalAggregateCollectionKeyFields().get(0));
+                    } else {
+                        countArg = baseExp.getField(newDescriptor.getPrimaryKeyFields().get(0));
+                    }
                     if (distinctUsed) {
                         countArg = countArg.distinct();
                     }
@@ -842,7 +850,7 @@ public class FunctionExpression extends BaseExpression {
                 } else if (((DatabasePlatform)session.getPlatform(newDescriptor.getJavaClass())).supportsCountDistinctWithMultipleFields()) {
                     // case 3, is database allows multiple fields, then just print them
                     // treat COUNT(distinct entity) as COUNT(distinct entity.pk1, entity.pk2)
-                    List args = new ArrayList(newDescriptor.getPrimaryKeyFields().size());
+                    List<Object> args = new ArrayList<>(newDescriptor.getPrimaryKeyFields().size());
                     Expression firstField = null;
                     for (DatabaseField field : newDescriptor.getPrimaryKeyFields()) {
                         if (firstField == null) {
@@ -854,8 +862,8 @@ public class FunctionExpression extends BaseExpression {
 
                     ExpressionOperator anOperator = new ExpressionOperator();
                     anOperator.setType(ExpressionOperator.FunctionOperator);
-                    Vector v = NonSynchronizedVector.newInstance(args.size());
-                    v.addElement("DISTINCT ");
+                    List<String> v = new ArrayList<>(args.size());
+                    v.add("DISTINCT ");
                     for (int index = 0; index < args.size(); index++) {
                         v.add(", ");
                     }
@@ -921,6 +929,16 @@ public class FunctionExpression extends BaseExpression {
                 }
             }
         }
+    }
+
+    // Check whether ReadQuery in the ExpressionNormalizer is ReportQuery
+    // and contains an aggregate descriptor.
+    private static boolean isAggregateReportQuery(ExpressionNormalizer normalizer) {
+        ReadQuery normalizerQuery = normalizer.getStatement() != null
+                ? normalizer.getStatement().getQuery()
+                : null;
+        return normalizerQuery != null && normalizerQuery.isReportQuery()
+                && normalizerQuery.getDescriptor().isAggregateDescriptor();
     }
 
     /**

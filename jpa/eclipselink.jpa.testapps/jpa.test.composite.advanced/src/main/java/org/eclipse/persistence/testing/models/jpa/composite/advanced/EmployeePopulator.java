@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,6 +34,7 @@ import org.eclipse.persistence.tools.schemaframework.SchemaManager;
 import org.eclipse.persistence.tools.schemaframework.StoredProcedureDefinition;
 
 import java.util.Calendar;
+import java.util.List;
 import java.util.Vector;
 
 /**
@@ -1445,11 +1446,11 @@ public class EmployeePopulator {
         return equipmentCode;
     }
 
-    protected Vector<Object> getAllObjects() {
+    protected List<Object> getAllObjects() {
         return populationManager.getAllObjects();
     }
 
-    public Vector<Object> getAllObjectsForClass(Class<?> domainClass) {
+    public List<Object> getAllObjectsForClass(Class<?> domainClass) {
         return populationManager.getAllObjectsForClass(domainClass);
     }
 

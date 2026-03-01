@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,8 +15,6 @@
 package org.eclipse.persistence.testing.oxm.mappings.compositecollection.nested;
 
 import java.util.Vector;
-
-import org.eclipse.persistence.testing.oxm.mappings.compositecollection.Employee;
 
 public class Project  {
 
@@ -46,27 +44,23 @@ public class Project  {
     }
     public String toString()
   {
-    String returnString= "Project: " + this.getName() + " ";
+    StringBuilder returnString= new StringBuilder("Project: " + this.getName() + " ");
         if(employees !=null)
         {
             for(int i=0; i<employees.size(); i++)
             {
-                returnString += employees.elementAt(i) + " ";
+                returnString.append(employees.elementAt(i)).append(" ");
             }
         }
-        return returnString;
+        return returnString.toString();
  }
 
   public boolean equals(Object object)
   {
-    if(!(object instanceof Project))
+    if(!(object instanceof Project projectObject))
       return false;
-    Project projectObject = (Project)object;
-    if((this.getName().equals(projectObject.getName())) &&
-      (this.getEmployees().containsAll(projectObject.getEmployees())))
-          return true;
-
-    return false;
+      return (this.getName().equals(projectObject.getName())) &&
+              (this.getEmployees().containsAll(projectObject.getEmployees()));
   }
 
 }

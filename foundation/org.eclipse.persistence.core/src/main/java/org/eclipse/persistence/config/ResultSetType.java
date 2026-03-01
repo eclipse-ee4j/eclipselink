@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,15 +16,17 @@ package org.eclipse.persistence.config;
 
 /**
  * JDBC ResultSet type hint values.
- *
+ * <p>
  * The class contains all the valid values for QueryHints.RESULT_SET_TYPE query hint.
  * This can be used on ScrollableCursor queries to set the JDBC ResultSet scroll type.
- *
- * JPA Query Hint Usage:
- *
- * <p><code>query.setHint(QueryHints.RESULT_SET_TYPE, ResultSetType.ForwardOnly);</code>
+ * <p>JPA Query Hint usage:
+ * {@snippet :
+ *  query.setHint(QueryHints.RESULT_SET_TYPE, ResultSetType.ForwardOnly);
+ * }
  * <p>or
- * <p><code>@QueryHint(name=QueryHints.RESULT_SET_TYPE, value=ResultSetType.ForwardOnly)</code>
+ * {@snippet :
+ *  @QueryHint(name=QueryHints.RESULT_SET_TYPE, value=ResultSetType.ForwardOnly)
+ * }
  *
  * <p>Hint values are case-insensitive.
  * "" could be used instead of default value ResultSetType.ScrollInsensitive.
@@ -34,7 +36,7 @@ package org.eclipse.persistence.config;
  *
  * @author James Sutherland
  */
-public class ResultSetType {
+public final class ResultSetType {
     /** The rows in a result set will be processed in a forward direction; first-to-last. */
     public static final String  Forward = "Forward";
 

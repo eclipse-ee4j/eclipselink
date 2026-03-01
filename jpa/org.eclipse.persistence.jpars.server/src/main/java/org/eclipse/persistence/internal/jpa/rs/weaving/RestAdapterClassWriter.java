@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,13 +16,14 @@
 //       - 429992: JavaSE 8/ASM 5.0.1 support (EclipseLink silently ignores Entity classes with lambda expressions)
 package org.eclipse.persistence.internal.jpa.rs.weaving;
 
+import org.eclipse.persistence.asm.ClassWriter;
+import org.eclipse.persistence.asm.EclipseLinkASMClassWriter;
+import org.eclipse.persistence.asm.MethodVisitor;
+import org.eclipse.persistence.asm.Opcodes;
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
 import org.eclipse.persistence.dynamic.EclipseLinkClassWriter;
-import org.eclipse.persistence.internal.libraries.asm.EclipseLinkASMClassWriter;
-import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
-import org.eclipse.persistence.internal.libraries.asm.Opcodes;
 
-public class RestAdapterClassWriter implements EclipseLinkClassWriter, Opcodes {
+public class RestAdapterClassWriter implements EclipseLinkClassWriter {
 
     public static final String CLASS_NAME_SUFFIX = "PersistenceRestAdapter";
     public static final String REFERENCE_ADAPTER_SHORT_SIGNATURE = "org/eclipse/persistence/jpa/rs/util/xmladapters/ReferenceAdapter";
@@ -60,24 +61,25 @@ public class RestAdapterClassWriter implements EclipseLinkClassWriter, Opcodes {
     public byte[] writeClass(DynamicClassLoader loader, String className)
             throws ClassNotFoundException {
 
-        EclipseLinkASMClassWriter cw = new EclipseLinkASMClassWriter(0);
-        cw.visit(ACC_PUBLIC + ACC_SUPER, getASMClassName(), "L" + REFERENCE_ADAPTER_SHORT_SIGNATURE + "<L" + getASMParentClassName() + ";>;", REFERENCE_ADAPTER_SHORT_SIGNATURE, null);
+        ClassWriter cw = new EclipseLinkASMClassWriter(0);
 
-        MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "<init>", "()V", null, null);
+        cw.visit(Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER, getASMClassName(), "L" + REFERENCE_ADAPTER_SHORT_SIGNATURE + "<L" + getASMParentClassName() + ";>;", REFERENCE_ADAPTER_SHORT_SIGNATURE, null);
+
+        MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "<init>", "()V", null, null);
         mv.visitCode();
-        mv.visitVarInsn(ALOAD, 0);
-        mv.visitMethodInsn(INVOKESPECIAL, REFERENCE_ADAPTER_SHORT_SIGNATURE, "<init>", "()V", false);
-        mv.visitInsn(RETURN);
+        mv.visitVarInsn(Opcodes.ALOAD, 0);
+        mv.visitMethodInsn(Opcodes.INVOKESPECIAL, REFERENCE_ADAPTER_SHORT_SIGNATURE, "<init>", "()V", false);
+        mv.visitInsn(Opcodes.RETURN);
         mv.visitMaxs(1, 1);
         mv.visitEnd();
 
-        mv = cw.visitMethod(ACC_PUBLIC, "<init>", "(Ljava/lang/String;Lorg/eclipse/persistence/jpa/rs/PersistenceContext;)V", null, null);
+        mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "<init>", "(Ljava/lang/String;Lorg/eclipse/persistence/jpa/rs/PersistenceContext;)V", null, null);
         mv.visitCode();
-        mv.visitVarInsn(ALOAD, 0);
-        mv.visitVarInsn(ALOAD, 1);
-        mv.visitVarInsn(ALOAD, 2);
-        mv.visitMethodInsn(INVOKESPECIAL, REFERENCE_ADAPTER_SHORT_SIGNATURE, "<init>", "(Ljava/lang/String;Lorg/eclipse/persistence/jpa/rs/PersistenceContext;)V", false);
-        mv.visitInsn(RETURN);
+        mv.visitVarInsn(Opcodes.ALOAD, 0);
+        mv.visitVarInsn(Opcodes.ALOAD, 1);
+        mv.visitVarInsn(Opcodes.ALOAD, 2);
+        mv.visitMethodInsn(Opcodes.INVOKESPECIAL, REFERENCE_ADAPTER_SHORT_SIGNATURE, "<init>", "(Ljava/lang/String;Lorg/eclipse/persistence/jpa/rs/PersistenceContext;)V", false);
+        mv.visitInsn(Opcodes.RETURN);
         mv.visitMaxs(3, 3);
         mv.visitEnd();
 

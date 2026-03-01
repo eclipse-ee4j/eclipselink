@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,12 +15,6 @@
 //     01/15/2015-2.6 Mythily Parthasarathy
 //       - 457480: NPE in  MethodAttributeAccessor.getAttributeValueFromObject
 package org.eclipse.persistence.mappings;
-
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.Vector;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.changetracking.ChangeTracker;
@@ -59,6 +53,13 @@ import org.eclipse.persistence.sessions.CopyGroup;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.remote.DistributedSession;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 /**
  * <p><b>Purpose</b>: Abstract class for 1:1, variable 1:1 and reference mappings
  */
@@ -68,7 +69,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
     protected boolean isForeignKeyRelationship;
 
     /** Keeps track of which fields are foreign keys on a per field basis (can have mixed foreign key relationships). */
-    protected Vector<DatabaseField> foreignKeyFields;
+    protected List<DatabaseField> foreignKeyFields;
 
     protected ObjectReferenceMapping() {
         super();
@@ -120,16 +121,12 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
             return null;
         }
         if (refreshCascade != null ){
-            switch(refreshCascade){
-            case ObjectBuildingQuery.CascadeAllParts :
-                return unitOfWork.mergeClone(attributeValue, MergeManager.CASCADE_ALL_PARTS, true);
-            case ObjectBuildingQuery.CascadePrivateParts :
-                return unitOfWork.mergeClone(attributeValue, MergeManager.CASCADE_PRIVATE_PARTS, true);
-            case ObjectBuildingQuery.CascadeByMapping :
-                return unitOfWork.mergeClone(attributeValue, MergeManager.CASCADE_BY_MAPPING, true);
-            default:
-                return unitOfWork.mergeClone(attributeValue, MergeManager.NO_CASCADE, true);
-            }
+            return switch (refreshCascade) {
+                case ObjectBuildingQuery.CascadeAllParts -> unitOfWork.mergeClone(attributeValue, MergeManager.CASCADE_ALL_PARTS, true);
+                case ObjectBuildingQuery.CascadePrivateParts -> unitOfWork.mergeClone(attributeValue, MergeManager.CASCADE_PRIVATE_PARTS, true);
+                case ObjectBuildingQuery.CascadeByMapping -> unitOfWork.mergeClone(attributeValue, MergeManager.CASCADE_BY_MAPPING, true);
+                default -> unitOfWork.mergeClone(attributeValue, MergeManager.NO_CASCADE, true);
+            };
         }else{
             // Optimize registration to knowledge of existence.
             Object registeredObject = null;
@@ -316,7 +313,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      * We are not using a remote valueholder
      * so we need to replace the reference object(s) with
      * the corresponding object(s) from the remote session.
-     *
+     * <p>
      * ObjectReferenceMappings need to unwrap and wrap the
      * reference object.
      */
@@ -563,7 +560,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      * Return all the fields populated by this mapping, these are foreign keys only.
      */
     @Override
-    protected Vector<DatabaseField> collectFields() {
+    protected List<DatabaseField> collectFields() {
         return getForeignKeyFields();
     }
 
@@ -572,7 +569,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      * Returns the foreign key names associated with the mapping.
      * These are the fields that will be populated by the 1-1 mapping when writing.
      */
-    public Vector<DatabaseField> getForeignKeyFields() {
+    public List<DatabaseField> getForeignKeyFields() {
         return foreignKeyFields;
     }
 
@@ -581,7 +578,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
     * Set the foreign key fields associated with the mapping.
     * These are the fields that will be populated by the 1-1 mapping when writing.
     */
-    protected void setForeignKeyFields(Vector<DatabaseField> foreignKeyFields) {
+    protected void setForeignKeyFields(List<DatabaseField> foreignKeyFields) {
         this.foreignKeyFields = foreignKeyFields;
         if (!foreignKeyFields.isEmpty()) {
             setIsForeignKeyRelationship(true);
@@ -939,9 +936,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      */
     @Override
     public void collectQueryParameters(Set<DatabaseField> cacheFields){
-        for (DatabaseField field : foreignKeyFields) {
-            cacheFields.add(field);
-        }
+        cacheFields.addAll(foreignKeyFields);
     }
 
     /**
@@ -1239,7 +1234,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
     /**
      * PUBLIC:
      * Set this mapping to use Proxy Indirection.
-     *
+     * <p>
      * Proxy Indirection uses the <CODE>Proxy</CODE> and <CODE>InvocationHandler</CODE> features
      * of JDK 1.3 to provide "transparent indirection" for 1:1 relationships.  In order to use Proxy
      * Indirection:
@@ -1252,7 +1247,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      *
      * With this policy, proxy objects are returned during object creation.  When a message other than
      * <CODE>toString</CODE> is called on the proxy the real object data is retrieved from the database.
-     *
+     * <p>
      * By default, use the target class' full list of interfaces for the proxy.
      *
      */
@@ -1302,9 +1297,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      */
     public Collection buildTargetInterfaces(Class<?> aClass, Collection targetInterfacesCol) {
         Class<?>[] targetInterfaces = aClass.getInterfaces();
-        for (int index = 0; index < targetInterfaces.length; index++) {
-            targetInterfacesCol.add(targetInterfaces[index]);
-        }
+        targetInterfacesCol.addAll(Arrays.asList(targetInterfaces));
         if (aClass.getSuperclass() == null) {
             return targetInterfacesCol;
         } else {
@@ -1315,7 +1308,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
     /**
      * PUBLIC:
      * Set this mapping to use Proxy Indirection.
-     *
+     * <p>
      * Proxy Indirection uses the <CODE>Proxy</CODE> and <CODE>InvocationHandler</CODE> features
      * of JDK 1.3 to provide "transparent indirection" for 1:1 relationships.  In order to use Proxy
      * Indirection:
@@ -1339,7 +1332,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
     /**
      * PUBLIC:
      * Set this mapping to use Proxy Indirection.
-     *
+     * <p>
      * Proxy Indirection uses the <CODE>Proxy</CODE> and <CODE>InvocationHandler</CODE> features
      * of JDK 1.3 to provide "transparent indirection" for 1:1 relationships.  In order to use Proxy
      * Indirection:

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,16 +14,7 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.oxm;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.StringTokenizer;
-
-import javax.xml.datatype.XMLGregorianCalendar;
-import javax.xml.namespace.QName;
-
-import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.oxm.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.helper.DatabaseField;
@@ -35,6 +26,14 @@ import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.XPathPredicate;
 import org.eclipse.persistence.internal.oxm.mappings.Field;
 import org.eclipse.persistence.internal.oxm.record.AbstractUnmarshalRecord;
+
+import javax.xml.datatype.XMLGregorianCalendar;
+import javax.xml.namespace.QName;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.StringTokenizer;
 
 /**
  * TopLink XML mappings make use of XMLFields based on XPath statements to find the relevant
@@ -78,7 +77,6 @@ import org.eclipse.persistence.internal.oxm.record.AbstractUnmarshalRecord;
  * XML document.  However, there are cases where you must specify which one of a number of possible targets
  * TopLink should use. For example, a java.util.Calendar could be marshalled to a schema date, time, or dateTime,
  * or a byte[] could be marshalled to a schema hexBinary or base64Binary node.
- *
  * <!--
  *    <?xml version="1.0" encoding="UTF-8"?>
  *    <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
@@ -703,7 +701,7 @@ public class XMLField extends DatabaseField implements Field<XMLConversionManage
     * INTERNAL:
     */
     public void setUserXMLTypesForDeploymentXML(ArrayList pairs) throws Exception {
-        if (pairs.size() > 0) {
+        if (!pairs.isEmpty()) {
             userXMLTypes = new HashMap();
             Iterator iter = pairs.iterator();
             while (iter.hasNext()) {
@@ -736,7 +734,7 @@ public class XMLField extends DatabaseField implements Field<XMLConversionManage
     * INTERNAL:
     */
     public void setUserJavaTypesForDeploymentXML(ArrayList pairs) throws Exception {
-        if (pairs.size() > 0) {
+        if (!pairs.isEmpty()) {
             userJavaTypes = new HashMap();
             Iterator iter = pairs.iterator();
             while (iter.hasNext()) {

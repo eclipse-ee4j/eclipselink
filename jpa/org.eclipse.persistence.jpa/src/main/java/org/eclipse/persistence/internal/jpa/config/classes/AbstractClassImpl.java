@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -45,12 +45,6 @@ import org.eclipse.persistence.internal.jpa.config.structures.ArrayImpl;
 import org.eclipse.persistence.internal.jpa.config.structures.StructImpl;
 import org.eclipse.persistence.internal.jpa.config.structures.StructureImpl;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
-import org.eclipse.persistence.internal.jpa.metadata.columns.AssociationOverrideMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.columns.AttributeOverrideMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.queries.OracleArrayTypeMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.queries.OracleObjectTypeMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.queries.PLSQLRecordMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.queries.PLSQLTableMetadata;
 import org.eclipse.persistence.jpa.config.Array;
 import org.eclipse.persistence.jpa.config.AssociationOverride;
 import org.eclipse.persistence.jpa.config.AttributeOverride;
@@ -92,12 +86,12 @@ public abstract class AbstractClassImpl<T extends ClassAccessor, R> extends Abst
         super(t);
 
         getMetadata().setAttributes(new Attributes());
-        getMetadata().setAssociationOverrides(new ArrayList<AssociationOverrideMetadata>());
-        getMetadata().setAttributeOverrides(new ArrayList<AttributeOverrideMetadata>());
-        getMetadata().setOracleArrayTypes(new ArrayList<OracleArrayTypeMetadata>());
-        getMetadata().setOracleObjectTypes(new ArrayList<OracleObjectTypeMetadata>());
-        getMetadata().setPLSQLRecords(new ArrayList<PLSQLRecordMetadata>());
-        getMetadata().setPLSQLTables(new ArrayList<PLSQLTableMetadata>());
+        getMetadata().setAssociationOverrides(new ArrayList<>());
+        getMetadata().setAttributeOverrides(new ArrayList<>());
+        getMetadata().setOracleArrayTypes(new ArrayList<>());
+        getMetadata().setOracleObjectTypes(new ArrayList<>());
+        getMetadata().setPLSQLRecords(new ArrayList<>());
+        getMetadata().setPLSQLTables(new ArrayList<>());
     }
 
     public Array addArray() {

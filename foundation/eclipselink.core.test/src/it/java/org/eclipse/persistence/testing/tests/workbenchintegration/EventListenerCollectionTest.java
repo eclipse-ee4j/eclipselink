@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,10 +16,6 @@
 //       - 291546: Performance degradation due to usage of Vector in DescriptorEventManager
 package org.eclipse.persistence.testing.tests.workbenchintegration;
 
-import java.io.File;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.DescriptorEventAdapter;
 import org.eclipse.persistence.descriptors.DescriptorEventListener;
@@ -27,6 +23,10 @@ import org.eclipse.persistence.sessions.factories.XMLProjectReader;
 import org.eclipse.persistence.sessions.factories.XMLProjectWriter;
 import org.eclipse.persistence.testing.models.employee.domain.Employee;
 import org.eclipse.persistence.testing.models.employee.relational.EmployeeProject;
+
+import java.io.File;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Bug 295383

@@ -56,8 +56,7 @@ public class TestQueryIsNull {
         EntityManager em = emf.createEntityManager();
 
         try {
-            TypedQuery<String> query = em.createQuery(""
-                    + "SELECT t.itemString1 FROM EntityTbl01 t "
+            TypedQuery<String> query = em.createQuery("SELECT t.itemString1 FROM EntityTbl01 t "
                         + "WHERE 'HELLO' IS NULL", String.class);
 
             List<String> dto01 = query.getResultList();
@@ -117,8 +116,7 @@ public class TestQueryIsNull {
         }
 
         try {
-            TypedQuery<String> query = em.createQuery(""
-                    + "SELECT t.itemString1 FROM EntityTbl01 t "
+            TypedQuery<String> query = em.createQuery("SELECT t.itemString1 FROM EntityTbl01 t "
                         + "WHERE NULL IS NULL", String.class);
 
             List<String> dto01 = query.getResultList();
@@ -171,8 +169,7 @@ public class TestQueryIsNull {
         EntityManager em = emf.createEntityManager();
 
         try {
-            TypedQuery<String> query = em.createQuery(""
-                    + "SELECT t.itemString1 FROM EntityTbl01 t "
+            TypedQuery<String> query = em.createQuery("SELECT t.itemString1 FROM EntityTbl01 t "
                         + "WHERE 'HELLO' IS NOT NULL", String.class);
 
             List<String> dto01 = query.getResultList();
@@ -232,8 +229,7 @@ public class TestQueryIsNull {
         }
 
         try {
-            TypedQuery<String> query = em.createQuery(""
-                    + "SELECT t.itemString1 FROM EntityTbl01 t "
+            TypedQuery<String> query = em.createQuery("SELECT t.itemString1 FROM EntityTbl01 t "
                         + "WHERE NULL IS NOT NULL", String.class);
 
             List<String> dto01 = query.getResultList();
@@ -286,8 +282,7 @@ public class TestQueryIsNull {
         EntityManager em = emf.createEntityManager();
 
         try {
-            TypedQuery<String> query = em.createQuery(""
-                    + "SELECT t.itemString1 FROM EntityTbl01 t "
+            TypedQuery<String> query = em.createQuery("SELECT t.itemString1 FROM EntityTbl01 t "
                         + "WHERE ?1 IS NULL", String.class);
             query.setParameter(1, "HELLO");
 
@@ -352,8 +347,7 @@ public class TestQueryIsNull {
         }
 
         try {
-            TypedQuery<String> query = em.createQuery(""
-                    + "SELECT t.itemString1 FROM EntityTbl01 t "
+            TypedQuery<String> query = em.createQuery("SELECT t.itemString1 FROM EntityTbl01 t "
                         + "WHERE ?1 IS NULL", String.class);
             query.setParameter(1, null);
 
@@ -411,8 +405,7 @@ public class TestQueryIsNull {
         EntityManager em = emf.createEntityManager();
 
         try {
-            TypedQuery<String> query = em.createQuery(""
-                    + "SELECT t.itemString1 FROM EntityTbl01 t "
+            TypedQuery<String> query = em.createQuery("SELECT t.itemString1 FROM EntityTbl01 t "
                         + "WHERE ?1 IS NOT NULL", String.class);
             query.setParameter(1, "HELLO");
 
@@ -477,8 +470,7 @@ public class TestQueryIsNull {
         }
 
         try {
-            TypedQuery<String> query = em.createQuery(""
-                    + "SELECT t.itemString1 FROM EntityTbl01 t "
+            TypedQuery<String> query = em.createQuery("SELECT t.itemString1 FROM EntityTbl01 t "
                         + "WHERE ?1 IS NOT NULL", String.class);
             query.setParameter(1, null);
 

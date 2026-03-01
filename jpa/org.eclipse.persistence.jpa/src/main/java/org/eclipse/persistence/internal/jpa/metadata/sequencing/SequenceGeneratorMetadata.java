@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,7 +30,7 @@ import org.eclipse.persistence.sequencing.NativeSequence;
 /**
  * A wrapper class to the MetadataSequenceGenerator that holds onto a
  * &#064;SequenceGenerator for its metadata values.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -52,6 +52,7 @@ public class SequenceGeneratorMetadata extends ORMetadata {
     private String m_schema;
     private String m_catalog;
     private String m_sequenceName;
+    private String m_options;
 
     /**
      * INTERNAL:
@@ -74,6 +75,7 @@ public class SequenceGeneratorMetadata extends ORMetadata {
         m_schema = sequenceGenerator.getAttributeString("schema");
         m_catalog = sequenceGenerator.getAttributeString("catalog");
         m_sequenceName = sequenceGenerator.getAttributeString("sequenceName");
+        m_options = sequenceGenerator.getAttributeString("options");
     }
 
     /**
@@ -107,8 +109,7 @@ public class SequenceGeneratorMetadata extends ORMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (objectToCompare instanceof SequenceGeneratorMetadata) {
-            SequenceGeneratorMetadata generator = (SequenceGeneratorMetadata) objectToCompare;
+        if (objectToCompare instanceof SequenceGeneratorMetadata generator) {
 
             if (! valuesMatch(m_name, generator.getName())) {
                 return false;
@@ -130,6 +131,10 @@ public class SequenceGeneratorMetadata extends ORMetadata {
                 return false;
             }
 
+            if (! valuesMatch(m_options, generator.getOptions())) {
+                return false;
+            }
+
             return valuesMatch(m_sequenceName, generator.getSequenceName());
         }
 
@@ -138,9 +143,11 @@ public class SequenceGeneratorMetadata extends ORMetadata {
 
     @Override
     public int hashCode() {
-        int result = m_allocationSize != null ? m_allocationSize.hashCode() : 0;
+        int result = super.hashCode();
+        result = 31 * result + (m_allocationSize != null ? m_allocationSize.hashCode() : 0);
         result = 31 * result + (m_initialValue != null ? m_initialValue.hashCode() : 0);
         result = 31 * result + (m_name != null ? m_name.hashCode() : 0);
+        result = 31 * result + (m_options != null ? m_options.hashCode() : 0);
         result = 31 * result + (m_schema != null ? m_schema.hashCode() : 0);
         result = 31 * result + (m_catalog != null ? m_catalog.hashCode() : 0);
         result = 31 * result + (m_sequenceName != null ? m_sequenceName.hashCode() : 0);
@@ -199,6 +206,14 @@ public class SequenceGeneratorMetadata extends ORMetadata {
      * INTERNAL:
      * Used for OX mapping.
      */
+    public String getOptions() {
+        return m_options;
+    }
+
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public String getSchema() {
         return m_schema;
     }
@@ -221,16 +236,20 @@ public class SequenceGeneratorMetadata extends ORMetadata {
     /**
      * INTERNAL:
      */
-    public NativeSequence process(MetadataLogger logger) {
+    public NativeSequence process(MetadataLogger logger, String generatedName) {
         NativeSequence sequence = new NativeSequence();
 
         // Process the sequence name.
-        if (m_sequenceName == null || m_sequenceName.equals("")) {
-            logger.logConfigMessage(MetadataLogger.SEQUENCE_GENERATOR_SEQUENCE_NAME, m_name, getAccessibleObject(), getLocation());
-            sequence.setName(m_name);
+        String name = null;
+        if (m_sequenceName != null && !m_sequenceName.isEmpty()) {
+            name = m_sequenceName;
+        } else if (m_name != null && !m_name.isEmpty()) {
+            name = m_name;
         } else {
-            sequence.setName(m_sequenceName);
+            name = generatedName;
         }
+        logger.logConfigMessage(MetadataLogger.SEQUENCE_GENERATOR_SEQUENCE_NAME, name, getAccessibleObject(), getLocation());
+        sequence.setName(name);
 
         // Set the should use identity flag.
         sequence.setShouldUseIdentityIfPlatformSupports(m_useIdentityIfPlatformSupports);
@@ -254,13 +273,13 @@ public class SequenceGeneratorMetadata extends ORMetadata {
     public String processQualifier() {
         String qualifier = "";
 
-        if (m_schema != null && ! m_schema.equals("")) {
+        if (m_schema != null && !m_schema.isEmpty()) {
             qualifier = m_schema;
         }
 
-        if (m_catalog != null && ! m_catalog.equals("")) {
+        if (m_catalog != null && !m_catalog.isEmpty()) {
             // We didn't append a schema, so don't add a dot.
-            if (qualifier.equals("")) {
+            if (qualifier.isEmpty()) {
                 qualifier = m_catalog;
             } else {
                 qualifier = m_catalog + "." + qualifier;
@@ -300,6 +319,14 @@ public class SequenceGeneratorMetadata extends ORMetadata {
      */
     public void setName(String name) {
         m_name = name;
+    }
+
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setOptions(String options) {
+        m_options = options;
     }
 
     /**

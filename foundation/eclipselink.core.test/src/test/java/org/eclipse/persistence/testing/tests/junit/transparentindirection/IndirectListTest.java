@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,6 +17,7 @@ package org.eclipse.persistence.testing.tests.junit.transparentindirection;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.beans.PropertyChangeEvent;
@@ -219,7 +220,7 @@ public class IndirectListTest {
 
     @Test
     public void testEquals() {
-        assertTrue(testList.equals(list));
+        assertEquals(testList, list);
         assertNoEvents();
     }
 
@@ -267,7 +268,7 @@ public class IndirectListTest {
 
     @Test
     public void testIsEmpty() {
-        assertTrue(!testList.isEmpty());
+        assertFalse(testList.isEmpty());
         assertNoEvents();
     }
 
@@ -329,7 +330,7 @@ public class IndirectListTest {
         Object temp = list.remove(1);
         assertEquals(temp, testList.remove(1));
         assertEquals(list, testList);
-        assertTrue(!testList.contains(temp));
+        assertFalse(testList.contains(temp));
         assertRemoveEvents(1);
     }
 
@@ -340,7 +341,7 @@ public class IndirectListTest {
         assertTrue(list.remove(temp));
         assertTrue(testList.remove(temp));
         assertEquals(list, testList);
-        assertTrue(!testList.contains(temp));
+        assertFalse(testList.contains(temp));
         assertRemoveEvents(1);
     }
 
@@ -353,7 +354,7 @@ public class IndirectListTest {
         assertTrue(list.removeAll(temp));
         assertTrue(testList.removeAll(temp));
         assertEquals(list, testList);
-        assertTrue(!testList.containsAll(temp));
+        assertFalse(testList.containsAll(temp));
         assertRemoveEvents(2);
     }
 
@@ -363,7 +364,7 @@ public class IndirectListTest {
         list.removeAllElements();
         testList.removeAllElements();
         assertEquals(list, testList);
-        assertTrue(testList.size() == 0);
+        assertTrue(testList.isEmpty());
         assertRemoveEvents(originalSize);
     }
 
@@ -373,7 +374,7 @@ public class IndirectListTest {
         assertTrue(list.removeElement(temp));
         assertTrue(testList.removeElement(temp));
         assertEquals(list, testList);
-        assertTrue(!testList.contains(temp));
+        assertFalse(testList.contains(temp));
         assertRemoveEvents(1);
     }
 
@@ -383,7 +384,7 @@ public class IndirectListTest {
         list.removeElementAt(1);
         testList.removeElementAt(1);
         assertEquals(list, testList);
-        assertTrue(!testList.contains(temp));
+        assertFalse(testList.contains(temp));
         assertRemoveEvents(1);
     }
 
@@ -439,13 +440,13 @@ public class IndirectListTest {
     public void testToArray1() {
         Object[] temp = list.toArray();
         Vector v1 = new Vector(temp.length);
-        for (int i = 0; i < temp.length; i++) {
-            v1.addElement(temp[i]);
+        for (Object object : temp) {
+            v1.addElement(object);
         }
         temp = testList.toArray();
         Vector v2 = new Vector(temp.length);
-        for (int i = 0; i < temp.length; i++) {
-            v2.addElement(temp[i]);
+        for (Object o : temp) {
+            v2.addElement(o);
         }
 
         assertEquals(v1, v2);
@@ -456,13 +457,13 @@ public class IndirectListTest {
     public void testToArray2() {
         String[] temp = list.toArray(new String[0]);
         Vector v1 = new Vector(temp.length);
-        for (int i = 0; i < temp.length; i++) {
-            v1.addElement(temp[i]);
+        for (String string : temp) {
+            v1.addElement(string);
         }
         temp = testList.toArray(new String[0]);
         Vector v2 = new Vector(temp.length);
-        for (int i = 0; i < temp.length; i++) {
-            v2.addElement(temp[i]);
+        for (String s : temp) {
+            v2.addElement(s);
         }
 
         assertEquals(v1, v2);
@@ -473,7 +474,7 @@ public class IndirectListTest {
     @Test
     public void testSort() {
         assertArrayEquals(list.toArray(), testList.toArray());
-        Comparator<String> c = new Comparator<String>() {
+        Comparator<String> c = new Comparator<>() {
 
             @Override
             public int compare(String o1, String o2) {
@@ -572,8 +573,7 @@ public class IndirectListTest {
                 CollectionChangeEvent addEvent = testListLsn.events.get(i++);
                 assertEquals("expected remove event", CollectionChangeEvent.REMOVE, removeEvent.getChangeType());
                 assertEquals("expected add event", CollectionChangeEvent.ADD, addEvent.getChangeType());
-                assertFalse("removed: '" + removeEvent.getNewValue() + "', new: '" + addEvent.getNewValue() + "'",
-                        removeEvent.getNewValue().equals(addEvent.getNewValue()));
+                assertNotEquals("removed: '" + removeEvent.getNewValue() + "', new: '" + addEvent.getNewValue() + "'", removeEvent.getNewValue(), addEvent.getNewValue());
             }
         }
     }

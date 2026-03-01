@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -428,12 +428,12 @@ public class XmlAdvancedTest extends JUnitTestCase {
         }
 
         // verify that the persisted and read objects are equal
-        String errorMsg = "";
-        for(int i=0; i<employeesPersisted.size(); i++) {
-            for(int j=0; j<employeesRead.size(); j++) {
-                if(employeesPersisted.get(i).getFirstName().equals(employeesRead.get(j).getFirstName())) {
-                    if(!session.compareObjects(employeesPersisted.get(i), employeesRead.get(j))) {
-                        errorMsg += "Employee " + employeesPersisted.get(i).getFirstName() +"  was not persisted correctly.";
+        StringBuilder errorMsg = new StringBuilder();
+        for (Employee value : employeesPersisted) {
+            for (Employee employee : employeesRead) {
+                if (value.getFirstName().equals(employee.getFirstName())) {
+                    if (!session.compareObjects(value, employee)) {
+                        errorMsg.append("Employee ").append(value.getFirstName()).append("  was not persisted correctly.");
                     }
                 }
             }
@@ -444,7 +444,7 @@ public class XmlAdvancedTest extends JUnitTestCase {
 
         // non-empty error message means the test has failed
         if(errorMsg.length() > 0) {
-            fail(errorMsg);
+            fail(errorMsg.toString());
         }
     }
 
@@ -494,15 +494,15 @@ public class XmlAdvancedTest extends JUnitTestCase {
 
         // verify that the persisted and read objects are equal
         beginTransaction(em);
-        String errorMsg = "";
+        StringBuilder errorMsg = new StringBuilder();
         try{
-            for(int i=0; i<employeesPersisted.size(); i++) {
-                for(int j=0; j<employeesRead.size(); j++) {
-                    Employee emp1 = em.find(Employee.class, employeesPersisted.get(i).getId());
-                    Employee emp2 = em.find(Employee.class, employeesRead.get(j).getId());
-                    if(emp1.getFirstName().equals(emp2.getFirstName())) {
-                        if(!session.compareObjects(emp1, emp2)) {
-                            errorMsg += "Employee " + emp1.getFirstName() +"  was not updated correctly.";
+            for (Employee value : employeesPersisted) {
+                for (Employee employee : employeesRead) {
+                    Employee emp1 = em.find(Employee.class, value.getId());
+                    Employee emp2 = em.find(Employee.class, employee.getId());
+                    if (emp1.getFirstName().equals(emp2.getFirstName())) {
+                        if (!session.compareObjects(emp1, emp2)) {
+                            errorMsg.append("Employee ").append(emp1.getFirstName()).append("  was not updated correctly.");
                         }
                     }
                 }
@@ -519,7 +519,7 @@ public class XmlAdvancedTest extends JUnitTestCase {
 
         // non-empty error message means the test has failed
         if(errorMsg.length() > 0) {
-            fail(errorMsg);
+            fail(errorMsg.toString());
         }
     }
 
@@ -559,10 +559,10 @@ public class XmlAdvancedTest extends JUnitTestCase {
         // The expected result of join fetch query is Employee.dealers being triggered - so need to trigger it on the control collection (getDealers.size() does that);
         // also the expected result should have an object for each row returned - therefore number of inclusions of each Employee equals its dealers.size()
         List<Employee> employeesControl = new ArrayList<>();
-        for(int i=0; i<employeesRead.size(); i++) {
-            int nDialers = employeesRead.get(i).getDealers().size();
-            for(int j=0; j<nDialers; j++) {
-                employeesControl.add(employeesRead.get(i));
+        for (Employee employee : employeesRead) {
+            int nDialers = employee.getDealers().size();
+            for (int j = 0; j < nDialers; j++) {
+                employeesControl.add(employee);
             }
         }
         String errorMsg = JoinedAttributeTestHelper.compareCollections(employeesControl, employeesReadWithFetchJoin, session.getClassDescriptor(Employee.class), session);
@@ -571,7 +571,7 @@ public class XmlAdvancedTest extends JUnitTestCase {
         deleteEmployeesWithUnidirectionalMappings(lastName);
 
         // non-empty error message means the test has failed
-        if(errorMsg.length() > 0) {
+        if(!errorMsg.isEmpty()) {
             fail(errorMsg);
         }
     }
@@ -659,7 +659,7 @@ public class XmlAdvancedTest extends JUnitTestCase {
         deleteEmployeesWithUnidirectionalMappings(lastName);
 
         // non-empty error message means the test has failed
-        if(errorMsg.length() > 0) {
+        if(!errorMsg.isEmpty()) {
             fail(errorMsg);
         }
     }
@@ -671,9 +671,8 @@ public class XmlAdvancedTest extends JUnitTestCase {
         List<Employee> persistedEmployees = persistEmployeesWithUnidirectionalMappings(lastName);
         // cache their dealers' ids
         ArrayList<Integer> dealersIds = new ArrayList<>();
-        for(int i=0; i<persistedEmployees.size(); i++) {
-            Employee emp = persistedEmployees.get(i);
-            for(int j=0; j<emp.getDealers().size(); j++) {
+        for (Employee emp : persistedEmployees) {
+            for (int j = 0; j < emp.getDealers().size(); j++) {
                 dealersIds.add(emp.getDealers().get(j).getId());
             }
         }
@@ -705,21 +704,21 @@ public class XmlAdvancedTest extends JUnitTestCase {
 
         // find employees' dealers and verify their versions - all should be 2.
         beginTransaction(em);
-        String errorMsg = "";
+        StringBuilder errorMsg = new StringBuilder();
         try{
-            for(int i=0; i<dealersIds.size(); i++) {
-                Dealer dealer = em.find(Dealer.class, dealersIds.get(i));
+            for (Integer dealersId : dealersIds) {
+                Dealer dealer = em.find(Dealer.class, dealersId);
 
                 // verify the version both in the cache and in the db
                 int version2 = getVersion(em, dealer);
-                if(version2 != 2) {
-                    errorMsg += "In the cache dealer "+dealer.getFirstName()+"'s version is " + version2 + " (2 was expected); ";
+                if (version2 != 2) {
+                    errorMsg.append("In the cache dealer ").append(dealer.getFirstName()).append("'s version is ").append(version2).append(" (2 was expected); ");
                 }
                 em.refresh(dealer);
 
                 version2 = getVersion(em, dealer);
-                if(version2 != 2) {
-                    errorMsg += "In the db dealer "+dealer.getFirstName()+"'s version is " + version2 + " (2 was expected); ";
+                if (version2 != 2) {
+                    errorMsg.append("In the db dealer ").append(dealer.getFirstName()).append("'s version is ").append(version2).append(" (2 was expected); ");
                 }
             }
         } finally {
@@ -735,7 +734,7 @@ public class XmlAdvancedTest extends JUnitTestCase {
 
         // non-empty error message means the test has failed
         if(errorMsg.length() > 0) {
-            fail(errorMsg);
+            fail(errorMsg.toString());
         }
     }
 
@@ -787,8 +786,8 @@ public class XmlAdvancedTest extends JUnitTestCase {
         List<Employee> employees = createEmployeesWithUnidirectionalMappings(lastName);
         beginTransaction(em);
         try {
-            for(int i=0; i<employees.size(); i++) {
-                em.persist(employees.get(i));
+            for (Employee employee : employees) {
+                em.persist(employee);
             }
             commitTransaction(em);
         } finally {

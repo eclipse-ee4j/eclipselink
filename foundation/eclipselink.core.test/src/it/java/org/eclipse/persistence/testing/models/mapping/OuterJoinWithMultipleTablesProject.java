@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,7 +14,8 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.mapping;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * TopLink generated Project class.
@@ -52,8 +53,8 @@ public class OuterJoinWithMultipleTablesProject extends org.eclipse.persistence.
 
         // SECTION: DESCRIPTOR
         descriptor.setJavaClass(org.eclipse.persistence.testing.models.mapping.Course.class);
-        Vector vector = new Vector();
-        vector.addElement("STUDENT2");
+        List<String> vector = new ArrayList<>();
+        vector.add("STUDENT2");
         descriptor.setTableNames(vector);
 
         // SECTION: PROPERTIES
@@ -107,9 +108,9 @@ public class OuterJoinWithMultipleTablesProject extends org.eclipse.persistence.
 
         // SECTION: DESCRIPTOR
         descriptor.setJavaClass(org.eclipse.persistence.testing.models.mapping.Student.class);
-        Vector vector = new Vector();
-        vector.addElement("STUDENT");
-        vector.addElement("STUDENT2");
+        List<String> vector = new ArrayList<>();
+        vector.add("STUDENT");
+        vector.add("STUDENT2");
         descriptor.setTableNames(vector);
         descriptor.addPrimaryKeyFieldName("STUDENT.ST_ID");
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,16 +14,15 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.sessionsxml;
 
-import java.util.Enumeration;
-import java.util.Vector;
-
-import javax.naming.Context;
-
 import org.eclipse.persistence.internal.security.SecurableObjectHolder;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.sessions.coordination.RemoteCommandManager;
 import org.eclipse.persistence.sessions.coordination.jms.JMSTopicTransportManager;
 import org.eclipse.persistence.testing.framework.TestErrorException;
+
+import javax.naming.Context;
+import java.util.Enumeration;
+import java.util.Vector;
 
 
 public class RCMWithJmsTopicTest extends RcmBasicTest {
@@ -105,11 +104,11 @@ public class RCMWithJmsTopicTest extends RcmBasicTest {
         }
 
         if (!errors.isEmpty()) {
-            String errorString = "The following RCM elements do not match their expected values:";
+            StringBuilder errorString = new StringBuilder("The following RCM elements do not match their expected values:");
             for (Enumeration enumtr = errors.elements(); enumtr.hasMoreElements(); ) {
-                errorString += "\n   " + enumtr.nextElement();
+                errorString.append("\n   ").append(enumtr.nextElement());
             }
-            throw new TestErrorException(errorString);
+            throw new TestErrorException(errorString.toString());
         }
     }
 

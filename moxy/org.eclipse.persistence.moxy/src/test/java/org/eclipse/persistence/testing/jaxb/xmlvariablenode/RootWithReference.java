@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,10 +30,9 @@ public class RootWithReference {
 
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof RootWithReference)) {
+        if (!(obj instanceof RootWithReference rwr)) {
             return false;
         }
-        RootWithReference rwr = (RootWithReference)obj;
         return things.equals(rwr.things) &&
                 name.equals(rwr.name) &&
                 ref.equals(rwr.ref);

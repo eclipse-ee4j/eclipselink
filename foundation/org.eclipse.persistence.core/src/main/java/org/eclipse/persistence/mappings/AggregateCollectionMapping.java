@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2018, 2021 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,16 +27,6 @@
 //       - 500753: Synchronize initialization of InsertQuery
 package org.eclipse.persistence.mappings;
 
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.Vector;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.DescriptorEvent;
 import org.eclipse.persistence.descriptors.DescriptorEventManager;
@@ -60,7 +50,6 @@ import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.IdentityHashSet;
-import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.identitymaps.CacheId;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.mappings.converters.AttributeNameTokenizer.TokensIterator;
@@ -96,6 +85,15 @@ import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.remote.DistributedSession;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.Vector;
+
 /**
  * <p><b>Purpose</b>: The aggregate collection mapping is used to represent the aggregate relationship between a single
  * source object and a collection of target objects. The target objects cannot exist without the existence of the
@@ -109,10 +107,10 @@ import org.eclipse.persistence.sessions.remote.DistributedSession;
 public class AggregateCollectionMapping extends CollectionMapping implements RelationalMapping, MapComponentMapping, EmbeddableMapping {
 
     /** This is a key in the target table which is a foreign key in the target table. */
-    protected Vector<DatabaseField> targetForeignKeyFields;
+    protected List<DatabaseField> targetForeignKeyFields;
 
     /** This is a primary key in the source table that is used as foreign key in the target table */
-    protected Vector<DatabaseField> sourceKeyFields;
+    protected List<DatabaseField> sourceKeyFields;
 
     /** Foreign keys in the target table to the related keys in the source table */
     protected Map<DatabaseField, DatabaseField> targetForeignKeyToSourceKeys;
@@ -173,12 +171,12 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * Default constructor.
      */
     public AggregateCollectionMapping() {
-        this.aggregateToSourceFields = new HashMap(5);
+        this.aggregateToSourceFields = new HashMap<>(5);
         this.nestedAggregateToSourceFields = new HashMap<>(5);
         this.converters = new HashMap<>();
-        this.targetForeignKeyToSourceKeys = new HashMap(5);
-        this.sourceKeyFields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(1);
-        this.targetForeignKeyFields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(1);
+        this.targetForeignKeyToSourceKeys = new HashMap<>(5);
+        this.sourceKeyFields = new ArrayList<>(1);
+        this.targetForeignKeyFields = new ArrayList<>(1);
         this.deleteAllQuery = new DeleteAllQuery();
         //aggregates should always cascade all operations
         this.setCascadeAll(true);
@@ -250,7 +248,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
 
     /**
      * PUBLIC:
-     *
+     * <p>
      * Maps a field name in the aggregate descriptor
      * to a field name in the source table.
      */
@@ -274,12 +272,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      */
     @Override
     public void addNestedFieldTranslation(String attributeName, DatabaseField sourceField, String aggregateFieldName) {
-        Map<String, DatabaseField> attributeFieldNameTranslation = nestedAggregateToSourceFields.get(attributeName);
-
-        if (attributeFieldNameTranslation == null) {
-            attributeFieldNameTranslation = new HashMap<>(5);
-            nestedAggregateToSourceFields.put(attributeName, attributeFieldNameTranslation);
-        }
+        Map<String, DatabaseField> attributeFieldNameTranslation = nestedAggregateToSourceFields.computeIfAbsent(attributeName, k -> new HashMap<>(5));
 
         attributeFieldNameTranslation.put(aggregateFieldName, sourceField);
     }
@@ -305,8 +298,8 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      */
     @Override
     public void addTargetForeignKeyField(DatabaseField targetForeignKey, DatabaseField sourceKey) {
-        getTargetForeignKeyFields().addElement(targetForeignKey);
-        getSourceKeyFields().addElement(sourceKey);
+        getTargetForeignKeyFields().add(targetForeignKey);
+        getSourceKeyFields().add(sourceKey);
     }
 
     /**
@@ -457,9 +450,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      */
     @Override
     public void collectQueryParameters(Set<DatabaseField> cacheFields){
-        for (DatabaseField field : getSourceKeyFields()) {
-            cacheFields.add(field);
-        }
+        cacheFields.addAll(getSourceKeyFields());
     }
 
     /**
@@ -606,11 +597,11 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
     @Override
     public Object clone() {
         AggregateCollectionMapping mappingObject = (AggregateCollectionMapping)super.clone();
-        mappingObject.setTargetForeignKeyToSourceKeys(new HashMap(getTargetForeignKeyToSourceKeys()));
-        mappingObject.setSourceKeyFields(org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(getSourceKeyFields()));
-        mappingObject.setTargetForeignKeyFields(org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(getTargetForeignKeyFields()));
-        mappingObject.aggregateToSourceFields = new HashMap(this.aggregateToSourceFields);
-        mappingObject.nestedAggregateToSourceFields = new HashMap(this.nestedAggregateToSourceFields);
+        mappingObject.setTargetForeignKeyToSourceKeys(new HashMap<>(getTargetForeignKeyToSourceKeys()));
+        mappingObject.setSourceKeyFields(new ArrayList<>(getSourceKeyFields()));
+        mappingObject.setTargetForeignKeyFields(new ArrayList<>(getTargetForeignKeyFields()));
+        mappingObject.aggregateToSourceFields = new HashMap<>(this.aggregateToSourceFields);
+        mappingObject.nestedAggregateToSourceFields = new HashMap<>(this.nestedAggregateToSourceFields);
         if(updateListOrderFieldQuery != null) {
             mappingObject.updateListOrderFieldQuery = this.updateListOrderFieldQuery;
         }
@@ -700,7 +691,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
                     change = true;
                 }
             }
-            if ((change == true)) {
+            if ((change)) {
                 return convertToChangeRecord(cloneCollection, backupCollection, owner, session);
             } else {
                 return null;
@@ -974,9 +965,9 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
                 int iMax = -1;
                 int iShift = 0;
                 // each index corresponds to a bunch of objects to be shifted
-                ArrayList<Integer> iMinList = new ArrayList();
-                ArrayList<Integer> iMaxList = new ArrayList();
-                ArrayList<Integer> iShiftList = new ArrayList();
+                ArrayList<Integer> iMinList = new ArrayList<>();
+                ArrayList<Integer> iMaxList = new ArrayList<>();
+                ArrayList<Integer> iShiftList = new ArrayList<>();
                 Iterator<Map.Entry<Integer, Integer>> itEntries = currentIndexByPreviousIndex.entrySet().iterator();
                 while(itEntries.hasNext()) {
                     Map.Entry<Integer, Integer> entry = itEntries.next();
@@ -1196,7 +1187,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
     protected ChangeRecord convertToChangeRecord(Object cloneCollection, Object backupCollection, ObjectChangeSet owner, AbstractSession session) {
         ContainerPolicy cp = getContainerPolicy();
         Object cloneIter = cp.iteratorFor(cloneCollection);
-        Vector collectionChanges = new Vector(2);
+        List<ObjectChangeSet> collectionChanges = new ArrayList<>(2);
         while (cp.hasNext(cloneIter)) {
             Object entry = cp.nextEntry(cloneIter, session);
             Object aggregateObject = cp.unwrapIteratorResult(entry);
@@ -1204,7 +1195,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
             if (aggregateObject != null) {
                 ObjectChangeSet changes = getReferenceDescriptor(aggregateObject.getClass(), session).getObjectBuilder().compareForChange(aggregateObject, null, (UnitOfWorkChangeSet)owner.getUOWChangeSet(), session);
                 changes.setNewKey(cp.keyFromIterator(cloneIter));
-                collectionChanges.addElement(changes);
+                collectionChanges.add(changes);
             }
         }
 
@@ -1369,9 +1360,9 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
     public AbstractRecord getAggregateRow(ObjectLevelModifyQuery query, Object object) {
         Vector referenceObjectKeys = getReferenceObjectKeys(query);
         AbstractRecord aggregateRow = new DatabaseRecord();
-        Vector<DatabaseField> keys = getTargetForeignKeyFields();
+        List<DatabaseField> keys = getTargetForeignKeyFields();
         for (int keyIndex = 0; keyIndex < keys.size(); keyIndex++) {
-            aggregateRow.put(keys.elementAt(keyIndex), referenceObjectKeys.elementAt(keyIndex));
+            aggregateRow.put(keys.get(keyIndex), referenceObjectKeys.get(keyIndex));
         }
         getReferenceDescriptor(object.getClass(), query.getSession()).getObjectBuilder().buildRow(aggregateRow, object, query.getSession(), WriteType.UNDEFINED);
 
@@ -1400,7 +1391,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
     }
 
     /**
-     * Overrides CollectionMappig because this mapping requires a DeleteAllQuery instead of a ModifyQuery.
+     * Overrides CollectionMapping because this mapping requires a DeleteAllQuery instead of a ModifyQuery.
      */
     @Override
     protected ModifyQuery getDeleteAllQuery() {
@@ -1454,9 +1445,9 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         //For CR#2587-S.M.  For nested aggregate collections the source keys can easily be read from the original query.
         AbstractRecord translationRow = query.getTranslationRow();
 
-        for (Enumeration<DatabaseField> sourcekeys = getSourceKeyFields().elements();
-             sourcekeys.hasMoreElements();) {
-            DatabaseField sourceKey = sourcekeys.nextElement();
+        for (Iterator<DatabaseField> iterator = getSourceKeyFields().iterator();
+             iterator.hasNext();) {
+            DatabaseField sourceKey = iterator.next();
 
             // CR#2587.  Try first to get the source key from the original query.  If that fails try to get it from the object.
             Object referenceKey = null;
@@ -1465,7 +1456,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
             } else {
                 referenceKey = getDescriptor().getObjectBuilder().extractValueFromObjectForField(query.getObject(), sourceKey, query.getSession());
             }
-            referenceObjectKeys.addElement(referenceKey);
+            referenceObjectKeys.add(referenceKey);
         }
 
         return referenceObjectKeys;
@@ -1476,11 +1467,11 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * Return the source key field names associated with the mapping.
      * These are in-order with the targetForeignKeyFieldNames.
      */
-    public Vector getSourceKeyFieldNames() {
-        Vector fieldNames = new Vector(getSourceKeyFields().size());
-        for (Enumeration<DatabaseField> fieldsEnum = getSourceKeyFields().elements();
-             fieldsEnum.hasMoreElements();) {
-            fieldNames.addElement(fieldsEnum.nextElement().getQualifiedName());
+    public List<String> getSourceKeyFieldNames() {
+        List<String> fieldNames = new ArrayList<>(getSourceKeyFields().size());
+        for (Iterator<DatabaseField> iterator = getSourceKeyFields().iterator();
+             iterator.hasNext();) {
+            fieldNames.add(iterator.next().getQualifiedName());
         }
 
         return fieldNames;
@@ -1490,20 +1481,20 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * INTERNAL:
      * Return the source key names associated with the mapping
      */
-    public Vector<DatabaseField> getSourceKeyFields() {
+    public List<DatabaseField> getSourceKeyFields() {
         return sourceKeyFields;
     }
 
     /**
      * PUBLIC:
-     * Return the target foregin key field names associated with the mapping.
+     * Return the target foreign key field names associated with the mapping.
      * These are in-order with the sourceKeyFieldNames.
      */
-    public Vector getTargetForeignKeyFieldNames() {
-        Vector fieldNames = new Vector(getTargetForeignKeyFields().size());
-        for (Enumeration<DatabaseField> fieldsEnum = getTargetForeignKeyFields().elements();
-             fieldsEnum.hasMoreElements();) {
-            fieldNames.addElement(fieldsEnum.nextElement().getQualifiedName());
+    public List<String> getTargetForeignKeyFieldNames() {
+        List<String> fieldNames = new ArrayList<>(getTargetForeignKeyFields().size());
+        for (Iterator<DatabaseField> iterator = getTargetForeignKeyFields().iterator();
+             iterator.hasNext();) {
+            fieldNames.add(iterator.next().getQualifiedName());
         }
 
         return fieldNames;
@@ -1511,9 +1502,9 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
 
     /**
      * INTERNAL:
-     * Return the target foregin key fields associated with the mapping
+     * Return the target foreign key fields associated with the mapping
      */
-    public Vector<DatabaseField> getTargetForeignKeyFields() {
+    public List<DatabaseField> getTargetForeignKeyFields() {
         return targetForeignKeyFields;
     }
 
@@ -1811,7 +1802,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
             descriptor.addTable(defaultSourceTable);
         } else {
             defaultAggregateTable = descriptor.getTables().get(0);
-            Vector newTables = NonSynchronizedVector.newInstance(nTables);
+            List<DatabaseTable> newTables = new ArrayList<>(nTables);
             for(int i=0; i < nTables; i++) {
                 DatabaseTable table = tableTranslation.get(descriptor.getTables().get(i));
                 if(table == null) {
@@ -1829,7 +1820,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
             nPrimaryKeyFields = descriptor.getPrimaryKeyFields().size();
         }
         if(nPrimaryKeyFields > 0) {
-            ArrayList<DatabaseField> newPrimaryKeyFields = new ArrayList(nPrimaryKeyFields);
+            ArrayList<DatabaseField> newPrimaryKeyFields = new ArrayList<>(nPrimaryKeyFields);
             for(int i=0; i < nPrimaryKeyFields; i++) {
                 DatabaseField pkField = descriptor.getPrimaryKeyFields().get(i);
                 if(!pkField.hasTableName() && nTables > 0) {
@@ -1867,7 +1858,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
 
                 // attribute "homes.sellingPonts" is divided into attribute "homes" and nestedAttribute "sellingPoints"
                 if (indexOfDot >= 0) {
-                    nestedAttribute = attribute.substring(indexOfDot + 1, attribute.length());
+                    nestedAttribute = attribute.substring(indexOfDot + 1);
                     attribute = attribute.substring(0, indexOfDot);
                 }
 
@@ -1932,7 +1923,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         if (parentDescriptor.getInheritancePolicy().hasChildren()) {
             //setFields(clonedChildDescriptor.getFields());
             List<ClassDescriptor> childDescriptors = parentDescriptor.getInheritancePolicy().getChildDescriptors();
-            List<ClassDescriptor> cloneChildDescriptors = new ArrayList(childDescriptors.size());
+            List<ClassDescriptor> cloneChildDescriptors = new ArrayList<>(childDescriptors.size());
             for (ClassDescriptor childDescriptor : childDescriptors) {
                 ClassDescriptor clonedChildDescriptor = (ClassDescriptor)childDescriptor.clone();
                 if (fieldTranslation != null) {
@@ -2012,8 +2003,8 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
             initializeParentInheritance(parentToParentDescriptor, parentDescriptor, session, fieldTranslation, tableTranslation);
         }
 
-        Vector children = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(1);
-        children.addElement(childDescriptor);
+        List<ClassDescriptor> children = new ArrayList<>(1);
+        children.add(childDescriptor);
         clonedParentDescriptor.getInheritancePolicy().setChildDescriptors(children);
         clonedParentDescriptor.preInitialize(session);
         clonedParentDescriptor.initialize(session);
@@ -2091,7 +2082,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
                 field.setKeepInRow(true);
             }
         }
-        setSourceKeyFields(org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(sourceKeys));
+        setSourceKeyFields(new ArrayList<>(sourceKeys));
         for (int index = 0; index < getTargetForeignKeyFields().size(); index++) {
             DatabaseField foreignKeyfield = getTargetForeignKeyFields().get(index);
             foreignKeyfield = getReferenceDescriptor().buildField(foreignKeyfield);
@@ -2569,7 +2560,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         AbstractRecord targetForeignKeyRow = new DatabaseRecord();
         Vector referenceObjectKeys = getReferenceObjectKeys(originalQuery);
         for (int keyIndex = 0; keyIndex < getTargetForeignKeyFields().size(); keyIndex++) {
-            targetForeignKeyRow.put(getTargetForeignKeyFields().elementAt(keyIndex), referenceObjectKeys.elementAt(keyIndex));
+            targetForeignKeyRow.put(getTargetForeignKeyFields().get(keyIndex), referenceObjectKeys.get(keyIndex));
         }
 
         insertQuery.setModifyRow(targetForeignKeyRow);
@@ -2646,10 +2637,10 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * Set the source key field names associated with the mapping.
      * These must be in-order with the targetForeignKeyFieldNames.
      */
-    public void setSourceKeyFieldNames(Vector fieldNames) {
-        Vector fields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(fieldNames.size());
-        for (Enumeration fieldNamesEnum = fieldNames.elements(); fieldNamesEnum.hasMoreElements();) {
-            fields.addElement(new DatabaseField((String)fieldNamesEnum.nextElement()));
+    public void setSourceKeyFieldNames(List<String> fieldNames) {
+        List<DatabaseField> fields = new ArrayList<>(fieldNames.size());
+        for (Iterator<String> iterator = fieldNames.iterator(); iterator.hasNext();) {
+            fields.add(new DatabaseField(iterator.next()));
         }
 
         setSourceKeyFields(fields);
@@ -2659,19 +2650,19 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * INTERNAL:
      * set all the primary key names associated with this mapping
      */
-    public void setSourceKeyFields(Vector<DatabaseField> sourceKeyFields) {
+    public void setSourceKeyFields(List<DatabaseField> sourceKeyFields) {
         this.sourceKeyFields = sourceKeyFields;
     }
 
     /**
      * PUBLIC:
-     * Set the target foregin key field names associated with the mapping.
+     * Set the target foreign key field names associated with the mapping.
      * These must be in-order with the sourceKeyFieldNames.
      */
-    public void setTargetForeignKeyFieldNames(Vector fieldNames) {
-        Vector fields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(fieldNames.size());
-        for (Enumeration fieldNamesEnum = fieldNames.elements(); fieldNamesEnum.hasMoreElements();) {
-            fields.addElement(new DatabaseField((String)fieldNamesEnum.nextElement()));
+    public void setTargetForeignKeyFieldNames(List<String> fieldNames) {
+        List<DatabaseField> fields = new ArrayList<>(fieldNames.size());
+        for (Iterator<String> iterator = fieldNames.iterator(); iterator.hasNext();) {
+            fields.add(new DatabaseField(iterator.next()));
         }
 
         setTargetForeignKeyFields(fields);
@@ -2679,9 +2670,9 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
 
     /**
      * INTERNAL:
-     * set the target foregin key fields associated with the mapping
+     * set the target foreign key fields associated with the mapping
      */
-    public void setTargetForeignKeyFields(Vector<DatabaseField> targetForeignKeyFields) {
+    public void setTargetForeignKeyFields(List<DatabaseField> targetForeignKeyFields) {
         this.targetForeignKeyFields = targetForeignKeyFields;
     }
 
@@ -2695,11 +2686,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      */
     @Override
     protected boolean shouldObjectModifyCascadeToParts(ObjectLevelModifyQuery query) {
-        if (isReadOnly()) {
-            return false;
-        }
-
-        return true;
+        return !isReadOnly();
     }
 
     /**

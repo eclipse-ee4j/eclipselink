@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,10 +18,10 @@ import commonj.sdo.Type;
 import java.util.ArrayList;
 import java.util.List;
 import junit.textui.TestRunner;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDOProperty;
 import org.eclipse.persistence.sdo.SDOType;
-import org.eclipse.persistence.internal.helper.ClassConstants;
 
 public class PurchaseOrderComplexDefineTestCases extends XSDHelperDefineTestCases {
     public PurchaseOrderComplexDefineTestCases(String name) {
@@ -210,7 +210,7 @@ public class PurchaseOrderComplexDefineTestCases extends XSDHelperDefineTestCase
         quantityType.setDataType(true);
         quantityType.getBaseTypes().add(intType);
         //quantityType.setInstanceClassName("java.lang.Integer");
-        quantityType.setInstanceClassName(ClassConstants.PINT.getName());
+        quantityType.setInstanceClassName(CoreClassConstants.PINT.getName());
         quantityType.setXsdLocalName("quantityType");
 
         /****SKU TYPE*****/

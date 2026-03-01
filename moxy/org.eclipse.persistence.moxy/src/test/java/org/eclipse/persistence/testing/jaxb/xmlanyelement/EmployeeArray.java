@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,9 +15,6 @@
 package org.eclipse.persistence.testing.jaxb.xmlanyelement;
 
 import jakarta.xml.bind.annotation.*;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
 
 import org.w3c.dom.Element;
 import org.eclipse.persistence.platform.xml.XMLComparer;
@@ -35,11 +32,10 @@ public class EmployeeArray {
     public Object[] elements;
 
     public boolean equals(Object obj) {
-        if(!(obj instanceof EmployeeArray)) {
+        if(!(obj instanceof EmployeeArray emp)) {
             return false;
         }
 
-        EmployeeArray emp = (EmployeeArray)obj;
         if(!(name.equals(emp.name))) {
             return false;
         }
@@ -56,9 +52,7 @@ public class EmployeeArray {
             Object next1 = elements[i];
             Object next2 = emp.elements[i];
 
-            if((next1 instanceof org.w3c.dom.Element) && (next2 instanceof Element)) {
-                Element nextElem1 = (Element)next1;
-                Element nextElem2 = (Element)next2;
+            if((next1 instanceof Element nextElem1) && (next2 instanceof Element nextElem2)) {
                 if(!(comparer.isNodeEqual(nextElem1, nextElem2))) {
                     return false;
                 }

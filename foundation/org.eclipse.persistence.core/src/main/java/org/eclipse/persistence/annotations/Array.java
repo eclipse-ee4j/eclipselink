@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,17 +14,17 @@
 //     Oracle - initial API and implementation
 package org.eclipse.persistence.annotations;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
 import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-
 /**
  * Array types are extended object-relational data-types supported by some databases.
  * Array types are user define types in the database such as VARRAY types on Oracle.
- * Arrays can contains basic types (VARCHAR) or other Struct types, and can be stored in
+ * Arrays can contain basic types (VARCHAR) or other Struct types, and can be stored in
  * a column or in a Struct type.
  * <p>
  * This annotation can be defined on a collection attribute that is
@@ -41,17 +41,18 @@ import java.lang.annotation.Target;
 @Retention(RUNTIME)
 public @interface Array {
     /**
-     * (Optional) The basic or embeddable class that is the element
-     * type of the collection.  This element is optional only if the
-     * collection field or property is defined using Java generics,
-     * and must be specified otherwise.  It defaults to the
-     * paramterized type of the collection when defined using
-     * generics.
+     * The basic or embeddable class that is the element type of the collection.
+     * <p>
+     * This element is optional only if the collection field or property
+     * is defined using Java generics, and must be specified otherwise.
+     * <p>
+     * It defaults to the parameterized type of the collection
+     * when defined using generics.
      */
     Class<?> targetClass() default void.class;
 
     /**
-     * (Required) The database name of the database array structure type.
+     * The database name of the database array structure type.
      */
     String databaseType();
 }

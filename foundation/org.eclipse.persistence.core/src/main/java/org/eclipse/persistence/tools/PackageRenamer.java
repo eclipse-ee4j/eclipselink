@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,22 +33,22 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.Objects;
 import java.util.Properties;
 import java.util.Vector;
 
 /**
  * This class performs package renaming. It demonstrates the following:
- *
+ * <p>
  * a) Reading the properties file to be a reference for changing the package
  * name from your source code.
- *
+ * <p>
  * b) Traverse source root directory for creating a corresponding output directory
  * and finding the java source file(s) to be changing the package name.
- *
+ * <p>
  * c) Search and replace the old TopLink package name(s) with new one(s) according to the reference.
- *
+ * <p>
  * You will be able to see the logging message at the command line window
  * where the PackageRenamer is running.
  *
@@ -86,14 +86,7 @@ public class PackageRenamer {
 
     static {
         // bug 2756643
-        CR = PrivilegedAccessHelper.shouldUsePrivilegedAccess() ?
-                AccessController.doPrivileged(new PrivilegedAction<>() {
-                    @Override
-                    public String run() {
-                        return System.getProperty("line.separator");
-                    }
-                })
-                : System.getProperty("line.separator");
+        CR = System.lineSeparator();
     }
 
     /**
@@ -104,14 +97,14 @@ public class PackageRenamer {
     }
 
     public PackageRenamer(String propertiesFileName) {
-        System.out.println("");
+        System.out.println();
         System.out.println("TopLink Package Renamer");
         System.out.println("-----------------------");
         System.out.println(bannerText());
         sourceRootDirFile = existingDirectoryFromPrompt();
-        System.out.println("");
+        System.out.println();
         destinationRootDir = promptForDestinationDirectory();
-        System.out.println("");
+        System.out.println();
         this.propertiesFileName = propertiesFileName;
         outLog = streamForNonExistentFilePrompt();
         properties = readChangesFile(propertiesFileName);
@@ -437,22 +430,12 @@ public class PackageRenamer {
      */
     public Properties readChangesFile(String filename) {
         Properties props = new Properties();
-        InputStream in = null;
-        try {
-            in = new FileInputStream(filename);
+        try (InputStream in = new FileInputStream(filename)) {
             props.load(in);
         } catch (FileNotFoundException fileNotFoundException) {
             throw new PackageRenamerException("Properties file was not found:" + CR + "  '" + filename + "'");
         } catch (IOException ioException) {
             throw new PackageRenamerException("IO error occurred while reading the properties file:'" + filename + "'" + ioException.getMessage());
-        } finally {
-            if (in != null) {
-                try {
-                    in.close();
-                } catch (Exception e) {
-                    // ignore
-                }
-            }
         }
         logln("Using properties file: " + filename);
         return props;
@@ -461,7 +444,7 @@ public class PackageRenamer {
     /**
     * This run() method performs,
     * reading the properties file into properties variable to be a reference for changing package name.
-    * creating an destination-root-direetory.
+    * creating a destination-root-directory.
     * and, calling traverseSourceDirectory() method.
     */
     public void run() {
@@ -506,7 +489,7 @@ public class PackageRenamer {
         } catch (IOException exception) {
             throw new PackageRenamerException("Error while reading the name of the log file: " + exception.getMessage());
         }
-        if ((aLine != null) && (aLine.length() == 0)) {
+        if ((aLine != null) && (aLine.isEmpty())) {
             return buildAndCheckLogWriter(SYSTEM_OUT);
         } else {
             return buildAndCheckLogWriter(aLine);
@@ -533,11 +516,9 @@ public class PackageRenamer {
 
         // Reading file into string.
         // stringContainAllFile = readAllStringsFromFile(sourceFileName);
-        FileInputStream fis = null;
-        try {
-            fis = new FileInputStream(new java.io.File(sourceFileName));
+        try (FileInputStream fis = new FileInputStream(sourceFileName)) {
             byte[] buf = new byte[BUFSIZ];
-            StringBuilder strBuf = new StringBuilder((int)new java.io.File(sourceFileName).length());
+            StringBuilder strBuf = new StringBuilder((int) new File(sourceFileName).length());
             int i = 0;
             while ((i = fis.read(buf)) != -1) {
                 if (bufferContainsNullChar(buf, i)) {
@@ -554,21 +535,11 @@ public class PackageRenamer {
 
         } catch (IOException ioException) {
             throw new PackageRenamerException("Unexpected exception was thrown during file manipulation." + ioException.getMessage());
-        } finally {
-            if (fis != null) {
-                try {
-                    fis.close();
-                } catch (Exception e) {
-                    // ignore
-                }
-            }
         }
 
         // Sorting key package name.
         Vector<Object> aVector = new Vector<>();
-        for (Enumeration<Object> e = properties.keys(); e.hasMoreElements();) {
-            aVector.addElement(e.nextElement());
-        }
+        aVector.addAll(properties.keySet());
         String[] aStringArrayOfSortedKeyPackageName = new String[aVector.size()];
         aVector.copyInto(aStringArrayOfSortedKeyPackageName);
         Arrays.sort(aStringArrayOfSortedKeyPackageName);
@@ -576,8 +547,8 @@ public class PackageRenamer {
         // Starting to rename.
         boolean alreadyPrint = false;
         int index = aStringArrayOfSortedKeyPackageName.length;
-        for (Enumeration<Object> enumtr = properties.keys(); enumtr.hasMoreElements();) {
-            enumtr.nextElement();
+        for (Iterator<Object> iterator = properties.keySet().iterator(); iterator.hasNext();) {
+            iterator.next();
             String key = aStringArrayOfSortedKeyPackageName[index - 1];
             String value = (String)properties.get(key);
             index -= 1;
@@ -633,7 +604,7 @@ public class PackageRenamer {
             String lastPart;
 
             firstPart = str.substring(0, pos);
-            lastPart = str.substring(pos + oldChars.length(), str.length());
+            lastPart = str.substring(pos + oldChars.length());
             str = firstPart + newChars + lastPart;
             lastPos = pos + len;
             pos = str.indexOf(oldChars, lastPos);
@@ -647,13 +618,13 @@ public class PackageRenamer {
      *
      * @param aSourceFileNameWithoutRoot
      *            The original filename
-     * @return The new filename, regardless of whether is has been changed
+     * @return The new filename, regardless of whether it has been changed
      */
     public String returnNewFileNameIfRequired(String aSourceFileNameWithoutRoot) {
-        for (Enumeration<Object> enumtr = properties.keys(); enumtr.hasMoreElements();) {
-            String key = (String)enumtr.nextElement();
+        for (Iterator<Object> iterator = properties.keySet().iterator(); iterator.hasNext();) {
+            String key = (String) iterator.next();
 
-            if (aSourceFileNameWithoutRoot.indexOf(key) != -1) {
+            if (aSourceFileNameWithoutRoot.contains(key)) {
                 // replacing the old package name.
                 aSourceFileNameWithoutRoot = replace(aSourceFileNameWithoutRoot, key, (String)properties.get(key));
             }
@@ -665,7 +636,7 @@ public class PackageRenamer {
 
     /**
      * This traverseSourceDirectory() traverse source-root-directory, creating
-     * an corresponding output directory, and calling another method for
+     * a corresponding output directory, and calling another method for
      * replacing old TopLink package name.
      *
      * @param aDirectoryString
@@ -682,7 +653,7 @@ public class PackageRenamer {
             java.io.File fileOrDirectory = filesAndDirectories[i];
             if (fileOrDirectory.isDirectory()) {
                 String sourceDirectoryName = fileOrDirectory.toString();
-                String destinationDirectoryName = destinationRootDir.toString() + sourceDirectoryName.substring(sourceRootDirFile.toString().length(), sourceDirectoryName.length());
+                String destinationDirectoryName = destinationRootDir.toString() + sourceDirectoryName.substring(sourceRootDirFile.toString().length());
                 createDestinationDirectory(new java.io.File(destinationDirectoryName));
                 traverseSourceDirectory(fileOrDirectory);
             } else {
@@ -698,45 +669,45 @@ public class PackageRenamer {
     }
 
     public static void usage() {
-        System.out.println("");
+        System.out.println();
         System.out.println("TopLink Package Renamer");
         System.out.println("-----------------------");
-        System.out.println("");
+        System.out.println();
         System.out.println("The package  renamer should  be run  once on user source code, configuration");
         System.out.println("files,  and   Mapping  Workbench  project  files  that  have  references  to");
         System.out.println("pre-Oracle 9iAS TopLink 9.0.3  API  packages.  The package renamer  works on");
         System.out.println("plain text files and should NOT be run on binary files such as JAR files.");
-        System.out.println("");
+        System.out.println();
         System.out.println("The package renamer supports two command line usages. A call which specifies");
         System.out.println("all the required arguments, and  a  call which takes only one parameter.  In");
         System.out.println("this last case, the user is prompted for the missing arguments.");
-        System.out.println("");
+        System.out.println();
         System.out.println("Usage:");
-        System.out.println("");
+        System.out.println();
         System.out.println("java org.eclipse.persistence.tools.PackageRenamer <properties-file>");
-        System.out.println("");
+        System.out.println();
         System.out.println("OR");
-        System.out.println("");
+        System.out.println();
         System.out.println("java org.eclipse.persistence.tools.PackageRenamer <properties-file> <source-root-directory> <destination-root-directory> [ <log-file> ]");
-        System.out.println("");
+        System.out.println();
         System.out.println("where:");
         System.out.println("\t<properties-file> - File containing  a list of  old and new package");
         System.out.println("\tnames.");
-        System.out.println("");
+        System.out.println();
         System.out.println("\t<source-root-directory> - Absolute path name of the directory which");
         System.out.println("\tcontains all the file to be converted.  The <source-root-directory>");
         System.out.println("\twill be searched recursively for files  to convert.  This directory");
         System.out.println("\tshould contain only the plain text files to be converted.");
-        System.out.println("");
+        System.out.println();
         System.out.println("\t<destination-root-directory> - Absolute path name of  the directory");
         System.out.println("\twhere the converted directory  structure will be copied.  All files");
         System.out.println("\twill be copied to  the new directory structure whether changes were");
         System.out.println("\tmade or not. This directory must either not exist or be empty.");
-        System.out.println("");
+        System.out.println();
         System.out.println("\t<log-file> - The logging  of  the  renaming process will be written");
         System.out.println("\tto the <log-file>.  If no  <log-file>  is  specified  then  logging");
         System.out.println("\twill be written to standard output.");
-        System.out.println("");
+        System.out.println();
     }
 
     // Made static final for performance reasons.

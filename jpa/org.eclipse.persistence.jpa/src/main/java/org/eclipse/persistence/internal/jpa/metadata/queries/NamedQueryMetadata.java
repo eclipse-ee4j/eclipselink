@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,13 +37,16 @@ import org.eclipse.persistence.internal.jpa.QueryHintsHandler;
 import org.eclipse.persistence.internal.jpa.jpql.JPQLQueryHelper;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
+import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 /**
  * INTERNAL:
  * Object to hold onto a named query metadata.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -58,11 +61,13 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
  * @since TopLink EJB 3.0 Reference Implementation
  */
 public class NamedQueryMetadata extends ORMetadata {
-    private List<QueryHintMetadata> m_hints = new ArrayList<QueryHintMetadata>();
+    private List<QueryHintMetadata> m_hints = new ArrayList<>();
 
     private String m_lockMode;
     private String m_name;
     private String m_query;
+    private MetadataClass m_resultClass;
+    private String m_resultClassName;
 
     /**
      * INTERNAL:
@@ -82,6 +87,7 @@ public class NamedQueryMetadata extends ORMetadata {
         m_name = namedQuery.getAttributeString("name");
         m_query = namedQuery.getAttributeString("query");
         m_lockMode = namedQuery.getAttributeString("lockMode");
+        m_resultClass = getMetadataClass(namedQuery.getAttributeString("resultClass"));
 
         for (Object hint : namedQuery.getAttributeArray("hints")) {
             m_hints.add(new QueryHintMetadata((MetadataAnnotation)hint, accessor));
@@ -128,14 +134,17 @@ public class NamedQueryMetadata extends ORMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (objectToCompare instanceof NamedQueryMetadata) {
-            NamedQueryMetadata query = (NamedQueryMetadata) objectToCompare;
+        if (objectToCompare instanceof NamedQueryMetadata query) {
 
             if (! valuesMatch(m_name, query.getName())) {
                 return false;
             }
 
             if (! valuesMatch(m_query, query.getQuery())) {
+                return false;
+            }
+
+            if (! valuesMatch(m_resultClass, query.getResultClass())) {
                 return false;
             }
 
@@ -147,9 +156,11 @@ public class NamedQueryMetadata extends ORMetadata {
 
     @Override
     public int hashCode() {
-        int result = m_hints != null ? m_hints.hashCode() : 0;
+        int result = super.hashCode();
+        result = 31 * result + (m_hints != null ? m_hints.hashCode() : 0);
         result = 31 * result + (m_name != null ? m_name.hashCode() : 0);
         result = 31 * result + (m_query != null ? m_query.hashCode() : 0);
+        result = 31 * result + (m_resultClass != null ? m_resultClass.hashCode() : 0);
         return result;
     }
 
@@ -197,6 +208,31 @@ public class NamedQueryMetadata extends ORMetadata {
     /**
      * INTERNAL:
      */
+    public MetadataClass getResultClass() {
+        return m_resultClass;
+    }
+
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public String getResultClassName() {
+        return m_resultClassName;
+    }
+
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public void initXMLObject(MetadataAccessibleObject accessibleObject, XMLEntityMappings entityMappings) {
+        super.initXMLObject(accessibleObject, entityMappings);
+
+        m_resultClass = initXMLClassName(m_resultClassName);
+    }
+
+    /**
+     * INTERNAL:
+     */
     public void process(AbstractSession session) {
         try {
             addJPAQuery(new JPAQuery(getName(), getQuery(), getLockMode(), processQueryHints(session)), session);
@@ -209,7 +245,7 @@ public class NamedQueryMetadata extends ORMetadata {
      * INTERNAL:
      */
     protected Map<String, Object> processQueryHints(AbstractSession session) {
-        Map<String, Object> hints = new HashMap<String, Object>();
+        Map<String, Object> hints = new HashMap<>();
 
         for (QueryHintMetadata hint : getHints()) {
             QueryHintsHandler.verify(hint.getName(), hint.getValue(), getName(), session);
@@ -268,4 +304,20 @@ public class NamedQueryMetadata extends ORMetadata {
     public void setQuery(String query) {
         m_query = query;
     }
+
+    /**
+     * INTERNAL:
+     */
+    public void setResultClass(MetadataClass resultClass) {
+        m_resultClass = resultClass;
+    }
+
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setResultClassName(String resultClassName) {
+        m_resultClassName = resultClassName;
+    }
+
 }

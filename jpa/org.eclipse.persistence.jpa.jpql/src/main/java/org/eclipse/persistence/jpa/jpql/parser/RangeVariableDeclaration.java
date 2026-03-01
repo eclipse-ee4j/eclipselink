@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2024 Contributors to the Eclipse Foundation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,7 +39,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * @since 2.3
  * @author Pascal Filion
  */
-public final class RangeVariableDeclaration extends AbstractExpression {
+public final class RangeVariableDeclaration extends AbstractExpression implements ParentExpression {
 
     /**
      * The actual <b>AS</b> identifier found in the string representation of the JPQL query.
@@ -175,6 +176,11 @@ public final class RangeVariableDeclaration extends AbstractExpression {
     }
 
     @Override
+    public List<IdentificationVariable> getIdentificationVariablesWithoutAlias() {
+        return null;
+    }
+
+    @Override
     public JPQLQueryBNF getQueryBNF() {
         return getQueryBNF(RangeVariableDeclarationBNF.ID);
     }
@@ -252,6 +258,11 @@ public final class RangeVariableDeclaration extends AbstractExpression {
     }
 
     @Override
+    public boolean isGenerateImplicitThisAlias() {
+        return false;
+    }
+
+    @Override
     protected boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
         return word.equalsIgnoreCase(AS)    ||
                word.equalsIgnoreCase(SET)   ||
@@ -275,17 +286,21 @@ public final class RangeVariableDeclaration extends AbstractExpression {
             hasSpaceAfterAs = wordParser.skipLeadingWhitespace() > 0;
         }
 
-        // Special case when parsing the range variable declaration of an UPDATE clause that does
-        // not have an identification variable, e.g. "UPDATE DateTime SET date = CURRENT_DATE"
-        if (!wordParser.startsWithIdentifier(SET)) {
-            if (tolerant) {
-                identificationVariable = parse(wordParser, IdentificationVariableBNF.ID, tolerant);
+        if (tolerant) {
+            identificationVariable = parse(wordParser, IdentificationVariableBNF.ID, tolerant);
+            if (identificationVariable == null && this.getRoot().isJakartaData()) {
+                addMissingAlias(Expression.THIS);
             }
-            else {
-                identificationVariable = new IdentificationVariable(this, wordParser.word());
-                identificationVariable.parse(wordParser, tolerant);
-            }
+        } else if (!wordParser.startsWithIdentifier(SET)) {
+            // We need to avoid the special valid case when parsing the range variable declaration of an UPDATE clause that does
+            // not have an identification variable, e.g. "UPDATE DateTime SET date = CURRENT_DATE"
+            identificationVariable = new IdentificationVariable(this, wordParser.word());
+            identificationVariable.parse(wordParser, tolerant);
         }
+    }
+
+    @Override
+    public void setGenerateImplicitThisAlias(boolean generateImplicitThisAlias) {
     }
 
     /**
@@ -354,5 +369,35 @@ public final class RangeVariableDeclaration extends AbstractExpression {
         if ((identificationVariable != null) && !virtualIdentificationVariable) {
             identificationVariable.toParsedText(writer, actual);
         }
+    }
+
+    /**
+     * Add missing Entity alias into current {@link FromClause}. Limited on SELECT queries.
+     *
+     * @param aliasName Entity alias.
+     */
+    private void addMissingAlias(String aliasName) {
+        if (isMissingAliasInSelectFromClause()
+                || isMissingAliasInUpdateClause()
+                || isMissingAliasInDeleteFromClause()) {
+            this.setVirtualIdentificationVariable(aliasName);
+            this.getParentExpression().setGenerateImplicitThisAlias(true);
+        }
+    }
+
+    private boolean isMissingAliasInSelectFromClause() {
+        return this.getParent() instanceof IdentificationVariableDeclaration identificationVariableDeclaration
+                && identificationVariableDeclaration.getParent() instanceof FromClause
+                && this.getIdentificationVariable() instanceof NullExpression;
+    }
+
+    private boolean isMissingAliasInUpdateClause() {
+        return this.getParent() instanceof UpdateClause
+                && this.getIdentificationVariable() instanceof NullExpression;
+    }
+
+    private boolean isMissingAliasInDeleteFromClause() {
+        return this.getParent() instanceof DeleteClause deleteClause
+                && this.getIdentificationVariable() instanceof NullExpression;
     }
 }

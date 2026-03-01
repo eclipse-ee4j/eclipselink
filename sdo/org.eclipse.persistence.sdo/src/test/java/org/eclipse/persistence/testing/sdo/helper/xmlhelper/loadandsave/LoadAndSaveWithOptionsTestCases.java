@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,7 +33,6 @@ import javax.xml.transform.stream.StreamSource;
 import org.eclipse.persistence.testing.sdo.helper.xmlhelper.SDOXMLHelperTestCases;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDOType;
-import org.eclipse.persistence.sdo.helper.SDOXMLHelper;
 import org.eclipse.persistence.sdo.helper.extension.SDOUtil;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
+import java.util.ArrayList;
 
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.Marshaller;
@@ -30,11 +31,10 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.dynamic.DynamicEntity;
-import org.eclipse.persistence.internal.jaxb.JaxbClassLoader;
-import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContextFactory;
+import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.testing.jaxb.dynamic.util.MyList;
 import org.w3c.dom.Document;
 
@@ -65,6 +65,23 @@ public class DynamicJAXBCollectionTestCases extends TestCase {
         assertEquals("Unexpected number of phoneNumbers returned.", 3, phoneNumbers.size());
         DynamicEntity firstPhoneNumber = phoneNumbers.get(0);
         assertEquals("Incorrect phoneNumber type.", "work", firstPhoneNumber.get("type"));
+    }
+
+    public void testXSDInstantiateList() throws Exception {
+        InputStream schemaStream = ClassLoader.getSystemResourceAsStream(XSD_SINGLE);
+        jaxbContext = DynamicJAXBContextFactory.createContextFromXSD(schemaStream, null, null, null);
+
+        var customer = jaxbContext.newDynamicEntity("Customer");
+
+        assertNotNull(customer.get("phoneNumbers"));
+
+        var resolver = new NamespaceResolver();
+        resolver.setDefaultNamespaceURI("www.example.org/customer");
+
+        var phoneNumbers = jaxbContext.getValueByXPath(customer, "phone-numbers", resolver, Object.class);
+
+        assertNotNull(phoneNumbers);
+        assertEquals(ArrayList.class, phoneNumbers.getClass());
     }
 
     public void testXSDMultipleListUnmarshal() throws Exception {

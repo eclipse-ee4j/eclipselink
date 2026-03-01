@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,14 +14,18 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.mapping;
 
-import java.util.*;
-import org.eclipse.persistence.testing.framework.*;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.sessions.*;
-import org.eclipse.persistence.testing.models.mapping.Phone;
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.sessions.UnitOfWork;
+import org.eclipse.persistence.testing.framework.TestErrorException;
+import org.eclipse.persistence.testing.framework.TestWarningException;
+import org.eclipse.persistence.testing.framework.WriteObjectTest;
 import org.eclipse.persistence.testing.models.mapping.Computer;
 import org.eclipse.persistence.testing.models.mapping.Employee;
 import org.eclipse.persistence.testing.models.mapping.JobDescription;
+import org.eclipse.persistence.testing.models.mapping.Phone;
+
+import java.util.Calendar;
+import java.util.Vector;
 
 /**
  * <p>
@@ -92,8 +96,8 @@ public class UnitOfWorkCommitResumeTest extends WriteObjectTest {
 
         // DirectCollectionMapping - Employee.policies
         Vector thePolicies = employee.getPolicies();
-        thePolicies.removeElementAt(0);
-        thePolicies.addElement("a silly policy");
+        thePolicies.remove(0);
+        thePolicies.add("a silly policy");
 
         // OneToOneMapping - Employee.computer
 
@@ -112,13 +116,13 @@ public class UnitOfWorkCommitResumeTest extends WriteObjectTest {
 
         // ManyToManyMapping - Employee.phoneNumbers
         Vector thePhoneNumbers = employee.getPhoneNumbers();
-        thePhoneNumbers.removeElementAt(0);
-        thePhoneNumbers.addElement(Phone.example10());
-        thePhoneNumbers.addElement(Phone.example11());
-        thePhoneNumbers.addElement(Phone.example12());
-        thePhoneNumbers.addElement(Phone.example13());
-        thePhoneNumbers.addElement(Phone.example14());
-        thePhoneNumbers.removeElementAt(0);
+        thePhoneNumbers.remove(0);
+        thePhoneNumbers.add(Phone.example10());
+        thePhoneNumbers.add(Phone.example11());
+        thePhoneNumbers.add(Phone.example12());
+        thePhoneNumbers.add(Phone.example13());
+        thePhoneNumbers.add(Phone.example14());
+        thePhoneNumbers.remove(0);
 
         // OneToManyMapping - Employee.managedEmployees
 
@@ -160,14 +164,14 @@ public class UnitOfWorkCommitResumeTest extends WriteObjectTest {
         //employee.computer = Computer.example5(employee) ;
         // ManyToManyMapping - Employee.phoneNumbers
         Vector thePhoneNumbers = employee.getPhoneNumbers();
-        thePhoneNumbers.addElement(Phone.example1());
-        thePhoneNumbers.addElement(Phone.example2());
-        thePhoneNumbers.addElement(Phone.example3());
-        thePhoneNumbers.addElement(Phone.example4());
-        thePhoneNumbers.removeElementAt(0);
-        thePhoneNumbers.removeElementAt(0);
-        thePhoneNumbers.removeElementAt(0);
-        thePhoneNumbers.removeElementAt(0);
+        thePhoneNumbers.add(Phone.example1());
+        thePhoneNumbers.add(Phone.example2());
+        thePhoneNumbers.add(Phone.example3());
+        thePhoneNumbers.add(Phone.example4());
+        thePhoneNumbers.remove(0);
+        thePhoneNumbers.remove(0);
+        thePhoneNumbers.remove(0);
+        thePhoneNumbers.remove(0);
 
         // OneToManyMapping - Employee.managedEmployees
         //employee.managedEmployees = new Vector();

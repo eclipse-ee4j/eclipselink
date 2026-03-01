@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,13 +14,11 @@
 //     Denise Smith - December 15, 2009
 package org.eclipse.persistence.testing.oxm.mappings.binarydata.identifiedbyname;
 
+import jakarta.activation.DataHandler;
+import org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.MyAttachmentUnmarshaller;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-
-import jakarta.activation.DataHandler;
-
-import org.eclipse.persistence.testing.oxm.mappings.binarydata.Employee;
-import org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.MyAttachmentUnmarshaller;
 
 public class EmployeeWithByteObjectArray {
     public static final int DEFAULT_ID = 123;
@@ -86,10 +84,9 @@ public class EmployeeWithByteObjectArray {
     }
 
     public boolean equals(Object object) {
-        if (!(object instanceof EmployeeWithByteObjectArray)) {
+        if (!(object instanceof EmployeeWithByteObjectArray employeeObject)) {
             return false;
         }
-        EmployeeWithByteObjectArray employeeObject = (EmployeeWithByteObjectArray)object;
 
         if ((this.getPhoto() == null) && (employeeObject.getPhoto() != null)) {
             return false;
@@ -98,7 +95,7 @@ public class EmployeeWithByteObjectArray {
             return false;
         }
 
-        /**
+        /*
          * Note: do not use Vector.contains() for byte[] arrays since each .getBytes() will return
          * a different hash-value and will not pass the embedded (==) during the .contain check.
          * You must check each base64 byte in sequence
@@ -123,9 +120,7 @@ public class EmployeeWithByteObjectArray {
             try {
                 Object obj1 =  data.getContent();
                 Object obj2 =  employeeObject.getData().getContent();
-                if(data.getContent() instanceof ByteArrayInputStream && employeeObject.getData().getContent() instanceof ByteArrayInputStream){
-                    ByteArrayInputStream controlStream = ((ByteArrayInputStream)data.getContent());
-                    ByteArrayInputStream testStream = ((ByteArrayInputStream)employeeObject.getData().getContent());
+                if(data.getContent() instanceof ByteArrayInputStream controlStream && employeeObject.getData().getContent() instanceof ByteArrayInputStream testStream){
                     if(controlStream.available() != testStream.available()){
                         return false;
                     }

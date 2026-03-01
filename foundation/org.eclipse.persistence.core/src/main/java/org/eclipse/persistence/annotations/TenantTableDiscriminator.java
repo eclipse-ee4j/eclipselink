@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,29 +18,27 @@ package org.eclipse.persistence.annotations;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import org.eclipse.persistence.config.PersistenceUnitProperties;
-
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
  * <p>
- * A tenant table discriminator is used with a TABLE_PER_TENANT multitenant
+ * A tenant table discriminator is used with a {@linkplain MultitenantType#TABLE_PER_TENANT} multitenant
  * strategy. The tenant table discriminator describes the type of table
  * discriminator to use. The user may choose their own tenant identifier
  * property or use the default property:
- *
- * org.eclipse.persistence.config.PersistenceUnitProperties.MULTITENANT_PROPERTY_DEFAULT = "eclipselink.tenant-id"
- *
+ * <p>
+ * {@snippet :
+ * org.eclipse.persistence.config.PersistenceUnitProperties.MULTITENANT_PROPERTY_DEFAULT = "eclipselink.tenant-id";
+ * }
  * <p>
  * Tenant table discriminator can be specified at the Entity or MappedSuperclass
- * level and must always be accompanied with a Multitenant(TABLE_PER_TENANT)
+ * level and must always be accompanied with a {@code @Multitenant(TABLE_PER_TENANT)}
  * specification. It is not sufficient to specify only a tenant table discriminator.
  *
- * @see org.eclipse.persistence.annotations.TenantTableDiscriminator
- * @see org.eclipse.persistence.annotations.Multitenant
- * @see org.eclipse.persistence.annotations.MultitenantType
- *
+ * @see TenantTableDiscriminator
+ * @see Multitenant
+ * @see MultitenantType
  * @author Guy Pelletier
  * @since EclipseLink 2.4
  */
@@ -48,15 +46,17 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 public @interface TenantTableDiscriminator {
     /**
-     * (Optional) The name of the context property to apply to as
-     * tenant table discriminator. Default is "eclipselink-tenant.id"
+     * The name of the context property to apply to as tenant table discriminator.
+     * <p>
+     * Default is "{@code eclipselink-tenant.id}".
      */
-    String contextProperty() default PersistenceUnitProperties.MULTITENANT_PROPERTY_DEFAULT;
+    String contextProperty() default "eclipselink.tenant-id";
 
     /**
-     * (Optional) The type of tenant table discriminator to use with the tables
+     * The type of tenant table discriminator to use with the tables
      * of the persistence unit.
-     * Defaults to {@link TenantTableDiscriminatorType#SUFFIX TenantTableDiscriminatorType.SUFFIX}.
+     * <p>
+     * Defaults to {@linkplain TenantTableDiscriminatorType#SUFFIX}.
      */
     TenantTableDiscriminatorType type() default TenantTableDiscriminatorType.SUFFIX;
 }

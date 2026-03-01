@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -747,7 +747,7 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
             assertFalse(phonesIL.isInstantiated());
             assertEquals(2, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
 
-            assertTrue(emp.getPhoneNumbers().size() > 0);
+            assertTrue(!emp.getPhoneNumbers().isEmpty());
             assertEquals(3, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
         } finally {
             if (isTransactionActive(em)){
@@ -1510,7 +1510,7 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
                  if(managerVH != managerAttr) {
                      localErrorMsg += "\n\tmanagerVH = " + managerVH + " != managerAttr = " + managerAttr;
                  }
-                 if(localErrorMsg.length() > 0) {
+                 if(!localErrorMsg.isEmpty()) {
                      localErrorMsg = emp.toString() + localErrorMsg + "\n";
                      errorMsgBuilder.append(localErrorMsg);
                  }
@@ -1522,7 +1522,7 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
             }
             closeEntityManager(em);
         }
-        if(errorMsg.length() > 0) {
+        if(!errorMsg.isEmpty()) {
             errorMsg = '\n' + errorMsg;
             fail(errorMsg);
         }

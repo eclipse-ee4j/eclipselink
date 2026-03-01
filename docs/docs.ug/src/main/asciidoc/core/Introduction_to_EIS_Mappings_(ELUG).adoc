@@ -1,0 +1,928 @@
+image:Elug_draft_icon.png[Image:Elug draft
+icon.png,title="Image:Elug draft icon.png"] *For the latest EclipseLink
+documentation, please see
+http://www.eclipse.org/eclipselink/documentation/*
+
+'''''
+
+*TOC* Special:Whatlinkshere_Introduction_to_EIS_Mappings_(ELUG)[Related
+Topics]
+
+EclipseLink enterprise information system (EIS) mappings provide support
+for accessing legacy data sources and enterprise applications through
+Java EE Connector architecture (JCA) adapter. EclipseLink EIS mappings
+use the JCA Common Client Interface (CCI) to access the EIS through its
+resource adapter. This provides the ability to directly map from an
+existing Java object model to any transactional data source, such as
+mainframes with flat file/hierarchical data.
+
+An EIS mapping transforms object data members to the EIS record format
+defined by the object’s descriptor.
+
+For information on mapping concepts and features common to more than one
+type of EclipseLink mappings, see
+link:Introduction%20to%20Mappings%20(ELUG)[Introduction to Mappings].
+
+== EIS Mapping Types
+
+EclipseLink supports the EIS mappings listed in this table.
+
+[#Table 73-1]##
+
+EIS Mapping Type
+
+Description
+
+EclipseLink Workbench
+
+Java
+
+EIS Direct Mapping
+
+Map a simple object attribute directly to an EIS record.
+
+EIS Composite Direct Collection Mapping
+
+Map a collection of Java attributes directly to an EIS record.
+
+EIS Composite Object Mapping
+
+Map a Java object to an EIS record in a privately owned one-to-one
+relationship. Composite object mappings represent a relationship between
+two classes.
+
+EIS Composite Collection Mapping
+
+Map a Map or Collection of Java objects to an EIS record in a privately
+owned one-to-many relationship.
+
+EIS One-to-One Mapping
+
+Define a reference mapping that represents the relationship between a
+single source object and a single mapped persistent Java object.
+
+EIS One-to-Many Mapping
+
+Define a reference mapping that represents the relationship between a
+single source object and a collection of mapped persistent Java objects.
+
+EIS Transformation Mapping
+
+Create custom mappings where one or more EIS record fields can be used
+to create the object to be stored in a Java class’s attribute.
+
+== EIS Mapping Concepts
+
+This section describes concepts unique to EclipseLink EIS mappings,
+including the following:
+
+* link:#EIS_Record_Type[EIS Record Type]
+* link:#XPath_Support[XPath Support]
+* #xsd:list_and_xsd:union_Support[xsd:list and xsd:union Support]
+* #jaxb:class_Support[jaxb:class Support]
+* link:#Typesafe_Enumeration_Support[Typesafe Enumeration Support]
+* link:#Composite_and_Reference_EIS_Mappings[Composite and Reference EIS
+Mappings]
+* link:#EIS_Mapping_Architecture[EIS Mapping Architecture]
+
+=== EIS Record Type
+
+EclipseLink supports the following JCA EIS record types:
+
+* link:#Indexed_Records[Indexed Records]
+* link:#Mapped_Records[Mapped Records]
+* link:#[XML RecordsXML Records]
+
+You configure the record type at the EIS descriptor level (see
+link:Configuring%20an%20EIS%20Descriptor%20(ELUG)#Configuring_Record_Format[Configuring
+Record Format]). EIS mappings use the record type of their EIS
+descriptor to determine how to map Java attributes. That is, you use the
+same EIS mapping regardless of the record type, with which you configure
+an EIS descriptor.
+
+[width="100%",cols="<100%",]
+|===
+|*Note:* Not all JCA adapters support all record types. Consult your JCA
+adapter documentation for details.
+|===
+
+==== Indexed Records
+
+The `+javax.resource.cci.IndexedRecord+` represents an ordered
+collection of record elements based on the `+java.util.List+` interface.
+
+The EclipseLink runtime maps Java objects to indexed record elements or
+subrecords of an indexed record depending on the type of EIS mapping you
+use (see link:#Composite_and_Reference_EIS_Mappings[Composite and
+Reference EIS Mappings]).
+
+==== Mapped Records
+
+The `+javax.resource.cci.MappedRecord+` represents a key-value map-based
+collection of record elements based on the `+java.util.Map+` interface.
+
+The EclipseLink runtime maps Java objects to mapped record elements or
+subrecords of a mapped record depending on the type of EIS mapping you
+use (see link:#Composite_and_Reference_EIS_Mappings[Composite and
+Reference EIS Mappings]).
+
+==== XML Records
+
+An XML record represents a `+javax.resource.cci.Record+` as an XML
+schema (XSD)-based XML document. Not all JCA adapters support XML
+records.
+
+The EclipseLink runtime maps Java objects to XML documents according to
+your XSD and the behavior defined for XML mappings.
+
+For more information, see
+link:Introduction%20to%20XML%20Mappings%20(ELUG)[Introduction to XML
+Mappings].
+
+=== XPath Support
+
+When using XML records, EclipseLink EIS mappings use XPath statements to
+efficiently map the attributes of a Java object to locations in an XML
+record. For more information about using XPath with XML mappings, see
+link:Introduction%20to%20Mappings%20(ELUG)#Mappings_and_XPath[Mappings
+and XPath].
+
+=== xsd:list and xsd:union Support
+
+When using XML records, you can use EIS direct (see
+link:#EIS_Direct_Mapping[EIS Direct Mapping]) and composite direct
+collection (see link:#EIS_Composite_Direct_Collection_Mapping[EIS
+Composite Direct Collection Mapping]) mappings to map to `+xsd:list+`
+and `+xsd:union+` types in an XML record.
+
+For more information, see
+Introduction%20to%20Mappings%20(ELUG)#Mappings_and_xsd:list_and_xsd:union_Types[Mappings
+and xsd:list and xsd:union Types].
+
+=== jaxb:class Support
+
+When using XML records, you can configure an EIS composite object
+mapping (see link:#EIS_Composite_Object_Mapping[EIS Composite Object
+Mapping]) to accommodate `+jaxb:class+` customizations with the
+following XSD structures:
+
+* `+all+`
+* `+sequence+`
+* `+choice+`
+* `+group+`
+
+For more information, see
+Introduction%20to%20Mappings%20(ELUG)#Mappings_and_the_jaxb:class_Customization[Mappings
+and the jaxb:class Customization].
+
+=== Typesafe Enumeration Support
+
+You can map a Java attribute to a `+typesafe+` enumeration using the
+`+JAXBTypesafeEnumConverter+` with an `+EISDirectMapping+` or
+`+EISCompositeDirectCollectionMapping+` with XML records.
+
+For more information, see
+link:Introduction%20to%20Mappings%20(ELUG)#Mappings_and_JAXB_Typesafe_Enumerations[Mappings
+and JAXB Typesafe Enumerations].
+
+=== Composite and Reference EIS Mappings
+
+EclipseLink supports composite and reference EIS mappings. Although
+there is a source and target object in both mapping types, the
+EclipseLink runtime handles interactions with each differently. This
+section explains how.
+
+==== Composite EIS Mappings
+
+In a composite EIS mapping (
+link:#EIS_Composite_Direct_Collection_Mapping[EIS Composite Direct
+Collection Mapping], link:#EIS_Composite_Object_Mapping[EIS Composite
+Object Mapping], and link:#EIS_Composite_Collection_Mapping[EIS
+Composite Collection Mapping]), the source object contains (owns) the
+target object.
+
+EclipseLink puts the attributes of the target (owned) object (or the
+owned collection of objects) into the source (owning) object’s record as
+a subrecord. The target object needs not be a root object type (see
+link:Configuring%20an%20EIS%20Descriptor%20(ELUG)#Configuring_an_EIS_Descriptor_as_a_Root_or_Composite_Type[Configuring
+an EIS Descriptor as a Root or Composite Type]): it needs not have
+interactions defined for it.
+
+The link:#Figure_73-1[EIS Composite Mappings] figure illustrates a read
+interaction on an instance of the `+Customer+` class using indexed
+records. For the composite object EIS mapping defined for the
+`+address+` attribute, EclipseLink creates an `+Address+` subrecord in
+the `+Customer+` record.
+
+[#Figure 73-1]## *_EIS Composite Mappings_*
+
+.EIS Composite Mappings
+image::eiscomp.gif[EIS Composite
+Mappings,title="EIS Composite Mappings"]
+
+==== Reference EIS Mappings
+
+In a reference EIS mapping ( link:#EIS_One-to-One_Mapping[EIS One-to-One
+Mapping] and link:#EIS_One-to-Many_Mapping[EIS One-to-Many Mapping]),
+the source object contains only a foreign key (pointer) to the target
+object or, alternatively, the target object contains a foreign key to
+the source object (key on target).
+
+EclipseLink puts the foreign key of the target object into the source
+object’s record as a simple value. When an interaction is executed on
+the source object, EclipseLink uses the selection interaction that you
+define on its descriptor to retrieve the appropriate target object
+instance and creates a record for it in the source object’s transaction.
+By default, the selection interaction is the target object’s read
+interaction. If the read interaction is not sufficient, you can define a
+separate selection interaction (see
+link:Configuring%20an%20EIS%20Mapping%20(ELUG)#Configuring_Selection_Interaction[Configuring
+Selection Interaction]). Because both the source and target object use
+interactions, they must both be of a root object type (see
+link:Configuring%20an%20EIS%20Descriptor%20(ELUG)#Configuring_an_EIS_Descriptor_as_a_Root_or_Composite_Type[Configuring
+an EIS Descriptor as a Root or Composite Type]).
+
+The link:#Figure_73-2[EIS Reference Mappings] figure illustrates a read
+interaction on an instance of the `+Order+` class using indexed records.
+For the one-to-one EIS mapping defined for the `+customer+` attribute,
+EclipseLink puts the target `+Customer+` object’s foreign key into the
+`+Order+` record as a simple value. EclipseLink then uses the selection
+interaction you configure on the `+Order+` descriptor to retrieve the
+appropriate instance of `+Customer+` and creates a record for it in the
+`+Order+` object’s transaction.
+
+[#Figure 73-2]## *_EIS Reference Mappings_*
+
+.EIS Reference Mappings
+image::eisref.gif[EIS Reference Mappings,title="EIS Reference Mappings"]
+
+=== EIS Mapping Architecture
+
+The link:#Figure_73-3[Possible EIS Mapping Architectures] figure
+illustrates the following possible EclipseLink EIS mapping
+architectures:
+
+* JDBC database gateway (such as Oracle Database 10__g__)
+* JDBC adapter
+* Proprietary adapter (such as Oracle Interconnect)
+* JCA
+
+[#Figure 73-3]## *_Possible EIS Mapping Architectures_*
+
+.Possible EIS Mapping Architectures
+image::eisarch.gif[Possible EIS Mapping
+Architectures,title="Possible EIS Mapping Architectures"]
+
+The best solution may vary, depending on your specific EIS and
+infrastructure.
+
+== EIS Direct Mapping
+
+An EIS direct mapping maps a simple object attribute directly to an EIS
+record according to its descriptor’s record type, as shown in this
+table.
+
+[#Table 73-2]## *_EIS Direct Mapping by EIS Record Type_*
+
+[width="100%",cols="<22%,<78%",options="header",]
+|===
+|*EIS Record Type* |*Mapping Behavior*
+|Indexed |Maps directly to a field in the indexed record.
+|Mapped |Maps directly to a field in the mapped record.
+|XML |Maps directly to an attribute or text node in the XML record 1.
+|===
+
+1See also
+link:Introduction%20to%20XML%20Mappings%20(ELUG)#XML_Direct_Mapping[XML
+Direct Mapping]. This figure illustrates a direct EIS mapping between
+`+Order+` class attribute `+orderedBy+` and XML record attribute
+`+ordered_by+` within the `+order+` element.
+
+[#Figure 73-4]## *_EIS Direct Mappings_*
+
+.EIS Direct Mappings
+image::onetoone_eis_fig.gif[EIS Direct
+Mappings,title="EIS Direct Mappings"]
+
+See
+link:Configuring%20an%20EIS%20Direct%20Mapping%20(ELUG)#Configuring_an_EIS_Direct_Mapping[Configuring
+an EIS Direct Mapping] for more information.
+
+== EIS Composite Direct Collection Mapping
+
+An EIS composite direct collection mapping maps a collection of Java
+attributes directly to an EIS record according to its descriptor’s
+record type, as shown in this table.
+
+[#Table 73-3]## *_EIS Composite Direct Collection Mapping by EIS Record
+Type_*
+
+[width="100%",cols="<22%,<78%",options="header",]
+|===
+|*EIS Record Type* |*Mapping Behavior*
+|Indexed |Maps directly to a subrecord in the indexed record 1.
+|Mapped |Maps directly to a subrecord in the mapped record 1.
+|XML |Maps directly to an attribute or text node in the XML record 2.
+|===
+
+1See also link:#Composite_EIS_Mappings[Composite EIS Mappings]. 2See
+also
+link:Introduction%20to%20XML%20Mappings%20(ELUG)#XML_Composite_Direct_Collection_Mapping[XML
+Composite Direct Collection Mapping]. The link:#Figure_73-5[EIS
+Composite Direct Collection Mapping] figure illustrates a composite
+direct collection mapping between `+Order+` class attribute `+items+`
+and an XML record. The `+Order+` attribute `+items+` is a collection
+type (such as `+Vector+`). It is mapped to an XML record composed of an
+`+order+` element that contains a sequence of `+item+` elements.
+
+[#Figure 73-5]## *_EIS Composite Direct Collection Mapping_*
+
+.EIS Composite Direct Collection Mapping
+image::eiscdc.gif[EIS Composite Direct Collection
+Mapping,title="EIS Composite Direct Collection Mapping"]
+
+See
+link:Configuring%20an%20EIS%20Composite%20Direct%20Collection%20Mapping%20(ELUG)[Configuring
+an EIS Composite Direct Collection Mapping] for more information.
+
+== EIS Composite Object Mapping
+
+An EIS composite object mapping maps a Java object to a privately owned
+one-to-one relationship in an EIS record according to its descriptor’s
+record type, as shown in this table.
+
+[#Table 73-4]## *_EIS Composite Object Mapping by EIS Record Type_*
+
+[width="100%",cols="<22%,<78%",options="header",]
+|===
+|*EIS Record Type* |*Mapping Behavior*
+|Indexed |Maps directly to a subrecord in the indexed record1.
+|Mapped |Maps directly to a subrecord in the mapped record 1.
+|XML |Maps directly to an attribute or text node in the XML record2.
+|===
+
+1See also link:#Composite_EIS_Mappings[Composite EIS Mappings]. 2See
+also
+link:Introduction%20to%20XML%20Mappings%20(ELUG)#XML_Composite_Object_Mapping[XML
+Composite Object Mapping]. The link:#Figure_73-6[EIS Composite Object
+Mappings] figure illustrates a composite object EIS mapping between
+`+Order+` class attribute `+address+` and an XML record. `+Order+`
+attribute `+address+` is mapped to an XML record composed of an
+`+order+` element that contains an `+address+` element.
+
+[#Figure 73-6]## *_EIS Composite Object Mappings_*
+
+.EIS Composite Object Mappings
+image::coeisfig.gif[EIS Composite Object
+Mappings,title="EIS Composite Object Mappings"]
+
+You can use an EIS composite object mapping with a change policy (see
+link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Change_Policy[Configuring
+Change Policy].
+
+See
+link:Configuring%20an%20EIS%20Composite%20Object%20Mapping%20(ELUG)[Configuring
+an EIS Composite Object Mapping] for more information.
+
+== EIS Composite Collection Mapping
+
+An EIS composite collection mapping maps a collection of Java objects to
+a privately owned one-to-many relationship in an EIS record according to
+its descriptor’s record type, as shown in the following table. Composite
+collection mappings can reference any class that has an EclipseLink
+descriptor.
+
+[#Table 73-5]## *_EIS Composite Collection Mapping by EIS Record Type_*
+
+[width="100%",cols="<22%,<78%",options="header",]
+|===
+|*EIS Record Type* |*Mapping Behavior*
+|Indexed |Maps directly to a subrecord in the indexed record 1.
+|Mapped |Maps directly to a subrecord in the mapped record 1.
+|XML |Maps directly to an attribute or text node in the XML record2.
+|===
+
+1See also link:#Composite_EIS_Mappings[Composite EIS Mappings]. 2See
+also
+link:Introduction%20to%20XML%20Mappings%20(ELUG)#XML_Composite_Collection_Mapping[XML
+Composite Collection Mapping]. This figure illustrates a composite
+collection EIS mapping between `+Phone+` class attribute
+`+phoneNumbers+` and an XML record. `+Employee+` attribute
+`+phoneNumbers+` is mapped to an XML record composed of an `+EMPLOYEE+`
+element that contains a sequence of `+PHONE_NUMBER+` elements.
+
+[#Figure 73-7]## *_EIS Composite Collection Mappings_*
+
+.EIS Composite Collection Mappings
+image::comclfig.gif[EIS Composite Collection
+Mappings,title="EIS Composite Collection Mappings"]
+
+See
+link:Configuring%20an%20EIS%20Composite%20Collection%20Mapping_(ELUG)[Configuring
+an EIS Composite Collection Mapping] for more information.
+
+== EIS One-to-One Mapping
+
+An EIS one-to-one mapping is a reference mapping that represents the
+relationship between a single source and target object. The source
+object usually contains a foreign key (pointer) to the target object
+(key on source). Alternatively, the target object may contain a foreign
+key to the source object (key on target). Because both the source and
+target object use interactions, they must both be of a root object type
+(see
+link:Configuring%20an%20EIS%20Descriptor%20(ELUG)#Configuring_an_EIS_Descriptor_as_a_Root_or_Composite_Type[Configuring
+an EIS Descriptor as a Root or Composite Type])
+
+This table summarizes the behavior of this mapping depending on the EIS
+record type you are using.
+
+[#Table 73-6]## *_EIS One-to-One Mapping by EIS Record Type_*
+
+EIS Record Type
+
+Mapping Behavior
+
+Indexed
+
+A new indexed record is created for the target object1:
+
+With the Key on Source use case, the foreign key(s) is added to the
+record for the source object.
+
+With the Key on Target use case, the foreign key(s) is added to the
+record for the target object
+
+Mapped
+
+A new mapped record is created for the target object 1:
+
+With the Key on Source use case, the foreign key(s) is added to the
+record for the source object.
+
+With the Key on Target use case, the foreign key(s) is added to the
+record for the target object
+
+XML
+
+A new XML record is created for the target object:
+
+With the Key on Source use case, the foreign key(s) is added to the
+record for the source object.
+
+With the Key on Target use case, the foreign key(s) is added to the
+record for the target object
+
+1See also link:#Reference_EIS_Mappings[Reference EIS Mappings]. This
+section describes the following:
+
+* link:#EIS_One-to-One_Mappings_with_Key_on_Source[EIS One-to-One
+Mappings with Key on Source]
+* link:#EIS_One-to-One_Mappings_with_Key_on_Target[EIS One-to-One
+Mappings with Key on Target]
+
+See
+link:Configuring%20an%20EIS%20One-to-One%20Mapping%20(ELUG)[Configuring
+an EIS One-to-One Mapping] for more information.
+
+=== EIS One-to-One Mappings with Key on Source
+
+This figure illustrates a EIS one-to-one mapping between the
+`+Employee+` class attribute `+project+` and the `+Project+` class using
+XML records in a *key on source* design.
+
+[#Figure 73-8]## *_EIS One-to-One Mapping with Key on Source_*
+
+.EIS One-to-One Mapping with Key on Source
+image::eisoto.gif[EIS One-to-One Mapping with Key on
+Source,title="EIS One-to-One Mapping with Key on Source"]
+
+When a read interaction is executed on the `+Employee+` object,
+EclipseLink puts the target `+Project+` object’s primary key into the
+`+Employee+` record as a simple value. EclipseLink then uses the
+selection interaction you configure on the `+Employee+` descriptor to
+retrieve the appropriate instance of `+Project+` and creates a record
+for it in the `+Employee+` object’s transaction. In this example, you
+can designate the `+Project+` class’s read interaction as the selection
+interaction.
+
+The general procedure for creating and configuring this mapping is as
+follows:
+
+[arabic]
+. Create a one-to-one EIS mapping on `+Employee+` attribute `+project+`.
+. Configure the reference descriptor as `+Project+` (see
+link:Configuring%20an%20EIS%20Mapping%20(ELUG)#Configuring_Reference_Descriptors[Configuring
+Reference Descriptors]).
+. Configure the source and target foreign keys (see
+link:Configuring%20an%20EIS%20One-to-One%20Mapping%20(ELUG)#Configuring_Foreign_Key_Pairs[Configuring
+Foreign Key Pairs]).In this example:
+* Source XML Field: `+@project-id+`
+* Target XML Field: `+@id+`
+. Configure the selection interaction (see
+link:Configuring%20an%20EIS%20Mapping%20(ELUG)#Configuring_Selection_Interaction[Configuring
+Selection Interaction]).In this example, you can designate the
+`+Project+` class’s read interaction as the selection interaction.
+
+Given the XSD shown in the link:#Example_73-1[XML Schema for EIS
+One-to-One Mapping with Key on Source] example, you can configure an EIS
+one-to-one mapping with key on source, as the link:#Example_73-2[EIS
+One-to-One Mapping with Key On Source] example shows. In this case, the
+source object contains a foreign key reference to the target object. In
+the following example, the source object is `+Employee+` and the target
+object is `+Project+`. Here, the `+Employee+` object has a `+Project+`
+that is referenced using the project’s id.
+
+[#Example 73-1]## *_XML Schema for EIS One-to-One Mapping with Key on
+Source_*
+
+`+    +` `+    +` `+    +`
+
+`+        +` `+            +` `+            +` `+                +`
+`+                    +` `+                        +`
+
+`+                    +` `+                +` `+            +`
+`+        +` `+    +` `+    +`
+
+`+        +` `+            +` `+            +` `+        +` `+    +`
+
+[#Example 73-2]## *_EIS One-to-One Mapping with Key On Source_*
+
+*`+//\'\' \'\'Employee\'\' \'\'descriptor+`*
+`+EISDescriptor descriptor = new EISDescriptor();+`
+`+descriptor.setJavaClass(Employee.class);+`
+`+descriptor.setDataTypeName("employee");+`
+`+descriptor.setPrimaryKeyFieldName("name/text()");+`
+
+`+EISOneToOneMapping projectMapping = new EISOneToOneMapping();+`
+`+projectMapping.setReferenceClass(Project.class);+`
+`+projectMapping.setAttributeName("project");+`
+`+projectMapping.dontUseIndirection();+`
+`+projectMapping.addForeignKeyFieldName("project/project-id/text()", "id/text()");+`
+
+=== EIS One-to-One Mappings with Key on Target
+
+The link:#Figure_73-9[EIS One-to-One Mapping with Key on Target] figure
+illustrates EIS one-to-one mapping between the `+Employee+` class
+attribute `+project+` and the `+Project+` class using XML records in a
+*key on target* design. You still configure a one-to-one EIS mapping
+between `+Employee+` and `+Project+`, but in this design, the
+`+Project+` attribute `+leader+` contains the foreign key of the
+`+Employee+` object.
+
+[#Figure 73-9]## *_EIS One-to-One Mapping with Key on Target_*
+
+.EIS One-to-One Mapping with Key on Target
+image::eisotok.gif[EIS One-to-One Mapping with Key on
+Target,title="EIS One-to-One Mapping with Key on Target"]
+
+When a read interaction is executed on the `+Employee+` object,
+EclipseLink uses the selection interaction you configure on the
+`+Employee+` descriptor to retrieve the appropriate instance of
+`+Project+` and creates a record for it in the `+Employee+` object’s
+transaction. In this example, the `+Project+` class’s read interaction
+is unlikely to be sufficient: it is likely implemented to read based on
+`+Project+` attribute `+Id+`, not on `+leader+`. If this is the case,
+you must define a separate selection interaction on the `+Employee+`
+descriptor that does the following: finds the `+Project+`, whose
+`+leader+` equals X, where X is the value of `+Employee+` attribute
+`+firstName+`.
+
+Note that in this configuration, `+Project+` attribute `+leader+` is not
+persisted. If you want this attribute persisted, you must configure a
+one-to-one EIS mapping from it to `+Employee+` attribute `+firstName+`.
+
+The general procedure for creating and configuring this mapping is as
+follows:
+
+[arabic]
+. Create a one-to-one EIS mapping on `+Employee+` attribute `+project+`.
+. Configure the reference descriptor as `+Project+` (see
+link:Configuring%20an%20EIS%20Mapping%20(ELUG)#Configuring_Reference_Descriptors[Configuring
+Reference Descriptors]).
+. Configure the source and target foreign keys (see
+link:Configuring%20an%20EIS%20One-to-One%20Mapping%20(ELUG)#Configuring_Foreign_Key_Pairs[Configuring
+Foreign Key Pairs]). In this example:
+* Source XML Field: `+firstName/text()+`
+* Target XML Field: `+leader/text()+`
+. Configure the selection interaction (see
+link:Configuring%20an%20EIS%20Mapping%20(ELUG)#Configuring_Selection_Interaction[Configuring
+Selection Interaction]). In this example, you must define a separate
+selection interaction on the `+Employee+` descriptor.
+
+Given the XSD shown in the link:#Example_73-3[XML Schema for EIS
+One-to-One Mapping with Key on Target] example, you can configure an EIS
+one-to-one mapping with key on target, as the link:#Example_73-4[EIS
+One-to-One Mapping with Key on Target] example shows. In this case, the
+target object contains a foreign key reference to the source object. In
+the following example, the source object is `+Employee+`, and the target
+object is `+Project+`. Here, a `+Project+` references its `+leader+`
+using the employee’s name.
+
+[#Example 73-3]## *_XML Schema for EIS One-to-One Mapping with Key on
+Target_*
+
+`+    +` `+    +` `+    +`
+
+`+        +` `+            +` `+            +` `+                +`
+`+                    +` `+                        +`
+
+`+                    +` `+                +` `+            +`
+`+        +` `+    +` `+    +`
+
+`+        +` `+            +` `+            +` `+        +` `+    +`
+`+    +`
+
+[#Example 73-4]## *_EIS One-to-One Mapping with Key on Target_*
+
+*`+//\'\' \'\'Project\'\' \'\'descriptor+`*
+`+EISDescriptor descriptor = new EISDescriptor();+`
+`+descriptor.setJavaClass(Project.class);+`
+`+descriptor.setDataTypeName("project");+`
+`+descriptor.setPrimaryKeyFieldName("id/text()");+`
+
+`+EISOneToOneMapping leaderMapping = new EISOneToOneMapping();+`
+`+leaderMapping.setReferenceClass(Employee.class);+`
+`+leaderMapping.setAttributeName("leader");+`
+`+leaderMapping.dontUseIndirection();+`
+`+leaderMapping.addForeignKeyFieldName("leader/text()", "name/text()");+`
+
+== EIS One-to-Many Mapping
+
+An EIS one-to-many mapping is a reference mapping that represents the
+relationship between a single source object and a collection of target
+objects. The source object usually contains a foreign key (pointer) to
+the target objects (key on source); alternatively, the target objects
+may contain a foreign key to the source object (key on target). Because
+both the source and target objects use interactions, they must all be of
+a root object type (see
+link:Configuring%20an%20EIS%20Descriptor%20(ELUG)#Configuring_an_EIS_Descriptor_as_a_Root_or_Composite_Type[Configuring
+an EIS Descriptor as a Root or Composite Type]).
+
+This table summarizes the behavior of this mapping depending on the EIS
+record type you are using.
+
+[#Table 73-7]## *_EIS One-to-Many Mapping by EIS Record Type_*
+
+EIS Record Type
+
+Mapping Behavior
+
+Indexed
+
+A new indexed record is created for each target object1:
+
+With the Key on Source use case, the foreign key(s) is added to the
+record for the source object for each target object.
+
+With the Key on Target use case, the foreign key(s) is added to the
+record for the target object
+
+Mapped
+
+A new mapped record is created for each target object1:
+
+With the Key on Source use case, the foreign key(s) is added to the
+record for the source object.
+
+With the Key on Target use case, the foreign key(s) is added to the
+record for the target object
+
+XML
+
+A new XML record is created for each target object:
+
+With the Key on Source use case, the foreign key(s) is added to the
+record for the source object for each target object.
+
+With the Key on Target use case, the foreign key(s) is added to the
+record for the target object
+
+1See also link:#Reference_EIS_Mappings[Reference EIS Mappings]. This
+section describes the following:
+
+* link:#EIS_One-to-Many_Mappings_with_Key_on_Source[EIS One-to-Many
+Mappings with Key on Source]
+* link:#EIS_One-to-Many_Mappings_with_Key_on_Target[EIS One-to-Many
+Mappings with Key on Target]
+
+See
+link:Configuring%20an%20EIS%20One-to-Many%20Mapping%20(ELUG)[Configuring
+an EIS One-to-Many Mapping] for more information.
+
+=== EIS One-to-Many Mappings with Key on Source
+
+This figure illustrates an EIS one-to-many mapping between the
+`+Employee+` class attribute `+projects+` and multiple `+Project+` class
+instances using XML records in a key on source design.
+
+[#'Figure 73-10]## *_EIS One-to-Many Mapping with Key on Source_*
+
+.EIS One-to-Many Mapping with Key on Source
+image::eisotm.gif[EIS One-to-Many Mapping with Key on
+Source,title="EIS One-to-Many Mapping with Key on Source"]
+
+When a read interaction is executed on the `+Employee+` object,
+EclipseLink puts each target `+Project+` object’s foreign key into the
+`+Employee+` record as a subelement. If you specify only one pair of
+source and target XML fields, by default, the foreign keys are not
+grouped in the `+Employee+` record. If you specify more than one pair of
+source and target XML fields, you must choose a grouping element (see
+link:Configuring%20an%20EIS%20Mapping%20(ELUG)#Configuring_Reference_Descriptors[Configuring
+Reference Descriptors]). The link:#Figure_73-10[EIS One-to-Many Mapping
+with Key on Source] figure shows an `+Employee+` record with grouping
+element `+Project+`. EclipseLink then uses the selection interaction you
+configure on the `+Employee+` descriptor to retrieve the appropriate
+instances of `+Project+` and creates a record for each in the
+`+Employee+` object’s transaction. In this example, you can designate
+the `+Project+` class’s read interaction as the selection interaction.
+
+The general procedure for creating and configuring this mapping is as
+follows:
+
+[arabic]
+. Create a one-to-many EIS mapping on `+Employee+` attribute
+`+project+`.
+. Configure the reference descriptor as `+Project+` (see
+link:Configuring%20an%20EIS%20Mapping%20(ELUG)#Configuring_Reference_Descriptors[Configuring
+Reference Descriptors]).
+. Configure the source and target foreign keys (see
+link:Configuring%20an%20EIS%20One-to-Many%20Mapping%20(ELUG)#Configuring_Foreign_Key_Pairs[Configuring
+Foreign Key Pairs]). In this example:
+* Source XML Field: `+PROJECT+`
+* Target XML Field: `+@ID+`
+. Configure the selection interaction (see
+link:Configuring%20an%20EIS%20Mapping%20(ELUG)#Configuring_Selection_Interaction[Configuring
+Selection Interaction]). In this example, you can designate the
+`+Project+` class’s read interaction as the selection interaction.
+
+Given the XSD shown in link:#Example_73-3[XML Schema for EIS One-to-One
+Mapping with Key on Target], you can configure an EIS one-to-many
+mapping with key on source, as the link:#Example_73-4[EIS One-to-One
+Mapping with Key on Target] example shows. In this case, the source
+object contains a foreign key reference to the target object. In the
+following example, the source object is `+Employee+`, and the target
+object is `+Project+`. Here, the `+Employee+` object has one or more
+`+Project+` instances that are referenced by `+Project+` id.
+
+[#Example 73-5]## *_XML Schema for EIS One-to-Many Mapping with Key on
+Source_*
+
+`+    +` `+    +` `+    +`
+
+`+        +` `+            +` `+            +` `+                +`
+`+                    +` `+                        +`
+
+`+                    +` `+                +` `+            +`
+`+        +` `+    +` `+    +`
+
+`+        +` `+            +` `+            +` `+        +` `+    +`
+
+[#Example 73-6]## *_EIS One-to-Many Mapping with Key on Source_*
+
+*`+//\'\' \'\'Employee\'\' \'\'descriptor+`*
+`+EISDescriptor descriptor = new EISDescriptor();+`
+`+descriptor.setJavaClass(Employee.class);+`
+`+descriptor.setDataTypeName("employee");+`
+`+descriptor.setPrimaryKeyFieldName("name/text()");+`
+
+`+EISOneToManyMapping projectMapping = new EISOneToManyMapping();+`
+`+projectMapping.setReferenceClass(Project.class);+`
+`+projectMapping.setAttributeName("projects");+`
+`+projectMapping.setForeignKeyGroupingElement("projects"); projectMapping.setIsForeignKeyRelationship(true); projectMapping.dontUseIndirection();+`
+`+projectMapping.addForeignKeyFieldName("project-id/text()", "id/text()");+`
+
+=== EIS One-to-Many Mappings with Key on Target
+
+The link:#Figure_73-9[EIS One-to-Many Mapping with Key on Target] figure
+illustrates an EIS one-to-many mapping between the `+Employee+` class
+attribute `+projects+` and multiple `+Project+` class instances using
+XML records in a key on target design. You still configure a one-to-one
+EIS mapping between `+Employee+` and `+Project+` but in this design, the
+`+Project+` attribute `+leader+` contains the foreign key of the
+`+Employee+` object.
+
+[#'Figure 73-11]## *_EIS One-to-Many Mapping with Key on Target_*
+
+.EIS One-to-Many Mapping with Key on Target
+image::eisotmk.gif[EIS One-to-Many Mapping with Key on
+Target,title="EIS One-to-Many Mapping with Key on Target"]
+
+When a read interaction is executed on the `+Employee+` object,
+EclipseLink uses the selection interaction you configure on the
+`+Employee+` descriptor to retrieve the appropriate instances of
+`+Project+` and creates a record for each in the `+Employee+` object’s
+transaction. In this example, the `+Project+` class’s read interaction
+is unlikely to be sufficient: it is likely implemented to read based on
+`+Project+` attribute `+Id+`, not on `+leader+`. If this is the case,
+you must define a separate selection interaction on the `+Employee+`
+descriptor that does the following: finds the `+Project+`, whose
+`+leader+` equals X, where X is "`Jane`".
+
+Note that in this configuration, `+Project+` attribute `+leader+` is not
+persisted. If you want this attribute persisted, you must configure a
+one-to-one EIS mapping from it to `+Employee+` attribute `+firstName+`.
+
+The general procedure for creating and configuring this mapping is as
+follows:
+
+[arabic]
+. Create a one-to-one EIS mapping on `+Employee+` attribute `+project+`.
+. Configure the reference descriptor as `+Project+` (see
+link:Configuring%20an%20EIS%20Mapping%20(ELUG)#Configuring_Reference_Descriptors[Configuring
+Reference Descriptors]).
+. Configure the source and target foreign keys (see
+link:Configuring%20an%20EIS%20One-to-One%20Mapping%20(ELUG)#Configuring_Foreign_Key_Pairs[Configuring
+Foreign Key Pairs]). In this example, you select *Foreign Keys Located
+On Source* and specify one pair of source and target XML fields:
+* Source XML Field:
+* Target XML Field:
+. Configure the selection interaction (see
+link:Configuring%20an%20EIS%20Mapping%20(ELUG)#Configuring_Selection_Interaction[Configuring
+Selection Interaction]). In this example, you must define a separate
+selection interaction on the `+Employee+` descriptor.
+
+Given the XSD shown in the link:#Example_73-3[XML Schema for EIS
+One-to-Many Mapping with Key on Target] example, you can configure an
+EIS one-to-many mapping with key on target, as the
+link:#Example_73-4[EIS One-to-Many Mapping with Key on Target] example
+shows. In this case, the target object contains a foreign key reference
+to the source object. In the following example, the source object is
+`+Employee+`, and the target object is `+Project+`. Here, each
+`+Project+` references its `+leader+` using the employee’s name.
+
+[#Example 73-7]##[#Example 73-3]## *_XML Schema for EIS One-to-Many
+Mapping with Key on Target_*
+
+`+    +` `+    +` `+    +`
+
+`+        +` `+            +` `+            +` `+                +`
+`+                    +` `+                        +`
+
+`+                    +` `+                +` `+            +`
+`+        +` `+    +` `+    +`
+
+`+        +` `+            +` `+            +` `+        +` `+    +`
+
+[#Example 73-8]##[#Example 73-4]## *_EIS One-to-Many Mapping with Key on
+Target_*
+
+*`+//\'\' \'\'Project\'\' \'\'descriptor+`*
+`+EISDescriptor descriptor = new EISDescriptor();+`
+`+descriptor.setJavaClass(Project.class);+`
+`+descriptor.setDataTypeName("project");+`
+`+descriptor.setPrimaryKeyFieldName("id/text()");+`
+
+`+EISOneToManyMapping leaderMapping = new EISOneToOneMapping();+`
+`+leaderMapping.setReferenceClass(Employee.class);+`
+`+leaderMapping.setAttributeName("leader");+`
+`+leaderMapping.dontUseIndirection();+`
+`+leaderMapping.addForeignKeyFieldName("leader/text()", "name/text()");+`
+
+== EIS Transformation Mapping
+
+A transformation EIS mapping lets you create a custom mapping, where one
+or more fields in an EIS record can be used to create the object to be
+stored in a Java class’s attribute.
+
+This table summarizes the behavior of this mapping depending on the EIS
+record type you are using.
+
+[#Table 73-8 EIS]## *_Transformation Mapping by EIS Record Type_*
+
+[width="100%",cols="<15%,<85%",options="header",]
+|===
+|*EIS Record Type* |*Mapping Behavior*
+|Indexed |The field transformer adds data to the indexed record (you
+have access to the indexed record in the attribute transformer).
+
+|Mapped |The field transformer adds data to the mapped record (you have
+access to the mapped record in the attribute transformer).
+
+|XML |The field transformer adds data to the XML record (you have access
+to the XML record in the attribute transformer).
+|===
+
+As the link:#Figure_73-12[EIS Transformation Mappings] figure
+illustrates, you configure the transformation mapping with an
+`+org.eclipse.persistence.mappings.transformers.AttributeTransformer+`
+instance to perform the XML instance-to-Java attribute transformation at
+unmarshall time. In this example, the `+AttributeTransformer+` combines
+two XML text nodes into a single Java object.
+
+[#Figure 73-12]## *_EIS Transformation Mappings_*
+
+.EIS Transformation Mappings
+image::transfig.gif[EIS Transformation
+Mappings,title="EIS Transformation Mappings"]
+
+See
+link:Configuring%20an%20EIS%20Transformation%20Mapping%20(ELUG)[Configuring
+an EIS Transformation Mapping] for more information.
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Release_1[Category: Release 1] Category:_Concept[Category:
+Concept] Category:_EIS[Category: EIS]

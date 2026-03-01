@@ -1,0 +1,200 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[MULTITENANCY004]]
+=== Using VPD Multi-Tenancy
+
+A Virtual Private Database (VPD) uses security controls to restrict
+access to database objects based on various parameters.
+
+For example, the Oracle Virtual Private Database supports security
+policies that control database access at the row and column level.
+Oracle VPD adds a dynamic `WHERE` clause to SQL statements issued
+against the table, view, or synonym to which the security policy was
+applied.
+
+Oracle Virtual Private Database enforces security directly on the
+database tables, views, or synonyms. Because security policies are
+attached directly to these database objects, and the policies are
+automatically applied whenever a user accesses data, there is no way to
+bypass security.
+
+When a user directly or indirectly accesses a table, view, or synonym
+that is protected with an Oracle Virtual Private Database policy, Oracle
+Database dynamically modifies the SQL statement of the user. This
+modification creates a WHERE condition (called a predicate) returned by
+a function implementing the security policy. Oracle Virtual Private
+Database modifies the statement dynamically, transparently to the user,
+using any condition that can be expressed in or returned by a function.
+Oracle Virtual Private Database policies can be applied to SELECT,
+INSERT, UPDATE, INDEX, and DELETE statements.
+
+When using EclipseLink VPD Multitenancy, the database handles the tenant
+filtering on all SELECT, INSERT, UPDATE, INDEX and DELETE queries.
+
+To use EclipseLink VPD multi-tenancy, you must first configure VPD in
+the database and then specify multi-tenancy on the entity or mapped
+superclass, as shown in the following example, using `@Multitenant` and
+`@TenantDiscriminatorColumn`:
+
+==== Main Tasks for Using VPD Multi-Tenancy
+
+The following tasks provide instructions for using VPD multi-tenancy
+with Oracle Virtual Private Database:
+
+* link:#CHDDEDCJ[Task 1: Prerequisites]
+* link:#CHDDFBFC[Task 2: Configure the Virtual Private Database]
+* link:#CHDICCHE[Task 3: Configure the Entity or Mapped Superclass]
+* link:#CHDDJIAE[Task 4: Disable Criteria Generation]
+* link:#CHDIIJEB[Task 5: Configure persistence.xml]
+
+[[CHDDEDCJ]]
+
+===== Task 1: Prerequisites
+
+To implement and use VPD multi-tenancy, you need:
+
+* EclipseLink 2.4 or later.
++
+Download EclipseLink from
+`http://www.eclipse.org/eclipselink/downloads/`.
+* Any compliant Java Database Connectivity (JDBC) database that supports
+VDP, for example, Oracle Virtual Private Database.
++
+For the certification matrix, see
+
+[[CHDDFBFC]]
+
+===== Task 2: Configure the Virtual Private Database
+
+In this example, an Oracle Virtual Private Database is configured with a
+policy and a stored procedure. The policy is a call to the database that
+tells the database to use a stored function to limit the results of a
+query. In this example, the function is called `ident_func`, and it is
+run whenever a `SELECT`, `UPDATE` or `DELETE` is performed on the
+`SCOTT.TASK` table. The policy is created as follows:
+
+[source,oac_no_warn]
+----
+CALL DBMS_RLS.ADD_POLICY ('SCOTT', 'TASK', 'todo_list_policy', 'SCOTT', 'ident_func', 'select, update, delete'));
+----
+
+The function defined below is used by VPD to limit the data based on the
+identifier that is passed in to the connection. The function uses the
+`USER_ID` column in the table to limit the rows. The rows are limited,
+based on what is set in the `client_identifier` variable in the
+`userenv` context.
+
+[source,oac_no_warn]
+----
+CREATE OR REPLACE FUNCTION ident_func (p_schema IN VARCHAR2 DEFAULT NULL, p_object IN VARCHAR2 DEFAULT NULL) 
+    RETURN VARCHAR2 
+    AS 
+    BEGIN 
+       RETURN 'USER_ID = sys_context(''userenv'', ''client_identifier'')';
+    END;
+----
+
+[[CHDICCHE]]
+
+===== Task 3: Configure the Entity or Mapped Superclass
+
+As described above, VPD is configured to use the `USER_ID` column to
+limit access to rows. Therefore, you must tell EclipseLink to
+auto-populate the `USER_ID` column on inserts. The following code uses
+EclipseLink multi-tenancy and specifies that the client identifier is
+passed in to the entity managers using a property called `tenant.id`.
+Because the filtering is done by VPD on the database, you must turn off
+caching on this entity to avoid leakage across users.
+
+[source,oac_no_warn]
+----
+@Entity
+@Multitenant(VPD)
+@TenantDiscriminatorColumn(name = "USER_ID", contextProperty = "tenant.id")
+@Cacheable(false)
+ 
+public class Task implements Serializable {
+...
+...
+----
+
+[[CHDDJIAE]]
+
+===== Task 4: Disable Criteria Generation
+
+When single-table and table-per-tenant multi-tenancy are enabled, a
+client identifier is auto appended to any generated SQL. However, when
+VPD is used to limit the access to data, the auto-appending of the
+identifier should be turned off.
+
+Beginning with EclipseLink 2.4, disable criteria generation as follows:
+
+[source,oac_no_warn]
+----
+@Multitenant(includeCriteria=false)
+@TenantDiscriminatorColumn(name = "USER_ID", contextProperty = "tenant.id")
+----
+
+In EclipseLink 2.3.1, you must run the following codefrom a
+`SessionCustomizer`:
+
+[source,oac_no_warn]
+----
+session.getDescriptor(Task.class).getQueryManager().setIncludeTenantCriteria(false);
+----
+
+[[CHDIIJEB]]
+
+===== Task 5: Configure persistence.xml
+
+Add the following properties to `persistence.xml`.
+
+Include the following to set and clear the VPD identifier:
+
+[source,oac_no_warn]
+----
+<property name="eclipselink.session-event-listener" value="example.VPDSessionEventAdapter" />
+----
+
+Include the following to provide one connection per entity manager:
+
+[source,oac_no_warn]
+----
+<property name="eclipselink.jdbc.exclusive-connection.mode" value="Always" /> 
+----
+
+Include the following to allow native queries to be runnable from
+EclipseLink. This is required for creating VPD artifacts:
+
+[source,oac_no_warn]
+----
+<property name="eclipselink.jdbc.allow-native-sql-queries" value="true" />
+</properties>
+----
+
+For example:
+
+[source,oac_no_warn]
+----
+ <properties>
+   <property name="eclipselink.session-event-listener" value="example.VPDSessionEventAdapter" />
+   <property name="eclipselink.jdbc.exclusive-connection.mode" value="Always" /> 
+   <property name="eclipselink.jdbc.allow-native-sql-queries" value="true" />
+  ...
+</properties>
+----

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,16 +15,15 @@
 // dmccann - Dec 31/2008 - 1.1 - Initial implementation
 package org.eclipse.persistence.testing.oxm.mappings.directtofield.leafelement;
 
-import java.util.Calendar;
-
 import junit.textui.TestRunner;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
+
+import java.util.Calendar;
 
 public class DirectWithLeafElementTestCases extends XMLMappingTestCases {
 
@@ -87,7 +86,7 @@ public class DirectWithLeafElementTestCases extends XMLMappingTestCases {
         XPathFragment frag2 = xmlField.getLastXPathFragment();
         assertNotNull(qName);
 
-        assertTrue(frag1 != frag2);
+        assertNotSame(frag1, frag2);
 
         return newProject;
     }

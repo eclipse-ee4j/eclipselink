@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,7 +38,7 @@ import org.eclipse.persistence.mappings.VariableOneToOneMapping;
 /**
  * INTERNAL:
  * A discriminator class is used within a variable one to one mapping.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -79,8 +79,7 @@ public class DiscriminatorClassMetadata extends ORMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (objectToCompare instanceof DiscriminatorClassMetadata) {
-            DiscriminatorClassMetadata discriminatorClass = (DiscriminatorClassMetadata) objectToCompare;
+        if (objectToCompare instanceof DiscriminatorClassMetadata discriminatorClass) {
 
             if (! valuesMatch(m_value, discriminatorClass.getValue())) {
                 return false;
@@ -94,7 +93,8 @@ public class DiscriminatorClassMetadata extends ORMetadata {
 
     @Override
     public int hashCode() {
-        int result = m_value != null ? m_value.hashCode() : 0;
+        int result = super.hashCode();
+        result = 31 * result + (m_value != null ? m_value.hashCode() : 0);
         result = 31 * result + (m_discriminator != null ? m_discriminator.hashCode() : 0);
         return result;
     }

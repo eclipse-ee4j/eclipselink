@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -57,9 +57,9 @@ import java.util.Set;
 
 import jakarta.persistence.spi.PersistenceUnitInfo;
 
-import org.eclipse.persistence.config.DescriptorCustomizer;
+import org.eclipse.persistence.descriptors.DescriptorCustomizer;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
-import org.eclipse.persistence.exceptions.PersistenceUnitLoadingException;
+import org.eclipse.persistence.jpa.exceptions.PersistenceUnitLoadingException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.jpa.EntityManagerSetupImpl;
 import org.eclipse.persistence.internal.jpa.deployment.PersistenceUnitProcessor;
@@ -69,6 +69,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.Converter
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EmbeddableAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EntityAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.MappedSuperclassAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.PackageAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAsmFactory;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataFactory;
@@ -211,7 +212,7 @@ public class MetadataProcessor {
      * MetadataProcessor.
      */
     public Set<String> getPersistenceUnitClassSetFromMappingFiles() {
-        HashSet<String> classSet = new HashSet<String>();
+        HashSet<String> classSet = new HashSet<>();
 
         for (XMLEntityMappings entityMappings : m_project.getEntityMappings()) {
             for (ClassAccessor entity : entityMappings.getEntities()) {
@@ -241,11 +242,11 @@ public class MetadataProcessor {
      * INTERNAL:
      * Adds a list of StructConverter string names that were defined in the
      * metadata of this project to the native EclipseLink project.
-     *
+     * <p>
      * These StructConverters can be added to the Project to be processed later
      */
     public void addStructConverterNames() {
-        List<String> structConverters = new ArrayList<String>();
+        List<String> structConverters = new ArrayList<>();
         for (StructConverterMetadata converter: m_project.getStructConverters()) {
             structConverters.add(converter.getConverterClassName());
         }
@@ -281,10 +282,10 @@ public class MetadataProcessor {
      * This method is responsible for discovering all the entity classes for
      * this PU and adding corresponding MetadataDescriptor in the
      * MetadataProject.
-     *
+     * <p>
      * This method will also gather all the weavable classes for this PU.
      * Currently, entity and embeddable classes are weavable.
-     *
+     * <p>
      * NOTE: The order of processing should not be changed as the steps are
      * dependent on one another.
      */
@@ -292,8 +293,8 @@ public class MetadataProcessor {
         // 1 - Iterate through the classes that are defined in the <mapping>
         // files and add them to the map. This will merge the accessors where
         // necessary.
-        HashMap<String, EntityAccessor> entities = new HashMap<String, EntityAccessor>();
-        HashMap<String, EmbeddableAccessor> embeddables = new HashMap<String, EmbeddableAccessor>();
+        HashMap<String, EntityAccessor> entities = new HashMap<>();
+        HashMap<String, EmbeddableAccessor> embeddables = new HashMap<>();
 
         for (XMLEntityMappings entityMappings : m_project.getEntityMappings()) {
             entityMappings.initPersistenceUnitClasses(entities, embeddables);
@@ -328,10 +329,12 @@ public class MetadataProcessor {
         // 4 - Iterate through the classes that are referenced from the
         // persistence.xml file.
         PersistenceUnitInfo persistenceUnitInfo = m_project.getPersistenceUnitInfo();
-        List<String> classNames = new ArrayList<String>();
 
         // Add all the <class> specifications.
-        classNames.addAll(persistenceUnitInfo.getManagedClassNames());
+        List<String> classNames = new ArrayList<>(persistenceUnitInfo.getManagedClassNames());
+
+        // Package names used by PU entities.
+        Set<String> packageNames = new HashSet<>();
 
         // Add all the classes from the <jar> specifications.
         for (URL url : persistenceUnitInfo.getJarFileUrls()) {
@@ -360,6 +363,9 @@ public class MetadataProcessor {
             }
             if (iterator.hasNext()) {
                 String className = iterator.next();
+                int dot = className.lastIndexOf('.');
+                String packageName = (dot != -1) ? className.substring(0, dot) : "";
+                packageNames.add(packageName);
                 MetadataClass candidateClass = m_factory.getMetadataClass(className, unlisted);
                 // JBoss Bug 227630: Do not process a null class whether it was from a
                 // NPE or a CNF, a warning or exception is thrown in loadClass()
@@ -380,6 +386,13 @@ public class MetadataProcessor {
                                 candidateClass, m_project));
                     }
                 }
+            }
+        }
+        for (String packageName : packageNames) {
+            MetadataClass metadataPackageInfo = m_factory.getMetadataClass(packageName + ".package-info", unlisted);
+            //Add to the list only existing package-info.class
+            if (metadataPackageInfo.getSuperclassName() != null) {
+                m_project.addPackageAccessor(new PackageAccessor(null, metadataPackageInfo, m_project));
             }
         }
     }

@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2019, 2022 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
+    Copyright (c) 2019, 2025 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -13,91 +14,29 @@
 
 -->
 
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd"
          xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <modelVersion>4.0.0</modelVersion>
 
-    <name>EclipseLink Parent</name>
-    <description>Comprehensive and universal persistence framework for Java.</description>
-    <groupId>org.eclipse.persistence</groupId>
-    <artifactId>org.eclipse.persistence.parent</artifactId>
-    <version>4.0.0-SNAPSHOT</version>
-    <packaging>pom</packaging>
-
     <parent>
-        <groupId>org.eclipse.ee4j</groupId>
-        <artifactId>project</artifactId>
-        <version>1.0.7</version>
-        <relativePath/>
+        <groupId>org.eclipse.persistence</groupId>
+        <artifactId>org.eclipse.persistence.tests.bom</artifactId>
+        <version>5.0.0-SNAPSHOT</version>
+        <relativePath>boms/tests/pom.xml</relativePath>
     </parent>
 
-    <scm>
-        <connection>scm:git:https://github.com/eclipse-ee4j/eclipselink.git</connection>
-        <url>https://github.com/eclipse-ee4j/eclipselink.git</url>
-    </scm>
+    <artifactId>org.eclipse.persistence.project</artifactId>
+    <version>5.0.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
 
-    <organization>
-        <name>Eclipse.org - EclipseLink Project</name>
-        <url>http://www.eclipse.org/eclipselink</url>
-    </organization>
-
-    <inceptionYear>2007</inceptionYear>
-    <url>http://www.eclipse.org/eclipselink</url>
-
-    <licenses>
-        <license>
-            <name>Eclipse Public License - v 2.0</name>
-            <url>http://www.eclipse.org/legal/epl-2.0</url>
-            <distribution>repo</distribution>
-        </license>
-        <license>
-            <name>Eclipse Distribution License - v 1.0</name>
-            <url>http://www.eclipse.org/org/documents/edl-v10.php</url>
-            <distribution>repo</distribution>
-        </license>
-    </licenses>
-
-    <issueManagement>
-        <system>github</system>
-        <url>https://github.com/eclipse-ee4j/eclipselink/issues</url>
-    </issueManagement>
-
-    <mailingLists>
-        <mailingList>
-            <name>EclipseLink user's mailing list</name>
-            <post>eclipselink-users@eclipse.org</post>
-            <subscribe>https://accounts.eclipse.org/mailing-list/eclipselink-users</subscribe>
-            <unsubscribe>https://accounts.eclipse.org/mailing-list/eclipselink-users</unsubscribe>
-            <archive>https://dev.eclipse.org/mhonarc/lists/eclipselink-users/</archive>
-        </mailingList>
-        <mailingList>
-            <name>EclipseLink developer's mailing list</name>
-            <post>eclipselink-dev@eclipse.org</post>
-            <subscribe>https://accounts.eclipse.org/mailing-list/eclipselink-dev</subscribe>
-            <unsubscribe>https://accounts.eclipse.org/mailing-list/eclipselink-dev</unsubscribe>
-            <archive>https://dev.eclipse.org/mhonarc/lists/eclipselink-dev/</archive>
-        </mailingList>
-    </mailingLists>
-
-    <repositories>
-        <repository>
-            <id>sonatype-nexus-staging</id>
-            <name>Sonatype Nexus Staging</name>
-            <url>${sonatypeOssDistMgmtStagingUrl}</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
+    <name>EclipseLink Project</name>
+    <description>Comprehensive and universal persistence framework for Java.</description>
 
     <properties>
         <!-- Minimum required JDK version -->
-        <maven.compiler.release>11</maven.compiler.release>
-        <maven.compiler.testRelease>11</maven.compiler.testRelease>
+        <maven.compiler.release>17</maven.compiler.release>
+        <maven.compiler.testRelease>17</maven.compiler.testRelease>
 
         <!-- TOOL Properties -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -112,18 +51,19 @@
         <spotbugs.exclude/>
         <spotbugs.skip>false</spotbugs.skip>
         <spotbugs.threshold>Normal</spotbugs.threshold>
-        <spotbugs.version>4.7.1</spotbugs.version>
-        <findsecbugs.version>1.11.0</findsecbugs.version>
         <dependency-check.failonerror>false</dependency-check.failonerror>
 
         <!-- PROJECT Properties -->
         <build.type>SNAPSHOT</build.type>
         <maven.build.timestamp.format>yyyyMMddHHmm</maven.build.timestamp.format>
         <build.qualifier>v${maven.build.timestamp}</build.qualifier>
-        <bundle.version>${project.version}.${build.qualifier}</bundle.version>
+
+        <bundle.version>${release.version}.${build.qualifier}</bundle.version>
+        <project.build.testReports.settings>test-report-settings/surefire-report.properties</project.build.testReports.settings>
         <project.build.testReports.subdirectory>test-reports</project.build.testReports.subdirectory>
         <project.build.testReports.summaryFile>test-summary</project.build.testReports.summaryFile>
         <project.build.licenceResourceDirectory>${project.build.directory}/license</project.build.licenceResourceDirectory>
+        <project.build.javadocResourceDirectory>${project.build.directory}/javadoc-resources</project.build.javadocResourceDirectory>
 
         <!--Integration test sources/resources directory. Relative directory to ${project.basedir}
         !!!Can't start with / character!!!-->
@@ -134,15 +74,17 @@
 
         <!--Default location for JEE servers binaries-->
         <test.directory>${user.home}/.eclipselinktests</test.directory>
-        <installation.url>https://download.jboss.org/wildfly/18.0.0.Final/wildfly-18.0.0.Final.zip</installation.url>
-        <installation.checksum.md5>8e4d435bb5d6fe466b478dc49d34bf27</installation.checksum.md5>
+        <installation.url>https://github.com/wildfly/wildfly/releases/download/27.0.0.Final/wildfly-27.0.0.Final.zip</installation.url>
+        <installation.checksum.md5>56e2dd6f54e65603ada5659a06ad782b</installation.checksum.md5>
 
         <!--Test DB property file names-->
+        <test.h2.properties.file>el-test.h2.properties</test.h2.properties.file>
         <test.mysql.properties.file>el-test.mysql.properties</test.mysql.properties.file>
         <test.mariadb.properties.file>el-test.mariadb.properties</test.mariadb.properties.file>
         <test.oracle.properties.file>el-test.oracle.properties</test.oracle.properties.file>
         <test.mongodb.properties.file>el-test.mongodb.properties</test.mongodb.properties.file>
         <test.derby.properties.file>el-test.derby.properties</test.derby.properties.file>
+        <test.db2.properties.file>el-test.db2.properties</test.db2.properties.file>
         <test.mssql.properties.file>el-test.mssql.properties</test.mssql.properties.file>
         <test.pgsql.properties.file>el-test.pgsql.properties</test.pgsql.properties.file>
 
@@ -150,6 +92,7 @@
         <test.properties.file>${user.home}/${test.derby.properties.file}</test.properties.file>
         <test.properties.fileName>${test.derby.properties.file}</test.properties.fileName>
         <test.properties.default.directory>${project.build.directory}/test-default-properties</test.properties.default.directory>
+        <test.report.properties.default.directory>${project.build.directory}/test-report-properties</test.report.properties.default.directory>
         <test.database>derby</test.database>
         <!--false: to start In-Memory database, true: not start (MySQL, Oracle)-->
         <test.skip.in-memory.db>false</test.skip.in-memory.db>
@@ -179,84 +122,35 @@
         <test.xml.platform>org.eclipse.persistence.platform.xml.jaxp.JAXPPlatform</test.xml.platform>
         <test.xml.parser>org.eclipse.persistence.platform.xml.jaxp.JAXPParser</test.xml.parser>
 
-        <!--Eclipse Dependencies version-->
-        <eclipselink.asm.version>9.4.0</eclipselink.asm.version>
-        <activation-api.version>2.1.0</activation-api.version>
-        <angus-activation.version>1.0.0</angus-activation.version>
-        <annotation.version>2.1.1</annotation.version>
-        <cdi.version>4.0.1</cdi.version>
-        <ejb.version>4.0.1</ejb.version>
-        <el-api.version>5.0.1</el-api.version>
-        <el.version>5.0.0-M1</el.version>
-        <glassfish.version>7.0.0-M7</glassfish.version>
-        <jaxwsrt.version>4.0.0</jaxwsrt.version>
-        <jaxb.version>4.0.0</jaxb.version>
-        <jaxb.api.version>4.0.0</jaxb.api.version>
-        <soap.api.version>3.0.0</soap.api.version>
-        <jersey.version>3.1.0-M7</jersey.version>
-        <jms.version>3.1.0</jms.version>
-        <json.version>2.1.1</json.version>
-        <jpa.api.version>3.1.0</jpa.api.version>
-        <mail-api.version>2.1.0</mail-api.version>
-        <angus-mail.version>1.0.0</angus-mail.version>
-        <oracle.ddlparser.version>3.0.0</oracle.ddlparser.version>
-        <org.glassfish.corba.version>4.2.4</org.glassfish.corba.version>
-        <parsson.version>1.1.1</parsson.version>
-        <resource.version>2.1.0</resource.version>
-        <servlet.version>6.0.0</servlet.version>
-        <transaction.version>2.0.1</transaction.version>
-        <validation.version>3.0.2</validation.version>
-        <ws-api.version>4.0.0</ws-api.version>
-        <ws-rs.version>3.1.0</ws-rs.version>
+        <!--Documentation properties-->
+        <docs.status>DRAFT</docs.status>
 
-        <!--Third-Party Dependencies version-->
-        <!-- CQ #23046 -->
-        <apache.felix.framework.version>7.0.5</apache.felix.framework.version>
-        <!-- CQ #21133 -->
-        <ant.version>1.10.12</ant.version>
-        <commonj.sdo.version>2.1.1</commonj.sdo.version>
-        <derby.version>10.15.2.0</derby.version>
-        <!-- CQ #21134, 21135, 21136, 21137 -->
-        <exam.version>4.13.2</exam.version>
-        <hamcrest.version>1.3</hamcrest.version>
-        <!-- CQ #23048 -->
-        <hibernate.version>8.0.0.CR1</hibernate.version>
-        <checkstyle.version>10.3.1</checkstyle.version>
-        <!-- CQ #23049 -->
-        <jgroups.version>4.2.11.Final</jgroups.version>
-        <jmh.version>1.35</jmh.version>
-        <junit.version>4.13.2</junit.version>
-        <!-- CQ #24079 -->
-        <mongodb.version>3.12.11</mongodb.version>
-        <mysql.version>8.0.28</mysql.version>
-        <mariadb.version>3.0.6</mariadb.version>
-        <mssql.version>10.2.1.jre11</mssql.version>
-        <pgsql.version>42.4.1</pgsql.version>
-        <!-- CQ #21139, 21140 -->
-        <logback.version>1.3.0-alpha16</logback.version>
-        <oracle.jdbc.version>21.6.0.0.1</oracle.jdbc.version>
-        <!-- CQ #2437 -->
-        <oracle.aqapi.version>19.3.0.0</oracle.aqapi.version>
-        <oracle.fmw.version>12.2.1-2-0</oracle.fmw.version>
-        <!-- CQ #21141 -->
-        <oracle.nosql.version>18.3.10</oracle.nosql.version>
-        <!-- CQ #24195 -->
-        <oracle.nosql.sdk.version>5.3.5</oracle.nosql.sdk.version>
-        <!-- CQ #21142 -->
-        <osgi.version>6.0.0</osgi.version>
-        <!-- CQ #21143 -->
-        <slf4j.version>2.0.0-alpha7</slf4j.version>
-        <!-- CQ #23051, 23052, 23053, 53054, 53055 -->
-        <springframework.version>5.3.22</springframework.version>
-        <!-- CQ #23233 -->
-        <weld-se.version>5.0.1.Final</weld-se.version>
+        <!--Javadoc properties-->
+        <javadoc.prefixTitle>EclipseLink ${release.version}</javadoc.prefixTitle>
+        <javadoc.postfixTitle>API Reference</javadoc.postfixTitle>
+
+        <checkstyle.version>13.2.0</checkstyle.version>
+        <spotbugs.version>4.9.8</spotbugs.version>
+        <findsecbugs.version>1.14.0</findsecbugs.version>
+
+        <!--Documentation Dependencies version-->
+        <asciidoctorj.version>3.0.1</asciidoctorj.version>
+        <asciidoctorj.pdf.version>2.3.23</asciidoctorj.pdf.version>
+        <asciidoctorj.epub.version>2.2.0</asciidoctorj.epub.version>
+        <jruby.version>10.0.3.0</jruby.version>
+
+        <!--Server tests-->
         <weblogic.version>12.2.1-3</weblogic.version>
-        <wildfly.version>18.0.0.Final</wildfly.version>
-        <wsdl4j.version>1.6.3</wsdl4j.version>
+        <wildfly.version>27.0.0.Final</wildfly.version>
     </properties>
 
     <!-- Default modules set and added to by all profiles -->
     <modules>
+        <module>boms/parent</module>
+        <module>boms/bom</module>
+        <module>boms/dependencies</module>
+        <module>boms/tests</module>
+
         <module>jpa/org.eclipse.persistence.jpa.jpql</module>
 
         <module>foundation/org.eclipse.persistence.core</module>
@@ -293,718 +187,6 @@
         <module>bundles</module>
     </modules>
 
-    <dependencyManagement>
-        <dependencies>
-            <!-- our artifacts TODO: this belongs to BOM pom-->
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>org.eclipse.persistence.parent</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>org.eclipse.persistence.asm</artifactId>
-                <version>${eclipselink.asm.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>org.eclipse.persistence.asm</artifactId>
-                <version>${eclipselink.asm.version}</version>
-                <classifier>sources</classifier>
-            </dependency>
-
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>org.eclipse.persistence.corba</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>org.eclipse.persistence.corba</artifactId>
-                <version>${project.version}</version>
-                <classifier>sources</classifier>
-            </dependency>
-
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>org.eclipse.persistence.core</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>org.eclipse.persistence.core</artifactId>
-                <version>${project.version}</version>
-                <classifier>sources</classifier>
-            </dependency>
-
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>org.eclipse.persistence.dbws</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>org.eclipse.persistence.dbws</artifactId>
-                <version>${project.version}</version>
-                <classifier>sources</classifier>
-            </dependency>
-
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>org.eclipse.persistence.dbws.builder</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>org.eclipse.persistence.dbws.builder</artifactId>
-                <version>${project.version}</version>
-                <classifier>sources</classifier>
-            </dependency>
-
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>org.eclipse.persistence.extension</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>org.eclipse.persistence.extension</artifactId>
-                <version>${project.version}</version>
-                <classifier>sources</classifier>
-            </dependency>
-
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>org.eclipse.persistence.jpa</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>org.eclipse.persistence.jpa</artifactId>
-                <version>${project.version}</version>
-                <classifier>sources</classifier>
-            </dependency>
-
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>org.eclipse.persistence.jpa.jpql</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>org.eclipse.persistence.jpa.jpql</artifactId>
-                <version>${project.version}</version>
-                <classifier>sources</classifier>
-            </dependency>
-
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>org.eclipse.persistence.jpa.modelgen.processor</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>org.eclipse.persistence.jpa.modelgen.processor</artifactId>
-                <version>${project.version}</version>
-                <classifier>sources</classifier>
-            </dependency>
-
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>org.eclipse.persistence.jpars.server</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>org.eclipse.persistence.jpars.server</artifactId>
-                <version>${project.version}</version>
-                <classifier>sources</classifier>
-            </dependency>
-
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>org.eclipse.persistence.jpars</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>org.eclipse.persistence.jpars</artifactId>
-                <version>${project.version}</version>
-                <classifier>sources</classifier>
-            </dependency>
-
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>org.eclipse.persistence.json</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>org.eclipse.persistence.json</artifactId>
-                <version>${project.version}</version>
-                <classifier>sources</classifier>
-            </dependency>
-
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>org.eclipse.persistence.moxy</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>org.eclipse.persistence.moxy</artifactId>
-                <version>${project.version}</version>
-                <classifier>sources</classifier>
-            </dependency>
-
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>org.eclipse.persistence.moxy.utils.xjc</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>org.eclipse.persistence.moxy.utils.xjc</artifactId>
-                <version>${project.version}</version>
-                <classifier>sources</classifier>
-            </dependency>
-
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>org.eclipse.persistence.nosql</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>org.eclipse.persistence.nosql</artifactId>
-                <version>${project.version}</version>
-                <classifier>sources</classifier>
-            </dependency>
-
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>org.eclipse.persistence.oracle</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>org.eclipse.persistence.oracle</artifactId>
-                <version>${project.version}</version>
-                <classifier>sources</classifier>
-            </dependency>
-
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>org.eclipse.persistence.oracle.nosql</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>org.eclipse.persistence.oracle.nosql</artifactId>
-                <version>${project.version}</version>
-                <classifier>sources</classifier>
-            </dependency>
-
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>org.eclipse.persistence.oracle.spatial</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>org.eclipse.persistence.oracle.spatial</artifactId>
-                <version>${project.version}</version>
-                <classifier>sources</classifier>
-            </dependency>
-
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>org.eclipse.persistence.pgsql</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>org.eclipse.persistence.pgsql</artifactId>
-                <version>${project.version}</version>
-                <classifier>sources</classifier>
-            </dependency>
-
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>org.eclipse.persistence.sdo</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>org.eclipse.persistence.sdo</artifactId>
-                <version>${project.version}</version>
-                <classifier>sources</classifier>
-            </dependency>
-
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>eclipselink</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>eclipselink</artifactId>
-                <version>${project.version}</version>
-                <classifier>sources</classifier>
-            </dependency>
-
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>org.eclipse.persistence.utils.rename</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>org.eclipse.persistence.utils.rename</artifactId>
-                <version>${project.version}</version>
-                <classifier>sources</classifier>
-            </dependency>
-
-            <!-- our TEST artifacts TODO: this belongs to BOM pom-->
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>org.eclipse.persistence.core.test.framework</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>org.eclipse.persistence.core.test.framework</artifactId>
-                <version>${project.version}</version>
-                <classifier>sources</classifier>
-            </dependency>
-
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>org.eclipse.persistence.jpa.test.framework</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>org.eclipse.persistence.jpa.test.framework</artifactId>
-                <version>${project.version}</version>
-                <classifier>sources</classifier>
-            </dependency>
-
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>org.eclipse.persistence.core</artifactId>
-                <version>${project.version}</version>
-                <type>test-jar</type>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>org.eclipse.persistence.core.test</artifactId>
-                <version>${project.version}</version>
-                <type>test-jar</type>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>org.eclipse.persistence.jpa.test</artifactId>
-                <version>${project.version}</version>
-                <type>test-jar</type>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>org.eclipse.persistence.nosql</artifactId>
-                <version>${project.version}</version>
-                <type>test-jar</type>
-            </dependency>
-
-            <!--API/Implementation dependencies-->
-            <dependency>
-                <groupId>jakarta.activation</groupId>
-                <artifactId>jakarta.activation-api</artifactId>
-                <version>${activation-api.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.angus</groupId>
-                <artifactId>angus-activation</artifactId>
-                <version>${angus-activation.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>jakarta.mail</groupId>
-                <artifactId>jakarta.mail-api</artifactId>
-                <version>${mail-api.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.angus</groupId>
-                <artifactId>angus-mail</artifactId>
-                <version>${angus-mail.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.sun.xml.bind</groupId>
-                <artifactId>jaxb-core</artifactId>
-                <version>${jaxb.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.sun.xml.bind</groupId>
-                <artifactId>jaxb-impl</artifactId>
-                <version>${jaxb.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.sun.xml.bind</groupId>
-                <artifactId>jaxb-xjc</artifactId>
-                <version>${jaxb.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.sun.xml.ws</groupId>
-                <artifactId>jaxws-rt</artifactId>
-                <version>${jaxwsrt.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.sun.xml.ws</groupId>
-                <artifactId>jaxws-eclipselink-plugin</artifactId>
-                <version>${jaxwsrt.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>jakarta.annotation</groupId>
-                <artifactId>jakarta.annotation-api</artifactId>
-                <version>${annotation.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>jakarta.ejb</groupId>
-                <artifactId>jakarta.ejb-api</artifactId>
-                <version>${ejb.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>jakarta.enterprise</groupId>
-                <artifactId>jakarta.enterprise.cdi-api</artifactId>
-                <version>${cdi.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>jakarta.jms</groupId>
-                <artifactId>jakarta.jms-api</artifactId>
-                <version>${jms.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>jakarta.json</groupId>
-                <artifactId>jakarta.json-api</artifactId>
-                <version>${json.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>jakarta.persistence</groupId>
-                <artifactId>jakarta.persistence-api</artifactId>
-                <version>${jpa.api.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>jakarta.resource</groupId>
-                <artifactId>jakarta.resource-api</artifactId>
-                <version>${resource.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>jakarta.servlet</groupId>
-                <artifactId>jakarta.servlet-api</artifactId>
-                <version>${servlet.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>jakarta.transaction</groupId>
-                <artifactId>jakarta.transaction-api</artifactId>
-                <version>${transaction.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>jakarta.validation</groupId>
-                <artifactId>jakarta.validation-api</artifactId>
-                <version>${validation.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>jakarta.xml.bind</groupId>
-                <artifactId>jakarta.xml.bind-api</artifactId>
-                <version>${jaxb.api.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>*</groupId>
-                        <artifactId>*</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>jakarta.xml.bind</groupId>
-                <artifactId>jakarta.xml.bind-api</artifactId>
-                <version>${jaxb.api.version}</version>
-                <classifier>sources</classifier>
-            </dependency>
-            <dependency>
-                <groupId>jakarta.xml.soap</groupId>
-                <artifactId>jakarta.xml.soap-api</artifactId>
-                <version>${soap.api.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>*</groupId>
-                        <artifactId>*</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>jakarta.xml.ws</groupId>
-                <artifactId>jakarta.xml.ws-api</artifactId>
-                <version>${ws-api.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>*</groupId>
-                        <artifactId>*</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>jakarta.ws.rs</groupId>
-                <artifactId>jakarta.ws.rs-api</artifactId>
-                <version>${ws-rs.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.ant</groupId>
-                <artifactId>ant</artifactId>
-                <version>${ant.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>org.apache.felix.framework</artifactId>
-                <version>${apache.felix.framework.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>commonj.sdo</artifactId>
-                <version>${commonj.sdo.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>commonj.sdo</artifactId>
-                <version>${commonj.sdo.version}</version>
-                <classifier>sources</classifier>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>org.eclipse.persistence.oracleddlparser</artifactId>
-                <version>${oracle.ddlparser.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>org.eclipse.persistence.oracleddlparser</artifactId>
-                <version>${oracle.ddlparser.version}</version>
-                <classifier>sources</classifier>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.parsson</groupId>
-                <artifactId>parsson</artifactId>
-                <version>${parsson.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish.corba</groupId>
-                <artifactId>glassfish-corba-omgapi</artifactId>
-                <version>${org.glassfish.corba.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish.corba</groupId>
-                <artifactId>glassfish-corba-orb</artifactId>
-                <version>${org.glassfish.corba.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.jgroups</groupId>
-                <artifactId>jgroups</artifactId>
-                <version>${jgroups.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-api</artifactId>
-                <version>${slf4j.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>wsdl4j</groupId>
-                <artifactId>wsdl4j</artifactId>
-                <version>${wsdl4j.version}</version>
-            </dependency>
-            <!--NoSQL DBs-->
-            <!--Mongo DB-->
-            <dependency>
-                <groupId>org.mongodb</groupId>
-                <artifactId>mongo-java-driver</artifactId>
-                <version>${mongodb.version}</version>
-            </dependency>
-            <!--Oracle proprietary dependencies-->
-            <!--Oracle NoSQL DB-->
-            <dependency>
-                <groupId>com.oracle.kv</groupId>
-                <artifactId>oracle-nosql-client</artifactId>
-                <version>${oracle.nosql.version}</version>
-            </dependency>
-            <!--Oracle NoSQL SDK Driver-->
-            <dependency>
-                <groupId>com.oracle.nosql.sdk</groupId>
-                <artifactId>nosqldriver</artifactId>
-                <version>${oracle.nosql.sdk.version}</version>
-            </dependency>
-            <!-- All files as a Oracle JDBC driver CQ #21154 -->
-            <dependency>
-                <groupId>com.oracle.database.jdbc</groupId>
-                <artifactId>ojdbc-bom</artifactId>
-                <version>${oracle.jdbc.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-            <!--TODO resolve dependency later
-                                <dependency>
-                                    <groupId>com.oracle.spatial</groupId>
-                                    <artifactId>sdoapi</artifactId>
-                                    <version>${oracle.version}</version>
-                                </dependency>
-            -->
-            <dependency>
-                <groupId>com.oracle.database.messaging</groupId>
-                <artifactId>aqapi</artifactId>
-                <version>${oracle.aqapi.version}</version>
-            </dependency>
-            <!--Test dependencies-->
-            <!--Test framework-->
-            <dependency>
-                <groupId>junit</groupId>
-                <artifactId>junit</artifactId>
-                <version>${junit.version}</version>
-            </dependency>
-            <!--APIs and other libs used in test classes-->
-            <dependency>
-                <groupId>jakarta.el</groupId>
-                <artifactId>jakarta.el-api</artifactId>
-                <version>${el-api.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.jboss.weld.se</groupId>
-                <artifactId>weld-se-core</artifactId>
-                <version>${weld-se.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish</groupId>
-                <artifactId>jakarta.el</artifactId>
-                <version>${el.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish.jersey.core</groupId>
-                <artifactId>jersey-client</artifactId>
-                <version>${jersey.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish.jersey.core</groupId>
-                <artifactId>jersey-common</artifactId>
-                <version>${jersey.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish.main.appclient</groupId>
-                <artifactId>gf-client</artifactId>
-                <version>${glassfish.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.openjdk.jmh</groupId>
-                <artifactId>jmh-core</artifactId>
-                <version>${jmh.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.openjdk.jmh</groupId>
-                <artifactId>jmh-generator-annprocess</artifactId>
-                <version>${jmh.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-context</artifactId>
-                <version>${springframework.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-instrument</artifactId>
-                <version>${springframework.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-orm</artifactId>
-                <version>${springframework.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-test</artifactId>
-                <version>${springframework.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-tx</artifactId>
-                <version>${springframework.version}</version>
-            </dependency>
-            <!--JDBC drivers-->
-            <dependency>
-                <groupId>mysql</groupId>
-                <artifactId>mysql-connector-java</artifactId>
-                <version>${mysql.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.mariadb.jdbc</groupId>
-                <artifactId>mariadb-java-client</artifactId>
-                <version>${mariadb.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.derby</groupId>
-                <artifactId>derbyclient</artifactId>
-                <version>${derby.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.microsoft.sqlserver</groupId>
-                <artifactId>mssql-jdbc</artifactId>
-                <version>${mssql.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.postgresql</groupId>
-                <artifactId>postgresql</artifactId>
-                <version>${pgsql.version}</version>
-            </dependency>
-            <!--For Oracle DB driver see Oracle proprietary dependencies part. It's not limited to tests only-->
-            <!-- Hibernate validator and it's dependencies -->
-            <dependency>
-                <groupId>org.hibernate.validator</groupId>
-                <artifactId>hibernate-validator</artifactId>
-                <version>${hibernate.version}</version>
-            </dependency>
-            <!--PaxExam -->
-            <dependency>
-                <groupId>org.ops4j.pax.exam</groupId>
-                <artifactId>pax-exam</artifactId>
-                <version>${exam.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.ops4j.pax.exam</groupId>
-                <artifactId>pax-exam-container-forked</artifactId>
-                <version>${exam.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.ops4j.pax.exam</groupId>
-                <artifactId>pax-exam-junit4</artifactId>
-                <version>${exam.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.ops4j.pax.exam</groupId>
-                <artifactId>pax-exam-link-mvn</artifactId>
-                <version>${exam.version}</version>
-            </dependency>
-            <!--Test Logging, required by Pax and extension module-->
-            <dependency>
-                <groupId>ch.qos.logback</groupId>
-                <artifactId>logback-core</artifactId>
-                <version>${logback.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>ch.qos.logback</groupId>
-                <artifactId>logback-classic</artifactId>
-                <version>${logback.version}</version>
-            </dependency>
-            <!--Test OSGi core-->
-            <dependency>
-                <groupId>org.osgi</groupId>
-                <artifactId>org.osgi.core</artifactId>
-                <version>${osgi.version}</version>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
-
     <build>
         <pluginManagement>
             <plugins>
@@ -1016,12 +198,12 @@
                 <plugin>
                     <groupId>com.googlecode.maven-download-plugin</groupId>
                     <artifactId>download-maven-plugin</artifactId>
-                    <version>1.6.8</version>
+                    <version>1.13.0</version>
                 </plugin>
                 <plugin>
                     <groupId>com.sun.wts.tools.ant</groupId>
                     <artifactId>package-rename-task</artifactId>
-                    <version>1.5.2</version>
+                    <version>1.6.0</version>
                 </plugin>
                 <plugin>
                     <groupId>de.empulse.eclipselink</groupId>
@@ -1031,42 +213,37 @@
                 <plugin>
                     <groupId>org.apache.felix</groupId>
                     <artifactId>maven-bundle-plugin</artifactId>
-                    <version>5.1.7</version>
+                    <version>6.0.2</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-antrun-plugin</artifactId>
-                    <version>3.1.0</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-assembly-plugin</artifactId>
-                    <version>3.4.1</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-clean-plugin</artifactId>
                     <version>3.2.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-assembly-plugin</artifactId>
+                    <version>3.8.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.10.1</version>
+                    <version>3.15.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-dependency-plugin</artifactId>
-                    <version>3.3.0</version>
+                    <version>3.10.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-enforcer-plugin</artifactId>
-                    <version>3.1.0</version>
+                    <version>3.6.2</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-failsafe-plugin</artifactId>
-                    <version>3.0.0-M7</version>
+                    <version>3.5.5</version>
                     <configuration>
                         <useModulePath>false</useModulePath>
                         <forkNode implementation="org.apache.maven.plugin.surefire.extensions.SurefireForkNodeFactory"/>
@@ -1074,43 +251,39 @@
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-install-plugin</artifactId>
-                    <version>3.0.0</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jar-plugin</artifactId>
-                    <version>3.2.2</version>
+                    <version>3.5.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>3.4.0</version>
+                    <version>3.12.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-resources-plugin</artifactId>
-                    <version>3.2.0</version>
+                    <version>3.4.0</version>
                     <configuration>
                         <nonFilteredFileExtensions>
                             <nonFilteredFileExtension>gar</nonFilteredFileExtension>
+                            <nonFilteredFileExtension>war</nonFilteredFileExtension>
                         </nonFilteredFileExtensions>
                     </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-site-plugin</artifactId>
-                    <version>3.12.0</version>
+                    <version>4.0.0-M16</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-source-plugin</artifactId>
-                    <version>3.2.1</version>
+                    <version>3.4.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>3.0.0-M7</version>
+                    <version>3.5.5</version>
                     <configuration>
                         <useModulePath>false</useModulePath>
                         <forkNode implementation="org.apache.maven.plugin.surefire.extensions.SurefireForkNodeFactory"/>
@@ -1119,17 +292,17 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-report-plugin</artifactId>
-                    <version>3.0.0-M7</version>
+                    <version>3.5.5</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-war-plugin</artifactId>
-                    <version>3.3.2</version>
+                    <version>3.5.1</version>
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.cargo</groupId>
                     <artifactId>cargo-maven3-plugin</artifactId>
-                    <version>1.9.0</version>
+                    <version>1.10.26</version>
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.gmaven</groupId>
@@ -1138,23 +311,45 @@
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>aspectj-maven-plugin</artifactId>
+                    <version>1.16.0</version>
+                    <dependencies>
+                        <dependency>
+                            <groupId>org.aspectj</groupId>
+                            <artifactId>aspectjrt</artifactId>
+                            <version>${aspectj.version}</version>
+                        </dependency>
+                        <dependency>
+                            <groupId>org.aspectj</groupId>
+                            <artifactId>aspectjweaver</artifactId>
+                            <version>${aspectj.version}</version>
+                        </dependency>
+                        <dependency>
+                            <groupId>org.aspectj</groupId>
+                            <artifactId>aspectjtools</artifactId>
+                            <version>${aspectj.version}</version>
+                        </dependency>
+                    </dependencies>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
                     <artifactId>build-helper-maven-plugin</artifactId>
-                    <version>3.3.0</version>
+                    <version>3.6.1</version>
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>buildnumber-maven-plugin</artifactId>
-                    <version>3.0.0</version>
+                    <version>3.3.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>exec-maven-plugin</artifactId>
-                    <version>3.1.0</version>
+                    <version>3.6.3</version>
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>sql-maven-plugin</artifactId>
-                    <version>1.5</version>
+                    <version>3.0.0</version>
                     <dependencies>
                         <dependency>
                             <groupId>${db.driver.groupId}</groupId>
@@ -1166,7 +361,7 @@
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>xml-maven-plugin</artifactId>
-                    <version>1.0.2</version>
+                    <version>1.2.1</version>
                 </plugin>
                 <!--This plugin (g:org.kuali.maven.plugins) is used instead typical org.codehaus.mojo:properties-maven-plugin:1.0.0
                     due bug: "Circular property definition" if expression like this is used in the Maven pom
@@ -1180,13 +375,13 @@
                 <plugin>
                     <groupId>org.reficio</groupId>
                     <artifactId>p2-maven-plugin</artifactId>
-                    <version>2.0.0</version>
+                    <version>2.1.0</version>
                 </plugin>
                 <plugin>
                     <!-- see https://github.com/eclipse-ee4j/eclipselink-build-support -->
                     <groupId>org.eclipse.persistence</groupId>
                     <artifactId>eclipselink-testbuild-plugin</artifactId>
-                    <version>1.0.0</version>
+                    <version>1.1.2</version>
                 </plugin>
                 <plugin>
                     <groupId>org.carlspring.maven</groupId>
@@ -1211,14 +406,9 @@
                     </dependencies>
                 </plugin>
                 <plugin>
-                    <groupId>com.github.joelittlejohn.embedmongo</groupId>
-                    <artifactId>embedmongo-maven-plugin</artifactId>
-                    <version>0.4.2</version>
-                </plugin>
-                <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-checkstyle-plugin</artifactId>
-                    <version>3.1.2</version>
+                    <version>3.6.0</version>
                     <dependencies>
                         <dependency>
                             <groupId>com.puppycrawl.tools</groupId>
@@ -1239,7 +429,7 @@
                 <plugin>
                     <groupId>com.github.spotbugs</groupId>
                     <artifactId>spotbugs-maven-plugin</artifactId>
-                    <version>4.7.1.0</version>
+                    <version>4.9.8.2</version>
                     <dependencies>
                         <dependency>
                             <groupId>com.github.spotbugs</groupId>
@@ -1263,7 +453,7 @@
                 <plugin>
                     <groupId>org.owasp</groupId>
                     <artifactId>dependency-check-maven</artifactId>
-                    <version>7.1.1</version>
+                    <version>12.2.0</version>
                     <configuration>
 <!--                        <failBuildOnCVSS>7</failBuildOnCVSS>-->
                         <assemblyAnalyzerEnabled>false</assemblyAnalyzerEnabled>
@@ -1273,6 +463,43 @@
                             <format>CSV</format>
                         </formats>
                     </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.asciidoctor</groupId>
+                    <artifactId>asciidoctor-maven-plugin</artifactId>
+                    <version>3.2.0</version>
+                    <dependencies>
+                        <dependency>
+                            <groupId>org.jruby</groupId>
+                            <artifactId>jruby-complete</artifactId>
+                            <version>${jruby.version}</version>
+                        </dependency>
+                        <dependency>
+                            <groupId>org.asciidoctor</groupId>
+                            <artifactId>asciidoctorj</artifactId>
+                            <version>${asciidoctorj.version}</version>
+                        </dependency>
+                        <dependency>
+                            <groupId>org.asciidoctor</groupId>
+                            <artifactId>asciidoctorj-pdf</artifactId>
+                            <version>${asciidoctorj.pdf.version}</version>
+                        </dependency>
+                        <dependency>
+                            <groupId>org.asciidoctor</groupId>
+                            <artifactId>asciidoctorj-epub3</artifactId>
+                            <version>${asciidoctorj.epub.version}</version>
+                        </dependency>
+                    </dependencies>
+                </plugin>
+                <plugin>
+                    <groupId>org.sonatype.central</groupId>
+                    <artifactId>central-publishing-maven-plugin</artifactId>
+                    <version>0.10.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.wildfly.plugins</groupId>
+                    <artifactId>wildfly-maven-plugin</artifactId>
+                    <version>5.1.5.Final</version>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -1331,7 +558,9 @@
                         <configuration>
                             <descriptors>
                                 <descriptor>src/main/assembly/common-license.xml</descriptor>
+                                <descriptor>src/main/assembly/common-javadoc.xml</descriptor>
                                 <descriptor>src/main/assembly/test-defaults.xml</descriptor>
+                                <descriptor>src/main/assembly/test-report.xml</descriptor>
                                 <descriptor>src/main/assembly/spotbugs-filter.xml</descriptor>
                             </descriptors>
                         </configuration>
@@ -1351,8 +580,8 @@
                         <configuration>
                             <artifactItems>
                                 <artifactItem>
-                                    <groupId>${project.groupId}</groupId>
-                                    <artifactId>org.eclipse.persistence.parent</artifactId>
+                                    <groupId>org.eclipse.persistence</groupId>
+                                    <artifactId>org.eclipse.persistence.project</artifactId>
                                     <version>${project.version}</version>
                                     <classifier>common-license</classifier>
                                     <type>zip</type>
@@ -1370,12 +599,31 @@
                         <configuration>
                             <artifactItems>
                                 <artifactItem>
-                                    <groupId>${project.groupId}</groupId>
-                                    <artifactId>org.eclipse.persistence.parent</artifactId>
+                                    <groupId>org.eclipse.persistence</groupId>
+                                    <artifactId>org.eclipse.persistence.project</artifactId>
                                     <version>${project.version}</version>
                                     <classifier>test-defaults</classifier>
                                     <type>zip</type>
                                     <outputDirectory>${test.properties.default.directory}</outputDirectory>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>unpack-test-report-properties</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.eclipse.persistence</groupId>
+                                    <artifactId>org.eclipse.persistence.project</artifactId>
+                                    <version>${project.version}</version>
+                                    <classifier>test-report</classifier>
+                                    <type>zip</type>
+                                    <outputDirectory>${test.report.properties.default.directory}</outputDirectory>
                                 </artifactItem>
                             </artifactItems>
                         </configuration>
@@ -1389,12 +637,31 @@
                         <configuration>
                             <artifactItems>
                                 <artifactItem>
-                                    <groupId>${project.groupId}</groupId>
-                                    <artifactId>org.eclipse.persistence.parent</artifactId>
+                                    <groupId>org.eclipse.persistence</groupId>
+                                    <artifactId>org.eclipse.persistence.project</artifactId>
                                     <version>${project.version}</version>
                                     <classifier>spotbugs-filter</classifier>
                                     <type>zip</type>
                                     <outputDirectory>${project.build.directory}</outputDirectory>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>unpack-javadoc-resources</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.eclipse.persistence</groupId>
+                                    <artifactId>org.eclipse.persistence.project</artifactId>
+                                    <version>${project.version}</version>
+                                    <classifier>javadoc-resources</classifier>
+                                    <type>zip</type>
+                                    <outputDirectory>${project.build.javadocResourceDirectory}</outputDirectory>
                                 </artifactItem>
                             </artifactItems>
                         </configuration>
@@ -1405,6 +672,25 @@
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
                 <executions>
+                    <execution>
+                        <phase>validate</phase>
+                        <id>parse-project-version</id>
+                        <goals>
+                            <goal>parse-version</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <phase>validate</phase>
+                        <id>set-current-date</id>
+                        <goals>
+                            <goal>timestamp-property</goal>
+                        </goals>
+                        <configuration>
+                            <locale>en_US</locale>
+                            <name>release.date</name>
+                            <pattern>MMMM dd, YYYY</pattern>
+                        </configuration>
+                    </execution>
                     <execution>
                         <id>release.version-property</id>
                         <goals>
@@ -1425,6 +711,7 @@
                             <goal>add-test-source</goal>
                         </goals>
                         <configuration>
+                            <skipAddTestSourceIfMissing>true</skipAddTestSourceIfMissing>
                             <sources>
                                 <source>${integration.test.sources.directory}</source>
                             </sources>
@@ -1437,9 +724,11 @@
                             <goal>add-test-resource</goal>
                         </goals>
                         <configuration>
+                            <skipAddTestResourceIfMissing>true</skipAddTestResourceIfMissing>
                             <resources>
                                 <resource>
                                     <directory>${integration.test.resources.directory}</directory>
+                                    <filtering>true</filtering>
                                 </resource>
                             </resources>
                         </configuration>
@@ -1456,6 +745,11 @@
                                     <directory>${project.build.licenceResourceDirectory}/md</directory>
                                     <includes>*</includes>
                                     <targetPath>META-INF</targetPath>
+                                </resource>
+                                <resource>
+                                    <directory>${project.build.licenceResourceDirectory}/plugins</directory>
+                                    <includes>*</includes>
+                                    <targetPath>.</targetPath>
                                 </resource>
                             </resources>
                         </configuration>
@@ -1491,11 +785,18 @@
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
                 <configuration>
+                    <noWarningProjectTypes>
+                        <noWarningProjectType>pom</noWarningProjectType>
+                    </noWarningProjectTypes>
                     <niceManifest>true</niceManifest>
                     <instructions>
                         <_noextraheaders>true</_noextraheaders>
                         <_noimportjava>true</_noimportjava>
                         <HK2-Bundle-Name>${project.groupId}:${project.artifactId}</HK2-Bundle-Name>
+                        <Bundle-Version>${bundle.version}</Bundle-Version>
+                        <Extension-Name>${project.artifactId}</Extension-Name>
+                        <Specification-Version>${release.version}</Specification-Version>
+                        <Implementation-Version>${bundle.version}</Implementation-Version>
                     </instructions>
                 </configuration>
                 <executions>
@@ -1520,10 +821,10 @@
                         <configuration>
                             <rules>
                                 <requireJavaVersion>
-                                    <version>[11,)</version>
+                                    <version>[17,)</version>
                                 </requireJavaVersion>
                                 <requireMavenVersion>
-                                    <version>[3.6.3,)</version>
+                                    <version>[3.8.5,)</version>
                                 </requireMavenVersion>
                             </rules>
                         </configuration>
@@ -1655,7 +956,7 @@
                             </reportsDirectories>
                             <outputDirectory>${project.build.directory}/${project.build.testReports.subdirectory}</outputDirectory>
                             <outputName>${project.build.testReports.summaryFile}</outputName>
-                            <title>${project.name} - Test Summary (more details on ${env.BUILD_URL} )</title>
+                            <customBundle>${test.report.properties.default.directory}/surefire-report.properties</customBundle>
                         </configuration>
                     </execution>
                 </executions>
@@ -1693,6 +994,16 @@
     </build>
 
     <profiles>
+        <!--For JDK<21 use Derby 10.16.1.1 as default 10.17.x support >JDK 21-->
+        <profile>
+            <id>derby-version</id>
+            <activation>
+                <jdk>[,21)</jdk>
+            </activation>
+            <properties>
+                <derby.version>10.16.1.1</derby.version>
+            </properties>
+        </profile>
         <!--Testing database profiles-->
         <!--TODO simplify properties part db.driver.XXXX to load it from file-->
         <profile>
@@ -1711,16 +1022,280 @@
             </properties>
         </profile>
         <profile>
+            <id>db2</id>
+            <properties>
+                <test.properties.file>${user.home}/${test.db2.properties.file}</test.properties.file>
+                <test.properties.fileName>${test.db2.properties.file}</test.properties.fileName>
+                <!--Used by sql-maven-plugin-->
+                <db.driver.groupId>com.ibm.db2</db.driver.groupId>
+                <db.driver.artifactId>jcc</db.driver.artifactId>
+                <db.driver.version>${db2.version}</db.driver.version>
+                <test.skip.in-memory.db>true</test.skip.in-memory.db>
+            </properties>
+        </profile>
+        <profile>
+            <id>db2-start</id>
+            <build>
+                <plugins>
+                    <!-- Docker Maven Plugin 
+
+                        Note, macOS may need to set DOCKER_HOST via e.g. 
+                    
+                        DOCKER_HOST=unix:///Users/$(whoami)/.docker/run/docker.sock
+                    -->
+                    <plugin>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <version>3.2.0</version>
+                        <inherited>false</inherited>
+                        <executions>
+                            <execution>
+                                <id>gen-db2-init</id>
+                                <phase>initialize</phase>
+                                <configuration>
+                                    <target>
+                                        <mkdir dir="${project.build.directory}/db2-init" />
+
+                                        <echo file="${project.build.directory}/db2-init/init.sql"><![CDATA[
+                                        CONNECT TO ${db.name};
+                                        CREATE USER TEMPORARY TABLESPACE USR_TMP_4K PAGESIZE 4K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL IBMDEFAULTBP;
+                                        CONNECT RESET;
+                                        TERMINATE;
+                                        ]]></echo>
+
+                                        <echo file="${project.build.directory}/db2-init/init-db2.sh"><![CDATA[
+                                        #!/usr/bin/env bash
+                                        set -euo pipefail
+                                        : "${DB2INSTANCE:?DB2INSTANCE not set}"
+                                        : "${DBNAME:?DBNAME not set}"
+                                        su - "$DB2INSTANCE" -c "db2 -tvsf /opt/db2-init/init.sql"
+                                        ]]></echo>
+
+                                        <chmod file="${project.build.directory}/db2-init/init-db2.sh" perm="755" />
+                                    </target>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    
+                    <plugin>
+                        <groupId>io.fabric8</groupId>
+                        <artifactId>docker-maven-plugin</artifactId>
+                        <version>0.48.1</version>
+                        <inherited>false</inherited>
+                        <configuration>
+                            <!-- Declare the named volume "db2data" so we can create/remove it -->
+                            <volumes>
+                                <volume>
+                                    <name>db2data</name>
+                                    <driver>local</driver>
+                                </volume>
+                            </volumes>
+                            
+                            <images>
+                                <image>
+                                    <alias>db2</alias>
+                                    <name>icr.io/db2_community/db2</name>
+                                    <run>
+                                        <!-- Give the container a fixed name (like name db2server) -->
+                                        <containerNamePattern>db2server</containerNamePattern>
+
+                                        <hostname>db2host</hostname>
+
+                                        <ports>
+                                            <port>50000:${db.port}</port>
+                                        </ports>
+                                        
+                                        <platform>linux/amd64</platform>
+
+                                        <env>
+                                            <LICENSE>accept</LICENSE>
+                                            <DB2INSTANCE>${db.user}</DB2INSTANCE>
+                                            <DB2INST1_PASSWORD>${db.pwd}</DB2INST1_PASSWORD>
+                                            <DBNAME>${db.name}</DBNAME>
+                                        </env>
+
+                                        <privileged>true</privileged>
+
+                                        <volumes>
+                                            <bind>
+                                                <volume>db2data:/database</volume>
+                                                <volume>${project.build.directory}/db2-init:/opt/db2-init:ro</volume>
+                                            </bind>
+                                        </volumes>
+
+                                        <!-- 
+                                            Wait for DB2 to be ready before proceeding
+                                            
+                                            Note: this can take quite some time. On a M1 Pro:
+                                            DOCKER> [icr.io/db2_community/db2:latest] "db2": Waited on log out 'Setup has completed' 302450 ms 
+                                        -->
+                                        <wait>
+                                            <log>Setup has completed</log>
+                                            <time>300000</time> <!-- 5 minutes timeout -->
+                                            
+                                            <exec>
+                                                <postStart>bash /opt/db2-init/init-db2.sh</postStart>
+                                                <breakOnError>true</breakOnError>
+                                            </exec>
+                                        </wait>
+                                        <!-- Container is started detached by the plugin (no TTY needed). -->
+                                    </run>
+                                </image>
+                            </images>
+                        </configuration>
+                        <executions>
+                            <!-- Force stop and remove specific container by name -->
+                            <execution>
+                                <id>force-remove-db2server</id>
+                                <phase>initialize</phase>
+                                <goals>
+                                    <goal>stop</goal>
+                                    <goal>remove</goal>
+                                </goals>
+                                <configuration>
+                                    <verbose>true</verbose>
+                                    <!-- Target specific container name -->
+                                    <containerNamePattern>db2server</containerNamePattern>
+                                    <!-- Force removal -->
+                                    <removeVolumes>false</removeVolumes>
+                                </configuration>
+                            </execution>
+
+                            <!-- Stop and remove any existing db2server container first -->
+                            <execution>
+                                <id>cleanup-old-container</id>
+                                <phase>initialize</phase>
+                                <goals>
+                                    <goal>stop</goal>
+                                    <goal>remove</goal>
+                                </goals>
+                                <configuration>
+                                    <verbose>true</verbose>
+                                    <!-- Remove all containers for this image -->
+                                    <allContainers>true</allContainers>
+                                    <removeVolumes>true</removeVolumes>
+                                </configuration>
+                            </execution>
+
+                            <!-- docker volume rm db2data (ignore error if it didn't exist) -->
+                            <execution>
+                                <id>cleanup-old-volume</id>
+                                <phase>initialize</phase>
+                                <goals>
+                                    <goal>volume-remove</goal>
+                                </goals>
+                                <configuration>
+                                    <verbose>true</verbose>
+                                </configuration>
+                            </execution>
+
+                            <!-- docker volume create db2data -->
+                            <execution>
+                                <id>create-db2-volume</id>
+                                <phase>initialize</phase>
+                                <goals>
+                                    <goal>volume-create</goal>
+                                </goals>
+                            </execution>
+
+                            <!-- docker run ... -->
+                            <execution>
+                                <id>start-db2</id>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>start</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>h2</id>
+            <properties>
+                <test.properties.file>${user.home}/${test.h2.properties.file}</test.properties.file>
+                <test.properties.fileName>${test.h2.properties.file}</test.properties.fileName>
+                <!--Used by sql-maven-plugin-->
+                <db.driver.groupId>com.h2database</db.driver.groupId>
+                <db.driver.artifactId>h2</db.driver.artifactId>
+                <db.driver.version>${h2.version}</db.driver.version>
+                <test.skip.in-memory.db>true</test.skip.in-memory.db>
+            </properties>
+        </profile>
+        <profile>
             <id>mysql</id>
             <properties>
                 <test.properties.file>${user.home}/${test.mysql.properties.file}</test.properties.file>
                 <test.properties.fileName>${test.mysql.properties.file}</test.properties.fileName>
                 <!--Used by sql-maven-plugin-->
-                <db.driver.groupId>mysql</db.driver.groupId>
-                <db.driver.artifactId>mysql-connector-java</db.driver.artifactId>
+                <db.driver.groupId>com.mysql</db.driver.groupId>
+                <db.driver.artifactId>mysql-connector-j</db.driver.artifactId>
                 <db.driver.version>${mysql.version}</db.driver.version>
                 <test.skip.in-memory.db>true</test.skip.in-memory.db>
             </properties>
+        </profile>
+        <profile>
+            <id>mysql-start</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>io.fabric8</groupId>
+                        <artifactId>docker-maven-plugin</artifactId>
+                        <version>0.48.1</version>
+                        <inherited>false</inherited>
+                        <configuration>
+                            <images>
+                                <image>
+                                    <alias>mysql</alias>
+                                    <name>mysql:8.0.43</name>
+
+                                    <run>
+                                        <containerNamePattern>mysqlserver</containerNamePattern>
+
+                                        <env>
+                                            <MYSQL_ROOT_PASSWORD>${db.pwd}</MYSQL_ROOT_PASSWORD>
+                                            <MYSQL_DATABASE>ecltests</MYSQL_DATABASE>
+                                        </env>
+
+                                        <ports>
+                                            <port>3306:3306</port>
+                                        </ports>
+
+                                        <cmd>
+                                            <exec>
+                                                <arg>--log-bin-trust-function-creators=1</arg>
+                                            </exec>
+                                        </cmd>
+
+                                        <!-- Wait until MySQL is really up -->
+                                        <wait>
+                                            <log><![CDATA[port: 3306  MySQL Community Server - GPL]]></log>
+                                            <time>600000</time>
+                                        </wait>
+                                    </run>
+                                </image>
+                            </images>
+                        </configuration>
+
+                        <executions>
+                            <execution>
+                                <id>start-mysql</id>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>start</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
         <profile>
             <id>mariadb</id>
@@ -1785,8 +1360,8 @@
                 <jee.client.version>${wildfly.version}</jee.client.version>
                 <jee.client.type>pom</jee.client.type>
                 <!--Download properties-->
-                <installation.url>https://download.jboss.org/wildfly/18.0.0.Final/wildfly-18.0.0.Final.zip</installation.url>
-                <installation.checksum.md5>8e4d435bb5d6fe466b478dc49d34bf27</installation.checksum.md5>
+                <installation.url>https://github.com/wildfly/wildfly/releases/download/27.0.0.Final/wildfly-27.0.0.Final.zip</installation.url>
+                <installation.checksum.md5>56e2dd6f54e65603ada5659a06ad782b</installation.checksum.md5>
             </properties>
         </profile>
         <profile>
@@ -1950,7 +1525,7 @@
                         <plugin>
                             <groupId>org.jacoco</groupId>
                             <artifactId>jacoco-maven-plugin</artifactId>
-                            <version>0.8.8</version>
+                            <version>0.8.14</version>
                         </plugin>
                     </plugins>
                 </pluginManagement>
@@ -2031,6 +1606,13 @@
                 <!--JPA JPA-RS test module-->
                 <!--TODO FIXIT Doesn't work well. -->
                 <module>jpa/eclipselink.jpars.test</module>
+            </modules>
+        </profile>
+        <profile>
+            <id>docs</id>
+            <modules>
+                <!--Parent documentation module-->
+                <module>docs</module>
             </modules>
         </profile>
     </profiles>

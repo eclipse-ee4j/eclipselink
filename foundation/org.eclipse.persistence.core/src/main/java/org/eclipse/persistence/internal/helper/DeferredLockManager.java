@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,7 +14,8 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.helper;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.Vector;
 
 /**
  * INTERNAL:
@@ -52,14 +53,14 @@ public class DeferredLockManager {
      * add a concurrency manager as active locks to the DLM
      */
     public void addActiveLock(Object manager) {
-        getActiveLocks().addElement((ConcurrencyManager) manager);
+        getActiveLocks().add((ConcurrencyManager) manager);
     }
 
     /**
      * add a concurrency manager as deferred locks to the DLM
      */
     public void addDeferredLock(Object manager) {
-        getDeferredLocks().addElement((ConcurrencyManager) manager);
+        getDeferredLocks().add((ConcurrencyManager) manager);
     }
 
     /**
@@ -117,9 +118,9 @@ public class DeferredLockManager {
     public void releaseActiveLocksOnThread() {
         Vector<ConcurrencyManager> activeLocks = getActiveLocks();
         if (!activeLocks.isEmpty()) {
-            for (Enumeration<ConcurrencyManager> activeLocksEnum = activeLocks.elements();
-                     activeLocksEnum.hasMoreElements();) {
-                ConcurrencyManager manager = activeLocksEnum.nextElement();
+            for (Iterator<ConcurrencyManager> iterator = activeLocks.iterator();
+                 iterator.hasNext();) {
+                ConcurrencyManager manager = iterator.next();
                 manager.release();
             }
         }

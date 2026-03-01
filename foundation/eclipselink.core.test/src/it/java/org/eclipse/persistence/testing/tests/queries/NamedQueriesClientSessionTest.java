@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,10 +14,10 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.queries;
 
-import java.util.*;
+import org.eclipse.persistence.sessions.server.ClientSession;
+import org.eclipse.persistence.sessions.server.Server;
 
-// TopLink imports
-import org.eclipse.persistence.sessions.server.*;
+import java.util.Vector;
 
 /**
  * We have added support so that there can be multiple queries
@@ -71,12 +71,12 @@ public class NamedQueriesClientSessionTest extends MultiNameQueriesTestCase {
         // do not use the following session's API,
         // public Object executeQuery(queryName, domainClass, argumentValues)
         // since it looks for query in DescriptorQueryManager, not in ClientSession
-        Vector empsByFirstName = (Vector)clientSession.executeQuery("namedQuerySameName", new String("Jill"));
+        Vector empsByFirstName = (Vector)clientSession.executeQuery("namedQuerySameName", "Jill");
     }
 
     // end of useNamedQueryFirstName
     public void useNamedQueryFirstAndLastName() {
-        Vector empsByFirstAndLastName = (Vector)clientSession.executeQuery("namedQuerySameName", new String("Jill"), new String("May"));
+        Vector empsByFirstAndLastName = (Vector)clientSession.executeQuery("namedQuerySameName", "Jill", "May");
     }
 
     // end of useNamedQueryFirstAndLastName
@@ -107,7 +107,12 @@ public class NamedQueriesClientSessionTest extends MultiNameQueriesTestCase {
     @Override
     public void verify() {
         if (caughtException != null) {
-            throw new org.eclipse.persistence.testing.framework.TestErrorException("Multiple queries with the same named cached on the ClientSession.\n" + "Each with different argument sets.\n" + "This exception thrown while testing test case.\n" + "----- NamedQueriesClientSessionTest() -----\n");
+            throw new org.eclipse.persistence.testing.framework.TestErrorException("""
+                    Multiple queries with the same named cached on the ClientSession.
+                    Each with different argument sets.
+                    This exception thrown while testing test case.
+                    ----- NamedQueriesClientSessionTest() -----
+                    """);
         }
     }
     // end of verify()

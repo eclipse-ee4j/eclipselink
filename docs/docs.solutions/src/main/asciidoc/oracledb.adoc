@@ -1,0 +1,57 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[ORACLEDB]]
+== Using EclipseLink with the Oracle Database
+
+This chapter provides instructions for understanding and
+usingEclipseLink features that are designed specifically to support the
+Oracle Database platform.
+
+This chapter includes the following sections:
+
+* xref:{relativedir}/oracledb001.adoc#ORACLEDB001[Introduction to the Solution]
+* xref:{relativedir}/oracledb002.adoc#ORACLEDB002[Implementing the Solution]
+* xref:{relativedir}/oracledb003.adoc#ORACLEDB003[Additional Resources]
+
+*Use Case*
+
+EclipseLink offers a persistence solution that is designed to work with
+any database. However, applications that plan to use the Oracle Database
+platform can take advantage of enhanced support for the Oracle Database.
+
+*Solution*
+
+The solution is achieved by using various EclipseLink APIs and Oracle
+products. Applications choose to implement different EclipseLink APIs
+based on the Oracle Database feature or products being used.
+
+*Components*
+
+* EclipseLink 2.4 or later.
+* Oracle Database
+* Additional Oracle Database and Middleware products are required
+depending on the features that an application chooses to use.
+
+//Introduction to the Solution
+include::{rootdir}/oracledb001.adoc[]
+
+//Implementing the Solution
+include::{rootdir}/oracledb002.adoc[]
+
+//Additional Resources
+include::{rootdir}/oracledb003.adoc[]

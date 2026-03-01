@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2018 IBM Corporation and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,11 +35,11 @@
 //       - 454189 : Misc message cleanup.#2
 //     03/09/2016-2.6 Dalia Abo Sheasha
 //       - 489298: Wrap EclipseLink's Bean Validation calls in doPrivileged blocks when security is enabled
+//     12/05/2023: Tomas Kraus
+//       - New Jakarta Persistence 3.2 Features
 package org.eclipse.persistence.internal.localization.i18n;
 
 import java.util.ListResourceBundle;
-
-import org.eclipse.persistence.config.PersistenceUnitProperties;
 
 /**
  * English ResourceBundle for ExceptionLocalization messages.
@@ -85,6 +85,12 @@ public class ExceptionLocalizationResource extends ListResourceBundle {
                                            { "bean_definition_vector_arguments_are_of_different_sizes", "Bean definition vector arguments are of different sizes" },
                                            { "missing_toplink_bean_definition_for", "Missing TopLink bean definition for {0}" },
                                            { "argument_collection_was_null", "Argument collection was null" },
+                                           { "entity_manager_with_connection_failed", "The user code failed with an error: {0}"},
+                                           { "custom_pu_name_conflict", "Cannot create a custom persistence unit with the name {0}. This name was found in the xml configuration."},
+                                           { "custom_pu_create_error", "Cannot create a custom persistence unit with the name {0}."},
+                                           { "custom_pu_create_error_no_caller", "Cannot create custom persistence unit with name {0}. No caller method was found in stack."},
+                                           { "custom_pu_create_error_no_caller_class_url", "Cannot create custom persistence unit with name {0}. No caller class {1} URL was found."},
+                                           { "configured_pu_name_conflict", "Cannot create a configured persistence unit with the name {0}. This name was found in custom persistence units."},
                                            { "no_entities_retrieved_for_get_single_result", "getSingleResult() did not retrieve any entities." },
                                            { "no_entities_retrieved_for_get_reference", "Could not find Entity for id: {0}" },
                                            { "too_many_results_for_get_single_result", "More than one result was returned from Query.getSingleResult()" },
@@ -193,6 +199,9 @@ public class ExceptionLocalizationResource extends ListResourceBundle {
                                            { "jaxb_helper_invalid_target_for_marshaller", "The provided target Class [{0}] must be one of EclipseLink JAXBMarshaller or EclipseLink XMLMarshaller." },
                                            { "jaxb_helper_invalid_target_for_binder", "The provided target Class [{0}] must be one of EclipseLink JAXBBinder or EclipseLink XMLBinder." },
                                            { "jpa_persistence_util_non_persistent_class", "PersistenceUtil.getIdentifier(entity) was called with object [{0}] which is not a persistent object." },
+                                           { "jpa_persistence_util_get_version_non_persistent_class", "PersistenceUtil.getVersion(entity) was called with the [{0}] object, which is not a persistent object." },
+                                           { "jpa_persistence_util_get_version_no_version_in_class", "PersistenceUtil.getVersion(entity) was called with the [{0}] object, which has no version attribute." },
+                                           { "jpa_non_persistent_class", "The [{0}] class is not a persistent class." },
                                            { "metamodel_identifiable_type_has_no_idclass_attribute", "No @IdClass attributes exist on the IdentifiableType [{0}].  There still may be one or more @Id or an @EmbeddedId on type." },
                                            { "metamodel_identifiable_no_version_attribute_present", "No @Version attribute exists on the identifiable type [{0}]." },
                                            { "metamodel_identifiable_no_id_attribute_present", "No @Id attribute exists on the identifiable type [{0}]." },
@@ -227,8 +236,8 @@ public class ExceptionLocalizationResource extends ListResourceBundle {
                                            { "jpa21-ddl-source-script-io-exception", "An IO error occurred with the source ddl generation script: {0}."},
                                            { "jpa21-ddl-invalid-source-script-type", "The source script provided {0} is of an invalid type {0}. Valid source script types are: java.io.Reader or a string designating a file URL."},
                                            { "jpa21-ddl-invalid-target-script-type", "The target script provided {0} is of an invalid type {0}. Valid target script types are: java.io.Writer or a string designating a file URL."},
-                                           { "jpa21-ddl-drop-script-target-not-specified", "When generating DDL to scripts, a drop script target must be specified using the ["+ PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPTS_DROP_TARGET+"] property."},
-                                           { "jpa21-ddl-create-script-target-not-specified", "When generating DDL to scripts, a create script target must be specified using the ["+ PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPTS_CREATE_TARGET+"] property."},
+                                           { "jpa21-ddl-drop-script-target-not-specified", "When generating DDL to scripts, a drop script target must be specified using the [{0}] property."},
+                                           { "jpa21-ddl-create-script-target-not-specified", "When generating DDL to scripts, a create script target must be specified using the [{0}] property."},
                                            //criteria API IllegalArgumentExceptions
                                            { "jpa_criteriaapi_no_corresponding_element_in_result", "Element {0} does not correspond to an element in the query result."},
                                            { "jpa_criteriaapi_invalid_result_index", "index {0} invalid for result list of size {1}."},
@@ -253,6 +262,8 @@ public class ExceptionLocalizationResource extends ListResourceBundle {
                                            { "getpersistenceunitutil_called_on_closed_emf", "getPersistenceUnitUtil() was called on a closed EntityManagerFactory."},
                                            { "named_entity_graph_exists", "NamedEntityGraph with name {0} found on {1} already exists in this persistence unit."},
                                            { "cannot_get_from_non_correlated_query", "getCorrelationParent() called on a from-clause that was not obtained through correlation." },
+                                           { "no_key_in_entity", "Cannot add join of {0} to {1} because the target class is missing an attribute of source type"},
+                                           { "RIGHT_JOIN_NOT_SUPPORTED", "Right join is not supported"},
                                            { "wrap_convert_exception", "An exception occurred while calling {0} on converter class {1} with value {2}"},
                                            { "ora_pessimistic_locking_with_rownum", "Pessimistic locking with query row limits is not supported."},
                                            { "bean_validation_constraint_violated", "One or more Bean Validation constraints were violated while executing Automatic Bean Validation on callback event: {0} for class: {1}. Please refer to the embedded constraint violations for details."},
@@ -262,7 +273,19 @@ public class ExceptionLocalizationResource extends ListResourceBundle {
                                            { "json_pgsql_pgobject_conversion", "Database PGobject conversion failed."},
                                            { "json_pgsql_unknown_type", "Unknown JSON type returned from database."},
                                            { "json_ora21c_jsonvalue_to_oraclevalue", "Could not convert JsonValue to OracleJsonValue."},
-                                           { "json_ora21c_resultset_to_jsonvalue", "Could not convert JDBC ResultSet type to JsonValue."}
+                                           { "json_ora21c_resultset_to_jsonvalue", "Could not convert JDBC ResultSet type to JsonValue."},
+                                           { "schema_validation", "Schema validation"},
+                                           { "schema_validation_failed", "Schema validation failed"},
+                                           { "schema_validation_missing_table", "The {0} table is not found in the schema"},
+                                           { "schema_validation_table_surplus_columns", "The {0} table has surplus columns in the schema"},
+                                           { "schema_validation_table_missing_columns", "The {0} table has missing columns in the schema"},
+                                           { "schema_validation_table_different_columns", "The {0} table has different columns in the schema"},
+                                           { "truncate_tables_failed", "Tables truncation failed"},
+                                           { "find_option_class_unknown", "The FindOption implementing the {0} class is not supported"},
+                                           { "refresh_option_class_unknown", "The RefreshOption implementing class {0} is not supported"},
+                                           { "lock_option_class_unknown", "The LockOption implementing class {0} is not supported"},
+                                           { "typed_query_reference_is_null", "Reference to a named query is null"},
+                                           { "missing_jpql_parser_class", "Could not load the JPQL parser class."}
                                         };
     /**
      * Return the lookup table.

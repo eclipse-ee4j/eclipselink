@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,7 +14,7 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.mappings.structures;
 
-import org.eclipse.persistence.exceptions.*;
+import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.foundation.AbstractCompositeDirectCollectionMapping;
 
@@ -101,7 +101,7 @@ public class ArrayMapping extends AbstractCompositeDirectCollectionMapping {
     @Override
     public void initialize(AbstractSession session) throws DescriptorException {
         super.initialize(session);
-        if (this.getStructureName().length() == 0) {
+        if (this.getStructureName().isEmpty()) {
             throw DescriptorException.structureNameNotSetInMapping(this);
         }
 

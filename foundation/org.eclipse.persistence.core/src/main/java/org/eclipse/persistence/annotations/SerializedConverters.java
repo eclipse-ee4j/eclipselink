@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,10 +23,10 @@ import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * A TypeConverters annotation allows the definition of multiple SerializedConverter.
+ * A SerializedConverters annotation allows the definition of multiple
+ * {@linkplain SerializedConverter}s.
  *
- * @see org.eclipse.persistence.annotations.SerializedConverter
- *
+ * @see SerializedConverter
  * @author James Sutherland
  * @since EclipseLink 2.6
  */
@@ -34,7 +34,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 public @interface SerializedConverters {
     /**
-     * (Required) An array of type converter.
+     * An array of SerializedConverter annotations.
      */
     SerializedConverter[] value();
 }

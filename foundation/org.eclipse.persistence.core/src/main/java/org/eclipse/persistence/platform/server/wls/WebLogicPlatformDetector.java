@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2015 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -16,13 +16,13 @@
 //       - 455683: Automatically detect target server
 package org.eclipse.persistence.platform.server.wls;
 
-import java.lang.reflect.Method;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
-
 import org.eclipse.persistence.config.TargetServer;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.platform.server.ServerPlatformDetector;
+
+import java.lang.reflect.Method;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 
 public class WebLogicPlatformDetector implements ServerPlatformDetector {
 
@@ -53,17 +53,11 @@ public class WebLogicPlatformDetector implements ServerPlatformDetector {
                 if (version >= 12) {
                     platform = TargetServer.WebLogic_12;
                 } else {
-                    switch (version) {
-                        case 11:
-                        case 10:
-                            platform = TargetServer.WebLogic_10;
-                            break;
-                        case 9:
-                            platform = TargetServer.WebLogic_9;
-                            break;
-                        default:
-                            platform = TargetServer.WebLogic;
-                    }
+                    platform = switch (version) {
+                        case 11, 10 -> TargetServer.WebLogic_10;
+                        case 9 -> TargetServer.WebLogic_9;
+                        default -> TargetServer.WebLogic;
+                    };
                 }
             } catch (NumberFormatException nfe) {
                 // default fallback

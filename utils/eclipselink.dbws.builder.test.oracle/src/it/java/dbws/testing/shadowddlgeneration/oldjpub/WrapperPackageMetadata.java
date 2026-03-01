@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,7 +21,7 @@ import java.util.ArrayList;
 public class WrapperPackageMetadata {
 
     private String name;
-    private ArrayList<WrapperMethodMetadata> wrapperMethods = new ArrayList<WrapperMethodMetadata>();
+    private ArrayList<WrapperMethodMetadata> wrapperMethods = new ArrayList<>();
 
     public WrapperPackageMetadata(String name) {
         this.name = name;
@@ -32,7 +32,7 @@ public class WrapperPackageMetadata {
     }
 
     public WrapperMethodMetadata[] getWrapperMethods() {
-        return  wrapperMethods.toArray(new WrapperMethodMetadata[wrapperMethods.size()]);
+        return  wrapperMethods.toArray(new WrapperMethodMetadata[0]);
     }
 
     public String getName() {

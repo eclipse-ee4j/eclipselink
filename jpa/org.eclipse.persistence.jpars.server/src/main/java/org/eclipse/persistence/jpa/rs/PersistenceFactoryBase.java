@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -59,7 +59,7 @@ public class PersistenceFactoryBase implements PersistenceContextFactory {
      * @return newly created persistence context
      */
     public PersistenceContext bootstrapPersistenceContext(String name, EntityManagerFactory emf, URI baseURI, String version, boolean replace) {
-        final PersistenceContext persistenceContext = new PersistenceContext(name, (EntityManagerFactoryImpl) emf, baseURI, ServiceVersion.fromCode(version));
+        final PersistenceContext persistenceContext = new PersistenceContext(name, emf, baseURI, ServiceVersion.fromCode(version));
 
         if (replace) {
             addReplacePersistenceContext(persistenceContext);
@@ -122,7 +122,7 @@ public class PersistenceFactoryBase implements PersistenceContextFactory {
                     }
                 }
 
-                if (contextSet.size() == 0) {
+                if (contextSet.isEmpty()) {
                     dynamicPersistenceContexts.remove(name);
                 } else {
                     dynamicPersistenceContexts.put(name, contextSet);
@@ -182,12 +182,12 @@ public class PersistenceFactoryBase implements PersistenceContextFactory {
 
                 persistenceContext = bootstrapPersistenceContext(persistenceUnitName, factory, defaultURI, version, true);
             } catch (Exception e) {
-                JPARSLogger.exception("exception_creating_persistence_context", new Object[] { persistenceUnitName, e.toString() }, e);
+                JPARSLogger.DEFAULT_LOGGER.exception(null, "exception_creating_persistence_context", new Object[] { persistenceUnitName, e.toString() }, e);
             }
         }
 
         if ((persistenceContext != null) && (!persistenceContext.isWeavingEnabled())) {
-            JPARSLogger.error(persistenceContext.getServerSession().getSessionLog(), "weaving_required_for_relationships", new Object[] {});
+            persistenceContext.getLogger().error(persistenceContext.getSessionId(), "weaving_required_for_relationships", new Object[] {});
             throw JPARSException.invalidConfiguration();
         }
 

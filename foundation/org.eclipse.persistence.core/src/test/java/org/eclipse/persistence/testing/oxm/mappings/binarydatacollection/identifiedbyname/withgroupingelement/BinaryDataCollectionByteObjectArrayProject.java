@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,7 +14,6 @@
 //     Denise Smith - December 15, 2009
 package org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.identifiedbyname.withgroupingelement;
 
-import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.oxm.NamespaceResolver;
@@ -25,7 +24,6 @@ import org.eclipse.persistence.oxm.mappings.XMLBinaryDataCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.Session;
-import org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.Employee;
 import org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.EmployeeWithByteArrayObject;
 
 public class BinaryDataCollectionByteObjectArrayProject extends Project {
@@ -58,7 +56,7 @@ public class BinaryDataCollectionByteObjectArrayProject extends Project {
         photosMapping.setShouldInlineBinaryData(false);
         photosMapping.setSwaRef(false);
         photosMapping.setMimeType("image");
-        //photosMapping.setCollectionContentType(ClassConstants.ABYTE);
+        //photosMapping.setCollectionContentType(CoreClassConstants.ABYTE);
         Converter valueConverter = new MyConverter();
         photosMapping.setValueConverter(valueConverter);
 
@@ -66,7 +64,7 @@ public class BinaryDataCollectionByteObjectArrayProject extends Project {
         return descriptor;
     }
 
-    public class MyConverter implements Converter{
+    public static class MyConverter implements Converter{
 
         @Override
         public Object convertDataValueToObjectValue(Object dataValue, Session session) {

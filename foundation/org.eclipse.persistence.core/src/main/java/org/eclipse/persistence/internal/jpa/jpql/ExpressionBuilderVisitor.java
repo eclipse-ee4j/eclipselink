@@ -1,6 +1,7 @@
 /*
- * Copyright (c) 2006, 2022 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2006, 2021 IBM Corporation. All rights reserved.
+ * Copyright (c) 2006, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2024 IBM Corporation. All rights reserved.
+ * Copyright (c) 2024 Contributors to the Eclipse Foundation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,24 +25,11 @@
 //     04/21/2022: Tomas Kraus
 //       - Issue 1474: Update JPQL Grammar for Jakarta Persistence 2.2, 3.0 and 3.1
 //       - Issue 317: Implement LOCAL DATE, LOCAL TIME and LOCAL DATETIME.
+//     06/02/2023: Radek Felcman
+//       - Issue 1885: Implement new JPQLGrammar for upcoming Jakarta Persistence 3.2
+//     07/24/2024: Ondro Mihalyi
+//       - Issues 2197, 2198, and 2199: JPQL query incorrectly parsed when "this" variable used explicitly in path expressions
 package org.eclipse.persistence.internal.jpa.jpql;
-
-import java.sql.Date;
-import java.sql.Time;
-import java.sql.Timestamp;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Vector;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.expressions.Expression;
@@ -50,6 +38,7 @@ import org.eclipse.persistence.expressions.ExpressionMath;
 import org.eclipse.persistence.internal.expressions.ConstantExpression;
 import org.eclipse.persistence.internal.expressions.DateConstantExpression;
 import org.eclipse.persistence.internal.expressions.MapEntryExpression;
+import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.expressions.ParameterExpression;
 import org.eclipse.persistence.internal.queries.ReportItem;
 import org.eclipse.persistence.jpa.jpql.ExpressionTools;
@@ -78,6 +67,7 @@ import org.eclipse.persistence.jpa.jpql.parser.CollectionMemberExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CollectionValuedPathExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ComparisonExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ConcatExpression;
+import org.eclipse.persistence.jpa.jpql.parser.ConcatPipesExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ConnectByClause;
 import org.eclipse.persistence.jpa.jpql.parser.ConstructorExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CountFunction;
@@ -98,6 +88,7 @@ import org.eclipse.persistence.jpa.jpql.parser.FunctionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.GroupByClause;
 import org.eclipse.persistence.jpa.jpql.parser.HavingClause;
 import org.eclipse.persistence.jpa.jpql.parser.HierarchicalQueryClause;
+import org.eclipse.persistence.jpa.jpql.parser.IdExpression;
 import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariable;
 import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariableDeclaration;
 import org.eclipse.persistence.jpa.jpql.parser.InExpression;
@@ -107,6 +98,7 @@ import org.eclipse.persistence.jpa.jpql.parser.JPQLExpression;
 import org.eclipse.persistence.jpa.jpql.parser.Join;
 import org.eclipse.persistence.jpa.jpql.parser.KeyExpression;
 import org.eclipse.persistence.jpa.jpql.parser.KeywordExpression;
+import org.eclipse.persistence.jpa.jpql.parser.LeftExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LengthExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LikeExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LocalDateTime;
@@ -132,7 +124,9 @@ import org.eclipse.persistence.jpa.jpql.parser.OrderByItem;
 import org.eclipse.persistence.jpa.jpql.parser.OrderSiblingsByClause;
 import org.eclipse.persistence.jpa.jpql.parser.RangeVariableDeclaration;
 import org.eclipse.persistence.jpa.jpql.parser.RegexpExpression;
+import org.eclipse.persistence.jpa.jpql.parser.ReplaceExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ResultVariable;
+import org.eclipse.persistence.jpa.jpql.parser.RightExpression;
 import org.eclipse.persistence.jpa.jpql.parser.SelectClause;
 import org.eclipse.persistence.jpa.jpql.parser.SelectStatement;
 import org.eclipse.persistence.jpa.jpql.parser.SimpleFromClause;
@@ -166,6 +160,21 @@ import org.eclipse.persistence.mappings.querykeys.ForeignReferenceQueryKey;
 import org.eclipse.persistence.mappings.querykeys.QueryKey;
 import org.eclipse.persistence.queries.ReportQuery;
 
+import java.sql.Date;
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 /**
  * This {@link org.eclipse.persistence.jpa.jpql.parser.ExpressionVisitor} visits an {@link org.eclipse.persistence.jpa.jpql.parser.Expression
  * JPQL Expression} and creates the corresponding {@link org.eclipse.persistence.expressions.Expression EclipseLink Expression}.
@@ -174,7 +183,7 @@ import org.eclipse.persistence.queries.ReportQuery;
  * @author John Bracken
  */
 @SuppressWarnings("nls")
-final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
+final class ExpressionBuilderVisitor extends JPQLFunctionsAbstractBuilder implements EclipseLinkExpressionVisitor {
 
     /**
      * This visitor creates a list by retrieving either the single child or the children of the
@@ -192,11 +201,6 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
      * type that takes precedence.
      */
     private Comparator<Class<?>> numericTypeComparator;
-
-    /**
-     * The context used to query information about the application metadata.
-     */
-    private final JPQLQueryContext queryContext;
 
     /**
      * The EclipseLink {@link Expression} that represents a visited parsed
@@ -222,9 +226,8 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
      * cached information
      */
     ExpressionBuilderVisitor(JPQLQueryContext queryContext) {
-        super();
+        super(queryContext);
         this.type = new Class<?>[1];
-        this.queryContext = queryContext;
     }
 
     private void appendJoinVariables(org.eclipse.persistence.jpa.jpql.parser.Expression expression,
@@ -442,7 +445,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
         queryExpression = ExpressionMath.add(leftExpression, rightExpression);
 
         // Set the expression type
-        Collections.sort(types, NumericTypeComparator.instance());
+        types.sort(NumericTypeComparator.instance());
         type[0] = types.get(0);
     }
 
@@ -588,7 +591,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
                 //Bug 537795
                 //After we build the caseStatement, we need to retroactively fix the THEN/ELSE children's base
                 if(queryExpression.isFunctionExpression()) {
-                    Vector<Expression> children = ((org.eclipse.persistence.internal.expressions.FunctionExpression)queryExpression).getChildren();
+                    List<Expression> children = ((org.eclipse.persistence.internal.expressions.FunctionExpression)queryExpression).getChildren();
                     int index = 1;
                     while(index <  children.size()) {
                         Expression when_else = children.get(index);
@@ -741,6 +744,35 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
         // Now create the comparison expression
         String comparaison = expression.getComparisonOperator();
 
+        // Handle ID() function with composite keys on left side
+        if (expression.getLeftExpression() instanceof IdExpression) {
+            IdExpression idExpression = (IdExpression) expression.getLeftExpression();
+            Collection<StateFieldPathExpression> stateFieldPaths = idExpression.getStateFieldPathExpressions();
+
+            // If composite key (multiple fields), create AND/OR expression for each field
+            if (stateFieldPaths.size() > 1) {
+                queryExpression = buildCompositeKeyComparison(
+                    stateFieldPaths, rightExpression, comparaison, visitor);
+                type[0] = Boolean.class;
+                return;
+            }
+        }
+
+        // Handle ID() function with composite keys on right side
+        if (expression.getRightExpression() instanceof IdExpression) {
+            IdExpression idExpression = (IdExpression) expression.getRightExpression();
+            Collection<StateFieldPathExpression> stateFieldPaths = idExpression.getStateFieldPathExpressions();
+
+            // If composite key (multiple fields), create AND/OR expression for each field
+            if (stateFieldPaths.size() > 1) {
+                queryExpression = buildCompositeKeyComparison(
+                    stateFieldPaths, leftExpression, comparaison, visitor);
+                type[0] = Boolean.class;
+                return;
+            }
+        }
+
+        // Standard comparison for non-composite keys
         // =
         if (comparaison == ComparisonExpression.EQUAL) {
             queryExpression = leftExpression.equal(rightExpression);
@@ -775,6 +807,85 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
         type[0] = Boolean.class;
     }
 
+    /**
+     * Builds a comparison expression for composite keys by creating individual field comparisons
+     * and combining them with AND/OR operators.
+     *
+     * @param stateFieldPaths The collection of field paths from the ID() expression
+     * @param parameterExpression The parameter expression (e.g., ?1)
+     * @param operator The comparison operator (=, !=, etc.)
+     * @param visitor The visitor for building sub-expressions
+     * @return The combined expression for all key fields
+     */
+    private Expression buildCompositeKeyComparison(
+            Collection<StateFieldPathExpression> stateFieldPaths,
+            Expression parameterExpression,
+            String operator,
+            ComparisonExpressionVisitor visitor) {
+
+        Expression result = null;
+
+        // Check if parameter expression is a ParameterExpression
+        boolean isParameter = parameterExpression instanceof ParameterExpression;
+
+        for (StateFieldPathExpression fieldPath : stateFieldPaths) {
+            // Build expression for this field: e.g., c.name
+            fieldPath.accept(visitor);
+            Expression fieldExpression = queryExpression;
+
+            // Extract the field name from the path (last segment)
+            // For "c.name", pathSize() is 2, and getPath(1) returns "name"
+            int lastIndex = fieldPath.pathSize() - 1;
+            String fieldName = fieldPath.getPath(lastIndex);
+
+            // Create a NEW ParameterExpression for this field
+            // We create it with just the field name, and set the baseExpression to the original parameter
+            // This will cause getValue() to extract the field value from the composite key object
+            DatabaseField dbField = new DatabaseField(fieldName);
+            ParameterExpression paramFieldExpression = new ParameterExpression(dbField);
+            
+            // Set the base expression to the original parameter so it knows where to get the CityId object from
+            if (parameterExpression instanceof ParameterExpression) {
+                paramFieldExpression.setBaseExpression(parameterExpression);
+            }
+            
+            // CRITICAL: Set the localBase to the field expression from the entity side
+            // This provides the mapping information needed to extract the field value
+            paramFieldExpression.setLocalBase(fieldExpression);
+
+            // Create comparison for this field
+            Expression fieldComparison;
+            if (operator.equals(ComparisonExpression.EQUAL)) {
+                fieldComparison = fieldExpression.equal(paramFieldExpression);
+            }
+            else if (operator.equals(ComparisonExpression.DIFFERENT) ||
+                     operator.equals(ComparisonExpression.NOT_EQUAL)) {
+                fieldComparison = fieldExpression.notEqual(paramFieldExpression);
+            }
+            else {
+                throw new IllegalArgumentException(
+                    "Comparison operator " + operator + " is not supported for composite keys");
+            }
+
+            // Combine with previous comparisons
+            if (result == null) {
+                result = fieldComparison;
+            }
+            else {
+                // For EQUAL: use AND (all fields must match)
+                // For NOT_EQUAL: use OR (any field can differ)
+                if (operator.equals(ComparisonExpression.EQUAL)) {
+                    result = result.and(fieldComparison);
+                }
+                else {
+                    result = result.or(fieldComparison);
+                }
+            }
+        }
+
+        return result;
+    }
+
     @Override
     public void visit(ConcatExpression expression) {
 
@@ -795,6 +906,31 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 
         // Set the expression type
        type[0] = String.class;
+    }
+
+    @Override
+    public void visit(ConcatPipesExpression expression) {
+        //Convert || string operator into function CONCAT() as not every DB supports it
+        //but DB platform should translate it into platform valid SQL
+        List<org.eclipse.persistence.jpa.jpql.parser.Expression> expressions = new ArrayList<>(2);
+        expressions.add(expression.getLeftExpression());
+        expressions.add(expression.getRightExpression());
+        Expression newExpression = null;
+
+        for (org.eclipse.persistence.jpa.jpql.parser.Expression child : expressions) {
+            child.accept(this);
+            if (newExpression == null) {
+                newExpression = queryExpression;
+            }
+            else {
+                newExpression = newExpression.concat(queryExpression);
+            }
+        }
+
+        queryExpression = newExpression;
+
+        // Set the expression type
+        type[0] = String.class;
     }
 
     @Override
@@ -901,7 +1037,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
         queryExpression = ExpressionMath.divide(leftExpression, rightExpression);
 
         // Set the expression type
-        Collections.sort(types, NumericTypeComparator.instance());
+        types.sort(NumericTypeComparator.instance());
         type[0] = types.get(0);
     }
 
@@ -1011,6 +1147,12 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
                 case "SECOND":
                     type[0] = Double.class;
                     break;
+                case "DATE":
+                    type[0] = LocalDate.class;
+                    break;
+                case "TIME":
+                    type[0] = LocalTime.class;
+                    break;
                 default:
                     type[0] = Object.class;
             }
@@ -1068,6 +1210,8 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
                 }
 
                 queryExpression = queryExpressions.remove(0);
+                // ensure the session is set for the 'SQL' operator
+                queryExpression.getBuilder().setSession(queryContext.getSession());
 
                 // SQL
                 if (identifier == org.eclipse.persistence.jpa.jpql.parser.Expression.SQL) {
@@ -1245,6 +1389,24 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 
         queryExpression = queryContext.getBaseExpression();
         queryExpression = new ConstantExpression(value, queryExpression);
+    }
+
+    @Override
+    public void visit(LeftExpression expression) {
+
+        // Create the first expression
+        expression.getFirstExpression().accept(this);
+        Expression firstExpression = queryExpression;
+
+        // Create the second expression
+        expression.getSecondExpression().accept(this);
+        Expression secondExpression = queryExpression;
+
+        // Now create the LEFT expression
+        queryExpression = firstExpression.left(secondExpression);
+
+        // Set the expression type
+        type[0] = String.class;
     }
 
     @Override
@@ -1535,7 +1697,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
         queryExpression = ExpressionMath.multiply(leftExpression, rightExpression);
 
         // Set the expression type
-        Collections.sort(types, NumericTypeComparator.instance());
+        types.sort(NumericTypeComparator.instance());
         type[0] = types.get(0);
     }
 
@@ -1729,6 +1891,28 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
     }
 
     @Override
+    public void visit(ReplaceExpression expression) {
+
+        // Create the first expression
+        expression.getFirstExpression().accept(this);
+        Expression firstExpression = queryExpression;
+
+        // Create the second expression
+        expression.getSecondExpression().accept(this);
+        Expression secondExpression = queryExpression;
+
+        // Create the third expression
+        expression.getThirdExpression().accept(this);
+        Expression thirdExpression = queryExpression;
+
+        // Now create the REPLACE expression
+        queryExpression = firstExpression.replace(secondExpression, thirdExpression);
+
+        // Set the expression type
+        type[0] = String.class;
+    }
+
+    @Override
     public void visit(ResultVariable expression) {
 
         expression.getSelectExpression().accept(this);
@@ -1737,6 +1921,24 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
         queryContext.addQueryExpression(variableName, queryExpression);
 
         // Note: The type will be calculated when traversing the select expression
+    }
+
+    @Override
+    public void visit(RightExpression expression) {
+
+        // Create the first expression
+        expression.getFirstExpression().accept(this);
+        Expression firstExpression = queryExpression;
+
+        // Create the second expression
+        expression.getSecondExpression().accept(this);
+        Expression secondExpression = queryExpression;
+
+        // Now create the RIGHT expression
+        queryExpression = firstExpression.right(secondExpression);
+
+        // Set the expression type
+        type[0] = String.class;
     }
 
     @Override
@@ -1872,7 +2074,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
         queryExpression = ExpressionMath.subtract(leftExpression, rightExpression);
 
         // Set the expression type
-        Collections.sort(types, NumericTypeComparator.instance());
+        types.sort(NumericTypeComparator.instance());
         type[0] = types.get(0);
     }
 
@@ -2388,7 +2590,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 
         private void resolvePath(AbstractPathExpression expression) {
 
-            for (int index = expression.hasVirtualIdentificationVariable() ? 0 : 1, count = length; index < count; index++) {
+            for (int index = expression.hasImplicitIdentificationVariable() ? 0 : 1, count = length; index < count; index++) {
 
                 String path = expression.getPath(index);
                 DatabaseMapping mapping = descriptor.getObjectBuilder().getMappingForAttributeName(path);

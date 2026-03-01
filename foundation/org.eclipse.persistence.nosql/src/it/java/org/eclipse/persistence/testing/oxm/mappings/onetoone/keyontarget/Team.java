@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -70,29 +70,28 @@ public class Team
 
   public String toString()
   {
-    String result = "TEAM: " + this.getId();
-    result += " EMPLOYEES: ";
+    StringBuilder result = new StringBuilder("TEAM: " + this.getId());
+    result.append(" EMPLOYEES: ");
 
     for(int i=0; i<employees.size();i++)
     {
-      result+= employees.elementAt(i);
+      result.append(employees.elementAt(i));
     }
 
-    result += "PROJECTS: ";
+    result.append("PROJECTS: ");
     for(int i=0; i<projects.size();i++)
     {
-      result+= projects.elementAt(i);
+      result.append(projects.elementAt(i));
     }
-    return result;
+    return result.toString();
   }
 
    public boolean equals(Object object)
    {
-     if(!(object instanceof Team))
+     if(!(object instanceof Team teamObject))
       return false;
 
-     Team teamObject = (Team)object;
-     if((((this.getEmployees() == null) && (teamObject.getEmployees() == null))||
+       if((((this.getEmployees() == null) && (teamObject.getEmployees() == null))||
           (this.getEmployees().containsAll(teamObject.getEmployees()))) &&
         (((this.getProjects() == null) && (teamObject.getProjects() == null))||
           (this.getProjects().containsAll(teamObject.getProjects()))) &&

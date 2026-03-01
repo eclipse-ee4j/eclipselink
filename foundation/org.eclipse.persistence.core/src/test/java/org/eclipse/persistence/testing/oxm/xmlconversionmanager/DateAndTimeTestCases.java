@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,22 +14,20 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.oxm.xmlconversionmanager;
 
+import org.eclipse.persistence.exceptions.ConversionException;
+import org.eclipse.persistence.oxm.exceptions.XMLConversionException;
+import org.eclipse.persistence.internal.oxm.XMLConversionManager;
+import org.eclipse.persistence.oxm.XMLConstants;
+import org.eclipse.persistence.testing.oxm.OXTestCase;
+
+import javax.xml.datatype.DatatypeConstants;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
-
-import javax.xml.datatype.DatatypeConstants;
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
-
-import junit.framework.TestCase;
-import org.eclipse.persistence.exceptions.ConversionException;
-import org.eclipse.persistence.exceptions.XMLConversionException;
-import org.eclipse.persistence.internal.oxm.XMLConversionManager;
-import org.eclipse.persistence.oxm.XMLConstants;
-import org.eclipse.persistence.testing.oxm.OXTestCase;
 
 public class DateAndTimeTestCases extends OXTestCase {
 
@@ -438,7 +436,7 @@ public class DateAndTimeTestCases extends OXTestCase {
             String string = "1975-02-21";
             xcm.convertObject(string, java.util.Date.class);
         } catch (ConversionException e) {
-            assertTrue(WRONG_EXCEPTION_THROWN, e.getErrorCode() == ConversionException.INCORRECT_DATE_TIME_FORMAT);
+            assertEquals(WRONG_EXCEPTION_THROWN, ConversionException.INCORRECT_DATE_TIME_FORMAT, e.getErrorCode());
             return;
         }
         fail(EXCEPTION_NOT_THROWN);
@@ -449,7 +447,7 @@ public class DateAndTimeTestCases extends OXTestCase {
             String string = "07:47:15";
             xcm.convertObject(string, java.util.Date.class);
         } catch (ConversionException e) {
-            assertTrue(WRONG_EXCEPTION_THROWN, e.getErrorCode() == ConversionException.INCORRECT_DATE_TIME_FORMAT);
+            assertEquals(WRONG_EXCEPTION_THROWN, ConversionException.INCORRECT_DATE_TIME_FORMAT, e.getErrorCode());
             return;
         }
         fail(EXCEPTION_NOT_THROWN);
@@ -460,7 +458,7 @@ public class DateAndTimeTestCases extends OXTestCase {
             String string = "1975$02$21T07$47$15";
             xcm.convertObject(string, java.util.Date.class);
         } catch (ConversionException e) {
-            assertTrue(WRONG_EXCEPTION_THROWN, e.getErrorCode() == ConversionException.INCORRECT_DATE_TIME_FORMAT);
+            assertEquals(WRONG_EXCEPTION_THROWN, ConversionException.INCORRECT_DATE_TIME_FORMAT, e.getErrorCode());
             return;
         }
         fail(EXCEPTION_NOT_THROWN);
@@ -471,7 +469,7 @@ public class DateAndTimeTestCases extends OXTestCase {
             String string = "1975-02-21$07:47:15";
             xcm.convertObject(string, java.util.Date.class);
         } catch (ConversionException e) {
-            assertTrue(WRONG_EXCEPTION_THROWN, e.getErrorCode() == ConversionException.INCORRECT_DATE_TIME_FORMAT);
+            assertEquals(WRONG_EXCEPTION_THROWN, ConversionException.INCORRECT_DATE_TIME_FORMAT, e.getErrorCode());
             return;
         }
         fail(EXCEPTION_NOT_THROWN);
@@ -482,7 +480,7 @@ public class DateAndTimeTestCases extends OXTestCase {
             String string = "10";
             xcm.convertObject(string, java.util.Date.class);
         } catch (ConversionException e) {
-            assertTrue(WRONG_EXCEPTION_THROWN, e.getErrorCode() == ConversionException.INCORRECT_DATE_TIME_FORMAT);
+            assertEquals(WRONG_EXCEPTION_THROWN, ConversionException.INCORRECT_DATE_TIME_FORMAT, e.getErrorCode());
             return;
         }
         fail(EXCEPTION_NOT_THROWN);
@@ -514,7 +512,7 @@ public class DateAndTimeTestCases extends OXTestCase {
             String string = "07:47:15";
             xcm.convertObject(string, java.util.Date.class, XMLConstants.DATE_QNAME);
         } catch (ConversionException e) {
-            assertTrue(WRONG_EXCEPTION_THROWN, e.getErrorCode() == ConversionException.INCORRECT_DATE_FORMAT);
+            assertEquals(WRONG_EXCEPTION_THROWN, ConversionException.INCORRECT_DATE_FORMAT, e.getErrorCode());
             return;
         }
         fail(EXCEPTION_NOT_THROWN);
@@ -525,7 +523,7 @@ public class DateAndTimeTestCases extends OXTestCase {
             String string = "1975$02$21";
             xcm.convertObject(string, java.util.Date.class, XMLConstants.DATE_QNAME);
         } catch (ConversionException e) {
-            assertTrue(WRONG_EXCEPTION_THROWN, e.getErrorCode() == ConversionException.INCORRECT_DATE_FORMAT);
+            assertEquals(WRONG_EXCEPTION_THROWN, ConversionException.INCORRECT_DATE_FORMAT, e.getErrorCode());
             return;
         }
         fail(EXCEPTION_NOT_THROWN);
@@ -536,7 +534,7 @@ public class DateAndTimeTestCases extends OXTestCase {
             String string = "10";
             xcm.convertObject(string, java.util.Date.class, XMLConstants.DATE_QNAME);
         } catch (ConversionException e) {
-            assertTrue(WRONG_EXCEPTION_THROWN, e.getErrorCode() == ConversionException.INCORRECT_DATE_FORMAT);
+            assertEquals(WRONG_EXCEPTION_THROWN, ConversionException.INCORRECT_DATE_FORMAT, e.getErrorCode());
             return;
         }
         fail(EXCEPTION_NOT_THROWN);
@@ -589,7 +587,7 @@ public class DateAndTimeTestCases extends OXTestCase {
             String string = "1975-02-21";
             xcm.convertObject(string, java.util.Date.class, XMLConstants.DATE_TIME_QNAME);
         } catch (ConversionException e) {
-            assertTrue(WRONG_EXCEPTION_THROWN, e.getErrorCode() == ConversionException.INCORRECT_DATE_TIME_FORMAT);
+            assertEquals(WRONG_EXCEPTION_THROWN, ConversionException.INCORRECT_DATE_TIME_FORMAT, e.getErrorCode());
             return;
         }
         fail(EXCEPTION_NOT_THROWN);
@@ -600,7 +598,7 @@ public class DateAndTimeTestCases extends OXTestCase {
             String string = "07:47:15";
             xcm.convertObject(string, java.util.Date.class, XMLConstants.DATE_TIME_QNAME);
         } catch (ConversionException e) {
-            assertTrue(WRONG_EXCEPTION_THROWN, e.getErrorCode() == ConversionException.INCORRECT_DATE_TIME_FORMAT);
+            assertEquals(WRONG_EXCEPTION_THROWN, ConversionException.INCORRECT_DATE_TIME_FORMAT, e.getErrorCode());
             return;
         }
         fail(EXCEPTION_NOT_THROWN);
@@ -611,7 +609,7 @@ public class DateAndTimeTestCases extends OXTestCase {
             String string = "1975$02$21T07$47$15";
             xcm.convertObject(string, java.util.Date.class, XMLConstants.DATE_TIME_QNAME);
         } catch (ConversionException e) {
-            assertTrue(WRONG_EXCEPTION_THROWN, e.getErrorCode() == ConversionException.INCORRECT_DATE_TIME_FORMAT);
+            assertEquals(WRONG_EXCEPTION_THROWN, ConversionException.INCORRECT_DATE_TIME_FORMAT, e.getErrorCode());
             return;
         }
         fail(EXCEPTION_NOT_THROWN);
@@ -622,7 +620,7 @@ public class DateAndTimeTestCases extends OXTestCase {
             String string = "1975-02-21$07:47:15";
             xcm.convertObject(string, java.util.Date.class, XMLConstants.DATE_TIME_QNAME);
         } catch (ConversionException e) {
-            assertTrue(WRONG_EXCEPTION_THROWN, e.getErrorCode() == ConversionException.INCORRECT_DATE_TIME_FORMAT);
+            assertEquals(WRONG_EXCEPTION_THROWN, ConversionException.INCORRECT_DATE_TIME_FORMAT, e.getErrorCode());
             return;
         }
         fail(EXCEPTION_NOT_THROWN);
@@ -675,7 +673,7 @@ public class DateAndTimeTestCases extends OXTestCase {
             String string = "1975-02-21";
             xcm.convertObject(string, java.util.Date.class, XMLConstants.TIME_QNAME);
         } catch (ConversionException e) {
-            assertTrue(WRONG_EXCEPTION_THROWN, e.getErrorCode() == ConversionException.INCORRECT_TIME_FORMAT);
+            assertEquals(WRONG_EXCEPTION_THROWN, ConversionException.INCORRECT_TIME_FORMAT, e.getErrorCode());
         }
     }
 
@@ -684,7 +682,7 @@ public class DateAndTimeTestCases extends OXTestCase {
             String string = "1975-02-21T07:47:15";
             xcm.convertObject(string, java.util.Date.class, XMLConstants.TIME_QNAME);
         } catch (ConversionException e) {
-            assertTrue(WRONG_EXCEPTION_THROWN, e.getErrorCode() == ConversionException.INCORRECT_TIME_FORMAT);
+            assertEquals(WRONG_EXCEPTION_THROWN, ConversionException.INCORRECT_TIME_FORMAT, e.getErrorCode());
             return;
         }
         fail(EXCEPTION_NOT_THROWN);
@@ -695,7 +693,7 @@ public class DateAndTimeTestCases extends OXTestCase {
             String string = "07-47$15";
             xcm.convertObject(string, java.util.Date.class, XMLConstants.TIME_QNAME);
         } catch (ConversionException e) {
-            assertTrue(WRONG_EXCEPTION_THROWN, e.getErrorCode() == ConversionException.INCORRECT_TIME_FORMAT);
+            assertEquals(WRONG_EXCEPTION_THROWN, ConversionException.INCORRECT_TIME_FORMAT, e.getErrorCode());
             return;
         }
         fail(EXCEPTION_NOT_THROWN);
@@ -706,7 +704,7 @@ public class DateAndTimeTestCases extends OXTestCase {
             String string = "10";
             xcm.convertObject(string, java.util.Date.class, XMLConstants.TIME_QNAME);
         } catch (ConversionException e) {
-            assertTrue(WRONG_EXCEPTION_THROWN, e.getErrorCode() == ConversionException.INCORRECT_TIME_FORMAT);
+            assertEquals(WRONG_EXCEPTION_THROWN, ConversionException.INCORRECT_TIME_FORMAT, e.getErrorCode());
             return;
         }
         fail(EXCEPTION_NOT_THROWN);
@@ -731,7 +729,7 @@ public class DateAndTimeTestCases extends OXTestCase {
             String string = "INVALID";
             xcm.convertObject(string, java.util.Date.class, XMLConstants.G_DAY_QNAME);
         } catch (XMLConversionException e) {
-            assertTrue(WRONG_EXCEPTION_THROWN, e.getErrorCode() == XMLConversionException.INCORRECT_G_DAY_FORMAT);
+            assertEquals(WRONG_EXCEPTION_THROWN, XMLConversionException.INCORRECT_G_DAY_FORMAT, e.getErrorCode());
             return;
         }
         fail(EXCEPTION_NOT_THROWN);
@@ -756,7 +754,7 @@ public class DateAndTimeTestCases extends OXTestCase {
             String string = "INVALID";
             xcm.convertObject(string, java.util.Date.class, XMLConstants.G_MONTH_QNAME);
         } catch (XMLConversionException e) {
-            assertTrue(WRONG_EXCEPTION_THROWN, e.getErrorCode() == XMLConversionException.INCORRECT_G_MONTH_FORMAT);
+            assertEquals(WRONG_EXCEPTION_THROWN, XMLConversionException.INCORRECT_G_MONTH_FORMAT, e.getErrorCode());
             return;
         }
         fail(EXCEPTION_NOT_THROWN);
@@ -781,7 +779,7 @@ public class DateAndTimeTestCases extends OXTestCase {
             String string = "INVALID";
             xcm.convertObject(string, java.util.Date.class, XMLConstants.G_MONTH_DAY_QNAME);
         } catch (XMLConversionException e) {
-            assertTrue(WRONG_EXCEPTION_THROWN, e.getErrorCode() == XMLConversionException.INCORRECT_G_MONTH_DAY_FORMAT);
+            assertEquals(WRONG_EXCEPTION_THROWN, XMLConversionException.INCORRECT_G_MONTH_DAY_FORMAT, e.getErrorCode());
             return;
         }
         fail(EXCEPTION_NOT_THROWN);
@@ -806,7 +804,7 @@ public class DateAndTimeTestCases extends OXTestCase {
             String string = "INVALID";
             xcm.convertObject(string, java.util.Date.class, XMLConstants.G_YEAR_QNAME);
         } catch (XMLConversionException e) {
-            assertTrue(WRONG_EXCEPTION_THROWN, e.getErrorCode() == XMLConversionException.INCORRECT_G_YEAR_FORMAT);
+            assertEquals(WRONG_EXCEPTION_THROWN, XMLConversionException.INCORRECT_G_YEAR_FORMAT, e.getErrorCode());
             return;
         }
         fail(EXCEPTION_NOT_THROWN);
@@ -831,7 +829,7 @@ public class DateAndTimeTestCases extends OXTestCase {
             String string = "INVALID";
             xcm.convertObject(string, java.util.Date.class, XMLConstants.G_YEAR_MONTH_QNAME);
         } catch (XMLConversionException e) {
-            assertTrue(WRONG_EXCEPTION_THROWN, e.getErrorCode() == XMLConversionException.INCORRECT_G_YEAR_MONTH_FORMAT);
+            assertEquals(WRONG_EXCEPTION_THROWN, XMLConversionException.INCORRECT_G_YEAR_MONTH_FORMAT, e.getErrorCode());
             return;
         }
         fail(EXCEPTION_NOT_THROWN);
@@ -1056,7 +1054,7 @@ public class DateAndTimeTestCases extends OXTestCase {
             String string = "07:47:15";
             xcm.convertObject(string, java.sql.Date.class);
         } catch (ConversionException e) {
-            assertTrue(WRONG_EXCEPTION_THROWN, e.getErrorCode() == ConversionException.INCORRECT_DATE_FORMAT);
+            assertEquals(WRONG_EXCEPTION_THROWN, ConversionException.INCORRECT_DATE_FORMAT, e.getErrorCode());
             return;
         }
         fail(EXCEPTION_NOT_THROWN);
@@ -1067,7 +1065,7 @@ public class DateAndTimeTestCases extends OXTestCase {
             String string = "1975$02$21";
             xcm.convertObject(string, java.sql.Date.class);
         } catch (ConversionException e) {
-            assertTrue(WRONG_EXCEPTION_THROWN, e.getErrorCode() == ConversionException.INCORRECT_DATE_FORMAT);
+            assertEquals(WRONG_EXCEPTION_THROWN, ConversionException.INCORRECT_DATE_FORMAT, e.getErrorCode());
             return;
         }
         fail(EXCEPTION_NOT_THROWN);
@@ -1099,7 +1097,7 @@ public class DateAndTimeTestCases extends OXTestCase {
             String string = "07:47:15";
             xcm.convertObject(string, java.sql.Date.class, XMLConstants.DATE_QNAME);
         } catch (ConversionException e) {
-            assertTrue(WRONG_EXCEPTION_THROWN, e.getErrorCode() == ConversionException.INCORRECT_DATE_FORMAT);
+            assertEquals(WRONG_EXCEPTION_THROWN, ConversionException.INCORRECT_DATE_FORMAT, e.getErrorCode());
             return;
         }
         fail(EXCEPTION_NOT_THROWN);
@@ -1110,7 +1108,7 @@ public class DateAndTimeTestCases extends OXTestCase {
             String string = "1975$02$21";
             xcm.convertObject(string, java.sql.Date.class, XMLConstants.DATE_QNAME);
         } catch (ConversionException e) {
-            assertTrue(WRONG_EXCEPTION_THROWN, e.getErrorCode() == ConversionException.INCORRECT_DATE_FORMAT);
+            assertEquals(WRONG_EXCEPTION_THROWN, ConversionException.INCORRECT_DATE_FORMAT, e.getErrorCode());
             return;
         }
         fail(EXCEPTION_NOT_THROWN);
@@ -1163,7 +1161,7 @@ public class DateAndTimeTestCases extends OXTestCase {
             String string = "1975-02-21";
             xcm.convertObject(string, java.sql.Date.class, XMLConstants.DATE_TIME_QNAME);
         } catch (ConversionException e) {
-            assertTrue(WRONG_EXCEPTION_THROWN, e.getErrorCode() == ConversionException.INCORRECT_DATE_TIME_FORMAT);
+            assertEquals(WRONG_EXCEPTION_THROWN, ConversionException.INCORRECT_DATE_TIME_FORMAT, e.getErrorCode());
             return;
         }
         fail(EXCEPTION_NOT_THROWN);
@@ -1174,7 +1172,7 @@ public class DateAndTimeTestCases extends OXTestCase {
             String string = "07:47:15";
             xcm.convertObject(string, java.sql.Date.class, XMLConstants.DATE_TIME_QNAME);
         } catch (ConversionException e) {
-            assertTrue(WRONG_EXCEPTION_THROWN, e.getErrorCode() == ConversionException.INCORRECT_DATE_TIME_FORMAT);
+            assertEquals(WRONG_EXCEPTION_THROWN, ConversionException.INCORRECT_DATE_TIME_FORMAT, e.getErrorCode());
             return;
         }
         fail(EXCEPTION_NOT_THROWN);
@@ -1185,7 +1183,7 @@ public class DateAndTimeTestCases extends OXTestCase {
             String string = "1975$02$21T07$47$15";
             xcm.convertObject(string, java.sql.Date.class, XMLConstants.DATE_TIME_QNAME);
         } catch (ConversionException e) {
-            assertTrue(WRONG_EXCEPTION_THROWN, e.getErrorCode() == ConversionException.INCORRECT_DATE_TIME_FORMAT);
+            assertEquals(WRONG_EXCEPTION_THROWN, ConversionException.INCORRECT_DATE_TIME_FORMAT, e.getErrorCode());
             return;
         }
         fail(EXCEPTION_NOT_THROWN);
@@ -1196,7 +1194,7 @@ public class DateAndTimeTestCases extends OXTestCase {
             String string = "1975-02-21$07:47:15";
             xcm.convertObject(string, java.sql.Date.class, XMLConstants.DATE_TIME_QNAME);
         } catch (ConversionException e) {
-            assertTrue(WRONG_EXCEPTION_THROWN, e.getErrorCode() == ConversionException.INCORRECT_DATE_TIME_FORMAT);
+            assertEquals(WRONG_EXCEPTION_THROWN, ConversionException.INCORRECT_DATE_TIME_FORMAT, e.getErrorCode());
             return;
         }
         fail(EXCEPTION_NOT_THROWN);
@@ -1249,7 +1247,7 @@ public class DateAndTimeTestCases extends OXTestCase {
             String string = "1975-02-21";
             xcm.convertObject(string, java.sql.Date.class, XMLConstants.TIME_QNAME);
         } catch (ConversionException e) {
-            assertTrue(WRONG_EXCEPTION_THROWN, e.getErrorCode() == ConversionException.INCORRECT_TIME_FORMAT);
+            assertEquals(WRONG_EXCEPTION_THROWN, ConversionException.INCORRECT_TIME_FORMAT, e.getErrorCode());
             return;
         }
         fail(EXCEPTION_NOT_THROWN);
@@ -1260,7 +1258,7 @@ public class DateAndTimeTestCases extends OXTestCase {
             String string = "1975-02-21T07:47:15";
             xcm.convertObject(string, java.sql.Date.class, XMLConstants.TIME_QNAME);
         } catch (ConversionException e) {
-            assertTrue(WRONG_EXCEPTION_THROWN, e.getErrorCode() == ConversionException.INCORRECT_TIME_FORMAT);
+            assertEquals(WRONG_EXCEPTION_THROWN, ConversionException.INCORRECT_TIME_FORMAT, e.getErrorCode());
             return;
         }
         fail(EXCEPTION_NOT_THROWN);
@@ -1271,7 +1269,7 @@ public class DateAndTimeTestCases extends OXTestCase {
             String string = "07$47$15";
             xcm.convertObject(string, java.sql.Date.class, XMLConstants.TIME_QNAME);
         } catch (ConversionException e) {
-            assertTrue(WRONG_EXCEPTION_THROWN, e.getErrorCode() == ConversionException.INCORRECT_TIME_FORMAT);
+            assertEquals(WRONG_EXCEPTION_THROWN, ConversionException.INCORRECT_TIME_FORMAT, e.getErrorCode());
             return;
         }
         fail(EXCEPTION_NOT_THROWN);
@@ -1296,7 +1294,7 @@ public class DateAndTimeTestCases extends OXTestCase {
             String string = "INVALID";
             xcm.convertObject(string, java.sql.Date.class, XMLConstants.G_DAY_QNAME);
         } catch (XMLConversionException e) {
-            assertTrue(WRONG_EXCEPTION_THROWN, e.getErrorCode() == XMLConversionException.INCORRECT_G_DAY_FORMAT);
+            assertEquals(WRONG_EXCEPTION_THROWN, XMLConversionException.INCORRECT_G_DAY_FORMAT, e.getErrorCode());
             return;
         }
         fail(EXCEPTION_NOT_THROWN);
@@ -1321,7 +1319,7 @@ public class DateAndTimeTestCases extends OXTestCase {
             String string = "INVALID";
             xcm.convertObject(string, java.sql.Date.class, XMLConstants.G_MONTH_QNAME);
         } catch (XMLConversionException e) {
-            assertTrue(WRONG_EXCEPTION_THROWN, e.getErrorCode() == XMLConversionException.INCORRECT_G_MONTH_FORMAT);
+            assertEquals(WRONG_EXCEPTION_THROWN, XMLConversionException.INCORRECT_G_MONTH_FORMAT, e.getErrorCode());
             return;
         }
         fail(EXCEPTION_NOT_THROWN);
@@ -1346,7 +1344,7 @@ public class DateAndTimeTestCases extends OXTestCase {
             String string = "INVALID";
             xcm.convertObject(string, java.sql.Date.class, XMLConstants.G_MONTH_DAY_QNAME);
         } catch (XMLConversionException e) {
-            assertTrue(WRONG_EXCEPTION_THROWN, e.getErrorCode() == XMLConversionException.INCORRECT_G_MONTH_DAY_FORMAT);
+            assertEquals(WRONG_EXCEPTION_THROWN, XMLConversionException.INCORRECT_G_MONTH_DAY_FORMAT, e.getErrorCode());
             return;
         }
         fail(EXCEPTION_NOT_THROWN);
@@ -1371,7 +1369,7 @@ public class DateAndTimeTestCases extends OXTestCase {
             String string = "INVALID";
             xcm.convertObject(string, java.sql.Date.class, XMLConstants.G_YEAR_QNAME);
         } catch (XMLConversionException e) {
-            assertTrue(WRONG_EXCEPTION_THROWN, e.getErrorCode() == XMLConversionException.INCORRECT_G_YEAR_FORMAT);
+            assertEquals(WRONG_EXCEPTION_THROWN, XMLConversionException.INCORRECT_G_YEAR_FORMAT, e.getErrorCode());
             return;
         }
         fail(EXCEPTION_NOT_THROWN);
@@ -1396,7 +1394,7 @@ public class DateAndTimeTestCases extends OXTestCase {
             String string = "INVALID";
             xcm.convertObject(string, java.sql.Date.class, XMLConstants.G_YEAR_MONTH_QNAME);
         } catch (XMLConversionException e) {
-            assertTrue(WRONG_EXCEPTION_THROWN, e.getErrorCode() == XMLConversionException.INCORRECT_G_YEAR_MONTH_FORMAT);
+            assertEquals(WRONG_EXCEPTION_THROWN, XMLConversionException.INCORRECT_G_YEAR_MONTH_FORMAT, e.getErrorCode());
             return;
         }
         fail(EXCEPTION_NOT_THROWN);
@@ -1703,7 +1701,7 @@ public class DateAndTimeTestCases extends OXTestCase {
             String string = "1975-02-21T07:47:15";
             xcm.convertObject(string, Time.class);
         } catch (ConversionException e) {
-            assertTrue(WRONG_EXCEPTION_THROWN, e.getErrorCode() == ConversionException.INCORRECT_TIME_FORMAT);
+            assertEquals(WRONG_EXCEPTION_THROWN, ConversionException.INCORRECT_TIME_FORMAT, e.getErrorCode());
             return;
         }
         fail(EXCEPTION_NOT_THROWN);
@@ -1714,7 +1712,7 @@ public class DateAndTimeTestCases extends OXTestCase {
             String string = "1975-02-21";
             xcm.convertObject(string, Time.class);
         } catch (ConversionException e) {
-            assertTrue(WRONG_EXCEPTION_THROWN, e.getErrorCode() == ConversionException.INCORRECT_TIME_FORMAT);
+            assertEquals(WRONG_EXCEPTION_THROWN, ConversionException.INCORRECT_TIME_FORMAT, e.getErrorCode());
             return;
         }
         fail(EXCEPTION_NOT_THROWN);
@@ -1725,7 +1723,7 @@ public class DateAndTimeTestCases extends OXTestCase {
             String string = "07$47$15";
             xcm.convertObject(string, Time.class);
         } catch (ConversionException e) {
-            assertTrue(WRONG_EXCEPTION_THROWN, e.getErrorCode() == ConversionException.INCORRECT_TIME_FORMAT);
+            assertEquals(WRONG_EXCEPTION_THROWN, ConversionException.INCORRECT_TIME_FORMAT, e.getErrorCode());
             return;
         }
         fail(EXCEPTION_NOT_THROWN);
@@ -1757,7 +1755,7 @@ public class DateAndTimeTestCases extends OXTestCase {
             String string = "07:47:15";
             Time test = xcm.convertObject(string, Time.class, XMLConstants.DATE_QNAME);
         } catch (ConversionException e) {
-            assertTrue(WRONG_EXCEPTION_THROWN, e.getErrorCode() == ConversionException.INCORRECT_DATE_FORMAT);
+            assertEquals(WRONG_EXCEPTION_THROWN, ConversionException.INCORRECT_DATE_FORMAT, e.getErrorCode());
             return;
         }
         fail(EXCEPTION_NOT_THROWN);
@@ -1768,7 +1766,7 @@ public class DateAndTimeTestCases extends OXTestCase {
             String string = "1975$02$21";
             Time test = xcm.convertObject(string, Time.class, XMLConstants.DATE_QNAME);
         } catch (ConversionException e) {
-            assertTrue(WRONG_EXCEPTION_THROWN, e.getErrorCode() == ConversionException.INCORRECT_DATE_FORMAT);
+            assertEquals(WRONG_EXCEPTION_THROWN, ConversionException.INCORRECT_DATE_FORMAT, e.getErrorCode());
             return;
         }
         fail(EXCEPTION_NOT_THROWN);
@@ -1821,7 +1819,7 @@ public class DateAndTimeTestCases extends OXTestCase {
             String string = "1975-02-21";
             Time test = xcm.convertObject(string, Time.class, XMLConstants.DATE_TIME_QNAME);
         } catch (ConversionException e) {
-            assertTrue(WRONG_EXCEPTION_THROWN, e.getErrorCode() == ConversionException.INCORRECT_DATE_TIME_FORMAT);
+            assertEquals(WRONG_EXCEPTION_THROWN, ConversionException.INCORRECT_DATE_TIME_FORMAT, e.getErrorCode());
             return;
         }
         fail(EXCEPTION_NOT_THROWN);
@@ -1832,7 +1830,7 @@ public class DateAndTimeTestCases extends OXTestCase {
             String string = "07:47:15";
             Time test = xcm.convertObject(string, Time.class, XMLConstants.DATE_TIME_QNAME);
         } catch (ConversionException e) {
-            assertTrue(WRONG_EXCEPTION_THROWN, e.getErrorCode() == ConversionException.INCORRECT_DATE_TIME_FORMAT);
+            assertEquals(WRONG_EXCEPTION_THROWN, ConversionException.INCORRECT_DATE_TIME_FORMAT, e.getErrorCode());
         }
     }
 
@@ -1841,7 +1839,7 @@ public class DateAndTimeTestCases extends OXTestCase {
             String string = "1975$02$21T07$47$15";
             Time test = xcm.convertObject(string, Time.class, XMLConstants.DATE_TIME_QNAME);
         } catch (ConversionException e) {
-            assertTrue(WRONG_EXCEPTION_THROWN, e.getErrorCode() == ConversionException.INCORRECT_DATE_TIME_FORMAT);
+            assertEquals(WRONG_EXCEPTION_THROWN, ConversionException.INCORRECT_DATE_TIME_FORMAT, e.getErrorCode());
             return;
         }
         fail(EXCEPTION_NOT_THROWN);
@@ -1852,7 +1850,7 @@ public class DateAndTimeTestCases extends OXTestCase {
             String string = "1975-02-21$07:47:15";
             Time test = xcm.convertObject(string, Time.class, XMLConstants.DATE_TIME_QNAME);
         } catch (ConversionException e) {
-            assertTrue(WRONG_EXCEPTION_THROWN, e.getErrorCode() == ConversionException.INCORRECT_DATE_TIME_FORMAT);
+            assertEquals(WRONG_EXCEPTION_THROWN, ConversionException.INCORRECT_DATE_TIME_FORMAT, e.getErrorCode());
             return;
         }
         fail(EXCEPTION_NOT_THROWN);
@@ -1905,7 +1903,7 @@ public class DateAndTimeTestCases extends OXTestCase {
             String string = "1975-02-21";
             xcm.convertObject(string, Time.class, XMLConstants.TIME_QNAME);
         } catch (ConversionException e) {
-            assertTrue(WRONG_EXCEPTION_THROWN, e.getErrorCode() == ConversionException.INCORRECT_TIME_FORMAT);
+            assertEquals(WRONG_EXCEPTION_THROWN, ConversionException.INCORRECT_TIME_FORMAT, e.getErrorCode());
         }
     }
 
@@ -1914,7 +1912,7 @@ public class DateAndTimeTestCases extends OXTestCase {
             String string = "1975-02-21T07:47:15";
             xcm.convertObject(string, Time.class, XMLConstants.TIME_QNAME);
         } catch (ConversionException e) {
-            assertTrue(WRONG_EXCEPTION_THROWN, e.getErrorCode() == ConversionException.INCORRECT_TIME_FORMAT);
+            assertEquals(WRONG_EXCEPTION_THROWN, ConversionException.INCORRECT_TIME_FORMAT, e.getErrorCode());
             return;
         }
         fail(EXCEPTION_NOT_THROWN);
@@ -1925,7 +1923,7 @@ public class DateAndTimeTestCases extends OXTestCase {
             String string = "07$47$15";
             xcm.convertObject(string, Time.class, XMLConstants.TIME_QNAME);
         } catch (ConversionException e) {
-            assertTrue(WRONG_EXCEPTION_THROWN, e.getErrorCode() == ConversionException.INCORRECT_TIME_FORMAT);
+            assertEquals(WRONG_EXCEPTION_THROWN, ConversionException.INCORRECT_TIME_FORMAT, e.getErrorCode());
             return;
         }
         fail(EXCEPTION_NOT_THROWN);
@@ -1950,7 +1948,7 @@ public class DateAndTimeTestCases extends OXTestCase {
             String string = "INVALID";
             xcm.convertObject(string, java.sql.Time.class, XMLConstants.G_DAY_QNAME);
         } catch (XMLConversionException e) {
-            assertTrue(WRONG_EXCEPTION_THROWN, e.getErrorCode() == XMLConversionException.INCORRECT_G_DAY_FORMAT);
+            assertEquals(WRONG_EXCEPTION_THROWN, XMLConversionException.INCORRECT_G_DAY_FORMAT, e.getErrorCode());
             return;
         }
         fail(EXCEPTION_NOT_THROWN);
@@ -1975,7 +1973,7 @@ public class DateAndTimeTestCases extends OXTestCase {
             String string = "INVALID";
             xcm.convertObject(string, java.sql.Time.class, XMLConstants.G_MONTH_QNAME);
         } catch (XMLConversionException e) {
-            assertTrue(WRONG_EXCEPTION_THROWN, e.getErrorCode() == XMLConversionException.INCORRECT_G_MONTH_FORMAT);
+            assertEquals(WRONG_EXCEPTION_THROWN, XMLConversionException.INCORRECT_G_MONTH_FORMAT, e.getErrorCode());
             return;
         }
         fail(EXCEPTION_NOT_THROWN);
@@ -2000,7 +1998,7 @@ public class DateAndTimeTestCases extends OXTestCase {
             String string = "INVALID";
             xcm.convertObject(string, java.sql.Time.class, XMLConstants.G_MONTH_DAY_QNAME);
         } catch (XMLConversionException e) {
-            assertTrue(WRONG_EXCEPTION_THROWN, e.getErrorCode() == XMLConversionException.INCORRECT_G_MONTH_DAY_FORMAT);
+            assertEquals(WRONG_EXCEPTION_THROWN, XMLConversionException.INCORRECT_G_MONTH_DAY_FORMAT, e.getErrorCode());
             return;
         }
         fail(EXCEPTION_NOT_THROWN);
@@ -2025,7 +2023,7 @@ public class DateAndTimeTestCases extends OXTestCase {
             String string = "INVALID";
             xcm.convertObject(string, java.sql.Time.class, XMLConstants.G_YEAR_QNAME);
         } catch (XMLConversionException e) {
-            assertTrue(WRONG_EXCEPTION_THROWN, e.getErrorCode() == XMLConversionException.INCORRECT_G_YEAR_FORMAT);
+            assertEquals(WRONG_EXCEPTION_THROWN, XMLConversionException.INCORRECT_G_YEAR_FORMAT, e.getErrorCode());
             return;
         }
         fail(EXCEPTION_NOT_THROWN);
@@ -2050,7 +2048,7 @@ public class DateAndTimeTestCases extends OXTestCase {
             String string = "INVALID";
             xcm.convertObject(string, java.sql.Time.class, XMLConstants.G_YEAR_MONTH_QNAME);
         } catch (XMLConversionException e) {
-            assertTrue(WRONG_EXCEPTION_THROWN, e.getErrorCode() == XMLConversionException.INCORRECT_G_YEAR_MONTH_FORMAT);
+            assertEquals(WRONG_EXCEPTION_THROWN, XMLConversionException.INCORRECT_G_YEAR_MONTH_FORMAT, e.getErrorCode());
             return;
         }
         fail(EXCEPTION_NOT_THROWN);
@@ -2395,7 +2393,7 @@ public class DateAndTimeTestCases extends OXTestCase {
             String string = "1975-02-21";
             xcm.convertObject(string, java.sql.Timestamp.class);
         } catch (XMLConversionException e) {
-            assertTrue(WRONG_EXCEPTION_THROWN, e.getErrorCode() == XMLConversionException.INCORRECT_TIMESTAMP_DATE_TIME_FORMAT);
+            assertEquals(WRONG_EXCEPTION_THROWN, XMLConversionException.INCORRECT_TIMESTAMP_DATE_TIME_FORMAT, e.getErrorCode());
             return;
         }
         fail(EXCEPTION_NOT_THROWN);
@@ -2406,7 +2404,7 @@ public class DateAndTimeTestCases extends OXTestCase {
             String string = "07:47:15";
             xcm.convertObject(string, java.sql.Timestamp.class);
         } catch (XMLConversionException e) {
-            assertTrue(WRONG_EXCEPTION_THROWN, e.getErrorCode() == XMLConversionException.INCORRECT_TIMESTAMP_DATE_TIME_FORMAT);
+            assertEquals(WRONG_EXCEPTION_THROWN, XMLConversionException.INCORRECT_TIMESTAMP_DATE_TIME_FORMAT, e.getErrorCode());
             return;
         }
         fail(EXCEPTION_NOT_THROWN);
@@ -2417,7 +2415,7 @@ public class DateAndTimeTestCases extends OXTestCase {
             String string = "1975$02$21T07$47$15";
             xcm.convertObject(string, java.sql.Timestamp.class);
         } catch (XMLConversionException e) {
-            assertTrue(WRONG_EXCEPTION_THROWN, e.getErrorCode() == XMLConversionException.INCORRECT_TIMESTAMP_DATE_TIME_FORMAT);
+            assertEquals(WRONG_EXCEPTION_THROWN, XMLConversionException.INCORRECT_TIMESTAMP_DATE_TIME_FORMAT, e.getErrorCode());
             return;
         }
         fail(EXCEPTION_NOT_THROWN);
@@ -2428,7 +2426,7 @@ public class DateAndTimeTestCases extends OXTestCase {
             String string = "1975-02-21$07:47:15";
             xcm.convertObject(string, java.sql.Timestamp.class);
         } catch (XMLConversionException e) {
-            assertTrue(WRONG_EXCEPTION_THROWN, e.getErrorCode() == XMLConversionException.INCORRECT_TIMESTAMP_DATE_TIME_FORMAT);
+            assertEquals(WRONG_EXCEPTION_THROWN, XMLConversionException.INCORRECT_TIMESTAMP_DATE_TIME_FORMAT, e.getErrorCode());
             return;
         }
         fail(EXCEPTION_NOT_THROWN);
@@ -2439,7 +2437,7 @@ public class DateAndTimeTestCases extends OXTestCase {
             String string = "1975-02-21T07:47:15.12345678$";
             xcm.convertObject(string, java.sql.Timestamp.class);
         } catch (XMLConversionException e) {
-            assertTrue(WRONG_EXCEPTION_THROWN, e.getErrorCode() == XMLConversionException.INCORRECT_TIMESTAMP_DATE_TIME_FORMAT);
+            assertEquals(WRONG_EXCEPTION_THROWN, XMLConversionException.INCORRECT_TIMESTAMP_DATE_TIME_FORMAT, e.getErrorCode());
             return;
         }
         fail(EXCEPTION_NOT_THROWN);
@@ -2471,7 +2469,7 @@ public class DateAndTimeTestCases extends OXTestCase {
             String string = "07:47:15";
             xcm.convertObject(string, java.sql.Timestamp.class, XMLConstants.DATE_QNAME);
         } catch (ConversionException e) {
-            assertTrue(WRONG_EXCEPTION_THROWN, e.getErrorCode() == ConversionException.INCORRECT_DATE_FORMAT);
+            assertEquals(WRONG_EXCEPTION_THROWN, ConversionException.INCORRECT_DATE_FORMAT, e.getErrorCode());
             return;
         }
         fail(EXCEPTION_NOT_THROWN);
@@ -2482,7 +2480,7 @@ public class DateAndTimeTestCases extends OXTestCase {
             String string = "1975$02$21";
             xcm.convertObject(string, java.sql.Timestamp.class, XMLConstants.DATE_QNAME);
         } catch (ConversionException e) {
-            assertTrue(WRONG_EXCEPTION_THROWN, e.getErrorCode() == ConversionException.INCORRECT_DATE_FORMAT);
+            assertEquals(WRONG_EXCEPTION_THROWN, ConversionException.INCORRECT_DATE_FORMAT, e.getErrorCode());
             return;
         }
         fail(EXCEPTION_NOT_THROWN);
@@ -2543,7 +2541,7 @@ public class DateAndTimeTestCases extends OXTestCase {
             String string = "1975-02-21";
             xcm.convertObject(string, java.sql.Timestamp.class, XMLConstants.DATE_TIME_QNAME);
         } catch (XMLConversionException e) {
-            assertTrue(WRONG_EXCEPTION_THROWN, e.getErrorCode() == XMLConversionException.INCORRECT_TIMESTAMP_DATE_TIME_FORMAT);
+            assertEquals(WRONG_EXCEPTION_THROWN, XMLConversionException.INCORRECT_TIMESTAMP_DATE_TIME_FORMAT, e.getErrorCode());
             return;
         }
         fail(EXCEPTION_NOT_THROWN);
@@ -2554,7 +2552,7 @@ public class DateAndTimeTestCases extends OXTestCase {
             String string = "07:47:15";
             xcm.convertObject(string, java.sql.Timestamp.class, XMLConstants.DATE_TIME_QNAME);
         } catch (XMLConversionException e) {
-            assertTrue(WRONG_EXCEPTION_THROWN, e.getErrorCode() == XMLConversionException.INCORRECT_TIMESTAMP_DATE_TIME_FORMAT);
+            assertEquals(WRONG_EXCEPTION_THROWN, XMLConversionException.INCORRECT_TIMESTAMP_DATE_TIME_FORMAT, e.getErrorCode());
             return;
         }
         fail(EXCEPTION_NOT_THROWN);
@@ -2565,7 +2563,7 @@ public class DateAndTimeTestCases extends OXTestCase {
             String string = "1975$02$21T07$47$15";
             xcm.convertObject(string, java.sql.Timestamp.class, XMLConstants.DATE_TIME_QNAME);
         } catch (XMLConversionException e) {
-            assertTrue(WRONG_EXCEPTION_THROWN, e.getErrorCode() == XMLConversionException.INCORRECT_TIMESTAMP_DATE_TIME_FORMAT);
+            assertEquals(WRONG_EXCEPTION_THROWN, XMLConversionException.INCORRECT_TIMESTAMP_DATE_TIME_FORMAT, e.getErrorCode());
         }
     }
 
@@ -2574,7 +2572,7 @@ public class DateAndTimeTestCases extends OXTestCase {
             String string = "1975-02-21$07:47:15";
             xcm.convertObject(string, java.sql.Timestamp.class, XMLConstants.DATE_TIME_QNAME);
         } catch (XMLConversionException e) {
-            assertTrue(WRONG_EXCEPTION_THROWN, e.getErrorCode() == XMLConversionException.INCORRECT_TIMESTAMP_DATE_TIME_FORMAT);
+            assertEquals(WRONG_EXCEPTION_THROWN, XMLConversionException.INCORRECT_TIMESTAMP_DATE_TIME_FORMAT, e.getErrorCode());
             return;
         }
         fail(EXCEPTION_NOT_THROWN);
@@ -2634,7 +2632,7 @@ public class DateAndTimeTestCases extends OXTestCase {
             String string = "1975-02-21";
             xcm.convertObject(string, java.sql.Timestamp.class, XMLConstants.TIME_QNAME);
         } catch (XMLConversionException e) {
-            assertTrue(WRONG_EXCEPTION_THROWN, e.getErrorCode() == XMLConversionException.INCORRECT_TIMESTAMP_TIME_FORMAT);
+            assertEquals(WRONG_EXCEPTION_THROWN, XMLConversionException.INCORRECT_TIMESTAMP_TIME_FORMAT, e.getErrorCode());
         }
     }
 
@@ -2643,7 +2641,7 @@ public class DateAndTimeTestCases extends OXTestCase {
             String string = "1975-02-21T07:47:15";
             xcm.convertObject(string, java.sql.Timestamp.class, XMLConstants.TIME_QNAME);
         } catch (XMLConversionException e) {
-            assertTrue(WRONG_EXCEPTION_THROWN, e.getErrorCode() == XMLConversionException.INCORRECT_TIMESTAMP_TIME_FORMAT);
+            assertEquals(WRONG_EXCEPTION_THROWN, XMLConversionException.INCORRECT_TIMESTAMP_TIME_FORMAT, e.getErrorCode());
             return;
         }
         fail(EXCEPTION_NOT_THROWN);
@@ -2654,7 +2652,7 @@ public class DateAndTimeTestCases extends OXTestCase {
             String string = "07$47$15";
             xcm.convertObject(string, java.sql.Timestamp.class, XMLConstants.TIME_QNAME);
         } catch (XMLConversionException e) {
-            assertTrue(WRONG_EXCEPTION_THROWN, e.getErrorCode() == XMLConversionException.INCORRECT_TIMESTAMP_TIME_FORMAT);
+            assertEquals(WRONG_EXCEPTION_THROWN, XMLConversionException.INCORRECT_TIMESTAMP_TIME_FORMAT, e.getErrorCode());
             return;
         }
         fail(EXCEPTION_NOT_THROWN);
@@ -2679,7 +2677,7 @@ public class DateAndTimeTestCases extends OXTestCase {
             String string = "INVALID";
             xcm.convertObject(string, java.sql.Timestamp.class, XMLConstants.G_DAY_QNAME);
         } catch (XMLConversionException e) {
-            assertTrue(WRONG_EXCEPTION_THROWN, e.getErrorCode() == XMLConversionException.INCORRECT_G_DAY_FORMAT);
+            assertEquals(WRONG_EXCEPTION_THROWN, XMLConversionException.INCORRECT_G_DAY_FORMAT, e.getErrorCode());
             return;
         }
         fail(EXCEPTION_NOT_THROWN);
@@ -2704,7 +2702,7 @@ public class DateAndTimeTestCases extends OXTestCase {
             String string = "INVALID";
             xcm.convertObject(string, java.sql.Timestamp.class, XMLConstants.G_MONTH_QNAME);
         } catch (XMLConversionException e) {
-            assertTrue(WRONG_EXCEPTION_THROWN, e.getErrorCode() == XMLConversionException.INCORRECT_G_MONTH_FORMAT);
+            assertEquals(WRONG_EXCEPTION_THROWN, XMLConversionException.INCORRECT_G_MONTH_FORMAT, e.getErrorCode());
             return;
         }
         fail(EXCEPTION_NOT_THROWN);
@@ -2729,7 +2727,7 @@ public class DateAndTimeTestCases extends OXTestCase {
             String string = "INVALID";
             xcm.convertObject(string, java.sql.Timestamp.class, XMLConstants.G_MONTH_DAY_QNAME);
         } catch (XMLConversionException e) {
-            assertTrue(WRONG_EXCEPTION_THROWN, e.getErrorCode() == XMLConversionException.INCORRECT_G_MONTH_DAY_FORMAT);
+            assertEquals(WRONG_EXCEPTION_THROWN, XMLConversionException.INCORRECT_G_MONTH_DAY_FORMAT, e.getErrorCode());
             return;
         }
         fail(EXCEPTION_NOT_THROWN);
@@ -2754,7 +2752,7 @@ public class DateAndTimeTestCases extends OXTestCase {
             String string = "INVALID";
             xcm.convertObject(string, java.sql.Timestamp.class, XMLConstants.G_YEAR_QNAME);
         } catch (XMLConversionException e) {
-            assertTrue(WRONG_EXCEPTION_THROWN, e.getErrorCode() == XMLConversionException.INCORRECT_G_YEAR_FORMAT);
+            assertEquals(WRONG_EXCEPTION_THROWN, XMLConversionException.INCORRECT_G_YEAR_FORMAT, e.getErrorCode());
             return;
         }
         fail(EXCEPTION_NOT_THROWN);
@@ -2779,7 +2777,7 @@ public class DateAndTimeTestCases extends OXTestCase {
             String string = "INVALID";
             xcm.convertObject(string, java.sql.Timestamp.class, XMLConstants.G_YEAR_MONTH_QNAME);
         } catch (XMLConversionException e) {
-            assertTrue(WRONG_EXCEPTION_THROWN, e.getErrorCode() == XMLConversionException.INCORRECT_G_YEAR_MONTH_FORMAT);
+            assertEquals(WRONG_EXCEPTION_THROWN, XMLConversionException.INCORRECT_G_YEAR_MONTH_FORMAT, e.getErrorCode());
             return;
         }
         fail(EXCEPTION_NOT_THROWN);
@@ -2867,7 +2865,7 @@ public class DateAndTimeTestCases extends OXTestCase {
     public void testCalendarToString_default_time_0ms() {
         Calendar calendar = Calendar.getInstance();
         calendar.clear();
-        calendar.set(Calendar.HOUR, 7);
+        calendar.set(Calendar.HOUR_OF_DAY, 7);
         calendar.set(Calendar.MINUTE, 47);
         calendar.set(Calendar.SECOND, 15);
         calendar.set(Calendar.MILLISECOND, 0);
@@ -2879,7 +2877,7 @@ public class DateAndTimeTestCases extends OXTestCase {
     public void testCalendarToString_default_time_1ms() {
         Calendar calendar = Calendar.getInstance();
         calendar.clear();
-        calendar.set(Calendar.HOUR, 7);
+        calendar.set(Calendar.HOUR_OF_DAY, 7);
         calendar.set(Calendar.MINUTE, 47);
         calendar.set(Calendar.SECOND, 15);
         calendar.set(Calendar.MILLISECOND, 1);
@@ -2891,7 +2889,7 @@ public class DateAndTimeTestCases extends OXTestCase {
     public void testCalendarToString_default_time_10ms() {
         Calendar calendar = Calendar.getInstance();
         calendar.clear();
-        calendar.set(Calendar.HOUR, 7);
+        calendar.set(Calendar.HOUR_OF_DAY, 7);
         calendar.set(Calendar.MINUTE, 47);
         calendar.set(Calendar.SECOND, 15);
         calendar.set(Calendar.MILLISECOND, 10);
@@ -2903,7 +2901,7 @@ public class DateAndTimeTestCases extends OXTestCase {
     public void testCalendarToString_default_time_100ms() {
         Calendar calendar = Calendar.getInstance();
         calendar.clear();
-        calendar.set(Calendar.HOUR, 7);
+        calendar.set(Calendar.HOUR_OF_DAY, 7);
         calendar.set(Calendar.MINUTE, 47);
         calendar.set(Calendar.SECOND, 15);
         calendar.set(Calendar.MILLISECOND, 100);
@@ -3121,7 +3119,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         control.clear();
         control.setTimeInMillis(CONTROL_DATE_TIME_0MS);
         java.util.Calendar test = xcm.convertObject(string, Calendar.class);
-        assertTrue(control.getTimeInMillis() == test.getTimeInMillis());
+        assertEquals(control.getTimeInMillis(), test.getTimeInMillis());
     }
 
     public void testStringToCalendar_default_dateTime_0ms() {
@@ -3130,7 +3128,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         control.clear();
         control.setTimeInMillis(CONTROL_DATE_TIME_0MS);
         java.util.Calendar test = xcm.convertObject(string, Calendar.class);
-        assertTrue(control.getTimeInMillis() == test.getTimeInMillis());
+        assertEquals(control.getTimeInMillis(), test.getTimeInMillis());
     }
 
     public void testStringToCalendar_default_dateTime_1ms() {
@@ -3139,7 +3137,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         control.clear();
         control.setTimeInMillis(CONTROL_DATE_TIME_1MS);
         java.util.Calendar test = xcm.convertObject(string, Calendar.class);
-        assertTrue(control.getTimeInMillis() == test.getTimeInMillis());
+        assertEquals(control.getTimeInMillis(), test.getTimeInMillis());
     }
 
     public void testStringToCalendar_default_dateTime_10ms() {
@@ -3148,7 +3146,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         control.clear();
         control.setTimeInMillis(CONTROL_DATE_TIME_10MS);
         java.util.Calendar test = xcm.convertObject(string, Calendar.class);
-        assertTrue(control.getTimeInMillis() == test.getTimeInMillis());
+        assertEquals(control.getTimeInMillis(), test.getTimeInMillis());
     }
 
     public void testStringToCalendar_default_dateTime_100ms() {
@@ -3157,7 +3155,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         control.clear();
         control.setTimeInMillis(CONTROL_DATE_TIME_100MS);
         java.util.Calendar test = xcm.convertObject(string, Calendar.class);
-        assertTrue(control.getTimeInMillis() == test.getTimeInMillis());
+        assertEquals(control.getTimeInMillis(), test.getTimeInMillis());
     }
 
     public void testStringToCalendar_default_date_null() {
@@ -3173,7 +3171,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         control.clear();
         control.setTimeInMillis(CONTROL_DATE);
         java.util.Calendar test = xcm.convertObject(string, Calendar.class);
-        assertTrue(control.getTimeInMillis() == test.getTimeInMillis());
+        assertEquals(control.getTimeInMillis(), test.getTimeInMillis());
     }
 
     public void testStringToCalendar_default_time_null() {
@@ -3189,7 +3187,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         control.clear();
         control.setTimeInMillis(CONTROL_TIME_0MS);
         java.util.Calendar test = xcm.convertObject(string, Calendar.class);
-        assertTrue(control.getTimeInMillis() == test.getTimeInMillis());
+        assertEquals(control.getTimeInMillis(), test.getTimeInMillis());
     }
 
     public void testStringToCalendar_default_time_0ms() {
@@ -3198,7 +3196,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         control.clear();
         control.setTimeInMillis(CONTROL_TIME_0MS);
         java.util.Calendar test = xcm.convertObject(string, Calendar.class);
-        assertTrue(control.getTimeInMillis() == test.getTimeInMillis());
+        assertEquals(control.getTimeInMillis(), test.getTimeInMillis());
     }
 
     public void testStringToCalendar_default_time_1ms() {
@@ -3207,7 +3205,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         control.clear();
         control.setTimeInMillis(CONTROL_TIME_1MS);
         java.util.Calendar test = xcm.convertObject(string, Calendar.class);
-        assertTrue(control.getTimeInMillis() == test.getTimeInMillis());
+        assertEquals(control.getTimeInMillis(), test.getTimeInMillis());
     }
 
     public void testStringToCalendar_default_time_10ms() {
@@ -3216,7 +3214,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         control.clear();
         control.setTimeInMillis(CONTROL_TIME_10MS);
         java.util.Calendar test = xcm.convertObject(string, Calendar.class);
-        assertTrue(control.getTimeInMillis() == test.getTimeInMillis());
+        assertEquals(control.getTimeInMillis(), test.getTimeInMillis());
     }
 
     public void testStringToCalendar_default_time_100ms() {
@@ -3225,7 +3223,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         control.clear();
         control.setTimeInMillis(CONTROL_TIME_100MS);
         java.util.Calendar test = xcm.convertObject(string, Calendar.class);
-        assertTrue(control.getTimeInMillis() == test.getTimeInMillis());
+        assertEquals(control.getTimeInMillis(), test.getTimeInMillis());
     }
 
     public void testStringToCalendar_date_null() {
@@ -3241,7 +3239,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         control.clear();
         control.setTimeInMillis(CONTROL_DATE);
         java.util.Calendar test = xcm.convertObject(string, Calendar.class, XMLConstants.DATE_QNAME);
-        assertTrue(control.getTimeInMillis() == test.getTimeInMillis());
+        assertEquals(control.getTimeInMillis(), test.getTimeInMillis());
     }
 
     public void testStringToCalendar_date_negative1() {
@@ -3249,7 +3247,7 @@ public class DateAndTimeTestCases extends OXTestCase {
             String string = "1975-02-21T07:47:15";
             xcm.convertObject(string, java.util.Calendar.class, XMLConstants.DATE_QNAME);
         } catch (ConversionException e) {
-            assertTrue(WRONG_EXCEPTION_THROWN, e.getErrorCode() == ConversionException.INCORRECT_DATE_FORMAT);
+            assertEquals(WRONG_EXCEPTION_THROWN, ConversionException.INCORRECT_DATE_FORMAT, e.getErrorCode());
         }
     }
 
@@ -3258,7 +3256,7 @@ public class DateAndTimeTestCases extends OXTestCase {
             String string = "07:47:15";
             xcm.convertObject(string, java.util.Calendar.class, XMLConstants.DATE_QNAME);
         } catch (ConversionException e) {
-            assertTrue(WRONG_EXCEPTION_THROWN, e.getErrorCode() == ConversionException.INCORRECT_DATE_FORMAT);
+            assertEquals(WRONG_EXCEPTION_THROWN, ConversionException.INCORRECT_DATE_FORMAT, e.getErrorCode());
             return;
         }
         fail(EXCEPTION_NOT_THROWN);
@@ -3269,7 +3267,7 @@ public class DateAndTimeTestCases extends OXTestCase {
             String string = "1975$02$21";
             xcm.convertObject(string, java.util.Calendar.class, XMLConstants.DATE_QNAME);
         } catch (ConversionException e) {
-            assertTrue(WRONG_EXCEPTION_THROWN, e.getErrorCode() == ConversionException.INCORRECT_DATE_FORMAT);
+            assertEquals(WRONG_EXCEPTION_THROWN, ConversionException.INCORRECT_DATE_FORMAT, e.getErrorCode());
             return;
         }
         fail(EXCEPTION_NOT_THROWN);
@@ -3288,7 +3286,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         control.clear();
         control.setTimeInMillis(CONTROL_DATE_TIME_0MS);
         java.util.Calendar test = xcm.convertObject(string, Calendar.class, XMLConstants.DATE_TIME_QNAME);
-        assertTrue(control.getTimeInMillis() == test.getTimeInMillis());
+        assertEquals(control.getTimeInMillis(), test.getTimeInMillis());
     }
 
     public void testStringToCalendar_dateTime_0ms() {
@@ -3297,7 +3295,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         control.clear();
         control.setTimeInMillis(CONTROL_DATE_TIME_0MS);
         java.util.Calendar test = xcm.convertObject(string, Calendar.class, XMLConstants.DATE_TIME_QNAME);
-        assertTrue(control.getTimeInMillis() == test.getTimeInMillis());
+        assertEquals(control.getTimeInMillis(), test.getTimeInMillis());
     }
 
     public void testStringToCalendar_dateTime_1ms() {
@@ -3306,7 +3304,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         control.clear();
         control.setTimeInMillis(CONTROL_DATE_TIME_1MS);
         java.util.Calendar test = xcm.convertObject(string, Calendar.class, XMLConstants.DATE_TIME_QNAME);
-        assertTrue(control.getTimeInMillis() == test.getTimeInMillis());
+        assertEquals(control.getTimeInMillis(), test.getTimeInMillis());
     }
 
     public void testStringToCalendar_dateTime_10ms() {
@@ -3315,7 +3313,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         control.clear();
         control.setTimeInMillis(CONTROL_DATE_TIME_10MS);
         java.util.Calendar test = xcm.convertObject(string, Calendar.class, XMLConstants.DATE_TIME_QNAME);
-        assertTrue(control.getTimeInMillis() == test.getTimeInMillis());
+        assertEquals(control.getTimeInMillis(), test.getTimeInMillis());
     }
 
     public void testStringToCalendar_dateTime_100ms() {
@@ -3324,7 +3322,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         control.clear();
         control.setTimeInMillis(CONTROL_DATE_TIME_100MS);
         java.util.Calendar test = xcm.convertObject(string, Calendar.class, XMLConstants.DATE_TIME_QNAME);
-        assertTrue(control.getTimeInMillis() == test.getTimeInMillis());
+        assertEquals(control.getTimeInMillis(), test.getTimeInMillis());
     }
 
     public void testStringToCalendar_dateTime_negative1() {
@@ -3332,7 +3330,7 @@ public class DateAndTimeTestCases extends OXTestCase {
             String string = "1975-02-21";
             xcm.convertObject(string, java.util.Calendar.class, XMLConstants.DATE_TIME_QNAME);
         } catch (ConversionException e) {
-            assertTrue(WRONG_EXCEPTION_THROWN, e.getErrorCode() == ConversionException.INCORRECT_DATE_TIME_FORMAT);
+            assertEquals(WRONG_EXCEPTION_THROWN, ConversionException.INCORRECT_DATE_TIME_FORMAT, e.getErrorCode());
         }
     }
 
@@ -3341,7 +3339,7 @@ public class DateAndTimeTestCases extends OXTestCase {
             String string = "07:47:15";
             xcm.convertObject(string, java.util.Calendar.class, XMLConstants.DATE_TIME_QNAME);
         } catch (ConversionException e) {
-            assertTrue(WRONG_EXCEPTION_THROWN, e.getErrorCode() == ConversionException.INCORRECT_DATE_TIME_FORMAT);
+            assertEquals(WRONG_EXCEPTION_THROWN, ConversionException.INCORRECT_DATE_TIME_FORMAT, e.getErrorCode());
             return;
         }
         fail(EXCEPTION_NOT_THROWN);
@@ -3352,7 +3350,7 @@ public class DateAndTimeTestCases extends OXTestCase {
             String string = "1975$02$21T07$47$15";
             xcm.convertObject(string, java.util.Calendar.class, XMLConstants.DATE_TIME_QNAME);
         } catch (ConversionException e) {
-            assertTrue(WRONG_EXCEPTION_THROWN, e.getErrorCode() == ConversionException.INCORRECT_DATE_TIME_FORMAT);
+            assertEquals(WRONG_EXCEPTION_THROWN, ConversionException.INCORRECT_DATE_TIME_FORMAT, e.getErrorCode());
             return;
         }
         fail(EXCEPTION_NOT_THROWN);
@@ -3363,7 +3361,7 @@ public class DateAndTimeTestCases extends OXTestCase {
             String string = "1975-02-21$07:47:15";
             xcm.convertObject(string, java.util.Calendar.class, XMLConstants.DATE_TIME_QNAME);
         } catch (ConversionException e) {
-            assertTrue(WRONG_EXCEPTION_THROWN, e.getErrorCode() == ConversionException.INCORRECT_DATE_TIME_FORMAT);
+            assertEquals(WRONG_EXCEPTION_THROWN, ConversionException.INCORRECT_DATE_TIME_FORMAT, e.getErrorCode());
             return;
         }
         fail(EXCEPTION_NOT_THROWN);
@@ -3382,7 +3380,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         control.clear();
         control.setTimeInMillis(CONTROL_TIME_0MS);
         java.util.Calendar test = xcm.convertObject(string, Calendar.class, XMLConstants.TIME_QNAME);
-        assertTrue(control.getTimeInMillis() == test.getTimeInMillis());
+        assertEquals(control.getTimeInMillis(), test.getTimeInMillis());
     }
 
     public void testStringToCalendar_time_0ms() {
@@ -3391,7 +3389,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         control.clear();
         control.setTimeInMillis(CONTROL_TIME_0MS);
         java.util.Calendar test = xcm.convertObject(string, Calendar.class, XMLConstants.TIME_QNAME);
-        assertTrue(control.getTimeInMillis() == test.getTimeInMillis());
+        assertEquals(control.getTimeInMillis(), test.getTimeInMillis());
     }
 
     public void testStringToCalendar_time_1ms() {
@@ -3400,7 +3398,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         control.clear();
         control.setTimeInMillis(CONTROL_TIME_1MS);
         java.util.Calendar test = xcm.convertObject(string, Calendar.class, XMLConstants.TIME_QNAME);
-        assertTrue(control.getTimeInMillis() == test.getTimeInMillis());
+        assertEquals(control.getTimeInMillis(), test.getTimeInMillis());
     }
 
     public void testStringToCalendar_time_10ms() {
@@ -3409,7 +3407,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         control.clear();
         control.setTimeInMillis(CONTROL_TIME_10MS);
         java.util.Calendar test = xcm.convertObject(string, Calendar.class, XMLConstants.TIME_QNAME);
-        assertTrue(control.getTimeInMillis() == test.getTimeInMillis());
+        assertEquals(control.getTimeInMillis(), test.getTimeInMillis());
     }
 
     public void testStringToCalendar_time_100ms() {
@@ -3418,7 +3416,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         control.clear();
         control.setTimeInMillis(CONTROL_TIME_100MS);
         java.util.Calendar test = xcm.convertObject(string, Calendar.class, XMLConstants.TIME_QNAME);
-        assertTrue(control.getTimeInMillis() == test.getTimeInMillis());
+        assertEquals(control.getTimeInMillis(), test.getTimeInMillis());
     }
 
     public void testStringToCalendar_time_negative1() {
@@ -3426,7 +3424,7 @@ public class DateAndTimeTestCases extends OXTestCase {
             String string = "1975-02-21";
             xcm.convertObject(string, java.util.Calendar.class, XMLConstants.TIME_QNAME);
         } catch (ConversionException e) {
-            assertTrue(WRONG_EXCEPTION_THROWN, e.getErrorCode() == ConversionException.INCORRECT_TIME_FORMAT);
+            assertEquals(WRONG_EXCEPTION_THROWN, ConversionException.INCORRECT_TIME_FORMAT, e.getErrorCode());
             return;
         }
         fail(EXCEPTION_NOT_THROWN);
@@ -3437,7 +3435,7 @@ public class DateAndTimeTestCases extends OXTestCase {
             String string = "1975-02-21T07:47:15";
             xcm.convertObject(string, java.util.Calendar.class, XMLConstants.TIME_QNAME);
         } catch (ConversionException e) {
-            assertTrue(WRONG_EXCEPTION_THROWN, e.getErrorCode() == ConversionException.INCORRECT_TIME_FORMAT);
+            assertEquals(WRONG_EXCEPTION_THROWN, ConversionException.INCORRECT_TIME_FORMAT, e.getErrorCode());
         }
     }
 
@@ -3446,7 +3444,7 @@ public class DateAndTimeTestCases extends OXTestCase {
             String string = "07$47$15";
             xcm.convertObject(string, java.util.Calendar.class, XMLConstants.TIME_QNAME);
         } catch (ConversionException e) {
-            assertTrue(WRONG_EXCEPTION_THROWN, e.getErrorCode() == ConversionException.INCORRECT_TIME_FORMAT);
+            assertEquals(WRONG_EXCEPTION_THROWN, ConversionException.INCORRECT_TIME_FORMAT, e.getErrorCode());
             return;
         }
         fail(EXCEPTION_NOT_THROWN);
@@ -3465,7 +3463,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         control.clear();
         control.setTimeInMillis(CONTROL_G_DAY);
         java.util.Calendar test = xcm.convertObject(string, Calendar.class, XMLConstants.G_DAY_QNAME);
-        assertTrue(control.getTimeInMillis() == test.getTimeInMillis());
+        assertEquals(control.getTimeInMillis(), test.getTimeInMillis());
     }
 
     public void testStringToCalendar_gDay_negative1() {
@@ -3473,7 +3471,7 @@ public class DateAndTimeTestCases extends OXTestCase {
             String string = "INVALID";
             xcm.convertObject(string, java.util.Calendar.class, XMLConstants.G_DAY_QNAME);
         } catch (XMLConversionException e) {
-            assertTrue(WRONG_EXCEPTION_THROWN, e.getErrorCode() == XMLConversionException.INCORRECT_G_DAY_FORMAT);
+            assertEquals(WRONG_EXCEPTION_THROWN, XMLConversionException.INCORRECT_G_DAY_FORMAT, e.getErrorCode());
             return;
         }
         fail(EXCEPTION_NOT_THROWN);
@@ -3492,7 +3490,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         control.clear();
         control.setTimeInMillis(CONTROL_G_MONTH);
         java.util.Calendar test = xcm.convertObject(string, Calendar.class, XMLConstants.G_MONTH_QNAME);
-        assertTrue(control.getTimeInMillis() == test.getTimeInMillis());
+        assertEquals(control.getTimeInMillis(), test.getTimeInMillis());
     }
 
     public void testStringToCalendar_gMonth_negative1() {
@@ -3500,7 +3498,7 @@ public class DateAndTimeTestCases extends OXTestCase {
             String string = "INVALID";
             xcm.convertObject(string, java.util.Calendar.class, XMLConstants.G_MONTH_QNAME);
         } catch (XMLConversionException e) {
-            assertTrue(WRONG_EXCEPTION_THROWN, e.getErrorCode() == XMLConversionException.INCORRECT_G_MONTH_FORMAT);
+            assertEquals(WRONG_EXCEPTION_THROWN, XMLConversionException.INCORRECT_G_MONTH_FORMAT, e.getErrorCode());
             return;
         }
         fail(EXCEPTION_NOT_THROWN);
@@ -3519,7 +3517,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         control.clear();
         control.setTimeInMillis(CONTROL_G_MONTH_DAY);
         java.util.Calendar test = xcm.convertObject(string, Calendar.class, XMLConstants.G_MONTH_DAY_QNAME);
-        assertTrue(control.getTimeInMillis() == test.getTimeInMillis());
+        assertEquals(control.getTimeInMillis(), test.getTimeInMillis());
     }
 
     public void testStringToCalendar_gMonthDay_negative1() {
@@ -3527,7 +3525,7 @@ public class DateAndTimeTestCases extends OXTestCase {
             String string = "INVALID";
             xcm.convertObject(string, java.util.Calendar.class, XMLConstants.G_MONTH_DAY_QNAME);
         } catch (XMLConversionException e) {
-            assertTrue(WRONG_EXCEPTION_THROWN, e.getErrorCode() == XMLConversionException.INCORRECT_G_MONTH_DAY_FORMAT);
+            assertEquals(WRONG_EXCEPTION_THROWN, XMLConversionException.INCORRECT_G_MONTH_DAY_FORMAT, e.getErrorCode());
             return;
         }
         fail(EXCEPTION_NOT_THROWN);
@@ -3546,7 +3544,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         control.clear();
         control.setTimeInMillis(CONTROL_G_YEAR);
         java.util.Calendar test = xcm.convertObject(string, Calendar.class, XMLConstants.G_YEAR_QNAME);
-        assertTrue(control.getTimeInMillis() == test.getTimeInMillis());
+        assertEquals(control.getTimeInMillis(), test.getTimeInMillis());
     }
 
     public void testStringToCalendar_gYear_negative1() {
@@ -3554,7 +3552,7 @@ public class DateAndTimeTestCases extends OXTestCase {
             String string = "INVALID";
             xcm.convertObject(string, java.util.Calendar.class, XMLConstants.G_YEAR_QNAME);
         } catch (XMLConversionException e) {
-            assertTrue(WRONG_EXCEPTION_THROWN, e.getErrorCode() == XMLConversionException.INCORRECT_G_YEAR_FORMAT);
+            assertEquals(WRONG_EXCEPTION_THROWN, XMLConversionException.INCORRECT_G_YEAR_FORMAT, e.getErrorCode());
             return;
         }
         fail(EXCEPTION_NOT_THROWN);
@@ -3573,7 +3571,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         control.clear();
         control.setTimeInMillis(CONTROL_G_YEAR_MONTH);
         java.util.Calendar test = xcm.convertObject(string, Calendar.class, XMLConstants.G_YEAR_MONTH_QNAME);
-        assertTrue(control.getTimeInMillis() == test.getTimeInMillis());
+        assertEquals(control.getTimeInMillis(), test.getTimeInMillis());
     }
 
     public void testStringToCalendar_gYearMonth_negative1() {
@@ -3581,7 +3579,7 @@ public class DateAndTimeTestCases extends OXTestCase {
             String string = "INVALID";
             xcm.convertObject(string, java.util.Calendar.class, XMLConstants.G_YEAR_MONTH_QNAME);
         } catch (XMLConversionException e) {
-            assertTrue(WRONG_EXCEPTION_THROWN, e.getErrorCode() == XMLConversionException.INCORRECT_G_YEAR_MONTH_FORMAT);
+            assertEquals(WRONG_EXCEPTION_THROWN, XMLConversionException.INCORRECT_G_YEAR_MONTH_FORMAT, e.getErrorCode());
             return;
         }
         fail(EXCEPTION_NOT_THROWN);
@@ -3599,7 +3597,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         String controlString = "2010-01-01";
         String dateWithWhitespace = " \t 2010-01-01 \t ";
         Calendar cal = xcm.convertStringToCalendar(dateWithWhitespace, XMLConstants.DATE_QNAME);
-        String s = xcm.convertObject(cal, String.class).toString();
+        String s = xcm.convertObject(cal, String.class);
         assertEquals(controlString, s);
     }
 
@@ -3609,21 +3607,21 @@ public class DateAndTimeTestCases extends OXTestCase {
 
         XMLGregorianCalendar xgc1 = factory.newXMLGregorianCalendar(6, 5, 1, 10, 0, 0, 0, 0);
 
-        String xml1 = xcm.convertObject(xgc1, String.class).toString();
+        String xml1 = xcm.convertObject(xgc1, String.class);
 
         Calendar c = xcm.convertObject(xml1, Calendar.class);
 
-        String xml2 = xcm.convertObject(c, String.class).toString();
+        String xml2 = xcm.convertObject(c, String.class);
 
         XMLGregorianCalendar xgc2 = xcm.convertObject(xml2, XMLGregorianCalendar.class);
 
-        assertTrue(xgc1.compare(xgc2) == DatatypeConstants.EQUAL);
+        assertEquals(DatatypeConstants.EQUAL, xgc1.compare(xgc2));
     }
 
     public void testGMonthTimeZone() throws Exception {
         String controlString = "--05Z";
         XMLGregorianCalendar cal = xcm.convertStringToXMLGregorianCalendar(controlString, XMLConstants.G_MONTH_QNAME);
-        String s = xcm.convertObject(cal, String.class, XMLConstants.G_MONTH_QNAME).toString();
+        String s = xcm.convertObject(cal, String.class, XMLConstants.G_MONTH_QNAME);
         assertEquals(controlString, s);
     }
 
@@ -3786,7 +3784,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         cal.set(Calendar.YEAR, 0001);
         cal.set(Calendar.MONTH, Calendar.JANUARY);
         cal.set(Calendar.DAY_OF_MONTH, 1);
-        cal.set(Calendar.HOUR, 1);
+        cal.set(Calendar.HOUR_OF_DAY, 1);
         cal.set(Calendar.MINUTE, 1);
         cal.set(Calendar.SECOND, 1);
         cal.set(Calendar.MILLISECOND, 1);
@@ -3818,7 +3816,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         cal.set(Calendar.YEAR, 0001);
         cal.set(Calendar.MONTH, Calendar.JANUARY);
         cal.set(Calendar.DAY_OF_MONTH, 1);
-        cal.set(Calendar.HOUR, 1);
+        cal.set(Calendar.HOUR_OF_DAY, 1);
         cal.set(Calendar.MINUTE, 1);
         cal.set(Calendar.SECOND, 1);
         cal.set(Calendar.MILLISECOND, 1);
@@ -3857,7 +3855,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         cal.set(Calendar.YEAR, 0001);
         cal.set(Calendar.MONTH, Calendar.JANUARY);
         cal.set(Calendar.DAY_OF_MONTH, 1);
-        cal.set(Calendar.HOUR, 1);
+        cal.set(Calendar.HOUR_OF_DAY, 1);
         cal.set(Calendar.MINUTE, 1);
         cal.set(Calendar.SECOND, 1);
         cal.set(Calendar.MILLISECOND, 1);
@@ -3876,7 +3874,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         cal.set(Calendar.YEAR, 0001);
         cal.set(Calendar.MONTH, Calendar.JANUARY);
         cal.set(Calendar.DAY_OF_MONTH, 1);
-        cal.set(Calendar.HOUR, 1);
+        cal.set(Calendar.HOUR_OF_DAY, 1);
         cal.set(Calendar.MINUTE, 1);
         cal.set(Calendar.SECOND, 1);
         cal.set(Calendar.MILLISECOND, 1);
@@ -3912,7 +3910,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         cal.set(Calendar.YEAR, 0001);
         cal.set(Calendar.MONTH, Calendar.JANUARY);
         cal.set(Calendar.DAY_OF_MONTH, 1);
-        cal.set(Calendar.HOUR, 1);
+        cal.set(Calendar.HOUR_OF_DAY, 1);
         cal.set(Calendar.MINUTE, 1);
         cal.set(Calendar.SECOND, 1);
         cal.set(Calendar.MILLISECOND, 1);
@@ -3944,7 +3942,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         cal.set(Calendar.YEAR, 0001);
         cal.set(Calendar.MONTH, Calendar.JANUARY);
         cal.set(Calendar.DAY_OF_MONTH, 1);
-        cal.set(Calendar.HOUR, 1);
+        cal.set(Calendar.HOUR_OF_DAY, 1);
         cal.set(Calendar.MINUTE, 1);
         cal.set(Calendar.SECOND, 1);
         cal.set(Calendar.MILLISECOND, 1);
@@ -3963,7 +3961,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         cal.set(Calendar.YEAR, 0001);
         cal.set(Calendar.MONTH, Calendar.JANUARY);
         cal.set(Calendar.DAY_OF_MONTH, 1);
-        cal.set(Calendar.HOUR, 1);
+        cal.set(Calendar.HOUR_OF_DAY, 1);
         cal.set(Calendar.MINUTE, 1);
         cal.set(Calendar.SECOND, 1);
         cal.set(Calendar.MILLISECOND, 1);
@@ -3981,7 +3979,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         cal.set(Calendar.YEAR, 0001);
         cal.set(Calendar.MONTH, Calendar.JANUARY);
         cal.set(Calendar.DAY_OF_MONTH, 1);
-        cal.set(Calendar.HOUR, 1);
+        cal.set(Calendar.HOUR_OF_DAY, 1);
         cal.set(Calendar.MINUTE, 1);
         cal.set(Calendar.SECOND, 1);
         cal.set(Calendar.MILLISECOND, 1);
@@ -4010,7 +4008,7 @@ public class DateAndTimeTestCases extends OXTestCase {
         
         Calendar cal = Calendar.getInstance();
         cal.clear();
-        cal.set(Calendar.HOUR, 1);
+        cal.set(Calendar.HOUR_OF_DAY, 1);
         cal.set(Calendar.MINUTE, 1);
         cal.set(Calendar.SECOND, 1);
         cal.set(Calendar.MILLISECOND, 1);

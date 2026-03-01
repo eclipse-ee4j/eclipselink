@@ -18,38 +18,41 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Log levels for EclipseLink logging.
- * The EclipseLink logging levels available are:<br>
+ * The EclipseLink logging levels.
+ * <ul>
+ *     <li><b>ALL:</b> This level currently logs at the same level as FINEST.</li>
+ *     <li><b>FINEST:</b> This level enables logging of more debugging information than the FINER setting, such as a very detailed
+ *            information about certain features (for example, sequencing). You may want to use this log level during
+ *            debugging and testing, but not at production.</li>
+ *     <li><b>FINER:</b> This level enables logging of more debugging information than the FINE setting. For example, the transaction
+ *            information is logged at this level. You may want to use this log level during debugging and testing,
+ *            but not at production.</li>
+ *     <li><b>FINE:</b> This level enables logging of the first level of the debugging information and SQL. You may want to use
+ *            this log level during debugging and testing, but not at production.</li>
+ *     <li><b>CONFIG:</b> This level enables logging of such configuration details as your database login information and some metadata
+ *            information. You may want to use the CONFIG log level at deployment time.</li>
+ *     <li><b>INFO:</b> This level enables the standard output. The contents of this output is very limited. It is the default
+ *            logging level if a logging level is not set.</li>
+ *     <li><b>WARNING:</b> This level enables logging of issues that have a potential to cause problems. For example, a setting that
+ *            is picked by the application and not by the user.</li>
+ *     <li><b>SEVERE:</b> This level enables reporting of failure cases only. Usually, if the failure occurs, the application
+ *            stops.</li>
+ *     <li><b>OFF:</b> This setting disables the generation of the log output. You may want to set logging to OFF during production
+ *            to avoid the overhead of logging.</li>
+ * </ul>
+ * <p>
+ * The logging level IDs in {@linkplain SessionLog}:<br>
  * <table>
  * <caption>Logging levels</caption>
- * <tr><td>ALL</td>    <td>&nbsp;</td><td>=&nbsp;0</td>
- *     <td>This level currently logs at the same level as FINEST.</td></tr>
- * <tr><td>FINEST</td> <td>&nbsp;</td><td>=&nbsp;1</td>
- *     <td>This level enables logging of more debugging information than the FINER setting, such as a very detailed
- *         information about certain features (for example, sequencing). You may want to use this log level during
- *         debugging and testing, but not at production.</td></tr>
- * <tr><td>FINER</td>  <td>&nbsp;</td><td>=&nbsp;2</td>
- *     <td>This level enables logging of more debugging information than the FINE setting. For example, the transaction
- *         information is logged at this level. You may want to use this log level during debugging and testing,
- *         but not at production.</td></tr>
- * <tr><td>FINE</td>   <td>&nbsp;</td><td>=&nbsp;3</td>
- *     <td>This level enables logging of the first level of the debugging information and SQL. You may want to use
- *         this log level during debugging and testing, but not at production.</td></tr>
- * <tr><td>CONFIG</td> <td>&nbsp;</td><td>=&nbsp;4</td>
- *     <td>This level enables logging of such configuration details as your database login information and some metadata
- *         information. You may want to use the CONFIG log level at deployment time.</td></tr>
- * <tr><td>INFO</td>   <td>&nbsp;</td><td>=&nbsp;5</td>
- *     <td>This level enables the standard output. The contents of this output is very limited. It is the default
- *         logging level if a logging level is not set.</td></tr>
- * <tr><td>WARNING</td><td>&nbsp;</td><td>=&nbsp;6</td>
- *     <td>This level enables logging of issues that have a potential to cause problems. For example, a setting that
- *         is picked by the application and not by the user.</td></tr>
- * <tr><td>SEVERE</td> <td>&nbsp;</td><td>=&nbsp;7</td>
- *     <td>This level enables reporting of failure cases only. Usually, if the failure occurs, the application
- *         stops.</td></tr>
- * <tr><td>OFF</td>    <td>&nbsp;</td><td>=&nbsp;8</td>
- *     <td>This setting disables the generation of the log output. You may want to set logging to OFF during production
- *         to avoid the overhead of logging.</td></tr>
+ * <tr><td>{@linkplain SessionLog#ALL}</td>    <td>&nbsp;</td><td>= {@value SessionLog#ALL}</td>
+ * <tr><td>{@linkplain SessionLog#FINEST}</td> <td>&nbsp;</td><td>= {@value SessionLog#FINEST}</td>
+ * <tr><td>{@linkplain SessionLog#FINER}</td>  <td>&nbsp;</td><td>= {@value SessionLog#FINER}</td>
+ * <tr><td>{@linkplain SessionLog#FINE}</td>   <td>&nbsp;</td><td>= {@value SessionLog#FINE}</td>
+ * <tr><td>{@linkplain SessionLog#CONFIG}</td> <td>&nbsp;</td><td>= {@value SessionLog#CONFIG}</td>
+ * <tr><td>{@linkplain SessionLog#INFO}</td>   <td>&nbsp;</td><td>= {@value SessionLog#INFO}</td>
+ * <tr><td>{@linkplain SessionLog#WARNING}</td><td>&nbsp;</td><td>= {@value SessionLog#WARNING}</td>
+ * <tr><td>{@linkplain SessionLog#SEVERE}</td> <td>&nbsp;</td><td>= {@value SessionLog#SEVERE}</td>
+ * <tr><td>{@linkplain SessionLog#OFF}</td>    <td>&nbsp;</td><td>= {@value SessionLog#OFF}</td>
  * </table>
  */
 public enum LogLevel {
@@ -76,7 +79,7 @@ public enum LogLevel {
     /** Logging levels enumeration length. */
     public static final int length = LogLevel.values().length;
 
-    /** {@link Map} for {@link String} to {@link LogLevel} case insensitive lookup. */
+    /** {@linkplain Map} for {@linkplain String} to {@linkplain LogLevel} case insensitive lookup. */
     private static final Map<String, LogLevel> stringValuesMap = new HashMap<>(2 * length);
 
     // Initialize String to LogLevel case insensitive lookup Map.
@@ -86,7 +89,7 @@ public enum LogLevel {
         }
     }
 
-    /** Array for id to {@link LogLevel} lookup. */
+    /** Array for id to {@linkplain LogLevel} lookup. */
     private static final LogLevel[] idValues = new LogLevel[length];
 
     // Initialize id to LogLevel lookup array.
@@ -97,21 +100,21 @@ public enum LogLevel {
     }
 
     /**
-     * Returns {@link LogLevel} object holding the value of the specified {@link String}.
-     * @param name The {@link String} to be parsed.
-     * @return {@link LogLevel} object holding the value represented by the string argument or {@code null} when
-     *         there exists no corresponding {@link LogLevel} object to provided argument value.
+     * Returns {@linkplain LogLevel} object holding the value of the specified {@linkplain String}.
+     * @param name The {@linkplain String} to be parsed.
+     * @return {@linkplain LogLevel} object holding the value represented by the string argument or {@code null} when
+     *         there exists no corresponding {@linkplain LogLevel} object to provided argument value.
      */
     public static LogLevel toValue(final String name) {
         return name != null ? stringValuesMap.get(name.toUpperCase()) : null;
     }
 
     /**
-     * Returns {@link LogLevel} object holding the value of the specified {@link String}.
-     * @param name The {@link String} to be parsed.
-     * @param fallBack {@link LogLevel} object to return on ID lookup failure.
-     * @return {@link LogLevel} object holding the value represented by the string argument or {@code fallBack} when
-     *         there exists no corresponding {@link LogLevel} object to provided argument value.
+     * Returns {@linkplain LogLevel} object holding the value of the specified {@linkplain String}.
+     * @param name The {@linkplain String} to be parsed.
+     * @param fallBack {@linkplain LogLevel} object to return on ID lookup failure.
+     * @return {@linkplain LogLevel} object holding the value represented by the string argument or {@code fallBack} when
+     *         there exists no corresponding {@linkplain LogLevel} object to provided argument value.
      */
     public static LogLevel toValue(final String name, final LogLevel fallBack) {
         if (name != null) {
@@ -123,10 +126,10 @@ public enum LogLevel {
     }
 
     /**
-     * Returns {@link LogLevel} object holding the value of the specified {@link LogLevel} ID.
-     * @param id {@link LogLevel} ID.
-     * @return {@link LogLevel} object holding the value represented by the {@code id} argument.
-     * @throws IllegalArgumentException when {@link LogLevel} ID is out of valid {@link LogLevel} IDs range.
+     * Returns {@linkplain LogLevel} object holding the value of the specified {@linkplain LogLevel} ID.
+     * @param id {@linkplain LogLevel} ID.
+     * @return {@linkplain LogLevel} object holding the value represented by the {@code id} argument.
+     * @throws IllegalArgumentException when {@linkplain LogLevel} ID is out of valid {@linkplain LogLevel} IDs range.
      */
     public static LogLevel toValue(final int id) {
         if (id < 0 || id >= length) {
@@ -137,12 +140,12 @@ public enum LogLevel {
     }
 
     /**
-     * Returns {@link LogLevel} object holding the value of the specified {@link LogLevel} ID.
-     * @param id       {@link LogLevel} ID.
-     * @param fallBack {@link LogLevel} object to return on ID lookup failure.
-     * @return {@link LogLevel} object holding the value represented by the {@code id} argument or {@code fallBack}
-     *         when provided ID is not valid {@link LogLevel} ID.
-     * @throws IllegalArgumentException when {@link LogLevel} ID is out of valid {@link LogLevel} IDs range.
+     * Returns {@linkplain LogLevel} object holding the value of the specified {@linkplain LogLevel} ID.
+     * @param id       {@linkplain LogLevel} ID.
+     * @param fallBack {@linkplain LogLevel} object to return on ID lookup failure.
+     * @return {@linkplain LogLevel} object holding the value represented by the {@code id} argument or {@code fallBack}
+     *         when provided ID is not valid {@linkplain LogLevel} ID.
+     * @throws IllegalArgumentException when {@linkplain LogLevel} ID is out of valid {@linkplain LogLevel} IDs range.
      */
     public static LogLevel toValue(final int id, final LogLevel fallBack) {
         if (id >= 0 && id < length) {

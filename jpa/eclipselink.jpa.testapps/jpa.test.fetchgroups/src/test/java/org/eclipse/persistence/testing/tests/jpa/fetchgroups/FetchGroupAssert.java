@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -101,8 +101,7 @@ public class FetchGroupAssert {
             if (value instanceof IndirectContainer) {
                 value = ((IndirectContainer<?>) value).getValueHolder();
             }
-            if (value instanceof ValueHolderInterface) {
-                ValueHolderInterface<?> vhi = (ValueHolderInterface<?>) value;
+            if (value instanceof ValueHolderInterface<?> vhi) {
                 assertTrue("ValueHolder for: '" + attrName + "' not instantiated", vhi.isInstantiated());
                 value = vhi.getValue();
             }
@@ -147,8 +146,7 @@ public class FetchGroupAssert {
             if (value instanceof IndirectContainer) {
                 value = ((IndirectContainer<?>) value).getValueHolder();
             }
-            if (value instanceof ValueHolderInterface) {
-                ValueHolderInterface<?> vhi = (ValueHolderInterface<?>) value;
+            if (value instanceof ValueHolderInterface<?> vhi) {
                 assertTrue("ValueHolder for: '" + attrName + "' not instantiated", vhi.isInstantiated());
                 value = vhi.getValue();
             }
@@ -249,8 +247,7 @@ public class FetchGroupAssert {
      * it.
      */
     public static void assertNoFetchGroup(EntityManagerFactory emf, Object entity) {
-        if (entity instanceof FetchGroupTracker) {
-            FetchGroupTracker tracker = (FetchGroupTracker) entity;
+        if (entity instanceof FetchGroupTracker tracker) {
 
             assertNull("Entity: " + entity + " has: " + tracker._persistence_getFetchGroup(), tracker._persistence_getFetchGroup());
         }

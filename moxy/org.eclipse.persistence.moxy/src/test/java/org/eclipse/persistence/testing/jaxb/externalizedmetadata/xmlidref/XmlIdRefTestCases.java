@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,14 +19,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContext;
-import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
@@ -104,9 +102,9 @@ public class XmlIdRefTestCases extends JAXBWithJSONTestCases{
      */
     public void testPrimaryKeyWasSet() {
         XMLDescriptor xdesc = ((JAXBContext) jaxbContext).getXMLContext().getDescriptor(new QName("address"));
-        Vector<String> pkFields = xdesc.getPrimaryKeyFieldNames();
+        List<String> pkFields = xdesc.getPrimaryKeyFieldNames();
         assertTrue("Expected [1] primary key field for Address, but was [" + pkFields.size() + "]", pkFields.size() == 1);
-        assertTrue("Expected primary key field [primary-key/@aid] for Address, but was [" + pkFields.elementAt(0) + "]", pkFields.elementAt(0).equals("primary-key/@aid"));
+        assertTrue("Expected primary key field [primary-key/@aid] for Address, but was [" + pkFields.get(0) + "]", pkFields.get(0).equals("primary-key/@aid"));
     }
 
 

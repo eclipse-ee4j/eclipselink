@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,8 +14,6 @@
 //      tware - initial
 package org.eclipse.persistence.jpa.rs.service;
 
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.ServiceLoader;
 import java.util.Set;
 
@@ -44,23 +42,17 @@ public class JPARSApplication extends Application {
      * Instantiates a new jPARS application.
      */
     public JPARSApplication() {
-        HashSet<Class<?>> c = new HashSet<>();
 
         // Versioned Resources (resources that do have version in the url)
-        c.add(org.eclipse.persistence.jpa.rs.resources.PersistenceResource.class);
-        c.add(org.eclipse.persistence.jpa.rs.resources.PersistenceUnitResource.class);
-        c.add(org.eclipse.persistence.jpa.rs.resources.EntityResource.class);
-        c.add(org.eclipse.persistence.jpa.rs.resources.SingleResultQueryResource.class);
-        c.add(org.eclipse.persistence.jpa.rs.resources.QueryResource.class);
-
-        // JPARS 2.0
-        c.add(org.eclipse.persistence.jpa.rs.resources.MetadataResource.class);
-
-        // Exception Mapping
-        c.add(JPARSExceptionMapper.class);
 
         //
-        classes = Collections.unmodifiableSet(c);
+        classes = Set.of(org.eclipse.persistence.jpa.rs.resources.PersistenceResource.class, org.eclipse.persistence.jpa.rs.resources.PersistenceUnitResource.class, org.eclipse.persistence.jpa.rs.resources.EntityResource.class, org.eclipse.persistence.jpa.rs.resources.SingleResultQueryResource.class, org.eclipse.persistence.jpa.rs.resources.QueryResource.class,
+
+                // JPARS 2.0
+                org.eclipse.persistence.jpa.rs.resources.MetadataResource.class,
+
+                // Exception Mapping
+                JPARSExceptionMapper.class);
     }
 
     /* (non-Javadoc)

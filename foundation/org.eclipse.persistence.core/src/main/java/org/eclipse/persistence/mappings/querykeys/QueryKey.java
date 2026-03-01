@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,9 +14,9 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.mappings.querykeys;
 
-import java.io.*;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+
+import java.io.Serializable;
 
 /**
  * <p>
@@ -44,22 +44,18 @@ public class QueryKey implements Cloneable, Serializable {
      */
     @Override
     public Object clone() {
-        Object object = null;
-
         try {
-            object = super.clone();
+            return super.clone();
         } catch (Exception exception) {
             throw new InternalError(exception.toString());
         }
-
-        return object;
     }
 
     /**
      * INTERNAL:
      * Convert all the class-name-based settings in this QueryKey to actual class-based
      * settings
-     * Will be overridded by subclasses
+     * Will be overridden by subclasses
      */
     public void convertClassNamesToClasses(ClassLoader classLoader){}
 
@@ -187,6 +183,6 @@ public class QueryKey implements Cloneable, Serializable {
      */
     @Override
     public String toString() {
-        return org.eclipse.persistence.internal.helper.Helper.getShortClassName(this) + "(" + getName() + ")";
+        return getClass().getSimpleName() + "(" + getName() + ")";
     }
 }

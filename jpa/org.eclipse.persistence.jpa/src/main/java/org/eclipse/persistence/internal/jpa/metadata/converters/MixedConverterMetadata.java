@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,7 +21,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.Converter
  * INTERNAL:
  * Object to hold onto XML converter metadata. This metadata is either for
  * a ConverterMetadata object or a ConverterAccessor.
- *
+ * <p>
  * Key notes:
  * - methods should be preserved in alphabetical order.
  *
@@ -90,7 +90,7 @@ public class MixedConverterMetadata {
      * Return true if this metadata has a name specified.
      */
     protected boolean hasName() {
-        return m_name != null && ! m_name.equals("");
+        return m_name != null && !m_name.isEmpty();
     }
 
     /**

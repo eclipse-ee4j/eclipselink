@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,7 +24,7 @@ import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 
 import org.eclipse.persistence.core.mappings.converters.CoreConverter;
 import org.eclipse.persistence.exceptions.ConversionException;
-import org.eclipse.persistence.exceptions.JAXBException;
+import org.eclipse.persistence.jaxb.JAXBException;
 import org.eclipse.persistence.internal.oxm.XMLBinaryDataHelper;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.mappings.BinaryDataMapping;

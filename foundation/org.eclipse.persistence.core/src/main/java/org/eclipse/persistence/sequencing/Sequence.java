@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,12 +14,13 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.sequencing;
 
-import java.util.Vector;
-import java.io.Serializable;
-import org.eclipse.persistence.internal.databaseaccess.Platform;
-import org.eclipse.persistence.internal.databaseaccess.Accessor;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.databaseaccess.Accessor;
+import org.eclipse.persistence.internal.databaseaccess.Platform;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+
+import java.io.Serializable;
+import java.util.Vector;
 
 /**
  * <p>
@@ -342,7 +343,7 @@ public abstract class Sequence implements Serializable, Cloneable {
         if(qualifier == null) {
             qualifier = "";
         }
-        this.isCustomQualifier = qualifier.length() > 0;
+        this.isCustomQualifier = !qualifier.isEmpty();
         this.qualifier = qualifier;
     }
 
@@ -364,7 +365,7 @@ public abstract class Sequence implements Serializable, Cloneable {
      * INTERNAL:
      */
     public String getQualified(String str) {
-        if (qualifier.equals("")) {
+        if (qualifier.isEmpty()) {
             return str;
         } else {
             return qualifier + "." + str;

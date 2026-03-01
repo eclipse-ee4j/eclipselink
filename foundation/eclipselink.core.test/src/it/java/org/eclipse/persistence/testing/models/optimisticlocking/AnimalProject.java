@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,9 +14,10 @@
 //     tware - added cascaded locking testing
 package org.eclipse.persistence.testing.models.optimisticlocking;
 
-import java.util.Vector;
-
 import org.eclipse.persistence.descriptors.VersionLockingPolicy;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class AnimalProject extends org.eclipse.persistence.sessions.Project {
 
@@ -56,8 +57,8 @@ public class AnimalProject extends org.eclipse.persistence.sessions.Project {
 
         // SECTION: DESCRIPTOR
         descriptor.setJavaClass(Animal.class);
-        Vector vector = new Vector();
-        vector.addElement("OL_ANIMAL");
+        List<String> vector = new ArrayList<>();
+        vector.add("OL_ANIMAL");
         descriptor.setTableNames(vector);
         descriptor.addPrimaryKeyFieldName("OL_ANIMAL.ID");
 
@@ -160,8 +161,8 @@ public class AnimalProject extends org.eclipse.persistence.sessions.Project {
 
         // SECTION: DESCRIPTOR
         descriptor.setJavaClass(Toy.class);
-        Vector vector = new Vector();
-        vector.addElement("OL_TOY");
+        List<String> vector = new ArrayList<>();
+        vector.add("OL_TOY");
         descriptor.setTableNames(vector);
         descriptor.addPrimaryKeyFieldName("OL_TOY.ID");
 
@@ -211,8 +212,8 @@ public class AnimalProject extends org.eclipse.persistence.sessions.Project {
 
         // SECTION: DESCRIPTOR
         descriptor.setJavaClass(VetAppointment.class);
-        Vector vector = new Vector();
-        vector.addElement("OL_VET_APPT");
+        List<String> vector = new ArrayList<>();
+        vector.add("OL_VET_APPT");
         descriptor.setTableNames(vector);
         descriptor.addPrimaryKeyFieldName("OL_VET_APPT.ID");
 

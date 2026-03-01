@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2015 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -19,6 +19,7 @@
 package org.eclipse.persistence.config;
 
 import org.eclipse.persistence.exceptions.ConversionException;
+import org.eclipse.persistence.internal.helper.PropertiesUtils;
 import org.eclipse.persistence.platform.database.DB2Platform;
 import org.eclipse.persistence.platform.database.MySQLPlatform;
 import org.junit.Assert;
@@ -85,11 +86,11 @@ public class TestPropertiesUtils {
     @Test
     public void testStoredProcedureTerminationToken() {
         DB2Platform db2 = new DB2Platform();
-        Assert.assertTrue(db2.getStoredProcedureTerminationToken().equals(";"));
+        Assert.assertEquals(";", db2.getStoredProcedureTerminationToken());
 
         String token = "test";
         PropertiesUtils.set(db2, PersistenceUnitProperties.TARGET_DATABASE_PROPERTIES, "StoredProcedureTerminationToken=" + token);
 
-        Assert.assertTrue(db2.getStoredProcedureTerminationToken().equals(token));
+        Assert.assertEquals(db2.getStoredProcedureTerminationToken(), token);
     }
 }

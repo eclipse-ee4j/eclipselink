@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,8 +14,6 @@
 // mmacivor - January 09, 2009 - 1.1 - Initial implementation
 package org.eclipse.persistence.testing.jaxb.annotations.xmlcontainerproperty;
 
-import jakarta.xml.bind.annotation.*;
-
 import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
 
 
@@ -27,10 +25,9 @@ public class Address {
     public Employee owningEmployee;
 
     public boolean equals(Object o) {
-        if(!(o instanceof Address)) {
+        if(!(o instanceof Address obj)) {
             return false;
         }
-        Address obj = (Address)o;
         boolean equal = true;
 
         equal = equal && street.equals(obj.street);

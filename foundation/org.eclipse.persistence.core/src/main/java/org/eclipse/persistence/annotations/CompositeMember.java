@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,18 +23,17 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
  * A CompositeMember annotation is ignored unless is in composite member persistence unit.
- * It may be used in conjunction with a ElementCollection and CollectionTable annotations.
+ * It may be used in conjunction with a {@linkplain jakarta.persistence.ElementCollection}
+ * and {@linkplain jakarta.persistence.CollectionTable} annotations.
  * It should be used if target type is a primitive type
- * and CollectionTable designates the table that belongs to
+ * and {@linkplain jakarta.persistence.CollectionTable} designates the table that belongs to
  * composite member persistence unit other than the source composite member persistence unit.
  * That allows the source and target to be mapped to different databases.
- *
- * @see jakarta.persistence.ElementCollection
- * @see jakarta.persistence.CollectionTable
- * @see org.eclipse.persistence.config.PersistenceUnitProperties#COMPOSITE_UNIT
- *
+ * <p>
  * A CompositeMember can be specified on within an Entity, MappedSuperclass
  * and Embeddable class.
+ *
+ * @see org.eclipse.persistence.config.PersistenceUnitProperties#COMPOSITE_UNIT
  *
  * @author Andrei Ilitchev
  * @since Eclipselink 2.3

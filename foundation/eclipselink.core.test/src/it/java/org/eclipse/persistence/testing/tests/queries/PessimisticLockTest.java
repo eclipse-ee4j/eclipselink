@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -71,10 +71,10 @@ public class PessimisticLockTest extends RefreshTest {
         employeeObject.getManager().setFirstName("Karl");
 
         collectionSize = employeeObject.getPhoneNumbers().size();
-        employeeObject.getPhoneNumbers().removeAllElements();
+        employeeObject.getPhoneNumbers().clear();
 
         responsibilityListSize = employeeObject.getResponsibilitiesList().size();
-        employeeObject.getResponsibilitiesList().removeAllElements();
+        employeeObject.getResponsibilitiesList().clear();
 
         uow.refreshAndLockObject(employeeObject, (short) this.lockMode);
 

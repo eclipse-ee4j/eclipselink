@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,7 +14,8 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.mapping;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * TopLink generated Project class.
@@ -62,8 +63,8 @@ public class BiDirectionInserOrderTestProject extends org.eclipse.persistence.se
 
         // SECTION: DESCRIPTOR
         descriptor.setJavaClass(org.eclipse.persistence.testing.models.mapping.Baby.class);
-        Vector vector = new Vector();
-        vector.addElement("BABY");
+        List<String> vector = new ArrayList<>();
+        vector.add("BABY");
         descriptor.setTableNames(vector);
         descriptor.addPrimaryKeyFieldName("BABY.ID");
 
@@ -136,8 +137,8 @@ public class BiDirectionInserOrderTestProject extends org.eclipse.persistence.se
 
         // SECTION: DESCRIPTOR
         descriptor.setJavaClass(org.eclipse.persistence.testing.models.mapping.BabyMonitor.class);
-        Vector vector = new Vector();
-        vector.addElement("BABY_MONIOTR");
+        List<String> vector = new ArrayList<>();
+        vector.add("BABY_MONIOTR");
         descriptor.setTableNames(vector);
         descriptor.addPrimaryKeyFieldName("BABY_MONIOTR.ID");
 
@@ -208,8 +209,8 @@ public class BiDirectionInserOrderTestProject extends org.eclipse.persistence.se
 
         // SECTION: DESCRIPTOR
         descriptor.setJavaClass(org.eclipse.persistence.testing.models.mapping.Crib.class);
-        Vector vector = new Vector();
-        vector.addElement("CRIB");
+        List<String> vector = new ArrayList<>();
+        vector.add("CRIB");
         descriptor.setTableNames(vector);
         descriptor.addPrimaryKeyFieldName("CRIB.ID");
 

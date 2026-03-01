@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import org.eclipse.persistence.internal.jpa.config.columns.ForeignKeyImpl;
 import org.eclipse.persistence.internal.jpa.config.columns.PrimaryKeyJoinColumnImpl;
 import org.eclipse.persistence.internal.jpa.metadata.columns.PrimaryKeyForeignKeyMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.columns.PrimaryKeyJoinColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.tables.SecondaryTableMetadata;
 import org.eclipse.persistence.jpa.config.ForeignKey;
 import org.eclipse.persistence.jpa.config.PrimaryKeyJoinColumn;
@@ -36,7 +35,7 @@ public class SecondaryTableImpl extends AbstractTableImpl<SecondaryTableMetadata
     public SecondaryTableImpl() {
         super(new SecondaryTableMetadata());
 
-        getMetadata().setPrimaryKeyJoinColumns(new ArrayList<PrimaryKeyJoinColumnMetadata>());
+        getMetadata().setPrimaryKeyJoinColumns(new ArrayList<>());
     }
 
     @Override

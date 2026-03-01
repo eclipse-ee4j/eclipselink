@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,7 +33,7 @@ public class FaultyUnitOfWorkTest extends AutoVerifyTestCase {
         getAbstractSession().beginTransaction();
 
         // Read some object from the database.
-        this.employeeInSession = (Employee)getSession().readAllObjects(Employee.class).firstElement();
+        this.employeeInSession = (Employee)getSession().readAllObjects(Employee.class).get(0);
         this.addressOfEmployeeInSession = employeeInSession.getAddress();
         this.addressOfEmployeeInSession.setCity("LKO");
 

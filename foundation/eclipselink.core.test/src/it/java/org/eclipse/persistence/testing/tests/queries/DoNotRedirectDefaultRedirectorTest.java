@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,11 +14,14 @@
 //     GYORKE - initial API and implementation
 package org.eclipse.persistence.testing.tests.queries;
 
-import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.sessions.*;
-import org.eclipse.persistence.testing.framework.*;
-import org.eclipse.persistence.testing.models.employee.domain.*;
+import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.MethodBaseQueryRedirector;
+import org.eclipse.persistence.queries.ReadObjectQuery;
+import org.eclipse.persistence.sessions.DataRecord;
+import org.eclipse.persistence.testing.framework.TestCase;
+import org.eclipse.persistence.testing.framework.TestErrorException;
+import org.eclipse.persistence.testing.models.employee.domain.Employee;
 
 /**
  *

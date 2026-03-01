@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,13 +14,46 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.inheritance;
 
-import java.util.*;
-import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.testing.framework.*;
-import org.eclipse.persistence.tools.schemaframework.*;
-import org.eclipse.persistence.testing.models.inheritance.*;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.queries.ReadAllQuery;
+import org.eclipse.persistence.queries.ReadObjectQuery;
+import org.eclipse.persistence.testing.framework.DeleteObjectTest;
+import org.eclipse.persistence.testing.framework.InsertObjectTest;
+import org.eclipse.persistence.testing.framework.ReadAllTest;
+import org.eclipse.persistence.testing.framework.ReadObjectTest;
+import org.eclipse.persistence.testing.framework.TestModel;
+import org.eclipse.persistence.testing.framework.TestSuite;
+import org.eclipse.persistence.testing.framework.UnitOfWorkBasicUpdateObjectTest;
+import org.eclipse.persistence.testing.framework.WriteObjectTest;
+import org.eclipse.persistence.testing.models.inheritance.A_King2;
+import org.eclipse.persistence.testing.models.inheritance.Alligator;
+import org.eclipse.persistence.testing.models.inheritance.Bicycle;
+import org.eclipse.persistence.testing.models.inheritance.Boat;
+import org.eclipse.persistence.testing.models.inheritance.Bus;
+import org.eclipse.persistence.testing.models.inheritance.Car;
+import org.eclipse.persistence.testing.models.inheritance.Cat;
+import org.eclipse.persistence.testing.models.inheritance.Company;
+import org.eclipse.persistence.testing.models.inheritance.Computer;
+import org.eclipse.persistence.testing.models.inheritance.Developer_King;
+import org.eclipse.persistence.testing.models.inheritance.Dog;
+import org.eclipse.persistence.testing.models.inheritance.Engineer;
+import org.eclipse.persistence.testing.models.inheritance.FueledVehicle;
+import org.eclipse.persistence.testing.models.inheritance.IBMPC;
+import org.eclipse.persistence.testing.models.inheritance.InheritanceSystem;
+import org.eclipse.persistence.testing.models.inheritance.Mac;
+import org.eclipse.persistence.testing.models.inheritance.Mainframe;
+import org.eclipse.persistence.testing.models.inheritance.NonFueledVehicle;
+import org.eclipse.persistence.testing.models.inheritance.PC;
+import org.eclipse.persistence.testing.models.inheritance.Person;
+import org.eclipse.persistence.testing.models.inheritance.SalesRep;
+import org.eclipse.persistence.testing.models.inheritance.SeniorDeveloper_King;
+import org.eclipse.persistence.testing.models.inheritance.SoftwareEngineer;
+import org.eclipse.persistence.testing.models.inheritance.SportsCar;
+import org.eclipse.persistence.testing.models.inheritance.Vehicle;
 import org.eclipse.persistence.testing.tests.writing.ComplexDeleteTest;
+import org.eclipse.persistence.tools.schemaframework.PopulationManager;
+
+import java.util.Vector;
 
 /**
  * This test model tests basic CRUD operations with complex inheritance models.

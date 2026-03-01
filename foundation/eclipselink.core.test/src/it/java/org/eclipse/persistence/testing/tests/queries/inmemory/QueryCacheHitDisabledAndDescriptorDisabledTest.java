@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,8 +14,9 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.queries.inmemory;
 
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.testing.framework.*;
+import org.eclipse.persistence.queries.ObjectLevelReadQuery;
+import org.eclipse.persistence.queries.ReadObjectQuery;
+import org.eclipse.persistence.testing.framework.TestErrorException;
 
 //When query's shouldMaintainCache is false and descriptor's shouldDisableCacheHits is true,
 //cache is not checked and a different object is returned.
@@ -43,7 +44,7 @@ public class QueryCacheHitDisabledAndDescriptorDisabledTest extends QueryAndDesc
             throw new TestErrorException("Object read match but should not.");
         }
 
-        if (tempStream.toString().length() == 0) {
+        if (tempStream.toString().isEmpty()) {
             throw new TestErrorException("The read did not go to the database, but should have");
         }
     }

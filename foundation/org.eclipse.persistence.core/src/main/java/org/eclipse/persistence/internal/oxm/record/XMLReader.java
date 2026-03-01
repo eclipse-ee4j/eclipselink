@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -13,12 +13,6 @@
 // Contributors:
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.oxm.record;
-
-import java.io.IOException;
-
-import javax.xml.XMLConstants;
-import javax.xml.namespace.QName;
-import javax.xml.validation.ValidatorHandler;
 
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.Constants;
@@ -38,6 +32,11 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXNotRecognizedException;
 import org.xml.sax.SAXNotSupportedException;
 import org.xml.sax.ext.LexicalHandler;
+
+import javax.xml.XMLConstants;
+import javax.xml.namespace.QName;
+import javax.xml.validation.ValidatorHandler;
+import java.io.IOException;
 
 /**
  * INTERNAL:

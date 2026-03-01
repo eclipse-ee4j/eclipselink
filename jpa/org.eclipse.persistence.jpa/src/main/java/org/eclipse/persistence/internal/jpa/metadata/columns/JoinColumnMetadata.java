@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,7 +29,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
 /**
  * INTERNAL:
  * Object to process JPA join columns EclipseLink database fields.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -86,8 +86,7 @@ public class JoinColumnMetadata extends RelationalColumnMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (super.equals(objectToCompare) && objectToCompare instanceof JoinColumnMetadata) {
-            JoinColumnMetadata joinColumn = (JoinColumnMetadata) objectToCompare;
+        if (super.equals(objectToCompare) && objectToCompare instanceof JoinColumnMetadata joinColumn) {
 
             if (! valuesMatch(m_unique, joinColumn.getUnique())) {
                 return false;
@@ -113,7 +112,8 @@ public class JoinColumnMetadata extends RelationalColumnMetadata {
 
     @Override
     public int hashCode() {
-        int result = m_unique != null ? m_unique.hashCode() : 0;
+        int result = super.hashCode();
+        result = 31 * result + (m_unique != null ? m_unique.hashCode() : 0);
         result = 31 * result + (m_nullable != null ? m_nullable.hashCode() : 0);
         result = 31 * result + (m_updatable != null ? m_updatable.hashCode() : 0);
         result = 31 * result + (m_insertable != null ? m_insertable.hashCode() : 0);
@@ -130,10 +130,10 @@ public class JoinColumnMetadata extends RelationalColumnMetadata {
         DatabaseField fkField = super.getForeignKeyField();
 
         fkField.setTableName(m_table == null ? "" : m_table);
-        fkField.setUnique(m_unique == null ? false : m_unique);
-        fkField.setNullable(m_nullable == null ? true : m_nullable);
-        fkField.setUpdatable(m_updatable == null ? true : m_updatable);
-        fkField.setInsertable(m_insertable == null ? true : m_insertable);
+        fkField.setUnique(m_unique != null && m_unique);
+        fkField.setNullable(m_nullable == null || m_nullable);
+        fkField.setUpdatable(m_updatable == null || m_updatable);
+        fkField.setInsertable(m_insertable == null || m_insertable);
 
         return fkField;
     }

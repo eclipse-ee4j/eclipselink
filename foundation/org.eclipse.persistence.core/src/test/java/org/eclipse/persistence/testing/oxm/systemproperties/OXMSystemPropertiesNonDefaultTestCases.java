@@ -15,15 +15,9 @@
 package org.eclipse.persistence.testing.oxm.systemproperties;
 
 import org.eclipse.persistence.internal.oxm.OXMSystemProperties;
-import org.eclipse.persistence.internal.oxm.XMLConversionManager;
-import org.eclipse.persistence.oxm.XMLConstants;
 import org.junit.Test;
 
-import java.sql.Timestamp;
-import java.util.TimeZone;
-
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**

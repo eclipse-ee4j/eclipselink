@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,6 +33,7 @@ import org.eclipse.persistence.eis.interactions.EISInteraction;
 import org.eclipse.persistence.eis.interactions.MappedInteraction;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionOperator;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.databaseaccess.DatasourceCall;
 import org.eclipse.persistence.internal.databaseaccess.QueryStringCall;
 import org.eclipse.persistence.internal.nosql.adapters.mongo.MongoInteractionSpec;
@@ -47,14 +48,10 @@ import org.eclipse.persistence.internal.expressions.QueryKeyExpression;
 import org.eclipse.persistence.internal.expressions.RelationExpression;
 import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
 import org.eclipse.persistence.internal.expressions.SQLStatement;
-import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.mappings.foundation.AbstractCompositeCollectionMapping;
-import org.eclipse.persistence.mappings.foundation.AbstractCompositeDirectCollectionMapping;
-import org.eclipse.persistence.mappings.foundation.AbstractCompositeObjectMapping;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.sequencing.Sequence;
@@ -100,12 +97,12 @@ public class MongoPlatform extends EISPlatform {
      * Convert unsupported types to string.
      */
     @Override
-    public void setValueInRecord(String key, Object value, MappedRecord record, EISAccessor accessor) {
+    public void setValueInRecord(String key, Object value, MappedRecord mappedRecord, EISAccessor accessor) {
         Object recordValue = value;
         if ((value instanceof BigDecimal) || (value instanceof BigInteger)) {
-            recordValue = getConversionManager().convertObject(value, ClassConstants.STRING);
+            recordValue = getConversionManager().convertObject(value, CoreClassConstants.STRING);
         }
-        record.put(key, recordValue);
+        mappedRecord.put(key, recordValue);
     }
 
     /**
@@ -138,8 +135,8 @@ public class MongoPlatform extends EISPlatform {
             if (operation == null) {
                 throw new EISException("'" + OPERATION + "' property must be set on the query's interation.");
             }
-            if (operation instanceof String) {
-                operation = MongoOperation.valueOf((String)operation);
+            if (operation instanceof String op) {
+                operation = MongoOperation.valueOf(op);
             }
             mongoSpec.setOperation((MongoOperation)operation);
             Object collection = interaction.getProperty(COLLECTION);
@@ -149,10 +146,9 @@ public class MongoPlatform extends EISPlatform {
 
             // Allows setting of read preference as a property.
             Object preference = interaction.getProperty(READ_PREFERENCE);
-            if (preference instanceof ReadPreference) {
-                mongoSpec.setReadPreference((ReadPreference)preference);
-            } else if (preference instanceof String) {
-                String constant = (String)preference;
+            if (preference instanceof ReadPreference rf) {
+                mongoSpec.setReadPreference(rf);
+            } else if (preference instanceof String constant) {
                 if (constant.equals("PRIMARY")) {
                     mongoSpec.setReadPreference(ReadPreference.primary());
                 } else if (constant.equals("SECONDARY")) {
@@ -164,59 +160,52 @@ public class MongoPlatform extends EISPlatform {
 
             // Allows setting of write concern as a property.
             Object concern = interaction.getProperty(WRITE_CONCERN);
-            if (concern instanceof WriteConcern) {
-                mongoSpec.setWriteConcern((WriteConcern)concern);
-            } else if (concern instanceof String) {
-                String constant = (String)concern;
-                if (constant.equals("FSYNC_SAFE")) {
-                    mongoSpec.setWriteConcern(WriteConcern.FSYNC_SAFE);
-                } else if (constant.equals("JOURNAL_SAFE")) {
-                    mongoSpec.setWriteConcern(WriteConcern.JOURNAL_SAFE);
-                } else if (constant.equals("MAJORITY")) {
-                    mongoSpec.setWriteConcern(WriteConcern.MAJORITY);
-                } else if (constant.equals("NONE")) {
-                    mongoSpec.setWriteConcern(/* WriteConcern.NONE */ new WriteConcern("none"));
-                } else if (constant.equals("NORMAL")) {
-                    mongoSpec.setWriteConcern(WriteConcern.NORMAL);
-                } else if (constant.equals("REPLICAS_SAFE")) {
-                    mongoSpec.setWriteConcern(WriteConcern.REPLICAS_SAFE);
-                } else if (constant.equals("SAFE")) {
-                    mongoSpec.setWriteConcern(WriteConcern.SAFE);
-                } else {
-                    throw new EISException("Invalid read preference property value: " + constant);
+            if (concern instanceof WriteConcern wc) {
+                mongoSpec.setWriteConcern(wc);
+            } else if (concern instanceof String constant) {
+                switch (constant) {
+                    case "ACKNOWLEDGED" -> mongoSpec.setWriteConcern(WriteConcern.ACKNOWLEDGED);
+                    case "JOURNALED" -> mongoSpec.setWriteConcern(WriteConcern.JOURNALED);
+                    case "MAJORITY" -> mongoSpec.setWriteConcern(WriteConcern.MAJORITY);
+                    case "NONE" -> mongoSpec.setWriteConcern(/*FIXME: WriteConcern.NONE*/ new WriteConcern("none"));
+                    case "UNACKNOWLEDGED" -> mongoSpec.setWriteConcern(WriteConcern.UNACKNOWLEDGED);
+                    case "W1" -> mongoSpec.setWriteConcern(WriteConcern.W1);
+                    case "W2" -> mongoSpec.setWriteConcern(WriteConcern.W2);
+                    case "W3" -> mongoSpec.setWriteConcern(WriteConcern.W3);
+                    default -> throw new EISException("Invalid read preference property value: " + constant);
                 }
             }
 
             // Allows setting of options as a property.
             Object options = interaction.getProperty(OPTIONS);
-            if (options instanceof Number) {
-                mongoSpec.setOptions(((Number)options).intValue());
-            } else if (options instanceof String) {
-                mongoSpec.setOptions(Integer.parseInt(((String)options)));
+            if (options instanceof Number n) {
+                mongoSpec.setOptions(n.intValue());
+            } else if (options instanceof String s) {
+                mongoSpec.setOptions(Integer.parseInt(s));
             }
 
             // Allows setting of skip as a property.
             Object skip = interaction.getProperty(SKIP);
-            if (skip instanceof Number) {
-                mongoSpec.setSkip(((Number)skip).intValue());
-            } else if (skip instanceof String) {
-                mongoSpec.setSkip(Integer.parseInt(((String)skip)));
+            if (skip instanceof Number n) {
+                mongoSpec.setSkip(n.intValue());
+            } else if (skip instanceof String s) {
+                mongoSpec.setSkip(Integer.parseInt(s));
             }
 
             // Allows setting of limit as a property.
             Object limit = interaction.getProperty(LIMIT);
-            if (limit instanceof Number) {
-                mongoSpec.setLimit(((Number)limit).intValue());
-            } else if (skip instanceof String) {
-                mongoSpec.setLimit(Integer.parseInt(((String)limit)));
+            if (limit instanceof Number n) {
+                mongoSpec.setLimit(n.intValue());
+            } else if (skip instanceof String s) {
+                mongoSpec.setLimit(Integer.parseInt(s));
             }
 
             // Allows setting of batchSize as a property.
             Object batchSize = interaction.getProperty(BATCH_SIZE);
-            if (batchSize instanceof Number) {
-                mongoSpec.setBatchSize(((Number)batchSize).intValue());
-            } else if (skip instanceof String) {
-                mongoSpec.setBatchSize(Integer.parseInt(((String)batchSize)));
+            if (batchSize instanceof Number n) {
+                mongoSpec.setBatchSize(n.intValue());
+            } else if (skip instanceof String s) {
+                mongoSpec.setBatchSize(Integer.parseInt(s));
             }
 
             spec = mongoSpec;
@@ -321,10 +310,10 @@ public class MongoPlatform extends EISPlatform {
             if (readQuery.isReportQuery()) {
                 DatabaseRecord select = new DatabaseRecord();
                 for (Object field : ((SQLSelectStatement)statement).getFields()) {
-                    if (field instanceof DatabaseField) {
-                        select.put((DatabaseField)field, 1);
-                    } else if (field instanceof Expression) {
-                        Object value = extractValueFromExpression((Expression)field, readQuery);
+                    if (field instanceof DatabaseField df) {
+                        select.put(df, 1);
+                    } else if (field instanceof Expression e) {
+                        Object value = extractValueFromExpression(e, readQuery);
                         if (!(value instanceof DatabaseField)) {
                             throw new EISException("Query too complex for Mongo translation, only field selects are supported in query: " + query);
                         }
@@ -393,10 +382,9 @@ public class MongoPlatform extends EISPlatform {
             if (function.getOperator().getSelector() == ExpressionOperator.Like) {
                 Object left = extractValueFromExpression(function.getChildren().get(0), query);
                 Object right = extractValueFromExpression(function.getChildren().get(1), query);
-                if (!(right instanceof String)) {
+                if (!(right instanceof String pattern)) {
                     throw new EISException("Query too complex for Mongo translation, like with [" + right + "] not supported in query: " + query);
                 }
-                String pattern = (String)right;
                 DatabaseRecord nested = new DatabaseRecord();
                 if (!this.isLikeRegex) {
                     pattern = Helper.convertLikeToRegex(pattern);
@@ -499,8 +487,8 @@ public class MongoPlatform extends EISPlatform {
             List<Object> values = (List<Object>)value;
             for (int index = 0; index < values.size(); index++) {
                 Object element = values.get(index);
-                if (element instanceof Expression) {
-                    element = extractValueFromExpression((Expression)element, query);
+                if (element instanceof Expression e) {
+                    element = extractValueFromExpression(e, query);
                     values.set(index, element);
                 }
             }

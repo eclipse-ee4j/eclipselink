@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2012, 2022 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2019, 2022 IBM Corporation. All rights reserved.
+ * Copyright (c) 2012, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019, 2025 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,6 +32,8 @@
 //       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
 //     11/05/2012-2.5 Guy Pelletier
 //       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+//     08/23/2023: Tomas Kraus
+//       - New Jakarta Persistence 3.2 Features
 package org.eclipse.persistence.internal.jpa;
 
 import java.sql.CallableStatement;
@@ -46,6 +48,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
+import jakarta.persistence.CacheRetrieveMode;
+import jakarta.persistence.CacheStoreMode;
 import jakarta.persistence.FlushModeType;
 import jakarta.persistence.LockModeType;
 import jakarta.persistence.LockTimeoutException;
@@ -56,6 +60,7 @@ import jakarta.persistence.QueryTimeoutException;
 import jakarta.persistence.StoredProcedureQuery;
 import jakarta.persistence.TemporalType;
 
+import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.internal.databaseaccess.*;
 import org.eclipse.persistence.internal.databaseaccess.DatasourceCall.ParameterType;
@@ -101,6 +106,8 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
      */
     public StoredProcedureQueryImpl(DatabaseQuery query, EntityManagerImpl entityManager) {
         super(query, entityManager);
+        // Inherit applicable hints from EntityManager
+        inheritEntityManagerHints();
     }
 
     /**
@@ -109,6 +116,8 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     public StoredProcedureQueryImpl(String name, EntityManagerImpl entityManager) {
         super(entityManager);
         this.queryName = name;
+        // Inherit applicable hints from EntityManager
+        inheritEntityManagerHints();
     }
 
     /**
@@ -116,7 +125,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
      * execute call available and therefore should not be called unless an
      * execute statement was issued by the user.
      */
-    protected List buildResultRecords(ResultSet resultSet) {
+    protected List<?> buildResultRecords(ResultSet resultSet) {
         try {
             AbstractSession session = (AbstractSession) getActiveSession();
             DatabaseAccessor accessor = (DatabaseAccessor) executeCall.getQuery().getAccessor();
@@ -143,7 +152,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     /**
      * Build a ResultSetMappingQuery from a sql result set mapping name and a
      * stored procedure call.
-     *
+     * <p>
      * This is called from a named stored procedure that employs result set
      * mapping name(s) which should be available from the session.
      */
@@ -159,7 +168,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     /**
      * Build a ResultSetMappingQuery from a sql result set mapping name and a
      * stored procedure call.
-     *
+     * <p>
      * This is called from a named stored procedure that employs result set
      * mapping name(s) which should be available from the session.
      */
@@ -176,7 +185,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     /**
      * Build a ResultSetMappingQuery from the sql result set mappings given
      *  a stored procedure call.
-     *
+     * <p>
      * This is called from a named stored procedure query that employs result
      * class name(s). The resultSetMappings are build from these class name(s)
      * and are not available from the session.
@@ -193,7 +202,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     /**
      * Build a ResultSetMappingQuery from the sql result set mappings given
      *  a stored procedure call.
-     *
+     * <p>
      * This is called from a named stored procedure query that employs result
      * class name(s). The resultSetMappings are build from these class name(s)
      * and are not available from the session.
@@ -344,12 +353,9 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
             return hasMoreResults;
         } catch (LockTimeoutException exception) {
             throw exception;
-        } catch (PersistenceException exception) {
+        } catch (PersistenceException | IllegalStateException exception) {
             setRollbackOnly();
             throw exception;
-        } catch (IllegalStateException e){
-            setRollbackOnly();
-            throw e;
         } catch (RuntimeException exception) {
             setRollbackOnly();
             throw new PersistenceException(exception);
@@ -379,20 +385,13 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
 
             // If the return value is true indicating a result set then throw an exception.
             if (execute()) {
-                if (getActiveSession().getPlatform().isJDBCExecuteCompliant()) {
-                    throw new IllegalStateException(ExceptionLocalization.buildMessage("incorrect_spq_query_for_execute_update"));
-                } else {
-                    return getUpdateCount();
-                }
+                throw new IllegalStateException(ExceptionLocalization.buildMessage("incorrect_spq_query_for_execute_update"));
             } else {
                 return getUpdateCount();
             }
         } catch (LockTimeoutException exception) {
             throw exception;
-        } catch (PersistenceException e) {
-            setRollbackOnly();
-            throw e;
-        } catch (IllegalStateException e){
+        } catch (PersistenceException | IllegalStateException e) {
             setRollbackOnly();
             throw e;
         } catch (RuntimeException exception) {
@@ -407,6 +406,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
      * Finalize method in case the query is not closed.
      */
     @Override
+    @SuppressWarnings("removal")
     public void finalize() {
         close();
     }
@@ -424,7 +424,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     @Override
     protected Map<String, Parameter<?>> getInternalParameters() {
         if (parameters == null) {
-            parameters = new HashMap<String, Parameter<?>>();
+            parameters = new HashMap<>();
 
             int index = 0;
 
@@ -592,10 +592,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
             }
         } catch (LockTimeoutException e) {
             throw e;
-        } catch (PersistenceException e) {
-            setRollbackOnly();
-            throw e;
-        } catch (IllegalStateException e) {
+        } catch (PersistenceException | IllegalStateException e) {
             setRollbackOnly();
             throw e;
         } catch (Exception e) {
@@ -616,12 +613,17 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
         }
     }
 
-    /**
-     * Execute the query and return the single query result.
-     * @return a single result object.
-     */
+    @Override
+    public Object getSingleResultOrNull() {
+        return getSingleResult(false);
+    }
+
     @Override
     public Object getSingleResult() {
+        return getSingleResult(true);
+    }
+
+    private Object getSingleResult(boolean failOnEmpty) {
         // bug51411440: need to throw IllegalStateException if query
         // executed on closed em
         this.entityManager.verifyOpenWithSetRollbackOnly();
@@ -639,28 +641,28 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
                 // If the return value is true indicating a result set then
                 // build and return the single result.
                 if (execute()) {
-                    return getSingleResult();
+                    return getSingleResult(failOnEmpty);
                 } else {
                     throw new IllegalStateException(ExceptionLocalization.buildMessage("incorrect_spq_query_for_get_result_list"));
                 }
             } else {
                 if (hasMoreResults()) {
                     // Build the result records first.
-                    List results;
+                    List<?> results;
 
                     if (isOutputCursorResultSet) {
                         // Return result set list for the current outputCursorIndex.
                         if (hasPositionalParameters()) {
-                            results = (List) getOutputParameterValue(getCall().getOutputCursors().get(outputCursorIndex++).getIndex() + 1);
+                            results = (List<?>) getOutputParameterValue(getCall().getOutputCursors().get(outputCursorIndex++).getIndex() + 1);
                         } else {
-                            results = (List) getOutputParameterValue(getCall().getOutputCursors().get(outputCursorIndex++).getName());
+                            results = (List<?>) getOutputParameterValue(getCall().getOutputCursors().get(outputCursorIndex++).getName());
                         }
 
                         // Update the hasMoreResults flag.
                         hasMoreResults = (outputCursorIndex < getCall().getOutputCursors().size());
                     } else {
                         // Build the result records first.
-                        List result = buildResultRecords(executeStatement.getResultSet());
+                        List<?> result = buildResultRecords(executeStatement.getResultSet());
 
                         // Move the result pointer.
                         moveResultPointer();
@@ -671,10 +673,16 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
                     if (results.size() > 1) {
                         throwNonUniqueResultException(ExceptionLocalization.buildMessage("too_many_results_for_get_single_result", null));
                     } else if (results.isEmpty()) {
-                        throwNoResultException(ExceptionLocalization.buildMessage("no_entities_retrieved_for_get_single_result", null));
+                        if (failOnEmpty) {
+                            throwNoResultException(ExceptionLocalization.buildMessage("no_entities_retrieved_for_get_single_result", null));
+                        } else {
+                            return null;
+                        }
                     }
-
-                    // TODO: if hasMoreResults is true, we 'could' and maybe should throw an exception here.
+                    // If hasMoreResults is true, we should throw an exception here.
+                    if (results.size() > 1 || hasMoreResults) {
+                        throwNonUniqueResultException(ExceptionLocalization.buildMessage("too_many_results_for_get_single_result", null));
+                    }
 
                     return results.get(0);
                 } else {
@@ -683,10 +691,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
             }
         } catch (LockTimeoutException e) {
             throw e;
-        } catch (PersistenceException e) {
-            setRollbackOnly();
-            throw e;
-        } catch (IllegalStateException e) {
+        } catch (PersistenceException | IllegalStateException e) {
             setRollbackOnly();
             throw e;
         } catch (Exception e) {
@@ -868,6 +873,71 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     @Override
     public StoredProcedureQueryImpl setFlushMode(FlushModeType flushMode) {
         return (StoredProcedureQueryImpl) super.setFlushMode(flushMode);
+    }
+
+    @Override
+    public CacheRetrieveMode getCacheRetrieveMode() {
+        return FindOptionUtils.getCacheRetrieveMode(entityManager.getAbstractSession(), getDatabaseQuery().getProperties());
+    }
+
+    @Override
+    public StoredProcedureQueryImpl setCacheRetrieveMode(CacheRetrieveMode cacheRetrieveMode) {
+        FindOptionUtils.setCacheRetrieveMode(getDatabaseQuery().getProperties(), cacheRetrieveMode);
+        setHint(QueryHints.CACHE_RETRIEVE_MODE, cacheRetrieveMode);
+        return this;
+    }
+
+    @Override
+    public CacheStoreMode getCacheStoreMode() {
+        return FindOptionUtils.getCacheStoreMode(entityManager.getAbstractSession(), getDatabaseQuery().getProperties());
+    }
+
+    @Override
+    public StoredProcedureQueryImpl setCacheStoreMode(CacheStoreMode cacheStoreMode) {
+        FindOptionUtils.setCacheStoreMode(getDatabaseQuery().getProperties(), cacheStoreMode);
+        setHint(QueryHints.CACHE_STORE_MODE, cacheStoreMode);
+        return this;
+    }
+
+    @Override
+    public Integer getTimeout() {
+        return FindOptionUtils.getTimeout(entityManager.getAbstractSession(), getDatabaseQuery().getProperties());
+    }
+
+    @Override
+    public StoredProcedureQueryImpl setTimeout(Integer timeout) {
+        FindOptionUtils.setTimeout(getDatabaseQuery().getProperties(), timeout);
+        setHint(QueryHints.QUERY_TIMEOUT, timeout);
+        return this;
+    }
+
+    /**
+     * Inherit applicable query hints from the EntityManager.
+     * EntityManager-level settings to newly created queries.
+     */
+    protected void inheritEntityManagerHints() {
+        if (entityManager == null || entityManager.properties == null) {
+            return;
+        }
+
+        DatabaseQuery dbQuery = getDatabaseQuery();
+        if (dbQuery == null) {
+            return;
+        }
+
+        Map<String, Object> emProperties = entityManager.properties;
+
+        // CACHE_RETRIEVE_MODE only applies to ObjectLevelReadQuery (SELECT queries)
+        if (dbQuery.isObjectLevelReadQuery() && emProperties.containsKey(QueryHints.CACHE_RETRIEVE_MODE)) {
+            setHint(QueryHints.CACHE_RETRIEVE_MODE, emProperties.get(QueryHints.CACHE_RETRIEVE_MODE));
+        }
+
+        // CACHE_STORE_MODE applies to all query types:
+        // - For ObjectLevelReadQuery: controls whether results are stored in cache after reading
+        // - For ModifyQuery: controls whether cache is invalidated after UPDATE/DELETE
+        if (emProperties.containsKey(QueryHints.CACHE_STORE_MODE)) {
+            setHint(QueryHints.CACHE_STORE_MODE, emProperties.get(QueryHints.CACHE_STORE_MODE));
+        }
     }
 
     /**

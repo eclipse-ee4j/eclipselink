@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,7 +24,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
 
 /**
  * Object to hold onto conversion values.
- *
+ * <p>
   * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -64,8 +64,7 @@ public class ConversionValueMetadata extends ORMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (objectToCompare instanceof ConversionValueMetadata) {
-            ConversionValueMetadata conversionValue = (ConversionValueMetadata) objectToCompare;
+        if (objectToCompare instanceof ConversionValueMetadata conversionValue) {
 
             if (! valuesMatch(m_dataValue, conversionValue.getDataValue())) {
                 return false;
@@ -79,7 +78,8 @@ public class ConversionValueMetadata extends ORMetadata {
 
     @Override
     public int hashCode() {
-        int result = m_dataValue != null ? m_dataValue.hashCode() : 0;
+        int result = super.hashCode();
+        result = 31 * result + (m_dataValue != null ? m_dataValue.hashCode() : 0);
         result = 31 * result + (m_objectValue != null ? m_objectValue.hashCode() : 0);
         return result;
     }

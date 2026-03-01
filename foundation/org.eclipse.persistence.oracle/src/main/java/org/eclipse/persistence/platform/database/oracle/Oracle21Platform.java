@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,13 +17,12 @@ package org.eclipse.persistence.platform.database.oracle;
 import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.Hashtable;
 import java.util.Map;
 
 import oracle.jdbc.OracleType;
 import oracle.sql.json.OracleJsonValue;
-import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
 
 /**
  * <p><b>Purpose:</b>
@@ -46,8 +45,8 @@ public class Oracle21Platform extends Oracle19Platform {
      * @return database types to class types {@code Map} for the schema framework
      */
     @Override
-    protected Map<String, Class<?>> buildClassTypes() {
-        final Map<String, Class<?>> classTypeMapping = super.buildClassTypes();
+    protected Map<String, Class<?>> buildJavaTypes() {
+        final Map<String, Class<?>> classTypeMapping = super.buildJavaTypes();
         // Mapping for JSON type.
         getJsonPlatform().updateClassTypes(classTypeMapping);
         return classTypeMapping;
@@ -56,11 +55,11 @@ public class Oracle21Platform extends Oracle19Platform {
     /**
      * Build the mapping of class types to Oracle 21c database types for the schema framework.
      *
-     * @return {@code Hashtable} mapping class types to database types for the schema framework
+     * @return {@code Map} mapping class types to database types for the schema framework
      */
     @Override
-    protected Hashtable<Class<?>, FieldTypeDefinition> buildFieldTypes() {
-        final Hashtable<Class<?>, FieldTypeDefinition>fieldTypeMapping = super.buildFieldTypes();
+    protected Map<Class<?>, FieldDefinition.DatabaseType> buildDatabaseTypes() {
+        Map<Class<?>, FieldDefinition.DatabaseType>fieldTypeMapping = super.buildDatabaseTypes();
         // Mapping for JSON type.
         getJsonPlatform().updateFieldTypes(fieldTypeMapping);
         return fieldTypeMapping;
@@ -110,6 +109,11 @@ public class Oracle21Platform extends Oracle19Platform {
         } else {
             super.setParameterValueInDatabaseCall(parameter, statement, name, session);
         }
+    }
+
+    @Override
+    public boolean supportsFractionalTime() {
+        return true;
     }
 
 }

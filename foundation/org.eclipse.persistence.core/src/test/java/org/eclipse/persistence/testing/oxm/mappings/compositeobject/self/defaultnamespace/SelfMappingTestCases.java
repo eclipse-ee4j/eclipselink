@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,18 +14,7 @@
 // dmccann - Nov.19/2008 - 1.1 - Initial implementation
 package org.eclipse.persistence.testing.oxm.mappings.compositeobject.self.defaultnamespace;
 
-import java.io.File;
-import java.io.FileReader;
-
-import junit.framework.TestCase;
-
-import org.eclipse.persistence.oxm.XMLContext;
-import org.eclipse.persistence.oxm.XMLUnmarshaller;
-import org.eclipse.persistence.sessions.Project;
-import org.eclipse.persistence.sessions.factories.XMLProjectReader;
-import org.eclipse.persistence.sessions.factories.XMLProjectWriter;
 import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
-import org.eclipse.persistence.testing.oxm.mappings.compositeobject.self.AttributeListOnTargetTestProject;
 
 public class SelfMappingTestCases extends XMLMappingTestCases {
     private final static String INSTANCE_XML = "org/eclipse/persistence/testing/oxm/mappings/compositeobject/self/defaultnamespace/instance.xml";

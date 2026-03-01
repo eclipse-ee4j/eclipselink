@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,13 +14,13 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.sessions;
 
-import java.util.Collection;
-import java.util.Set;
-import java.util.Vector;
-
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.OptimisticLockException;
 import org.eclipse.persistence.sessions.changesets.UnitOfWorkChangeSet;
+
+import java.util.Collection;
+import java.util.Set;
+import java.util.Vector;
 
 /**
  * <b>Purpose</b>: To allow object level transactions.  This class represents the public API of the
@@ -237,10 +237,10 @@ public interface UnitOfWork extends Session {
      * when the object is changed in UnitOfWork. The cloneFromUOW must be the clone of from this
      * UnitOfWork and it must implements version locking or timestamp locking.
      * The SQL would look like the followings.
-     *
+     * <p>
      * If shouldModifyVersionField is true,
      * "UPDATE EMPLOYEE SET VERSION = 2 WHERE EMP_ID = 9 AND VERSION = 1"
-     *
+     * <p>
      * If shouldModifyVersionField is false,
      * "UPDATE EMPLOYEE SET VERSION = 1 WHERE EMP_ID = 9 AND VERSION = 1"
      */
@@ -327,7 +327,7 @@ public interface UnitOfWork extends Session {
      * RMI serialization (or another serialization mechanism), because the RMI object
      * will be a clone this will merge its attributes correctly to preserve object
      * identity within the unit of work and record its changes.
-     *
+     * <p>
      * The object and its private owned parts are merged.
      *
      * @return the registered version for the clone being merged.
@@ -343,7 +343,7 @@ public interface UnitOfWork extends Session {
      * RMI serialization (or another serialization mechanism), because the RMI object
      * will be a clone this will merge its attributes correctly to preserve object
      * identity within the unit of work and record its changes.
-     *
+     * <p>
      * The object and its private owned parts are merged. This will include
      * references from this clone to independent objects.
      *
@@ -564,7 +564,7 @@ public interface UnitOfWork extends Session {
      * RMI serialization (or other serialization mechanisms), because the RMI object will
      * be a clone this will merge its attributes correctly to preserve object identity
      * within the unit of work and record its changes.
-     *
+     * <p>
      * Only direct attributes are merged.
      *
      * @return the registered version for the clone being merged.
@@ -689,12 +689,28 @@ public interface UnitOfWork extends Session {
     void writeChanges();
 
     /**
-     * Get an instance, whose state may be lazily fetched.
+     * Get an entity instance, whose state may be lazily fetched.
      * If the requested instance does not exist in the database, null is returned, or the object will fail when accessed.
      * The instance will be lazy when it does not exist in the cache, and supports fetch groups.
-     * @param primaryKey - The primary key of the object, either as a List, singleton, IdClass or an instance of the object.
+     *
+     * @param theClass instance class
+     * @param primaryKey the primary key of the object, either as a List, singleton, IdClass or an instance of the object
+     * @param <T> the entity type
+     *
+     * @return a reference to the entity instance
      */
-    Object getReference(Class<?> theClass, Object primaryKey);
+    <T> T getReference(Class<T> theClass, Object primaryKey);
+
+    /**
+     * Get an entity instance, whose state may be lazily fetched.
+     * If the requested instance does not exist in the database, null is returned, or the object will fail when accessed.
+     * The instance will be lazy when it does not exist in the cache, and supports fetch groups.
+     *
+     * @param entity persistent or detached entity instance
+     * @param <T> the entity type
+     * @return a reference to the entity instance
+     */
+    <T> T getReference(T entity);
 
     /**
      * ADVANCED:

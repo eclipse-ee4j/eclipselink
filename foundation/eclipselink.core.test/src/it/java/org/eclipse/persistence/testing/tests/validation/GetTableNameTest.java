@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,8 +18,6 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.testing.framework.TestErrorException;
 
-import java.util.Iterator;
-
 
 public class GetTableNameTest extends ExceptionTest {
     public GetTableNameTest() {
@@ -36,9 +34,8 @@ public class GetTableNameTest extends ExceptionTest {
     public void test() {
         try { //test if getTableName() throws casting exception
             org.eclipse.persistence.testing.models.employee.relational.EmployeeProject project = new org.eclipse.persistence.testing.models.employee.relational.EmployeeProject();
-            Iterator<ClassDescriptor> iterator = project.getDescriptors().values().iterator();
-            while (iterator.hasNext()) {
-                iterator.next().getTableName();
+            for (ClassDescriptor classDescriptor : project.getDescriptors().values()) {
+                classDescriptor.getTableName();
             }
         } catch (EclipseLinkException exception) {
             caughtException = exception;

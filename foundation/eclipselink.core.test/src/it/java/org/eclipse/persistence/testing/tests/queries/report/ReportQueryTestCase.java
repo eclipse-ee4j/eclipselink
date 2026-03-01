@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,9 +14,18 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.queries.report;
 
-import java.util.*;
-import org.eclipse.persistence.testing.framework.*;
-import org.eclipse.persistence.queries.*;
+import org.eclipse.persistence.queries.ReportQuery;
+import org.eclipse.persistence.queries.ReportQueryResult;
+import org.eclipse.persistence.testing.framework.AutoVerifyTestCase;
+import org.eclipse.persistence.testing.framework.TestErrorException;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Vector;
 
 /**
  * ReportQuery test for Scenario 1.1
@@ -30,12 +39,10 @@ public abstract class ReportQueryTestCase extends AutoVerifyTestCase {
 
     protected void addResult(Object[] values, Object primaryKey) {
         Vector results = new Vector(values.length);
-        for (int index = 0; index < values.length; index++) {
-            results.add(values[index]);
-        }
+        results.addAll(Arrays.asList(values));
         ReportQueryResult result = new ReportQueryResult(results, primaryKey);
 
-        expectedResults.addElement(result);
+        expectedResults.add(result);
     }
 
     protected abstract void buildExpectedResults() throws Exception;
@@ -49,7 +56,7 @@ public abstract class ReportQueryTestCase extends AutoVerifyTestCase {
         for (Enumeration e = expected.elements(); e.hasMoreElements();) {
             ReportQueryResult expRes = (ReportQueryResult)e.nextElement();
             if (result.equals(expRes)) {
-                expected.removeElement(expRes);
+                expected.remove(expRes);
                 return;
             }
         }
@@ -64,9 +71,8 @@ public abstract class ReportQueryTestCase extends AutoVerifyTestCase {
             }
             List names = new ArrayList(result.getNames());
             List results = new ArrayList(result.getResults());
-            Iterator it = set.iterator();
-            while (it.hasNext()) {
-                Map.Entry entry = (Map.Entry)it.next();
+            for (Object o : set) {
+                Map.Entry entry = (Map.Entry) o;
                 Object key = entry.getKey();
                 Object value = entry.getValue();
                 int index = names.indexOf(key);
@@ -110,7 +116,7 @@ protected  void setup() throws Exception
         for (Enumeration e = results.elements(); e.hasMoreElements();) {
             removeFromResult((ReportQueryResult)e.nextElement(), cloneResults);
         }
-        if (cloneResults.size() != 0) {
+        if (!cloneResults.isEmpty()) {
             throw new TestErrorException("ReportQuery test failed: The result didn't match");
         }
 

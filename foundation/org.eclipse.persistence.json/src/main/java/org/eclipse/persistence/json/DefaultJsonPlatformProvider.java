@@ -15,8 +15,6 @@
 //       - 1391: JSON support in JPA
 package org.eclipse.persistence.json;
 
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
@@ -35,12 +33,10 @@ public class DefaultJsonPlatformProvider implements JsonPlatformProvider {
 
     // Initialize default platforms JSON extension mapping.
     private static Map<Class<? extends DatabasePlatform>, Supplier<DatabaseJsonPlatform>> initPlatforms() {
-        final Map<Class<? extends DatabasePlatform>, Supplier<DatabaseJsonPlatform>> platforms = new HashMap<>(2);
         // Default JSON platform with VARCHAR DB type.
-        platforms.put(DatabasePlatform.class, JsonPlatform::new);
-        // MySQL specific JSON platform
-        platforms.put(MySQLPlatform.class, MySQLJsonPlatform::new);
-        return Collections.unmodifiableMap(platforms);
+        return Map.of(DatabasePlatform.class, JsonPlatform::new,
+                // MySQL specific JSON platform
+                MySQLPlatform.class, MySQLJsonPlatform::new);
     }
 
     /**

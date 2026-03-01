@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,13 +14,17 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.eis.interactions;
 
-import java.util.*;
-import jakarta.resource.*;
-import jakarta.resource.cci.*;
+import jakarta.resource.ResourceException;
+import jakarta.resource.cci.IndexedRecord;
+import jakarta.resource.cci.MappedRecord;
+import org.eclipse.persistence.eis.EISAccessor;
+import org.eclipse.persistence.eis.EISException;
+import org.eclipse.persistence.eis.EISMappedRecord;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.sessions.DatabaseRecord;
-import org.eclipse.persistence.eis.*;
+
+import java.util.Vector;
 
 /**
  * Defines the specification for a call to a JCA interaction that uses indexed records.
@@ -45,7 +49,7 @@ public class IndexedInteraction extends EISInteraction {
      * The argumentFieldName is the field or argument name in the descriptor that maps to the indexed value.
      */
     public void addArgument(String argumentFieldName) {
-        getArguments().addElement(new DatabaseField(argumentFieldName));
+        getArguments().add(new DatabaseField(argumentFieldName));
     }
 
     /**
@@ -55,7 +59,7 @@ public class IndexedInteraction extends EISInteraction {
      * The argumentValue is the value of the argument to be used to pass to the interaction.
      */
     public void addArgumentValue(Object argumentValue) {
-        getArguments().addElement(argumentValue);
+        getArguments().add(argumentValue);
     }
 
     /**
@@ -66,7 +70,7 @@ public class IndexedInteraction extends EISInteraction {
      */
     @Override
     public void addOutputArgument(String argumentFieldName) {
-        getOutputArguments().addElement(new DatabaseField(argumentFieldName));
+        getOutputArguments().add(new DatabaseField(argumentFieldName));
     }
 
     /**
@@ -128,15 +132,13 @@ public class IndexedInteraction extends EISInteraction {
     @Override
     public AbstractRecord buildRow(jakarta.resource.cci.Record record, EISAccessor accessor) {
         AbstractRecord row = null;
-        if (record instanceof IndexedRecord) {
-            IndexedRecord indexedRecord = (IndexedRecord)record;
+        if (record instanceof IndexedRecord indexedRecord) {
             row = new DatabaseRecord(indexedRecord.size());
             for (int index = 0; index < indexedRecord.size(); index++) {
                 DatabaseField field = getOutputArguments().get(index);
                 row.put(field, indexedRecord.get(index));
             }
-        } else if (record instanceof MappedRecord) {
-            MappedRecord mappedRecord = (MappedRecord)record;
+        } else if (record instanceof MappedRecord mappedRecord) {
 
             // Handle the case of a single output argument of the entire row contained within the return record.
             if (getOutputArgumentNames().size() == 1) {

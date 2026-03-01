@@ -1,0 +1,90 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[CACHE007]]
+=== Database Event Notification and Oracle CQN
+
+Some databases and database products allow events to be raised from the
+database when rows are updated or deleted.
+
+EclipseLink supports an API to allow the database to notify EclipseLink
+of database changes, so the changed objects can be invalidated in the
+EclipseLink shared cache. This allows a shared cache to be used, and
+stale data to be avoided, even if other applications access the same
+data in the database. EclipseLink supports integration with the Oracle
+Database feature for Database Change Notification CQN. A custom
+`DatabaseEventListener` may be provided for other databases and products
+that support database events.
+
+There are also other solutions to caching in a shared environment,
+including:
+
+* Disable the shared cache (through setting `@Cacheable(false)`, or
+`@Cache(isolation=ISOLATED)`).
+* Only cache read-only objects.
+* Set a cache invalidation timeout to reduce stale data.
+* Use refreshing on objects/queries when fresh data is required.
+* Use optimistic locking to ensure write consistency (writes on stale
+data will fail, and will automatically invalidate the cache).
+
+The JPA Cache API and the EclipseLink `JpaCache` API can also be used
+directly to invalidate objects in the shared cache by the application.
+EclipseLink cache coordination could also be used to send invalidation
+messages to a cluster of EclipseLink persistence units.
+
+Database events can reduce the chance of an application getting stale
+data, but do not eliminate the possibility. Optimistic locking should
+still be used to ensure data integrity. Even in a single server
+application stale data is still possible within a persistence context
+unless pessimistic locking is used. Optimistic (or pessimistic) locking
+is always required to ensure data integrity in any multi-user system.
+
+[[sthref61]]
+
+==== Oracle Continuous Query Notification
+
+The Oracle database released a Continuous Query Notification (CQN)
+feature in the 10.2 release. CQN allows for database events to be raised
+when the rows in a table are modified. The JDBC API for CQN was not
+complete until 11.2, so 11.2 is required for EclipseLink's integration.
+
+EclipseLink CQN support is enabled by the
+`OracleChangeNotificationListener` listener which integrates with Oracle
+JDBC to received database change events. Use the
+`eclipselink.cache.database-event-listener` property to configure the
+full class name of the listener.
+
+By default all tables in the persistence unit are registered for change
+notification, but this can be configured using the
+`databaseChangeNotificationType` attribute of the `@Cache` annotation to
+selectively disable change notification for certain classes.
+
+Oracle CQN uses the `ROWID` to inform of row level changes. This
+requires EclipseLink to include the `ROWID` in all queries for a CQN
+enabled class. EclipseLink must also select the object's `ROWID` after
+an insert operation. EclipseLink must maintain a cache index on the
+`ROWID`, in addition to the object's Id. EclipseLink also selects the
+database transaction Id once each transaction to avoid invalidating the
+cache on the server that is processing the transaction.
+
+EclipseLink's CQN integration has the following limitations:
+
+* Changes to an object's secondary tables will not trigger it to be
+invalidate unless a version is used and updated in the primary table.
+* Changes to an object's OneToMany, ManyToMany, and ElementCollection
+relationships will not trigger it to be invalidate unless a version is
+used and updated in the primary table.

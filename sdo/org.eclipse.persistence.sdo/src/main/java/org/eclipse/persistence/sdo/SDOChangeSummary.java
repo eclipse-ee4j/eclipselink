@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -492,7 +492,7 @@ public class SDOChangeSummary implements ChangeSummary {
         if (value != null) {
             // if we referenced the property - check if it is the only one left in the map value
             if (((List)value).remove(ocKey)) {
-                if(!(((List)value).size() > 0)) {
+                if(!(!((List) value).isEmpty())) {
                     unsetOCPropsMap.remove(dataObject);
                 }
             }
@@ -1103,7 +1103,7 @@ public class SDOChangeSummary implements ChangeSummary {
      */
     @Override
     public String toString() {
-        StringBuffer aBuffer = new StringBuffer();
+        StringBuilder aBuffer = new StringBuilder();
         aBuffer.append("ChangeSummary@");
         aBuffer.append(getClass().hashCode());
         aBuffer.append(" [logging: ");

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,8 +28,7 @@ public class XMLGregorianCalendarHolder {
     public XMLGregorianCalendar gregCalTime;
 
     public boolean equals(Object obj){
-        if(obj instanceof XMLGregorianCalendarHolder){
-            XMLGregorianCalendarHolder compare = (XMLGregorianCalendarHolder)obj;
+        if(obj instanceof XMLGregorianCalendarHolder compare){
             if(!thing.equals(compare.thing)){
                 return false;
             }

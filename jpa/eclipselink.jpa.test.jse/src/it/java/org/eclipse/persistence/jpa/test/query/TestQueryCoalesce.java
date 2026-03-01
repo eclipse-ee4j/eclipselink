@@ -54,8 +54,7 @@ public class TestQueryCoalesce {
         EntityManager em = emf.createEntityManager();
 
         try {
-            TypedQuery<EntityTbl01> query = em.createQuery(""
-                    + "SELECT t FROM EntityTbl01 t "
+            TypedQuery<EntityTbl01> query = em.createQuery("SELECT t FROM EntityTbl01 t "
                         + "WHERE t.itemString2 = "
                             + "COALESCE (t.itemString1, 'Sample')", EntityTbl01.class);
 
@@ -63,8 +62,7 @@ public class TestQueryCoalesce {
             assertNotNull(dto01);
             assertEquals(0, dto01.size());
 
-            TypedQuery<String> query2 = em.createQuery(""
-                    + "SELECT COALESCE (t.itemString2, 'Sample') FROM EntityTbl01 t ORDER BY t.itemInteger1 ASC", String.class);
+            TypedQuery<String> query2 = em.createQuery("SELECT COALESCE (t.itemString2, 'Sample') FROM EntityTbl01 t ORDER BY t.itemInteger1 ASC", String.class);
 
             List<String> dto02 = query2.getResultList();
             assertNotNull(dto02);
@@ -124,8 +122,7 @@ public class TestQueryCoalesce {
         EntityManager em = emf.createEntityManager();
 
         try {
-            TypedQuery<EntityTbl01> query = em.createQuery(""
-                    + "SELECT t FROM EntityTbl01 t "
+            TypedQuery<EntityTbl01> query = em.createQuery("SELECT t FROM EntityTbl01 t "
                         + "WHERE t.itemString2 = "
                             + "COALESCE (t.itemString1, ?1)", EntityTbl01.class);
             query.setParameter(1, "Sample");
@@ -134,8 +131,7 @@ public class TestQueryCoalesce {
             assertNotNull(dto01);
             assertEquals(0, dto01.size());
 
-            TypedQuery<String> query2 = em.createQuery(""
-                    + "SELECT COALESCE (t.itemString2, ?1) FROM EntityTbl01 t ORDER BY t.itemInteger1 ASC", String.class);
+            TypedQuery<String> query2 = em.createQuery("SELECT COALESCE (t.itemString2, ?1) FROM EntityTbl01 t ORDER BY t.itemInteger1 ASC", String.class);
             query2.setParameter(1, "Sample");
 
             List<String> dto02 = query2.getResultList();

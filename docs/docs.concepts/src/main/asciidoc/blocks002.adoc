@@ -1,0 +1,408 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[BLOCKS002]]
+=== About the Object-Relational Solution
+
+EclipseLink provides a complete, JPA-compliant JPA implementation. It
+provides complete compliance for all of the mandatory features and many
+of the optional features. It also supports EclipseLink features not
+described in the JPA specification, such as object-level cache,
+distributed cache coordination, extensive performance tuning options,
+enhanced Oracle Database support, advanced mappings, optimistic and
+pessimistic locking options, extended annotations, and query hints.
+
+For more information, see _Jakarta Persistence API (JPA) Extensions
+Reference for EclipseLink_.
+
+The following sections describe many of these features.
+
+* link:#CHDHIEDE[Understanding Object-Relational Entity Architecture]
+* link:#CHDIADII[Adding Metadata Using Annotations]
+* link:#CHDIEIFJ[About Configuration Basics]
+* link:#CHDFFBHD[About Data Sources]
+* link:#CHDGGEID[About EclipseLink Caches]
+* link:#CHDFGCJB[About Database Queries]
+
+[[CHDHIEDE]][[OTLCG136]]
+
+==== Understanding Object-Relational Entity Architecture
+
+The entity architecture is composed of entities, persistence units,
+persistence contexts, entity manager factories, and entity managers.
+link:#CHDHABEI[Figure 2-2] illustrates the relationships between these
+elements:
+
+* Persistence creates one or more `EntityManagerFactory` objects.
+* Each `EntityManagerFactory` is configured by one persistence unit.
+* `EntityManagerFactory` creates one or more `EntityManager` objects.
+* One or more `EntityManagers` manage one `PersistenceContext`.
+
+[[CHDHABEI]][[OTLCG137]]
+
+*_Figure 2-2 Relationships Between Entity Architecture Elements_*
+
+image:{imagesrelativedir}/otlcg_jd_001.png[Relationships between entity architectue elements,title="Relationships between entity architectue elements"] +
+xref:{imagestextrelativedir}/otlcg_jd_001.adoc[Description of "Figure 2-2 Relationships Between Entity Architecture Elements"] +
+
+[[OTLCG138]]
+
+[[sthref14]]
+
+===== Entities
+
+An entity is any application-defined object with the following
+characteristics:
+
+* It can be made persistent.
+* It has a persistent identity (a key that uniquely identifies an entity
+instance and distinguishes it from other instances of the same entity
+type. An entity has a persistent identity when there is a representation
+of it in a data store).
+* It is transactional in a sense that a _persistence_ _view_ of an
+entity is transactional (an entity is created, updated, and deleted
+within a transaction, and a transaction is required for the changes to
+be committed in the database). However, in-memory entities can be
+changed without the changes being persisted.
+* It is _not_ a primitive, a primitive wrapper, or built-in object. An
+entity is a fine-grained object that has a set of aggregated states that
+is typically stored in a single place (such as a row in a table) and
+have relationships to other entities.
+
+The entity also contains entity metadata that describes the entity.
+Entity metadata is not persisted to the database. It is used by the
+persistence layer to manage the entity from when it is loaded until it
+is invoked at runtime. Metadata can be expressed as annotations on the
+Java programming elements or in XML files (descriptors). For more
+information, see link:entities.htm#CIHGAJCF[Chapter 4, "Understanding
+Entities."]
+
+Beginning with the current release, you can define and use extensible
+entities where mappings can be added spontaneously. In this case, the
+entity stores extended attributes within a map instead of static
+attributes. The entity then defines how values from this map are mapped
+to the database using an `eclipselink-orm.xml` mapping file. In addition
+to being able to dynamically define mappings, EclipseLink also enables
+these extended mappings to be stored and managed externally. This
+external storage enables your extended mappings to be defined while the
+application is running. For more information on making entities
+extensible, see "Providing Software as a Service" in _Solutions Guide
+for EclipseLink_.
+
+[[OTLCG139]]
+
+[[sthref15]]
+
+===== Persistence and Persistence Units
+
+Persistence is a characteristic of an entity. This means that the entity
+can be represented in a data store, and it can be accessed at a later
+time.
+
+A persistence unit identifies a persistable unit and defines the
+properties associated with it. It also defines the objects that must be
+persisted. The objects can be entity classes, embeddable classes, or
+mapped superclasses. The persistence unit provides the configuration for
+the entity manager factory. Entity managers created by the entity
+manager factory inherit the properties defined in the persistence unit.
+
+[[OTLCG140]]
+
+[[sthref16]]
+
+===== Entity Managers
+
+An entity manager enables API calls to perform operations on an entity.
+Until an entity manager is used to create, read, or write an entity, the
+entity is a nonpersistent Java object. When an entity manager obtains a
+reference to an entity, that entity becomes managed by the entity
+manager. The set of managed entity instances within an entity manager at
+any given time is called its persistence context; only one Java instance
+with the same persistent identity can exist in a persistence context at
+any time.
+
+You can configure an entity manager to read or write to a particular
+database, to persist or manage certain types of objects, and to be
+implemented by a specific persistence provider. The persistence provider
+supplies the implementation for JPA, including the `EntityManager`
+interface implementation, the Query implementation, and the SQL
+generation.Entity managers are provided by an `EntityManagerFactory`.
+The configuration for an entity manager is bound to the
+`EntityManagerFactory`, but it is defined separately as a persistence
+unit. You name persistence units to enable differentiation between
+`EntityManagerFactory` objects. This way, your application obtains
+control over which configuration to use for operations on a specific
+entity. The configuration that describes the persistence unit is defined
+in a `persistence.xml` file. You name persistence units to be able to
+request a specific configuration to be bound to an
+`EntityManagerFactory`.
+
+[[CHDIADII]][[OTLCG141]]
+
+==== Adding Metadata Using Annotations
+
+An annotation is a simple, expressive means of decorating Java source
+code with metadata that is compiled into the corresponding Java class
+files for interpretation at run time by a JPA persistence provider to
+manage persistent behavior.
+
+A metadata annotation represents a Java language feature that lets you
+attach structured and typed metadata to the source code. Annotations
+alone are sufficient for the metadata specification—you do not need to
+use XML. Standard JPA annotations are in the `jakarta.persistence`
+package.
+
+For more information, see Chapter 10 "Metadata Annotations" in the JPA
+Specification `http://jcp.org/en/jsr/detail?id=338`
+
+EclipseLink provides a set of proprietary annotations as an easy way to
+add metadata to the Java source code. The metadata is compiled into the
+corresponding Java class files for interpretation at run time by a JPA
+persistence provider to manage persistent behavior. You can apply
+annotations at the class, method, and field levels.
+
+EclipseLink annotations expose some features that are currently not
+available through the use of JPA metadata:
+
+* Basic properties—By default, the EclipseLink persistence provider
+automatically configures a basic mapping for simple types. Use these
+annotations to fine-tune the immediate state of an entity in its fields
+or properties.
+* Relationships—EclipseLink has defaults for some relationships, such as
+One-To-One and One-To-Many. Other relationships must be mapped
+explicitly. Use the annotations to specify the type and characteristics
+of entity relationships and to fine-tune how your database implements
+these relationships.
+* Embedded objects—An embedded object does not have its own persistent
+identity; it is dependent upon an entity for its identity. By default,
+the persistence provider assumes that every entity is mapped to its own
+table. Use annotations to override this behavior for entities that are
+owned by other entities.
+
+[[OTLCG94267]]
+
+[[sthref17]]
+
+===== Advantages and Disadvantages of Using Annotations
+
+Using annotations provides several advantages:
+
+* They are relatively simple to use and understand.
+* They provide in-line metadata within with the code that it describes;
+you do not need to replicate the source code context of where the
+metadata applies.
+
+The primary disadvantage of annotations is that the metatdata becomes
+unnecessarily coupled to the code; changes to metadata require changing
+and recompiling the source code.
+
+[[CHDIEIFJ]][[OTLCG142]]
+
+==== About Configuration Basics
+
+The following sections describe some of the key configuration files in
+an Object Relational Mapping project.
+
+[[OTLCG143]]
+
+[[sthref18]]
+
+===== Default Annotation Values
+
+Each annotation has a default value (consult the JPA specification for
+defaults). A persistence engine defines defaults that apply to the
+majority of applications. You only need to supply values when you want
+to override the default value. Therefore, having to supply a
+configuration value is not a requirement, but the exception to the rule.
+This is known as configuration by exception.
+
+NOTE: You should be familiar with the defaults to be able to change the
+behavior when necessary.
+
+The default values are described in _Jakarta Persistence API (JPA)
+Extensions Reference for EclipseLink_. See also Chapter 10, "Metadata
+Annotations" in the JPA specification.
+
+`http://jcp.org/en/jsr/detail?id=338`
+
+The configuration is done by exception: if a value is _not_ specified in
+one of the configuration files, then a default value is used.
+
+[[OTLCG144]]
+
+[[sthref19]]
+
+===== Configuring Persistence Units Using persistence.xml
+
+A persistence unit defines the details that are required when you
+acquire an entity manager. You specify a persistence unit by name when
+you acquire an entity manager factory. Use the JPA persistence file,
+`persistence.xml`, to configure a persistence unit. You can specify any
+vendor-specific extensions in the file by using a `<properties>`
+element.
+
+This file appears in the `META-INF`/ directory of your persistence unit
+JAR file or in the classpath.
+
+For more information, see link:app_dev001.htm#BABHCJDG[About the
+Persistence Unit.] See also "Persistence Property Extensions Reference"
+in _Jakarta Persistence API (JPA) Extensions Reference for EclipseLink_.
+
+[[CHDFGGBB]][[OTLCG130]]
+
+===== Object-Relational Data Type Mappings
+
+Object-relational data type mappings transform certain object data
+member types to structured data source representations optimized for
+storage in specialized object-relational databases such as Oracle
+Database. Object-relational data type mappings let you map an object
+model into an object-relational model. You can use only
+object-relational data type mappings with specialized object-relational
+databases optimized to support object-relational data type data source
+representations.
+
+For more information, see _Jakarta Persistence API (JPA) Extensions
+Reference for EclipseLink_.
+
+[[CHDFFBHD]][[OTLCG146]]
+
+==== About Data Sources
+
+An important part of the definition of the persistence unit is the
+location where the provider can find data to read and write. This is
+called the *data* *source*. The data source is typically a database. The
+database location is specified in the form of a JDBC data source in the
+JNDI namespace of the server.
+
+Typically, applications that use EclipseLink are run in the context of a
+JTA transaction. Specify the name of the data source in the
+`jta-data-source` element in the `persistence.xml` file. If the
+application is not run in the context of a transaction, then it is
+considered to be _resource-local_. In this case, specify the name of the
+data source in the `non-jta-data-source` element.
+
+You can also specify a non-relational database data source, such as an
+XML schema.
+
+For more information, see link:data_access.htm#CHDJBDEA[Chapter 7,
+"Understanding Data Access."]
+
+Applications can be run in standalone, or _Java SE_, mode. In this mode,
+the application runs outside the server, with a non-JTA compliant data
+source, and in a non-Oracle stack. In this case, you must provide
+driver-specific information, such as the JDBC driver class, the URL that
+the client uses to connect to the database, and the user name and
+password to access the database. For more information and an example of
+running an application in standalone mode, see "Testing EclipseLink JPA
+Outside a Container" in _Solutions Guide for EclipseLink_.
+
+[[CHDGGEID]][[OTLCG147]]
+
+==== About EclipseLink Caches
+
+By default, EclipseLink uses a shared object cache that caches a subset
+of all objects read and persisted for the persistence unit. The shared
+cache differs from the local `EntityManager` cache. The shared cache
+exists for the duration of the persistence unit (`EntityManagerFactory`
+or server) and is shared by all `EntityManagers` and users of the
+persistence unit. The local `EntityManager` cache is not shared and only
+exists for the duration of the `EntityManager` or transaction.
+
+The benefit of the shared cache is that after an object is read, the
+database does not need to be accessed if the object is read again. Also,
+if the object is read by using a query, it does not need to be rebuilt,
+and its relationships do not need to be fetched again.
+
+The limitation of the shared cache is that if the database is changed
+directly through JDBC, or by another application or server, the objects
+in the shared cache will be stale.
+
+EclipseLink offers several mechanism to deal with stale data including:
+
+* Refreshing
+* Invalidation
+* Optimistic locking
+* Cache coordination
+* Database Change Notification (DCN)
+
+The shared cache can also be disabled, or it can be selectively enabled
+and disabled by using the `@Cache` or `@Cacheable`
+annotations.EclipseLink also offers several different caching
+strategies, to configure how many objects are cached and how much memory
+is used.
+
+If the application detects that the cache is out of date, it can clear,
+refresh, or invalidate it programmatically. Clearing the cache can cause
+object identity issues if any of the cached objects are in use, so
+invalidating is safer. If you know that none of the cached objects are
+in use, then you can clear the cache.
+
+For more information, see xref:{relativedir}/cache.adoc#CACHE[Chapter 8,
+"Understanding Caching."]
+
+[[OTLCG148]]
+
+[[sthref20]]
+
+===== Defining Cache Behavior
+
+EclipseLink provides an `@Cache` annotation which lets you define cache
+properties. The properties include cache type, size, and refresh rules,
+among others. See _Jakarta Persistence API (JPA) Extensions Reference
+for EclipseLink_.
+
+[[OTLCG149]]
+
+[[sthref21]]
+
+===== Caching in Clustered Environments
+
+Caching in a clustered environment can have problems because changes
+made on one server are not reflected on objects cached in other servers.
+This is not a problem for read-only objects, but it is for objects that
+are frequently updated.
+
+EclipseLink offers several solutions to this problem.
+
+* The cache can be disabled for the classes that frequently change.
+* Cache coordination can be used to broadcast changes between the
+servers in the cluster to update or invalidate changed objects.
+* Cache invalidation based on time-to-live or time-of-day.
+* Optimistic locking prevents updates to stale objects and triggers the
+objects to be invalidated in the cache.
+
+For more information, see link:cache010.htm#CDEGDGAA[Clustering and
+Cache Coordination].
+
+[[CHDFGCJB]][[OTLCG150]]
+
+==== About Database Queries
+
+The object-relational component of EclipseLink supports a variety of
+queries.
+
+* JPQL queries
+* SQL queries
+* Criteria API queries
+* Native SQL queries
+* EclipseLink JPA query hints
+* Query casting
+* Oracle Extensions for queries
+* Advanced EclipseLink native queries
+
+For information on these queries, see link:queries.htm#CHDGGCJB[Chapter
+9, "Understanding Queries."]

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -81,7 +81,6 @@ public class MetadataResource extends AbstractResource {
         PRIMITIVE_TO_JSON.put(int.class, "integer");
         PRIMITIVE_TO_JSON.put(long.class, "integer");
         PRIMITIVE_TO_JSON.put(short.class, "number");
-        PRIMITIVE_TO_JSON.put(short.class, "number");
     }
 
     /**
@@ -145,7 +144,7 @@ public class MetadataResource extends AbstractResource {
     }
 
     private Response buildMetadataCatalogResponse(String version, String persistenceUnit, HttpHeaders httpHeaders, UriInfo uriInfo) {
-        JPARSLogger.entering(CLASS_NAME, "buildMetadataCatalogResponse", new Object[]{"GET", version, persistenceUnit, uriInfo.getRequestUri().toASCIIString()});
+        JPARSLogger.DEFAULT_LOGGER.entering(null, CLASS_NAME, "buildMetadataCatalogResponse", new Object[]{"GET", version, persistenceUnit, uriInfo.getRequestUri().toASCIIString()});
 
         final String result;
         try {
@@ -160,14 +159,14 @@ public class MetadataResource extends AbstractResource {
     }
 
     private Response buildEntityMetadataResponse(String version, String persistenceUnit, String entityName, HttpHeaders httpHeaders, UriInfo uriInfo) {
-        JPARSLogger.entering(CLASS_NAME, "buildEntityMetadataResponse", new Object[]{"GET", version, persistenceUnit, entityName, uriInfo.getRequestUri().toASCIIString()});
+        JPARSLogger.DEFAULT_LOGGER.entering(null, CLASS_NAME, "buildEntityMetadataResponse", new Object[]{"GET", version, persistenceUnit, entityName, uriInfo.getRequestUri().toASCIIString()});
 
         final String result;
         try {
             final PersistenceContext context = getPersistenceContext(persistenceUnit, null, uriInfo.getBaseUri(), version, null);
             final ClassDescriptor descriptor = context.getServerSession().getDescriptorForAlias(entityName);
             if (descriptor == null) {
-                JPARSLogger.error(context.getSessionLog(), "jpars_could_not_find_entity_type", new Object[] { entityName, persistenceUnit });
+                context.getLogger().error(context.getSessionId(), "jpars_could_not_find_entity_type", new Object[] { entityName, persistenceUnit });
                 throw JPARSException.classOrClassDescriptorCouldNotBeFoundForEntity(entityName, persistenceUnit);
             } else {
                 final String mediaType = StreamingOutputMarshaller.mediaType(httpHeaders.getAcceptableMediaTypes()).toString();
@@ -181,7 +180,7 @@ public class MetadataResource extends AbstractResource {
     }
 
     private Response buildQueryMetadataResponse(String version, String persistenceUnit, String queryName, HttpHeaders httpHeaders, UriInfo uriInfo) {
-        JPARSLogger.entering(CLASS_NAME, "buildQueryMetadataResponse", new Object[]{"GET", version, persistenceUnit, queryName, uriInfo.getRequestUri().toASCIIString()});
+        JPARSLogger.DEFAULT_LOGGER.entering(null, CLASS_NAME, "buildQueryMetadataResponse", new Object[]{"GET", version, persistenceUnit, queryName, uriInfo.getRequestUri().toASCIIString()});
 
         final String result;
         try {
@@ -190,7 +189,7 @@ public class MetadataResource extends AbstractResource {
             // We need to make sure that query with given name exists
             final DatabaseQuery query = context.getServerSession().getQuery(queryName);
             if (query == null) {
-                JPARSLogger.error(context.getSessionLog(), "jpars_could_not_find_query", new Object[] {queryName, persistenceUnit});
+                context.getLogger().error(context.getSessionId(), "jpars_could_not_find_query", new Object[] {queryName, persistenceUnit});
                 throw JPARSException.responseCouldNotBeBuiltForNamedQueryRequest(queryName, context.getName());
             }
 
@@ -204,14 +203,14 @@ public class MetadataResource extends AbstractResource {
     }
 
     private Response buildEntitySchemaResponse(String version, String persistenceUnit, String entityName, UriInfo uriInfo) {
-        JPARSLogger.entering(CLASS_NAME, "buildEntitySchemaResponse", new Object[]{"GET", version, persistenceUnit, uriInfo.getRequestUri().toASCIIString()});
+        JPARSLogger.DEFAULT_LOGGER.entering(null, CLASS_NAME, "buildEntitySchemaResponse", new Object[]{"GET", version, persistenceUnit, uriInfo.getRequestUri().toASCIIString()});
 
         final String result;
         try {
             final PersistenceContext context = getPersistenceContext(persistenceUnit, null, uriInfo.getBaseUri(), version, null);
             final ClassDescriptor descriptor = context.getServerSession().getDescriptorForAlias(entityName);
             if (descriptor == null) {
-                JPARSLogger.error(context.getSessionLog(), "jpars_could_not_find_entity_type", new Object[] { entityName, persistenceUnit });
+                context.getLogger().error(context.getSessionId(), "jpars_could_not_find_entity_type", new Object[] { entityName, persistenceUnit });
                 throw JPARSException.classOrClassDescriptorCouldNotBeFoundForEntity(entityName, persistenceUnit);
             } else {
                 final ResourceSchema schema = new ResourceSchema();
@@ -243,7 +242,7 @@ public class MetadataResource extends AbstractResource {
     }
 
     private Response buildQuerySchemaResponse(String version, String persistenceUnit, String queryName, UriInfo uriInfo) {
-        JPARSLogger.entering(CLASS_NAME, "buildQuerySchemaResponse", new Object[]{"GET", version, persistenceUnit, uriInfo.getRequestUri().toASCIIString()});
+        JPARSLogger.DEFAULT_LOGGER.entering(null, CLASS_NAME, "buildQuerySchemaResponse", new Object[]{"GET", version, persistenceUnit, uriInfo.getRequestUri().toASCIIString()});
 
         final String result;
         try {
@@ -252,7 +251,7 @@ public class MetadataResource extends AbstractResource {
             // We need to make sure that query with given name exists
             final DatabaseQuery query = context.getServerSession().getQuery(queryName);
             if (query == null) {
-                JPARSLogger.error(context.getSessionLog(), "jpars_could_not_find_query", new Object[] {queryName, persistenceUnit});
+                context.getLogger().error(context.getSessionId(), "jpars_could_not_find_query", new Object[] {queryName, persistenceUnit});
                 throw JPARSException.responseCouldNotBeBuiltForNamedQueryRequest(queryName, context.getName());
             }
 

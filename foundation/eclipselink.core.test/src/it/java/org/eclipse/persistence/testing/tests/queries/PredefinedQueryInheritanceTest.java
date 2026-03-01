@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,11 +14,14 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.queries;
 
-import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.testing.models.employee.domain.*;
-import org.eclipse.persistence.testing.framework.*;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.ReadObjectQuery;
+import org.eclipse.persistence.testing.framework.TestErrorException;
+import org.eclipse.persistence.testing.models.employee.domain.LargeProject;
+import org.eclipse.persistence.testing.models.employee.domain.Project;
 
 /**
  * PredefinedQueryInheritanceTest checks that named queries are accessable
@@ -78,7 +81,7 @@ public class PredefinedQueryInheritanceTest extends org.eclipse.persistence.test
 
         // Get a handle on the descriptor of Project.class
     if (getSession() instanceof org.eclipse.persistence.sessions.remote.RemoteSession) {
-        descriptor = org.eclipse.persistence.testing.tests.remote.RemoteModel.getServerSession().getDescriptor(Project.class);;
+        descriptor = org.eclipse.persistence.testing.tests.remote.RemoteModel.getServerSession().getDescriptor(Project.class);
     } else {
         descriptor = getSession().getDescriptor(Project.class);
     }
@@ -122,7 +125,6 @@ public class PredefinedQueryInheritanceTest extends org.eclipse.persistence.test
         }
         if (subclassTestObjectRead == null) {
             setStoredException(new TestErrorException("Inherited named query returned null object in test:" + TEST_NAME));
-            return;
         }
     }
 

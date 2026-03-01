@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,24 +14,17 @@
 //     Blaise Doughan - 2.4.2 - initial implementation
 package org.eclipse.persistence.testing.jaxb.json.wrapper;
 
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBElement;
-import jakarta.xml.bind.Marshaller;
-import jakarta.xml.bind.Unmarshaller;
-import javax.xml.namespace.QName;
-import javax.xml.transform.stream.StreamSource;
 
-import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import javax.xml.namespace.QName;
+
 import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.testing.jaxb.json.JSONMarshalUnmarshalTestCases;
-
-import junit.framework.TestCase;
 
 public class WrapperNamespaceTestCases extends JSONMarshalUnmarshalTestCases {
 

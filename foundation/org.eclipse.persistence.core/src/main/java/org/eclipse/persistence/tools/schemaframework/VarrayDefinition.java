@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,11 +14,11 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.tools.schemaframework;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.Writer;
 
-import org.eclipse.persistence.internal.databaseaccess.*;
+import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.exceptions.*;
 
 /**
  * <p>
@@ -42,15 +42,16 @@ public class VarrayDefinition extends DatabaseObjectDefinition {
      * @param session  Current session context.
      * @throws ValidationException When invalid or inconsistent data were found.
      */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public void appendTypeString(final Writer writer, final AbstractSession session)
             throws ValidationException {
         try {
-            final FieldTypeDefinition fieldType = getFieldTypeDefinition(session, type, typeName);
-            writer.write(fieldType.getName());
-            if ((fieldType.isSizeAllowed()) && ((typeSize != 0) || (fieldType.isSizeRequired()))) {
+            final FieldDefinition.DatabaseType fieldType = session.getPlatform().getDatabaseType(type, typeName);
+            writer.write(fieldType.name());
+            if ((fieldType.allowSize()) && ((typeSize != 0) || (fieldType.requireSize()))) {
                 writer.write("(");
                 if (typeSize == 0) {
-                    writer.write(Integer.toString(fieldType.getDefaultSize()));
+                    writer.write(Integer.toString(fieldType.defaultSize()));
                 } else {
                     writer.write(Integer.toString(typeSize));
                 }
@@ -71,6 +72,7 @@ public class VarrayDefinition extends DatabaseObjectDefinition {
      * @throws ValidationException When invalid or inconsistent data were found.
      */
     @Override
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public Writer buildCreationWriter(final AbstractSession session, final Writer writer)
             throws ValidationException {
         try {
@@ -97,6 +99,7 @@ public class VarrayDefinition extends DatabaseObjectDefinition {
      * Return the DDL to drop the varray.
      */
     @Override
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public Writer buildDeletionWriter(AbstractSession session, Writer writer) throws ValidationException {
         try {
             writer.write("DROP TYPE ");
@@ -108,7 +111,6 @@ public class VarrayDefinition extends DatabaseObjectDefinition {
     }
 
     /**
-     * PUBLIC:
      * Return the maximum size of the array.
      */
     public int getSize() {
@@ -116,7 +118,6 @@ public class VarrayDefinition extends DatabaseObjectDefinition {
     }
 
     /**
-     * PUBLIC:
      * Return the type of the field.
      * This should be set to a java class, such as String.class, Integer.class or Date.class.
      */
@@ -125,7 +126,6 @@ public class VarrayDefinition extends DatabaseObjectDefinition {
     }
 
     /**
-     * PUBLIC:
      * Return the type of the field.
      * This is the exact DB type name, which can be used instead of the Java class.
      */
@@ -134,7 +134,6 @@ public class VarrayDefinition extends DatabaseObjectDefinition {
     }
 
     /**
-     * PUBLIC:
      * Return the size of the element field, this is only required for some field types.
      */
     public int getTypeSize() {
@@ -142,7 +141,6 @@ public class VarrayDefinition extends DatabaseObjectDefinition {
     }
 
     /**
-     * PUBLIC:
      * Set the maximum size of the array.
      */
     public void setSize(int size) {
@@ -150,7 +148,6 @@ public class VarrayDefinition extends DatabaseObjectDefinition {
     }
 
     /**
-     * PUBLIC:
      * Set the type of the field.
      * This should be set to a java class, such as String.class, Integer.class or Date.class.
      */
@@ -159,7 +156,6 @@ public class VarrayDefinition extends DatabaseObjectDefinition {
     }
 
     /**
-     * PUBLIC:
      * Set the type of the field.
      * This is the exact DB type name, which can be used instead of the Java class.
      */
@@ -168,7 +164,6 @@ public class VarrayDefinition extends DatabaseObjectDefinition {
     }
 
     /**
-     * PUBLIC:
      * Set the size of the element field, this is only required for some field types.
      */
     public void setTypeSize(int typeSize) {

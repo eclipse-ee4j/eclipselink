@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,7 +35,7 @@ import org.eclipse.persistence.mappings.CollectionMapping;
 /**
  * INTERNAL:
  * Object to process a JPA order column into an EclipseLink database field.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -77,8 +77,7 @@ public class OrderColumnMetadata extends DirectColumnMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (super.equals(objectToCompare) && objectToCompare instanceof OrderColumnMetadata) {
-            OrderColumnMetadata orderColumn = (OrderColumnMetadata) objectToCompare;
+        if (super.equals(objectToCompare) && objectToCompare instanceof OrderColumnMetadata orderColumn) {
             return valuesMatch(m_correctionType, orderColumn.getCorrectionType());
         }
 

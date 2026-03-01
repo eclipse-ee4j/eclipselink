@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -12,7 +12,8 @@
 
 // Contributors:
 //     Oracle - initial API and implementation
-//
+//     06/02/2023: Radek Felcman
+//       - Issue 1885: Implement new JPQLGrammar for upcoming Jakarta Persistence 3.2
 package org.eclipse.persistence.jpa.jpql;
 
 /**
@@ -191,6 +192,10 @@ public interface JPQLQueryProblemMessages {
     String IdentificationVariableDeclaration_JoinsEndWithComma = "IDENTIFICATION_VARIABLE_DECLARATION_JOINS_END_WITH_COMMA";
     String IdentificationVariableDeclaration_JoinsHaveComma = "IDENTIFICATION_VARIABLE_DECLARATION_JOINS_HAS_COMMA";
     String IdentificationVariableDeclaration_MissingRangeVariableDeclaration = "IDENTIFICATION_VARIABLE_DECLARATION_MISSING_RANGE_VARIABLE_DECLARATION";
+    String IdExpression_InvalidExpression = "ID_EXPRESSION_INVALID_EXPRESSION";
+    String IdExpression_MissingExpression = "ID_EXPRESSION_MISSING_EXPRESSION";
+    String IdExpression_MissingLeftParenthesis = "ID_EXPRESSION_MISSING_LEFT_PARENTHESIS";
+    String IdExpression_MissingRightParenthesis = "ID_EXPRESSION_MISSING_RIGHT_PARENTHESIS";
     String IndexExpression_InvalidExpression = "INDEX_EXPRESSION_INVALID_EXPRESSION";
     String IndexExpression_InvalidJPAVersion = "INDEX_EXPRESSION_INVALID_JPA_VERSION";
     String IndexExpression_MissingExpression = "INDEX_EXPRESSION_MISSING_EXPRESSION";
@@ -227,6 +232,15 @@ public interface JPQLQueryProblemMessages {
     String KeyExpression_MissingExpression = "KEY_EXPRESSION_MISSING_EXPRESSION";
     String KeyExpression_MissingLeftParenthesis = "KEY_EXPRESSION_MISSING_LEFT_PARENTHESIS";
     String KeyExpression_MissingRightParenthesis = "KEY_EXPRESSION_MISSING_RIGHT_PARENTHESIS";
+    String LeftExpression_FirstExpression_WrongType = "LEFT_EXPRESSION_FIRST_EXPRESSION_WRONG_TYPE";
+    String LeftExpression_InvalidFirstExpression = "LEFT_EXPRESSION_INVALID_FIRST_EXPRESSION";
+    String LeftExpression_InvalidSecondExpression = "LEFT_EXPRESSION_INVALID_SECOND_EXPRESSION";
+    String LeftExpression_MissingFirstExpression = "LEFT_EXPRESSION_MISSING_FIRST_EXPRESSION";
+    String LeftExpression_MissingLeftParenthesis = "LEFT_EXPRESSION_MISSING_LEFT_PARENTHESIS";
+    String LeftExpression_MissingRightParenthesis = "LEFT_EXPRESSION_MISSING_RIGHT_PARENTHESIS";
+    String LeftExpression_MissingFirstComma = "LEFT_EXPRESSION_MISSING_FIRST_COMMA";
+    String LeftExpression_MissingSecondExpression = "LEFT_EXPRESSION_MISSING_SECOND_EXPRESSION";
+    String LeftExpression_SecondExpression_WrongType = "LEFT_EXPRESSION_SECOND_EXPRESSION_WRONG_TYPE";
     String LengthExpression_InvalidExpression = "LENGTH_EXPRESSION_INVALID_EXPRESSION";
     String LengthExpression_MissingExpression = "LENGTH_EXPRESSION_MISSING_EXPRESSION";
     String LengthExpression_MissingLeftParenthesis = "LENGTH_EXPRESSION_MISSING_LEFT_PARENTHESIS";
@@ -310,9 +324,31 @@ public interface JPQLQueryProblemMessages {
     String RegexpExpression_InvalidStringExpression = "REGEXP_EXPRESSION_INVALID_STRING_EXPRESSION";
     String RegexpExpression_MissingPatternValue = "REGEXP_EXPRESSION_MISSING_PATTERN_VALUE";
     String RegexpExpression_MissingStringExpression = "REGEXP_EXPRESSION_MISSING_STRING_EXPRESSION";
+    String ReplaceExpression_FirstExpression_WrongType = "REPLACE_EXPRESSION_FIRST_EXPRESSION_WRONG_TYPE";
+    String ReplaceExpression_InvalidFirstExpression = "REPLACE_EXPRESSION_INVALID_FIRST_EXPRESSION";
+    String ReplaceExpression_InvalidSecondExpression = "REPLACE_EXPRESSION_INVALID_SECOND_EXPRESSION";
+    String ReplaceExpression_InvalidThirdExpression = "REPLACE_EXPRESSION_INVALID_THIRD_EXPRESSION";
+    String ReplaceExpression_MissingFirstComma = "REPLACE_EXPRESSION_MISSING_FIRST_COMMA";
+    String ReplaceExpression_MissingFirstExpression = "REPLACE_EXPRESSION_MISSING_FIRST_EXPRESSION";
+    String ReplaceExpression_MissingLeftParenthesis = "REPLACE_EXPRESSION_MISSING_LEFT_PARENTHESIS";
+    String ReplaceExpression_MissingRightParenthesis = "REPLACE_EXPRESSION_MISSING_RIGHT_PARENTHESIS";
+    String ReplaceExpression_MissingSecondComma = "REPLACE_EXPRESSION_MISSING_SECOND_COMMA";
+    String ReplaceExpression_MissingSecondExpression = "REPLACE_EXPRESSION_MISSING_SECOND_EXPRESSION";
+    String ReplaceExpression_MissingThirdExpression = "REPLACE_EXPRESSION_MISSING_THIRD_EXPRESSION";
+    String ReplaceExpression_SecondExpression_WrongType = "REPLACE_EXPRESSION_SECOND_EXPRESSION_WRONG_TYPE";
+    String ReplaceExpression_ThirdExpression_WrongType = "REPLACE_EXPRESSION_THIRD_EXPRESSION_WRONG_TYPE";
     String ResultVariable_InvalidJPAVersion = "RESULT_VARIABLE_INVALID_JPA_VERSION";
     String ResultVariable_MissingResultVariable = "RESULT_VARIABLE_MISSING_RESULT_VARIABLE";
     String ResultVariable_MissingSelectExpression = "RESULT_VARIABLE_MISSING_SELECT_EXPRESSION";
+    String RightExpression_FirstExpression_WrongType = "RIGHT_EXPRESSION_FIRST_EXPRESSION_WRONG_TYPE";
+    String RightExpression_InvalidFirstExpression = "RIGHT_EXPRESSION_INVALID_FIRST_EXPRESSION";
+    String RightExpression_InvalidSecondExpression = "RIGHT_EXPRESSION_INVALID_SECOND_EXPRESSION";
+    String RightExpression_MissingFirstExpression = "RIGHT_EXPRESSION_MISSING_FIRST_EXPRESSION";
+    String RightExpression_MissingLeftParenthesis = "RIGHT_EXPRESSION_MISSING_LEFT_PARENTHESIS";
+    String RightExpression_MissingRightParenthesis = "RIGHT_EXPRESSION_MISSING_RIGHT_PARENTHESIS";
+    String RightExpression_MissingFirstComma = "RIGHT_EXPRESSION_MISSING_FIRST_COMMA";
+    String RightExpression_MissingSecondExpression = "RIGHT_EXPRESSION_MISSING_SECOND_EXPRESSION";
+    String RightExpression_SecondExpression_WrongType = "RIGHT_EXPRESSION_SECOND_EXPRESSION_WRONG_TYPE";
     String SimpleSelectClause_NotSingleExpression = "SIMPLE_SELECT_CLAUSE_NOT_SINGLE_EXPRESSION";
     String SizeExpression_InvalidExpression = "SIZE_EXPRESSION_INVALID_EXPRESSION";
     String SizeExpression_MissingExpression = "SIZE_EXPRESSION_MISSING_EXPRESSION";
@@ -333,6 +369,12 @@ public interface JPQLQueryProblemMessages {
     String StringLiteral_MissingClosingQuote = "STRING_LITERAL_MISSING_CLOSING_QUOTE";
     String SubExpression_MissingExpression = "SUB_EXPRESSION_MISSING_EXPRESSION";
     String SubExpression_MissingRightParenthesis = "SUB_EXPRESSION_MISSING_RIGHT_PARENTHESIS";
+    String StringExpression_InvalidLeftExpression = "STRING_EXPRESSION_INVALID_LEFT_EXPRESSION";
+    String StringExpression_InvalidRightExpression = "STRING_EXPRESSION_INVALID_RIGHT_EXPRESSION";
+    String StringExpression_MissingLeftExpression = "STRING_EXPRESSION_MISSING_LEFT_EXPRESSION";
+    String StringExpression_MissingRightExpression = "STRING_EXPRESSION_MISSING_RIGHT_EXPRESSION";
+    String StringFactor_InvalidExpression = "STRING_FACTOR_INVALID_EXPRESSION";
+    String StringFactor_MissingExpression = "STRING_FACTOR_MISSING_EXPRESSION";
     String SubstringExpression_FirstExpression_WrongType = "SUBSTRING_EXPRESSION_FIRST_EXPRESSION_WRONG_TYPE";
     String SubstringExpression_InvalidFirstExpression = "SUBSTRING_EXPRESSION_INVALID_FIRST_EXPRESSION";
     String SubstringExpression_InvalidSecondExpression = "SUBSTRING_EXPRESSION_INVALID_SECOND_EXPRESSION";
@@ -396,6 +438,10 @@ public interface JPQLQueryProblemMessages {
     String ValueExpression_MissingExpression = "VALUE_EXPRESSION_MISSING_EXPRESSION";
     String ValueExpression_MissingLeftParenthesis = "VALUE_EXPRESSION_MISSING_LEFT_PARENTHESIS";
     String ValueExpression_MissingRightParenthesis = "VALUE_EXPRESSION_MISSING_RIGHT_PARENTHESIS";
+    String VersionExpression_InvalidExpression = "VERSION_EXPRESSION_INVALID_EXPRESSION";
+    String VersionExpression_MissingExpression = "VERSION_EXPRESSION_MISSING_EXPRESSION";
+    String VersionExpression_MissingLeftParenthesis = "VERSION_EXPRESSION_MISSING_LEFT_PARENTHESIS";
+    String VersionExpression_MissingRightParenthesis = "VERSION_EXPRESSION_MISSING_RIGHT_PARENTHESIS";
     String WhenClause_MissingThenExpression = "WHEN_CLAUSE_MISSING_THEN_EXPRESSION";
     String WhenClause_MissingThenIdentifier = "WHEN_CLAUSE_MISSING_THEN_IDENTIFIER";
     String WhenClause_MissingWhenExpression = "WHEN_CLAUSE_MISSING_WHEN_EXPRESSION";

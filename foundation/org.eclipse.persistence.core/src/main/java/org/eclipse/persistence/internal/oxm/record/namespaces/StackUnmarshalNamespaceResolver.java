@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,13 +14,13 @@
 //     bdoughan - June 25/2009 - 2.0 - Initial implementation
 package org.eclipse.persistence.internal.oxm.record.namespaces;
 
+import org.eclipse.persistence.internal.oxm.Constants;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import org.eclipse.persistence.internal.oxm.Constants;
 
 /**
  *  This is a complete UnmarshalNamespaceResolver implementation.  This is

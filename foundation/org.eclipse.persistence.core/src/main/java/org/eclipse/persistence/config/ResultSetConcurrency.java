@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,15 +16,17 @@ package org.eclipse.persistence.config;
 
 /**
  * JDBC ResultSet concurrency hint values.
- *
+ * <p>
  * The class contains all the valid values for QueryHints.RESULT_SET_CONCURRENCY query hint.
  * This can be used on ScrollableCursor queries to set the JDBC ResultSet concurrency.
- *
- * JPA Query Hint Usage:
- *
- * <p><code>query.setHint(QueryHints.RESULT_SET_CONCURRENCY, ResultSetConcurrency.ForwardOnly);</code>
+ * <p>JPA Query Hint usage:
+ * {@snippet :
+ *  query.setHint(QueryHints.RESULT_SET_CONCURRENCY, ResultSetConcurrency.ForwardOnly);
+ * }
  * <p>or
- * <p><code>@QueryHint(name=QueryHints.RESULT_SET_CONCURRENCY, value=ResultSetConcurrency.ForwardOnly)</code>
+ * {@snippet :
+ *  @QueryHint(name=QueryHints.RESULT_SET_CONCURRENCY, value=ResultSetConcurrency.ForwardOnly)
+ * }
  *
  * <p>Hint values are case-insensitive.
  * "" could be used instead of default value ResultSetConcurrency.Updatable.
@@ -34,7 +36,7 @@ package org.eclipse.persistence.config;
  *
  * @author James Sutherland
  */
-public class ResultSetConcurrency {
+public final class ResultSetConcurrency {
     /** The concurrency mode for a ResultSet object that may be updated. */
     public static final String  Updatable = "Updatable";
 
@@ -45,4 +47,8 @@ public class ResultSetConcurrency {
      * The default type is Updatable.
      */
     public static final String DEFAULT = Updatable;
+
+    private ResultSetConcurrency() {
+        // no instance please
+    }
 }

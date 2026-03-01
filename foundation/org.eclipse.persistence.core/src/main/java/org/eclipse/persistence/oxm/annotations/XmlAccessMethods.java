@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,11 +18,11 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+
 /**
- * <b>Purpose:</b>This annotation allows the userTo specify accessor methods for
- * a given property. The methods specified here will be used to set values in the object
+ * This annotation allows the userTo specify accessor methods for a given property.
+ * The methods specified here will be used to set values in the object
  * during unmarshal and to obtain the value from the object during marshal.
- *
  */
 @Target({ElementType.FIELD, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)

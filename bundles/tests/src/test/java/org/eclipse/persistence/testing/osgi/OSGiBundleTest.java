@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2016, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -44,8 +44,14 @@ public class OSGiBundleTest {
     // ASM bundle symbolic name
     private static final String ASM_BUNDLE_NAME = "org.eclipse.persistence.asm";
 
+    // CORE bundle symbolic name
+    private static final String CORE_BUNDLE_NAME = "org.eclipse.persistence.core";
+
     // MOXy bundle symbolic name
     private static final String MOXY_BUNDLE_NAME = "org.eclipse.persistence.moxy";
+
+    // CORE bundle
+    private Bundle coreBundle;
 
     // MOXy bundle
     private Bundle moxyBundle;
@@ -59,116 +65,142 @@ public class OSGiBundleTest {
     }
 
     @Test
-    public void testAsmVersion() {
-        Class<?> c = loadClass("org.eclipse.persistence.internal.libraries.asm.AnnotationVisitor");
+    public void testAsmELVersion() {
+        Class<?> c = loadClass(CORE_BUNDLE_NAME, "org.eclipse.persistence.internal.libraries.asm.AnnotationVisitor");
         assertClassLoadedByBundle(c, ASM_BUNDLE_NAME);
     }
 
     @Test
+    public void testAsmCoreVersion() {
+        Class<?> c = loadClass(CORE_BUNDLE_NAME, "org.eclipse.persistence.asm.AnnotationVisitor");
+        assertClassLoadedByBundle(c, CORE_BUNDLE_NAME);
+    }
+
+    @Test
     public void testInternalJaxb() {
-        Class<?> c = loadClass("org.eclipse.persistence.internal.jaxb.AttributeNodeImpl");
+        Class<?> c = loadClass(MOXY_BUNDLE_NAME, "org.eclipse.persistence.internal.jaxb.AttributeNodeImpl");
         assertClassLoadedByBundle(c, MOXY_BUNDLE_NAME);
     }
 
     @Test
     public void testInternalJaxbMany() {
-        Class<?> c = loadClass("org.eclipse.persistence.internal.jaxb.many.ArrayValue");
+        Class<?> c = loadClass(MOXY_BUNDLE_NAME, "org.eclipse.persistence.internal.jaxb.many.ArrayValue");
         assertClassLoadedByBundle(c, MOXY_BUNDLE_NAME);
     }
 
     @Test
     public void testJaxb() {
-        Class<?> c = loadClass("org.eclipse.persistence.jaxb.JAXBContext");
+        Class<?> c = loadClass(MOXY_BUNDLE_NAME, "org.eclipse.persistence.jaxb.JAXBContext");
         assertClassLoadedByBundle(c, MOXY_BUNDLE_NAME);
     }
 
     @Test
     public void testJaxbAttachment() {
-        Class<?> c = loadClass("org.eclipse.persistence.jaxb.attachment.AttachmentMarshallerAdapter");
+        Class<?> c = loadClass(MOXY_BUNDLE_NAME, "org.eclipse.persistence.jaxb.attachment.AttachmentMarshallerAdapter");
         assertClassLoadedByBundle(c, MOXY_BUNDLE_NAME);
     }
 
     @Test
     public void testJaxbCompiler() {
-        Class<?> c = loadClass("org.eclipse.persistence.jaxb.compiler.AnnotationsProcessor");
+        Class<?> c = loadClass(MOXY_BUNDLE_NAME, "org.eclipse.persistence.jaxb.compiler.AnnotationsProcessor");
         assertClassLoadedByBundle(c, MOXY_BUNDLE_NAME);
     }
 
     @Test
     public void testJaxbDynamic() {
-        Class<?> c = loadClass("org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext");
+        Class<?> c = loadClass(MOXY_BUNDLE_NAME, "org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext");
         assertClassLoadedByBundle(c, MOXY_BUNDLE_NAME);
     }
 
     @Test
     public void testJaxbDynamicMetadata() {
-        Class<?> c = loadClass("org.eclipse.persistence.jaxb.dynamic.metadata.Metadata");
+        Class<?> c = loadClass(MOXY_BUNDLE_NAME, "org.eclipse.persistence.jaxb.dynamic.metadata.Metadata");
         assertClassLoadedByBundle(c, MOXY_BUNDLE_NAME);
     }
 
     @Test
     public void testJaxbJavamodel() {
-        Class<?> c = loadClass("org.eclipse.persistence.jaxb.javamodel.AnnotationProxy");
+        Class<?> c = loadClass(MOXY_BUNDLE_NAME, "org.eclipse.persistence.jaxb.javamodel.AnnotationProxy");
         assertClassLoadedByBundle(c, MOXY_BUNDLE_NAME);
     }
 
     @Test
     public void testJaxbJavamodelOxm() {
-        Class<?> c = loadClass("org.eclipse.persistence.jaxb.javamodel.oxm.OXMJavaClassImpl");
+        Class<?> c = loadClass(MOXY_BUNDLE_NAME, "org.eclipse.persistence.jaxb.javamodel.oxm.OXMJavaClassImpl");
         assertClassLoadedByBundle(c, MOXY_BUNDLE_NAME);
     }
 
     @Test
     public void testJaxbJavamodelReflection() {
-        Class<?> c = loadClass("org.eclipse.persistence.jaxb.javamodel.reflection.AnnotationHelper");
+        Class<?> c = loadClass(MOXY_BUNDLE_NAME, "org.eclipse.persistence.jaxb.javamodel.reflection.AnnotationHelper");
         assertClassLoadedByBundle(c, MOXY_BUNDLE_NAME);
     }
 
     @Test
     public void testJaxbMetadata() throws ClassNotFoundException {
-        Class<?> c = loadClass("org.eclipse.persistence.jaxb.metadata.MetadataSource");
+        Class<?> c = loadClass(MOXY_BUNDLE_NAME, "org.eclipse.persistence.jaxb.metadata.MetadataSource");
         assertClassLoadedByBundle(c, MOXY_BUNDLE_NAME);
     }
 
     @Test
     public void testJaxbRs() {
-        Class<?> c = loadClass("org.eclipse.persistence.jaxb.rs.MOXyJsonProvider");
+        Class<?> c = loadClass(MOXY_BUNDLE_NAME, "org.eclipse.persistence.jaxb.rs.MOXyJsonProvider");
         assertClassLoadedByBundle(c, MOXY_BUNDLE_NAME);
     }
 
     @Test
     public void testJaxbXmlmodel() {
-        Class<?> c = loadClass("org.eclipse.persistence.jaxb.xmlmodel.JavaAttribute");
+        Class<?> c = loadClass(MOXY_BUNDLE_NAME, "org.eclipse.persistence.jaxb.xmlmodel.JavaAttribute");
         assertClassLoadedByBundle(c, MOXY_BUNDLE_NAME);
     }
 
     @Test
     public void testJavaxXmlParsers() {
-        Class<?> c = loadClass("javax.xml.parsers.ParserConfigurationException");
+        Class<?> c = loadClass(MOXY_BUNDLE_NAME, "javax.xml.parsers.ParserConfigurationException");
         assertClassLoadedBySystemBundle(c);
     }
 
     @Test
     public void testJavaxNaming() {
-        Class<?> c = loadClass("javax.naming.InitialContext");
+        Class<?> c = loadClass(MOXY_BUNDLE_NAME, "javax.naming.InitialContext");
         assertClassLoadedBySystemBundle(c);
     }
 
     @Test
     public void testOrgXmlSaxHelpers() {
-        Class<?> c = loadClass("org.xml.sax.helpers.DefaultHandler");
+        Class<?> c = loadClass(MOXY_BUNDLE_NAME, "org.xml.sax.helpers.DefaultHandler");
         assertClassLoadedBySystemBundle(c);
     }
 
     /**
      * Loads a class from MOXy bundle. Fails the test if not loaded.
      */
-    private Class<?> loadClass(String className) {
+    private Class<?> loadClass(String bundleName, String className) {
         try {
-            return getMoxyBundle().loadClass(className);
+            if (MOXY_BUNDLE_NAME.equals(bundleName)) {
+                return getMoxyBundle().loadClass(className);
+            } else if (CORE_BUNDLE_NAME.equals(bundleName)) {
+                return getCoreBundle().loadClass(className);
+            }
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(OSGiBundleTest.class.getName()).log(Level.SEVERE, ex.getMessage(), ex);
             Assert.fail("Cannot find and load class: " + className);
+        }
+        return null;
+    }
+
+    /**
+     * Returns CORE bundle ('org.eclipse.persistence.core').
+     */
+    private Bundle getCoreBundle() {
+        if (this.coreBundle != null) {
+            return this.coreBundle;
+        }
+        for (Bundle b : ctx.getBundles()) {
+            if (b.getSymbolicName().equals(CORE_BUNDLE_NAME)) {
+                this.coreBundle = b;
+                return b;
+            }
         }
         return null;
     }
@@ -186,7 +218,6 @@ public class OSGiBundleTest {
                 return b;
             }
         }
-
         return null;
     }
 

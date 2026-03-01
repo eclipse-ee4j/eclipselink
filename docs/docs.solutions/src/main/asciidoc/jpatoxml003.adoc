@@ -1,0 +1,553 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[JPA2XML003]]
+=== Mapping Simple Java Values to XML Text Nodes
+
+This section demonstrates several ways to map simple Java values
+directly to XML text nodes. It includes the following examples:
+
+* link:#BEIJIEGC[Mapping a Value to an Attribute]
+* link:#BEIDFEIC[Mapping a Value to a Text Node]
+
+[[BEIJIEGC]]
+
+==== Mapping a Value to an Attribute
+
+This example maps the `id` property in the Java object `Customer` to its
+XML representation as an attribute of the `<customer>` element. The XML
+will be based on the schema in link:#BEICBDBC[Example 15-10].
+
+[[BEICBDBC]]
+
+*_Example 15-10 Example XML Schema_*
+
+[source,oac_no_warn]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+ 
+   <xsd:element name="customer" type="customer-type"/>
+ 
+   <xsd:complexType name="customer-type">
+      <xsd:attribute name="id" type="xsd:integer"/>
+   </xsd:complexType>
+ 
+</xsd:schema>
+----
+
+The following procedures demonstrate how to map the `id` property from
+the Java object and, alternately, how to represent the value in
+EclipseLink's Object-to-XML Mapping (OXM) metadata format.
+
+===== Mapping from the Java Object
+
+The key to creating this mapping from a Java object is the
+`@XmlAttribute` JAXB annotation, which maps the field to the XML
+attribute. To create this mapping:
+
+. Create the object and import `jakarta.xml.bind.annotation.*`:
++
+[source,oac_no_warn]
+----
+package example;
+ 
+import jakarta.xml.bind.annotation.*;
+----
+. Declare the `Customer` class and use the `@XmlRootElement` annotation
+to make it the root element. Set the XML accessor type to `FIELD`:
++
+[source,oac_no_warn]
+----
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
+public class Customer {
+----
+. Map the `id` property in the `Customer` class as an attribute:
++
+[source,oac_no_warn]
+----
+   @XmlAttribute
+   private Integer id;
+----
+
+The object should look like link:#BEIHFEHF[Example 15-11].
+
+[[BEIHFEHF]]
+
+*_Example 15-11 Customer Object with Mapped id Property_*
+
+[source,oac_no_warn]
+----
+package example;
+ 
+import jakarta.xml.bind.annotation.*;
+ 
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
+public class Customer {
+   @XmlAttribute
+   private Integer id;
+ 
+   ...
+}
+----
+
+===== Defining the Mapping in OXM Metadata Format
+
+If you want to represent the mapping in EclipseLink's OXM metadata
+format, you need to use the XML tags defined in the
+`eclipselink-oxm.xml` file and populate them with the appropriate
+values, as shown in link:#BEICFEDE[Example 15-12].
+
+[[BEICFEDE]]
+
+*_Example 15-12 Mapping id as an Attribute in OXM Metadata Format_*
+
+[source,oac_no_warn]
+----
+...
+<java-type name="Customer">
+   <xml-root-element name="customer"/>
+   <java-attributes>
+      <xml-attribute java-attribute="id"/>
+   </java-attributes>
+</java-type>
+...
+----
+
+For more information about the OXM metadata format, see
+xref:{relativedir}/jpatoxml004.adoc#JPA2XML004[Using XML Metadata Representation to
+Override JAXB Annotations].
+
+[[BEIDFEIC]]
+
+==== Mapping a Value to a Text Node
+
+EclipseLink makes it easy for you to map values from a Java object to
+various kinds of XML text nodes; for example, to simple text nodes, text
+nodes in a simple sequence, in a subset, or by position. These mappings
+are demonstrated in the following examples:
+
+* link:#BEIFAICJ[Mapping a Value to a Simple Text Node]
+* link:#BEIBEFEJ[Mapping Values to a Text Node in a Simple Sequence]
+* link:#BEICIFCI[Mapping a Value to a Text Node in a Sub-element]
+* link:#BEIDCEHD[Mapping Values to a Text Node by Position]
+
+[[BEIFAICJ]]
+
+===== Mapping a Value to a Simple Text Node
+
+You can map a value from a Java object either by using JAXB annotations
+in the Java object or, alternately, by representing the mapping in
+EclipseLink's OXM metadata format.
+
+====== Mapping by Using JAXB Annotations
+
+Assuming the associated schema defines an element called
+`<phone-number>` which accepts a string value, you can use the
+`@XmlValue` annotation to map a string to the `<phone-number>` node. Do
+the following:
+
+. Create the object and import `jakarta.xml.bind.annotation.*`:
++
+[source,oac_no_warn]
+----
+package example;
+ 
+import jakarta.xml.bind.annotation.*;
+----
+. Declare the `PhoneNumber` class and use the `@XmlRootElement`
+annotation to make it the root element with the name phone-number. Set
+the XML accessor type to `FIELD`:
++
+[source,oac_no_warn]
+----
+@XmlRootElement(name="phone-number")
+@XmlAccessorType(XmlAccessType.FIELD)
+public class PhoneNumber {
+----
+. Insert the `@XmlValue` annotation on the line before the `number`
+property in the Customer class to map this value as an attribute:
++
+[source,oac_no_warn]
+----
+   @XmlValue
+   private String number;
+----
+
+The object should look like link:#BEIGFCJG[Example 15-13].
+
+[[BEIGFCJG]]
+
+*_Example 15-13 PhoneNumber Object with Mapped number Property_*
+
+[source,oac_no_warn]
+----
+package example;
+ 
+import jakarta.xml.bind.annotation.*;
+ 
+@XmlRootElement(name="phone-number")
+@XmlAccessorType(XmlAccessType.FIELD)
+public class PhoneNumber {
+   @XmlValue
+   private String number;
+ 
+   ...
+}
+----
+
+====== Defining the Mapping in OXM Metadata Format
+
+If you want to represent the mapping in EclipseLink's OXM metadata
+format, you need to use the XML tags defined in the
+`eclipselink-oxm.xml` file and populate them with the appropriate
+values, as shown in link:#BEIECBDG[Example 15-14].
+
+[[BEIECBDG]]
+
+*_Example 15-14 Mapping number as an Attribute in OXM Metadata Format_*
+
+[source,oac_no_warn]
+----
+...
+<java-type name="PhoneNumber">
+   <xml-root-element name="phone-number"/>
+   <java-attributes>
+      <xml-value java-attribute="number"/>
+   </java-attributes>
+</java-type>
+...
+----
+
+[[BEIBEFEJ]]
+
+===== Mapping Values to a Text Node in a Simple Sequence
+
+You can map a sequence of values, for example a customer's first and
+last name, as separate elements either by using JAXB annotations or by
+representing the mapping in EclipseLink's OXM metadata format. The
+following procedures illustrate how to map values for a customers' first
+names and last names
+
+====== Mapping by Using JAXB Annotations
+
+Assuming the associated schema defines the following elements:
+
+* `<customer>` of the type customer-type, which itself is defined as a
+`complexType`.
+* Sequential elements called `<first-name>` and `<last-name>`, both of
+the type `string`.
+
+you can use the `@XmlElement` annotation to map values for a customer's
+first and last name to the appropriate XML nodes. To do so:
+
+. Create the object and import `jakarta.xml.bind.annotation.*`:
++
+[source,oac_no_warn]
+----
+package example;
+ 
+import jakarta.xml.bind.annotation.*;
+----
+. Declare the `Customer` class and use the `@XmlRootElement` annotation
+to make it the root element. Set the XML accessor type to `FIELD`:
++
+[source,oac_no_warn]
+----
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
+public class Customer {
+----
+. Define the `firstname` and `lastname` properties and annotate them
+with the `@XmlElement` annotation. Use the `name=` argument to customize
+the XML element name (if you do not explicitly set the name with
+`name=`, the XML element will match the Java attribute name; for
+example, here the `<first-name>` element combination would be specified
+`<firstName> </firstName>` in XML).
++
+[source,oac_no_warn]
+----
+   @XmlElement(name="first-name")
+   private String firstName;
+ 
+   @XmlElement(name="last-name")
+   private String lastName;
+----
+
+The object should look like link:#BEIFIJIH[Example 15-15].
+
+[[BEIFIJIH]]
+
+*_Example 15-15 Customer Object Mapping Values to a Simple Sequence_*
+
+[source,oac_no_warn]
+----
+package example;
+ 
+import jakarta.xml.bind.annotation.*;
+ 
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
+public class Customer {
+   @XmlElement(name="first-name")
+   private String firstName;
+ 
+   @XmlElement(name="last-name")
+   private String lastName;
+ 
+   ...
+}
+----
+
+====== Defining the Mapping in OXM Metadata Format
+
+If you want to represent the mapping in EclipseLink's OXM metadata
+format, you need to use the XML tags defined in the
+`eclipselink-oxm.xml` file and populate them with the appropriate
+values, as shown in link:#BEIIHFFE[Example 15-16].
+
+[[BEIIHFFE]]
+
+*_Example 15-16 Mapping Sequential Attributes in OXM Metadata Format_*
+
+[source,oac_no_warn]
+----
+...
+<java-type name="Customer">
+   <xml-root-element name="customer"/>
+   <java-attributes>
+      <xml-element java-attribute="firstName" name="first-name"/>
+      <xml-element java-attribute="lastName" name="last-name"/>
+   </java-attributes>
+</java-type>
+...
+----
+
+[[BEICIFCI]]
+
+===== Mapping a Value to a Text Node in a Sub-element
+
+You can map values from a Java object to text nodes that are nested as a
+subelement in the XML document by using JAXB annotations or by
+representing the mapping in EclipseLink's OXM metadata format. For
+example, if you want to populate `<first-name>` and `<last-name>`
+elements, which are sub-elements of a `<personal-info>` element under a
+`<customer>` root, you could use the following procedures to achieve
+these mappings.
+
+====== Mapping by Using JAXB Annotations
+
+Assuming the associated schema defines the following elements:
+
+* `<customer>` of the type customer-type, which itself is defined as a
+complexTpe.
+* `<personal-info>`
+* Sub-elements of `<personal-info>` called `<first-name>` and
+`<last-name>`, both of the type string
+
+you can use JAXB annotations to map values for a customer's first and
+last name to the appropriate XML sub-element nodes. Because this example
+goes beyond a simple element name customization and actually introduces
+new XML structure, it uses EclipseLink's `@XmlPath` annotation. To
+achieve this mapping:
+
+. Create the object and import `jakarta.xml.bind.annotation.*` and
+`org.eclipse.persistence.oxm.annotations.*`.
++
+[source,oac_no_warn]
+----
+package example;
+ 
+import jakarta.xml.bind.annotation.*;
+import org.eclipse.persistence.oxm.annotations.*;
+----
+. Declare the `Customer` class and use the `@XmlRootElement` annotation
+to make it the root element. Set the XML accessor type to `FIELD`:
++
+[source,oac_no_warn]
+----
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
+public class Customer {
+----
+. Define the `firstName` and `lastName` properties.
+. Map the `firstName` and `lastName` properties to the sub-elements
+defined by the XML schema by inserting the `@XmlPath` annotation on the
+line immediately preceding the property declaration. For each
+annotation, define the mapping by specifying the appropriate XPath
+predicate:
++
+[source,oac_no_warn]
+----
+   @XmlPath("personal-info/first-name/text()")
+   private String firstName;
+ 
+   @XmlPath("personal-info/last-name/text()")
+   private String lastName;
+----
+
+The object should look like link:#BEIBCIDB[Example 15-17].
+
+[[BEIBCIDB]]
+
+*_Example 15-17 Customer Object Mapping Properties to Sub-elements_*
+
+[source,oac_no_warn]
+----
+package example;
+ 
+import jakarta.xml.bind.annotation.*;
+import org.eclipse.persistence.oxm.annotations.*;
+ 
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
+public class Customer {
+   @XmlPath("personal-info/first-name/text()")
+   private String firstName;
+ 
+   @XmlPath("personal-info/last-name/text()")
+   private String lastName;
+ 
+   ...
+}
+----
+
+====== Defining the Mapping in OXM Metadata Format
+
+If you want to represent the mapping in EclipseLink's OXM metadata
+format, you need to use the XML tags defined in the
+`eclipselink-oxm.xml` file and populate them with the appropriate
+values, as shown in link:#BEIEADBI[Example 15-18].
+
+[[BEIEADBI]]
+
+*_Example 15-18 Mapping Attributes as Sub-elements in OXM Metadata
+Format_*
+
+[source,oac_no_warn]
+----
+...
+<java-type name="Customer">
+   <xml-root-element name="customer"/>
+   <java-attributes>
+      <xml-element java-attribute="firstName" xml-path="personal-info/first-name/text()"/>
+      <xml-element java-attribute="lastName" xml-path="personal-info/last-name/text()"/>
+   </java-attributes>
+</java-type>
+...
+----
+
+[[BEIDCEHD]]
+
+===== Mapping Values to a Text Node by Position
+
+When multiple nodes have the same name, map their values from the Java
+object by specifying their position in the XML document. Do this by
+using mapping the values to the _position_ of the attribute rather than
+the attribute's name. You can do this either by using JAXB annotations
+or by or by representing the mapping in EclipseLink's OXM metadata
+format. In the following example, XML contains two `<name>` elements;
+the first occurrence of name should represent the Customer's first name,
+the second name their last name.
+
+====== Mapping by Using JAXB Annotations
+
+Assuming an XML schema that defines the following attributes:
+
+* `<customer>` of the type customer-type, which itself is specified as a
+`complexType`
+* `<name>` of the type `String`
+
+this example again uses the JAXB `@XmlPath` annotation to map a
+customer's first and last names to the appropriate `<name>` element. It
+also uses the `@XmlType(propOrder)` annotation to ensure that the
+elements are always in the proper positions. To achieve this mapping:
+
+. Create the object and import `jakarta.xml.bind.annotation.*` and
+`org.eclipse.persistence.oxm.annotations.XmlPath`.
++
+[source,oac_no_warn]
+----
+package example;
+ 
+import jakarta.xml.bind.annotation.*;
+import org.eclipse.persistence.oxm.annotations.XmlPath;
+----
+. Declare the `Customer` class and insert the `@XmlType(propOrder)`
+annotation with the arguments `"firstName"` followed by `"lastName"`.
+Insert the `@XmlRootElement` annotation to make `Customer` the root
+element and set the XML accessor type to `FIELD`:
++
+[source,oac_no_warn]
+----
+@XmlRootElement
+@XmlType(propOrder={"firstName", "lastName"})
+@XmlAccessorType(XmlAccessType.FIELD)
+public class Customer {
+----
+. Define the properties `firstName` and `lastName` with the type
+`String`.
+. Map the properties `firstName` and `lastName` to the appropriate
+position in the XML document by inserting the `@XmlPath` annotation with
+the appropriate XPath predicates.
++
+[source,oac_no_warn]
+----
+    @XmlPath("name[1]/text()")
+    private String firstName;
+ 
+    @XmlPath("name[2]/text()")
+    private String lastName;
+----
++
+The predicates, `"name[1]/text()"` and `"name[2]/text()"` indicate the
+`<name>` element to which that specific property will be mapped; for
+example, `"name[1]/text"` will map the `firstName` property to the first
+`<name>` element.
+
+The object should look like link:#BEICHICJ[Example 15-19].
+
+[[BEICHICJ]]
+
+*_Example 15-19 Customer Object Mapping Values by Position_*
+
+[source,oac_no_warn]
+----
+package example;
+ 
+import jakarta.xml.bind.annotation.*;
+ 
+import org.eclipse.persistence.oxm.annotations.XmlPath;
+ 
+@XmlRootElement
+@XmlType(propOrder={"firstName", "lastName"})
+@XmlAccessorType(XmlAccessType.FIELD)
+public class Customer {
+    @XmlPath("name[1]/text()")
+    private String firstName;
+ 
+    @XmlPath("name[2]/text()")
+    private String lastName;
+ 
+    ...
+}
+----
+
+For more information about using XPath predicates, see
+xref:{relativedir}/jpatoxml005.adoc#JPA2XML005[Using XPath Predicates for Mapping].

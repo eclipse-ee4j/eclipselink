@@ -1,0 +1,19 @@
+This part describes the EclipseLink artifact used to contain mapping and
+data source-specific information. It contains the following sections:
+
+* link:Creating_a_Project_(ELUG)[Creating a Project (ELUG)] – Contains
+procedures for creating EclipseLink projects.
+
+* link:Configuring_a_Project_(ELUG)[Configuring a Project (ELUG)] –
+Explains how to configure EclipseLink project options common to two or
+more project types.
+
+*Special:Whatlinkshere_Creating_and_Configuring_Projects_(ELUG)[Related
+Topics]*
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Concept[Category: Concept]

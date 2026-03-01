@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,11 +14,12 @@
 //     ailitchev - jpa 2.0 element collections support
 package org.eclipse.persistence.testing.models.aggregate;
 
-import java.io.*;
-import java.util.*;
-
 import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
 import org.eclipse.persistence.tools.schemaframework.TableDefinition;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Builder implements Serializable {
     private String firstName;

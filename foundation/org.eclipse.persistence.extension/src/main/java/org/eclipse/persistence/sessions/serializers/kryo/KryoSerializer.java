@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,6 +18,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Serial;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 
@@ -31,6 +32,7 @@ import org.eclipse.persistence.sessions.serializers.AbstractSerializer;
  */
 public class KryoSerializer extends AbstractSerializer {
 
+    @Serial
     private static final long serialVersionUID = 6538902324232789378L;
 
     /** Kryo is not thread safe, so need thread local. */

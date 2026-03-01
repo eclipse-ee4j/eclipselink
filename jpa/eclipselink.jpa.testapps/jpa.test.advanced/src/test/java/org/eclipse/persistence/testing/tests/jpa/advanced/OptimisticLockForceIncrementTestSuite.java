@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -513,7 +513,7 @@ public class OptimisticLockForceIncrementTestSuite extends JUnitTestCase {
     }
 
     protected int countNumberOfUpdateStatements(QuerySQLTracker counter) {
-        if (counter == null || counter.getSqlStatements().size() == 0) {
+        if (counter == null || counter.getSqlStatements().isEmpty()) {
             return 0;
         }
 

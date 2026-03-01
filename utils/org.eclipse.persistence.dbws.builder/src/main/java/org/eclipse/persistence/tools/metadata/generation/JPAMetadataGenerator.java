@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -71,41 +71,15 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataHelper;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EmbeddableAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EntityAccessor;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.MappedSuperclassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.XMLAttributes;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.BasicAccessor;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.BasicCollectionAccessor;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.BasicMapAccessor;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.ElementCollectionAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.EmbeddedAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.IdAccessor;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.ManyToManyAccessor;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.ManyToOneAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.MappingAccessor;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.OneToManyAccessor;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.OneToOneAccessor;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.TransformationAccessor;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.TransientAccessor;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.VariableOneToOneAccessor;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.VersionAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.columns.ColumnMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.columns.TenantDiscriminatorColumnMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.converters.MixedConverterMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.converters.ObjectTypeConverterMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.converters.SerializedConverterMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.converters.StructConverterMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.converters.TypeConverterMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.partitioning.HashPartitioningMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.partitioning.PartitioningMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.partitioning.PinnedPartitioningMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.partitioning.RangePartitioningMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.partitioning.ReplicationPartitioningMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.partitioning.RoundRobinPartitioningMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.partitioning.ValuePartitioningMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.NamedNativeQueryMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.NamedPLSQLStoredFunctionQueryMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.NamedPLSQLStoredProcedureQueryMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.queries.NamedQueryMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.NamedStoredFunctionQueryMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.NamedStoredProcedureQueryMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.OracleArrayTypeMetadata;
@@ -113,10 +87,7 @@ import org.eclipse.persistence.internal.jpa.metadata.queries.OracleObjectTypeMet
 import org.eclipse.persistence.internal.jpa.metadata.queries.PLSQLParameterMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.PLSQLRecordMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.PLSQLTableMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.queries.SQLResultSetMappingMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.StoredProcedureParameterMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.sequencing.SequenceGeneratorMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.sequencing.TableGeneratorMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.structures.ArrayAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.structures.StructMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.structures.StructureAccessor;
@@ -239,41 +210,41 @@ public class JPAMetadataGenerator {
      */
     protected void initializeXMLEntityMappingLists() {
         // Entities and Embeddables
-        xmlEntityMappings.setEntities(new ArrayList<EntityAccessor>());
-        xmlEntityMappings.setEmbeddables(new ArrayList<EmbeddableAccessor>());
+        xmlEntityMappings.setEntities(new ArrayList<>());
+        xmlEntityMappings.setEmbeddables(new ArrayList<>());
 
         // PL/SQL and advanced Oracle types
-        xmlEntityMappings.setPLSQLRecords(new ArrayList<PLSQLRecordMetadata>());
-        xmlEntityMappings.setPLSQLTables(new ArrayList<PLSQLTableMetadata>());
-        xmlEntityMappings.setOracleObjectTypes(new ArrayList<OracleObjectTypeMetadata>());
-        xmlEntityMappings.setOracleArrayTypes(new ArrayList<OracleArrayTypeMetadata>());
+        xmlEntityMappings.setPLSQLRecords(new ArrayList<>());
+        xmlEntityMappings.setPLSQLTables(new ArrayList<>());
+        xmlEntityMappings.setOracleObjectTypes(new ArrayList<>());
+        xmlEntityMappings.setOracleArrayTypes(new ArrayList<>());
 
         // queries
-        xmlEntityMappings.setNamedNativeQueries(new ArrayList<NamedNativeQueryMetadata>());
-        xmlEntityMappings.setNamedPLSQLStoredFunctionQueries(new ArrayList<NamedPLSQLStoredFunctionQueryMetadata>());
-        xmlEntityMappings.setNamedPLSQLStoredProcedureQueries(new ArrayList<NamedPLSQLStoredProcedureQueryMetadata>());
-        xmlEntityMappings.setNamedStoredFunctionQueries(new ArrayList<NamedStoredFunctionQueryMetadata>());
-        xmlEntityMappings.setNamedStoredProcedureQueries(new ArrayList<NamedStoredProcedureQueryMetadata>());
+        xmlEntityMappings.setNamedNativeQueries(new ArrayList<>());
+        xmlEntityMappings.setNamedPLSQLStoredFunctionQueries(new ArrayList<>());
+        xmlEntityMappings.setNamedPLSQLStoredProcedureQueries(new ArrayList<>());
+        xmlEntityMappings.setNamedStoredFunctionQueries(new ArrayList<>());
+        xmlEntityMappings.setNamedStoredProcedureQueries(new ArrayList<>());
 
         // initialize other various lists (to avoid exceptions)
-        xmlEntityMappings.setMixedConverters(new ArrayList<MixedConverterMetadata>());
-        xmlEntityMappings.setMappedSuperclasses(new ArrayList<MappedSuperclassAccessor>());
-        xmlEntityMappings.setTenantDiscriminatorColumns(new ArrayList<TenantDiscriminatorColumnMetadata>());
-        xmlEntityMappings.setTypeConverters(new ArrayList<TypeConverterMetadata>());
-        xmlEntityMappings.setObjectTypeConverters(new ArrayList<ObjectTypeConverterMetadata>());
-        xmlEntityMappings.setSerializedConverters(new ArrayList<SerializedConverterMetadata>());
-        xmlEntityMappings.setStructConverters(new ArrayList<StructConverterMetadata>());
-        xmlEntityMappings.setTableGenerators(new ArrayList<TableGeneratorMetadata>());
-        xmlEntityMappings.setSequenceGenerators(new ArrayList<SequenceGeneratorMetadata>());
-        xmlEntityMappings.setPartitioning(new ArrayList<PartitioningMetadata>());
-        xmlEntityMappings.setReplicationPartitioning(new ArrayList<ReplicationPartitioningMetadata>());
-        xmlEntityMappings.setRoundRobinPartitioning(new ArrayList<RoundRobinPartitioningMetadata>());
-        xmlEntityMappings.setPinnedPartitioning(new ArrayList<PinnedPartitioningMetadata>());
-        xmlEntityMappings.setRangePartitioning(new ArrayList<RangePartitioningMetadata>());
-        xmlEntityMappings.setValuePartitioning(new ArrayList<ValuePartitioningMetadata>());
-        xmlEntityMappings.setHashPartitioning(new ArrayList<HashPartitioningMetadata>());
-        xmlEntityMappings.setNamedQueries(new ArrayList<NamedQueryMetadata>());
-        xmlEntityMappings.setSqlResultSetMappings(new ArrayList<SQLResultSetMappingMetadata>());
+        xmlEntityMappings.setMixedConverters(new ArrayList<>());
+        xmlEntityMappings.setMappedSuperclasses(new ArrayList<>());
+        xmlEntityMappings.setTenantDiscriminatorColumns(new ArrayList<>());
+        xmlEntityMappings.setTypeConverters(new ArrayList<>());
+        xmlEntityMappings.setObjectTypeConverters(new ArrayList<>());
+        xmlEntityMappings.setSerializedConverters(new ArrayList<>());
+        xmlEntityMappings.setStructConverters(new ArrayList<>());
+        xmlEntityMappings.setTableGenerators(new ArrayList<>());
+        xmlEntityMappings.setSequenceGenerators(new ArrayList<>());
+        xmlEntityMappings.setPartitioning(new ArrayList<>());
+        xmlEntityMappings.setReplicationPartitioning(new ArrayList<>());
+        xmlEntityMappings.setRoundRobinPartitioning(new ArrayList<>());
+        xmlEntityMappings.setPinnedPartitioning(new ArrayList<>());
+        xmlEntityMappings.setRangePartitioning(new ArrayList<>());
+        xmlEntityMappings.setValuePartitioning(new ArrayList<>());
+        xmlEntityMappings.setHashPartitioning(new ArrayList<>());
+        xmlEntityMappings.setNamedQueries(new ArrayList<>());
+        xmlEntityMappings.setSqlResultSetMappings(new ArrayList<>());
     }
 
     /**
@@ -285,24 +256,24 @@ public class JPAMetadataGenerator {
      */
     protected void initializeXMLAttributeLists(ClassAccessor accessor) {
         accessor.setAttributes(new XMLAttributes());
-        accessor.getAttributes().setIds(new ArrayList<IdAccessor>());
-        accessor.getAttributes().setBasics(new ArrayList<BasicAccessor>());
-        accessor.getAttributes().setArrays(new ArrayList<ArrayAccessor>());
-        accessor.getAttributes().setStructures(new ArrayList<StructureAccessor>());
-        accessor.getAttributes().setEmbeddeds(new ArrayList<EmbeddedAccessor>());
+        accessor.getAttributes().setIds(new ArrayList<>());
+        accessor.getAttributes().setBasics(new ArrayList<>());
+        accessor.getAttributes().setArrays(new ArrayList<>());
+        accessor.getAttributes().setStructures(new ArrayList<>());
+        accessor.getAttributes().setEmbeddeds(new ArrayList<>());
 
         // initialize other various lists (to avoid exceptions)
-        accessor.getAttributes().setBasicCollections(new ArrayList<BasicCollectionAccessor>());
-        accessor.getAttributes().setBasicMaps(new ArrayList<BasicMapAccessor>());
-        accessor.getAttributes().setElementCollections(new ArrayList<ElementCollectionAccessor>());
-        accessor.getAttributes().setManyToManys(new ArrayList<ManyToManyAccessor>());
-        accessor.getAttributes().setManyToOnes(new ArrayList<ManyToOneAccessor>());
-        accessor.getAttributes().setOneToManys(new ArrayList<OneToManyAccessor>());
-        accessor.getAttributes().setOneToOnes(new ArrayList<OneToOneAccessor>());
-        accessor.getAttributes().setTransformations(new ArrayList<TransformationAccessor>());
-        accessor.getAttributes().setTransients(new ArrayList<TransientAccessor>());
-        accessor.getAttributes().setVariableOneToOnes(new ArrayList<VariableOneToOneAccessor>());
-        accessor.getAttributes().setVersions(new ArrayList<VersionAccessor>());
+        accessor.getAttributes().setBasicCollections(new ArrayList<>());
+        accessor.getAttributes().setBasicMaps(new ArrayList<>());
+        accessor.getAttributes().setElementCollections(new ArrayList<>());
+        accessor.getAttributes().setManyToManys(new ArrayList<>());
+        accessor.getAttributes().setManyToOnes(new ArrayList<>());
+        accessor.getAttributes().setOneToManys(new ArrayList<>());
+        accessor.getAttributes().setOneToOnes(new ArrayList<>());
+        accessor.getAttributes().setTransformations(new ArrayList<>());
+        accessor.getAttributes().setTransients(new ArrayList<>());
+        accessor.getAttributes().setVariableOneToOnes(new ArrayList<>());
+        accessor.getAttributes().setVersions(new ArrayList<>());
     }
 
     /**
@@ -312,8 +283,8 @@ public class JPAMetadataGenerator {
      * @see org.eclipse.persistence.tools.oracleddl.metadata.CompositeDatabaseType
      */
     public XMLEntityMappings generateXmlEntityMappings(List<CompositeDatabaseType> databaseTypes) {
-        List<ProcedureType> procedures = new ArrayList<ProcedureType>();
-        List<TableType> tables = new ArrayList<TableType>();
+        List<ProcedureType> procedures = new ArrayList<>();
+        List<TableType> tables = new ArrayList<>();
 
         // populate lists of TableTypes and ProcedureTypes
         for (CompositeDatabaseType dbType : databaseTypes) {
@@ -405,8 +376,8 @@ public class JPAMetadataGenerator {
         // set the return parameter
         storedFunc.setReturnParameter(processArgument(fType.getReturnArgument()));
         // process the function's arguments
-        if (fType.getArguments().size() > 0) {
-            List<StoredProcedureParameterMetadata> params = new ArrayList<StoredProcedureParameterMetadata>();
+        if (!fType.getArguments().isEmpty()) {
+            List<StoredProcedureParameterMetadata> params = new ArrayList<>();
             for (ArgumentType arg : fType.getArguments()) {
                 params.add(processArgument(arg));
             }
@@ -424,8 +395,8 @@ public class JPAMetadataGenerator {
         storedProc.setProcedureName(pType.getProcedureName());
         storedProc.setReturnsResultSet(false);
         // process the procedure's arguments
-        if (pType.getArguments().size() > 0) {
-            List<StoredProcedureParameterMetadata> params = new ArrayList<StoredProcedureParameterMetadata>();
+        if (!pType.getArguments().isEmpty()) {
+            List<StoredProcedureParameterMetadata> params = new ArrayList<>();
             for (ArgumentType arg : pType.getArguments()) {
                 params.add(processArgument(arg));
             }
@@ -441,11 +412,11 @@ public class JPAMetadataGenerator {
         NamedPLSQLStoredFunctionQueryMetadata storedFunc = new NamedPLSQLStoredFunctionQueryMetadata();
         storedFunc.setName(getQueryNameForProcedureType(fType));
         storedFunc.setProcedureName(pkgType.getPackageName() + DOT + fType.getProcedureName());
-        List<PLSQLParameterMetadata> params = new ArrayList<PLSQLParameterMetadata>();
+        List<PLSQLParameterMetadata> params = new ArrayList<>();
         // set the return parameter
         storedFunc.setReturnParameter(processPLSQLArgument(fType.getReturnArgument()));
         // process the function's arguments
-        if (fType.getArguments().size() > 0) {
+        if (!fType.getArguments().isEmpty()) {
             for (ArgumentType arg : fType.getArguments()) {
                 params.add(processPLSQLArgument(arg));
             }
@@ -462,8 +433,8 @@ public class JPAMetadataGenerator {
         storedProc.setName(getQueryNameForProcedureType(pType));
         storedProc.setProcedureName(pkgType.getPackageName() + DOT + pType.getProcedureName());
         // process the procedure's arguments
-        if (pType.getArguments().size() > 0) {
-            List<PLSQLParameterMetadata> params = new ArrayList<PLSQLParameterMetadata>();
+        if (!pType.getArguments().isEmpty()) {
+            List<PLSQLParameterMetadata> params = new ArrayList<>();
             for (ArgumentType arg : pType.getArguments()) {
                 params.add(processPLSQLArgument(arg));
             }
@@ -571,7 +542,7 @@ public class JPAMetadataGenerator {
         objectType.setName(oType.getTypeName());
         objectType.setJavaType(getGeneratedJavaClassName(oType.getTypeName(), defaultPackage));
         // process the object type's fields
-        List<PLSQLParameterMetadata> fields = new ArrayList<PLSQLParameterMetadata>();
+        List<PLSQLParameterMetadata> fields = new ArrayList<>();
         for (FieldType ft : oType.getFields()) {
             PLSQLParameterMetadata fieldMetadata = new PLSQLParameterMetadata();
             fieldMetadata.setName(ft.getFieldName());
@@ -683,7 +654,7 @@ public class JPAMetadataGenerator {
             plsqlRecord.setJavaType(getGeneratedJavaClassName(typeName));
         }
 
-        List<PLSQLParameterMetadata> fields = new ArrayList<PLSQLParameterMetadata>();
+        List<PLSQLParameterMetadata> fields = new ArrayList<>();
         PLSQLParameterMetadata field;
         for (FieldType fld : plsqlRecordType.getFields()) {
             field = new PLSQLParameterMetadata();
@@ -774,7 +745,7 @@ public class JPAMetadataGenerator {
             // add a struct to satisfy field ordering
             StructMetadata struct = new StructMetadata();
             struct.setName(recordMetadata.getCompatibleType());
-            List<String> fields = new ArrayList<String>();
+            List<String> fields = new ArrayList<>();
             for (PLSQLParameterMetadata fld : recordMetadata.getFields()) {
                 fields.add(fld.getName());
             }
@@ -831,7 +802,7 @@ public class JPAMetadataGenerator {
             // add a struct to satisfy field ordering
             StructMetadata struct = new StructMetadata();
             struct.setName(objectTypeMetadata.getName());
-            List<String> fields = new ArrayList<String>();
+            List<String> fields = new ArrayList<>();
             for (PLSQLParameterMetadata fld : objectTypeMetadata.getFields()) {
                 fields.add(fld.getName());
             }
@@ -976,7 +947,7 @@ public class JPAMetadataGenerator {
         if (generateCRUDOps) {
             // don't blow away the Entity's query metadata
             if (entity.getNamedNativeQueries() == null) {
-                entity.setNamedNativeQueries(new ArrayList<NamedNativeQueryMetadata>());
+                entity.setNamedNativeQueries(new ArrayList<>());
             }
 
             String tableName = entity.getTable().getName();
@@ -986,7 +957,7 @@ public class JPAMetadataGenerator {
             List<BasicAccessor> basics = entity.getAttributes().getBasics();
 
             // list of all mappings (ids and basics)
-            List<MappingAccessor> mappings = new ArrayList<MappingAccessor>();
+            List<MappingAccessor> mappings = new ArrayList<>();
             mappings.addAll(ids);
             mappings.addAll(basics);
 
@@ -1064,7 +1035,7 @@ public class JPAMetadataGenerator {
      */
     protected List<String> getProcessedTypes() {
         if (processedTypes == null) {
-            processedTypes = new ArrayList<String>();
+            processedTypes = new ArrayList<>();
         }
         return processedTypes;
     }
@@ -1073,7 +1044,7 @@ public class JPAMetadataGenerator {
      */
     protected List<String> getGeneratedEmbeddables() {
         if (generatedEmbeddables == null) {
-            generatedEmbeddables = new ArrayList<String>();
+            generatedEmbeddables = new ArrayList<>();
         }
         return generatedEmbeddables;
     }
@@ -1083,7 +1054,7 @@ public class JPAMetadataGenerator {
      * generated embeddable names will be checked for the given typeName.
      */
     protected boolean embeddableAlreadyProcessed(String embeddableName) {
-        return generatedEmbeddables != null && generatedEmbeddables.size() > 0 && generatedEmbeddables.contains(embeddableName);
+        return generatedEmbeddables != null && !generatedEmbeddables.isEmpty() && generatedEmbeddables.contains(embeddableName);
     }
 
     /**
@@ -1091,7 +1062,7 @@ public class JPAMetadataGenerator {
      * processed type names will be checked for the given typeName.
      */
     protected boolean alreadyProcessed(String typeName) {
-        return processedTypes != null && processedTypes.size() > 0 && processedTypes.contains(typeName);
+        return processedTypes != null && !processedTypes.isEmpty() && processedTypes.contains(typeName);
     }
 
     /**

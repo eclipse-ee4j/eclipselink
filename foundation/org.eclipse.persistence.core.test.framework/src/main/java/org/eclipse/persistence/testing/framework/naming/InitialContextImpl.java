@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -50,16 +50,13 @@ public class InitialContextImpl implements Context {
         }
 
         // If still not found then it just isn't there
-        if (obj == null) {
-            return null;
-        }
 
         return obj;
     }
 
-    /*************************************/
-    /***** Supported Context API *****/
-    /*************************************/
+    /* *********************************** */
+    /* **** Supported Context API *****/
+    /* *********************************** */
     @Override
     public Object lookup(String name) throws NamingException {
         Object obj = internalLookup(name);
@@ -115,9 +112,9 @@ public class InitialContextImpl implements Context {
     public void close() {
     }
 
-    /*************************************/
-    /***** Not supported Context API *****/
-    /*************************************/
+    /* *********************************** */
+    /* **** Not supported Context API **** */
+    /* *********************************** */
     @Override
     public void unbind(Name name) {
         namespace.remove(name);

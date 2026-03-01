@@ -1,0 +1,168 @@
+[#sdo-example-persistence]
+=== SDO-Persistence Integration
+
+* <<sdo-example-persistence-overview>>
+* <<sdo-example-persistence-bridge>>
+* <<sdo-example-persistence-query>>
+* <<sdo-example-persistence-persist>>
+* <<sdo-example-persistence-merge>>
+* <<sdo-example-persistence-remove>>
+
+[#sdo-example-persistence-overview]
+==== Overview
+
+In this use case a developer wishes to expose their JPA model as an SDO
+DataObject model (static or dynamic). The JPA entities are mapped to a
+XSD through JAXB mappings.
+
+* In this use case the developer defines the mapping from the JPA domain
+model (POJOs) to an XML schema (XSD) using JAXB mappings (annotations or
+EclipseLink native OXM).
+* The XSD is then generated using the JAXB Java-XML Compiler (JXC), or
+in the meet-in-the-middle case the schema from the previous step.
+* The SDO Data Object model is now implicitly define through the use of
+the generated XSD. If the service developer wishes to use a static
+DataObject model they can optionally use the SDO compiler to generate
+this model based on the XSD.
+
+[#sdo-example-persistence-bridge]
+==== Create the POJO/SDO Bridge
+
+JAXBHelperContext is the bridge between POJOs and DataObjects. This
+bridge allows POJOs to be converted to/from SDO DataObjects.
+
+[source,java]
+----
+JAXBContext jaxbContext = JAXBContext.newInstance("com.example.customer");
+JAXBHelperContext jaxbHelperContext = new JAXBHelperContext(jaxbContext);
+jaxbHelperContext.getXSDHelper().define(customerXSD);
+----
+
+When using JPA entities behind the SDO model the service developer will
+need to express the XML schema represenation through JAXB mappings
+(including MOXy extensions) on the JPA entities.
+
+For more informations see:
+
+* link:/EclipseLink/Examples/SDO/JAXB#Create_the_POJO.2FSDO_Bridge[Create
+the POJO/SDO Bridge]
+
+[#sdo-example-persistence-query]
+==== Querying
+
+When developing a service that will return SDO DataObject instances from
+the relational database the developer will issue queries against the
+database using JPA (PK Find, JP QL or Native ORM queries in JPA 1.0).
+The resulting entity/entities will then be wrapped by SDO DataObjects
+using the POJO/SDO bridge.
+
+[source,java]
+----
+EntityManagerFactory emf = Persistence.createEntityManagerFactory("CustomerExample");
+EntityManager em = emf.createEntityManager();
+MyEntity entity = em.createQuery("SELECT e FROM MyEntity e WHERE ...").getSingleResult();
+
+DataObject dataObject = jaxbHelperContext.wrap(entity);
+----
+
+[source,java]
+----
+EntityManagerFactory emf = Persistence.createEntityManagerFactory("CustomerExample");
+EntityManager em = emf.createEntityManager();
+List<MyEntity> entities = em.createQuery("SELECT e FROM MyEntity e WHERE ...").getResultList();
+
+List<DataObject> dataObjects = jaxbHelperContext.wrap(entities);
+----
+
+[#sdo-example-persistence-persist]
+==== Creating (JPA persist)
+
+Creating new entities in the database can be done by explicitly
+requesting the new data to be persisted. If the DataObject being
+persisted combines new objects with updates to existing objects then the
+Updating scenario below will be used.
+
+[source,java]
+----
+EntityManagerFactory emf = Persistence.createEntityManagerFactory("CustomerExample");
+EntityManager em = emf.createEntityManager();
+
+JAXBContext jaxbContext = JAXBContext.newInstance("com.example.customer");
+JAXBHelperContext jaxbHelperContext = new JAXBHelperConext(jaxbContext);
+jaxbHelperContext.getXSDHelper().define(customerXSD);
+
+Type customerType = jaxbHelperContext.getType(Customer.class);
+DataObject customerDO = jaxbHelperContext.getDataFactory().create(customerType);
+customerDO.setString("first-name", "Jane");
+customerDO.setString("last-name", "Doe");
+DataObject addressDO customerDO.create("address");
+addressDO.setString("street", "123 Any Street");
+addressDO.setString("city", "Any Town");
+
+em.getTransaction().begin();
+em.persist(jaxbHelperContext.unwrap(customerDO));
+em.getTransaction().commit();
+----
+
+[NOTE]
+====
+The cascade persist configuration on the underlying entity's
+relationship mappings will define the scope of which new instances in
+the graph will be persisted.
+====
+
+[#sdo-example-persistence-merge]
+==== Updating (JPA merge)
+
+In the case of updates to existing entities as well as addition of new
+entities through relationships the merge call on the helper will be
+used.
+
+[source,java]
+----
+EntityManagerFactory emf = Persistence.createEntityManagerFactory("CustomerExample");
+EntityManager em = emf.createEntityManager();
+
+JAXBContext jaxbContext = JAXBContext.newInstance("com.example.customer");
+JAXBHelperContext jaxbHelperContext = new JAXBHelperConext(jaxbContext);
+jaxbHelperContext.getXSDHelper().define(customerXSD);
+
+em.getTransaction().begin();
+em.merge(jaxbHelperContext.unwrap(dataObject));
+// ... Other operations within the same TX
+em.getTransaction().commit();
+----
+
+[NOTE]
+====
+The creation of new objects and the removal of existing objects
+in the graph result in database operations based on the cascade and
+private-owned configurations in the JPA model's relationship mappings.
+====
+
+[NOTE]
+====
+getTransaction() may return different transactions so that in the
+example above commit() may not affect the same transaction affected by
+the call to begin().
+====
+
+[#sdo-example-persistence-remove]
+==== Deleting (JPA remove)
+
+Entities can be removed from the database using the helper's remove
+call:
+
+[source,java]
+----
+EntityManagerFactory emf = Persistence.createEntityManagerFactory("CustomerExample");
+EntityManager em = emf.createEntityManager();
+
+JAXBContext jaxbContext = JAXBContext.newInstance("com.example.customer");
+JAXBHelperContext jaxbHelperContext = new JAXBHelperConext(jaxbContext);
+jaxbHelperContext.getXSDHelper().define(customerXSD);
+
+em.getTransaction().begin();
+em.remove(jaxbHelperContext.unwrap(dataObject));
+em.getTransaction().commit();
+----

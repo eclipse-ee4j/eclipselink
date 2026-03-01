@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,9 +15,11 @@
 package org.eclipse.persistence.testing.oxm.mappings.simpletypes.typetranslator.rootelement;
 
 // JDK imports
-import java.nio.ByteBuffer;
+
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
+
+import java.nio.ByteBuffer;
 // TopLink imports
 
 public class TypeTranslatorTestCases extends XMLMappingTestCases {
@@ -38,7 +40,7 @@ public class TypeTranslatorTestCases extends XMLMappingTestCases {
         ByteBuffer myBuffer = ByteBuffer.allocate(4);
 
         myBuffer.putInt(15);
-        byte bytes[] = myBuffer.array();
+        byte[] bytes = myBuffer.array();
 
         Byte[] byteObjects = new Byte[bytes.length];
         for(int i=0; i<bytes.length; i++){

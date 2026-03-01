@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,9 +14,10 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.transparentindirection;
 
-import java.util.*;
-
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * configure Order descriptor to use IndirectLists
@@ -33,8 +34,8 @@ public class CustomIndirectContainerProject extends IndirectListProject {
 
         // SECTION: DESCRIPTOR
         descriptor.setJavaClass(Dog.class);
-        Vector vector = new Vector();
-        vector.addElement("DOG");
+        List<String> vector = new ArrayList<>();
+        vector.add("DOG");
         descriptor.setTableNames(vector);
         descriptor.addPrimaryKeyFieldName("DOG.ID");
 

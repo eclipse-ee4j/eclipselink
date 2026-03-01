@@ -1,0 +1,61 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[SCALING]]
+== Scaling Applications in Clusters
+
+This chapter provides instructions for configuring EclipseLink
+applications to ensure scalability in an application server cluster. The
+instructions are generic and can be applied to any application server
+cluster; however, additional content is provided for Oracle WebLogic
+Server and Oracle GlassFish Server. Consult your vendor's documentation
+as required.
+
+This chapter includes the following sections:
+
+* xref:{relativedir}/scaling001.adoc#SCALING001[Introduction to the Solution]
+* xref:{relativedir}/scaling002.adoc#SCALING002[Implementing the Solution]
+* xref:{relativedir}/scaling003.adoc#SCALING003[Additional Resources]
+
+*Use Case*
+
+Applications must scale to meet client demand.
+
+*Solution*
+
+The implementation is achieved by using a cache, configuring cache
+coordination, and using data partitioning.
+
+*Components*
+
+* EclipseLink 2.4 or later.
+* Application Server that supports clustering.
+* Any compliant JDBC database.
+
+*Sample*
+
+See xref:{relativedir}/scaling003.adoc#SCALING003[Additional Resources,] for links to
+samples.
+
+//Introduction to the Solution
+include::{rootdir}/scaling001.adoc[]
+
+//Implementing the Solution
+include::{rootdir}/scaling002.adoc[]
+
+//Additional Resources
+include::{rootdir}/scaling003.adoc[]

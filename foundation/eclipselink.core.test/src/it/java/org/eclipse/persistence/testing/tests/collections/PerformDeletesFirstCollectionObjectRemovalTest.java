@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,15 +14,15 @@
 //     dminsky - initial API and implementation
 package org.eclipse.persistence.testing.tests.collections;
 
-import java.util.*;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.mappings.OneToManyMapping;
+import org.eclipse.persistence.sessions.UnitOfWork;
+import org.eclipse.persistence.testing.framework.TestCase;
+import org.eclipse.persistence.testing.framework.TestErrorException;
+import org.eclipse.persistence.testing.models.collections.Menu;
+import org.eclipse.persistence.testing.models.collections.Restaurant;
 
-import org.eclipse.persistence.sessions.*;
-import org.eclipse.persistence.mappings.*;
-import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.internal.helper.*;
-
-import org.eclipse.persistence.testing.framework.*;
-import org.eclipse.persistence.testing.models.collections.*;
+import java.util.Collection;
 
 /*
  * Test that removing a child object from a parent 1:M collection in a UoW also removes
@@ -65,7 +65,7 @@ public class PerformDeletesFirstCollectionObjectRemovalTest extends TestCase {
 
         Restaurant restaurantClone = (Restaurant) uow.registerObject(restaurantOriginal);
 
-        assertTrue(restaurantClone.getMenus() != null);
+        assertNotNull(restaurantClone.getMenus());
         Collection menus = restaurantClone.getMenus().values();
         assertFalse(menus.isEmpty());
 
@@ -88,16 +88,15 @@ public class PerformDeletesFirstCollectionObjectRemovalTest extends TestCase {
     protected void verify() {
         // we remove 1 element from the collection, so expected size is startSize - 1
         if (endSize != (startSize - 1)) {
-            StringBuffer buffer = new StringBuffer();
-            buffer.append("Parent collection was not updated correctly.");
-            buffer.append(Helper.cr());
-            buffer.append("Start size: ");
-            buffer.append(startSize);
-            buffer.append(" End size: ");
-            buffer.append(endSize);
-            buffer.append(" Perform deletes first: ");
-            buffer.append(this.shouldPerformDeletesFirst);
-            throw new TestErrorException(buffer.toString());
+            String buffer = "Parent collection was not updated correctly." +
+                    System.lineSeparator() +
+                    "Start size: " +
+                    startSize +
+                    " End size: " +
+                    endSize +
+                    " Perform deletes first: " +
+                    this.shouldPerformDeletesFirst;
+            throw new TestErrorException(buffer);
         }
     }
 

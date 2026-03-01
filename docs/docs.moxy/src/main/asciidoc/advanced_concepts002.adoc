@@ -1,0 +1,207 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[ADVANCEDCONCEPTS002]]
+=== Customizing XML Name Conversions
+
+JAXB has well-established rules for converting Java names to XML names,
+which can be overridden through the use of annotations. This can become
+burdensome if your names follow common rules (such as making everything
+upper-case). Starting with EclipseLink MOXy 2.3, you can override this
+default naming algorithm.
+
+This example will create an implementation of `XMLNameTransformer` to
+provide a naming algorithm to MOXy.
+
+==== Using the XMLNameTransformer
+
+The `XMLNameTransformer` interface defines several methods for
+customizing name generation:
+
+* `transformElementName` – called when creating an element from a Java
+field or method
+* `transformAttributeName` – called when creating an attribute from a
+Java field or method
+* `transformTypeName` – called when creating a simple type or complex
+type from a Java class
+* `transformRootElementName` – called when creating a (root) simple type
+or complex type from a Java class
+
+link:#CHDCIJJI[Example 8-2] defines an `XMLNameTransformer` that does
+the following:
+
+* Root element will be the unqualified Java class name
+* Other types will be named (unqualified Java class name) + "Type"
+* Camel-case element names will be converted to lower-case, hyphenated
+names
+* XML attributes will appear in all upper-case
+
+[[CHDCIJJI]]
+
+*_Example 8-2 Using an XMLNameTransformer_*
+
+[source,oac_no_warn]
+----
+package example;
+ 
+public class NameGenerator implements org.eclipse.persistence.oxm.XMLNameTransformer {
+ 
+    // Use the unqualified class name as our root element name.
+    public String transformRootElementName(String name) {
+        return name.substring(name.lastIndexOf('.') + 1);
+    }
+ 
+    // The same algorithm as root element name plus "Type" appended to the end.
+    public String transformTypeName(String name) {
+        return transformRootElementName(name) + "Type";
+    }
+ 
+    // The name will be lower-case with word breaks represented by '-'.  
+    // Note:  A capital letter in the original name represents the start of a new word.
+    public String transformElementName(String name) {
+        StringBuilder strBldr = new StringBuilder();
+        for (char character : name.toCharArray()) {
+            if (Character.isUpperCase(character)) {
+                strBldr.append('-');
+                strBldr.append(Character.toLowerCase(character));
+            } else {
+                strBldr.append(character);
+            }
+         }
+        return strBldr.toString();
+    }
+ 
+    // The original name converted to upper-case.
+    public String transformAttributeName(String name) {
+        return name.toUpperCase();
+    }
+ 
+}
+ 
+----
+
+==== Example Model
+
+The domain model in link:#CHDEEICC[Example 8-3] will be used. To save
+space, the accessors have been omitted.
+
+[[CHDEEICC]]
+
+*_Example 8-3 Customer_*
+
+[source,oac_no_warn]
+----
+import jakarta.xml.bind.annotation.*;
+ 
+@XmlRootElement
+@XmlType(propOrder={"fullName", "shippingAddress"})
+@XmlAccessorType(XmlAccessType.FIELD)
+public class Customer {
+ 
+    @XmlAttribute
+    private long id;
+ 
+    private String fullName;     
+ 
+    private Address shippingAddress;
+ 
+}
+ 
+----
+
+[[sthref141]]
+
+*_Example 8-4 Address.java_*
+
+[source,oac_no_warn]
+----
+import jakarta.xml.bind.annotation.*;
+ 
+@XmlAccessorType(XmlAccessType.FIELD)
+public class Address {
+ 
+    @XmlAttribute
+    private String type;
+ 
+    private String street;
+ 
+}
+ 
+----
+
+==== Specifying the Naming Algorithm
+
+Our implementation of the naming algorithm can be provided via the
+`@XmlNameTransformer` annotation (package or type level) or via the
+external bindings file in XML.
+
+. At the type level:
++
+[source,oac_no_warn]
+----
+@XmlNameTransformer(example.NameGenerator.class)
+public class Customer
+----
+. At the package level (package-info.java):
++
+[source,oac_no_warn]
+----
+@XmlNameTransformer(example.NameGenerator.class)
+package example;
+----
+. External bindings file:
++
+[source,oac_no_warn]
+----
+<?xml version='1.0' encoding='UTF-8'?>
+<xml-bindings xmlns='http://www.eclipse.org/eclipselink/xsds/persistence/oxm' xml-name-transformer='example.NameGenerator'>
+   <xml-schema/>
+   <java-types/>
+</xml-bindings>
+ 
+----
+
+==== XML Output
+
+Without any customization, JAXB's default naming algorithm will produce
+XML that looks like the following:
+
+[source,oac_no_warn]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<customer id="123">
+    <fullName>Jane Doe</fullName>
+    <shippingAddress type="residential">
+        <street>1 Any Street</street>
+    </shippingAddress>
+</customer>
+ 
+----
+
+By leveraging our customized naming algorithm we can get the following
+output without specifying any additional metadata on our domain classes:
+
+[source,oac_no_warn]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<Customer ID="123">
+   <full-name>Jane Doe</full-name>
+   <shipping-address TYPE="residential">
+      <street>1 Any Street</street>
+   </shipping-address>
+</Customer>
+----

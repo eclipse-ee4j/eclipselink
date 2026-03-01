@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,23 +18,29 @@ package org.eclipse.persistence.config;
 
 /**
  * Parameter delimiter char hint values.
- *
+ * <p>
  * The class contains the default value for QueryHints.PARAMETER_DELIMITER query hint.
  * A single char should be specified if the default hash symbol needs to be overridden.
  * <p>i.e. "%"
- *
- * JPA Query Hint Usage:
- *
- * <p><code>query.setHint(QueryHints.PARAMETER_DELIMITER, "%");</code>
+ * <p>JPA Query Hint usage:
+ * {@snippet :
+ *  query.setHint(QueryHints.PARAMETER_DELIMITER, "%");
+ * }
  * <p>or
- * <p><code>@QueryHint(name=QueryHints.PARAMETER_DELIMITER, value="%")</code>
+ * {@snippet :
+ *  @QueryHint(name=QueryHints.PARAMETER_DELIMITER, value="%")
+ * }
  *
  * <p>Hint values are case-insensitive.
  * "" cannot be used - and will be replaced with the default value ParameterDelimiterType.DEFAULT
  *
  * @see QueryHints#PARAMETER_DELIMITER
  */
-public class ParameterDelimiterType {
+public final class ParameterDelimiterType {
     public static final String  Hash = "#";
     public static final String DEFAULT = Hash;
+
+    private ParameterDelimiterType() {
+        // no instance please
+    }
 }

@@ -1,0 +1,320 @@
+image:Elug_draft_icon.png[Image:Elug draft
+icon.png,title="Image:Elug draft icon.png"] *For the latest EclipseLink
+documentation, please see
+http://www.eclipse.org/eclipselink/documentation/*
+
+'''''
+
+*TOC* Special:Whatlinkshere_Configuring_an_XML_Descriptor_(ELUG)[Related
+Topics]
+
+For information on how to create XML descriptors, see
+link:Creating%20an%20XML%20Descriptor%20(ELUG)[Creating an XML
+Descriptor].
+
+This table lists the default configurable options for an XML descriptor.
+
+[#Table 57-1]##
+
+[width="100%",cols="<66%,<16%,<18%",options="header",]
+|===
+|*Option to Configure* |*EclipseLink Workbench* |*Java*
+|link:Using%20Workbench%20(ELUG)#How_to_Configure_XML_Schema_Namespace[XML
+schema namespace] |image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Using%20Workbench%20(ELUG)#How_to_Configure_an_XML_Schema_Reference[XML
+schema reference] |image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:#Configuring_Schema_Context_for_an_XML_Descriptor[Schema context]
+|image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:#Configuring_for_Complex_Type_of_anyType[Complex type of anyType]
+|image:support.gif[Supported,title="Supported"]
+|image:unsupport.gif[Unsupported.,title="Unsupported."]
+
+|link:#Configuring_Default_Root_Element[Default root element]
+|image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:#Configuring_Document_Preservation[Document preservation]
+|image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Descriptor_Comments[Comments]
+|image:support.gif[Supported,title="Supported"]
+|image:unsupport.gif[Unsupported.,title="Unsupported."]
+
+|link:Using%20Workbench%20(ELUG)#How_to_Configure_Classes[Classes]
+|image:support.gif[Supported,title="Supported"]
+|image:unsupport.gif[Unsupported.,title="Unsupported."]
+
+|link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Inheritance_for_a_Child_(Branch_or_Leaf)_Class_Descriptor[Inheritance
+for a child class descriptor]
+|image:support.gif[Supported.,title="Supported."]
+|image:support.gif[Supported.,title="Supported."]
+
+|link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Inheritance_for_a_Parent_(Root)_Descriptor[Inheritance
+for a parent descriptor] |image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Inherited_Attribute_Mapping_in_a_Subclass[Inherited
+attribute mapping in a subclass]
+|image:support.gif[Supported.,title="Supported."]
+|image:support.gif[Supported.,title="Supported."]
+
+|link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Instantiation_Policy[Instantiation
+policy] |image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Copy_Policy[Copy
+policy] |image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_a_Descriptor[Amendment
+methods] |image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Mapping%20(ELUG)#Configuring_a_Mapping[Mapping]
+|image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+|===
+
+For more information, see
+link:Introduction%20to%20XML%20Descriptors%20(ELUG)[Introduction to XML
+Descriptors].
+
+== Configuring Schema Context for an XML Descriptor
+
+The Workbench uses the schema context to associate the XML descriptor
+reference class with a simple or complex type in one of the schemas
+associated with the XML project (see
+link:Using%20Workbench%20(ELUG)#How_to_Configure_an_XML_Schema_Reference[How
+to Configure an XML Schema Reference]). This allows the Workbench to
+display the appropriate attributes available for mapping in that
+context.
+
+You must configure the schema context for an XML descriptor regardless
+of whether or not you are using the Workbench.
+
+The EclipseLink runtime uses the schema context to validate XML
+fragments.
+
+=== How to Configure Schema Context for an XML Descriptor Using Workbench
+
+To associate an XML descriptor with a specific schema complex type, use
+this procedure:
+
+[arabic]
+. Select an XML descriptor in the *Navigator*. Its properties appear in
+the Editor.
+. Click the *Descriptor Info* tab. The Descriptor Info tab appears.
+[#Figure 57-1]##*_Descriptor Info Tab, Schema Context Option_*
+image:schmctx.gif[Descriptor Info Tab, Schema Context
+Option,title="Descriptor Info Tab, Schema Context Option"]
+. Complete the Schema Context field on the tab.
+. Click *Browse* to select the schema element to associate with this
+descriptor. For more information, see
+link:#Choosing_a_Schema_Context[Choosing a Schema Context].
+
+See Also:
+
+link:Configuring%20a%20Descriptor%20(ELUG)[Configuring a Descriptor]
+
+==== Choosing a Schema Context
+
+[arabic]
+. Use the Choose Schema Context dialog box to select a specific schema
+element (such as when mapping an element). [#Figure 57-2]## *_Choose
+Schema Context Dialog Box_* image:schcontx.gif[Choose Schema Context
+Dialog Box,title="Choose Schema Context Dialog Box"]
+. Select a schema element and click *OK*.
+
+=== How to Configure Schema Context for an XML Descriptor Using Java
+
+To configure an XML descriptor with a schema context using Java, create
+a descriptor amendment method (see
+link:Configuring%20a%20Descriptor%20(ELUG)[Configuring a Descriptor])
+that uses `+XMLSchemaReference+` method `+setSchemaContext+`, as this
+example shows.
+
+[#Example 57-1]## *_Configuring Schema Context_*
+
+[source,java]
+----
+ public void addToDescriptor(ClassDescriptor descriptor) {
+     descriptor.getSchemaReference().setSchemaContext(xPath);
+ }
+----
+
+== Configuring for Complex Type of anyType
+
+This attribute applies only to Workbench. Use this option to solve "`No
+schema context is specified`" problems (see
+link:Using%20Workbench%20(ELUG)#How_to_Use_the_Problems_Window[How to
+Use the Problems Window]) for an XML descriptor that does not represent
+an element in your XML schema.
+
+In general, Workbench assumes that every XML descriptor must have a
+schema context (see
+link:#Configuring_Schema_Context_for_an_XML_Descriptor[Configuring
+Schema Context for an XML Descriptor]). However, if a class in your
+project does not relate to an element in your schema, then it does not
+have a schema context.
+
+Consider the schema that this exmaple shows:
+
+[#Example 57-2]## *_Schema Using xsd:anyType_*
+
+[source,xml]
+----
+ <?xml version="1.0" encoding="UTF-8"?>
+ <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+     <xsd:element name="customer" type="customer-type"/>
+     <xsd:complexType name="customer-type">
+         <xsd:sequence>
+             <xsd:element name="contact-method" type="xsd:anyType"/>
+         </xsd:sequence>
+     </xsd:complexType>
+
+     <xsd:element name="address">
+         <xsd:complexType>
+             <xsd:sequence>
+                 <xsd:element name="street" type="xsd:string"/>
+                 <xsd:element name="city" type="xsd:string"/>
+             </xsd:sequence>
+
+         </xsd:complexType>
+     </xsd:element>
+     <xsd:element name="phone-number" type="xsd:string"/>
+ </xsd:schema>
+----
+
+Because element `+contact-method+` is of type `+xsd:anyType+`, your
+project requires a class to represent that type, such as class
+`+AnyTypeImpl+` shown in the link:#Figure_57-3[Class Representing
+xsd:anyType] figure. Because this class does not relate to any complex
+type in your schema, it has no schema context. In this example, you
+would select this option for the `+AnyTypeImpl+` class.
+
+[#Figure 57-3]## *_Class Representing xsd:anyType_*
+
+.Class Representing xsd:anyType
+image::cmplxtp.gif[Class Representing
+xsd:anyType,title="Class Representing xsd:anyType"]
+
+For more information, see
+Introduction%20to%20XML%20Mappings%20(ELUG)#xs:any_and_xs:anyType_Support[xs:any
+and xs:anyType Support].
+
+=== How to Configure Complex Type of anyType Using Workbench
+
+To specify that the descriptor represents a complex type of `+anyType+`,
+use this procedure:
+
+[arabic]
+. Select a descriptor in the *Navigator*. Its properties appear in the
+Editor.
+. Click the *Descriptor Info* tab. The Descriptor Info tab appears.
+*_Descriptor Info Tab, Complex Type "`anyType`" Option
+_*image:drcmplxa.gif[Descriptor Info Tab, Complex Type "`anyType`"
+Option,title="Descriptor Info Tab, Complex Type "anyType" Option"]
+. Select the *Descriptor Represents Complex Type "`anyType`"* option to
+specify this descriptor as the root element.
+
+== Configuring Default Root Element
+
+The default root element is the name that EclipseLink uses for the root
+element when marshalling objects for this descriptor to, and
+unmarshalling from, an XML document. Descriptors used only in composite
+relationship mappings do not require a default root element.
+
+For more information, see
+link:Introduction%20to%20Descriptors%20(ELUG)#Default_Root_Element[Default
+Root Element].
+
+=== How to Configure Default Root Element Using Workbench
+
+To specify a schema element as the default root element for the
+descriptor, use this procedure:
+
+[arabic]
+. Select a descriptor in the *Navigator*. Its properties appear in the
+Editor.
+. Click the *Descriptor Info* tab. The Descriptor Info tab appears.
+*_Descriptor Info Tab, Default Root Option_*
+image:docroot.gif[Descriptor Info Tab, Default Root
+Option,title="Descriptor Info Tab, Default Root Option"]
+. Select the *Default Root Element* option to specify this descriptor as
+the root element.
+. Click *Browse* to select the schema element to identify as the root
+element for this descriptor. See link:#Choosing_a_Root_Element[Choosing
+a Root Element] for more information.
+
+See Also:
+
+link:#Configuring_Default_Root_Element[Configuring Default Root Element]
+
+==== Choosing a Root Element
+
+Use the Choose Root Element dialog box to select a specific root
+element.
+
+*_Choose Root Element Dialog Box_*
+
+.Choose Root Element Dialog Box
+image::rootelem.gif[Choose Root Element Dialog
+Box,title="Choose Root Element Dialog Box"]
+
+Select the root element and click *OK*.
+
+== Configuring Document Preservation
+
+EclipseLink lets you preserve any "`extra`" data in your XML source that
+is not required to map to an object model (such as comments, processing
+instructions, or unmapped elements).
+
+This permits round-tripping from XML to objects and back to XML without
+losing any data.
+
+=== How to Configure Document Preservation Using Workbench
+
+To preserve the entire XML source document, use this procedure:
+
+[arabic]
+. Select a descriptor in the *Navigator*. Its properties appear in the
+Editor.
+. Click the *Descriptor Info* tab. The Descriptor Info tab appears.
+*_Descriptor Info Tab, Preserve Document Option_*
+image:preserve.gif[Descriptor Info Tab, Preserve Document
+Option,title="Descriptor Info Tab, Preserve Document Option"]
+. Select the *Preserve Document* option to maintain any extra
+information from the source XML document that EclipseLink does not
+require (such as comments).
+
+See Also:
+
+link:#Configuring_Document_Preservation[Configuring Document
+Preservation]
+
+link:Configuring%20a%20Descriptor%20(ELUG)[Configuring a Descriptor]
+
+=== How to Configure Document Preservation Using Java
+
+To configure an XML descriptor to maintain any extra information from
+the source XML document that EclipseLink does not require (such as
+comments) using Java, create a descriptor amendment method (see
+link:Configuring%20a%20Descriptor%20(ELUG)[Configuring a Descriptor])
+that configures the descriptor using `+XMLDescriptor+` method
+`+setShouldPreserveDocument+`.
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Release_1[Category: Release 1] Category:_Task[Category: Task]
+Category:_XML[Category: XML]

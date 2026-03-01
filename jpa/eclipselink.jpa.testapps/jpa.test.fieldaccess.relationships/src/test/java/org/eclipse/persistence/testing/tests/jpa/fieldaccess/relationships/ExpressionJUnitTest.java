@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -84,7 +84,7 @@ public class ExpressionJUnitTest extends JUnitTestCase {
             List<Customer> result = (List<Customer>) ((JpaEntityManager)em.getDelegate()).createQuery(query).getResultList();
             commitTransaction(em);
             closeEntityManager(em);
-            assertTrue("Test error: No Customers found", result.size()!=0 );
+            assertTrue("Test error: No Customers found", !result.isEmpty());
             Customer returned = result.get(0);
             assertEquals("Test error: No Customers found", "Manotick", returned.getCity());
 
@@ -147,7 +147,7 @@ public class ExpressionJUnitTest extends JUnitTestCase {
             List<Customer> result = (List<Customer>) ((JpaEntityManager)em.getDelegate()).createQuery(query).getResultList();
             commitTransaction(em);
             closeEntityManager(em);
-            assertTrue("Test error: No Customers found", result.size()!=0 );
+            assertTrue("Test error: No Customers found", !result.isEmpty());
             Customer returned = result.get(0);
             assertEquals("Test error: No Customers found", " anotick", returned.getCity());
 
@@ -215,7 +215,7 @@ public class ExpressionJUnitTest extends JUnitTestCase {
             List<Customer> result = (List<Customer>) ((JpaEntityManager)em.getDelegate()).createQuery(query).getResultList();
             commitTransaction(em);
             closeEntityManager(em);
-            assertTrue("Test error: No Items found", result.size()!=0 );
+            assertTrue("Test error: No Items found", !result.isEmpty());
             Customer returned = result.get(0);
             assertEquals("Test error: No Customers found", "ManotickM", returned.getCity());
 
@@ -278,7 +278,7 @@ public class ExpressionJUnitTest extends JUnitTestCase {
             List<Customer> result = (List<Customer>) ((JpaEntityManager)em.getDelegate()).createQuery(query).getResultList();
             commitTransaction(em);
             closeEntityManager(em);
-            assertTrue("Test error: No Items found", result.size()!=0 );
+            assertTrue("Test error: No Items found", !result.isEmpty());
             Customer returned = result.get(0);
             if (!getServerSession("fieldaccess-relationships").getPlatform().isMaxDB() && !getServerSession("fieldaccess-relationships").getPlatform().isSybase()) {
                 // bug 327435: MaxDB trims trailing spaces of [VAR]CHAR fields
@@ -347,7 +347,7 @@ public class ExpressionJUnitTest extends JUnitTestCase {
             List<Item> result = (List<Item>) ((JpaEntityManager)em.getDelegate()).createQuery(query).getResultList();
             commitTransaction(em);
             closeEntityManager(em);
-            assertTrue("Test error: No Items found", result.size()!=0 );
+            assertTrue("Test error: No Items found", !result.isEmpty());
             Item returned = result.get(0);
             assertEquals("Test error: No Items found", "itemi", returned.getName());
 
@@ -414,7 +414,7 @@ public class ExpressionJUnitTest extends JUnitTestCase {
             List<Item> result = (List<Item>) ((JpaEntityManager)em.getDelegate()).createQuery(query).getResultList();
             commitTransaction(em);
             closeEntityManager(em);
-            assertTrue("Test error: No Items found", result.size()!=0 );
+            assertTrue("Test error: No Items found", !result.isEmpty());
             Item returned = result.get(0);
             assertEquals("Test error: No Items found", " tem ", returned.getName());
 
@@ -475,7 +475,7 @@ public class ExpressionJUnitTest extends JUnitTestCase {
             List<Item> result = (List<Item>) ((JpaEntityManager)em.getDelegate()).createQuery(query).getResultList();
             commitTransaction(em);
             closeEntityManager(em);
-            assertTrue("Test error: No Items found", result.size()!=0 );
+            assertTrue("Test error: No Items found", !result.isEmpty());
             Item returned = result.get(0);
             assertEquals("Test error: IncorrectItem found", "itemi", returned.getName());
 
@@ -536,7 +536,7 @@ public class ExpressionJUnitTest extends JUnitTestCase {
             List<Item> result = (List<Item>) ((JpaEntityManager)em.getDelegate()).createQuery(query).getResultList();
             commitTransaction(em);
             closeEntityManager(em);
-            assertTrue("Test error: No Items found", result.size()!=0 );
+            assertTrue("Test error: No Items found", !result.isEmpty());
             Item returned = result.get(0);
             assertEquals("Test error: IncorrectItem found", "itemi", returned.getName());
 

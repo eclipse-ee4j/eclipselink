@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,8 +14,10 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.tools.schemaframework;
 
-import java.io.*;
-import org.eclipse.persistence.exceptions.*;
+import java.io.IOException;
+import java.io.Writer;
+
+import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 /**
@@ -36,6 +38,7 @@ public class ViewDefinition extends DatabaseObjectDefinition {
      * Return the DDL to create the view.
      */
     @Override
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public Writer buildCreationWriter(AbstractSession session, Writer writer) throws ValidationException {
         try {
             writer.write(session.getPlatform().getCreateViewString());
@@ -54,6 +57,7 @@ public class ViewDefinition extends DatabaseObjectDefinition {
      * Return the DDL to drop the view.
      */
     @Override
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public Writer buildDeletionWriter(AbstractSession session, Writer writer) throws ValidationException {
         try {
             writer.write("DROP VIEW " + getFullName());

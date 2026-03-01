@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,17 +15,10 @@
 //       - 376603: Provide for table per tenant support for multitenant applications
 package org.eclipse.persistence.descriptors;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.Vector;
-
 import org.eclipse.persistence.annotations.TenantTableDiscriminatorType;
 import org.eclipse.persistence.config.EntityManagerProperties;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
-import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.DatabaseMapping;
@@ -33,6 +26,13 @@ import org.eclipse.persistence.mappings.DirectCollectionMapping;
 import org.eclipse.persistence.mappings.ManyToManyMapping;
 import org.eclipse.persistence.mappings.OneToOneMapping;
 import org.eclipse.persistence.tools.schemaframework.TableDefinition;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * A table per tenant multitenant policy. Tables can either be per schema
@@ -57,7 +57,7 @@ public class TablePerMultitenantPolicy implements MultitenantPolicy, Cloneable {
     public TablePerMultitenantPolicy(ClassDescriptor desc) {
         descriptor = desc;
         type = TenantTableDiscriminatorType.SUFFIX;
-        tablePerTenantTables = new HashMap(4);
+        tablePerTenantTables = new HashMap<>(4);
         contextProperty = EntityManagerProperties.MULTITENANT_PROPERTY_DEFAULT;
     }
 
@@ -83,23 +83,20 @@ public class TablePerMultitenantPolicy implements MultitenantPolicy, Cloneable {
      */
     @Override
     public MultitenantPolicy clone(ClassDescriptor descriptor) {
-        TablePerMultitenantPolicy clonedPolicy = null;
-
         try {
-            clonedPolicy = (TablePerMultitenantPolicy) super.clone();
+            TablePerMultitenantPolicy clonedPolicy = (TablePerMultitenantPolicy) super.clone();
 
             clonedPolicy.descriptor = descriptor;
 
             // Create a separate hashmap per clone.
-            clonedPolicy.tablePerTenantTables = new HashMap(4);
+            clonedPolicy.tablePerTenantTables = new HashMap<>(4);
             for (DatabaseTable table : this.tablePerTenantTables.keySet()) {
                 clonedPolicy.tablePerTenantTables.put(table, this.tablePerTenantTables.get(table));
             }
+            return clonedPolicy;
         } catch (CloneNotSupportedException exception) {
             throw new InternalError(exception.getMessage());
         }
-
-        return clonedPolicy;
     }
 
     /**
@@ -242,17 +239,17 @@ public class TablePerMultitenantPolicy implements MultitenantPolicy, Cloneable {
      * This method is used to update the table per tenant descriptor with
      * a table per tenant prefix or suffix on its associated tables. This
      * includes any relation tables from mappings.
-     *
+     * <p>
      * If the given session is a client session than we must clone the tables.
      * Outside of a client session, assume global usage and no cloning is
      * needed.
-     *
+     * <p>
      * This method should only be called at the start of a client session
      * lifecycle and should only be called once.
      */
     protected void setTablePerTenant() {
         // Update the descriptor tables.
-        Vector<DatabaseTable> tables = NonSynchronizedVector.newInstance(3);
+        List<DatabaseTable> tables = new ArrayList<>(3);
         for (DatabaseTable table : descriptor.getTables()) {
             tables.add(updateTable(table));
         }
@@ -316,7 +313,7 @@ public class TablePerMultitenantPolicy implements MultitenantPolicy, Cloneable {
      * a table per tenant schema. This includes any relation tables from
      * mappings. This will be done through the setting of a table qualifier on
      * the tables.
-     *
+     * <p>
      * This method should only be called at the start of a client session
      * lifecycle and should only be called once.
      */

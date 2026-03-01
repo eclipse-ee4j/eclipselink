@@ -28,9 +28,9 @@ package org.eclipse.persistence.internal.jpa.querydef;
  * @author gyorke
  * @since EclipseLink 1.2
  */
-public interface InternalSelection{
+public interface InternalSelection {
 
-    void findRootAndParameters(CommonAbstractCriteriaImpl criteriaQuery);
+    void findRootAndParameters(CommonAbstractCriteriaImpl<?> criteriaQuery);
 
     org.eclipse.persistence.expressions.Expression getCurrentNode();
 

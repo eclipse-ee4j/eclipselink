@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,38 +16,28 @@ package org.eclipse.persistence.testing.oxm.mappings.simpletypes.documentpreserv
 
 
 // JDK imports
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.StringReader;
-import java.io.StringWriter;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamWriter;
 
-// XML imports
+import org.eclipse.persistence.oxm.XMLContext;
+import org.eclipse.persistence.oxm.XMLMarshaller;
+import org.eclipse.persistence.oxm.XMLUnmarshallerHandler;
+import org.eclipse.persistence.oxm.platform.DOMPlatform;
+import org.eclipse.persistence.sessions.Project;
+import org.eclipse.persistence.sessions.factories.XMLProjectReader;
+import org.eclipse.persistence.sessions.factories.XMLProjectWriter;
+import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 
-// TopLink imports
-import org.eclipse.persistence.oxm.XMLContext;
-import org.eclipse.persistence.oxm.XMLDescriptor;
-import org.eclipse.persistence.oxm.XMLMarshaller;
-import org.eclipse.persistence.oxm.XMLRoot;
-import org.eclipse.persistence.oxm.XMLUnmarshallerHandler;
-import org.eclipse.persistence.oxm.platform.DOMPlatform;
-import org.eclipse.persistence.oxm.record.MarshalRecord;
-import org.eclipse.persistence.exceptions.XMLMarshalException;
-import org.eclipse.persistence.sessions.Project;
-import org.eclipse.persistence.testing.oxm.OXTestCase;
-import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
-import org.eclipse.persistence.sessions.factories.XMLProjectReader;
-import org.eclipse.persistence.sessions.factories.XMLProjectWriter;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.io.StringReader;
+import java.io.StringWriter;
 
 public class DocumentPreservationTestCases extends XMLMappingTestCases {
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/simpletypes/documentpreservation/DocumentPreservationTestIn.xml";

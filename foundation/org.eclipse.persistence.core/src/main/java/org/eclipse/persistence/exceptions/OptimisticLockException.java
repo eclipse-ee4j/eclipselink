@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,10 +14,11 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.exceptions;
 
-import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.exceptions.i18n.ExceptionMessageGenerator;
+import org.eclipse.persistence.queries.ObjectLevelModifyQuery;
 import org.eclipse.persistence.sessions.SessionProfiler;
-import java.util.Vector;
+
+import java.util.List;
 
 /**
  * <p><b>Purpose</b>:  This exception is used when TopLink's optimistic locking feature is used.
@@ -39,6 +40,7 @@ public class OptimisticLockException extends EclipseLinkException {
     public final static int UNWRAPPING_OBJECT_DELETED_SINCE_LAST_READ = 5009;
     public final static int OBJECT_CHANGED_SINCE_LAST_MERGE = 5010;
     public final static int STATEMENT_NOT_EXECUTED_IN_BATCH = 5011;
+    public final static int STATEMENT_NOT_EXECUTED_IN_BATCH_WITH_PARAMETERS_LIST = 5012;
 
     /**
      * INTERNAL:
@@ -89,6 +91,14 @@ public class OptimisticLockException extends EclipseLinkException {
         optimisticLockException.setErrorCode(STATEMENT_NOT_EXECUTED_IN_BATCH);
         return optimisticLockException;
 
+    }
+
+    public static OptimisticLockException batchStatementExecutionFailureWithParametersList(Object object, List<List> parameters, String queryString){
+        Object[] args = { object.getClass().getName(), parameters.toString(), queryString};
+
+        OptimisticLockException optimisticLockException = new OptimisticLockException(ExceptionMessageGenerator.buildMessage(OptimisticLockException.class, STATEMENT_NOT_EXECUTED_IN_BATCH_WITH_PARAMETERS_LIST, args));
+        optimisticLockException.setErrorCode(STATEMENT_NOT_EXECUTED_IN_BATCH_WITH_PARAMETERS_LIST);
+        return optimisticLockException;
     }
 
     public static OptimisticLockException mustHaveMappingWhenStoredInObject(Class<?> aClass) {
@@ -156,7 +166,7 @@ public class OptimisticLockException extends EclipseLinkException {
         return optimisticLockException;
     }
 
-    public static OptimisticLockException unwrappingObjectDeletedSinceLastRead(Vector pkVector, String className) {
+    public static OptimisticLockException unwrappingObjectDeletedSinceLastRead(List<?> pkVector, String className) {
         Object[] args = { pkVector, className };
 
         OptimisticLockException optimisticLockException = new OptimisticLockException(ExceptionMessageGenerator.buildMessage(OptimisticLockException.class, UNWRAPPING_OBJECT_DELETED_SINCE_LAST_READ, args));

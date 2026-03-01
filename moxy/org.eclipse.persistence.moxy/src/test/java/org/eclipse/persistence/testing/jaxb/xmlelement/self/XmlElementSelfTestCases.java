@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,14 +14,8 @@
 //     Denise Smith - September 2013
 package org.eclipse.persistence.testing.jaxb.xmlelement.self;
 
-import java.io.IOException;
 import java.io.InputStream;
 
-import javax.xml.transform.Result;
-import javax.xml.transform.stream.StreamResult;
-
-import org.eclipse.persistence.jaxb.json.JsonSchemaOutputResolver;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;

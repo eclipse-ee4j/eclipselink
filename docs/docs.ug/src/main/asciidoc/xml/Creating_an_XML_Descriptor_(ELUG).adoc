@@ -1,0 +1,77 @@
+image:Elug_draft_icon.png[Image:Elug draft
+icon.png,title="Image:Elug draft icon.png"] *For the latest EclipseLink
+documentation, please see
+http://www.eclipse.org/eclipselink/documentation/*
+
+'''''
+
+*TOC* Special:Whatlinkshere_Creating_an_XML_Descriptor_(ELUG)[Related
+Topics]
+
+This section explains how to create descriptor options specific to an
+XML descriptor.
+
+For information on how to create more than one type of descriptor, see
+link:Creating%20a%20Descriptor%20(ELUG)[Creating a Descriptor].
+
+After you create a descriptor, you must configure its various options
+(see link:Configuring%20a%20Descriptor%20(ELUG)[Configuring a
+Descriptor]) and use it to define mappings.
+
+For complete information on the various types of mapping that
+EclipseLink supports, see
+link:Introduction%20to%20Mappings%20(ELUG)[Introduction to Mappings] and
+link:Creating%20a%20Mapping%20(ELUG)[Creating a Mapping].
+
+For complete information on the various types of descriptor that
+EclipseLink supports, see
+link:Introduction%20to%20Descriptors%20(ELUG)#Descriptor_Types[Descriptor
+Types].
+
+For more information, see the following:
+
+* link:Introduction%20to%20Descriptors%20(ELUG)[Introduction to
+Descriptors]
+* link:Introduction%20to%20XML%20Descriptors%20(ELUG)[Introduction to
+XML Descriptors]
+
+== Creating an XML Descriptor
+
+You can create an XML descriptor using the
+link:#How_to_Create_an_XML_Descriptor_Using_Workbench[Workbench] or
+link:#How_to_Create_an_XML_Descriptor_Using_Java[Java code]. We
+recommend that you use the Workbench to create and manage your XML
+descriptors.
+
+=== How to Create an XML Descriptor Using Workbench
+
+image:xmldesin.gif[XML descriptor icon,title="XML descriptor icon"] When
+you add a class to an XML project (see
+link:Configuring%20a%20Project%20(ELUG)#Configuring_Project_Classpath[Configuring
+Project Classpath]), Workbench creates an XML descriptor for the class.
+
+An XML descriptor is always a composite type.
+
+=== How to Create an XML Descriptor Using Java
+
+This example shows how to create an XML descriptor using Java code.
+
+[#Example 56-1]## *_Creating an XML Descriptor in Java_*
+
+`+XMLDescriptor descriptor = new XMLDescriptor();+`
+`+descriptor.setJavaClass(YourClass.class);+`
+
+[width="100%",cols="<100%",]
+|===
+|*Note:* Use the `+org.eclipse.persistence.ox.XMLDescriptor+` class. Do
+not use the deprecated
+`+org.eclipse.persistence.internal.xml\'\'.\'\'XMLDescriptor+` class.
+|===
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Release_1[Category: Release 1] Category:_Task[Category: Task]
+Category:_XML[Category: XML]

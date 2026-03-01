@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -65,7 +65,7 @@ public class SerializationOfValueHolderWithTIMESTAMPTZTest extends TestCase {
             //serialize object by writing to a stream
             stream.writeObject(tstz);
             stream.flush();
-            byte arr[] = byteStream.toByteArray();
+            byte[] arr = byteStream.toByteArray();
             ByteArrayInputStream inByteStream = new ByteArrayInputStream(arr);
             ObjectInputStream inObjStream = new ObjectInputStream(inByteStream);
 
@@ -73,7 +73,7 @@ public class SerializationOfValueHolderWithTIMESTAMPTZTest extends TestCase {
             try {
                 TIMESTAMPTZOwner ts = (TIMESTAMPTZOwner) inObjStream.readObject();
             } catch (ClassNotFoundException e) {
-                System.out.println("Could not deserialize object " + e.toString());
+                System.out.println("Could not deserialize object " + e);
             }
         } catch (Exception e) {
             ex = e;

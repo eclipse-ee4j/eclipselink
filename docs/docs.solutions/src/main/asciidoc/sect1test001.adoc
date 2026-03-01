@@ -1,0 +1,66 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[MIGRATETOPLINK000]]
+=== Introduction to the Solution
+
+"Native" TopLink ORM refers to the API, configuration files, and tools
+for object-relational mapping that evolved in TopLink before the Jakarta
+Persistence API (JPA) standardized an object-relational mapping API.
+Full JPA support was introduced in Oracle TopLink 10__g__ (10.1.3.1.0),
+via TopLink Essentials. However, native TopLink continued to be
+supported.
+
+Prior to the TopLink 11__g__ (11.1.1) release, Oracle contributed the
+TopLink source code--including TopLink JPA and native TopLink--to the
+Eclipse Foundation, where it was used to form the basis of the
+open-source EclipseLink persistence services project. Then, in TopLink
+11__g__ Release 1 (11.1.1), Oracle started to include EclipseLink in
+TopLink, providing TopLink's core functionality.
+
+EclipseLink developers using TopLink versions 11.1.1.0.0 though
+11.1.1.6.0 have access to native TopLink ORM in either the proprietary
+Oracle `toplink.jar` or in the EclipseLink `eclipselink.jar`. In
+`toplink.jar`, the classes are in packages whose names start with
+`oracle.toplink.*`. In `eclipselink.jar`, those package names begin
+instead with `org.eclipselink.persistence.`.
+
+NOTE: The `toplink.jar` file was deprecated in TopLink 11__g__ and is no long
+shipped with TopLink 12__c__. It is recommended that you migrate off
+`oracle.toplink.*` in TopLink 11__g__.
+
+You can migrate applications that use `oracle.toplink.*` packages from
+`toplink.jar` to use `org.eclipselink.persistence.` packages from
+`eclipselink.jar`. The application functionality remains the same, but
+migrating to `eclipselink.jar` provides the most up-to-date code base.
+After migrating, you will have access to other EclipseLink features and
+will be better prepared to convert your application to use JPA or one of
+the other persistence services included in current versions of
+EclipseLink.
+
+This chapter explains how to use the renaming tool that is packaged with
+stand-alone EclipseLink to easily change the package names in your
+application and how to perform other actions necessary to migrate to the
+current code base.
+
+NOTE: Following the instructions in this chapter will update your application
+to use the current EclipseLink code base. Doing so retains the design
+and functionality of your application as originally implemented.
+However, these instructions do not describe how to convert a native
+TopLink-based application to use JPA or any of the other persistence
+services in current versions of EclipseLink. See the other EclipseLink
+documentation sources for that information.

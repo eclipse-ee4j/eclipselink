@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -61,18 +61,20 @@ import org.w3c.dom.Document;
  */
 public class CursorTypeTestSuite {
     static final String CREATE_EMPTABLE =
-        "CREATE TABLE EMPTABLE (" +
-            "\nEMPNO DECIMAL(4,0) NOT NULL," +
-            "\nENAME VARCHAR(10)," +
-            "\nHIREDATE DATE," +
-            "\nPRIMARY KEY (EMPNO)" +
-        "\n)";
+            """
+                    CREATE TABLE EMPTABLE (
+                    EMPNO DECIMAL(4,0) NOT NULL,
+                    ENAME VARCHAR(10),
+                    HIREDATE DATE,
+                    PRIMARY KEY (EMPNO)
+                    )""";
     static final String CREATE_CURSORTYPE_PACKAGE =
-        "CREATE OR REPLACE PACKAGE CURSORTYPE AS" +
-            "\nTYPE WEAKLY_TYPED_REF_CURSOR IS REF CURSOR;" +
-            "\nPROCEDURE GET_EMP(EMP_NAME EMPTABLE.ENAME%TYPE, EMP OUT WEAKLY_TYPED_REF_CURSOR);" +
-            "\nFUNCTION GET_EMP_FUNC(EMP_NAME VARCHAR) RETURN WEAKLY_TYPED_REF_CURSOR;" +
-        "\nEND CURSORTYPE;";
+            """
+                    CREATE OR REPLACE PACKAGE CURSORTYPE AS
+                    TYPE WEAKLY_TYPED_REF_CURSOR IS REF CURSOR;
+                    PROCEDURE GET_EMP(EMP_NAME EMPTABLE.ENAME%TYPE, EMP OUT WEAKLY_TYPED_REF_CURSOR);
+                    FUNCTION GET_EMP_FUNC(EMP_NAME VARCHAR) RETURN WEAKLY_TYPED_REF_CURSOR;
+                    END CURSORTYPE;""";
 
     static final String DROP_CURSORTYPE_PACKAGE = "DROP PACKAGE CURSORTYPE";
     static final String DROP_EMPTABLE = "DROP TABLE EMPTABLE";
@@ -109,7 +111,7 @@ public class CursorTypeTestSuite {
 
         String schema = System.getProperty(DATABASE_USERNAME_KEY, DEFAULT_DATABASE_USERNAME);
 
-        List<String> procedurePatterns = new ArrayList<String>();
+        List<String> procedurePatterns = new ArrayList<>();
         procedurePatterns.add("GET_EMP");
         procedurePatterns.add("GET_EMP_FUNC");
 
@@ -166,17 +168,16 @@ public class CursorTypeTestSuite {
     }
 
     static final String cursortypemetadata =
-        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-        "<orm:entity-mappings xsi:schemaLocation=\"http://www.eclipse.org/eclipselink/xsds/persistence/orm org/eclipse/persistence/jpa/eclipselink_orm_2_5.xsd\"" +
-        "     xmlns:orm=\"http://www.eclipse.org/eclipselink/xsds/persistence/orm\" " +
-        "     xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n" +
-        "   <orm:named-plsql-stored-procedure-query name=\"GET_EMP\" procedure-name=\"CURSORTYPE.GET_EMP\">\n" +
-        "      <orm:parameter direction=\"IN\" name=\"EMP_NAME\" database-type=\"VARCHAR_TYPE\"/>\n" +
-        "      <orm:parameter direction=\"OUT_CURSOR\" name=\"EMP\" database-type=\"CURSORTYPE.WEAKLY_TYPED_REF_CURSOR\"/>\n" +
-        "   </orm:named-plsql-stored-procedure-query>\n" +
-        "   <orm:named-plsql-stored-function-query name=\"GET_EMP_FUNC\" function-name=\"CURSORTYPE.GET_EMP_FUNC\">\n" +
-        "      <orm:parameter direction=\"IN\" name=\"EMP_NAME\" database-type=\"VARCHAR_TYPE\"/>\n" +
-        "      <orm:return-parameter direction=\"OUT_CURSOR\" name=\"CURSOR\" database-type=\"CURSORTYPE.WEAKLY_TYPED_REF_CURSOR\"/>\n" +
-        "   </orm:named-plsql-stored-function-query>\n" +
-        "</orm:entity-mappings>";
+            """
+                    <?xml version="1.0" encoding="UTF-8"?>
+                    <orm:entity-mappings xsi:schemaLocation="http://www.eclipse.org/eclipselink/xsds/persistence/orm org/eclipse/persistence/jpa/eclipselink_orm_2_5.xsd"     xmlns:orm="http://www.eclipse.org/eclipselink/xsds/persistence/orm"      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                       <orm:named-plsql-stored-procedure-query name="GET_EMP" procedure-name="CURSORTYPE.GET_EMP">
+                          <orm:parameter direction="IN" name="EMP_NAME" database-type="VARCHAR_TYPE"/>
+                          <orm:parameter direction="OUT_CURSOR" name="EMP" database-type="CURSORTYPE.WEAKLY_TYPED_REF_CURSOR"/>
+                       </orm:named-plsql-stored-procedure-query>
+                       <orm:named-plsql-stored-function-query name="GET_EMP_FUNC" function-name="CURSORTYPE.GET_EMP_FUNC">
+                          <orm:parameter direction="IN" name="EMP_NAME" database-type="VARCHAR_TYPE"/>
+                          <orm:return-parameter direction="OUT_CURSOR" name="CURSOR" database-type="CURSORTYPE.WEAKLY_TYPED_REF_CURSOR"/>
+                       </orm:named-plsql-stored-function-query>
+                    </orm:entity-mappings>""";
 }

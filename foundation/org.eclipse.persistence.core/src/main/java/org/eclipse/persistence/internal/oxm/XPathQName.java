@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,6 +15,7 @@
 package org.eclipse.persistence.internal.oxm;
 
 import javax.xml.namespace.QName;
+import java.util.Objects;
 
 /**
  * <p>This class represents the pairing of a local name and a namespace uri.
@@ -83,10 +84,9 @@ public class XPathQName {
 
     @Override
     public boolean equals(Object obj){
-        if(obj == null || !(obj instanceof XPathQName)){
+        if(obj == null || !(obj instanceof XPathQName qName)){
             return false;
         }
-        XPathQName qName = (XPathQName)obj;
         if(isNamespaceAware && qName.isNamespaceAware){
              if(namespaceUri == null){
                     if(qName.namespaceUri != null){
@@ -100,13 +100,13 @@ public class XPathQName {
                     }
                 }
         }
-        return ((localName == qName.localName) || ((localName != null) && localName.equals(qName.localName)));
+        return (Objects.equals(localName, qName.localName));
     }
 
     @Override
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
-        if(null != namespaceUri && namespaceUri.length() > 0) {
+        if(null != namespaceUri && !namespaceUri.isEmpty()) {
             stringBuilder.append('{');
             stringBuilder.append(namespaceUri);
             stringBuilder.append('}');

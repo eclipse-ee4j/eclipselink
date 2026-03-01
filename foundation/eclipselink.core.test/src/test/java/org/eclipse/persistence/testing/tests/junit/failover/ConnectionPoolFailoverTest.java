@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -82,7 +82,7 @@ public class ConnectionPoolFailoverTest extends FailoverBase<ServerSession> {
                 Assert.fail("Should have reconnected an not thrown exception.");
             }
         }
-        connections = new ArrayList<Accessor>();
+        connections = new ArrayList<>();
         // prime connection pools.
         for (int i = 0; i < 10; ++i) {
             connections.add(getEmulatedSession().getConnectionPool("default").acquireConnection());

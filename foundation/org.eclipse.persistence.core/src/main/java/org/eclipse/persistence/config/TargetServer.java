@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2022 IBM Corporation and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,15 +21,18 @@ package org.eclipse.persistence.config;
 /**
  * Target server persistence property values.
  *
- * <p>JPA persistence property Usage:
- *
- * <p><code>properties.add(PersistenceUnitProperties.TargetServer, TargetServer.WebLogic);</code><br>
- * <p>JPA persistence unit persistence.xml  Usage:
- * <p><code>&lt;property name="eclipselink.target-server" value="WebLogic"/&gt;</code></p>
+ * <p>JPA persistence property usage:
+ * {@snippet :
+ *  properties.add(PersistenceUnitProperties.TargetServer, TargetServer.WebLogic);
+ * }
+ * <p>JPA persistence unit persistence.xml  usage:
+ * {@snippet lang="XML" :
+ *  <property name="eclipselink.target-server" value="WebLogic"/>
+ * }
  *
  * <p>Property values are case-insensitive
  */
-public class TargetServer {
+public final class TargetServer {
     public static final String  None = "None";
     public static final String  Glassfish = "Glassfish";
     public static final String  WebSphere = "WebSphere";
@@ -43,6 +46,11 @@ public class TargetServer {
     public static final String  WebLogic_12 = "WebLogic_12";
     public static final String  JBoss = "JBoss";
     public static final String  SAPNetWeaver_7_1 = "NetWeaver_7_1";
+    public static final String  WildFly = "WildFly";
 
     public static final String DEFAULT = None;
+
+    private TargetServer() {
+        // no instance please
+    }
 }

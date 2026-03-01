@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,12 +14,13 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.inheritance;
 
-import java.io.*;
-import java.util.Enumeration;
-import org.eclipse.persistence.descriptors.*;
-import org.eclipse.persistence.mappings.*;
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.TransformationMapping;
 import org.eclipse.persistence.sessions.DataRecord;
-import org.eclipse.persistence.tools.schemaframework.*;
+import org.eclipse.persistence.tools.schemaframework.ViewDefinition;
+
+import java.io.Serializable;
 
 public class Computer implements Serializable {
     public int id;
@@ -34,15 +35,12 @@ public class Computer implements Serializable {
         // As a result, we check for the mapping before adding it.
         // The reason this mapping is not added in the project is that some Mapping Workbench
         // tests rely on the ammendment method.
-        Enumeration<DatabaseMapping> mappings = descriptor.getMappings().elements();
-        while (mappings.hasMoreElements()) {
-            DatabaseMapping mapping = mappings.nextElement();
+        for (DatabaseMapping mapping : descriptor.getMappings()) {
             if (mapping.isTransformationMapping()) {
-                Object ctype = ((TransformationMapping)mapping).getFieldNameToMethodNames().get("CTYPE");
+                Object ctype = ((TransformationMapping) mapping).getFieldNameToMethodNames().get("CTYPE");
                 if (ctype != null) {
                     return;
                 }
-                ;
             }
         }
 

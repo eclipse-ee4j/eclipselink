@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,11 +22,13 @@ import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import org.eclipse.persistence.internal.libraries.asm.ClassReader;
-import org.eclipse.persistence.internal.libraries.asm.ClassVisitor;
-import org.eclipse.persistence.internal.libraries.asm.FieldVisitor;
-import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
-import org.eclipse.persistence.internal.libraries.asm.Opcodes;
+import org.eclipse.persistence.asm.ASMFactory;
+import org.eclipse.persistence.asm.ClassReader;
+import org.eclipse.persistence.asm.ClassVisitor;
+import org.eclipse.persistence.asm.FieldVisitor;
+import org.eclipse.persistence.asm.MethodVisitor;
+import org.eclipse.persistence.asm.Opcodes;
+
 
 public class SignatureImporter {
 
@@ -39,7 +41,7 @@ public class SignatureImporter {
 
             if (entry.getName().endsWith(".class")) {
                 InputStream in = zipFile.getInputStream(entry);
-                ClassReader reader = new ClassReader(in);
+                ClassReader reader = ASMFactory.createClassReader(in);
                 reader.accept(visitor, ClassReader.SKIP_CODE + ClassReader.SKIP_DEBUG);
                 in.close();
             }
@@ -56,7 +58,7 @@ public class SignatureImporter {
 
     class SignatureClassVisitor extends ClassVisitor {
 
-        protected Map<String, ClassSignature> classes = new HashMap<String, ClassSignature>();
+        protected Map<String, ClassSignature> classes = new HashMap<>();
 
         protected ClassSignature sig = null;
 

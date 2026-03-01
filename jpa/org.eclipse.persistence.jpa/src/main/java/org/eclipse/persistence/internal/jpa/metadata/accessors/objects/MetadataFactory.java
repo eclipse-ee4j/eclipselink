@@ -79,6 +79,14 @@ public abstract class MetadataFactory {
     }
 
     /**
+     * Return {@code true} if given {@code metadataClass} extends given class
+     * either directly or indirectly.
+     */
+    public boolean extendsClass(MetadataClass metadataClass, String superClassName) {
+        return false;
+    }
+
+    /**
      * INTERNAL:
      */
     public ClassLoader getLoader() {
@@ -117,6 +125,21 @@ public abstract class MetadataFactory {
     public abstract MetadataClass getMetadataClass(String className, boolean isLazy);
 
     /**
+     * Return {@code true} if given {@code metadataClass} implements given interface
+     * either directly or indirectly.
+     */
+    public boolean implementsInterface(MetadataClass metadataClass, String interfaceName) {
+        return false;
+    }
+
+    /**
+     * Return {@code true} if given {@code metadataClass} represents an interface.
+     */
+    public boolean isInterface(MetadataClass metadataClass) {
+        return false;
+    }
+
+    /**
      * INTERNAL:
      */
     public void setLoader(ClassLoader loader) {
@@ -138,4 +161,5 @@ public abstract class MetadataFactory {
      * to it.
      */
     public abstract void resolveGenericTypes(MetadataClass child, List<String> genericTypes, MetadataClass parent, MetadataDescriptor descriptor);
+
 }

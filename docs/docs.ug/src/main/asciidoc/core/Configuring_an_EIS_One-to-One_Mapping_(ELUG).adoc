@@ -1,0 +1,88 @@
+*TOC*
+Special:Whatlinkshere_Configuring_an_EIS_One-to-One_Mapping_(ELUG)[Related
+Topics]
+
+For information on how to create EclipseLink mappings, see
+link:Creating%20a%20Mapping%20(ELUG)#CBBHHHJC[Creating a Mapping].
+
+This table lists the configurable options for an EIS one-to-one mapping.
+
+[#Table 79-1]##
+
+Option to Configure
+
+Workbench
+
+Java
+
+Reference descriptors
+
+Foreign key pairs
+
+Bidirectional relationship
+
+Method or direct field access at the mapping level
+
+Read-only mappings
+
+Private or independent relationships
+
+Indirection (lazy loading)
+
+Mapping comments
+
+Selection interaction
+
+For more information, see the following:
+
+* link:Introduction%20to%20EIS%20Mappings%20(ELUG)#EIS_One-to-One_Mapping[EIS
+One-to-One Mapping]
+* link:Configuring%20an%20EIS%20Mapping%20(ELUG)#CHDHFGAH[Configuring an
+EIS Mapping]
+* link:Configuring%20a%20Mapping%20(ELUG)#CEGFEFJG[Configuring a
+Mapping]
+
+== Configuring Foreign Key Pairs
+
+In a one-to-one EIS mapping, you relate a source object attribute to a
+target object attribute by specifying one or more pairs of source and
+target object fields.
+
+In a one-to-one EIS mapping with key on source (see
+link:Introduction%20to%20EIS%20Mappings%20(ELUG)#EIS_One-to-One_Mappings_with_Key_on_Source[EIS
+One-to-One Mappings with Key on Source]) using XML records, EclipseLink
+puts the target XML field value into the source object’s record as a
+simple value.
+
+In a one-to-one EIS mapping with key on target (see
+link:Introduction%20to%20EIS%20Mappings%20(ELUG)#EIS_One-to-One_Mappings_with_Key_on_Target[EIS
+One-to-One Mappings with Key on Target]) using XML records, EclipseLink
+uses the source XML field value in the selection interaction to acquire
+the appropriate instance of target object.
+
+=== How to Configure Foreign Key Pairs Using Workbench
+
+To specify the source and target XML field pairs for a one-to-one EIS
+mapping, use this procedure:
+
+[arabic]
+. Select the one-to-one EIS mapping in the *Navigator*. Its properties
+appear in the Editor.
+. Click the *General* tab. The General tab opens.
+[#Figure 79-1]##*_General Tab, Foreign Keys Field_*
+image:onetoone_eis_fk.gif[General Tab, Foreign Keys
+Field,title="General Tab, Foreign Keys Field"]
+. Click *Add* in the Foreign Keys area to add a key pair. The Specify
+Field Pair dialog box appears. [#Figure 79-2]##*_Specify Field Pair
+Dialog Box_* image:spfldpr.gif[Specify Field Pair Dialog
+Box,title="Specify Field Pair Dialog Box"]
+. Click *Browse* to add a foreign key for the *Source XPath* and *Target
+XPath* fields.
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Release_1[Category: Release 1] Category:_Task[Category: Task]
+Category:_EIS[Category: EIS]

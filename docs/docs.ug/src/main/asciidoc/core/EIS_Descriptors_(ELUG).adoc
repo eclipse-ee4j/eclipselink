@@ -1,0 +1,19 @@
+The following sections contain general information about EIS
+descriptors, as well as detailed information on how to create and
+configure these descriptors:
+
+* link:Introduction_to_EIS_Descriptors_(ELUG)[Introduction to EIS
+Descriptors]
+
+* link:Creating_an_EIS_Descriptor_(ELUG)[Creating an EIS Descriptor]
+
+* link:Configuring_an_EIS_Descriptor_(ELUG)[Configuring an EIS
+Descriptor]
+
+*Special:Whatlinkshere_EIS_Descriptors_(ELUG)[Related Topics]*
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]

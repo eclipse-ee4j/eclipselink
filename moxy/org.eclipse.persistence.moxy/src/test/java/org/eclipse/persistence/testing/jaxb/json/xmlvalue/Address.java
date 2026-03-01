@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,12 +33,12 @@ public class Address {
     }
 
     public String toString(){
-          String s = "Address:" +  " ";
+          StringBuilder s = new StringBuilder("Address:" + " ");
         for(int i=0; i<getAddressInfo().size(); i++){
-            s += " " + getAddressInfo().get(i);
+            s.append(" ").append(getAddressInfo().get(i));
         }
 
-        return s;
+        return s.toString();
     }
 
     public boolean equals(Object obj) {

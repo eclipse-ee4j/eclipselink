@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2018 IBM Corporation and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,13 +17,19 @@
 //       - 455690: Move JNDIConnector lookup type to ServerPlatform.
 package org.eclipse.persistence.sessions;
 
-import java.util.*;
-import java.sql.*;
-import javax.naming.*;
-import javax.sql.*;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.internal.localization.*;
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.localization.ToStringLocalization;
+
+import javax.naming.CompositeName;
+import javax.naming.CompoundName;
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Properties;
 
 /**
  * Specifies the J2EE DataSource lookup options.
@@ -136,7 +142,7 @@ public class JNDIConnector implements Connector {
             // JDBCLogin usually initializes these values with an empty string.
             // WebLogic data source does not support the getConnection() call with arguments
             // it only supports the zero argument call. DM 26/07/2000
-            if ((user == null) || (user.length() == 0)) {
+            if ((user == null) || (user.isEmpty())) {
                 return dataSource.getConnection();
             } else {
                 Object passwordObject = properties.get("password");
@@ -243,7 +249,7 @@ public class JNDIConnector implements Connector {
      */
     @Override
     public String toString() {
-        return Helper.getShortClassName(getClass()) + ToStringLocalization.buildMessage("datasource_name", null) + "=>" + getName();
+        return getClass().getSimpleName() + ToStringLocalization.buildMessage("datasource_name", null) + "=>" + getName();
     }
 
     /**
@@ -252,7 +258,7 @@ public class JNDIConnector implements Connector {
      */
     @Override
     public void toString(java.io.PrintWriter writer) {
-        writer.print(ToStringLocalization.buildMessage("connector", null) + "=>" + Helper.getShortClassName(getClass()));
+        writer.print(ToStringLocalization.buildMessage("connector", null) + "=>" + getClass().getSimpleName());
         writer.print(" ");
         writer.println(ToStringLocalization.buildMessage("datasource_name", null) + "=>" + getName());
     }

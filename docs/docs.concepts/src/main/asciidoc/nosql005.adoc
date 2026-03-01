@@ -1,0 +1,31 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[NOSQL005]]
+=== About Queries and the NoSQL Platform
+
+Whether querying is supported in NoSQL depends on the NoSQL platform you
+are using. Some NoSQL data-sources may support dynamic querying through
+their own query language, others may not support querying at all. The
+following types of queries are supported by NoSQL.
+
+* JPQL Queries
+* Native Queries
+* Interaction Queries
+
+For more information on support for these queries, see "Defining
+Queries" in _Solutions Guide for EclipseLink_.

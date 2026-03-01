@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -244,10 +244,9 @@ public class Root {
         return isSetString1MethodCalled;
     }
     public boolean equals(Object obj){
-        if(!(obj instanceof Root)){
+        if(!(obj instanceof Root compareObject)){
             return false;
         }
-        Root compareObject = (Root)obj;
         if(child1 == null){
             if(compareObject.child1 !=null){
                 return false;

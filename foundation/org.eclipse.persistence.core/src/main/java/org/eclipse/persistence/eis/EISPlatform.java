@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,23 +14,31 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.eis;
 
-import java.util.*;
-import java.io.*;
-import java.lang.reflect.*;
-import jakarta.resource.*;
-import jakarta.resource.cci.*;
-import org.w3c.dom.Element;
-import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.eis.interactions.*;
+import jakarta.resource.ResourceException;
+import jakarta.resource.cci.InteractionSpec;
+import jakarta.resource.cci.MappedRecord;
+import org.eclipse.persistence.eis.interactions.EISInteraction;
+import org.eclipse.persistence.eis.interactions.QueryStringInteraction;
+import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.databaseaccess.DatasourceCall;
 import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
 import org.eclipse.persistence.internal.expressions.SQLStatement;
+import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.queries.Call;
+import org.eclipse.persistence.queries.DatabaseQuery;
+import org.w3c.dom.Element;
+
+import java.io.IOException;
+import java.io.Writer;
+import java.lang.reflect.Method;
+import java.util.Collection;
+import java.util.Vector;
 
 /**
  * <p>An <code>EISPlatform</code> defines any EIS adapter specific behavior.
@@ -299,7 +307,7 @@ public class EISPlatform extends DatasourcePlatform {
     public void setValueInRecord(String key, Object value, MappedRecord record, EISAccessor accessor) {
         Object recordValue = value;
         if (shouldConvertDataToStrings() && !(value instanceof jakarta.resource.cci.Record) && !(value instanceof Collection)) {
-            recordValue = getConversionManager().convertObject(value, ClassConstants.STRING);
+            recordValue = getConversionManager().convertObject(value, CoreClassConstants.STRING);
         }
         record.put(key, recordValue);
     }
@@ -311,12 +319,11 @@ public class EISPlatform extends DatasourcePlatform {
      */
     @Override
     public void appendParameter(Call call, Writer writer, Object parameter) {
-        if (parameter instanceof Vector) {
-            Vector<?> records = (Vector<?>)parameter;
+        if (parameter instanceof Vector<?> records) {
 
             // May be a collection of record.
             for (int index = 0; index < records.size(); index++) {
-                appendParameter(call, writer, (records).elementAt(index));
+                appendParameter(call, writer, (records).get(index));
             }
         } else if (parameter instanceof org.eclipse.persistence.oxm.record.DOMRecord) {
             String xml = ((org.eclipse.persistence.oxm.record.DOMRecord)parameter).transformToXML();

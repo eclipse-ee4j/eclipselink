@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,11 +31,10 @@ public class RootNoAnnotations {
     public Map<String,List<String>> stringListMap;
 
      public boolean equals(Object obj){
-            if(!(obj instanceof RootNoAnnotations)) {
+            if(!(obj instanceof RootNoAnnotations compare)) {
                 return false;
             }
-            RootNoAnnotations compare = (RootNoAnnotations)obj;
-            if (stringArrayMap != null ? compare.stringArrayMap == null || !Arrays.deepEquals(stringArrayMap.keySet().toArray(), compare.stringArrayMap.keySet().toArray()) || !Arrays.deepEquals(stringArrayMap.values().toArray(), compare.stringArrayMap.values().toArray()) : compare.stringArrayMap != null)
+         if (stringArrayMap != null ? compare.stringArrayMap == null || !Arrays.deepEquals(stringArrayMap.keySet().toArray(), compare.stringArrayMap.keySet().toArray()) || !Arrays.deepEquals(stringArrayMap.values().toArray(), compare.stringArrayMap.values().toArray()) : compare.stringArrayMap != null)
                 return false;
             if (stringListMap != null ? compare.stringListMap == null || !Arrays.deepEquals(stringListMap.keySet().toArray(), compare.stringListMap.keySet().toArray()) || !Arrays.deepEquals(stringListMap.values().toArray(), compare.stringListMap.values().toArray()) : compare.stringListMap != null)
                 return false;

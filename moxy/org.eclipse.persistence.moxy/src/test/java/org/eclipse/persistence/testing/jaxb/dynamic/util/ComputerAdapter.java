@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,14 +14,9 @@
 //     rbarkhouse - 2.2 - initial implementation
 package org.eclipse.persistence.testing.jaxb.dynamic.util;
 
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.StringTokenizer;
 
 import jakarta.xml.bind.annotation.adapters.XmlAdapter;
-
-import org.eclipse.persistence.dynamic.DynamicClassLoader;
-import org.eclipse.persistence.dynamic.DynamicEntity;
 
 public final class ComputerAdapter extends XmlAdapter<String, Computer> {
 

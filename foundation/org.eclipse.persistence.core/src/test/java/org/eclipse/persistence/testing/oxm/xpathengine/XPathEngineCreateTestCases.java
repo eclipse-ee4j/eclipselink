@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,16 +14,7 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.oxm.xpathengine;
 
-import java.io.InputStream;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.ArrayList;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
-import junit.framework.TestCase;
-import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.oxm.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.oxm.XPathEngine;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.XMLContext;
@@ -31,12 +22,18 @@ import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.platform.xml.XMLPlatformException;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.eclipse.persistence.platform.xml.XMLTransformer;
-import org.eclipse.persistence.sessions.factories.SessionManager;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.InputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.ArrayList;
 
 public class XPathEngineCreateTestCases extends org.eclipse.persistence.testing.oxm.XMLTestCase {
 
@@ -77,7 +74,7 @@ public class XPathEngineCreateTestCases extends org.eclipse.persistence.testing.
 
         assertTrue("XPath failed to create the element.", verifyNodes.getLength() > 0);
 
-        assertTrue("XPath failed to create the correct number of elements.", verifyNodes.getLength() == 2);
+        assertEquals("XPath failed to create the correct number of elements.", 2, verifyNodes.getLength());
 
         searchNode = backupNode;
     }
@@ -95,8 +92,8 @@ public class XPathEngineCreateTestCases extends org.eclipse.persistence.testing.
 
         NodeList verifyNodes = searchNode.getElementsByTagName(fieldName);
 
-        assertTrue("XPath failed to create the element.", verifyNodes != null);
-        assertTrue("XPath failed to create the element.", verifyNodes.getLength() == 1);
+        assertNotNull("XPath failed to create the element.", verifyNodes);
+        assertEquals("XPath failed to create the element.", 1, verifyNodes.getLength());
 
         assertEquals("New element's value was not created.", verifyNodes.item(0).getFirstChild().getNodeValue(), newElementValue);
 
@@ -114,8 +111,8 @@ public class XPathEngineCreateTestCases extends org.eclipse.persistence.testing.
 
         NodeList verifyNodes = searchNode.getElementsByTagName(fieldName);
 
-        assertTrue("XPath created the element and should not have.", createdNode == null);
-        assertTrue("XPath created the element and should not have.", verifyNodes.getLength() == 0);
+        assertNull("XPath created the element and should not have.", createdNode);
+        assertEquals("XPath created the element and should not have.", 0, verifyNodes.getLength());
 
         searchNode = backupNode;
     }
@@ -131,7 +128,7 @@ public class XPathEngineCreateTestCases extends org.eclipse.persistence.testing.
 
         NodeList verifyNodes = searchNode.getElementsByTagName("newChild");
 
-        assertTrue("XPath failed to create the correct number of child elements.", verifyNodes.getLength() == 2);
+        assertEquals("XPath failed to create the correct number of child elements.", 2, verifyNodes.getLength());
 
         searchNode = backupNode;
     }
@@ -157,8 +154,8 @@ public class XPathEngineCreateTestCases extends org.eclipse.persistence.testing.
         Node created = XPathEngine.getInstance().create(field, searchNode, elementValue, session);
         NodeList verifyNodes = searchNode.getElementsByTagName("newChildWithElementValue");
 
-        assertTrue("XPath failed to create the child elements.", verifyNodes != null);
-        assertTrue("XPath failed to create the correct number of child elements.", verifyNodes.getLength() == 1);
+        assertNotNull("XPath failed to create the child elements.", verifyNodes);
+        assertEquals("XPath failed to create the correct number of child elements.", 1, verifyNodes.getLength());
 
         StringWriter stringWriter1 = new StringWriter();
         PrintWriter writer1 = new PrintWriter(stringWriter1);
@@ -180,7 +177,7 @@ public class XPathEngineCreateTestCases extends org.eclipse.persistence.testing.
             return;
         }
 
-        assertTrue(stringWriter1.toString().equals(stringWriter2.toString()));
+        assertEquals(stringWriter1.toString(), stringWriter2.toString());
         searchNode = backupNode;
     }
 
@@ -212,8 +209,8 @@ public class XPathEngineCreateTestCases extends org.eclipse.persistence.testing.
 
         NodeList verifyNodes = searchNode.getElementsByTagName("newIndexedElement");
 
-        assertTrue("XPath failed to create the element.", verifyNodes != null);
-        assertTrue("XPath failed to create the correct number of elements.", verifyNodes.getLength() == 10);
+        assertNotNull("XPath failed to create the element.", verifyNodes);
+        assertEquals("XPath failed to create the correct number of elements.", 10, verifyNodes.getLength());
         Node verifyNode = verifyNodes.item(9);
         assertEquals("New element's value was not created.", verifyNode.getFirstChild().getNodeValue(), newElementValue);
 
@@ -235,8 +232,8 @@ public class XPathEngineCreateTestCases extends org.eclipse.persistence.testing.
 
         NodeList verifyNodes = searchNode.getElementsByTagName("newIndexedElement");
 
-        assertTrue("XPath failed to create the element.", verifyNodes != null);
-        assertTrue("XPath failed to create the correct number of elements.", verifyNodes.getLength() == 10);
+        assertNotNull("XPath failed to create the element.", verifyNodes);
+        assertEquals("XPath failed to create the correct number of elements.", 10, verifyNodes.getLength());
 
         Node verifyNode = verifyNodes.item(9);
         assertEquals("New element's value was not created.", verifyNode.getFirstChild().getNodeValue(), newElementValue);
@@ -259,7 +256,7 @@ public class XPathEngineCreateTestCases extends org.eclipse.persistence.testing.
 
         NodeList verifyNodes = indexedElement.getElementsByTagName("newChild");
 
-        assertTrue("XPath failed to create the correct number of child elements.", verifyNodes.getLength() == 2);
+        assertEquals("XPath failed to create the correct number of child elements.", 2, verifyNodes.getLength());
 
         searchNode = backupNode;
     }
@@ -277,7 +274,7 @@ public class XPathEngineCreateTestCases extends org.eclipse.persistence.testing.
         Element verifyNode = (Element) verifyNodes.item(0);
         verifyNode.getAttributeNode("newAttribute");
 
-        assertTrue("XPath failed to create the attribute.", verifyNode != null);
+        assertNotNull("XPath failed to create the attribute.", verifyNode);
 
         searchNode = backupNode;
     }
@@ -300,7 +297,7 @@ public class XPathEngineCreateTestCases extends org.eclipse.persistence.testing.
 
         Node verifyNode = verifyElement.getAttributeNode("newAttribute");
 
-        assertTrue("XPath failed to create the attribute.", verifyNode != null);
+        assertNotNull("XPath failed to create the attribute.", verifyNode);
 
         assertEquals("New attribute's value was not created.", newAttributeValue, verifyElement.getAttribute("newAttribute"));
 
@@ -321,8 +318,8 @@ public class XPathEngineCreateTestCases extends org.eclipse.persistence.testing.
         Node verifyNode = verifyElement.getAttributeNode("newAttribute");
 
         assertTrue("XPath failed to create the attribute.", verifyNodes.getLength() != 0);
-        assertTrue("XPath failed to create the indexed elements.", verifyNodes.getLength() == 5);
-        assertTrue("XPath failed to create the attribute.", verifyNode != null);
+        assertEquals("XPath failed to create the indexed elements.", 5, verifyNodes.getLength());
+        assertNotNull("XPath failed to create the attribute.", verifyNode);
 
         searchNode = backupNode;
     }
@@ -343,11 +340,11 @@ public class XPathEngineCreateTestCases extends org.eclipse.persistence.testing.
         NodeList verifyNodes = searchNode.getElementsByTagName("newElement");
 
         assertTrue("XPath failed to create the attribute.", verifyNodes.getLength() != 0);
-        assertTrue("XPath created too many attributes, should only have created one.", verifyNodes.getLength() == 1);
+        assertEquals("XPath created too many attributes, should only have created one.", 1, verifyNodes.getLength());
 
         Element element = (Element) verifyNodes.item(0);
 
-        assertTrue("XPath did not create both attributes.", element.getAttributes().getLength() == 2);
+        assertEquals("XPath did not create both attributes.", 2, element.getAttributes().getLength());
 
         searchNode = backupNode;
     }
@@ -361,13 +358,13 @@ public class XPathEngineCreateTestCases extends org.eclipse.persistence.testing.
             XMLField field = new XMLField(fieldName);
             XPathEngine.getInstance().create(field, searchNode, session);
         } catch (XMLMarshalException validationException) {
-            assertTrue("An unexpected XMLMarshalException was caught. " + validationException.getMessage(), validationException.getErrorCode() == XMLMarshalException.INVALID_XPATH_INDEX_STRING);
+            assertEquals("An unexpected XMLMarshalException was caught. " + validationException.getMessage(), XMLMarshalException.INVALID_XPATH_INDEX_STRING, validationException.getErrorCode());
             return;
         } catch (Exception e) {
             fail("An unexpected Exception was caught. " + e.getMessage());
             return;
         }
         searchNode = backupNode;
-        assertTrue(false);
+        fail();
     }
 }

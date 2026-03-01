@@ -1,0 +1,14 @@
+:nofooter:
+This figure shows the typical EclipseLink DBWS service files, when
+packaged in an archive.
+
+[source,oac_no_warn]
+----
+root of archive
+   \---META-INF
+     |   eclipselink-dbws.xml -- service descriptor file
+     |   eclipselink-dbws-sessions.xml -- name can be overriden by <sessions-file> entry in eclipselink-dbws.xml
+     |   eclipselink-dbws-or.xml -- EclipseLink mapping file
+     |   eclipselink-dbws-ox.xml -- EclipseLink mapping file
+     |   eclipselink-dbws-schema.xsd -- XML schema definition file - when deployed in a .war file, located in a different directory
+----

@@ -1,0 +1,22 @@
+== EclipseLink Sessions
+
+The following sections describe the EclipseLink artifact used to
+associate an EclipseLink project with a particular instance of a data
+source:
+
+* link:Introduction_to_EclipseLink_Sessions_(ELUG)[Introduction to
+EclipseLink Sessions] – describes each EclipseLink session type and
+important session concepts.
+
+* link:Creating_a_Session_(ELUG)[Creating a Session]
+
+* link:Configuring_a_Session_(ELUG)[Configuring a Session]
+
+* link:Acquiring_and_Using_Sessions_at_Run_Time_(ELUG)[Acquiring and
+Using Sessions at Run Time]
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]

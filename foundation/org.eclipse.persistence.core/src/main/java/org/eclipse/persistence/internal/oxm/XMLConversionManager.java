@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,6 +14,24 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.oxm;
 
+import org.eclipse.persistence.exceptions.ConversionException;
+import org.eclipse.persistence.oxm.exceptions.XMLConversionException;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
+import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
+import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
+import org.eclipse.persistence.internal.helper.ConversionManager;
+import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.helper.TimeZoneHolder;
+import org.eclipse.persistence.internal.oxm.conversion.Base64;
+import org.eclipse.persistence.internal.oxm.record.AbstractUnmarshalRecord;
+import org.eclipse.persistence.internal.queries.ContainerPolicy;
+
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeConstants;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.Duration;
+import javax.xml.datatype.XMLGregorianCalendar;
+import javax.xml.namespace.QName;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -27,31 +45,13 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.HexFormat;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.TimeZone;
 import java.util.UUID;
-
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeConstants;
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.Duration;
-import javax.xml.datatype.XMLGregorianCalendar;
-import javax.xml.namespace.QName;
-
-import org.eclipse.persistence.exceptions.ConversionException;
-import org.eclipse.persistence.exceptions.XMLConversionException;
-import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
-import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
-import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
-import org.eclipse.persistence.internal.helper.ConversionManager;
-import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.internal.helper.TimeZoneHolder;
-import org.eclipse.persistence.internal.oxm.conversion.Base64;
-import org.eclipse.persistence.internal.oxm.record.AbstractUnmarshalRecord;
-import org.eclipse.persistence.internal.queries.ContainerPolicy;
 
 /**
  * INTERNAL:
@@ -87,7 +87,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
 
     /**
      * INTERNAL:
-     *
+     * <p>
      * Return the DatatypeFactory instance.
      *
      */
@@ -254,7 +254,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
             if (schemaTypeQName.getLocalPart().equalsIgnoreCase(Constants.BASE_64_BINARY)) {
                 return (T) buildBase64StringFromBytes((byte[]) sourceObject);
             }
-            return (T) Helper.buildHexStringFromBytes((byte[]) sourceObject);
+            return (T) HexFormat.of().formatHex((byte[]) sourceObject);
         } else if (sourceObject instanceof Byte[]) {
             if (schemaTypeQName.getLocalPart().equalsIgnoreCase(Constants.BASE_64_BINARY)) {
                 return (T) buildBase64StringFromObjectBytes((Byte[]) sourceObject);
@@ -411,8 +411,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
      */
     @Override
     protected Calendar convertObjectToCalendar(Object sourceObject) throws ConversionException {
-        if (sourceObject instanceof String) {
-            String sourceString = (String) sourceObject;
+        if (sourceObject instanceof String sourceString) {
             if (sourceString.lastIndexOf('T') != -1) {
                 return convertStringToCalendar((String) sourceObject, Constants.DATE_TIME_QNAME);
             } else {
@@ -575,7 +574,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
    @Override
    protected Double convertObjectToDouble(Object sourceObject) throws ConversionException {
        if (sourceObject instanceof String) {
-           if(((String) sourceObject).length() == 0) {
+           if(((String) sourceObject).isEmpty()) {
                return 0d;
            }else if(Constants.POSITIVE_INFINITY.equals(sourceObject)){
                return Double.POSITIVE_INFINITY;
@@ -597,7 +596,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
    @Override
    protected Float convertObjectToFloat(Object sourceObject) throws ConversionException {
        if (sourceObject instanceof String) {
-           if(((String) sourceObject).length() == 0) {
+           if(((String) sourceObject).isEmpty()) {
                return 0f;
            } else if(Constants.POSITIVE_INFINITY.equals(sourceObject)){
                return Float.POSITIVE_INFINITY;
@@ -615,9 +614,8 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
     */
    @Override
    protected Integer convertObjectToInteger(Object sourceObject) throws ConversionException {
-       if(sourceObject instanceof String) {
-           String sourceString = (String) sourceObject;
-           if(sourceString.length() == 0) {
+       if(sourceObject instanceof String sourceString) {
+           if(sourceString.isEmpty()) {
                return 0;
            } else if(sourceString.charAt(0) == PLUS) {
                return super.convertObjectToInteger(sourceString.substring(1));
@@ -634,9 +632,8 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
     */
   @Override
   protected Long convertObjectToLong(Object sourceObject) throws ConversionException {
-      if(sourceObject instanceof String) {
-          String sourceString = (String) sourceObject;
-          if(sourceString.length() == 0) {
+      if(sourceObject instanceof String sourceString) {
+          if(sourceString.isEmpty()) {
               return 0L;
           } else if(sourceString.charAt(0) == PLUS) {
               return super.convertObjectToLong(sourceString.substring(1));
@@ -653,9 +650,8 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
    */
   @Override
   protected Short convertObjectToShort(Object sourceObject) throws ConversionException {
-      if(sourceObject instanceof String) {
-          String sourceString = (String) sourceObject;
-          if(sourceString.length() == 0) {
+      if(sourceObject instanceof String sourceString) {
+          if(sourceString.isEmpty()) {
               return 0;
           } else if(sourceString.charAt(0) == PLUS) {
               return super.convertObjectToShort(sourceString.substring(1));
@@ -674,9 +670,8 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
    */
   @Override
   protected BigDecimal convertObjectToNumber(Object sourceObject) throws ConversionException {
-      if(sourceObject instanceof String) {
-          String sourceString = (String) sourceObject;
-          if(sourceString.length() == 0) {
+      if(sourceObject instanceof String sourceString) {
+          if(sourceString.isEmpty()) {
               return BigDecimal.ZERO;
           } else if(sourceString.charAt(0) == PLUS) {
               return super.convertObjectToNumber(sourceString.substring(1));
@@ -691,9 +686,8 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
     */
    @Override
    protected BigInteger convertObjectToBigInteger(Object sourceObject) throws ConversionException {
-       if(sourceObject instanceof String) {
-           String sourceString = (String) sourceObject;
-           if(sourceString.length() == 0) {
+       if(sourceObject instanceof String sourceString) {
+           if(sourceString.isEmpty()) {
                return null;
            } else if(sourceString.charAt(0) == PLUS) {
                return super.convertObjectToBigInteger(sourceString.substring(1));
@@ -708,9 +702,8 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
     */
    @Override
    protected BigDecimal convertObjectToBigDecimal(Object sourceObject) throws ConversionException {
-       if(sourceObject instanceof String) {
-           String sourceString = (String) sourceObject;
-           if(sourceString.length() == 0) {
+       if(sourceObject instanceof String sourceString) {
+           if(sourceString.isEmpty()) {
                return null;
            }
            try {
@@ -740,9 +733,8 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
     */
     @Override
     protected Byte convertObjectToByte(Object sourceObject) throws ConversionException {
-        if(sourceObject instanceof String) {
-            String sourceString = (String) sourceObject;
-            if(sourceString.length() == 0) {
+        if(sourceObject instanceof String sourceString) {
+            if(sourceString.isEmpty()) {
                 return 0;
             } else if(sourceString.charAt(0) == PLUS) {
                 return super.convertObjectToByte(sourceString.substring(1));
@@ -822,7 +814,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
     public XMLGregorianCalendar convertStringToXMLGregorianCalendar(String sourceString) {
         // Trim in case of leading or trailing whitespace
         String trimmedSourceString = sourceString.trim();
-        if(trimmedSourceString.length() == 0) {
+        if(trimmedSourceString.isEmpty()) {
             return null;
         }
         XMLGregorianCalendar calToReturn = null;
@@ -869,7 +861,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
      *
      */
     public Duration convertStringToDuration(String sourceString) {
-        if(sourceString == null || sourceString.length() == 0) {
+        if(sourceString == null || sourceString.isEmpty()) {
             return null;
         }
         return getDatatypeFactory().newDuration(sourceString);
@@ -1164,7 +1156,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
                 truncIndex--;
             }
             milliStr = new String(numbChar, 0, truncIndex + 1);
-            if (milliStr.length() > 0 && !"0".equals(milliStr)) {
+            if (!milliStr.isEmpty() && !"0".equals(milliStr)) {
                 milliStr = '.' + milliStr;
                 result = pre + milliStr + post;
             } else {
@@ -1175,7 +1167,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
     }
 
     private String stringFromCalendar(Calendar sourceCalendar) {
-        if (!(sourceCalendar.isSet(Calendar.HOUR) || sourceCalendar.isSet(Calendar.MINUTE) || sourceCalendar.isSet(Calendar.SECOND) || sourceCalendar.isSet(Calendar.MILLISECOND))) {
+        if (!(sourceCalendar.isSet(Calendar.HOUR_OF_DAY) || sourceCalendar.isSet(Calendar.MINUTE) || sourceCalendar.isSet(Calendar.SECOND) || sourceCalendar.isSet(Calendar.MILLISECOND))) {
             return stringFromCalendar(sourceCalendar, Constants.DATE_QNAME);
         } else if (!(sourceCalendar.isSet(Calendar.YEAR) || sourceCalendar.isSet(Calendar.MONTH) || sourceCalendar.isSet(Calendar.DATE))) {
             return stringFromCalendar(sourceCalendar, Constants.TIME_QNAME);
@@ -1241,7 +1233,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
     /**
      * This method returns a dateTime string representing a given
      * java.util.Date.
-     *
+     * <p>
      * BC dates {@code (sourceDate.getTime() < YEAR_ONE_AD_TIME)} are handled
      * as follows: {@code '2007 BC' --> '-2006 AD'}
      *
@@ -1259,7 +1251,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
     /**
      * This method returns a string representing a given java.util.Date
      * based on a given schema type QName.
-     *
+     * <p>
      * BC dates (sourceDate.getTime() &lt; YEAR_ONE_AD_TIME) are handled
      * as follows: '2007 BC' --&gt; '-2006 AD'.
      *
@@ -1401,7 +1393,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
     /**
      * This method returns a dateTime string representing a given
      * Timestamp.
-     *
+     * <p>
      * BC dates {@code (sourceDate.getTime() < YEAR_ONE_AD_TIME)} are handled
      * as follows: {@code '2007 BC' --> '-2006 AD'}
      *
@@ -1431,7 +1423,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
     /**
      * This method returns a string representing a given Timestamp
      * based on a given schema type QName.
-     *
+     * <p>
      * BC dates {@code (sourceDate.getTime() < YEAR_ONE_AD_TIME)} are handled
      * as follows: {@code '2007 BC' --> '-2006 AD'}.
      *
@@ -1599,17 +1591,12 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
     private byte[] base64RemoveWhiteSpaces(String sourceObject) {
         StringTokenizer tokenizer = new StringTokenizer(sourceObject);
         ByteArrayOutputStream baos = new ByteArrayOutputStream(sourceObject.length());
-        try {
+        try (baos) {
             while (tokenizer.hasMoreTokens()) {
                 baos.write(tokenizer.nextToken().getBytes());
             }
         } catch (IOException e) {
             throw ConversionException.couldNotBeConverted(sourceObject, CoreClassConstants.APBYTE, e);
-        } finally {
-            try {
-                baos.close();
-            } catch (Exception e) {
-            }
         }
         return baos.toByteArray();
     }
@@ -1657,7 +1644,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
         for (int i = 0; i < bytes.length; i++) {
             primitiveBytes[i] = bytes[i];
         }
-        return Helper.buildHexStringFromBytes(primitiveBytes);
+        return HexFormat.of().formatHex(primitiveBytes);
     }
 
     protected List<String> convertStringToList(Object sourceObject) throws ConversionException {
@@ -1673,7 +1660,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
     }
 
     protected File convertStringToFile(String path) {
-        if(path == null || path.length() == 0) {
+        if(path == null || path.isEmpty()) {
             return null;
         }
         return new File(path);
@@ -1703,8 +1690,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
 
     public String convertListToString(Object sourceObject, QName schemaType) throws ConversionException {
         StringBuilder returnStringBuilder = new StringBuilder();
-        if (sourceObject instanceof List) {
-            List<?> list = (List<?>) sourceObject;
+        if (sourceObject instanceof List<?> list) {
             for (int i = 0, listSize = list.size(); i < listSize; i++) {
                 Object next = list.get(i);
                 if (i > 0) {
@@ -2065,7 +2051,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
             Object container = containerPolicy.containerInstance();
             while (tokenizer.hasMoreElements()) {
                 String token = tokenizer.nextToken();
-                byte[] bytes = Helper.buildBytesFromHexString(token);
+                byte[] bytes = HexFormat.of().parseHex(token);
                 containerPolicy.addInto(bytes, container, session);
             }
             return container;

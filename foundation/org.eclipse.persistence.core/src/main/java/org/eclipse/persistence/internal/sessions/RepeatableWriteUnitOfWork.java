@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,15 +19,9 @@
 //       - 349424: persists during an preCalculateUnitOfWorkChangeSet event are lost
 package org.eclipse.persistence.internal.sessions;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-
 import org.eclipse.persistence.config.FlushClearCache;
 import org.eclipse.persistence.config.ReferenceMode;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.descriptors.changetracking.AttributeChangeTrackingPolicy;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.OptimisticLockException;
 import org.eclipse.persistence.exceptions.ValidationException;
@@ -38,6 +32,11 @@ import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.sessions.IdentityMapAccessor;
+
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 
 public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
@@ -262,7 +261,7 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
 
     /**
      * Check to see if the descriptor of a superclass can be used to describe this class
-     *
+     * <p>
      * By default, in JPA, classes must have specific descriptors to be considered entities
      * In this implementation, we check whether the inheritance policy has been configured to allow
      * superclass descriptors to describe subclasses that do not have a descriptor themselves
@@ -442,6 +441,9 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
             return;
         }
         log(SessionLog.FINER, SessionLog.TRANSACTION, "begin_unit_of_work_flush");
+        if(eventManager != null) {
+            eventManager.preFlushUnitOfWork();
+        }
 
         // 256277: stop any nested flushing - there should only be one level
         this.isWithinFlush = true; // set before calculateChanges as a PrePersist callback may contain a query that requires a pre flush()
@@ -466,6 +468,9 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
                 writesCompleted();
                 //return if there were no changes in the change set.
                 log(SessionLog.FINER, SessionLog.TRANSACTION, "end_unit_of_work_flush");
+                if(eventManager != null) {
+                    eventManager.postFlushUnitOfWork();
+                }
                 return;
             }
             // Write changes to the database.
@@ -486,6 +491,9 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
             this.cumulativeUOWChangeSet.mergeUnitOfWorkChangeSet(changeSet, this, true);
         }
         log(SessionLog.FINER, SessionLog.TRANSACTION, "end_unit_of_work_flush");
+        if(eventManager != null) {
+            eventManager.postFlushUnitOfWork();
+        }
 
         resumeUnitOfWork();
         log(SessionLog.FINER, SessionLog.TRANSACTION, "resume_unit_of_work");
@@ -600,7 +608,7 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
     protected Object cloneAndRegisterNewObject(Object original, boolean isShallowClone) {
         ClassDescriptor descriptor = getDescriptor(original);
         //Nested unit of work is not supported for attribute change tracking
-        if (isNestedUnitOfWork() && (descriptor.getObjectChangePolicy() instanceof AttributeChangeTrackingPolicy)) {
+        if (isNestedUnitOfWork() && (descriptor.getObjectChangePolicy().isAttributeChangeTrackingPolicy())) {
             throw ValidationException.nestedUOWNotSupportedForAttributeTracking();
         }
         ObjectBuilder builder = descriptor.getObjectBuilder();

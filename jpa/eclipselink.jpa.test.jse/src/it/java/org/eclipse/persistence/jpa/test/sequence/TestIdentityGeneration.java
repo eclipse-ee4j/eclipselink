@@ -50,7 +50,7 @@ public class TestIdentityGeneration {
 
         EntityManager em = emf.createEntityManager();
         try {
-            Set<Tea> teas = new HashSet<Tea>();
+            Set<Tea> teas = new HashSet<>();
 
             Tea tea1 = new Tea("Earl Grey", 3.29, "Lipton", 1.29);
             teas.add(tea1);

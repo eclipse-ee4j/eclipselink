@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,37 +17,37 @@
 //       - 526957 : Split the logging and trace messages
 package org.eclipse.persistence.logging;
 
+import org.eclipse.persistence.internal.localization.LoggingLocalization;
+import org.eclipse.persistence.internal.localization.TraceLocalization;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.text.DateFormat;
-import java.util.Date;
-
-import org.eclipse.persistence.config.PersistenceUnitProperties;
-import org.eclipse.persistence.exceptions.ValidationException;
-import org.eclipse.persistence.internal.databaseaccess.Accessor;
-import org.eclipse.persistence.internal.helper.ConversionManager;
-import org.eclipse.persistence.internal.localization.LoggingLocalization;
-import org.eclipse.persistence.internal.localization.TraceLocalization;
-import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.sessions.Session;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
+import java.text.MessageFormat;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAccessor;
+import java.util.function.Supplier;
 
 /**
  * Represents the abstract log that implements all the generic logging functions.
  * It contains a singleton SessionLog that logs messages from outside any EclipseLink session.
  * The singleton SessionLog can also be passed to an EclipseLink session when messages
- * are logged through that session.  When JDK1.4 is used, a singleton JavaLog is created.
- * Otherwise a singleton DefaultSessionLog is created.
+ * are logged through that session. By default, a singleton {@linkplain DefaultSessionLog} is created.
  *
  * @see SessionLog
  * @see SessionLogEntry
  * @see DefaultSessionLog
- * @see JavaLog
  */
 public abstract class AbstractSessionLog implements SessionLog, java.lang.Cloneable {
+
+    // Copy of PersistenceUnitProperties.LOGGING_LEVEL to break dependency
+    private static final String LOGGING_LEVEL = "eclipselink.logging.level";
 
     /**
      * Represents the log level
@@ -59,10 +59,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      */
     protected static SessionLog defaultLog;
 
-    /**
-     * Represents the session that owns this SessionLog
-     */
-    protected Session session;
+    private String sessionName;
 
     /**
      * Represents prefix to logged severe
@@ -119,69 +116,83 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      */
     protected Writer writer;
 
-    protected static String DATE_FORMAT_STR = "yyyy.MM.dd HH:mm:ss.SSS";
     /**
-     * Format use to print the current date/time.
+     * The pattern for formatting date-time in the log entries.
+     * By default, set to {@code "yyyy.MM.dd HH:mm:ss.SSS"}.
      */
-    protected DateFormat dateFormat;
+    protected static String DATE_FORMAT_STR = "yyyy.MM.dd HH:mm:ss.SSS";
 
     /**
+     * Formatter used to print the current date/time.
+     */
+    protected DateTimeFormatter timeStampFormatter;
+
+    /*
      * Allows the printing of the stack to be explicitly disabled/enabled.
      * CR #3870467.
      * null value is default behavior of determining from log level.
      */
-    protected Boolean shouldLogExceptionStackTrace;
+    private Boolean shouldLogExceptionStackTrace;
 
-    /**
+    /*
      * Allows the printing of the date to be explicitly disabled/enabled.
      * CR #3870467.
      * null value is default behavior of determining from log level.
      */
-    protected Boolean shouldPrintDate;
+    private Boolean shouldPrintDate;
 
-    /**
+    /*
      * Allows the printing of the thread to be explicitly disabled/enabled.
      * CR #3870467.
      * null value is default behavior of determining from log level.
      */
-    protected Boolean shouldPrintThread;
+    private Boolean shouldPrintThread;
 
-    /**
+    /*
      * Allows the printing of the session to be explicitly disabled/enabled.
      * CR #3870467.
      * null value is default behavior of determining from log level.
      */
-    protected Boolean shouldPrintSession;
+    private Boolean shouldPrintSession;
 
-    /**
+    /*
      * Allows the printing of the connection to be explicitly disabled/enabled.
      * CR #4157545.
      * null value is default behavior of determining from log level.
      */
-    protected Boolean shouldPrintConnection;
+    private Boolean shouldPrintConnection;
 
-    /** Used to determine if bingdparameters should be logged or hidden. */
-    protected Boolean shouldDisplayData;
+    /*
+     * Used to determine if bind parameters should be logged or hidden.
+     */
+    private Boolean shouldDisplayData;
 
     /**
      * Return the system default log level property value.
-     * @return The system default log level property value or {@code null} if no such property is set.
+     *
+     * @return the system default log level property value or {@code null} if no such property is set.
      */
     private static String getDefaultLoggingLevelProperty() {
-        return PrivilegedAccessHelper.getSystemProperty(PersistenceUnitProperties.LOGGING_LEVEL);
+        if (System.getSecurityManager() != null) {
+            return AccessController.doPrivileged(
+                    (PrivilegedAction<String>) () -> System.getProperty(LOGGING_LEVEL, null));
+        } else {
+            return System.getProperty(LOGGING_LEVEL, null);
+        }
     }
 
     /**
      * Return the system default log level.
      * This is based on the System property "eclipselink.logging.level", or INFO if not set.
+     *
+     * @return the system default log level
      */
     public static int getDefaultLoggingLevel() {
         return translateStringToLoggingLevel(getDefaultLoggingLevelProperty());
     }
 
     /**
-     * PUBLIC:
-     * Create a new AbstractSessionLog
+     * Creates a new instance of {@linkplain AbstractSessionLog} class.
      */
     protected AbstractSessionLog() {
         this.writer = new PrintWriter(System.out);
@@ -189,9 +200,8 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
     }
 
     /**
-     * PUBLIC:
-     * <p>
-     * Return the log level.  It is used when session is not available.
+     * Return the log level.
+     * It is used when session is not available.
      *
      * @return the log level
      */
@@ -201,8 +211,6 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
     }
 
     /**
-     * PUBLIC:
-     * <p>
      * Return the log level as a string value.
      */
     @Override
@@ -211,8 +219,6 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
     }
 
     /**
-     * PUBLIC:
-     * <p>
      * Return the log level for the category name space.
      *
      * @return the log level
@@ -224,8 +230,6 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
     }
 
     /**
-     * PUBLIC:
-     * <p>
      * Set the log level.  It is used when session is not available.
      *
      * @param level     the new log level
@@ -236,8 +240,6 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
     }
 
     /**
-     * PUBLIC:
-     * <p>
      * Set the log level for the category name space.
      *
      * @param level     the new log level
@@ -249,23 +251,6 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
     }
 
     /**
-     * PUBLIC:
-     * Return true if SQL logging should log visible bind parameters. If the
-     * shouldDisplayData is not set, check the session log level and return
-     * true for a level greater than CONFIG.
-     */
-    @Override
-    public boolean shouldDisplayData() {
-        if (this.shouldDisplayData != null) {
-            return shouldDisplayData;
-        } else {
-            return this.level < SessionLog.CONFIG;
-        }
-    }
-
-    /**
-     * PUBLIC:
-     * <p>
      * Check if a message of the given level would actually be logged.
      * It is used when session is not available.
      *
@@ -278,8 +263,6 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
     }
 
     /**
-     * PUBLIC:
-     * <p>
      * Check if a message of the given level would actually be logged for the category name space.
      * !isOff() is checked to screen out the possibility when both
      * log level and log request level are set to OFF.
@@ -294,8 +277,6 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
     }
 
     /**
-     * PUBLIC:
-     * <p>
      * Return the singleton SessionLog.  If the singleton SessionLog does not exist,
      * a new one is created based on the version of JDK being used from the Version class.
      *
@@ -309,269 +290,116 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
     }
 
     /**
-     * PUBLIC:
-     * <p>
      * Set the singleton SessionLog.
-     * </p>
      *
      * @param sessionLog  a SessionLog
      */
     public static void setLog(SessionLog sessionLog) {
         defaultLog = sessionLog;
-        defaultLog.setSession(null);
+        defaultLog.setSessionName(null);
     }
 
-    /**
-     * PUBLIC:
-     * <p>
-     * Get the session.
-     * </p>
-     *
-     * @return  session
-     */
     @Override
-    public Session getSession() {
-        return this.session;
+    public String getSessionName() {
+        return sessionName;
     }
 
-    /**
-     * PUBLIC:
-     * <p>
-     * Set the session.
-     * </p>
-     *
-     * @param session  a Session
-     */
     @Override
-    public void setSession(Session session) {
-        this.session = session;
+    public void setSessionName(String sessionName) {
+        this.sessionName = sessionName;
     }
 
-    /**
-     * PUBLIC:
-     * <p>
-     * Log a message that does not need to be translated.  This method is intended for
-     * external use when logging messages are required within the EclipseLink output.
-     *
-     * @param level the log request level value
-     * @param message the string message - this should not be a bundle key
-     */
     @Override
-    public void log(int level, String message) {
-        // Warning: do not use this function to pass in bundle keys as they will not get transformed into string messages
-        if (!shouldLog(level)) {
-            return;
-        }
-        //Bug#4566524  Pass in false for external use
-        log(level, message, null, false);
+    public void log(int level, Supplier<String> messageSupplier) {
+        // Target method has shouldLog check, so it's skipped here.
+        log(level, null, messageSupplier);
     }
 
-    /**
-     * PUBLIC:
-     * <p>
-     * Log a message with one parameter that needs to be translated.
-     *
-     * @param level  the log request level value
-     * @param message  the string message
-     * @param param  a parameter of the message
-     */
     @Override
-    public void log(int level, String message, Object param) {
-        if (!shouldLog(level)) {
-            return;
-        }
-        log(level, message, new Object[] { param });
-    }
-
-    /**
-     * PUBLIC:
-     * <p>
-     * Log a message with one parameter that needs to be translated.
-     *
-     * @param level  the log request level value
-     * @param message  the string message
-     * @param param  a parameter of the message
-     */
-    @Override
-    public void log(int level, String category, String message, Object param) {
+    public void log(int level, String category, Supplier<String> messageSupplier) {
         if (!shouldLog(level, category)) {
             return;
         }
+        log(new SessionLogEntry(level, category, null, messageSupplier.get(), null, null, false));
+    }
+
+    @Override
+    public void log(int level, String message) {
+        // Target method has shouldLog check, so it's skipped here.
+        // Warning: do not use this function to pass in bundle keys as they will not get transformed into string messages
+        //Bug#4566524  Pass in false for external use
+        log(level, null, message, null, false);
+    }
+
+    @Override
+    public void log(int level, String message, Object param) {
+        // Target method has shouldLog check, so it's skipped here.
+        log(level, null, message, new Object[] { param }, true);
+    }
+
+    @Override
+    public void log(int level, String category, String message, Object param) {
+        // Target method has shouldLog check, so it's skipped here.
         log(level, category, message, new Object[] { param }, true);
     }
 
-    /**
-     * PUBLIC:
-     * <p>
-     * Log a message with two parameters that needs to be translated.
-     *
-     * @param level the log request level value
-     * @param message the string message
-     * @param param1  a parameter of the message
-     * @param param2  second parameter of the message
-     */
     @Override
     public void log(int level, String message, Object param1, Object param2) {
-        if (!shouldLog(level)) {
-            return;
-        }
-        log(level, message, new Object[] { param1, param2 });
+        // Target method has shouldLog check, so it's skipped here.
+        log(level, null, message, new Object[] { param1, param2 }, true);
     }
 
-    /**
-     * PUBLIC:
-     * <p>
-     * Log a message with two parameters that needs to be translated.
-     *
-     * @param level the log request level value
-     * @param message the string message
-     * @param param1  a parameter of the message
-     * @param param2  second parameter of the message
-     */
     @Override
     public void log(int level, String category, String message, Object param1, Object param2) {
-        if (!shouldLog(level)) {
-            return;
-        }
+        // Target method has shouldLog check, so it's skipped here.
         log(level, category, message, new Object[] { param1, param2 }, true);
     }
 
-    /**
-     * PUBLIC:
-     * <p>
-     * Log a message with three parameters that needs to be translated.
-     *
-     * @param level the log request level value
-     * @param message the string message
-     * @param param1  a parameter of the message
-     * @param param2  second parameter of the message
-     * @param param3  third parameter of the message
-     */
     @Override
     public void log(int level, String message, Object param1, Object param2, Object param3) {
-        if (!shouldLog(level)) {
-            return;
-        }
-        log(level, message, new Object[] { param1, param2, param3 });
+        // Target method has shouldLog check, so it's skipped here.
+        log(level, null, message, new Object[] { param1, param2, param3 }, true);
     }
 
-    /**
-     * PUBLIC:
-     * <p>
-     * Log a message with three parameters that needs to be translated.
-     *
-     * @param level the log request level value
-     * @param message the string message
-     * @param param1  a parameter of the message
-     * @param param2  second parameter of the message
-     * @param param3  third parameter of the message
-     */
     @Override
     public void log(int level, String category, String message, Object param1, Object param2, Object param3) {
-        if (!shouldLog(level)) {
-            return;
-        }
+        // Target method has shouldLog check, so it's skipped here.
         log(level, category, message, new Object[] { param1, param2, param3 }, true);
     }
 
-    /**
-     * PUBLIC:
-     * <p>
-     * Log a message with four parameters that needs to be translated.
-     *
-     * @param level the log request level value
-     * @param message the string message
-     * @param param1  a parameter of the message
-     * @param param2  second parameter of the message
-     * @param param3  third parameter of the message
-     * @param param4  third parameter of the message
-     */
     @Override
     public void log(int level, String message, Object param1, Object param2, Object param3, Object param4) {
-        if (!shouldLog(level)) {
-            return;
-        }
-        log(level, message, new Object[] { param1, param2, param3, param4 });
+        // Target method has shouldLog check, so it's skipped here.
+        log(level, null, message, new Object[] { param1, param2, param3, param4 }, true);
     }
 
-    /**
-     * PUBLIC:
-     * <p>
-     * Log a message with four parameters that needs to be translated.
-     *
-     * @param level the log request level value
-     * @param message the string message
-     * @param param1  a parameter of the message
-     * @param param2  second parameter of the message
-     * @param param3  third parameter of the message
-     * @param param4  third parameter of the message
-     */
     @Override
     public void log(int level, String category, String message, Object param1, Object param2, Object param3, Object param4) {
-        if (!shouldLog(level)) {
-            return;
-        }
+        // Target method has shouldLog check, so it's skipped here.
         log(level, category, message, new Object[] { param1, param2, param3, param4 }, true);
     }
 
-    /**
-     * PUBLIC:
-     * <p>
-     * Log a message with an array of parameters that needs to be translated.
-     *
-     * @param level the log request level value
-     * @param message the string message
-     * @param params array of parameters to the message
-     */
     @Override
     public void log(int level, String message, Object[] params) {
-        log(level, message, params, true);
+        // Target method has shouldLog check, so it's skipped here.
+        log(level, null, message, params, true);
     }
 
-    /**
-     * PUBLIC:
-     * <p>
-     * Log a message with an array of parameters that needs to be translated.
-     *
-     * @param level the log request level value
-     * @param message the string message
-     * @param params array of parameters to the message
-     */
     @Override
     public void log(int level, String category, String message, Object[] params) {
+        // Target method has shouldLog check, so it's skipped here.
         log(level, category, message, params, true);
     }
 
-    /**
-     * PUBLIC:
-     * <p>
-     * Log a message.  shouldTranslate determines if the message needs to be translated.
-     *
-     * @param level the log request level
-     * @param message the string message
-     * @param params array of parameters to the message
-     * @param shouldTranslate true if the message needs to be translated
-     */
     @Override
+    @Deprecated(forRemoval=true, since="4.0.9")
     public void log(int level, String message, Object[] params, boolean shouldTranslate) {
-        if (!shouldLog(level)) {
-            return;
-        }
-        log(new SessionLogEntry(level, null, message, params, null, shouldTranslate));
+        // Target method has shouldLog check, so it's skipped here.
+        log(level, null, message, params, shouldTranslate);
     }
 
-    /**
-     * PUBLIC:
-     * <p>
-     * Log a message.  shouldTranslate determines if the message needs to be translated.
-     *
-     * @param level the log request level
-     * @param message the string message
-     * @param category the log category
-     * @param params array of parameters to the message
-     * @param shouldTranslate true if the message needs to be translated
-     */
     @Override
+    @Deprecated(forRemoval=true, since="4.0.9")
     public void log(int level, String category, String message, Object[] params, boolean shouldTranslate) {
         if (!shouldLog(level, category)) {
             return;
@@ -579,74 +407,104 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
         log(new SessionLogEntry(level, category, null, message, params, null, shouldTranslate));
     }
 
-    /**
-     * PUBLIC:
-     * <p>
-     * Log a SessionLogEntry
-     *
-     * @param sessionLogEntry SessionLogEntry that holds all the information for an EclipseLink logging event
-     */
-    @Override
-    public abstract void log(SessionLogEntry sessionLogEntry);
+    // Remove with deprecated API removal
+    // Internal shortcut for translated message (public API method has translation turned off)
+    private void logTranslated(int level, String message) {
+        log(level, null, message, null, true);
+    }
 
     /**
-     * By default the session (and its connection is available) are printed,
-     * this can be turned off.
+     * Whether the session should be printed as part of the log messages.
+     * By default, the session is always printed, but can be explicitly turned off or on.
+     *
+     * @return value of {@code true} when the session should be printed as part of the log messages
+     *         or {@code false} otherwise
      */
     @Override
     public boolean shouldPrintSession() {
-        return (shouldPrintSession == null) || shouldPrintSession;
+        return shouldPrintSession == null || shouldPrintSession;
     }
 
     /**
-     * By default the session (and its connection is available) are printed,
-     * this can be turned off.
+     * Turn printing of the session as part of the log messages on or off explicitly.
+     *
+     * @param shouldPrintSession value of {@code true} when the session should be printed
+     *                           as part of the log messages or {@code false} otherwise
      */
     @Override
     public void setShouldPrintSession(boolean shouldPrintSession) {
-        if (shouldPrintSession) {
-            this.shouldPrintSession = Boolean.TRUE;
-        } else {
-            this.shouldPrintSession = Boolean.FALSE;
-        }
+        this.shouldPrintSession = shouldPrintSession;
     }
 
     /**
-     * By default the connection is printed, this can be turned off.
+     * Whether the connection should be printed as part of the log messages.
+     * By default, the connection is always printed when available, but can be explicitly turned off or on.
+     *
+     * @return value of {@code true} when the connection should be printed as part of the log messages
+     *         or {@code false} otherwise
      */
     @Override
     public boolean shouldPrintConnection() {
-        return (shouldPrintConnection == null) || shouldPrintConnection;
+        return shouldPrintConnection == null || shouldPrintConnection;
     }
 
     /**
-     * By default the connection is printed, this can be turned off.
+     * Turn printing of the connection as part of the log messages on or off explicitly.
+     *
+     * @param shouldPrintConnection value of {@code true} when the connection should be printed
+     *                              as part of the log messages or {@code false} otherwise
      */
     @Override
     public void setShouldPrintConnection(boolean shouldPrintConnection) {
-        if (shouldPrintConnection) {
-            this.shouldPrintConnection = Boolean.TRUE;
-        } else {
-            this.shouldPrintConnection = Boolean.FALSE;
-        }
+        this.shouldPrintConnection = shouldPrintConnection;
     }
 
     /**
-     * By default the stack is logged for FINER or less (finest).
-     * The logging of the stack can also be explicitly turned on or off.
+     * Whether the {@linkplain Exception} stack trace should be logged.
+     * By default, the stack is logged for FINER or less (finest). The logging of the stack
+     * can be explicitly turned on or off.
+     *
+     * @return value of {@code true} when the {@linkplain Exception} stack trace should be logged
+     * or {@code false} otherwise
      */
     @Override
     public boolean shouldLogExceptionStackTrace() {
-        if (shouldLogExceptionStackTrace == null) {
-            return getLevel() <= FINER;
-        } else {
-            return shouldLogExceptionStackTrace;
-        }
+        return shouldLogExceptionStackTrace == null
+                ? getLevel() <= FINER
+                : shouldLogExceptionStackTrace;
     }
 
     /**
-     * PUBLIC:
-     * Set whether bind parameters should be displayed when logging SQL.
+     * Turn {@linkplain Exception} stack trace logging on or off explicitly.
+     *
+     * @param shouldLogExceptionStackTrace value of {@code true} when the {@linkplain Exception} stack trace
+     *                                     should be logged or {@code false} otherwise
+     */
+    @Override
+    public void setShouldLogExceptionStackTrace(boolean shouldLogExceptionStackTrace) {
+        this.shouldLogExceptionStackTrace = shouldLogExceptionStackTrace;
+    }
+
+    /**
+     * Whether the SQL logging should log visible the bind parameters.
+     * By default, the bind parameters are printed for FINE or less (finer, etc.). The printing of the bind
+     * parameters can be explicitly turned on or off.
+     *
+     * @return value of {@code true} when the bind parameters should be printed as part of the SQL log messages
+     *         or {@code false} otherwise
+     */
+    @Override
+    public boolean shouldDisplayData() {
+        return this.shouldDisplayData == null
+                ? getLevel() <= FINE
+                : shouldDisplayData;
+    }
+
+    /**
+     * Turn printing of the bind parameters as part of the SQL log messages on or off explicitly.
+     *
+     * @param shouldDisplayData value of {@code true} when the bind parameters should be printed
+     *                          as part of the SQL log messages or {@code false} otherwise
      */
     @Override
     public void setShouldDisplayData(Boolean shouldDisplayData) {
@@ -654,67 +512,55 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
     }
 
     /**
-     * By default the stack is logged for FINER or less (finest).
-     * The logging of the stack can also be explicitly turned on or off.
-     */
-    @Override
-    public void setShouldLogExceptionStackTrace(boolean shouldLogExceptionStackTrace) {
-        if (shouldLogExceptionStackTrace) {
-            this.shouldLogExceptionStackTrace = Boolean.TRUE;
-        } else {
-            this.shouldLogExceptionStackTrace = Boolean.FALSE;
-        }
-    }
-
-    /**
-     * By default the date is always printed, but can be turned off.
+     * Whether the date should be printed as part of the log messages.
+     * By default, the date is always printed, but can be explicitly turned off or on.
+     *
+     * @return value of {@code true} when the date should be printed as part of the log messages
+     *         or {@code false} otherwise
      */
     @Override
     public boolean shouldPrintDate() {
-        return (shouldPrintDate == null) || (shouldPrintDate);
+        return shouldPrintDate == null || shouldPrintDate;
     }
 
     /**
-     * By default the date is always printed, but can be turned off.
+     * Turn printing of the date as part of the log messages on or off explicitly.
+     *
+     * @param shouldPrintDate value of {@code true} when the date should be printed as part
+     *                        of the log messages or {@code false} otherwise
      */
     @Override
     public void setShouldPrintDate(boolean shouldPrintDate) {
-        if (shouldPrintDate) {
-            this.shouldPrintDate = Boolean.TRUE;
-        } else {
-            this.shouldPrintDate = Boolean.FALSE;
-        }
+        this.shouldPrintDate = shouldPrintDate;
     }
 
     /**
-     * By default the thread is logged for FINE or less (finer,etc.).
-     * The logging of the thread can also be explicitly turned on or off.
+     * Whether the thread should be printed as part of the log messages.
+     * By default, the thread is printed for FINE or less (finer, etc.). The printing of the thread
+     * can be explicitly turned on or off.
+     *
+     * @return value of {@code true} when the thread should be printed as part of the log messages
+     *         or {@code false} otherwise
      */
     @Override
     public boolean shouldPrintThread() {
-        if (shouldPrintThread == null) {
-            return getLevel() <= FINE;
-        } else {
-            return shouldPrintThread;
-        }
+        return shouldPrintThread == null
+                ? getLevel() <= FINE
+                : shouldPrintThread;
     }
 
     /**
-     * By default the thread is logged for FINE or less (finer,etc.).
-     * The logging of the thread can also be explicitly turned on or off.
+     * Turn printing of the thread as part of the log messages on or off explicitly.
+     *
+     * @param shouldPrintThread value of {@code true} when the thread should be printed
+     *                          as part of the log messages or {@code false} otherwise
      */
     @Override
     public void setShouldPrintThread(boolean shouldPrintThread) {
-        if (shouldPrintThread) {
-            this.shouldPrintThread = Boolean.TRUE;
-        } else {
-            this.shouldPrintThread = Boolean.FALSE;
-        }
+        this.shouldPrintThread = shouldPrintThread;
     }
 
     /**
-     * PUBLIC:
-     * <p>
      * Return the writer that will receive the formatted log entries.
      *
      * @return the log writer
@@ -725,8 +571,6 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
     }
 
     /**
-     * PUBLIC:
-     * <p>
      * Set the writer that will receive the formatted log entries.
      *
      * @param writer  the log writer
@@ -738,8 +582,6 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
 
 
     /**
-     * PUBLIC:
-     * <p>
      * Set the writer that will receive the formatted log entries.
      *
      * @param outputstream  the log writer
@@ -749,31 +591,24 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
     }
 
     /**
-     * PUBLIC:
-     * Return the date format to be used when printing a log entry date.
-     * @return the date format
+     * Return the specified date and/or time information in string.
+     * The format will be determined by the {@linkplain  DateTimeFormatter} settings.
+     * By default, the value of the {@linkplain #DATE_FORMAT_STR} pattern is used.
      */
-    public DateFormat getDateFormat() {
-        return dateFormat;
+    public DateTimeFormatter getTimeStampFormatter() {
+        if (timeStampFormatter == null) {
+            timeStampFormatter = DateTimeFormatter
+                    .ofPattern(DATE_FORMAT_STR)
+                    .withZone(ZoneId.systemDefault());
+        }
+        return timeStampFormatter;
     }
 
-    /**
-     * Return the specified date and/or time information in string.
-     * The format will be determined by the date format settings.
-     */
-    protected String getDateString(Date date) {
-        if (getDateFormat() != null) {
-            return getDateFormat().format(date);
-
-        }
-
-        if (date == null) {
+    protected String getTimeStampString(TemporalAccessor temporalAccessor) {
+        if (temporalAccessor == null) {
             return null;
         }
-
-        // Since we currently do not have a thread-safe way to format dates,
-        // we will use ConversionManager to build the string.
-        return ConversionManager.getDefaultManager().convertObject(date, String.class).toString();
+        return getTimeStampFormatter().format(temporalAccessor);
     }
 
     /**
@@ -784,15 +619,15 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
         StringWriter writer = new StringWriter();
 
         if (shouldPrintDate()) {
-            writer.write(getDateString(entry.getDate()));
+            writer.write(getTimeStampString(entry.getTimeStamp()));
             writer.write("--");
         }
-        if (shouldPrintSession() && (entry.getSession() != null)) {
-            writer.write(this.getSessionString(entry.getSession()));
+        if (shouldPrintSession() && entry.getSessionId() != null) {
+            writer.write(entry.getSessionId());
             writer.write("--");
         }
-        if (shouldPrintConnection() && (entry.getConnection() != null)) {
-            writer.write(this.getConnectionString(entry.getConnection()));
+        if (shouldPrintConnection() && entry.getConnectionId() != null) {
+            writer.write(this.getConnectionString(entry.getConnectionId()));
             writer.write("--");
         }
         if (shouldPrintThread()) {
@@ -811,29 +646,13 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
     }
 
     /**
-     * Return the current session including the type and id.
-     */
-    protected String getSessionString(Session session) {
-        // For bug 3422759 the session to log against should be the one in the
-        // event, not the static one in the SessionLog, for there are many
-        // sessions but only one SessionLog.
-        if (session != null) {
-            return ((org.eclipse.persistence.internal.sessions.AbstractSession)session).getLogSessionString();
-        } else {
-            return "";
-        }
-    }
-
-    /**
      * Return the specified connection information.
+     *
+     * @param connectionId the identifier of the datasource connection
+     * @return connection string to be printed to the logs
      */
-    protected String getConnectionString(Accessor connection) {
-        // Bug 3630182 - if possible, print the actual connection's hashcode instead of just the accessor
-        if (connection.getDatasourceConnection() == null){
-            return CONNECTION_STRING + "(" + System.identityHashCode(connection) + ")";
-        } else {
-             return CONNECTION_STRING + "(" + System.identityHashCode(connection.getDatasourceConnection()) + ")";
-        }
+    protected String getConnectionString(int connectionId) {
+        return CONNECTION_STRING + "(" + connectionId + ")";
     }
 
     /**
@@ -846,80 +665,83 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
     /**
      * Print the prefix string representing EclipseLink logging
      */
-
     //Bug3135111  Prefix strings are not translated until the first time they are used.
     protected void printPrefixString(int level, String category) {
         try {
-            switch (level) {
+                this.getWriter().write(getPrefixString(level, category));
+        } catch (IOException exception) {
+            throw new RuntimeException(exception);
+        }
+    }
+
+    /**
+     * Get the prefix string for the EclipseLink logging
+     */
+    protected String getPrefixString(int level, String category) {
+        StringBuilder sb = new StringBuilder();
+        switch (level) {
             case SEVERE:
                 if (SEVERE_PREFIX == null) {
                     SEVERE_PREFIX = LoggingLocalization.buildMessage("toplink_severe");
                 }
-                this.getWriter().write(SEVERE_PREFIX);
+                sb.append(SEVERE_PREFIX);
                 break;
             case WARNING:
                 if (WARNING_PREFIX == null) {
                     WARNING_PREFIX = LoggingLocalization.buildMessage("toplink_warning");
                 }
-                this.getWriter().write(WARNING_PREFIX);
+                sb.append(WARNING_PREFIX);
                 break;
             case INFO:
                 if (INFO_PREFIX == null) {
                     INFO_PREFIX = LoggingLocalization.buildMessage("toplink_info");
                 }
-                this.getWriter().write(INFO_PREFIX);
+                sb.append(INFO_PREFIX);
                 break;
             case CONFIG:
                 if (CONFIG_PREFIX == null) {
                     CONFIG_PREFIX = LoggingLocalization.buildMessage("toplink_config");
                 }
-                this.getWriter().write(CONFIG_PREFIX);
+                sb.append(CONFIG_PREFIX);
                 break;
             case FINE:
                 if (FINE_PREFIX == null) {
                     FINE_PREFIX = LoggingLocalization.buildMessage("toplink_fine");
                 }
-                this.getWriter().write(FINE_PREFIX);
+                sb.append(FINE_PREFIX);
                 break;
             case FINER:
                 if (FINER_PREFIX == null) {
                     FINER_PREFIX = LoggingLocalization.buildMessage("toplink_finer");
                 }
-                this.getWriter().write(FINER_PREFIX);
+                sb.append(FINER_PREFIX);
                 break;
             case FINEST:
                 if (FINEST_PREFIX == null) {
                     FINEST_PREFIX = LoggingLocalization.buildMessage("toplink_finest");
                 }
-                this.getWriter().write(FINEST_PREFIX);
+                sb.append(FINEST_PREFIX);
                 break;
             default:
                 if (TOPLINK_PREFIX == null) {
                     TOPLINK_PREFIX = LoggingLocalization.buildMessage("toplink");
                 }
-                this.getWriter().write(TOPLINK_PREFIX);
-            }
-            if (category != null) {
-                this.getWriter().write(category);
-                this.getWriter().write(": ");
-            }
-        } catch (IOException exception) {
-            throw ValidationException.logIOError(exception);
+                sb.append(TOPLINK_PREFIX);
         }
+        if (category != null) {
+            sb.append(category);
+            sb.append(": ");
+        }
+        return sb.toString();
     }
 
-
     /**
-     * PUBLIC:
-     * Set the date format to be used when printing a log entry date.
-     * <p>Note: the JDK's <code>java.text.SimpleDateFormat</code> is <b>NOT</b> thread-safe.<br>
-     * The user is <b>strongly</b> advised to consider using Apache Commons<br>
-     * <code>org.apache.commons.lang.time.FastDateFormat</code> instead.</p>
+     * Set the date-time format to be used when printing a log entry date.
      *
-     * @param dateFormat java.text.DateFormat
+     * @param timeStampFormatter Formatter for printing time stamp in the log entry.
      */
-    public void setDateFormat(DateFormat dateFormat) {
-        this.dateFormat = dateFormat;
+    public void setTimeStampFormatter(DateTimeFormatter timeStampFormatter) {
+        this.timeStampFormatter = timeStampFormatter;
     }
 
     /**
@@ -938,17 +760,18 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
         } else {
             //Bug5976657, if there are entry parameters and the string "{0" contained in the message
             //body, we assume it needs to be formatted.
-            if (entry.getParameters()!=null && entry.getParameters().length>0 && message.indexOf("{0") >= 0) {
-                message = java.text.MessageFormat.format(message, entry.getParameters());
+            if (entry.getParameters() != null && entry.getParameters().length > 0 && message.contains("{0")) {
+                message = MessageFormat.format(message, entry.getParameters());
             }
         }
         return message;
     }
 
     /**
-     * INTERNAL:
      * Translate the string value of the log level to the constant value.
-     * If value is null or invalid use the default.
+     * If value is {@code null} or invalid use the default.
+     *
+     * @return the constant value of the provided log level {@linkplain String}
      */
     public static int translateStringToLoggingLevel(String loggingLevel) {
         final LogLevel logLevel = LogLevel.toValue(loggingLevel);
@@ -956,8 +779,6 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
     }
 
     /**
-     * PUBLIC:
-     * <p>
      * Log a throwable at FINER level.
      *
      * @param throwable a Throwable
@@ -965,106 +786,81 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
     @Override
     public void throwing(Throwable throwable) {
         if (shouldLog(FINER)) {
-            SessionLogEntry entry = new SessionLogEntry(null, throwable);
-            entry.setLevel(FINER);
-            log(entry);
+            log(new SessionLogEntry(FINER, null, null, "", throwable));
         }
     }
 
-    /**
-     * PUBLIC:
-     * <p>
-     * This method is called when a severe level message needs to be logged.
-     * The message will be translated
-     *
-     * @param message  the message key
-     */
     @Override
     public void severe(String message) {
-        log(SEVERE, message, null);
+        logTranslated(SEVERE, message);
     }
 
-    /**
-     * PUBLIC:
-     * <p>
-     * This method is called when a warning level message needs to be logged.
-     * The message will be translated
-     *
-     * @param message  the message key
-     */
+    @Override
+    public void severe(Supplier<String> messageSupplier) {
+        log(SEVERE, messageSupplier);
+    }
+
     @Override
     public void warning(String message) {
-        log(WARNING, message, null);
+        logTranslated(WARNING, message);
     }
 
-    /**
-     * PUBLIC:
-     * <p>
-     * This method is called when a info level message needs to be logged.
-     * The message will be translated
-     *
-     * @param message  the message key
-     */
+    @Override
+    public void warning(Supplier<String> messageSupplier) {
+        log(WARNING, messageSupplier);
+    }
+
     @Override
     public void info(String message) {
-        log(INFO, message, null);
+        logTranslated(INFO, message);
     }
 
-    /**
-     * PUBLIC:
-     * <p>
-     * This method is called when a config level message needs to be logged.
-     * The message will be translated
-     *
-     * @param message  the message key
-     */
+    @Override
+    public void info(Supplier<String> messageSupplier) {
+        log(INFO, messageSupplier);
+    }
+
     @Override
     public void config(String message) {
-        log(CONFIG, message, null);
+        logTranslated(CONFIG, message);
     }
 
-    /**
-     * PUBLIC:
-     * <p>
-     * This method is called when a fine level message needs to be logged.
-     * The message will be translated
-     *
-     * @param message  the message key
-     */
+    @Override
+    public void config(Supplier<String> messageSupplier) {
+        log(CONFIG, messageSupplier);
+    }
+
     @Override
     public void fine(String message) {
-        log(FINE, message, null);
+        logTranslated(FINE, message);
     }
 
-    /**
-     * PUBLIC:
-     * <p>
-     * This method is called when a finer level message needs to be logged.
-     * The message will be translated
-     *
-     * @param message  the message key
-     */
+    @Override
+    public void fine(Supplier<String> messageSupplier) {
+        log(FINE, messageSupplier);
+    }
+
     @Override
     public void finer(String message) {
-        log(FINER, message, null);
+        logTranslated(FINER, message);
     }
 
-    /**
-     * PUBLIC:
-     * <p>
-     * This method is called when a finest level message needs to be logged.
-     * The message will be translated
-     *
-     * @param message  the message key
-     */
+    @Override
+    public void finer(Supplier<String> messageSupplier) {
+        log(FINER, messageSupplier);
+    }
+
     @Override
     public void finest(String message) {
-        log(FINEST, message, null);
+        logTranslated(FINEST, message);
+    }
+
+    @Override
+    public void finest(Supplier<String> messageSupplier) {
+        log(FINEST, messageSupplier);
     }
 
     /**
-     * PUBLIC:
-     * <p>
      * Log a throwable with level.
      *
      * @param level  the log request level value
@@ -1074,13 +870,11 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
     public void logThrowable(int level, Throwable throwable) {
         // Must not create the log if not logging as is a performance issue.
         if (shouldLog(level)) {
-            log(new SessionLogEntry(null, level, null, throwable));
+            log(new SessionLogEntry(level, null, null, "", throwable));
         }
     }
 
     /**
-     * PUBLIC:
-     * <p>
      * Log a throwable with level.
      *
      * @param level  the log request level value
@@ -1090,7 +884,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
     public void logThrowable(int level, String category, Throwable throwable) {
         // Must not create the log if not logging as is a performance issue.
         if (shouldLog(level, category)) {
-            log(new SessionLogEntry(null, level, category, throwable));
+            log(new SessionLogEntry(level, category, null, "", throwable));
         }
     }
 
@@ -1113,14 +907,6 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
         } catch (Exception exception) {
             throw new AssertionError(exception);
         }
-    }
-    /**
-     * INTERNAL:
-     * Translate the string value of the log level to the constant value.
-     * If value is null or invalid use the default.
-     */
-    public static String translateLoggingLevelToString(final int loggingLevel) {
-        return LogLevel.toValue(loggingLevel, LogLevel.INFO).getName();
     }
 
 }

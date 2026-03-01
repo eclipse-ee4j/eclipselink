@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,7 +28,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
  * INTERNAL:
  * Object to hold onto relation (fk and pk) column metadata in a Eclipselink
  * database field.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -72,8 +72,7 @@ public class DirectColumnMetadata extends MetadataColumn {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (super.equals(objectToCompare) && objectToCompare instanceof DirectColumnMetadata) {
-            DirectColumnMetadata directColumn = (DirectColumnMetadata) objectToCompare;
+        if (super.equals(objectToCompare) && objectToCompare instanceof DirectColumnMetadata directColumn) {
 
             if (! valuesMatch(m_nullable, directColumn.getNullable())) {
                 return false;
@@ -83,7 +82,11 @@ public class DirectColumnMetadata extends MetadataColumn {
                 return false;
             }
 
-            return valuesMatch(m_insertable, directColumn.getInsertable());
+            if (! valuesMatch(m_insertable, directColumn.getInsertable())) {
+                return false;
+            }
+
+            return true;
         }
 
         return false;
@@ -91,7 +94,8 @@ public class DirectColumnMetadata extends MetadataColumn {
 
     @Override
     public int hashCode() {
-        int result = m_nullable != null ? m_nullable.hashCode() : 0;
+        int result = super.hashCode();
+        result = 31 * result + (m_nullable != null ? m_nullable.hashCode() : 0);
         result = 31 * result + (m_updatable != null ? m_updatable.hashCode() : 0);
         result = 31 * result + (m_insertable != null ? m_insertable.hashCode() : 0);
         return result;
@@ -104,9 +108,9 @@ public class DirectColumnMetadata extends MetadataColumn {
     public DatabaseField getDatabaseField() {
         DatabaseField databaseField = super.getDatabaseField();
 
-        databaseField.setNullable(m_nullable == null ? true : m_nullable);
-        databaseField.setUpdatable(m_updatable == null ? true : m_updatable);
-        databaseField.setInsertable(m_insertable == null ? true : m_insertable);
+        databaseField.setNullable(m_nullable == null || m_nullable);
+        databaseField.setUpdatable(m_updatable == null || m_updatable);
+        databaseField.setInsertable(m_insertable == null || m_insertable);
 
         return databaseField;
     }

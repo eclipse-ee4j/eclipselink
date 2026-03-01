@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,11 +22,10 @@ import java.util.HashMap;
 import commonj.sdo.Property;
 import commonj.sdo.Sequence;
 import javax.xml.namespace.QName;
-import org.eclipse.persistence.sdo.SDODataObject;
+
 import org.eclipse.persistence.sdo.helper.ListWrapper;
 import org.eclipse.persistence.sdo.helper.SDOTypeHelper;
 import org.eclipse.persistence.core.mappings.CoreMapping;
-import org.eclipse.persistence.exceptions.SDOException;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
@@ -51,8 +50,8 @@ public class SDOSequence implements Sequence {
             throw SDOException.sequenceDataObjectInstanceFieldIsNull();
         }
         this.dataObject = dataObject;
-        this.settings = new ArrayList<Setting>();
-        this.valuesToSettings = new HashMap<Key, Setting>();
+        this.settings = new ArrayList<>();
+        this.valuesToSettings = new HashMap<>();
     }
 
     public SDODataObject getDataObject() {
@@ -240,7 +239,7 @@ public class SDOSequence implements Sequence {
         CoreMapping mapping = setting.getMapping();
         if (null == mapping) {
             List<Setting> children = setting.getChildren();
-            if (null != children && children.size() > 0) {
+            if (null != children && !children.isEmpty()) {
                 return getProperty(children.get(0));
             }
         } else {
@@ -297,7 +296,7 @@ public class SDOSequence implements Sequence {
             return value;
         }
 
-        if (null == setting.getChildren() || setting.getChildren().size() == 0) {
+        if (null == setting.getChildren() || setting.getChildren().isEmpty()) {
             return null;
         }
         return getValue(setting.getChildren().get(0));
@@ -405,7 +404,7 @@ public class SDOSequence implements Sequence {
                 return oldValue;
             }
             List<Setting> children = setting.getChildren();
-            if (null != children && children.size() > 0) {
+            if (null != children && !children.isEmpty()) {
                 return setValue(children.get(0), value);
             }
             return null;
@@ -480,9 +479,9 @@ public class SDOSequence implements Sequence {
         XMLField xmlField = (XMLField) mapping.getField();
         if (xmlField == null) {
             if (mapping instanceof XMLObjectReferenceMapping) {
-                xmlField = (XMLField) ((XMLObjectReferenceMapping) mapping).getFields().get(0);
+                xmlField = (XMLField) mapping.getFields().get(0);
             } else if (mapping instanceof XMLCollectionReferenceMapping) {
-                xmlField = (XMLField) ((XMLCollectionReferenceMapping) mapping).getFields().get(0);
+                xmlField = (XMLField) mapping.getFields().get(0);
             }
         }
         Setting setting = rootSetting;
@@ -580,7 +579,7 @@ public class SDOSequence implements Sequence {
         // set the new value on the appropriate setting
         while (setting.getMapping() == null) {
             List<Setting> children = setting.getChildren();
-            if (children != null && children.size() > 0) {
+            if (children != null && !children.isEmpty()) {
                 setting = children.get(0);
             }
         }
@@ -598,7 +597,7 @@ public class SDOSequence implements Sequence {
      * INTERNAL:
      */
     public void removeSettingWithoutModifyingDataObject(Property property) {
-        List<Key> keys = new ArrayList<Key>(valuesToSettings.keySet());
+        List<Key> keys = new ArrayList<>(valuesToSettings.keySet());
         int size = valuesToSettings.keySet().size();
         for (int i = size - 1; i >= 0; i--) {
             Key nextKey = keys.get(i);
@@ -617,7 +616,7 @@ public class SDOSequence implements Sequence {
      *         Settings list or -1 if not found
      */
     public int getIndexForProperty(Property property) {
-        List<Key> keys = new ArrayList<Key>(valuesToSettings.keySet());
+        List<Key> keys = new ArrayList<>(valuesToSettings.keySet());
         for (int i = 0; i < keys.size(); i++) {
             Key nextKey = keys.get(i);
             if (nextKey.getProperty() == property) {

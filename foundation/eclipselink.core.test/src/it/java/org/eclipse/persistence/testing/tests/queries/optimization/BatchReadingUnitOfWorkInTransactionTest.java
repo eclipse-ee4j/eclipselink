@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,13 +14,12 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.queries.optimization;
 
-import java.util.*;
-
 import org.eclipse.persistence.annotations.BatchFetchType;
-import org.eclipse.persistence.queries.*;
+import org.eclipse.persistence.queries.ReadAllQuery;
+import org.eclipse.persistence.testing.framework.TestCase;
+import org.eclipse.persistence.testing.models.employee.domain.Employee;
 
-import org.eclipse.persistence.testing.framework.*;
-import org.eclipse.persistence.testing.models.employee.domain.*;
+import java.util.Vector;
 
 /**
  *  This testcase verifies the bug fix about batch reading through a UnitOfWork while already in a transaction
@@ -70,7 +69,7 @@ public class BatchReadingUnitOfWorkInTransactionTest extends TestCase {
         // don't do an update.
         try {
             Vector employees = (Vector)getMyUOW().executeQuery(getMyQuery());
-            ((Employee)employees.firstElement()).getAddress().getCity();
+            ((Employee)employees.get(0)).getAddress().getCity();
             getMyUOW().commit(); // no changes so rollback not required.
         } catch (Exception exception) {
             getMyUOW().release();

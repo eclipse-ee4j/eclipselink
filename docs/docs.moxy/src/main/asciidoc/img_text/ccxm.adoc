@@ -1,0 +1,3 @@
+:nofooter:
+This figure shows a one-to-many relationship between Customer and
+PhoneNumber.

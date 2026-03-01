@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,19 +14,31 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.queries;
 
-import java.util.*;
-
 import org.eclipse.persistence.descriptors.VersionLockingPolicy;
-import org.eclipse.persistence.expressions.*;
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
-import org.eclipse.persistence.internal.expressions.*;
-import org.eclipse.persistence.internal.queries.*;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.internal.sessions.remote.*;
+import org.eclipse.persistence.internal.expressions.ConstantExpression;
+import org.eclipse.persistence.internal.expressions.FunctionExpression;
+import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
+import org.eclipse.persistence.internal.queries.ContainerPolicy;
+import org.eclipse.persistence.internal.queries.ExpressionQueryMechanism;
+import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
+import org.eclipse.persistence.internal.queries.ReportItem;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
+import org.eclipse.persistence.internal.sessions.remote.RemoteSessionController;
+import org.eclipse.persistence.internal.sessions.remote.Transporter;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Vector;
 
 /**
  * <b>Purpose</b>: Query for information about a set of objects instead of the objects themselves.
@@ -71,6 +83,9 @@ public class ReportQuery extends ReadAllQuery {
     /** For example, ... EXISTS( SELECT 1 FROM ... */
     public static final int ShouldSelectValue1 = 6;
 
+    /** For example, ... SELECT ID(e) FROM Entity e... */
+    public static final int ShouldReturnPKClassInstance = 7;
+
     /** Specifies whether to retrieve primary keys, first primary key, or no primary key.*/
     public static final int FULL_PRIMARY_KEY = 2;
     public static final int FIRST_PRIMARY_KEY = 1;
@@ -107,6 +122,11 @@ public class ReportQuery extends ReadAllQuery {
      * Used when distinct has been set on the query.  For use in TCK
      */
     protected Set<Object> returnedKeys;
+
+    private boolean hasIDFunctionSelectItemOnly = false;
+
+    //Optional flag which says which type (Java class instance) should be produced as a result from query execution
+    private Class<?> resultClass;
 
     /**
      * INTERNAL:
@@ -382,7 +402,7 @@ public class ReportQuery extends ReadAllQuery {
      * Method used to abstract addToConstructorItem behavour from the public addItem methods
      */
     private void addItem(ReportItem item){
-        if (this.addToConstructorItem && (getItems().size() > 0) && (getItems().get(getItems().size() - 1).isConstructorItem())) {
+        if (this.addToConstructorItem && (!getItems().isEmpty()) && (getItems().get(getItems().size() - 1).isConstructorItem())) {
             ((ConstructorReportItem)getItems().get(getItems().size() - 1)).addItem(item);
         } else {
             getItems().add(item);
@@ -644,20 +664,47 @@ public class ReportQuery extends ReadAllQuery {
             }
         }
         //end GF_ISSUE_395
-        if (shouldReturnSingleAttribute()) {
-            return reportQueryResult.getResults().get(0);
+
+        //handle case of TypedQuery like
+        //TypedQuery<IdClassPK> query = em.createQuery("SELECT ID(THIS) FROM IdClassEntity WHERE (name = :nameParam) ORDER BY population DESC", IdClassPK.class);
+        //where query return only SELECT ID(e) FROM .... and expected return type (some @IdClass) is specified
+        if (shouldReturnPKClassInstance()) {
+            int[] elementIndex;
+            Object[] elements;
+            if (getDescriptor().getCMPPolicy().getPKClass().isRecord()) {
+                return getDescriptor().getObjectBuilder().buildNewRecordInstance(getDescriptor().getCMPPolicy().getPKClass(), getDescriptor().getObjectBuilder().getPrimaryKeyMappings(), row, session);
+            } else {
+                //Prepare data for POJO (accessors are used)
+                elementIndex = new int[reportQueryResult.getResults().size()];
+                elements = new Object[reportQueryResult.getResults().size()];
+                for (int i = 0; i < reportQueryResult.getResults().size(); i++) {
+                    elementIndex[i] = i;
+                    elements[i] = reportQueryResult.getResults().get(i);
+                }
+            }
+            return getDescriptor().getCMPPolicy().createPrimaryKeyInstanceFromPrimaryKeyValues(session, elementIndex, elements);
+        } else if (shouldReturnSingleAttribute()) {
+            return convertSingleQueryResult(reportQueryResult.getResults().get(0));
         } else if (shouldReturnArray()) {
             return reportQueryResult.toArray();
         } else if (shouldReturnWithoutReportQueryResult()) {
             if (reportQueryResult.size() == 1) {
-                return reportQueryResult.getResults().get(0);
+                return convertSingleQueryResult(reportQueryResult.getResults().get(0));
             } else {
                 return reportQueryResult.toArray();
             }
         } else if (shouldReturnSingleValue()) {
-            return reportQueryResult.getResults().get(0);
+            return convertSingleQueryResult(reportQueryResult.getResults().get(0));
         } else {
             return reportQueryResult;
+        }
+    }
+
+    private Object convertSingleQueryResult(Object queryResult) {
+        if (this.getResultClass() != null) {
+            return session.getPlatform().convertObject(queryResult, this.getResultClass());
+        } else {
+            return queryResult;
         }
     }
 
@@ -757,15 +804,15 @@ public class ReportQuery extends ReadAllQuery {
      * Each call to copiedVersionFrom() will take O(1) time as the expression was
      * already cloned.
      */
-    public void copyReportItems(Map alreadyDone) {
+    public void copyReportItems(Map<Expression, Expression> alreadyDone) {
         this.items = new ArrayList<>(this.items);
         for (int i = this.items.size() - 1; i >= 0; i--) {
             ReportItem item = this.items.get(i);
-            Expression expression = item.getAttributeExpression();
-            if ((expression != null) && (alreadyDone.get(expression.getBuilder()) != null)) {
-                expression = expression.copiedVersionFrom(alreadyDone);
+            if (item.isConstructorItem()) {
+                this.items.set(i, copyConstructorReportItem((ConstructorReportItem) item, alreadyDone));
+            } else {
+                this.items.set(i, copyReportItem(item, alreadyDone));
             }
-            this.items.set(i, new ReportItem(item.getName(), expression));
         }
         if (this.groupByExpressions != null) {
             this.groupByExpressions = new ArrayList<>(this.groupByExpressions);
@@ -787,6 +834,39 @@ public class ReportQuery extends ReadAllQuery {
                 }
             }
         }
+    }
+
+    // copyReportItems helper
+    private static ConstructorReportItem copyConstructorReportItem(ConstructorReportItem reportItem, Map<Expression, Expression> alreadyDone) {
+        // Copy ReportItems list if exists
+        List<ReportItem> reportItems = reportItem.getReportItems();
+        List<ReportItem> newReportItems = reportItems != null ? new ArrayList<>(reportItems.size()) : null;
+        if (reportItems != null) {
+            for (ReportItem item : reportItems) {
+                newReportItems.add(copyReportItem(item, alreadyDone));
+            }
+        }
+        // Create new ConstructorReportItem
+        ConstructorReportItem newItem = new ConstructorReportItem(reportItem.getName());
+        newItem.setConstructor(reportItem.getConstructor());
+        newItem.setResultType(reportItem.getResultType());
+        newItem.setReportItems(newReportItems);
+        newItem.setAttributeExpression(copyAttributeExpression(reportItem, alreadyDone));
+        return newItem;
+    }
+
+    // copyReportItems helper
+    private static Expression copyAttributeExpression(ReportItem reportItem, Map<Expression, Expression> alreadyDone) {
+        Expression expression = reportItem.getAttributeExpression();
+        if ((expression != null) && (alreadyDone.get(expression.getBuilder()) != null)) {
+            expression = expression.copiedVersionFrom(alreadyDone);
+        }
+        return expression;
+    }
+
+    // copyReportItems helper
+    private static ReportItem copyReportItem(ReportItem reportItem, Map<Expression, Expression> alreadyDone) {
+        return new ReportItem(reportItem.getName(), copyAttributeExpression(reportItem, alreadyDone));
     }
 
     /**
@@ -888,7 +968,12 @@ public class ReportQuery extends ReadAllQuery {
             return getDescriptor().getInterfacePolicy().selectAllObjectsUsingMultipleTableSubclassRead(this);
         }
 
-        return buildObjects(getQueryMechanism().selectAllReportQueryRows());
+        List<AbstractRecord> rows = getQueryMechanism().selectAllReportQueryRows();
+        if ((this.batchFetchPolicy != null) && this.batchFetchPolicy.isIN()) {
+            this.batchFetchPolicy.setDataResults(rows);
+        }
+
+        return buildObjects((Vector) rows);
     }
 
     /**
@@ -947,12 +1032,12 @@ public class ReportQuery extends ReadAllQuery {
             Expression one = new ConstantExpression(1, new ExpressionBuilder());
             this.addItem("one", one);
             this.dontUseDistinct();
-            fieldExpressions.addElement(one);
+            fieldExpressions.add(one);
         } else
         // For bug 3115576 and an EXISTS subquery only need to return a single field.
         if (shouldRetrieveFirstPrimaryKey()) {
             if (!getDescriptor().getPrimaryKeyFields().isEmpty()) {
-                fieldExpressions.addElement(getDescriptor().getPrimaryKeyFields().get(0));
+                fieldExpressions.add(getDescriptor().getPrimaryKeyFields().get(0));
             }
         }
         if (shouldRetrievePrimaryKeys()) {
@@ -1003,15 +1088,16 @@ public class ReportQuery extends ReadAllQuery {
 
     /**
      * INTERNAL:
-     * Sets a jakarta.persistence.LockModeType to used with this queries execution.
-     * The valid types are:
-     *  - WRITE
-     *  - READ
-     *  - OPTIMISTIC
-     *  - OPTIMISTIC_FORCE_INCREMENT
-     *  - PESSIMISTIC
-     *  - PESSIMISTIC_FORCE_INCREMENT
-     *  - NONE
+     * Sets a {@code jakarta.persistence.LockModeType} to used with this queries execution.
+     * <p><br>
+     * The valid types are:<ul>
+     * <li>{@code WRITE}</li>
+     * <li>{@code READ}</li>
+     * <li>{@code OPTIMISTIC}</li>
+     * <li>{@code OPTIMISTIC_FORCE_INCREMENT}</li>
+     * <li>{@code PESSIMISTIC}</li>
+     * <li>{@code PESSIMISTIC_FORCE_INCREMENT}</li>
+     * <li>{@code NONE}</li></ul>
      * Setting a null type will do nothing.
      * @return returns a failure flag indicating that we were UNABLE to set the
      * lock mode because of validation. Callers to this method should check the
@@ -1096,7 +1182,7 @@ public class ReportQuery extends ReadAllQuery {
         }
         // Oct 19, 2000 JED
         // Added exception to be thrown if no attributes have been added to the query
-        if (getItems().size() > 0) {
+        if (!getItems().isEmpty()) {
             try {
                 for (ReportItem item : getItems()) {
                     item.initialize(this);
@@ -1208,7 +1294,7 @@ public class ReportQuery extends ReadAllQuery {
      * Prepare a report query with a count defined on an object attribute.
      * Added to fix bug 3268040, addCount(objectAttribute) not supported.
      */
-    protected void prepareObjectAttributeCount(Map clonedExpressions) {
+    protected void prepareObjectAttributeCount(Map<Expression, Expression> clonedExpressions) {
         prepareObjectAttributeCount(getItems(), clonedExpressions);
     }
 
@@ -1218,7 +1304,7 @@ public class ReportQuery extends ReadAllQuery {
      * If the descriptor has a single pk, it is used, otherwise any pk is used if distinct, otherwise a subselect is used.
      * If the object was obtained through an outer join, then the subselect also will not work, so an error is thrown.
      */
-    private void prepareObjectAttributeCount(List<ReportItem> items, Map clonedExpressions) {
+    private void prepareObjectAttributeCount(List<ReportItem> items, Map<Expression, Expression> clonedExpressions) {
         int numOfReportItems = items.size();
         //gf675: need to loop through all items to fix all count(..) instances
         for (int i =0;i<numOfReportItems; i++){
@@ -1228,8 +1314,7 @@ public class ReportQuery extends ReadAllQuery {
             } else if (item instanceof ConstructorReportItem) {
                 // recursive call to process child ReportItems
                 prepareObjectAttributeCount(((ConstructorReportItem)item).getReportItems(), clonedExpressions);
-            } else if (item.getAttributeExpression() instanceof FunctionExpression) {
-                FunctionExpression count = (FunctionExpression)item.getAttributeExpression();
+            } else if (item.getAttributeExpression() instanceof FunctionExpression count) {
                 count.prepareObjectAttributeCount(null, item, this, clonedExpressions);
             }
         }
@@ -1251,7 +1336,7 @@ public class ReportQuery extends ReadAllQuery {
      * Prepare the receiver for being printed inside a subselect.
      * This prepares the statement but not the call.
      */
-    public synchronized void prepareSubSelect(AbstractSession session, AbstractRecord translationRow, Map clonedExpressions) throws QueryException {
+    public synchronized void prepareSubSelect(AbstractSession session, AbstractRecord translationRow, Map<Expression, Expression> clonedExpressions) throws QueryException {
         if (isPrepared()) {
             return;
         }
@@ -1261,11 +1346,6 @@ public class ReportQuery extends ReadAllQuery {
         setTranslationRow(translationRow);
 
         checkDescriptor(getSession());
-
-        if (descriptor.isAggregateDescriptor()) {
-            // Not allowed
-            throw QueryException.aggregateObjectCannotBeDeletedOrWritten(descriptor, this);
-        }
 
         try {
             for (ReportItem item : getItems()) {
@@ -1375,6 +1455,14 @@ public class ReportQuery extends ReadAllQuery {
      */
     public void selectValue1() {
         returnChoice = ShouldSelectValue1;
+    }
+
+    /**
+     * PUBLIC:
+     * Simplify the result by returning an instance of IdClass. It's valid for queries like SELECT ID(e) FROM Entity e... and {@link jakarta.persistence.TypedQuery}
+     */
+    public void setReturnPKClassInstance() {
+        this.returnChoice = ShouldReturnPKClassInstance;
     }
 
     /**
@@ -1524,4 +1612,27 @@ public class ReportQuery extends ReadAllQuery {
         return this.returnChoice == ShouldSelectValue1;
     }
 
+    /**
+     * PUBLIC:
+     * Returns true if results should be returned as instance of IdClass. It's valid for queries like SELECT ID(e) FROM Entity e...
+     */
+    public boolean shouldReturnPKClassInstance() {
+        return this.returnChoice == ShouldReturnPKClassInstance;
+    }
+
+    public void setHasIDFunctionSelectItemOnly(boolean hasIDFunctionSelectItemOnly) {
+        this.hasIDFunctionSelectItemOnly = hasIDFunctionSelectItemOnly;
+    }
+
+    public boolean hasIDFunctionSelectItemOnly() {
+        return hasIDFunctionSelectItemOnly;
+    }
+
+    public Class<?> getResultClass() {
+        return resultClass;
+    }
+
+    public void setResultClass(Class<?> resultClass) {
+        this.resultClass = resultClass;
+    }
 }

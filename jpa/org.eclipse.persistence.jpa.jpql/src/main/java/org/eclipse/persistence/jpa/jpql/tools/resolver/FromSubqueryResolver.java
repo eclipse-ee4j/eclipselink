@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -34,12 +34,15 @@ import org.eclipse.persistence.jpa.jpql.parser.CountFunction;
 import org.eclipse.persistence.jpa.jpql.parser.DivisionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.Expression;
 import org.eclipse.persistence.jpa.jpql.parser.IndexExpression;
+import org.eclipse.persistence.jpa.jpql.parser.LeftExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LengthExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LocateExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LowerExpression;
 import org.eclipse.persistence.jpa.jpql.parser.MaxFunction;
 import org.eclipse.persistence.jpa.jpql.parser.MinFunction;
+import org.eclipse.persistence.jpa.jpql.parser.ReplaceExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ResultVariable;
+import org.eclipse.persistence.jpa.jpql.parser.RightExpression;
 import org.eclipse.persistence.jpa.jpql.parser.SimpleSelectClause;
 import org.eclipse.persistence.jpa.jpql.parser.SimpleSelectStatement;
 import org.eclipse.persistence.jpa.jpql.parser.SizeExpression;
@@ -363,6 +366,11 @@ public class FromSubqueryResolver extends Resolver {
         }
 
         @Override
+        public void visit(LeftExpression expression) {
+            mappingType = MappingType.PROPERTY;
+        }
+
+        @Override
         public void visit(LengthExpression expression) {
             mappingType = MappingType.PROPERTY;
         }
@@ -388,6 +396,11 @@ public class FromSubqueryResolver extends Resolver {
         }
 
         @Override
+        public void visit(ReplaceExpression expression) {
+            mappingType = MappingType.PROPERTY;
+        }
+
+        @Override
         public void visit(ResultVariable expression) {
 
             String name = queryContext.literal(expression, RESULT_VARIABLE);
@@ -403,6 +416,11 @@ public class FromSubqueryResolver extends Resolver {
                 Resolver resolver = queryContext.getResolver(selectExpression);
                 mappings.put(name, buildMapping(name, resolver));
             }
+        }
+
+        @Override
+        public void visit(RightExpression expression) {
+            mappingType = MappingType.PROPERTY;
         }
 
         @Override

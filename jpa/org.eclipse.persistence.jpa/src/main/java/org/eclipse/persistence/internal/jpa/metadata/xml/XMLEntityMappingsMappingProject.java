@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -199,6 +199,7 @@ import org.eclipse.persistence.internal.jpa.metadata.sop.SerializedObjectPolicyM
 import org.eclipse.persistence.internal.jpa.metadata.structures.ArrayAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.structures.StructMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.structures.StructureAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.tables.CheckConstraintMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.tables.CollectionTableMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.tables.IndexMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.tables.JoinTableMetadata;
@@ -223,7 +224,7 @@ import org.eclipse.persistence.oxm.schema.XMLSchemaClassPathReference;
 /**
  * INTERNAL:
  * EclipseLink ORM mapping file OX mapping project.
- *
+ * <p>
  * Key notes:
  * - Elements mappings (per descriptor) must remain in order of definition in
  *   XML. This ensure on any write out the elements will be written in a valid
@@ -254,6 +255,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         addDescriptor(buildIndexDescriptor());
         addDescriptor(buildSecondaryTableDescriptor());
         addDescriptor(buildUniqueConstraintDescriptor());
+        addDescriptor(buildCheckConstraintDescriptor());
         addDescriptor(buildAttributesDescriptor());
         addDescriptor(buildEntityListenerDescriptor());
         addDescriptor(buildPrimaryKeyDescriptor());
@@ -1567,7 +1569,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setDefaultRootElement("orm:entity-mappings");
         descriptor.setJavaClass(XMLEntityMappings.class);
-        descriptor.setSchemaReference(new XMLSchemaClassPathReference(xsdLocation));
+        descriptor.setSchemaReference(new XMLSchemaClassPathReference("/" + xsdLocation));
 
         descriptor.addMapping(getDescriptionMapping());
 
@@ -3316,14 +3318,17 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.setJavaClass(TableMetadata.class);
 
         // Element mappings - must remain in order of definition in XML.
+        descriptor.addMapping(getCommentMapping());
         descriptor.addMapping(getUniqueConstraintMapping());
         descriptor.addMapping(getIndexesMapping());
+        descriptor.addMapping(getCheckConstraintMapping());
 
         // Attribute mappings.
         descriptor.addMapping(getNameAttributeMapping());
         descriptor.addMapping(getCatalogAttributeMapping());
         descriptor.addMapping(getSchemaAttributeMapping());
         descriptor.addMapping(getCreationSuffixAttributeMapping());
+        descriptor.addMapping(getOptionsAttributeMapping());
 
         return descriptor;
     }
@@ -3404,6 +3409,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
 
         descriptor.addMapping(getInitialValueAttributeMapping());
         descriptor.addMapping(getAllocationSizeAttributeMapping());
+        descriptor.addMapping(getOptionsAttributeMapping());
 
         return descriptor;
     }
@@ -3615,6 +3621,23 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
 
         // Attribute mappings.
         descriptor.addMapping(getNameAttributeMapping());
+        descriptor.addMapping(getOptionsAttributeMapping());
+
+        return descriptor;
+    }
+
+    /**
+     * INTERNAL:
+     * XSD: check-constraint
+     */
+    protected ClassDescriptor buildCheckConstraintDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(CheckConstraintMetadata.class);
+
+        // Attribute mappings.
+        descriptor.addMapping(getNameAttributeMapping());
+        descriptor.addMapping(getConstraintAttributeMapping());
+        descriptor.addMapping(getOptionsAttributeMapping());
 
         return descriptor;
     }
@@ -4449,6 +4472,15 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         return descriptionMapping;
     }
 
+    protected XMLDirectMapping getCommentMapping() {
+        XMLDirectMapping descriptionMapping = new XMLDirectMapping();
+        descriptionMapping.setAttributeName("m_comment");
+        descriptionMapping.setGetMethodName("getComment");
+        descriptionMapping.setSetMethodName("setComment");
+        descriptionMapping.setXPath("orm:comment/text()");
+        return descriptionMapping;
+    }
+
     /**
      * INTERNAL:
      */
@@ -4795,6 +4827,19 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         indexMapping.setReferenceClass(CacheIndexMetadata.class);
         indexMapping.setXPath("orm:cache-index");
         return indexMapping;
+    }
+
+    /**
+     * INTERNAL:
+     */
+    protected XMLCompositeCollectionMapping getCheckConstraintMapping() {
+        XMLCompositeCollectionMapping checkConstraintMapping = new XMLCompositeCollectionMapping();
+        checkConstraintMapping.setAttributeName("m_checkConstraints");
+        checkConstraintMapping.setGetMethodName("getCheckConstraints");
+        checkConstraintMapping.setSetMethodName("setCheckConstraints");
+        checkConstraintMapping.setReferenceClass(CheckConstraintMetadata.class);
+        checkConstraintMapping.setXPath("orm:check-constraint");
+        return checkConstraintMapping;
     }
 
     /**
@@ -5208,6 +5253,30 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         nameMapping.setGetMethodName("getName");
         nameMapping.setSetMethodName("setName");
         nameMapping.setXPath("@name");
+        return nameMapping;
+    }
+
+    /**
+     * INTERNAL:
+     */
+    protected XMLDirectMapping getConstraintAttributeMapping() {
+        XMLDirectMapping constraintMapping = new XMLDirectMapping();
+        constraintMapping.setAttributeName("m_constraint");
+        constraintMapping.setGetMethodName("getConstraint");
+        constraintMapping.setSetMethodName("setConstraint");
+        constraintMapping.setXPath("@constraint");
+        return constraintMapping;
+    }
+
+    /**
+     * INTERNAL:
+     */
+    protected XMLDirectMapping getOptionsAttributeMapping() {
+        XMLDirectMapping nameMapping = new XMLDirectMapping();
+        nameMapping.setAttributeName("m_options");
+        nameMapping.setGetMethodName("getOptions");
+        nameMapping.setSetMethodName("setOptions");
+        nameMapping.setXPath("@options");
         return nameMapping;
     }
 

@@ -1,0 +1,30 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[INSTALL003]]
+=== Installing EclipseLink NoSQL Support
+
+Support for NoSQL databases was introduced in EclipseLink 2.4.
+
+To add support for NoSQL databases to EclipseLink, download and install
+`eclipselink-plugins-nosql-`__`ver_no`__`.zip` file from
+`http://www.eclipse.org/eclipselink/downloads/`. Use this bundle in
+conjunction with `eclipselink.jar` or the EclipseLink JPA bundles.
+
+For information about NoSQL support, see
+xref:{relativedir}/nonrelational_db.adoc#NOSQL[Chapter 21, "Using EclipseLink with
+NoSQL Databases."]

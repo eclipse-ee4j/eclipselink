@@ -1,0 +1,66 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+
+:description: EclipseLink
+:keywords: eclipselink, java, jpa, persistence, data access
+
+== Understanding Data Access
+
+This chapter describes one of the most important functions of a session,
+which is to provide access to a data source. This chapter describes the
+concepts behind data access within a session that are unique to
+EclipseLink.
+
+This chapter includes the following sections:
+
+* link:#DATA_ACCESS001[About Externally Managed Transactional Data Sources]
+* link:#DATA_ACCESS002[About Data Source Login Types]
+* link:#DATA_ACCESS003[About Data Source Platform Types]
+* link:#DATA_ACCESS004[About Authentication]
+* link:#DATA_ACCESS005[About Connections]
+* link:#DATA_ACCESS006[About Connection Pools]
+* link:#DATA_ACCESS007[About Data Partitioning Policies]
+* link:#DATA_ACCESS008[About Tenant Isolation]
+* link:#DATA_ACCESS009[About Heterogeneous Batch Writing]
+
+//About Externally Managed Transactional Data Sources
+include::{rootdir}/data_access001.adoc[]
+
+//About Data Source Login Types
+include::{rootdir}/data_access002.adoc[]
+
+//About Data Source Platform Types
+include::{rootdir}/data_access003.adoc[]
+
+//About Authentication
+include::{rootdir}/data_access004.adoc[]
+
+//About Connections
+include::{rootdir}/data_access005.adoc[]
+
+//About Connection Pools
+include::{rootdir}/data_access006.adoc[]
+
+//About Data Partitioning Policies
+include::{rootdir}/data_access007.adoc[]
+
+//About Tenant Isolation
+include::{rootdir}/data_access008.adoc[]
+
+//About Heterogeneous Batch Writing
+include::{rootdir}/data_access009.adoc[]

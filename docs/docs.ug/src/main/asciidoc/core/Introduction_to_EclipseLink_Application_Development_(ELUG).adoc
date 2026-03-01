@@ -1,0 +1,2175 @@
+image:Elug_draft_icon.png[Image:Elug draft
+icon.png,title="Image:Elug draft icon.png"] *For the latest EclipseLink
+documentation, please see
+http://www.eclipse.org/eclipselink/documentation/*
+
+'''''
+
+*TOC*
+Special:Whatlinkshere_Introduction_to_EclipseLink_Application_Development_(ELUG)[Related
+Topics]
+
+This section describes how to build an EclipseLink application,
+including suggested development processes, architectures, and
+technologies.
+
+To ensure the best design for your EclipseLink application, we recommend
+that you follow an iterative step-by-step development process. The
+flexibility of EclipseLink lets you use _any_ development tool.
+
+=== Typical Development Stages
+
+This section describes the general development stages of an EclipseLink
+application. The following figure illustrates the EclipseLink
+development process.
+
+*_EclipseLink Development Process_*
+
+.EclipseLink Development Process
+image::process.gif[EclipseLink Development
+Process,title="EclipseLink Development Process"]
+
+*Design the Application (1)*
+
+Define your application requirements, select an architecture, and
+determine the target platform. See
+link:#Designing_Your_Application_with_EclipseLink[Designing Your
+Application with EclipseLink] for more information. Remember,
+EclipseLink works with _any_ architecture and _any_ platform.
+
+When designing the application, you should also create an object model
+for the application. See link:#Persisting_Objects[Persisting Objects]
+for more information. It is important to create the object model
+_before_ using EclipseLink to map objects, because defining persistent
+mappings for an incorrect or rapidly changing model can be very
+difficult.
+
+*Develop the Application (2, 3, 4)*
+
+Create the Java classes and decide how the classes should be implemented
+by the data source. When working with a legacy system, decide how the
+classes relate to the existing data. If there is no legacy data source
+to integrate, decide how to store each class in the data source and
+create the required schema. Alternatively, you may use EclipseLink to
+create your initial tables.
+
+You have several choices in how you map your classes. When using JPA you
+can use either annotations or XML. You can code or write the XML by
+hand, or use an IDE that supports JPA such as Eclipse Dali, or Oracle
+JDeveloper. When using EclipseLink’s native API’s, MOXy or EIS you can
+use the EclipseLink Workbench.
+
+Using the Workbench, create descriptors and mappings for the persistent
+classes. Use EclipseLink sessions to manipulate the persistent classes,
+including querying and changing data. See
+link:EclipseLink_UserGuide_Overview_of_EclipseLink_Development_Tools_(ELUG)[EclipseLink
+Development Tools Overview] for more information.
+
+Avoid mapping all your model’s classes in a single iteration. Start with
+a small subset of your classes. Build and test their mappings, then
+gradually add classes and relationships. This lets you catch common
+problems before they proliferate through your entire design.
+
+Your runtime application code can use JPA, the native EclipseLink API’s,
+or JAXB when using MOXy. For JPA write Java code to use the
+EntityManager. For native EclipseLink API write Java code to use
+EclipseLink sessions. Sessions are used to query for database objects
+and write objects to the database. See
+link:Introduction_to_EclipseLink_Sessions_(ELUG)[Introduction to
+EclipseLink Sessions] for more information.
+
+*Deploy the Application (5)*
+
+Generate, package, then deploy the necessary files to your application
+server. The required information will vary, depending on your
+environment and architecture. See
+link:EclipseLink_UserGuide_Overview_of_EclipseLink_Application_Deployment_(ELUG)[Introduction
+to EclipseLink Application Deployment] for more information.
+
+*Maintain the Application (6)*
+
+EclipseLink includes many options that can enhance application
+performance. You can customize most aspects of EclipseLink to suit your
+requirements. Use advanced EclipseLink features or write custom querying
+routines to access the database in specific ways, and to optimize
+performance. See
+link:EclipseLink_UserGuide_Optimizing_and_Customizing_an_EclipseLink_Application_(ELUG)[Optimization
+and Customization of an EclipseLink Application] for more information.
+
+== Designing Your Application with EclipseLink
+
+When you design your application, you must choose how and where to use
+EclipseLink. You can use EclipseLink to perform a variety of persistence
+and data transformation functions (see
+link:#How_to_Use_EclipseLink_in_Your_Application_Design[How to Use
+EclipseLink in Your Application Design]) on a variety of Java-supporting
+platforms (see link:#Target_Platforms[Target Platforms]). When you
+design your application architecture, keep these capabilities in mind
+(see link:#Selecting_an_Architecture_with_EclipseLink[Selecting an
+Architecture with EclipseLink]).
+
+=== How to Use EclipseLink in Your Application Design
+
+This section describes the basic ways in which you can use EclipseLink,
+including the following usage types:
+
+* link:#Relational_Database_Usage[Relational Database Usage]
+* link:#Object-Relational_Data_Type_Database_Usage[Object-Relational
+Data Type Database Usage]
+* link:#Oracle_XML_Database_(XDB)_Usage[Oracle XML Database (XDB) Usage]
+* link:#Enterprise_Information_System_(EIS)_Usage[Enterprise Information
+System (EIS) Usage]
+* link:#XML_Usage[XML Usage]
+* link:#EclipseLink_Database_Web_Services_Usage[EclipseLink Database Web
+Services Usage]
+
+==== Relational Database Usage
+
+You can use EclipseLink to persist Java objects to relational databases
+that support SQL data types accessed using JDBC.
+
+For more information, see
+link:Introduction%20to%20Relational%20Projects%20(ELUG)#How_to_Build_Relational_Projects_for_a_Relational_Database[How
+to Build Relational Projects for a Relational Database].
+
+==== Object-Relational Data Type Database Usage
+
+You can use EclipseLink to persist Java objects to object-relational
+data type databases that support data types specialized for object
+storage (such as Oracle Database) accessed using JDBC.
+
+For more information, see
+link:Introduction%20to%20Relational%20Projects%20(ELUG)#How_to_Build_Relational_Projects_for_an_Object-Relational_Data_Type_Database[How
+to Build Relational Projects for an Object-Relational Data Type
+Database].
+
+==== Oracle XML Database (XDB) Usage
+
+You can use EclipseLink to persist XML documents to an Oracle XML
+database using EclipseLink direct-to-XMLType mappings.
+
+For more information, see
+link:Introduction%20to%20Relational%20Projects%20(ELUG)[Introduction to
+Relational Projects] and
+link:Introduction%20to%20Relational%20Mappings%20(ELUG)#Direct-to-XMLType_Mapping[Direct-to-XMLType
+Mapping].
+
+==== Enterprise Information System (EIS) Usage
+
+You can use EclipseLink to persist Java objects to an EIS data source
+using a JCA adapter.
+
+In this scenario, the application invokes EIS data source-defined
+operations by sending EIS interactions to the JCA adapter. Operations
+can take (and return) EIS records. Using EclipseLink EIS descriptors and
+mappings, you can easily map Java objects to the EIS record types
+supported by your JCA adapter and EIS data source.
+
+This usage is common in applications that connect to legacy data sources
+and is also applicable to Web services.
+
+For more information, see
+link:Introduction%20to%20EIS%20Projects%20(ELUG)[Introduction to EIS
+Projects].
+
+==== XML Usage
+
+You can use EclipseLink for in-memory, nonpersistent Java object-to-XML
+transformation with XML Schema (XSD) based XML documents and JAXB.
+
+You can use the EclipseLink JAXB compiler with your XSD to generate both
+JAXB-specific artifacts (such as content and element interfaces,
+implementation classes, and object factory class) and
+EclipseLink-specific artifacts (such as sessions and project XML files
+and Workbench project). For more information, see
+link:Introduction%20to%20XML%20Projects%20(ELUG)#EclipseLink_Support_for_Java_Architecture_for_XML_Binding_(JAXB)[EclipseLink
+Support for Java Architecture for XML Binding (JAXB)].
+
+This usage has many applications, including messaging and Web services.
+
+For more information, see
+link:Introduction%20to%20XML%20Projects%20(ELUG)[Introduction to XML
+Projects].
+
+==== EclipseLink Database Web Services Usage
+
+You can use EclipseLink Database Web Services (DBWS) (introduced in
+Release 1.1) to automatically generate JAX-WS 2.0 compliant Web services
+that expose database operations such as queries, DML statements, and
+stored procedures and stored functions. Using EclipseLink DBWS services,
+you can provide Java EE-compliant, client-neutral access to a relational
+database without having to write Java code.
+
+EclipseLink DBWS services use document literal format as the WSDL
+specification defines and use wrapped elements
+(http://java.sun.com/webservices/jaxrpc/overview.html[see the JAX-RPC
+1.1 specification]).
+
+EclipseLink DBWS services have been tested with the Web services stack
+in Oracle WebLogic 10.3. For testing purposes, you can also deploy
+EclipseLink DBWS services as a Java SE 6 '`containerless`'
+http://java.sun.com/javase/6/docs/api/javax/xml/ws/Endpoint.html[Endpoint].
+
+You can use EclipseLink DBWS services with any database that providers a
+JDBC driver that returns
+http://java.sun.com/javase/6/docs/api/java/sql/DatabaseMetaData.html[DatabaseMetaData]
+(tested on Oracle, MySQL, and so on).
+
+For more information, see the following:
+
+* http://wiki.eclipse.org/Category:DBWS[EclipseLink DBWS Documentation]
+* http://wiki.eclipse.org/EclipseLink/Examples/DBWS[EclipseLink DBWS
+Examples]
+
+=== Target Platforms
+
+EclipseLink supports any enterprise architecture that uses Java,
+including the following:
+
+* Java EE
+* Spring
+* OSGI
+* Java Web servers such as Tomcat
+* Java clients such as Java SE and Web browsers
+* Server Java platforms
+
+Application packaging requirements of the specific target platform (for
+deployment in the host Java or Java EE environment) influences how you
+use and configure EclipseLink. For example, you package a Java EE
+application in an Enterprise Archive (EAR) file. Within the EAR file,
+there are several ways to package persistent entities within Web Archive
+(WAR) and Java Archive (JAR). How you configure EclipseLink depends, in
+part, on how you package the application and how you use the host
+application server class loader.
+
+For detailed information about supported application server versions,
+custom integration, and configuration requirements, see
+link:Integrating%20EclipseLink%20with%20an%20Application%20Server%20(ELUG)[Integrating
+EclipseLink with an Application Server].
+
+== Selecting an Architecture with EclipseLink
+
+This section describes some of the key aspects of application
+architecture that apply to EclipseLink and discusses the various options
+available for each, including the following:
+
+* link:#Tiers[Tiers]
+* link:#Service_Layer[Service Layer]
+* link:#Data_Access[Data Access]
+* link:#caching1[Caching]
+* link:#Locking[Locking]
+
+=== Tiers
+
+This section describes choices you need to make when deciding on how to
+separate client and server functionality in your application
+architecture.
+
+These choices can be summarized as follows:
+
+* link:#Three_Tier[Three Tier]
+** link:#Java_EE_or_Non-Java_EE[Java EE or Non-Java EE]
+** link:#Client1[Client]
+*** Web client
+*** XML/Web service client
+*** Java (fat) client
+* link:#Two_Tier[Two Tier]
+
+==== Three Tier
+
+We recommend a three-tier application architecture. With a three-tier
+architecture, we recommend using EclipseLink JPA or EclipseLink
+link:Introduction%20to%20EclipseLink%20Sessions%20(ELUG)#Server_and_Client_Sessions[Server
+and Client Sessions] and the
+link:Introduction%20to%20EclipseLink%20Transactions_(ELUG)[EclipseLink
+unit of work].
+
+For more information, see
+link:#Considering_Three-Tier_Architecture[Considering Three-Tier
+Architecture].
+
+===== Java EE or Non-Java EE
+
+You can use EclipseLink in a Java EE or non-Java EE application
+architecture. We recommend that you use a Java EE application
+architecture.
+
+With a Java EE application, you should use
+link:Introduction%20to%20Data%20Access%20(ELUG)#External_Connection_Pools[External
+Connection Pools]. You may consider using JPA, EJB session beans, and
+link:Introduction%20to%20EclipseLink%20Transactions_(ELUG)#JTA_Controlled_Transactions[Java
+Transaction API (JTA) integration].
+
+With a non-Java EE application, you should use
+link:Introduction%20to%20Data%20Access%20(ELUG)#Internal_Connection_Pools[Internal
+Connection Pools]. You may still consider using JPA.
+
+===== [#Client1]#Client#
+
+In a three-tier application architecture, you can implement any of the
+following types of client:
+
+* Web client – We recommend that you implement a Web client.
+* XML/Web service client – With this client type, you can
+link:#XML_Usage[use EclipseLink XML].
+* Java (fat) client – With this client type, you can choose the means of
+communicating with the server:
+** EJB session beans – We recommend this approach. You may consider
+using the `+UnitOfWork+` method `+mergeClone+` to handle merging
+deserialized objects (see
+link:Using%20Advanced%20Unit%20of%20Work%20API%20(ELUG)#Merging_Changes_in_Working_Copy_Clones[Merging
+Changes in Working Copy Clones]). The disadvantage of this approach is
+that your application must handle serialization. Avoid serializing deep
+object graphs. You should use indirection, also known in JPA as
+link:Configuring%20a%20Mapping%20(ELUG)#Configuring_Indirection_(Lazy_Loading)[lazy
+loading]. Consider using the data-transfer-object pattern.
+** XML/Web service – Use link:#XML_Usage[EclipseLink XML].
+** RMI – You may consider using an
+link:Introduction%20to%20EclipseLink%20Sessions%20(ELUG)#Remote_Sessions[EclipseLink
+remote session]. The disadvantage of this approach is that a remote
+session is stateful and may not scale well.
+
+See also link:#Service_Layer[Service Layer].
+
+==== Two Tier
+
+With a two-tier application architecture, we recommend using JPA or
+EclipseLink
+link:Introduction%20to%20EclipseLink%20Sessions%20(ELUG)[Database
+Sessions] and the
+link:Introduction%20to%20EclipseLink%20Transactions_(ELUG)[EclipseLink
+unit of work]. The disadvantages of this architecture are that it is not
+Web-enabled and does not scale well to large deployments.
+
+For more information, see
+link:#Considering_Two-Tier_Architecture[Considering Two-Tier
+Architecture].
+
+=== Service Layer
+
+This section describes choices you need to make when deciding on how to
+encapsulate your application’s business logic (or service).
+
+These choices can be summarized as follows:
+
+* link:#EJB_Session_Beans[EJB Session Beans]
+** link:#Stateful[Stateful]
+** link:#Stateless[Stateless]
+* link:#JPA-Entities1[JPA Entities]
+* link:#Plain_Old_Java_Objects_(POJO)[Plain Old Java Objects (POJO)]
+
+See also:
+
+* link:#Data_Access[Data Access]
+* link:#caching1[Caching]
+
+==== EJB Session Beans
+
+We recommend using EJB session beans.
+
+With EJB session beans, you should use
+link:Introduction%20to%20EclipseLink%20Transactions_(ELUG)#JTA_Controlled_Transactions[JTA
+integration] and
+link:Introduction%20to%20Data%20Access%20(ELUG)[External Connection
+Pools]. You can use JPA or the EclipseLink native API. If using JPA you
+can inject your JPA EntityManager into your SessionBeans. If using the
+native API, you should acquire a unit of work using `+Server+` method
+`+getActiveUnitOfWork+` (see
+link:Using%20Advanced%20Unit%20of%20Work%20API%20(ELUG)[How to Acquire a
+Unit of Work with an External Transaction Service]). If your session
+bean and client are not in the same JVM, you may consider using
+`+UnitOfWork+` method `+mergeClone+` to handle
+link:Using%20Advanced%20Unit%20of%20Work%20API%20(ELUG)#Merging_Changes_in_Working_Copy_Clones[merging
+deserialized objects].
+
+For more information, see
+link:#Considering_EJB_Session_Bean_Facade_Architecture[Considering EJB
+Session Bean Facade Architecture].
+
+===== Stateful
+
+If you are using stateful session beans, then note that a reference to a
+client session cannot be passivated. In this case, you must
+link:Introduction%20to%20EclipseLink%20Sessions%20(ELUG)#Acquiring_a_Session_at_Run_Time_with_the_Session_Manager[reacquire
+a client session] on activate or per request.
+
+===== Stateless
+
+If you are using stateless session beans, you must
+link:Introduction%20to%20EclipseLink%20Sessions%20(ELUG)#Acquiring_a_Session_at_Run_Time_with_the_Session_Manager[acquire
+new client session] for each request.
+
+==== [#JPA-Entities1]#JPA Entities#
+
+We recommend you use JPA.
+
+Java Persistence API (JPA) is a specification for persistence in Java EE
+and Java SE applications. In JPA, a persistent class is referred to as
+an entity. An entity is a link:#Plain_Old_Java_Objects_(POJO)[plain old
+Java object (POJO) class] that is mapped to the database and configured
+for usage through JPA using annotations, persistence XML, or both.
+
+With JPA, when your application is running inside a container, all of
+the benefits of the container support and ease of use apply. Note that
+you can configure the same application to run outside the container.
+
+You can use link:#EJB_Session_Beans[EJB Session Beans] as the means for
+your application to interact with JPA.
+
+EclipseLink JPA is a standards compliant JPA persistence provider built
+on the EclipseLink foundation library. EclipseLink JPA offers a variety
+of vendor extensions (annotations and persistence properties) that give
+you full access to the underlying EclipseLink API to take advantage of
+additional functionality and performance benefits.
+
+For more information, see the following:
+
+* link:#Considering_JPA_Entity_Architecture[Considering JPA Entity
+Architecture]
+* link:Introduction%20to%20EclipseLink%20(ELUG)#EclipseLink_Application_Architectures[EclipseLink
+Application Architectures]
+* link:Introduction_to_Java_Persistence_API_(ELUG)[Introduction to Java
+Persistence API]
+* link:Introduction_to_EclipseLink_JPA_(ELUG)[Introduction to
+EclipseLink JPA]
+
+==== Plain Old Java Objects (POJO)
+
+If you choose to build your service layer with non-EJB Java objects with
+a Java EE application server, you should use
+link:Introduction%20to%20Data%20Access%20(ELUG)#External_Connection_Pools[External
+Connection Pools], and may consider using JTA integration (see
+link:Introduction%20to%20EclipseLink%20Transactions_(ELUG)#JTA_Controlled_Transactions[JTA
+Controlled Transactions]). If you use a non-Java EE Web server, you
+should use
+link:Introduction%20to%20Data%20Access%20(ELUG)#Internal_Connection_Pools[Internal
+Connection Pools].
+
+=== Data Access
+
+This section describes choices you need to make when deciding on what
+type of data your application architecture must support.
+
+These choices can be summarized as follows:
+
+* link:#Data_Type[Data Type]
+* link:#Multiple_Data_Sources[Multiple Data Sources]
+* link:#Isolating_Data_Access[Isolating Data Access]
+* link:#Historical_Data_Access[Historical Data Access]
+
+See also link:#Locking[Locking].
+
+==== Data Type
+
+You can use EclipseLink to manage any of the following types of data:
+
+* link:#Relational_Database_Usage[relational];
+* link:#Object-Relational_Data_Type_Database_Usage[object-relational
+data type];
+* link:#Oracle_XML_Database_(XDB)_Usage[Oracle XDB];
+* link:#Enterprise_Information_System_(EIS)_Usage[EIS&#44;
+nonrelational&#44; legacy data];
+* link:#XML_Usage[XML and Web service data].
+
+==== Multiple Data Sources
+
+If your application architecture must access more than one data source,
+we recommend that you use a
+link:Introduction%20to%20EclipseLink%20Sessions%20(ELUG)#Session_Broker_and_Client_Sessions[session
+broker] and JTA integration (see
+link:Introduction%20to%20EclipseLink%20Transactions_(ELUG)#JTA_Controlled_Transactions[JTA
+Controlled Transactions]) for two-phase commit.
+
+Alternatively, you may use multiple sessions.
+
+==== Isolating Data Access
+
+If your application architecture requires that some data be restricted
+to a private cache and isolated from the EclipseLink shared session
+cache, we recommend that you use an
+link:Introduction%20to%20EclipseLink%20Sessions%20(ELUG)#Isolated_Client_Sessions[Isolated
+Client Session]. You can also use an isolated session with the
+link:Introduction%20to%20EclipseLink%20Sessions%20(ELUG)#Isolated_Client_Sessions_and_Oracle_Virtual_Private_Database_(VPD)[Oracle
+Virtual Private Database (VPD) feature].
+
+==== Historical Data Access
+
+If your data source maintains past or historical versions of objects, we
+recommend that you use an EclipseLink historical session
+link:Introduction%20to%20EclipseLink%20Sessions%20(ELUG)#Historical_Sessions[Historical
+Session] to access this historical data so that you can express read
+queries conditional on how your objects are changing over time.
+
+=== [#caching1]#Caching#
+
+This section describes choices you need to make when deciding on how to
+use the link:Introduction%20to%20Cache%20(ELUG)[EclipseLink cache] in
+your application architecture.
+
+These choices can be summarized as follows:
+
+* link:#Cache_Type[Cache Type]
+* link:#Refreshing[Refreshing]
+* link:#Cache-Coordination1[Cache Coordination]
+** link:#Protocol[Protocol]
+** link:#Synchronization[Synchronization]
+
+See also link:#Locking[Locking].
+
+==== Cache Type
+
+Choose a
+link:Introduction%20to%20Cache%20(ELUG)#Cache_Type_and_Object_Identity[Cache
+Type] appropriate for the type of data your application processes. For
+example, consider a weak identity map for volatile data (see
+link:Introduction%20to%20Cache%20(ELUG)#Guidelines_for_Configuring_the_Cache_and_Identity_Maps[Guidelines
+for Configuring the Cache and Identity Maps]).
+
+==== Refreshing
+
+Consider how your application architecture may be affected by stale data
+(see
+link:Introduction%20to%20Cache%20(ELUG)#Handling_Stale_Data[Handling
+Stale Data]): for example, consider using query or descriptor
+link:#Refreshing[refresh options]) or
+link:Introduction%20to%20Cache%20(ELUG)[Cache Invalidation], consider
+using an isolated session’s cache (see
+link:Introduction%20to%20EclipseLink%20Sessions%20(ELUG)#Isolated_Client_Sessions[Isolated
+Client Sessions]) for volatile data.
+
+Avoid using link:Introduction%20to%20Cache%20(ELUG)#No_Identity_Map[No
+Identity Map] for objects that are involved in relationships or that
+require object identity.
+
+==== [#Cache-Coordination1]#Cache Coordination#
+
+EclipseLink provides a distributed cache coordination feature that
+allows multiple, possibly distributed, instances of a session to
+broadcast object changes among each other so that each session’s cache
+is kept up to date (see
+link:Introduction%20to%20Cache%20(ELUG)#Cache_Coordination[Cache
+Coordination]). Before using cache coordination, ensure that it is
+appropriate for your application (see
+link:Introduction%20to%20Cache%20(ELUG)#When_to_Use_Cache_Coordination[When
+to Use Cache Coordination]).
+
+===== Protocol
+
+You can configure a coordinated cache to broadcast changes using any of
+the following communication protocols:
+
+* Java Message Service (JMS) – We recommend using a
+link:Introduction%20to%20Cache%20(ELUG)#JMS_Coordinated_Cache[JMS
+Coordinated Cache].
+* Remote Method Invocation (RMI) – We recommend that you use RMI cache
+coordination only if you require
+link:Configuring%20a%20Coordinated%20Cache%20(ELUG)#Configuring_the_Synchronous_Change_Propagation_Mode[synchronous
+change propagation]. For more information, see
+link:Introduction%20to%20Cache%20(ELUG)#RMI_Coordinated_Cache[RMI
+Coordinated Cache].
+* Common Object Request Broker Architecture (CORBA) – Currently,
+EclipseLink provides support for the Sun ORB (see
+link:Introduction%20to%20Cache%20(ELUG)#CORBA_Coordinated_Cache[CORBA
+Coordinated Cache]).
+
+===== Synchronization
+
+You can configure synchronization strategy that a coordinated cache uses
+to determine what it broadcasts when an object changes. You can
+configure this at the
+link:Configuring%20a%20Project%20(ELUG)#Configuring_Cache_Coordination_Change_Propagation_at_the_Project_Level[project
+level] or
+link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Cache_Coordination_Change_Propagation_at_the_Descriptor_Level[descriptor
+level] level as follows:
+
+* Invalidate changed objects – Propagate an object invalidation that
+marks the object as invalid in all other sessions. This tells other
+sessions that they must update their cache from the data source the next
+time this object is read. We recommend using this synchronization
+strategy.
+* Synchronize changes – Propagate a change notification that contains
+each changed attribute.
+* Synchronize changes and new objects – Propagate a change notification
+that contains each changed attribute. For new objects, propagate an
+object creation (along with all the new instance’s attributes).
+
+=== Locking
+
+This section describes choices you need to make when deciding on how to
+use EclipseLink locking options in your application architecture. We
+strongly recommend always using a locking policy in a concurrent system
+(see
+link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Locking_Policy[Configuring
+Locking Policy]).
+
+These choices can be summarized as follows:
+
+* link:#Optimistic_Locking[Optimistic Locking]
+* link:#Pessimistic_Locking[Pessimistic Locking]
+
+If you are building a three-tier application, be aware of how that
+architecture affects the way you use locking (see
+link:Introduction%20to%20Descriptors%20(ELUG)#Locking_in_a_Three-Tier_Application[Locking
+in a Three-Tier Application]).
+
+For more information, see
+link:Introduction%20to%20Descriptors%20(ELUG)#Descriptors_and_Locking[Descriptors
+and Locking].
+
+==== Optimistic Locking
+
+We recommend using EclipseLink optimistic locking. With optimistic
+locking, all users have read access to the data. When a user attempts to
+write a change, the application checks to ensure the data has not
+changed since the user read the data.
+
+You can use
+link:Introduction%20to%20Descriptors%20(ELUG)#Optimistic_Version_Locking_Policies[Optimistic
+Version Locking] or
+link:Introduction%20to%20Descriptors%20(ELUG)#Optimistic_Field_Locking_Policies[Optimistic
+Field Locking] locking policies. We recommend using version locking
+policies.
+
+==== Pessimistic Locking
+
+With pessimistic locking, the first user who accesses the data with the
+purpose of updating it locks the data until completing the update. The
+disadvantage of this approach is that it may lead to reduced concurrency
+and deadlocks.
+
+Consider using pessimistic locking support at the query level (see
+link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Named_Query_Options[Configuring
+Named Query Options]).
+
+== Building and Using the Persistence Layer
+
+EclipseLink requires that classes must meet certain minimum requirements
+before they can become persistent. EclipseLink also provides
+alternatives to most requirements. EclipseLink uses a nonintrusive
+approach by employing a metadata architecture that allows for minimal
+object model intrusions.
+
+This section includes the following information:
+
+* link:#Implementation_Options[Implementation Options]
+* link:#Persistent_Class_Requirements[Persistent Class Requirements]
+* link:#Persistence_Layer_Components[Persistence Layer Components]
+* link:#How_to_Use_the_Persistence_Layer[How to Use the Persistence
+Layer]
+
+=== Implementation Options
+
+When implementing your persistence layer using EclipseLink, consider the
+following options:
+
+* link:#Using_EclipseLink_JPA_Metatdata,_Annotations,_and_XML[Using
+EclipseLink JPA Metatdata&#44; Annotations&#44; and XML]
+* link:#Using_EclipseLink_Metatdata_XML[Using EclipseLink Metatdata XML]
+* link:#Using_EclipseLink_Metadata_Java_API[Using EclipseLink Metadata
+Java API]
+* link:#Using_Method_and_Direct_Field_Access[Using Method and Direct
+Field Access]
+* link:#Using_Weaving_Technique[Using Weaving Technique]
+
+==== Using EclipseLink JPA Metatdata, Annotations, and XML
+
+We recommend using JPA metadata.
+
+When using JPA, you can specify persistence layer components using any
+combination of standard JPA annotations and `+persistence.xml+`,
+EclipseLink JPA annotation extensions, and EclipseLink JPA
+`+persistence.xml+` extensions.
+
+For more information, see the following:
+
+* link:Introduction%20to%20Java%20Persistence%20API%20(ELUG)#Introduction_to_Java_Persistence_API[Introduction
+to Java Persistence API]
+* link:Introduction%20to%20EclipseLink%20JPA%20(ELUG)[Introduction to
+EclipseLink JPA]
+
+==== Using EclipseLink Metatdata XML
+
+Persistence layer components may be generated as metadata from the
+Workbench.
+
+When using the native API, we recommend using the Workbench to create
+the necessary metadata (stored as XML). You can easily export and update
+the `+project.xml+` and `+sessions.xml+` files. This reduces development
+effort by eliminating the need to regenerate and recompile Java code
+each time you change the project. With Workbench, you write Java code
+only for your own application classes and any necessary amendment
+methods. For information about the XML structure of the `+project.xml+`
+and `+sessions.xml+` files, refer to the appropriate XML schemas (XSD)
+in the _`+ECLIPSELINK_HOME+`_`+/xsds+` directory.
+
+Workbench provides Ant tasks that you can use to integrate Workbench
+with your automated builds.
+
+For more information, see the following:
+
+* link:#Working_with_EclipseLink_Metadata[Working with EclipseLink
+Metadata]
+* link:Using%20Workbench%20(ELUG)#Integrating_Workbench_with_Apache_Ant[Integrating
+Workbench with Apache Ant]
+
+==== Using EclipseLink Metadata Java API
+
+Persistence layer components may be coded or generated as Java from
+Workbench.
+
+To use Java code, you must manually write code for each element of the
+EclipseLink project including: project, login, platform, descriptors,
+and mappings. This may be more efficient if your application is
+model-based and relies heavily on code generation. Depending on the type
+of project you are creating, the Workbench can export Java code for
+projects, tables, and your model source.
+
+EclipseLink provides Ant tasks that you can use to integrate Workbench
+with your automated builds.
+
+For more information, see the following:
+
+* link:Creating%20a%20Project%20(ELUG)#Exporting_Project_Information[Exporting
+Project Information]
+* link:Using%20Workbench%20(ELUG)#Integrating_Workbench_with_Apache_Ant[Integrating
+Workbench with Apache Ant]
+
+==== Using Method and Direct Field Access
+
+You can configure EclipseLink to access the fields (data members) of a
+class by using a getter/setter method (also known as property access) or
+by accessing the field itself directly. We recommend using field access.
+
+When considering using method or direct field access in EclipseLink,
+consider the following.
+
+If you use method access in EclipseLink, ensure you have no side effects
+in the getter/setter methods used for persistence. Setter methods that
+set the inverse relationship, or that access the value being sent can
+disable optimizations such as lazy loading, and can potentially corrupt
+your object model. If you require side effects in your getter/setter
+methods, consider using separate methods for persistence than your
+application uses, or use field access.
+
+If you enable change tracking for your class and use method acess, then
+EclipseLink tracks changes accordingly when the setter methods are
+called. If you access the field directly, EclipseLink may not detect the
+change (EclipseLink will detect the changes made within the class if the
+field is named the same as the property, but not direct field changes
+made from external classes).
+
+Similarly, if you enable change tracking for your class and use field
+access, then EclipseLink tracks changes accordingly when the field is
+set within the class (direct field changes made from external classes
+are not detected).
+
+For more information, see the following:
+
+* link:Configuring%20a%20Project%20(ELUG)#Configuring_Method_or_Direct_Field_Access_at_the_Project_Level[Configuring
+Method or Direct Field Access at the Project Level]
+* link:Configuring%20a%20Mapping%20(ELUG)#Configuring_Method_or_Direct_Field_Accessing_at_the_Mapping_Level[Configuring
+Method or Direct Field Accessing at the Mapping Level]
+* link:Introduction%20to%20EclipseLink%20Transactions_(ELUG)#Unit_of_Work_and_Change_Policy[Unit
+of Work and Change Policy]
+* link:Using%20EclipseLink%20JPA%20Extensions%20(ELUG)#How_to_Use_the_@ChangeTracking_Annotation[How
+to Use the @ChangeTracking Annotation]
+* link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Change_Policy[Configuring
+Change Policy]
+
+==== Using Weaving Technique
+
+Weaving is a technique of manipulating the byte-code of compiled Java
+classes.
+
+EclipseLink uses weaving to enhance both JPA entities and Plain Old Java
+Object (POJO) classes for such things as lazy loading, change tracking,
+fetch groups, and internal optimizations.
+
+For more information, see link:#Using_Weaving[Using Weaving].
+
+=== Persistent Class Requirements
+
+The following requirements apply to plain Java objects:
+
+* You can use direct access on private or protected attributes. For
+more, see
+link:Configuring%20a%20Mapping%20(ELUG)#Configuring_Method_or_Direct_Field_Accessing_at_the_Mapping_Level[Configuring
+Method or Direct Field Accessing at the Mapping Level].
+* When using _nontransparent_ indirection, the attributes must be of the
+type`+ValueHolderInterface+` rather than the original attribute type.
+The value holder does not instantiate a referenced object until it is
+needed.
+* EclipseLink provides _transparent_ indirection for `+Collection+`,
+`+List+`, `+Set+`, and `+Map+` attribute types for any collection
+mappings. Using transparent indirection does not require the use of the
+`+ValueHolderInterface+` or any other object model requirements.
+
+If you are using weaving, the `+ValueHolderInterface+` is not required.
+For more information, see link:#Using_Weaving[Using Weaving].
+
+See
+link:Introduction%20to%20Mappings%20(ELUG)#Indirection_(Lazy_Loading)[Indirection
+(Lazy Loading)] for more information on indirection and transparent
+indirection.
+
+=== Persistence Layer Components
+
+Typically, the EclipseLink persistence layer contains the following
+components:
+
+* link:#Mapping_Metadata[Mapping Metadata]
+* link:#session1[Session]
+* link:#Cache[Cache]
+* link:#Queries_and_Expressions[Queries and Expressions]
+* link:#Transactions[Transactions]
+
+==== Mapping Metadata
+
+The EclipseLink application metadata model is based on the EclipseLink
+project. The project includes descriptors, mappings, and various
+policies that customize the run-time capabilities. You associate this
+mapping and configuration information with a particular data source and
+application by referencing the project from a session.
+
+For more information, see the following:
+
+* link:#Creating_Project_Metadata[Creating Project Metadata]
+* link:Introduction%20to%20Projects_(ELUG)[Introduction to Projects]
+* link:Introduction%20to%20Descriptors%20(ELUG)[Introduction to
+Descriptors]
+* link:Introduction%20to%20Mappings%20(ELUG)[Introduction to Mappings]
+
+==== [#session1]#Session#
+
+A session is the primary interface between the client application and
+EclipseLink, and represents the connection to the underlying data
+source.
+
+EclipseLink offers
+link:Introduction%20to%20EclipseLink%20Sessions%20(ELUG)[several
+different session types], each optimized for different design
+requirements and architectures. The most commonly used session is the
+server session, a session that clients access on the server through a
+client session. The server session provides a shared cache and shared
+connection resources. You define a session with session metadata.
+
+For EclipseLink JPA projects, the `+EntityManager+` represents (wraps)
+the EclipseLink session.
+
+For more information, see the following:
+
+* link:#Creating_Session_Metadata[Creating Session Metadata]
+* link:#How_to_Use_the_Persistence_Layer[How to Use the Persistence
+Layer]
+
+==== Cache
+
+By default, an EclipseLink session provides an object-level cache that
+guarantees object identity and enhances performance by reducing the
+number of times the application needs to access the data source.
+EclipseLink provides a variety of cache options, including locking,
+refresh, invalidation, isolation, and coordination. Using cache
+coordination, you can configure EclipseLink to synchronize changes with
+other instances of the deployed application. You configure most cache
+options at the session level. You can also configure cache options on a
+per-query basis or on a descriptor to apply to all queries on the
+reference class.
+
+For more information, see
+link:Introduction%20to%20Cache%20(ELUG)[Introduction to Cache].
+
+==== Queries and Expressions
+
+EclipseLink provides several object and data query types, and offers
+flexible options for query selection criteria, including the following:
+
+* EclipseLink expressions
+* JPQL (Java Persistence Query Language)
+* SQL
+* Stored procedures
+* Query by example
+
+With these options, you can build any type of query. We recommend using
+named queries over dynamic application queries. Named queries are held
+in the project metadata and referenced by name. This simplifies
+application development and encapsulates the queries to reduce
+maintenance costs.
+
+Regardless of the architecture or persistent entity type, you are free
+to use any of the query options. Queries can be defined through JPA
+annotations, XML or code. If using the native EclipseLink metadata the
+Workbench provides the simplest way to define queries. Alternatively,
+you can build queries in code, using the EclipseLink API.
+
+For more information, see
+link:Introduction%20to%20EclipseLink%20Queries%20(ELUG)[Introduction to
+EclipseLink Queries] and
+link:Introduction%20to%20EclipseLink%20Expressions%20(ELUG)[Introduction
+to EclipseLink Expressions].
+
+==== Transactions
+
+EclipseLink provides the ability to write transactional code isolated
+from the underlying database and schema by using a *unit of work*, a
+specific transactional session.
+
+The unit of work isolates changes in a transaction from other threads
+until it successfully commits the changes to the database. Unlike other
+transaction mechanisms, the unit of work automatically manages changes
+to the objects in the transaction, the order of the changes, and changes
+that might invalidate other EclipseLink caches. The unit of work manages
+these issues by calculating a minimal change set, ordering the database
+calls to comply with referential integrity rules and deadlock avoidance,
+and merging changed objects into the shared cache. In a clustered
+environment, the unit of work also synchronizes changes with the other
+servers in the coordinated cache.
+
+If an application uses JPA, you do not access the unit of work API
+directly, but you still benefit from its’ features: the integration
+between the EclipseLink runtime and JPA transactions or JTA transactions
+use the unit of work to the application’s best advantage.
+
+For more information, see
+link:Introduction_to_EclipseLink_Transactions_%28ELUG%29[Introduction to
+EclipseLink Transactions].
+
+=== How to Use the Persistence Layer
+
+At run time, your application uses the EclipseLink metadata (see
+link:#Working_with_EclipseLink_Metadata[Working with EclipseLink
+Metadata]).
+
+For a JPA project, your application loads a `+persistence.xml+` file at
+run time using the `+Persistence+` class, or injection. Using the
+EntityManager, your application accesses the EclipseLink runtime and the
+mapping metadata.
+
+For a POJO project using the native API, your application loads a
+`+sessions.xml+` file at run time using the session manager (see
+link:Acquiring%20and%20Using%20Sessions%20at%20Run%20Time%20(ELUG)#Acquiring_and_Using_Sessions_at_Run_Time[Acquiring
+and Using Sessions at Run Time]). The `+sessions.xml+` file contains a
+reference to the mapping metadata `+project.xml+` file. Using the
+session, your application accesses the EclipseLink runtime and the
+`+project.xml+` mapping metadata.
+
+== Deploying the Application
+
+Application packaging (for deployment in the host Java or Java EE
+environment) influences EclipseLink use and configuration. For example,
+you package a Java EE application in an EAR file. Within the EAR file,
+there are several ways to package persistent entities within WAR and
+JAR. How you configure EclipseLink depends, in part, on how you package
+the application and how you use the class loader of the host application
+server.
+
+This section discusses packaging and deployment from an EclipseLink
+perspective. However, if you deploy your application to a Java EE
+container, you must configure elements of your application to enable
+EclipseLink container support.
+
+This section includes the following information:
+
+* link:#About_Deployments[About Deployments]
+* link:#How_to_Use_EclipseLink_in_a_Java_EE_Application[How to Use
+EclipseLink in a Java EE Application]
+
+For more information, see
+link:EclipseLink_UserGuide_Overview_of_EclipseLink_Application_Deployment_%28ELUG%29[Overview
+of EclipseLink Application Deployment].
+
+=== About Deployments
+
+The EclipseLink approach to deployment involves packaging application
+files into a single file, such as a JAR file, or an EAR file. This
+approach lets you create clean and self-contained deployments that do
+not require significant file management.
+
+After creating these files, deploy the project.
+
+=== How to Use EclipseLink in a Java EE Application
+
+The typical deployment process involves the following steps:
+
+[arabic]
+. Build the project elements, including beans, classes, and data
+sources.
+. Define the application mappings in JPA annotations or XML, or native
+metadata using the Workbench.
+. Build the application deployment files.
+. Package and deploy the application.
+. Add code to the client application to enable it to access the
+EclipseLink application.
+
+== Optimizing and Customizing the Application
+
+EclipseLink provides a diverse set of features to optimize performance
+including the following:
+
+* Enhancing queries
+* Tuning the cache
+* Scaling to multiple server configuration
+
+You enable or disable most features in the descriptors or session,
+making any resulting performance gains global.
+
+Using link:#Enterprise_Information_System_(EIS)_Usage[EclipseLink EIS],
+you can integrate an EclipseLink application with legacy data sources
+using a JCA adapter. This is the most efficient way to customize an
+EclipseLink application to accommodate unusual or nonstandard systems.
+
+Using link:#XML_Usage[EclipseLink XML], you can integrate an EclipseLink
+application with legacy data sources using a Web service.
+
+See
+link:EclipseLink_UserGuide_Optimizing_and_Customizing_an_EclipseLink_Application_(ELUG)[Optimization
+and Customization of an EclipseLink Application] for details on
+optimizing and customizing EclipseLink.
+
+== Troubleshooting the Application
+
+See for information on troubleshooting all aspects of an EclipseLink
+application including development and deployment.
+
+== Persisting Objects
+
+This section includes a brief description of relational mapping and
+provides important information and restrictions to guide object and
+relational modeling. This information is useful when building
+EclipseLink applications.
+
+This section includes information on the following:
+
+* link:#Application_Object_Model[Application Object Model]
+* link:#Data_Storage_Schema[Data Storage Schema]
+* link:#Primary_Keys_and_Object_Identity[Primary Keys and Object
+Identity]
+* link:#Mappings1[Mappings]
+* link:#Foreign_Keys_and_Object_Relationships[Foreign Keys and Object
+Relationships]
+* link:#Inheritance1[Inheritance]
+* link:#Concurrency1[Concurrency]
+* link:#Caching[Caching]
+* link:#Nonintrusive_Persistence[Nonintrusive Persistence]
+* link:#Indirection1[Indirection]
+* link:#Mutability[Mutability]
+
+These sections contain additional detail on these features, and explain
+how to implement and use them with EclipseLink.
+
+=== Application Object Model
+
+Object modeling refers to the design of the Java classes that represent
+your application objects. With EclipseLink, you can use your favorite
+integrated development environment (IDE) or Unified Modeling Language
+(UML) modeling tool to define and create your application object model.
+
+Any class that registers a descriptor with an EclipseLink database
+session is called a persistent class. EclipseLink does not require that
+persistent classes provide public accessor methods for any private or
+protected attributes stored in the database. Refer to
+link:#Persistent_Class_Requirements[Persistent Class Requirements] for
+more information.
+
+=== Data Storage Schema
+
+Your data storage schema refers to the design that you implement to
+organize the persistent data in your application. This schema refers to
+the data itself–not the actual data source (such as a relational
+database or nonrelational legacy system).
+
+During the design phase of the EclipseLink application development
+process (see link:#Typical_Development_Stages[Typical Development
+Stages]), you should decide how to implement the classes in the data
+source. When integrating existing data source information, you must
+determine how the classes relate to the existing data. If no legacy
+information exists to integrate, decide how you will store each class,
+then create the necessary schema.
+
+You can also link:Using%20Workbench%20(ELUG)[use the Workbench] or
+link:Using%20the%20Schema%20Manager%20(ELUG)[database schema manager] to
+create the necessary information. If using JPA you can have the schema
+created automatically when you first access your application.
+
+=== Primary Keys and Object Identity
+
+When making objects persistent, each object requires an _identity_ to
+uniquely identify it for storage and retrieval. Object identity is
+typically implemented using a unique primary key. This key is used
+internally by EclipseLink to identify each object, and to create and
+manage references. Violating object identity can corrupt the object
+model.
+
+In a Java application, object identity is preserved if each object in
+memory is represented by one, and only one, object instance. Multiple
+retrievals of the same object return references to the same object
+instance–not multiple copies of the same object.
+
+EclipseLink supports multiple identity maps to maintain object identity
+(including composite primary keys). Refer to
+link:Introduction%20to%20Cache%20(ELUG)#Cache_Type_and_Object_Identity[Cache
+Type and Object Identity] for additional information.
+
+=== [#Mappings1]#Mappings#
+
+EclipseLink uses the metadata produced by the Workbench (see
+link:#Working_with_EclipseLink_Metadata[Working with EclipseLink
+Metadata]) to describe how objects and beans map to the data source.
+This approach isolates persistence information from the object model–you
+are free to design their ideal object model, and DBAs are free to design
+their ideal schema.
+
+You use the Workbench to create and manage the mapping information. At
+run time, EclipseLink uses the metadata to seamlessly and dynamically
+interact with the data source, as required by the application.
+
+EclipseLink provides an extensive mapping hierarchy that supports the
+wide variety of data types and references that an object model might
+contain. For more information, see
+link:Introduction%20to%20Mappings%20(ELUG)[Introduction to Mappings].
+
+=== Foreign Keys and Object Relationships
+
+A *foreign key* is a combination of columns that reference a unique key,
+usually the primary key, in another table. Foreign keys can be any
+number of fields (similar to primary key), all of which are treated as a
+unit. A foreign key and the primary parent key it references must have
+the same number and type of fields.
+
+Foreign keys represents relationships from a column or columns in one
+table to a column or columns in another table. For example, if every
+`+Employee+` has an attribute `+address+` that contains an instance of
+`+Address+` (which has its own descriptor and table), the one-to-one
+mapping for the `+address+` attribute would specify foreign key
+information to find an address for a particular `+Employee+`.
+
+Refer to
+link:Configuring%20a%20Relational%20Mapping%20(ELUG)#Configuring_Table_and_Field_References_(Foreign_and_Target_Foreign_Keys)[Configuring
+Table and Field References (Foreign and Target Foreign Keys)] for more
+information.
+
+=== [#Inheritance1]#Inheritance#
+
+Object-oriented systems allow classes to be defined in terms of other
+classes. For example: motorcycles, sedans, and vans are all _kinds of
+vehicles_. Each of the vehicle types is a _subclass_ of the `+Vehicle+`
+class. Similarly, the `+Vehicle+` class is the _superclass_ of each
+specific vehicle type. Each subclass inherits attributes and methods
+from its superclass (in addition to having its own attributes and
+methods).
+
+Inheritance provides several application benefits, including the
+following:
+
+* Using subclasses to provide specialized behaviors from the basis of
+common elements provided by the superclass. By using inheritance, you
+can reuse the code in the superclass many times.
+* Implementing _abstract_ superclasses that define generic behaviors.
+This abstract superclass may define and partially implement behavior,
+while allowing you to complete the details with specialized subclasses.
+
+Refer to
+link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Inheritance_for_a_Child_(Branch_or_Leaf)_Class_Descripto[Configuring
+Inheritance for a Child (Branch or Leaf) Class Descriptor] and
+link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Inherited_Attribute_Mapping_in_a_Subclass[Configuring
+Inherited Attribute Mapping in a Subclass] for detailed information on
+using inheritance with EclipseLink.
+
+=== [#Concurrency1]#Concurrency#
+
+To have concurrent clients logged in at the same time, the server must
+spawn a dedicated thread of execution for each client. Java EE
+application servers do this automatically. Dedicated threads enable each
+client to work without having to wait for the completion of other
+clients. EclipseLink ensures that these threads do not interfere with
+each other when they make changes to the identity map or perform
+database transactions. Using the EclipseLink `+UnitOfWork+` class, your
+client can make transactional changes in an isolated and thread safe
+manner. The unit of work manages clones for the objects you modify to
+isolate each client’s work from other concurrent clients and threads.
+The unit of work is essentially an object-level transaction mechanism
+that maintains all of the ACID (Atomicity, Consistency, Isolation,
+Durability) transaction principles as a database transaction. For more
+information on the unit of work, see
+link:Introduction%20to%20EclipseLink%20Transactions_(ELUG)[Introduction
+to EclipseLink Transactions].
+
+EclipseLink supports configurable optimistic and pessimistic locking
+strategies to let you customize the type of locking that the EclipseLink
+concurrency manager uses. For more information, see
+link:Introduction%20to%20Descriptors%20(ELUG)#Descriptors_and_Locking[Descriptors
+and Locking].
+
+=== Caching
+
+EclipseLink caching improves application performance by automatically
+storing data returned as objects from the database for future use. This
+caching provides several advantages:
+
+* Reusing Java objects that have been previously read from the database
+minimizes database access
+* Minimizing SQL calls to the database when objects already exist in the
+cache
+* Minimizing network access to the database
+* Setting caching policies a class-by-class and bean-by-bean basis
+* Basing caching options and behavior on Java garbage collection
+
+EclipseLink supports several caching polices to provide extensive
+flexibility. You can fine-tune the cache for maximum performance, based
+on individual application performance. Refer to
+link:EclipseLink_UserGuide_Caching_with_EclipseLink_(ELUG)[Cache] for
+more information.
+
+=== Nonintrusive Persistence
+
+The EclipseLink nonintrusive approach of achieving persistence through a
+metadata architecture (see
+link:#Working_with_EclipseLink_Metadata[Working with EclipseLink
+Metadata]) means that there are almost no object model intrusions.
+
+To persist Java objects, EclipseLink does not require any of the
+following:
+
+* Persistent superclass or implementation of persistent interfaces
+* Store, delete, or load methods required in the object model
+* Special persistence methods
+* Generating source code into or wrapping the object model
+
+See link:#Building_and_Using_the_Persistence_Layer[Building and Using
+the Persistence Layer] for additional information on this nonintrusive
+approach.
+
+=== [#Indirection1]#Indirection#
+
+An indirection object takes the place of an application object so the
+application object is not read from the database until it is needed.
+Using indirection, or lazy loading in JPA, allows EclipseLink to create
+_stand-ins_ for related objects. This results in significant performance
+improvements, especially when the application requires the contents of
+only the retrieved object rather than all related objects.
+
+Without indirection, each time the application retrieves a persistent
+object, it also retrieves _all_ the objects referenced by that object.
+This may result in lower performance for some applications.
+
+[cols="<",]
+|===
+|*Note:* We recommend that you use indirection in all situations.
+|===
+
+EclipseLink provides several indirection models, such as proxy
+indirection, transparent indirection, and value holder indirection.
+
+See
+link:Introduction%20to%20Mappings%20(ELUG)#Indirection_(Lazy_Loading)[Indirection
+(Lazy Loading)] for more information.
+
+=== Mutability
+
+Mutability is a property of a complex field that specifies whether or
+not the field value may be changed or not changed as opposed to
+replaced.
+
+An immutable mapping is one in which the mapped object value cannot
+change unless the object ID of the object changes: that is, unless the
+object value is replaced by another object value altogether.
+
+A mutable mapping is one in which the mapped object value can change
+without changing the object ID of the object.
+
+By default, EclipseLink assumes the following:
+
+* all `+TransformationMapping+` instances are mutable;
+* all JPA `+@Basic+` mapping types, except `+Serializable+` types, are
+immutable (including `+Date+` and `+Calendar+` types);
+* all JPA `+@Basic+` mapping `+Serializable+` types are mutable.
+
+Whether a value is immutable or mutable largely depends on how your
+application uses your persistent classes. For example, by default,
+EclipseLink assumes that a persistent field of type `+Date+` is
+immutable: this means that as long as the value of the field has the
+same object ID, EclipseLink assumes that the value has not changed. If
+your application uses the set methods of the `+Date+` class, you can
+change the state of the `+Date+` object value without changing its
+object ID. This prevents EclipseLink from detecting the change. To avoid
+this, you can configure a mapping as mutable: this tells EclipseLink to
+examine the state of the persistent value, not just its object ID.
+
+You can configure the mutability of the following:
+
+* `+TransformationMapping+` instances;
+* any JPA `+@Basic+` mapping type (including `+Date+` and `+Calendar+`
+types) individually;
+* all `+Date+` and `+Calendar+` types.
+
+Mutability can affect change tracking performance. For example, if a
+transformation mapping maps a mutable value, EclipseLink must clone and
+compare the value in a unit of work (see
+link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Copy_Policy[Configuring
+Copy Policy]). If the mapping maps a simple immutable value, you can
+improve unit of work performance by configuring mapping as immutable.
+
+Mutability also affects weaving. EclipseLink can only weave an attribute
+change tracking policy for immutable mappings.
+
+For more information, see the following:
+
+* link:Introduction%20to%20EclipseLink%20Transactions_(ELUG)#Unit_of_Work_and_Change_Policy[Unit
+of Work and Change Policy]
+* link:#Using_Weaving[Using Weaving]
+* link:Using%20EclipseLink%20JPA%20Extensions%20(ELUG)#How_to_Use_the_@Mutable_Annotation[How
+to Use the @Mutable Annotation]
+* link:Configuring%20a%20Mapping%20(ELUG)#Configuring_Mutable_Mappings[Configuring
+Mutable Mappings]
+
+== Working with EclipseLink Metadata
+
+The EclipseLink metadata is the bridge between the development of an
+application and its deployed run-time environment. Capture the metadata
+using:
+
+* JPA annotations, `+persistence.xml+`, `+orm.xml+`, and EclipseLink JPA
+annotation and `+persistence.xml+` property extensions: the EclipseLink
+JPA persistence provider interprets all these sources of metadata to
+create an in-memory EclipseLink session and project at run time.
+* The Workbench (see link:#Creating_Project_Metadata[Creating Project
+Metadata] and link:#Creating_Session_Metadata[Creating Session
+Metadata]) to create EclipseLink `+sessions.xml+` and `+project.xml+`
+files which you pass to the EclipseLink run-time environment.
+* Java and the EclipseLink API (this approach is the most
+labor-intensive).
+
+The metadata lets you pass configuration information into the run-time
+environment. The run-time environment uses the information in
+conjunction with the persistent classes (Java objects, JPA entities, or
+EJB entity beans) and the code written with the EclipseLink API, to
+complete the application.
+
+Using EclipseLink JPA, you also have the option of specifying your
+metadata using EclipseLink `+sessions.xml+` and `+project.xml+` while
+accessing your persistent classes using JPA and an `+EntityManger+`. For
+more information, see
+link:Using%20EclipseLink%20JPA%20Extensions%20(ELUG)#What_You_May_Need_to_Know_About_EclipseLink_JPA_Overriding_Mechanisms[What
+You May Need to Know About EclipseLink JPA Overriding Mechanisms].
+
+[#Figure 2-2]## *_EclipseLink Metadata_*
+
+.EclipseLink Metadata
+image::meta.gif[EclipseLink Metadata,title="EclipseLink Metadata"]
+
+This section describes the following:
+
+* link:#Advantages_of_the_EclipseLink_Metadata_Architecture[Advantages
+of the EclipseLink Metadata Architecture]
+* link:#Creating_Project_Metadata[Creating Project Metadata]
+* link:#Creating_Session_Metadata[Creating Session Metadata]
+* link:#Deploying_Metadata[Deploying Metadata]
+
+=== Advantages of the EclipseLink Metadata Architecture
+
+The EclipseLink metadata architecture provides many important benefits,
+including the following:
+
+* Stores mapping information in XML descriptors–not in the domain model
+objects
+* By using the metadata, EclipseLink does not intrude in the object
+model or the database schema
+* Allows you to design the object model as needed, without forcing any
+specific design
+* Allows DBAs to design the database as needed, without forcing any
+specific design
+* Does not rely on code-generation (which can cause serious design,
+implementation, and maintenance issues)
+* Is unintrusive: adapts to the object model and database schema, rather
+than requiring you to design their object model or database schema to
+suit EclipseLink
+
+Using EclipseLink JPA, you have the flexibility of expressing
+persistence metadata using standard JPA annotations, deployment XML, or
+both and you can optionally take advantage of EclipseLink JPA annotation
+and persistence.xml property extensions.
+
+=== Creating Project Metadata
+
+An EclipseLink project contains the mapping metadata that the
+EclipseLink runtime uses to map objects to a data source. The project is
+the primary object used by the EclipseLink runtime.
+
+This section describes the principal contents of project metadata,
+including the following:
+
+* link:#Descriptors_and_Mappings[Descriptors and Mappings]
+* link:#Data_Source_Login_Information[Data Source Login Information]
+
+Using EclipseLink JPA, the EclipseLink runtime constructs an in-memory
+project based on any combination of JPA annotations,
+`+persistence.xml+`, `+orm.xml+`, and EclipseLink JPA annotation and
+`+persistence.xml+` property extensions. The use of a `+project.xml+`
+file is optional (see
+link:Using%20EclipseLink%20JPA%20Extensions%20(ELUG)#What_You_May_Need_to_Know_About_EclipseLink_JPA_Overriding_Mechanisms[What
+You May Need to Know About EclipseLink JPA Overriding Mechanisms]).
+
+For more information about creating `+project.xml+` metadata, see
+link:Creating%20EclipseLink%20Files%20for%20Deployment%20(ELUG)#project.xml_File[project.xml
+File].
+
+==== Descriptors and Mappings
+
+EclipseLink maps persistent entities to the database in the application,
+using the descriptors and mappings you build with theWorkbench. These
+tools support several approaches to project development, including the
+following:
+
+* Importing classes and tables for mapping
+* Importing classes and generating tables and mappings
+* Importing tables and generating classes and mappings
+* Creating both class and table definitions
+
+Workbench supports all these options. The most common solution is to
+develop the persistent entities using a development tool, such as an
+integrated development environment (IDE), or a modeling tool, and to
+develop the relational model through appropriate relational design
+tools. You then use the Workbench to construct mappings that relate
+these two models.
+
+Although the Workbench offers the ability to generate persistent
+entities or the relational model components for an application, this
+utilities are intended only to assist in rapid initial development
+strategies–not complete round-trip application development.
+
+For more information, see
+link:Introduction%20to%20Descriptors%20(ELUG)[Introduction to
+Descriptors] and link:Introduction%20to%20Mappings%20(ELUG)[Introduction
+to Mappings].
+
+===== Amending Descriptors
+
+An amendment method lets you implement an EclipseLink feature that is
+not currently supported by the Workbench. Simply write a Java method to
+amend the descriptor after it is loaded, and specify the method in the
+Workbench for inclusion in the project metadata. See
+link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Amendment_Methods[Configuring
+Amendment Methods] for detailed information on implementing an amendment
+method for an EclipseLink descriptor.
+
+==== Data Source Login Information
+
+For POJO projects, you configure a session login in the session metadata
+that specifies the information required to access the data source (see
+link:#Creating_Session_Metadata#Creating_Session_Metadata[Creating
+Session Metadata]).
+
+For more information, see
+link:Introduction%20to%20Projects_(ELUG)#Projects_and_Login[Projects and
+Login].
+
+=== Creating Session Metadata
+
+An EclipseLink session contains a reference to a particular
+`+project.xml+` file, plus the information required to access the data
+source. The session is the primary object used by your application to
+access the features of the EclipseLink runtime. In a POJO project, your
+application acquires and accesses a session directly (see
+link:Creating%20EclipseLink%20Files%20for%20Deployment%20(ELUG)#POJO_Applications_and_Session_Metadata[POJO
+Applications and Session Metadata]).
+
+Using EclipseLink JPA, the EclipseLink runtime constructs an in-memory
+session based on any combination of JPA annotations,
+`+persistence.xml+`, `+orm.xml+`, and EclipseLink JPA annotation and
+`+persistence.xml+` property extensions. The use of a `+sessions.xml+`
+file is optional (see
+link:Using%20EclipseLink%20JPA%20Extensions%20(ELUG)#What_You_May_Need_to_Know_About_EclipseLink_JPA_Overriding_Mechanisms[What
+You May Need to Know About EclipseLink JPA Overriding Mechanisms]).
+
+=== Deploying Metadata
+
+The `+project.xml+` and `+sessions.xml+` file are packaged for
+deployment differently according to the type of application you are
+deploying.
+
+For more information, see the following:
+
+* link:Creating%20EclipseLink%20Files%20for%20Deployment%20(ELUG)[Creating
+EclipseLink Files for Deployment]
+* link:Packaging%20a%20EclipseLink%20Application%20(ELUG)[Packaging an
+EclipseLink Application]
+
+Using EclipseLink JPA, you also have the option of specifying your
+metadata using EclipseLink `+sessions.xml+` and `+project.xml+` while
+accessing your persistent classes using JPA and an `+EntityManger+`. For
+more information, see
+link:Using%20EclipseLink%20JPA%20Extensions%20(ELUG)#What_You_May_Need_to_Know_About_EclipseLink_JPA_Overriding_Mechanisms[What
+You May Need to Know About EclipseLink JPA Overriding Mechanisms].
+
+== Using Weaving
+
+Weaving is a technique of manipulating the byte-code of compiled Java
+classes. EclipseLink uses weaving to enhance both JPA entities and Plain
+Old Java Object (POJO) classes for such things as lazy loading, change
+tracking, fetch groups, and internal optimizations.
+
+This section describes the following:
+
+* link:#Configuring_Dynamic_Weaving_Using_the_EclipseLink_Agent[Configuring
+Dynamic Weaving Using the EclipseLink Agent]
+* link:#Configuring_Static_Weaving[Configuring Static Weaving]
+* link:#Disabling_Weaving_Using_EclipseLink_Persistence_Unit_Properties[Disabling
+Weaving Using EclipseLink Persistence Unit Properties]
+* link:#Packaging_a_POJO_Application_for_Weaving[Packaging a POJO
+Application for Weaving]
+* link:#What_You_May_Need_to_Know_About_Weaving_and_POJO_Classes[What
+You May Need to Know About Weaving and POJO Classes]
+* link:#What_You_May_Need_to_Know_About_Weaving_and_Java_EE_Application_Servers[What
+You May Need to Know About Weaving and Java EE Application Servers]
+
+=== Configuring Dynamic Weaving Using the EclipseLink Agent
+
+Use this option to weave applicable class files one at a time, as they
+are loaded at run time. For more information, see
+link:Using%20EclipseLink%20JPA%20Extensions%20(ELUG)#How_to_Configure_Dynamic_Weaving_for_JPA_Entities_Using_the_EclipseLink_Agent[How
+to Configure Dynamic Weaving for JPA Entities Using the EclipseLink
+Agent].
+
+==== To Configure Dynamic Weaving Using the EclipseLink Agent
+
+For information, see the following:
+
+* link:Using%20EclipseLink%20JPA%20Extensions%20(ELUG)#To_Configure_Dynamic_Weaving_for_JPA_Entities_Using_the_EclipseLink_Agent[To
+Configure Dynamic Weaving for JPA Entities Using the EclipseLink Agent]
+* link:#Packaging_a_POJO_Application_for_Weaving[Packaging a POJO
+Application for Weaving]
+
+=== Configuring Static Weaving
+
+Consider this option to weave all applicable class files at build time
+so that you can deliver prewoven class files. For more information, see
+link:Using%20EclipseLink%20JPA%20Extensions%20(ELUG)#How_to_Configure_Static_Weaving_for_JPA_Entities[How
+to Configure Static Weaving for JPA Entities].
+
+Alternatively, you can weave classes at run time. For more information,
+see
+link:#Configuring_Dynamic_Weaving_Using_the_EclipseLink_Agent[Configuring
+Dynamic Weaving Using the EclipseLink Agent].
+
+Note that for weaving, you use a `+persistence.xml+` file in both JPA
+and POJO applications.
+
+For information on packaging and deployment of POJO applications, see
+link:#Packaging_a_POJO_Application_for_Weaving[Packaging a POJO
+Application for Weaving].
+
+=== Disabling Weaving Using EclipseLink Persistence Unit Properties
+
+To disable weaving, you use persistence unit properties in both JPA and
+POJO applications. For more information, see
+link:Using%20EclipseLink%20JPA%20Extensions%20(ELUG)#How_to_Disable_Weaving_Using_EclipseLink_Persistence_Unit_Properties[How
+to Disable Weaving Using EclipseLink Persistence Unit Properties].
+
+For information on packaging and deployment of POJO application, see
+link:#Packaging_a_POJO_Application_for_Weaving[Packaging a POJO
+Application for Weaving].
+
+=== Packaging a POJO Application for Weaving
+
+To package a POJO application for weaving, you create a JAR that
+contains a `+sessions.xml+` file and a `+persistence.xml+` file.
+
+==== To Package a POJO Application for Weaving
+
+[arabic]
+. For any one to one or many to one relationship you want to be woven
+for lazy loading, enable ValueHolder indirection.
+. Create a `+sessions.xml+` file for your application. For more
+information, see
+link:Introduction%20to%20EclipseLink%20Sessions%20(ELUG)[Introduction to
+EclipseLink Sessions].
+. Create a `+persistence.+`xml file for your application and reference
+your `+sessions.xml+` file, as the following example shows.
+[#Example 2-8]##*_persistence.xml File for an EclipseLink JPA
+Application_*
++
++
++
+`+    +` `+        +``+false+` `+        +`
++
+`+            +` `+            +` `+        +` `+    +`
++
+. Create a JAR file that contains your POJO classes,
+`+project deployment+` XML file (the specific name is user
+defined),`+sessions.xml+` file, and `+persistence.xml+` file, as the
+following example shows. Put the `+project deployment XML+`,
+`+persistence.xml+` and `+sessions.xml+` files in a `+META-INF+`
+directory. [#Example 2-9]## *_JAR File for a POJO Application_*
++
+`+appname.jar+` `+    META-INF+` `+        persistence.xml+`
+`+        sessions.xml+` `+        project.xml+` `+    *.java+`
+. Weave the JAR. For more information, see the following:
+* link:#Configuring_Dynamic_Weaving_Using_the_EclipseLink_Agent[Configuring
+Dynamic Weaving Using the EclipseLink Agent]
+* link:#Configuring_Static_Weaving[Configuring Static Weaving]
+
+=== What You May Need to Know About Weaving and POJO Classes
+
+EclipseLink uses weaving to enable the following for POJO classes:
+
+* link:Configuring%20a%20Mapping%20(ELUG)#Configuring_Indirection_(Lazy_Loading)[lazy
+loading (indirection)]
+* link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Change_Policy[change
+tracking]
+* link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Fetch_Groups[fetch
+groups]
+* internal optimizations.
+
+EclipseLink weaves all the POJO classes in the JAR you create when you
+package a POJO application for weaving. For more information, see
+link:#Packaging_a_POJO_Application_for_Weaving[Packaging a POJO
+Application for Weaving].
+
+EclipseLink weaves all the classes defined in the `+persistence.xml+`
+file. That is the following:
+
+* all the classes you list in the persistence.xml file;
+* all classes relative to the JAR containing the `+persistence.xml+`
+file if element is `+false+`.
+
+=== What You May Need to Know About Weaving and Java EE Application Servers
+
+The default EclipseLink weaving behavior applies in any Java EE
+JPA-compliant application server using the EclipseLink JPA persistence
+provider.To change this behavior, modify your `+persistence.xml+` (for
+your JPA entities or POJO classes) to use EclipseLink JPA properties,
+EclipseLink JPA annotations, or both.
+
+For lazy loading (indirection) differences between Java EE and Java SE
+applications, see
+link:Using%20EclipseLink%20JPA%20Extensions%20(ELUG)#EclipseLink_JPA_Support_for_Lazy_Loading_by_Mapping_Type[EclipseLink
+JPA Support for Lazy Loading by Mapping Type].
+
+== Considering Three-Tier Architecture
+
+The three-tier Web application architecture generally includes the
+connection of a server-side Java application to the database through a
+JDBC connection (see the link:#Figure_2-3[Three Tier Architecture]
+figure). In this pattern, EclipseLink resides within a Java server (a
+Java EE server or a custom server), with several possible server
+integration points. The application can support Web clients such as
+servlets, Java clients, and generic clients using XML or Common Object
+Request Broker Architecture (CORBA).
+
+The three-tier application is a common architecture in which EclipseLink
+resides within a Java server (either a Java EE server or a custom
+server). In this architecture, the server session provides clients with
+shared access to JDBC connections and a shared object cache. Because it
+resides on a single JVM, this architecture is simple and easily
+scalable. The EclipseLink persistent entities in this architecture are
+generally Java objects.
+
+This architecture often supports Web-based applications in which the
+client application is a Web client, a Java client, or a server
+component.
+
+{empty}[#Figure 2-3]## *_Three Tier Architecture_*
+image:threetierov.gif[Three Tier
+Architecture,title="Three Tier Architecture"]
+
+Although not all three-tier applications are Web-based, this
+architecture is ideally suited to distributed Web applications. In
+addition, although it is also common to use EJB in a Web application,
+this EclipseLink architecture does not.
+
+=== [#Example-Implementations1]#Example Implementations#
+
+Examples of three-tier architecture implementation include the
+following:
+
+* A Model-View-Controller Model 2 architectural design pattern that runs
+in a Java EE container with servlets and JSP that uses EclipseLink to
+access data without EJB.
+* A Swing or Abstract Window Toolkit (AWT) client that connects to a
+server-side Java application through RMI, without an application server
+or container.
+
+=== [#Advantages-and-Disadvantages1]#Advantages and Disadvantages#
+
+The three-tier Web application architecture offers the following
+advantages:
+
+* High performance, lightweight persistent objects
+* High degree of flexibility in deployment platform and configuration
+
+The disadvantage of this architecture is it is less standard than EJB.
+
+=== Variation Using Remote Sessions
+
+EclipseLink includes a session type called remote session. The session
+offers the full session API and contains a cache of its own, but exists
+on the client system rather than on the EclipseLink server.
+Communications can be configured to use RMI or RMI-Internet Inter-Object
+Request Broker Protocol (IIOP).
+
+Remote session operations require a corresponding client session on the
+server.
+
+Although this is an excellent option for you if you wish to simplify the
+access from the client tier to the server tier, it is less scalable than
+using a client session and does not easily allow changes to server-side
+behavior.
+
+For more information, see
+link:Introduction%20to%20EclipseLink%20Sessions%20(ELUG)#Remote_Sessions[Remote
+Sessions].
+
+=== [#Technical-Challenges1]#Technical Challenges#
+
+The three-tier application with a stateless client presents several
+technical challenges, including the following:
+
+* Transaction management in a stateless environment A common design
+practice is to delimit client requests within a single unit of work
+(transactional session). In a stateless environment, this may affect how
+you design the presentation layer. For example, if a client requires
+multiple pages to collect information for a transaction, then the
+presentation layer must retain the information from page to page until
+the application accumulates the full set of changes or requests. At that
+point, the presentation layer invokes the unit of work to modify the
+database.
+* Optimistic locking in a stateless environmentIn a stateless
+environment, take care to avoid processing out-of-date (stale) data A
+common strategy for avoiding stale data is to implement optimistic
+locking, and store the optimistic lock values in the object. This
+solution requires careful implementation if the stateless application
+serializes the objects, or sends the contents of the object to the
+client in an alternative format. In this case, transport the optimistic
+lock values to the client in the HTTP contents of an edit page. You must
+then use the returned values in any write transaction to ensure that the
+data did not change while the client was performing its work. For more
+information about locking, see
+link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Locking_Policy[Configuring
+Locking Policy].
+* External JDBC pools By default, EclipseLink manages its own connection
+pools. You can also configure EclipseLink to use connection pooling
+offered by the host application server. This feature is useful for
+shared connection pools and is required for JTA/JTS integration (see
+link:Configuring%20a%20Data%20Source%20Login%20(ELUG)#Configuring_External_Connection_Pooling[Configuring
+External Connection Pooling]).
+* JTA/JTS Integration JTA and JTS are standard Java components that
+enable sessions to participate in distributed transactions. You must
+configure EclipseLink to use JTA/JTS to use session beans in the
+architecture (see
+link:Using%20Advanced%20Unit%20of%20Work%20API%20(ELUG)#Integrating_the_Unit_of_Work_with_an_External_Transaction_Service[Integrating
+the Unit of Work with an External Transaction Service]).
+* Cache coordination If you choose to use multiple servers to scale your
+application, you may require EclipseLink
+link:Introduction%20to%20Cache%20(ELUG)[Cache Coordination].
+
+== Considering Two-Tier Architecture
+
+A two-tier application generally includes a Java client that connects
+directly to the database through EclipseLink. The two-tier architecture
+is most common in complex user interfaces with limited deployment. The
+database session provides EclipseLink support for two-tier applications.
+
+For more information, see
+link:Introduction%20to%20EclipseLink%20Sessions%20(ELUG)[Introduction to
+EclipseLink Sessions].
+
+{empty}[#Figure 2-4]## *_Two-Tier Architecture_*
+image:dsessov.gif[Two-Tier Architecture,title="Two-Tier Architecture"]
+
+Although the two-tier architecture is the simplest EclipseLink
+application pattern, it is also the most restrictive, because each
+client application requires its own session. As a result, two-tier
+applications do not scale as easily as other architectures.
+
+Two-tier applications are often implemented as user interfaces that
+directly access the database (see link:#Figure_2-4[Two-Tier
+Architecture]). They can also be non-interface processing engines. In
+either case, the two-tier model is not as common as the three-tier
+model.
+
+The following are key elements of an efficient two-tier (client-server)
+architecture with EclipseLink:
+
+* Minimal dedicated connections from the client to the database
+* An isolated object cache
+
+=== [#Example-Implementations2]#Example Implementations#
+
+An example of a two-tier architecture implementation is a Java user
+interface (Swing/AWT) and batch data processing.
+
+=== [#Advantages-and-Disadvantages2]#Advantages and Disadvantages#
+
+The advantage of the two-tier design is its simplicity. The EclipseLink
+database session that builds the two-tier architecture provides all the
+EclipseLink features in a single session type, thereby making the
+two-tier architecture simple to build and use.
+
+The most important limitation of the two-tier architecture is that it is
+not scalable, because each client requires its own database session.
+
+=== [#Technical-Challenges2]#Technical Challenges#
+
+The current trend toward multitiered Web applications makes the two-tier
+architecture less common in production systems, but no less viable.
+Because there is no shared cache in a two-tier system, you risk
+encountering stale data if you run multiple instances of the
+application. This risk increases as the number of individual database
+sessions increases.
+
+To minimize this problem, EclipseLink offers support for several data
+locking strategies. These include pessimistic locking and several
+variations of optimistic locking. For more information, see
+link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Locking_Policy[Configuring
+Locking Policy].
+
+== Considering EJB Session Bean Facade Architecture
+
+This architecture is an extension of the three-tier pattern, with the
+addition of EJB session beans wrapping the access to the application
+tier. Session beans provide public API access to application operations,
+enabling you to separate the presentation tier from the application
+tier. The architecture also lets you use session beans within a Java EE
+container.This type of architecture generally includes JTA integration,
+and serialization of data to the client.
+
+{empty}[#Figure 2-5]## *_Three-Tier Architecture Using Session Beans and
+Java Objects_* image:sessbnov.gif[Three-Tier Architecture Using Session
+Beans and Java
+Objects,title="Three-Tier Architecture Using Session Beans and Java Objects"]
+
+A common extension to the three-tier architecture is to combine session
+beans and persistent Java objects managed by EclipseLink. The resulting
+application includes session beans and Java objects on an EclipseLink
+three-tier architecture (see the link:#Figure_2-5[Three-Tier
+Architecture Using Session Beans and Java Objects] figure).
+
+The three-tier architecture creates a server session and shares it
+between the session beans in the application. When a session bean needs
+to access an EclipseLink session, the bean obtains a client session from
+the shared server session. This architecture has the following key
+features:
+
+* Session beans delimit transactions. Configure EclipseLink to work with
+a JTA system and its associated connection pool.
+* Accessing the persistent objects on the client side causes them to be
+serialized. Ensure that when the objects re-emerge on the server side,
+they properly merge into the cache to maintain identity.
+
+=== Example Implementation
+
+An example of the EJB session bean facade architecture implementation is
+a Model-View-Controller Model 2 architectural design pattern that runs
+in a Java EE container with servlets and JSP and uses the session bean
+enabled by EclipseLink to access data without EJB.
+
+=== [#Advantages-and-Disadvantages3]#Advantages and Disadvantages#
+
+The EJB session bean facade architecture is a popular and effective
+compromise between the performance of persistent Java objects, and the
+benefits of EJB for standardized client development and server
+scalability. It offers the following advantages:
+
+* Less overhead than an EJB CMP application EclipseLink shares access to
+the project, descriptor, and login information across the beans in the
+application.
+* Future compatibility with other servers This design isolates login and
+EJB server-specific information from the beans, which lets you migrate
+the application from one application server to another without major
+recoding or rebuilding.
+* Shared read cacheThis design offers increased efficiency by providing
+a shared cache for reading objects.
+
+The key disadvantage of this model is the need to transport the
+persistent model to the client. If the model involves complex object
+graphs in conjunction with indirection (lazy loading), this can present
+many challenges with inheritance, indirection, and relationships.
+
+=== What Are Session Beans
+
+Session beans model a process, operation, or service and as such, are
+not persistent entities. However, session beans can use persistence
+mechanisms to perform the services they model.
+
+Under the session bean model, a client application invokes methods on a
+session bean that, in turn, performs operations on Java objects enabled
+by EclipseLink. Session beans execute all operations related to
+EclipseLink on behalf of the client.
+
+The EJB specifications describe session beans as either stateless or
+stateful.
+
+* *Stateful beans* maintain a conversational state with a client; that
+is, they retain information between method calls issued by a particular
+client. This enables the client to use multiple method calls to
+manipulate persistent objects.
+* *Stateless beans* do not retain data between method calls. When the
+client interacts with stateless session beans, it must complete any
+object manipulations within a single method call.
+
+=== [#Technical-Challenges3]#Technical Challenges#
+
+Your application can use both stateful and stateless session beans with
+an EclipseLink client session or database session. When you use session
+beans with an EclipseLink session, the type of bean used affects how it
+interacts with the session:
+
+* Stateless session beans and the EclipseLink session Stateless beans
+store no information between method calls from the client. As a result,
+reestablish the connection of the bean to the session for each client
+method call. Each method call through EclipseLink obtains a client
+session, makes the appropriate calls, and releases the reference to the
+client session.
+* Stateful session beans and the EclipseLink session Your EJB server
+configuration includes settings that affect the way it manages
+beans–settings designed to increase performance, limit memory footprint,
+or set a maximum number of beans. When you use stateful beans, the
+server may deactivate a stateful session bean enabled by EclipseLink out
+of the JVM memory space between calls to satisfy one of these settings.
+The server then reactivates the bean when required, and brings it back
+into memory. This behavior is important, because an EclipseLink session
+instance does not survive passivation. To maintain the session between
+method calls, release the session during the passivation process and
+re-obtain it when you reactivate the bean.
+* External JDBC pools By default, EclipseLink manages its own connection
+pools. For the session bean architecture, you must configure EclipseLink
+to use connection pooling offered by the host application server. This
+feature is useful for shared connection pools and is required for
+JTA/JTS integration (see
+link:Configuring%20a%20Data%20Source%20Login%20(ELUG)#Configuring_External_Connection_Pooling[Configuring
+External Connection Pooling]).
+* JTA/JTS integration JTA and JTS are standard Java components that
+enable sessions to participate in distributed transactions. You must
+configure EclipseLink to use JTA/JTS to use session beans in the
+architecture (see
+link:Using%20Advanced%20Unit%20of%20Work%20API%20(ELUG)#Integrating_the_Unit_of_Work_with_an_External_Transaction_Service[Integrating
+the Unit of Work with an External Transaction Service]).
+* Cache coordination If you choose to use multiple servers to scale your
+application, you may require EclipseLink
+link:Introduction%20to%20Cache%20(ELUG)#Cache_Coordination[Cache
+Coordination].
+
+=== What Is a Unit of Work Merge
+
+You can use a unit of work to enable your client application to modify
+objects on the database. The unit of work merge functions employ
+mappings to copy the values from the serialized object into the unit of
+work, and to calculate changes.
+
+For more information, see
+link:Using%20Advanced%20Unit%20of%20Work%20API%20(ELUG)#Merging_Changes_in_Working_Copy_Clones[Merging
+Changes in Working Copy Clones].
+
+== Considering JPA Entity Architecture
+
+A part of the EJB 3.0 specification, the Java Persistence API (JPA) is a
+lightweight, POJO-based framework for Java persistence. JPA focuses on
+object relational mapping and contains a full object relational mapping
+specification supporting the use of Java language metadata annotations
+and/or XML descriptors to define the mapping between Java objects and a
+relational database. Object relational mapping with the JPA is
+completely metadata-driven. JPA supports a SQL-like query language for
+both static and dynamic queries. It also supports the use of pluggable
+persistence providers.
+
+JPA includes the following concepts:
+
+* Entity–any application-defined object with the following
+characteristics can be an entity:
+** it can be made persistent;
+** it has a persistent identity (a key that uniquely identifies an
+entity instance and distinguishes it from other instances of the same
+entity type. An entity has a persistent identity when there is a
+representation of it in a data store);
+** it is partially transactional in a sense that a persistence view of
+an entity is transactional (an entity is created, updated and deleted
+within a transaction, and a transaction is required for the changes to
+be committed in the database). However, in-memory entities can be
+changed without the changes being persisted.
+** it is not a primitive, a primitive wrapper, or built-in object. An
+entity is a fine-graned object that has a set of aggregated state that
+is typically stored in a single place (such as a row in a table), and
+have relationships to other entities.
+* Entity metadata–describes every entity. Metadata could be expressed as
+annotations (specifically defined types that may be attached to or place
+in front of Java programming elements) or XML (descriptors).
+* Entity manager–enables API calls to perform operations on an entity.
+Until an entity manager is used to create, read, or write an entity, the
+entity is just a regular nonpersistent Java object. When an entity
+manager obtains a reference to an entity, that entity becomes managed by
+the entity manager. The set of managed entity instances within an entity
+manager at any given time is called its persistence context–only one
+Java instance with the same persistent identity may exist in a
+persistence context at any time. You can configure an entity manager to
+be able to persist or manage certain types of objects, read or write to
+a particular database, and be implemented by a specific persistence
+provider. The persistence provider supplies the backing implementation
+engine for JPA, including the `+EntityManager+` interface
+implementation, the `+Query+` implementation, and the SQL
+generation.Entity managers are provided by an `+EntityManagerFactory+`.
+The configuration for an entity manager is bound to the
+`+EntityManagerFactory+`, but it is defined separately as a persistence
+unit. You name persistence units to allow differentiation between
+`+EntityManagerFactory+` objects. This way your application obtains
+control over which configuration to use for operations on a specific
+entity. The configuration that describes the persistence unit is defined
+in a `+persistence.xml+` file. The following description expresses
+relationships between JPA concepts:
+** `+Persistence+` creates one or more `+EntityManagerFactory+` objects;
+** each `+EntityManagerFactory+` is configured by one persistence unit;
+** `+EntityManagerFactory+` creates one or more `+EntityManager+`
+objects;
+** one or more `+EntityManager+` manages one `+PersistenceContext+`.
+
+For more information, see the following:
+
+* link:Introduction%20to%20Java%20Persistence%20API%20(ELUG)[Introduction
+to Java Persistence API]
+* link:Introduction_to_EclipseLink_JPA_(ELUG)[EclipseLink JPA Overview]
+* http://www.oracle.com/technology/products/ias/toplink/jpa/indexl[`+http://www.oracle.com/technology/products/ias/toplink/jpa/indexl+`]
+* _http://download.oracle.com/docs/cd/B32110_01/web.1013/b28221/toc.htm[Oracle
+Fusion Middleware Enterprise JavaBeans Developer’s Guide for Oracle
+Containers for Java EE]_
+
+=== [#Example-Implementations3]#Example Implementations#
+
+An example of the entity beans with bean-managed persistence
+implementation is a Model-View-Controller Model 2 architectural design
+pattern that runs in a Java EE container, with servlets and JSP that
+access session beans and EJB 3.0-compliant entities using the
+EclipseLink-based JPA persistence provider.
+
+=== [#Advantages-and-Disadvantages4]#Advantages and Disadvantages#
+
+The use of EclipseLink JPA entities offers the following advantages:
+
+* POJO persistence–in JPA, persistent objects are POJOs.
+* Object relational mapping is completely metadata-driven.
+* The persistence API exists as a separate layer from the persistent
+objects and does not intrude upon them.
+* Using the query framework you can query across entities and their
+relationships without having to use concrete foreign keys or database
+columns.
+
+Also, you can define queries statically in metadata or create them
+dynamically by passing query criteria on construction. Queries can
+return entities as results.
+
+* Entities are mobile–objects are able to move from one JVM to another
+and back, and at the same time be usable by the application.
+* You can configure persistence features through the use of Java SE 5
+annotations, or XML, or a combination of both. You may also rely on
+defaults.
+* If your application is running inside a container, the container
+provides support and ease of use; you can configure the same application
+to run outside a container.
+
+== Considering Web Services Architecture
+
+A Web services architecture is similar to the
+link:#Considering_Three-Tier_Architecture[Three-Tier Architecture] or
+link:#Considering_EJB_Session_Bean_Facade_Architecture[Session Bean
+Architecture] architecture, however, in a Web services architecture, you
+encapsulate business logic (the service) in a Web service instead of (or
+in addition to) using session beans. In a Web services architecture,
+clients communicate with your application using SOAP messages (XML over
+HTTP).
+
+[#Figure 2-6]## *_Figure 2-6 Web Services Architecture_*
+image:websarch.gif[Web Services
+Architecture,title="Web Services Architecture"] As in any architecture,
+you can use EclipseLink to persist objects to relational or EIS data
+sources. However, in a Web services architecture, you can also use
+EclipseLink to map your object model to an XML schema for use with the
+Web service or as the Web service XML serializer.
+
+=== [#Example-Implementations4]#Example Implementations#
+
+An example of a Web services architecture implementation is the use of a
+Web service to expose parts of an existing application to a remote
+client (typically another application) by way of SOAP messages. In this
+application, you can use EclipseLink XML to unmarshall XML messages to
+Java objects to facilitate requests and marshall Java object responses
+back into XML for transmission to the client.
+
+=== [#Advantages-and-Disadvantages5]#Advantages and Disadvantages#
+
+Using EclipseLink in Web services architecture has many advantages,
+including, but not limited to, the following:
+
+* you can map XML messages to an existing Java object model;
+* you can achieve a high level of complexity of mapping support;
+* compliance with the JAXB standards;
+* providing a scalable, high-performing solution.
+
+One debatable disadvantage is this solution’s complexity over a simple
+RMI session bean service.
+
+=== [#Technical-Challenges4]#Technical Challenges#
+
+As with any technology, there are technical challenges associated with
+the use of EclipseLink in Web services architecture. These technical
+challenges are mostly related to special-case scenarios, such as when
+you need to implement a custom serializer because you have both the Java
+objects and the schema.
+
+For more information, see link:XML_Mappings_(ELUG)[XML Mappings].
+
+== Considering EclipseLink Database Web Services (DBWS)Architecture
+
+EclipseLink DBWS allows you to access relational database artifacts
+through a web service. EclipseLink DBWS includes two components: a
+design-time tooling component and a runtime provider component. The
+runtime provider uses EclipseLink to bridge between the database and the
+XML SOAP Messages used by a Web Service client.
+
+Using DBWS requires JDK 1.6 (or higher).
+
+See http://wiki.eclipse.org/EclipseLink/UserGuide/DBWS/Overview[DBWS for
+more information].
+
+== Considering EclipseLink Service Data Objects (SDO) Architecture
+
+An EclipseLink SDO architecture uses the SDO 2.1 framework for data
+application and development. The EclipseLink implementation provides
+additional features beyond the SDO specification provides and is
+primarily used for converting Java objects to XML. See
+link:Introduction_to_XML_Projects_(ELUG)#EclipseLink_Support_for_Java_Architecture_for_XML_Binding_(JAXB)[EclipseLink
+Support for Java Architecture for XML Binding (JAXB)] for more
+information.
+
+=== Example Implementation
+
+The EclipseLink implementation can be used with application similar to
+JAXB or OX mappings. Typical implementations include:
+
+* Reading in XML with no Types or Properties (metadata) defined. In this
+case the user is returned a graph of DataObjects that can be accesses
+much like a DO
+* Reading in XML with Types and Properties defined, but no generated
+classes. In this case the user is returned a graph of DataObjects with
+associated Types that allow the user to introspect the objects. In this
+case the user is using a very dynamic but still typed, object model.
+* Reading in XML with Types and Properties defined using generated
+classes. In this case the user is returned a graph of bean like objects.
+This is very similar to JAXB except that the user will have access to
+both the static and dynamic APIs.
+
+=== [#Advantages-and-Disadvantages6]#Advantages and Disadvantages#
+
+Using EclipseLink with SDO has many advantages, including, but not
+limited to the following:
+
+* generation of Java SDO classes from an XML schema;
+* generation of SDO types and properties at runtime, to create dynamic
+SDOs;
+* generation of an XML XML schema that corresponds to the types and
+properties of your SDO model; ability to capture and marshall (to XML)
+the set of changes made to an SDO object graph in an SDO Change Summary.
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Release_1.1[Category: Release 1.1] Category:_Concept[Category:
+Concept]

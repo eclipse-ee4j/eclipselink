@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2025 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,6 +22,8 @@
 //       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
 //     08/11/2012-2.5 Guy Pelletier
 //       - 393867: Named queries do not work when using EM level Table Per Tenant Multitenancy.
+//     08/23/2023: Tomas Kraus
+//       - New Jakarta Persistence 3.2 Features
 package org.eclipse.persistence.internal.jpa;
 
 import java.util.ArrayList;
@@ -31,6 +34,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import jakarta.persistence.CacheRetrieveMode;
+import jakarta.persistence.CacheStoreMode;
 import jakarta.persistence.FlushModeType;
 import jakarta.persistence.LockModeType;
 import jakarta.persistence.LockTimeoutException;
@@ -38,11 +43,11 @@ import jakarta.persistence.Parameter;
 import jakarta.persistence.PersistenceException;
 import jakarta.persistence.TemporalType;
 import jakarta.persistence.TypedQuery;
-
+import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
-import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.jpa.querydef.ParameterExpressionImpl;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
@@ -59,7 +64,9 @@ import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.queries.ReadQuery;
+import org.eclipse.persistence.queries.ReportQuery;
 import org.eclipse.persistence.queries.ResultSetMappingQuery;
+import org.eclipse.persistence.queries.SQLResultSetMapping;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 
 /**
@@ -79,6 +86,8 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
      */
     public EJBQueryImpl(DatabaseQuery query, EntityManagerImpl entityManager) {
         super(query, entityManager);
+        // Inherit applicable hints from EntityManager
+        inheritEntityManagerHints();
     }
 
     /**
@@ -89,21 +98,47 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
     }
 
     /**
+     * Build an EJBQueryImpl based on the given jpql string and result class.
+     */
+    public EJBQueryImpl(String jpql, EntityManagerImpl entityManager, Class<?> resultClass) {
+        this(jpql, entityManager, false, resultClass);
+    }
+
+    /**
      * Create an EJBQueryImpl with either a query name or an jpql string.
      *
+     * @param queryDescription a Java Persistence query string
+     * @param entityManager EntityManager instance
      * @param isNamedQuery
      *            determines whether to treat the queryDescription as jpql or a
      *            query name.
      */
     public EJBQueryImpl(String queryDescription, EntityManagerImpl entityManager, boolean isNamedQuery) {
+        this(queryDescription, entityManager, isNamedQuery, null);
+    }
+
+    /**
+     * Create an EJBQueryImpl with either a query name or an jpql string.
+     *
+     * @param queryDescription a Java Persistence query string
+     * @param entityManager EntityManager instance
+     * @param isNamedQuery
+     *            determines whether to treat the queryDescription as jpql or a
+     *            query name.
+     * @param resultClass the type of the query result
+     */
+    public EJBQueryImpl(String queryDescription, EntityManagerImpl entityManager, boolean isNamedQuery, Class<?> resultClass) {
         super(entityManager);
         if (isNamedQuery) {
             this.queryName = queryDescription;
         } else {
             if (databaseQuery == null) {
-                databaseQuery = buildEJBQLDatabaseQuery(queryDescription, entityManager.getActiveSessionIfExists());
+                AbstractSession session = entityManager.getActiveSessionIfExists();
+                databaseQuery = buildEJBQLDatabaseQuery(null, queryDescription, entityManager.getActiveSessionIfExists(), null, null, session.getDatasourcePlatform().getConversionManager().getLoader(), resultClass);
             }
         }
+        // Inherit applicable hints from EntityManager
+        inheritEntityManagerHints();
     }
 
     /**
@@ -129,12 +164,29 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
      * @return a DatabaseQuery representing the given jpql.
      */
     public static DatabaseQuery buildEJBQLDatabaseQuery(String queryName, String jpqlQuery, AbstractSession session, Enum lockMode, Map<String, Object> hints, ClassLoader classLoader) {
+        return buildEJBQLDatabaseQuery(queryName, jpqlQuery, session, lockMode, hints, classLoader, null);
+    }
+
+    /**
+     * Build a DatabaseQuery from an JPQL string.
+     *
+     * @param jpqlQuery
+     *            the JPQL string.
+     * @param session
+     *            the session to get the descriptors for this query for.
+     * @param hints
+     *            a list of hints to be applied to the query.
+     * @param resultClass
+     *            the type of the query result
+     * @return a DatabaseQuery representing the given jpql.
+     */
+    public static DatabaseQuery buildEJBQLDatabaseQuery(String queryName, String jpqlQuery, AbstractSession session, Enum lockMode, Map<String, Object> hints, ClassLoader classLoader, Class<?> resultClass) {
         // PERF: Check if the JPQL has already been parsed.
         // Only allow queries with default properties to be parse cached.
         boolean isCacheable = (queryName == null) && (hints == null);
         DatabaseQuery databaseQuery = null;
         if (isCacheable) {
-            databaseQuery = (DatabaseQuery) session.getProject().getJPQLParseCache().get(jpqlQuery);
+            databaseQuery = session.getProject().getJPQLParseCache().get(jpqlQuery);
         }
         if ((databaseQuery == null) || (!databaseQuery.isPrepared())) {
             JPAQueryBuilder queryBuilder = session.getQueryBuilder();
@@ -146,6 +198,14 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
                 ReadAllQuery readAllQuery = (ReadAllQuery) databaseQuery;
                 if (readAllQuery.hasJoining() && (readAllQuery.getDistinctState() == ReadAllQuery.DONT_USE_DISTINCT)) {
                     readAllQuery.setShouldFilterDuplicates(false);
+                }
+                if (databaseQuery.isReportQuery()) {
+                    ReportQuery reportQuery = (ReportQuery) databaseQuery;
+                    reportQuery.setResultClass(resultClass);
+                    Class<?> pkClass = reportQuery.getDescriptor().getCMPPolicy().getPKClass();
+                    if (pkClass != null && pkClass == reportQuery.getResultClass() && reportQuery.hasIDFunctionSelectItemOnly()) {
+                        reportQuery.setReturnPKClassInstance();
+                    }
                 }
             } else if (databaseQuery.isModifyQuery()) {
                 // By default, do not batch modify queries, as row count must be returned.
@@ -224,7 +284,7 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
      * Build a DataReadQuery from a sql string.
      */
     public static DatabaseQuery buildSQLDatabaseQuery(String sqlString, ClassLoader classLoader, AbstractSession session) {
-        return buildSQLDatabaseQuery(sqlString, new HashMap<String, Object>(), classLoader, session);
+        return buildSQLDatabaseQuery(sqlString, new HashMap<>(), classLoader, session);
     }
 
     /**
@@ -266,6 +326,23 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
     }
 
     /**
+     * Build a ResultSetMappingQuery from a sql result set mapping name and sql
+     * string.
+     *
+     * @param hints
+     *            a list of hints to be applied to the query.
+     */
+    public static DatabaseQuery buildSQLDatabaseQuery(SQLResultSetMapping sqlResultSetMapping, String sqlString, Map<String, Object> hints, ClassLoader classLoader, AbstractSession session) {
+        ResultSetMappingQuery query = new ResultSetMappingQuery();
+        query.addSQLResultSetMapping(sqlResultSetMapping);
+        query.setCall(((DatasourcePlatform)session.getDatasourcePlatform()).buildNativeCall(sqlString));
+        query.setIsUserDefined(true);
+
+        // apply any query hints
+        return applyHints(hints, query, classLoader, session);
+    }
+
+    /**
      * Set an implementation-specific hint. If the hint name is not recognized,
      * it is silently ignored.
      *
@@ -292,8 +369,76 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
      *             if not a Java Persistence query language SELECT query
      */
     @Override
-    public EJBQueryImpl setLockMode(LockModeType lockMode) {
-        return (EJBQueryImpl) super.setLockMode(lockMode);
+    @SuppressWarnings("unchecked")
+    public EJBQueryImpl<X> setLockMode(LockModeType lockMode) {
+        return (EJBQueryImpl<X>) super.setLockMode(lockMode);
+    }
+
+
+    // Based on EntityManagerImpl#getQueryHints(Object,OperationType)
+    @Override
+    public CacheRetrieveMode getCacheRetrieveMode() {
+        return FindOptionUtils.getCacheRetrieveMode(entityManager.getAbstractSession(), getDatabaseQuery().getProperties());
+    }
+
+    @Override
+    public TypedQuery<X> setCacheRetrieveMode(CacheRetrieveMode cacheRetrieveMode) {
+        FindOptionUtils.setCacheRetrieveMode(getDatabaseQuery().getProperties(), cacheRetrieveMode);
+        setHint(QueryHints.CACHE_RETRIEVE_MODE, cacheRetrieveMode);
+        return this;
+    }
+
+    @Override
+    public CacheStoreMode getCacheStoreMode() {
+        return FindOptionUtils.getCacheStoreMode(entityManager.getAbstractSession(), getDatabaseQuery().getProperties());
+    }
+
+    @Override
+    public TypedQuery<X> setCacheStoreMode(CacheStoreMode cacheStoreMode) {
+        FindOptionUtils.setCacheStoreMode(getDatabaseQuery().getProperties(), cacheStoreMode);
+        setHint(QueryHints.CACHE_STORE_MODE, cacheStoreMode);
+        return this;
+    }
+
+    @Override
+    public Integer getTimeout() {
+        return FindOptionUtils.getTimeout(entityManager.getAbstractSession(), getDatabaseQuery().getProperties());
+    }
+
+    @Override
+    public TypedQuery<X> setTimeout(Integer timeout) {
+        FindOptionUtils.setTimeout(getDatabaseQuery().getProperties(), timeout);
+        setHint(QueryHints.QUERY_TIMEOUT, timeout);
+        return this;
+    }
+
+    /**
+     * Inherit applicable query hints from the EntityManager.
+     * EntityManager-level settings to newly created queries.
+     */
+    protected void inheritEntityManagerHints() {
+        if (entityManager == null || entityManager.properties == null) {
+            return;
+        }
+
+        DatabaseQuery dbQuery = getDatabaseQuery();
+        if (dbQuery == null) {
+            return;
+        }
+
+        Map<String, Object> emProperties = entityManager.properties;
+
+        // CACHE_RETRIEVE_MODE only applies to ObjectLevelReadQuery (SELECT queries)
+        if (dbQuery.isObjectLevelReadQuery() && emProperties.containsKey(QueryHints.CACHE_RETRIEVE_MODE)) {
+            setHint(QueryHints.CACHE_RETRIEVE_MODE, emProperties.get(QueryHints.CACHE_RETRIEVE_MODE));
+        }
+
+        // CACHE_STORE_MODE applies to all query types:
+        // - For ObjectLevelReadQuery: controls whether results are stored in cache after reading
+        // - For ModifyQuery: controls whether cache is invalidated after UPDATE/DELETE
+        if (emProperties.containsKey(QueryHints.CACHE_STORE_MODE)) {
+            setHint(QueryHints.CACHE_STORE_MODE, emProperties.get(QueryHints.CACHE_STORE_MODE));
+        }
     }
 
     /**
@@ -315,8 +460,8 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
         try {
             if (query.isReadAllQuery()) {
                 Class<?> containerClass = ((ReadAllQuery) getDatabaseQueryInternal()).getContainerPolicy().getContainerClass();
-                if (!Helper.classImplementsInterface(containerClass, ClassConstants.Collection_Class)) {
-                    throw QueryException.invalidContainerClass(containerClass, ClassConstants.Collection_Class);
+                if (!Helper.classImplementsInterface(containerClass, CoreClassConstants.Collection_Class)) {
+                    throw QueryException.invalidContainerClass(containerClass, CoreClassConstants.Collection_Class);
                 }
             } else if (query.isReadObjectQuery()) {
                 List<Object> resultList = new ArrayList<>();
@@ -332,10 +477,7 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
             return (Collection) executeReadQuery();
         } catch (LockTimeoutException exception) {
             throw exception;
-        } catch (PersistenceException exception) {
-            setRollbackOnly();
-            throw exception;
-        } catch (IllegalStateException exception) {
+        } catch (PersistenceException | IllegalStateException exception) {
             setRollbackOnly();
             throw exception;
         } catch (RuntimeException exception) {
@@ -374,10 +516,7 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
             return (Cursor) result;
         } catch (LockTimeoutException e) {
             throw e;
-        } catch (PersistenceException exception) {
-            setRollbackOnly();
-            throw exception;
-        } catch (IllegalStateException exception) {
+        } catch (PersistenceException | IllegalStateException exception) {
             setRollbackOnly();
             throw exception;
         } catch (RuntimeException exception) {
@@ -386,18 +525,16 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
         }
     }
 
-    /**
-     * Execute a query that returns a single result.
-     *
-     * @return the result
-     * @throws jakarta.persistence.EntityNotFoundException
-     *             if there is no result
-     * @throws jakarta.persistence.NonUniqueResultException
-     *             if more than one result
-     */
     @Override
+    @SuppressWarnings("unchecked")
     public X getSingleResult() {
         return (X) super.getSingleResult();
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public X getSingleResultOrNull() {
+        return (X) super.getSingleResultOrNull();
     }
 
     /**

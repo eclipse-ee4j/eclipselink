@@ -15,10 +15,10 @@
 //       - 1391: JSON support in JPA
 package org.eclipse.persistence.mappings.converters.spi;
 
+import org.eclipse.persistence.mappings.converters.Converter;
+
 import java.util.Map;
 import java.util.function.Supplier;
-
-import org.eclipse.persistence.mappings.converters.Converter;
 
 // This converter is being used in JPA MappingAccessor.
 /**

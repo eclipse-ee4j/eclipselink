@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,11 +14,6 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.descriptors;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.QueryException;
@@ -31,6 +26,11 @@ import org.eclipse.persistence.queries.ComplexQueryResult;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReadObjectQuery;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * <b>Purpose</b>: Allows for a descriptor's implemented interfaces to be configured.
@@ -90,7 +90,7 @@ public class InterfacePolicy implements Serializable, Cloneable {
     /**
      * PUBLIC:
      * Add the parent Interface class.
-     *
+     * <p>
      * This method should be called once for each parent Interface of the Descriptor.
      */
     public void addParentInterface(Class<?> parentInterface) {
@@ -106,7 +106,7 @@ public class InterfacePolicy implements Serializable, Cloneable {
      * Return if there are any child descriptors.
      */
     public boolean hasChild() {
-        return this.childDescriptors.size() > 0;
+        return !this.childDescriptors.isEmpty();
     }
 
     /**

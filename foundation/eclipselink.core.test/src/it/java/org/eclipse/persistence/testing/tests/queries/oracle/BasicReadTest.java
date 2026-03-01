@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,8 +14,10 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.queries.oracle;
 
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.testing.framework.*;
+import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.testing.framework.TestCase;
+import org.eclipse.persistence.testing.framework.TestErrorException;
+import org.eclipse.persistence.testing.framework.TestWarningException;
 
 public class BasicReadTest extends TestCase {
     static String HINT_STRING = "/*+ ALL_ROWS */";
@@ -47,11 +49,11 @@ public class BasicReadTest extends TestCase {
     @Override
     public void verify() throws Exception {
         String SQLString = query.getSQLString();
-        if (SQLString.indexOf(HINT_STRING) == -1) {
+        if (!SQLString.contains(HINT_STRING)) {
             throw new TestErrorException("Hint String not in SQL String");
         }
         if (subselect) {
-            if (SQLString.indexOf(INNER_HINT) == -1) {
+            if (!SQLString.contains(INNER_HINT)) {
                 throw new TestErrorException("Inner Hint String not in SQL String");
             }
         }

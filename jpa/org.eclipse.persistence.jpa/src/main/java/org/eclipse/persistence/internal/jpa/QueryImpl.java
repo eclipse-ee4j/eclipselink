@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2012, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
+ * Copyright (c) 2012, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -52,6 +53,7 @@ import jakarta.persistence.TransactionRequiredException;
 
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.helper.BasicTypeHelperImpl;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.ConversionManager;
@@ -109,7 +111,7 @@ public class QueryImpl {
      * Base constructor for EJBQueryImpl. Initializes basic variables.
      */
     protected QueryImpl(EntityManagerImpl entityManager) {
-        this.parameterValues = new HashMap<String, Object>();
+        this.parameterValues = new HashMap<>();
         this.entityManager = entityManager;
         this.isShared = true;
     }
@@ -302,13 +304,10 @@ public class QueryImpl {
             }
             Integer changedRows = (Integer) getActiveSession().executeQuery(databaseQuery, parameterValues);
             return changedRows;
-        } catch (PersistenceException exception) {
+        } catch (PersistenceException | IllegalStateException exception) {
             setRollbackOnly();
             throw exception;
-        } catch (IllegalStateException exception) {
-            setRollbackOnly();
-            throw exception;
-        }catch (RuntimeException exception) {
+        } catch (RuntimeException exception) {
             setRollbackOnly();
             throw new PersistenceException(exception);
         }
@@ -405,7 +404,7 @@ public class QueryImpl {
      */
     protected Map<String, Parameter<?>> getInternalParameters() {
         if (this.parameters == null) {
-            this.parameters = new HashMap<String, Parameter<?>>();
+            this.parameters = new HashMap<>();
             DatabaseQuery query = getDatabaseQueryInternal(); // Retrieve named
                                                               // query
             int count = 0;
@@ -467,8 +466,8 @@ public class QueryImpl {
             DatabaseQuery query = getDatabaseQueryInternal();
             if (query.isReadAllQuery()) {
                 Class<?> containerClass = ((ReadAllQuery) query).getContainerPolicy().getContainerClass();
-                if (!Helper.classImplementsInterface(containerClass, ClassConstants.List_Class)) {
-                    throw QueryException.invalidContainerClass(containerClass, ClassConstants.List_Class);
+                if (!Helper.classImplementsInterface(containerClass, CoreClassConstants.List_Class)) {
+                    throw QueryException.invalidContainerClass(containerClass, CoreClassConstants.List_Class);
                 }
             } else if (query.isReadObjectQuery()) {
                 List<Object> resultList = new ArrayList<>();
@@ -483,16 +482,36 @@ public class QueryImpl {
             return (List) executeReadQuery();
         } catch (LockTimeoutException exception) {
             throw exception;
-        } catch (PersistenceException exception) {
-            setRollbackOnly();
-            throw exception;
-        } catch (IllegalStateException exception) {
+        } catch (PersistenceException | IllegalStateException exception) {
             setRollbackOnly();
             throw exception;
         } catch (RuntimeException exception) {
             setRollbackOnly();
             throw new PersistenceException(exception);
         }
+    }
+
+    /**
+     * Execute a SELECT query that returns a single untyped result.
+     *
+     * @return the result, or {@code null} if there is no result
+     * @throws NonUniqueResultException if more than one result
+     * @throws IllegalStateException if called for a Java Persistence query
+     *         language UPDATE or DELETE statement
+     * @throws QueryTimeoutException if the query execution exceeds the query
+     *         timeout value set and only the statement is rolled back
+     * @throws TransactionRequiredException if a lock mode other than NONE has
+     *         been been set and there is no transaction or the persistence
+     *         context has not been joined to the transaction
+     * @throws PessimisticLockException if pessimistic locking fails and the
+     *         transaction is rolled back
+     * @throws LockTimeoutException if pessimistic locking fails and only the
+     *         statement is rolled back
+     * @throws PersistenceException if the query execution exceeds the query
+     *         timeout value set and the transaction is rolled back
+     */
+    public Object getSingleResultOrNull() {
+        return getSingleResult(false);
     }
 
     /**
@@ -516,6 +535,10 @@ public class QueryImpl {
      *         timeout value set and the transaction is rolled back
      */
     public Object getSingleResult() {
+        return getSingleResult(true);
+    }
+
+    private Object getSingleResult(boolean failOnEmpty) {
         boolean rollbackOnException = true;
         // bug51411440: need to throw IllegalStateException if query
         // executed on closed em
@@ -529,18 +552,22 @@ public class QueryImpl {
                 throw new IllegalStateException(ExceptionLocalization.buildMessage("incorrect_query_for_get_single_result"));
             }
             Object result = executeReadQuery();
-            if (result instanceof List) {
-                List results = (List) result;
+            if (result instanceof List<?> results) {
                 if (results.isEmpty()) {
-                    rollbackOnException = false;
-                    throwNoResultException(ExceptionLocalization.buildMessage("no_entities_retrieved_for_get_single_result", null));
+                    if (failOnEmpty) {
+                        rollbackOnException = false;
+                        throwNoResultException(ExceptionLocalization.buildMessage("no_entities_retrieved_for_get_single_result",
+                                                                                  null));
+                    } else {
+                        return null;
+                    }
                 } else if (results.size() > 1) {
                     rollbackOnException = false;
                     throwNonUniqueResultException(ExceptionLocalization.buildMessage("too_many_results_for_get_single_result", null));
                 }
                 return results.get(0);
             } else {
-                if (result == null) {
+                if (failOnEmpty && result == null) {
                     rollbackOnException = false;
                     throwNoResultException(ExceptionLocalization.buildMessage("no_entities_retrieved_for_get_single_result", null));
                 }
@@ -580,7 +607,7 @@ public class QueryImpl {
         }
         // now create parameterValues in the same order as the argument list
         int size = arguments.size();
-        List<Object> parameterValues = new ArrayList<Object>(size);
+        List<Object> parameterValues = new ArrayList<>(size);
         for (int index = 0; index < size; index++) {
             String name = arguments.get(index);
             Object parameter = this.parameterValues.get(name);
@@ -671,8 +698,7 @@ public class QueryImpl {
      * Define the query arguments based on the procedure call.
      */
     protected static void applyArguments(StoredProcedureCall call, DatabaseQuery query) {
-        if (call instanceof PLSQLStoredProcedureCall) {
-            PLSQLStoredProcedureCall plsqlCall = (PLSQLStoredProcedureCall)call;
+        if (call instanceof PLSQLStoredProcedureCall plsqlCall) {
             for (int index = 0; index < plsqlCall.getArguments().size(); index++) {
                 PLSQLargument argument = plsqlCall.getArguments().get(index);
                 org.eclipse.persistence.internal.databaseaccess.DatasourceCall.ParameterType type = argument.direction;
@@ -928,7 +954,8 @@ public class QueryImpl {
     protected void setParameterInternal(String name, Object value, boolean isIndex) {
         DatabaseQuery query = getDatabaseQueryInternal();
         if (query.getQueryMechanism().isJPQLCallQueryMechanism()) { // only non native queries
-            int index = query.getArguments().indexOf(name);
+            final List<String> queryArguments = query.getArguments();
+            int index = queryArguments.indexOf(name);
             if (index == -1) {
                 if (isIndex) {
                     throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-argument-index", new Object[] { name, query.getEJBQLString() }));
@@ -936,10 +963,14 @@ public class QueryImpl {
                     throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-argument-name", new Object[] { name, query.getEJBQLString() }));
                 }
             }
-            Class<?> type = query.getArgumentTypes().get(index);
-            if (!isValidActualParameter(value, type)) {
-                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-incorrect-parameter-type", new Object[] { name, value.getClass(), query.getArgumentTypes().get(index), query.getEJBQLString() }));
-            }
+            do {
+                Class<?> type = query.getArgumentTypes().get(index);
+                if (!isValidActualParameter(value, type)) {
+                    throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-incorrect-parameter-type", new Object[]{name, value.getClass(), query.getArgumentTypes().get(index), query.getEJBQLString()}));
+                }
+                int pos = queryArguments.subList(index + 1, queryArguments.size()).indexOf(name);
+                index = pos < 0 ? -1 : (pos + index + 1);
+            } while (index > - 1);
         } else {
             // native queries start a 1 not 0.
             if (isIndex && name.equals("0")) {

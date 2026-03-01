@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -52,7 +52,7 @@ public class ExamplePropertiesLoader {
     public static void loadProperties(Map<String, Object> properties, String filename) {
         loadProperties(properties, new File(filename));
         String home = System.getProperty("user.home");
-        loadProperties(properties, new File(home + System.getProperty("file.separator") + filename));
+        loadProperties(properties, new File(home + File.separator + filename));
         for (Object key : System.getProperties().keySet()) {
             String keyName = (String) key;
             if (keyName.startsWith("jakarta.persistence") || keyName.startsWith("eclipselink")) {

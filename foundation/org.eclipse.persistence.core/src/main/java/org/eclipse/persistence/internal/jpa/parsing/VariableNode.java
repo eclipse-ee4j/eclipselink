@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,17 +14,16 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.jpa.parsing;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
-// TopLink imports
 import org.eclipse.persistence.exceptions.JPQLException;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.expressions.ConstantExpression;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReportQuery;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * INTERNAL
@@ -85,7 +84,7 @@ public class VariableNode extends Node implements AliasableNode {
     @Override
     public void applyToQuery(ObjectLevelReadQuery theQuery, GenerationContext generationContext) {
         String name = getCanonicalVariableName();
-        if (theQuery instanceof ReportQuery) {
+        if (theQuery.isReportQuery()) {
             ReportQuery reportQuery = (ReportQuery)theQuery;
             Expression expression = generationContext.expressionFor(name);
             if (expression == null) {

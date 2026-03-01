@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2014, 2022 IBM Corporation and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2024 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -53,6 +53,8 @@
 //       - 526957 : Split the logging and trace messages
 //     11/14/2017 - Dalia Abo Sheasha
 //       - 527273 : Minor message improvements
+//     12/05/2023: Tomas Kraus
+//       - New Jakarta Persistence 3.2 Features
 package org.eclipse.persistence.internal.localization.i18n;
 
 import java.util.ListResourceBundle;
@@ -62,9 +64,9 @@ import java.util.ListResourceBundle;
  *
  * @author Shannon Chen
  * @since TOPLink/Java 5.0
- *
+ * <p>
  * Internal change on 2006/04/24:
- *
+ * <p>
  * Message id is added for iAS 11 logging compliance.
  * Every message added into this file needs the message id entry as well.
  * Logs by AbstractSessionLog.getLog().log() when the level is below CONFIG=4 (FINE, FINER, FINEST, ALL)
@@ -103,8 +105,12 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "all_registered_clones", "All Registered Clones:" },
         { "new_objects", "New Objects:" },
         { "unit_of_work_thread_info", "Current unit of work in session ({0}) was created by another thread (id: {1} name: {2}), than current thread (id: {3} name: {4})" },
-        { "unit_of_work_thread_info_thread_dump", "Creation thread (id: {0} name: {1}) stack trace:\n{2}\n\n" +
-                "Current thread (id: {3} name: {4}) stack trace:\n{5}" },
+        { "unit_of_work_thread_info_thread_dump", """
+Creation thread (id: {0} name: {1}) stack trace:
+{2}
+
+Current thread (id: {3} name: {4}) stack trace:
+{5}"""},
         { "failed_to_propogate_to", "CacheSynchronization : Failed to propagate to {0}.  {1}" },
         { "exception_thrown_when_attempting_to_shutdown_cache_synch", "Exception thrown when attempting to shutdown cache synch: {0}" },
         { "corrupted_session_announcement", "SessionID: {0}  Discovery manager received corrupted session announcement - ignoring." },
@@ -184,7 +190,7 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "persistence_unit_ignores_statments_cache_setting", "The statement cache cannot be enabled because no connection pool is configured." },
         { "column_size_not_migrated", "DB column size ({0}) is not migrated. See migration doc for details." },
         { "verifiy_columns_read_locking_not_supported", "Optimistic setting \"Read\" on \"verify-columns\" in entity ({0}) is not directly supported in EclipseLink CMP. See migration doc for details." },
-        { "verifiy_rows_read_locking_not_supported", "Optimistic setting \"Read\" on \"verify-rows\" in entity ({0}) is not directly supported in EclipseLink CMP. See migration doc for details.." },
+        { "verifiy_rows_read_locking_not_supported", "Optimistic setting \"Read\" on \"verify-rows\" in entity ({0}) is not directly supported in EclipseLink CMP. See migration doc for details." },
         { "one_to_one_join_outer_migrated", "The one-to-one outer join defined for cmr field ({0}) of entity bean ({1}) is not directly supported in EclipseLink CMP. See migration doc for details." },
         { "bacth_update_not_supported", "The Batch update setting batch-size with value ({0}) defined on entity bean ({1}) is not directly supported in EclipseLink CMP. See migration doc for details." },
         { "data_sync_on_ejb_create_not_supported", "The data syncronization setting data-synchronization-option=\"ejbCreate\" defined on entity bean ({0}) is not directly supported in EclipseLink CMP. See migration doc for details." },
@@ -206,6 +212,7 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "toplink_ejb_jar_in_jar", "toplink-ejb-jar.xml is included in jar({0}) file, no migration therefore will be performed for this jar." },
         { "jta_cannot_be_disabled_in_cmp", "When using Container Managed Persistence (CMP), JTA cannot be disabled. EclipseLink will act as if JTA is enabled." },
         { "jta_tsr_lookup_failure", "Cannot look up TransactionSynchronizationRegistry instance: {0}"},
+        { "jta_tm_lookup_failure", "Cannot look up TransactionManager instance: {0}"},
         { "jta_duplicate_ctrl_property", "JTA transaction controller class defined in both \"eclipselink.target-server\" and \"eclipselink.jta.controller\" properties. Using value from \"eclipselink.target-server\"." },
         { "descriptor_named_query_cannot_be_added", "Cannot add a descriptor named query whose name conflict with an existing query. Query To Be Added: [{0}] is named: [{1}] with arguments [{2}]." },
         { "metadata_access_type", "The access type for the persistent class [{1}] is set to [{0}]." },
@@ -357,6 +364,7 @@ public class LoggingLocalizationResource extends ListResourceBundle {
 
         { "update_all_query_cannot_use_binding_on_this_platform", "UpdateAllQuery cannot use binding on this database platform. Changed query setting to execute without binding." },
 
+        { "broadcast_exception_thrown_when_attempting_to_close_subscriber", "Warning: {0}: attempt to close subscriber caused exception {1}" },
         { "broadcast_exception_thrown_when_attempting_to_close_connection", "Warning: {0}: attempt to close connection caused exception {1}" },
         { "broadcast_connection_already_closed", "Warning: {0}: attempt to close connection which has been already closed. Ignoring." },
         { "broadcast_connection_already_closing", "Warning: {0}: attempt to close connection which is currently closing. Ignoring." },
@@ -411,6 +419,7 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "osgi_initializer", "Using OSGi initializer: [{0}]."},
         { "entity_manager_ignores_nonjta_data_source", "Persistence unit uses JTA, therefore the EntityManager ignores non jta data source. "},
         { "entity_manager_ignores_jta_data_source", "Persistence unit does not use JTA, therefore the EntityManager ignores jta data source. "},
+        { "entity_manager_has_multiple_connections", "Persistence unit has multiple connections, returning the first one from the list."},
         { "problem_registering_mbean", "Problem while registering MBean: {0}" },
         { "problem_unregistering_mbean", "Problem while unregistering MBean: {0}" },
         { "session_key_for_mbean_name_is_null", "Session name used for the MBean registration cannot be null." },
@@ -472,7 +481,16 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "dbws_xml_schema_read_error", "The [{0}] XML schema could not be read."},
         { "dbws_orm_metadata_read_error", "The [{0}] ORM metadata could not be read."},
         { "dbws_oxm_metadata_read_error", "The [{0}] OXM metadata could not be read."},
-        { "dbws_no_wsdl_inline_schema", "The [{0}] WSDL inline schema could not be read."}
+        { "dbws_no_wsdl_inline_schema", "The [{0}] WSDL inline schema could not be read."},
+        // JPA 3.2
+        { "unknown_property_type", "Unknown {0} type of {1} persistence property"},
+        { "error_queryTimeoutParse", "Cannot parse the {0} jakarta.persistence.query.timeout property value: {1}"},
+
+        { "encryptor_script_usage", "Usage is `passwordUpdate.sh|.cmd -ip <old encrypted password>`"},
+        { "encryptor_script_description", "This application has an old encrypted password that was used by a previous version of EclipseLink. Reencrypt it with the latest algorithm."},
+        { "encryptor_script_output", "The reencrypted password is: {0}"},
+        { "cache_key_null_read_lock_manager", "CacheKey instance: {0}, locked by the cache read lock manager, has a null primary key." },
+        { "cache_key_null_identity_map", "CacheKey instance: {0}, stored into the identity map, has a null primary key." }
     };
 
     /**

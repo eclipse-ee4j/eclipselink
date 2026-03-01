@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,8 +14,13 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.writing;
 
-import java.util.*;
-import org.eclipse.persistence.testing.models.ownership.*;
+import org.eclipse.persistence.testing.models.ownership.ObjectA;
+import org.eclipse.persistence.testing.models.ownership.ObjectB;
+import org.eclipse.persistence.testing.models.ownership.ObjectC;
+import org.eclipse.persistence.testing.models.ownership.ObjectD;
+import org.eclipse.persistence.testing.models.ownership.ObjectE;
+
+import java.util.Vector;
 
 /**
  * Test changing private parts of an object.
@@ -42,13 +47,13 @@ public class UpdateDeepOwnershipTest extends ComplexUpdateTest {
         ObjectA a = (ObjectA)this.workingCopy;
         ObjectB b = (ObjectB)a.oneToOne.getValue();
         Vector cs = (Vector)b.oneToMany.getValue();
-        ObjectC c = (ObjectC)cs.firstElement();
+        ObjectC c = (ObjectC)cs.get(0);
         ObjectD d = (ObjectD)c.oneToOne.getValue();
         Vector es = (Vector)d.oneToMany.getValue();
-        ObjectE e = (ObjectE)es.firstElement();
+        ObjectE e = (ObjectE)es.get(0);
         e.setName("Foo");
-        es.removeElement(es.lastElement());
-        cs.removeElement(cs.lastElement());
+        es.remove(es.lastElement());
+        cs.remove(cs.lastElement());
         b.setName("lola");
     }
 }

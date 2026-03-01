@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,7 +21,6 @@ import java.util.Map;
 
 import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.jaxb.UnmarshallerProperties;
-import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 import org.eclipse.persistence.testing.jaxb.namespaceuri.inheritance.package2.AnotherPackageSubType;
@@ -68,7 +67,7 @@ public class InheritanceRootCompositeCollectionObjectOnlyNSTestCases extends JAX
         baseTypes.add(anotherPackageSubType);
 
         List objectList = new ArrayList(baseTypes);
-        objectList.add(new String("string test"));
+        objectList.add("string test");
         objectList.add(500);
         root.objectList = objectList;
 

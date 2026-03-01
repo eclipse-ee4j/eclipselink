@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,7 +25,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
-import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.XMLDescriptor;
@@ -87,7 +86,7 @@ public class XmlAnyElementListTestCases extends JAXBWithJSONTestCases{
         assertNotNull("No descriptor was generated for EmployeeWithList.", xDesc);
         DatabaseMapping mapping = xDesc.getMappingForAttributeName("stuff");
         assertNotNull("No mapping exists on EmployeeWithList for attribute [stuff].", mapping);
-        assertTrue("Expected an XMLAnyCollectionMapping for attribute [stuff], but was [" + mapping.toString() +"].", mapping instanceof XMLAnyCollectionMapping);
+        assertTrue("Expected an XMLAnyCollectionMapping for attribute [stuff], but was [" + mapping +"].", mapping instanceof XMLAnyCollectionMapping);
         assertTrue("Expected container class [java.util.LinkedList] but was ["+ mapping.getContainerPolicy().getContainerClassName()+"]", mapping.getContainerPolicy().getContainerClassName().equals("java.util.LinkedList"));
     }
 

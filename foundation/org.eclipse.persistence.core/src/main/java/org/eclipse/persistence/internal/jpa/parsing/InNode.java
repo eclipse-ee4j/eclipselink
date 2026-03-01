@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,12 +16,15 @@ package org.eclipse.persistence.internal.jpa.parsing;
 
 
 // Java imports
-import java.util.*;
 
-// TopLink imports
-import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.queries.ReportQuery;
 import org.eclipse.persistence.exceptions.JPQLException;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.queries.ReportQuery;
+
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
 
 /**
  * INTERNAL
@@ -118,7 +121,7 @@ public class InNode extends SimpleConditionalExpressionNode {
                 Node nextNode = iter.next();
                 inArguments.add(nextNode.generateExpression(context));
             }
-            if (inArguments.size() > 0) {
+            if (!inArguments.isEmpty()) {
                 if (notIndicated()) {
                     whereClause = whereClause.notIn(inArguments);
                 } else {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,18 +16,6 @@
 //       - 391279: Add support for Unidirectional OneToMany mappings with non-nullable values
 package org.eclipse.persistence.internal.sessions;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.IdentityHashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.Vector;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.OptimisticLockException;
@@ -43,6 +31,18 @@ import org.eclipse.persistence.queries.InsertObjectQuery;
 import org.eclipse.persistence.queries.UpdateObjectQuery;
 import org.eclipse.persistence.queries.WriteObjectQuery;
 import org.eclipse.persistence.sessions.UnitOfWork.CommitOrderType;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.IdentityHashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.Vector;
 
 /**
  * This class maintains a commit stack and resolves circular references.
@@ -266,7 +266,7 @@ public class CommitManager {
             if (order != CommitOrderType.NONE) {
                 changes = new ArrayList(objectChangesList.values());
                 if (order == CommitOrderType.CHANGES) {
-                    Collections.sort((List)changes, new ObjectChangeSet.ObjectChangeSetComparator());
+                    ((List) changes).sort(new ObjectChangeSet.ObjectChangeSetComparator());
                 } else {
                     Collections.sort((List)changes);
                 }
@@ -479,18 +479,18 @@ public class CommitManager {
      * stack size, and acts as a deadlock avoidance mechanism.
      */
     public void initializeCommitOrder() {
-        Vector<ClassDescriptor> descriptors = Helper.buildVectorFromMapElements(getSession().getDescriptors());
+        Vector<ClassDescriptor> descriptors = new Vector<>(getSession().getDescriptors().values());
 
         // Must ensure uniqueness, some descriptor my be register twice for interfaces.
         descriptors = Helper.addAllUniqueToVector(new Vector<>(descriptors.size()), descriptors);
         ClassDescriptor[] descriptorsArray = new ClassDescriptor[descriptors.size()];
         for (int index = 0; index < descriptors.size(); index++) {
-            descriptorsArray[index] = descriptors.elementAt(index);
+            descriptorsArray[index] = descriptors.get(index);
         }
         Arrays.sort(descriptorsArray, new DescriptorCompare());
         descriptors = new Vector<>(descriptors.size());
         for (int index = 0; index < descriptorsArray.length; index++) {
-            descriptors.addElement(descriptorsArray[index]);
+            descriptors.add(descriptorsArray[index]);
         }
 
         CommitOrderCalculator calculator = new CommitOrderCalculator(getSession());
@@ -632,7 +632,7 @@ public class CommitManager {
      * The commit order is a vector of vectors,
      * where the first vector is all root level classes, the second is classes owned by roots and so on.
      */
-    public void setCommitOrder(List commitOrder) {
+    public void setCommitOrder(List<Class<?>> commitOrder) {
         this.commitOrder = commitOrder;
     }
 
@@ -678,6 +678,6 @@ public class CommitManager {
     @Override
     public String toString() {
         Object[] args = {this.commitDepth};
-        return Helper.getShortClassName(getClass()) + ToStringLocalization.buildMessage("commit_depth", args);
+        return getClass().getSimpleName() + ToStringLocalization.buildMessage("commit_depth", args);
     }
 }

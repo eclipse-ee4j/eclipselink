@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,6 +23,7 @@
 //     08/06/2010-2.2 mobrien 322018 - reduce protected instance variables to private to enforce encapsulation
 package org.eclipse.persistence.internal.jpa.metamodel;
 
+import java.io.Serial;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -48,6 +49,7 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 public class MappedSuperclassTypeImpl<X> extends IdentifiableTypeImpl<X> implements MappedSuperclassType<X> {
 
     /** Item 54: DI 89: explicit UID will avoid performance hit runtime generation of one */
+    @Serial
     private static final long serialVersionUID = 3770722221322920646L;
 
     /**
@@ -61,7 +63,7 @@ public class MappedSuperclassTypeImpl<X> extends IdentifiableTypeImpl<X> impleme
 
     protected MappedSuperclassTypeImpl(MetamodelImpl metamodel, ClassDescriptor relationalDescriptor) {
         super(metamodel, relationalDescriptor);
-        inheritingIdentifiableTypes = new HashMap<Class<?>, IdentifiableTypeImpl>();
+        inheritingIdentifiableTypes = new HashMap<>();
         // The supertype field will remain uninstantiated until MetamodelImpl.initialize() is complete
     }
 
@@ -120,7 +122,7 @@ public class MappedSuperclassTypeImpl<X> extends IdentifiableTypeImpl<X> impleme
 
     @Override
     protected void initialize(){
-        /**
+        /*
          * Set the javaClass on the descriptor for the current classLoader (normally done in MetadataProject.addMetamodelMappedSuperclass).
          * This will ensure the class is both set and is in the right classLoader - even if the class is already set.
          * Perform this conversion only for our custom pseudo descriptors for MappedSuperclasses.

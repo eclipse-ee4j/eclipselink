@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 IBM and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -16,7 +16,6 @@
 //
 package org.eclipse.persistence.internal.jpa.jpql;
 
-import java.util.Collection;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.history.AsOfSCNClause;
@@ -57,6 +56,8 @@ import org.eclipse.persistence.jpa.jpql.parser.WhereClause;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReportQuery;
+
+import java.util.Collection;
 
 /**
  * This visitor is responsible to populate an {@link ObjectLevelReadQuery} by traversing a {@link

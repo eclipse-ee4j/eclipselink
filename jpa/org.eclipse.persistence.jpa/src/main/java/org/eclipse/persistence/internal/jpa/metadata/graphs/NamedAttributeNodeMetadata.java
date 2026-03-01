@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,7 +25,7 @@ import org.eclipse.persistence.queries.AttributeGroup;
 
 /**
  * Object to hold onto named attribute node metadata.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -70,8 +70,7 @@ public class NamedAttributeNodeMetadata extends ORMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (objectToCompare instanceof NamedAttributeNodeMetadata) {
-            NamedAttributeNodeMetadata attributeNode = (NamedAttributeNodeMetadata) objectToCompare;
+        if (objectToCompare instanceof NamedAttributeNodeMetadata attributeNode) {
 
             if (! valuesMatch(m_name, attributeNode.getName())) {
                 return false;
@@ -89,7 +88,8 @@ public class NamedAttributeNodeMetadata extends ORMetadata {
 
     @Override
     public int hashCode() {
-        int result = m_name != null ? m_name.hashCode() : 0;
+        int result = super.hashCode();
+        result = 31 * result + (m_name != null ? m_name.hashCode() : 0);
         result = 31 * result + (m_subgraph != null ? m_subgraph.hashCode() : 0);
         result = 31 * result + (m_keySubgraph != null ? m_keySubgraph.hashCode() : 0);
         return result;
@@ -134,21 +134,23 @@ public class NamedAttributeNodeMetadata extends ORMetadata {
      */
     public void process(Map<String, Map<String, AttributeGroup>> attributeGraphs, AttributeGroup graph, AttributeGroup rootGraph) {
         // Process the subgraph.
-        if (getSubgraph() != null) {
-            if (attributeGraphs.containsKey(getSubgraph())) {
-                graph.addAttribute(getName(), attributeGraphs.get(getSubgraph()).values());
+        String subgraph = getSubgraph();
+        if (subgraph != null && !subgraph.isEmpty()) {
+            if (attributeGraphs.containsKey(subgraph)) {
+                graph.addAttribute(getName(), attributeGraphs.get(subgraph).values());
             } else {
-                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("managed_component_not_found", new Object[]{graph.getName(), getName(), getSubgraph()}));
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("managed_component_not_found", new Object[]{graph.getName(), getName(), subgraph}));
             }
-        }else {
+        } else {
             graph.addAttribute(getName());
         }
 
-        if (getKeySubgraph() != null) {
-            if (attributeGraphs.containsKey(getKeySubgraph())) {
-                graph.getItem(getName()).addKeyGroups(attributeGraphs.get(getKeySubgraph()).values());
+        subgraph = getKeySubgraph();
+        if (subgraph != null && !subgraph.isEmpty()) {
+            if (attributeGraphs.containsKey(subgraph)) {
+                graph.getItem(getName()).addKeyGroups(attributeGraphs.get(subgraph).values());
             } else {
-                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("managed_component_not_found", new Object[]{graph.getName(), getName(), getKeySubgraph()}));
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("managed_component_not_found", new Object[]{graph.getName(), getName(), subgraph}));
             }
         }
     }

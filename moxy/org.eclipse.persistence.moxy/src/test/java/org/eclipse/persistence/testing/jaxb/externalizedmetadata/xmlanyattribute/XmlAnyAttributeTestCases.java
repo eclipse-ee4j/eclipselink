@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -92,7 +92,7 @@ public class XmlAnyAttributeTestCases extends JAXBWithJSONTestCases {
         assertNotNull("No descriptor was generated for Employee.", xDesc);
         DatabaseMapping mapping = xDesc.getMappingForAttributeName("stuff");
         assertNotNull("No mapping exists on Employee for attribute [stuff].", mapping);
-        assertTrue("Expected an XMLAnyAttributeMapping for attribute [stuff], but was [" + mapping.toString() +"].", mapping instanceof XMLAnyAttributeMapping);
+        assertTrue("Expected an XMLAnyAttributeMapping for attribute [stuff], but was [" + mapping +"].", mapping instanceof XMLAnyAttributeMapping);
         assertTrue("Expected map class [java.util.LinkedHashMap] but was ["+ mapping.getContainerPolicy().getContainerClassName()+"]", mapping.getContainerPolicy().getContainerClassName().equals("java.util.LinkedHashMap"));
     }
 

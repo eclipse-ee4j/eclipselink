@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,16 +14,12 @@
 //     rbarkhouse - 2009-10-07 13:24:58 - initial implementation
 package org.eclipse.persistence.testing.oxm.mappings.compositecollection.reuse;
 
+import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.compositecollection.EmailAddress;
+
 import java.net.URL;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Stack;
 import java.util.Vector;
-
-import org.eclipse.persistence.testing.oxm.mappings.compositecollection.EmailAddress;
-import org.eclipse.persistence.testing.oxm.mappings.compositecollection.reuse.Employee;
-
-import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
 
 public class CompositeCollectionReuseTestCases extends XMLMappingTestCases {
 

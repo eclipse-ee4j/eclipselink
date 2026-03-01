@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,7 +29,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.eclipse.persistence.exceptions.JAXBException;
+import org.eclipse.persistence.jaxb.JAXBException;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.jaxb.javamodel.JavaAnnotation;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
@@ -89,8 +89,7 @@ public class JavaClassImpl implements JavaClass {
         if (jType != null) {
             Type[] params = jType.getActualTypeArguments();
             for (Type type : params) {
-                if (type instanceof ParameterizedType) {
-                    ParameterizedType pt = (ParameterizedType) type;
+                if (type instanceof ParameterizedType pt) {
                     argCollection.add(new JavaClassImpl(pt, (Class) pt.getRawType(), javaModelImpl));
                 } else if(type instanceof WildcardType){
                     Type[] upperTypes = ((WildcardType)type).getUpperBounds();
@@ -177,9 +176,13 @@ public class JavaClassImpl implements JavaClass {
         Field[] fields = PrivilegedAccessHelper.getDeclaredFields(jClass);
 
         for (Field field : fields) {
-            if (!field.trySetAccessible()) {
-                AbstractSessionLog.getLog().log(SessionLog.FINE, SessionLog.MISC, "set_accessible_in",
-                        "field", field.getName(), jClass.getName());
+            try {
+                if (!field.trySetAccessible()) {
+                    AbstractSessionLog.getLog().log(SessionLog.FINE, SessionLog.MISC, "set_accessible_in",
+                            "field", field.getName(), jClass.getName());
+                }
+            } catch (NoSuchMethodError nsme) {
+                //android
             }
             fieldCollection.add(getJavaField(field));
         }
@@ -416,7 +419,7 @@ public class JavaClassImpl implements JavaClass {
 
     @Override
     public boolean hasActualTypeArguments() {
-        return getActualTypeArguments().size() > 0;
+        return !getActualTypeArguments().isEmpty();
     }
 
     public JavaField getJavaField(Field field) {

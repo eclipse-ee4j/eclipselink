@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,9 +20,6 @@
 //                       will also need an override in SDO.
 package org.eclipse.persistence.internal.descriptors;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.helper.Helper;
@@ -30,6 +27,9 @@ import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.AttributeAccessor;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 /**
  * <p><b>Purpose</b>: A wrapper class for handling cases when the domain object attributes are
@@ -114,7 +114,7 @@ public class MethodAttributeAccessor extends AttributeAccessor {
     public Class<?> getGetMethodReturnType() throws DescriptorException {
         // 323403: If the getMethod is missing - check for "_persistence_*_vh" to see if weaving was expected
         if(null == getGetMethod() && null != getGetMethodName()
-            && (getGetMethodName().indexOf(Helper.PERSISTENCE_FIELDNAME_PREFIX) > -1)) {
+            && (getGetMethodName().contains(Helper.PERSISTENCE_FIELDNAME_PREFIX))) {
             // warn before a possible NPE on accessing a weaved method that does not exist
             AbstractSessionLog.getLog().log(SessionLog.FINEST, "no_weaved_vh_method_found_verify_weaving_and_module_order",
                 getGetMethodName(), null, this);

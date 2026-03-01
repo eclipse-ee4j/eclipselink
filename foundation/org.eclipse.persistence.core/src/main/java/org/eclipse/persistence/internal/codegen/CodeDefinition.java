@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,6 +14,7 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.codegen;
 
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -40,11 +41,11 @@ public abstract class CodeDefinition {
     }
 
     private static boolean adjustmentNeededForType(String typeName, Map<String, Set<String>> typeNameMap) {
-        if ((typeName == null) || typeName.equals("")) {
+        if ((typeName == null) || typeName.isEmpty()) {
             return false;
         }
 
-        if (packageName(typeName).length() == 0) {
+        if (packageName(typeName).isEmpty()) {
             return false;
         }
 
@@ -57,10 +58,10 @@ public abstract class CodeDefinition {
      * If the short name of the typeName is unambiguous (only one package for
      * that short name in the Map), removes the package name and returns the
      * short name, else returns the whole thing.
-     *
+     * <p>
      * Assumes that typeName contains only a package name (optional) and a short name,
      * potentially with subtended brackets.
-     *
+     * <p>
      * (e.g. int -&gt; int, java.util.Vector -&gt; Vector, java.lang.Boolean[] -&gt; Boolean[], etc.)
      */
     protected static String adjustTypeName(String typeName, Map<String, Set<String>> typeNameMap) {
@@ -117,14 +118,14 @@ public abstract class CodeDefinition {
      * Used for calculating imports.  @see org.eclipse.persistence.internal.codegen.ClassDefinition#calculateImports()
      */
     protected static void putTypeNameInMap(String typeName, Map<String, Set<String>> typeNameMap) {
-        if ((typeName == null) || typeName.equals("")) {
+        if ((typeName == null) || typeName.isEmpty()) {
             return;
         }
 
         String shortName = shortName(typeName);
         String packageName = packageName(typeName);
 
-        if (packageName.length() > 0) {
+        if (!packageName.isEmpty()) {
             Set<String> packageNames;
 
             if (typeNameMap.get(shortName) == null) {
@@ -154,10 +155,10 @@ public abstract class CodeDefinition {
 
     /**
      * Removes the package name, if there is one.  Also removes any trailing brackets.
-     *
+     * <p>
      * Assumes that typeName contains only a package name (optional) and a short name,
      * potentially with subtended brackets.
-     *
+     * <p>
      * (e.g. {@code int -> int}, {@code java.util.Vector -> Vector}, {@code java.lang.Boolean[] -> Boolean}, etc.)
      */
     private static String shortName(String typeName) {
@@ -203,19 +204,23 @@ public abstract class CodeDefinition {
 
     @Override
     public String toString() {
-        CodeGenerator generator = new CodeGenerator();
-        write(generator);
-        return generator.toString();
+        try {
+            CodeGenerator generator = new CodeGenerator();
+            write(generator);
+            return generator.toString();
+        } catch (Exception exception) {
+            throw new RuntimeException(exception);
+        }
     }
 
     /**
      * Write the code out to the generator's stream.
      */
-    public void write(CodeGenerator generator) {
-        if (getComment().length() > 0) {
+    public void write(CodeGenerator generator) throws IOException {
+        if (!getComment().isEmpty()) {
             generator.writeln("/**");
             String comment = getComment();
-            String cr = org.eclipse.persistence.internal.helper.Helper.cr();
+            String cr = System.lineSeparator();
             int lastLineIndex = 0;
             int nextLineIndex = comment.indexOf(cr);
             while (nextLineIndex != -1) {
@@ -237,5 +242,5 @@ public abstract class CodeDefinition {
     /**
      * Write the code out to the generator's stream.
      */
-    public abstract void writeBody(CodeGenerator generator);
+    public abstract void writeBody(CodeGenerator generator) throws IOException;
 }

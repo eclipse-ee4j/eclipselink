@@ -1,0 +1,146 @@
+*TOC*
+Special:Whatlinkshere_Creating_a_Relational_Descriptor_(ELUG)[Related
+Topics]
+
+After you create a descriptor, you must configure its various options
+(see link:Configuring%20a%20Descriptor%20(ELUG)[Configuring a
+Descriptor]) and use it to define mappings.
+
+For information on the various types of mapping that EclipseLink
+supports, see link:Introduction%20to%20Mappings%20(ELUG)[Introduction to
+Mappings] and link:Creating%20a%20Mapping%20(ELUG)[Creating a Mapping].
+
+For information on the various types of descriptor that EclipseLink
+supports, see link:Introduction%20to%20Descriptors%20(ELUG)[Descriptor
+Types].
+
+For more information, see
+link:Introduction%20to%20Relational%20Descriptors%20(ELUG)[Introduction
+to Relational Descriptors].
+
+== Creating a Relational Descriptor
+
+You can create a relational descriptor using
+link:#How_to_Create_a_Relational_Descriptor_Using_Workbench[the
+Workbench] or
+link:#How_to_Create_a_Relational_Descriptor_Using_Java[Java code].
+
+=== How to Create a Relational Descriptor Using Workbench
+
+Using Workbench, you can create the following types of descriptor in a
+relational project:
+
+* link:#Creating_Relational_Class_Descriptors[Relational class
+descriptors];
+* link:#Creating_Relational_Aggregate_Descriptors[Relational aggregate
+descriptors];
+* link:#Creating_Relational_Interface_Descriptors[Relational interface
+descriptors].
+
+==== Creating Relational Class Descriptors
+
+image:clsesin.gif[Class descriptor icon,title="Class descriptor icon"]
+By default, when you add a Java class to a relational project (see
+link:Configuring%20a%20Project%20(ELUG)[Configuring Project Classpath]),
+the Workbench creates a relational class descriptor for it. A class
+descriptor is applicable to any persistent object except an object that
+is owned by another in an aggregate relationship. In this case, you must
+describe the owned object with
+link:#Creating_Relational_Aggregate_Descriptors[an aggregate
+descriptor]. Using a class descriptor, you can configure any relational
+mapping except aggregate collection and aggregate object mappings.
+
+==== Creating Relational Aggregate Descriptors
+
+image:agdesbtn.gif[Aggregate Descriptor
+button,title="Aggregate Descriptor button"] An aggregate object is an
+object that is strictly dependent on its owning object. Aggregate
+descriptors do not define a table, primary key, or many of the standard
+descriptor options as they obtain these from their owning descriptor. If
+you want to configure an aggregate mapping to associate data members in
+a target object with fields in a source object’s underlying database
+tables (see
+link:Configuring%20a%20Relational%20Aggregate%20Collection%20Mapping%20(ELUG)[Configuring
+a Relational Aggregate Collection Mapping] and
+link:Configuring%20a%20Relational%20Aggregate%20Object%20Mapping_(ELUG)[Configuring
+a Relational Aggregate Object Mapping]), you must designate the target
+object’s descriptor as
+link:Configuring%20a%20Relational%20Descriptor%20(ELUG)#Configuring_a_Relational_Descriptor_as_a_Class_or_Aggregate_Type[an
+aggregate].
+
+==== Creating Relational Interface Descriptors
+
+.Interface descriptor icon
+image::ifdescin.gif[Interface descriptor
+icon,title="Interface descriptor icon"]
+
+If you add an interface to a relational project (see
+link:Configuring%20a%20Project%20(ELUG)#Configuring_Project_Classpath[Configuring
+Project Classpath]), the Workbench creates an interface descriptor for
+it.
+
+An interface is a collection of abstract behavior that other classes can
+use. It is a purely Java concept and has no representation on the
+relational database. Therefore, a descriptor defined for the interfaces
+does not map any relational entities on the database.
+
+The interface descriptor includes the following elements:
+
+* The Java interface it describes.
+* The parent interface(s) it implements.
+* A list of abstract query keys.
+
+An interface descriptor does not define any mappings, because there is
+no concrete data or table associated with it. A list of abstract query
+keys is defined so that you can issue
+link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Interface_Query_Keys[queries
+on the interfaces]. A read query on the interface results in reading one
+or more of its implementors.
+
+=== How to Create a Relational Descriptor Using Java
+
+This example shows how to create a relational descriptor using Java
+code.
+
+[#Example 27-1]## *_Creating a Relational Descriptor in Java_*
+
+[source,java]
+----
+ RelationalDescriptor descriptor = new RelationalDescriptor();
+ descriptor.setJavaClass(YourClass.class);
+----
+
+To designate a relational descriptor as an aggregate, use
+`+ClassDescriptor+` method `+descriptorIsAggregate+`. For a
+`+RelationalDescriptor+` configured as an aggregate, you do not define a
+primary key, but when using Java, you must configure the
+link:Configuring%20a%20Relational%20Descriptor%20(ELUG)#Configuring_Associated_Tables[associated
+table] and link:Introduction%20to%20Mappings%20(ELUG)[field mappings].
+
+To allow a relational descriptor to participate in an
+link:Introduction%20to%20Relational%20Mappings%20(ELUG)#Aggregate_Collection_Mapping[Aggregate
+Collection Mapping], use `+ClassDescriptor+` method
+`+descriptorIsAggregateCollection+`. For a `+RelationalDescriptor+`
+configured for use with an aggregate collection mapping, you do
+link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Primary_Keys[define
+primary keys] and an
+link:Configuring%20a%20Relational%20Descriptor%20(ELUG)#Configuring_Associated_Tables[associated
+table], but you do not have to map the primary keys if they are shared
+from their parent.
+
+To configure a relational descriptor for an interface, use
+`+ClassDescriptor+` method `+setJavaInterface+`, passing in the
+`+java.lang.Class+` of the interface. You should only use an interface
+descriptor for an interface that has multiple implementors. If an
+interface has only a single implementor, then rather than creating an
+interface descriptor, just set the implementor descriptor’s
+link:Configuring%20a%20Relational%20Descriptor%20(ELUG)#Configuring_Interface_Alias[interface
+alias].
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Task[Category: Task] Category:_Concept[Category: Concept]
+Category:_ORM[Category: ORM]

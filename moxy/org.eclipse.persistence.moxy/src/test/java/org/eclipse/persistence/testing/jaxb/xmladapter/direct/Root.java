@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,8 +32,7 @@ public class Root {
     public String myString3;
 
     public boolean equals(Object obj){
-        if(obj instanceof Root){
-            Root compareObj = (Root)obj;
+        if(obj instanceof Root compareObj){
             return  myString1.equals(compareObj.myString1)
                  && myString2.equals(compareObj.myString2)
                  && myString3.equals(compareObj.myString3);

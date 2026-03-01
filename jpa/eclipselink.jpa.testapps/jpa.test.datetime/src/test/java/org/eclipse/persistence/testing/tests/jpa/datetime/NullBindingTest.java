@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -133,6 +133,28 @@ public class NullBindingTest extends JUnitTestCase {
         }
     }
 
+    public void testNullifyInstant() {
+        EntityManager em = createEntityManager();
+        Query q;
+        DateTime dt, dt2;
+
+        try {
+            beginTransaction(em);
+            dt = em.find(DateTime.class, datetimeId);
+            dt.setInstant(null);
+            commitTransaction(em);
+            q = em.createQuery("SELECT dt FROM DateTime dt WHERE dt.id = " + datetimeId);
+            dt2 = (DateTime) q.getSingleResult();
+            assertNull("Error setting java.time.LocalDateTime field to null", dt2.getInstant());
+        } catch (RuntimeException e) {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+            throw e;
+        }
+    }
+
     public void testNullifyLocalDate() {
         EntityManager em = createEntityManager();
         Query q;
@@ -234,6 +256,28 @@ public class NullBindingTest extends JUnitTestCase {
             q = em.createQuery("SELECT dt FROM DateTime dt WHERE dt.id = " + datetimeId);
             dt2 = (DateTime) q.getSingleResult();
             assertNull("Error setting java.time.LocalDateTime field to null", dt2.getOffsetDateTime());
+        } catch (RuntimeException e) {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+            throw e;
+        }
+    }
+
+    public void testNullifyYear() {
+        EntityManager em = createEntityManager();
+        Query q;
+        DateTime dt, dt2;
+
+        try {
+            beginTransaction(em);
+            dt = em.find(DateTime.class, datetimeId);
+            dt.setYear(null);
+            commitTransaction(em);
+            q = em.createQuery("SELECT dt FROM DateTime dt WHERE dt.id = " + datetimeId);
+            dt2 = (DateTime) q.getSingleResult();
+            assertNull("Error setting java.time.LocalDateTime field to null", dt2.getYear());
         } catch (RuntimeException e) {
             if (isTransactionActive(em)) {
                 rollbackTransaction(em);

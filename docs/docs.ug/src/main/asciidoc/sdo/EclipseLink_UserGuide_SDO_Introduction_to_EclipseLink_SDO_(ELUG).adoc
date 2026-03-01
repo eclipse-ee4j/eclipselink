@@ -1,0 +1,278 @@
+This section introduces EclipseLink implementation of Service Data
+Objects (SDO) specification, as well as provides information on how you
+can use it in your application development.
+
+[#sdo-introel]
+== Using SDO Metadata
+
+SDO metadata is represented as <<sdo-introel-type, Type>> and
+<<sdo-introel-property, Property>> objects. You define the metadata at
+run time either programmatically (<<sdo-introel-typehelper, using TypeHelper>>),
+or from an XML schema (<<sdo-introel-xsdhelper, using XSDHelper>>).
+
+For more information, see <<sdo-example-basic, EclipseLink examples of metadata usage>>.
+
+[#sdo-introel-type]
+=== Using Type
+
+SDO `+Type+` acts similarly to a `+Class+` in Java, and provides much of
+the same metadata as the Java Reflection API provides for Java classes.
+
+In EclipseLink, a
+http://www.eclipse.org/eclipselink/api/1.1/org/eclipse/persistence/sdo/SDOType.html[`+SDOType+`]
+wraps an link:Introduction_to_XML_Descriptors_%28ELUG%29[object-XML
+mapping (OXM) descriptor].
+
+A `+Type+` can have supertypes, which corresponds to the EclipseLink
+concept of inheritance policy (see
+link:Introduction_to_Descriptors_%28ELUG%29#Descriptor_API[Inheritance
+Policy in Descriptor API]).
+
+To create types programmatically, you populate a
+http://www.eclipse.org/eclipselink/api/1.1/commonj/sdo/DataObject.html[`+DataObject+`]
+with them.
+
+To load types from an XML schema, use the
+http://www.eclipse.org/eclipselink/api/1.1/commonj/sdo/helper/XSDHelper.html[`+XSDHelper+`]
+class, as the following example shows:
+
+[source,java]
+----
+HelperContext ctx = HelperProvider.getDefaultContext();
+FileInputStream is = new FileInputStream("test.xsd");
+ctx.getXSDHelper().define(is, null);
+----
+
+For more information, see the default
+http://help.eclipse.org/help32/index.jsp?topic=/org.eclipse.emf.ecore.sdo.doc/references/javadoc/commonj/sdo/Type.html[`+Type+`]
+API.
+
+==== What You May Need to Know About Sequenced Types
+
+You can define SDO types as sequenced (that is, `+isSequenced+` is
+`+true+`). With sequenced DataObjects you can have fine grained control
+over how the properties are ordered when they are saved to XML. For more
+information see
+http://www.eclipse.org/eclipselink/api/1.1/commonj/sdo/Sequence.html[`+Sequence+`].
+
+==== What You May Need to Know About Open Types
+
+You can define SDO types as open (that is, isOpen is true). Open
+DataObjects will accept additional properties (the ones not specified by
+their `+Type+`).
+
+[#sdo-introel-property]
+=== Using Property
+
+A `+DataObject+` is made up of `+Property+` values. SDO `+Property+`
+acts similarly to a property in Java and provides much of the same
+metadata as the Java Reflection API provides for Java fields or methods.
+
+In EclipseLink, a
+http://www.eclipse.org/eclipselink/api/1.1/org/eclipse/persistence/sdo/SDOProperty.html[`+SDOProperty+`]
+wraps an link:Introduction_to_XML_Mappings_%28ELUG%29[object-XML
+mapping] in the following manner:
+
+* `+DataType=true + isMany=false+` - corresponds to EclipseLink
+link:Introduction_to_XML_Mappings_%28ELUG%29#XML_Direct_Mapping[OXM
+direct mappings] and
+link:Introduction_to_XML_Mappings_%28ELUG%29#XML_Binary_Data_Mapping[OXM
+binary mappings].
+* `+DataType=true + isMany=true+` - corresponds to EclipseLink
+link:Introduction_to_XML_Mappings_%28ELUG%29#XML_Composite_Direct_Collection_Mapping[OXM
+direct collection mappings] and
+link:Introduction_to_XML_Mappings_%28ELUG%29#XML_Binary_Data_Collection_Mapping[OXM
+binary collection mappings].
+* `+DataType=false + isMany=false + containment=true+` - corresponds to
+EclipseLink
+link:Introduction_to_XML_Mappings_%28ELUG%29#XML_Composite_Object_Mapping[OXM
+composite object mappings].
+* `+DataType=false + isMany=true + containment=true+` - corresponds to
+EclipseLink
+link:Introduction_to_XML_Mappings_%28ELUG%29#XML_Composite_Collection_Mapping[OXM
+composite collection mappings].
+* `+DataType=false + isMany=false + containment=false+` - corresponds to
+EclipseLink
+link:Introduction_to_XML_Mappings_%28ELUG%29#XML_Object_Reference_Mapping[OXM
+reference mappings].
+* `+DataType=false + isMany=true + containment=false+` - corresponds to
+EclipseLink
+link:Introduction_to_XML_Mappings_%28ELUG%29#XML_Collection_Reference_Mapping[OXM
+collection reference mappings].
+
+For more information, see the
+http://help.eclipse.org/help32/index.jsp?topic=/org.eclipse.emf.ecore.sdo.doc/references/javadoc/commonj/sdo/Property.html[`+Property+`]
+API.
+
+=== Defining Metadata
+
+You can use the following helper classes to define and access SDO
+metadata:
+
+* <<sdo-introel-xsdhelper, XSDHelper>>
+* <<sdo-introel-typehelper, TypeHelper>>
+
+[#sdo-introel-xsdhelper]
+==== How to Define Metadata with XSDHelper
+
+You use the
+http://www.eclipse.org/eclipselink/api/1.1/commonj/sdo/helper/XSDHelper.html[`+XSDHelper+`]
+to do the following:
+
+* Define SDO metadata, where SDO metadata is derived from XML schemas.
+* Generate XML schemas from SDO types.
+
+You can obtain the default `+XSDHelper+` from the `+INSTANCE+` field or
+from the `+getXSDHelper+` method of the default
+http://www.eclipse.org/eclipselink/api/1.1/commonj/sdo/helper/HelperContext.html[`+HelperContext+`].
+
+You can customize metadata by using the following annotations that you
+apply to the XML schema:
+
+* Standard annotations:
+** Information pending
+** {blank}
+* EclipseLink annotations:
+** Information pending
+** {blank}
+
+You can also use various APIs to determine the XML representation about
+the SDO metadata.
+
+For more information, see the following:
+
+* EclipseLink
+http://www.eclipse.org/eclipselink/api/1.1/org/eclipse/persistence/sdo/helper/SDOXSDHelper.html[`+SDOXSDHelper+`]
+API
+* <<sdo-example-basic-xsdhelper, EclipseLink XSDHelper examples>>
+
+[#sdo-introel-typehelper]
+==== How to Define Metadata with TypeHelper
+
+You use the
+http://www.eclipse.org/eclipselink/api/1.1/commonj/sdo/helper/TypeHelper.html[`+TypeHelper+`]
+to do the following:
+
+* Look up SDO metadata.
+* Programmatically define SDO metadata.
+
+You can obtain the default `+TypeHelper+` from the `+INSTANCE+` field or
+from the `+getTypeHelper+` method of the default
+http://www.eclipse.org/eclipselink/api/1.1/commonj/sdo/helper/HelperContext.html[`+HelperContext+`].
+
+For more information on how to use the `+TypeHelper+` in your
+application, see <<sdo-example-basic-typehelper, TypeHelper examples>>.
+
+For more information, see EclipseLink
+http://www.eclipse.org/eclipselink/api/1.1/org/eclipse/persistence/sdo/helper/SDOTypeHelper.html[`+SDOTypeHelper+`]
+API.
+
+== Using Data
+
+Use the following SDO classes to work with data:
+
+* <<sdo-introel-do, DataObject>>
+* <<sdo-introel-xmldoc, XMLDocument>>
+
+[#sdo-introel-do]
+=== Using DataObject
+
+A
+http://www.eclipse.org/eclipselink/api/1.1/commonj/sdo/DataObject.html[`+DataObject+`]
+is the central concept in SDO. It represents business data and
+corresponds to an `+Object+` in Java (POJO). To define
+link:Introduction_to_XML_Mappings_%28ELUG%29[object-XML mappings], you
+map the `+DataObject+` to XML. You can create your data object as either
+dynamic (see
+http://wiki.eclipse.org/EclipseLink/Examples/SDO/DynamicAPI[Dynamic
+DataObject Examples]), or static by applying a type-safe interface to it
+(see <<sdo-example-static, Static DataObject Examples>>).
+
+The `+DataObject+` provides an XPath-like (see
+link:Introduction_to_Mappings_%28ELUG%29#Mappings_and_XPath[Mappings and
+XPath]) means of data access. For example, the following code is valid
+in SDO:
+
+[source,java]
+----
+customerDO.getDataObject("contact-info/phone-number[2]");
+----
+
+The standard XML Binding, however, would require the following:
+
+[source,java]
+----
+customer.getContactInfo().getPhoneNumbers().get(1);
+----
+
+Note that you can use the EclipseLink
+http://www.eclipse.org/eclipselink/api/1.1/org/eclipse/persistence/sdo/helper/extension/XPathHelper.html[`+XPathHelper+`]
+to query data objects using an XPath expression.
+
+For more information, see EclipseLink
+http://www.eclipse.org/eclipselink/api/1.1/org/eclipse/persistence/sdo/SDODataObject.html[`+SDODataObject+`]
+API.
+
+==== What You May Need to Know About Serialization in SDO
+
+SDO DataObjects are serializable. When a DataObject is serialized, the
+entire data graph is serialized with it. On the stream SDO DataObjects
+are represented in a specification defined XML representation.
+
+[#sdo-introel-xmldoc]
+=== Using XMLDocument
+
+When you marshall (save) a `+DataObject+` to XML, or unmarshall an XML
+document into objects, the
+http://www.eclipse.org/eclipselink/api/1.1/commonj/sdo/helper/XMLDocument.html[`+XMLDocument+`]
+class contains information about the root of the XML document.
+
+The
+http://www.eclipse.org/eclipselink/api/1.1/commonj/sdo/helper/XMLHelper.html[`+XMLHelper+`]
+creates and serializes `+XMLDocument+` objects. The `+XMLDocument+` does
+not change the state of any input `+DataObject+` and ignores any
+containers.
+
+For more information, see EclipseLink
+http://www.eclipse.org/eclipselink/api/1.1/org/eclipse/persistence/sdo/SDOXMLDocument.html[`+SDOXMLDocument+`]
+API.
+
+=== What You May Need to Know About Sequence, ChangeSummary, and DataGraph
+
+The following SDO classes allow you to obtain additional information
+about data objects:
+
+* http://help.eclipse.org/help32/index.jsp?topic=/org.eclipse.emf.ecore.sdo.doc/references/javadoc/commonj/sdo/Sequence.html[`+Sequence+`]
+– provides a list of properties and their corresponding values. It
+represents the order of all the XML elements in the `+DataObject+`. Each
+entry in a Sequence has an index, with the order of settings being
+preserved, even across different properties. The same properties that
+appear in a `+Sequence+` are also available through a `+DataObject+`,
+but without preserving the order across properties. You should use
+sequences when dealing with semi-structured business data, for example,
+mixed text XML elements.
+* http://help.eclipse.org/help32/index.jsp?topic=/org.eclipse.emf.ecore.sdo.doc/references/javadoc/commonj/sdo/ChangeSummary.html[`+ChangeSummary+`]
+– records changes to data objects, therefore reducing the amount of data
+that needs to be transmitted between collaborating SDO applications. The
+`+ChangeSummary+` only tracks modifications that have been made to a
+tree of data objects starting from the point when logging was activated.
+If logging is no longer active, the log includes only changes that were
+made up to the point when logging was deactivated. Otherwise, it
+includes all changes up to the point at which the `+ChangeSummary+` is
+being interrogated. Although change information is only gathered when
+logging is on, you can query change information whether logging is on or
+off. All of the information returned is read-only. Use the
+`+ChangeSummary+`’s `+beginLogging+` method to clear the `+List+` of
+changed `+DataObjects+` and start change logging; use the `+endLogging+`
+method to stop change logging; use `+undoChanges+` to restore the tree
+of data objects to its state when logging began. Note that
+`+undoChanges+` also clears the log, but does not affect `+isLogging+`.
+
+Note that the
+http://help.eclipse.org/help32/index.jsp?topic=/org.eclipse.emf.ecore.sdo.doc/references/javadoc/commonj/sdo/DataGraph.html[`+DataGraph+`]
+class has been deprecated.
+
+For more information, see the following EclipseLink APIs:
+
+* http://www.eclipse.org/eclipselink/api/1.1/org/eclipse/persistence/sdo/SDOSequence.html[`+SDOSequence+`]
+* http://www.eclipse.org/eclipselink/api/1.1/org/eclipse/persistence/sdo/SDOChangeSummary.html[`+SDOChangeSummary+`]

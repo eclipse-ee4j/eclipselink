@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,12 +14,6 @@
 // mmacivor - June 24/2009 - 1.0 - Initial implementation
 package org.eclipse.persistence.internal.oxm.record;
 
-import java.util.ArrayList;
-
-import javax.xml.namespace.NamespaceContext;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
-
 import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.NamespaceResolver;
 import org.w3c.dom.Attr;
@@ -28,6 +22,11 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
+import javax.xml.namespace.NamespaceContext;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+import java.util.ArrayList;
 
 public class DomToXMLStreamWriter{
 
@@ -69,13 +68,13 @@ public class DomToXMLStreamWriter{
             namespace = newNamespace;
             localName = newName;
             nodeName = newName;
-            if(newNamespace != null && newNamespace.length() > 0) {
+            if(newNamespace != null && !newNamespace.isEmpty()) {
                 NamespaceResolver tempNR = new NamespaceResolver();
                 tempNR.setDOM(elem);
 
                 prefix = tempNR.resolveNamespaceURI(namespace);
 
-                if(prefix == null || prefix.length() == 0){
+                if(prefix == null || prefix.isEmpty()){
                     String defaultNamespace = elem.getAttributeNS(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI, javax.xml.XMLConstants.XMLNS_ATTRIBUTE);
                     if(defaultNamespace == null){
                         prefix = tempNR.generatePrefix();
@@ -96,16 +95,16 @@ public class DomToXMLStreamWriter{
         String defaultNamespace = xsw.getNamespaceContext().getNamespaceURI(Constants.EMPTY_STRING);
 
         boolean needToAddDefaultNS = false;
-        if(prefix != null && prefix.length() > 0) {
+        if(prefix != null && !prefix.isEmpty()) {
            String namespaceURI = xsw.getNamespaceContext().getNamespaceURI(prefix);
             xsw.writeStartElement(prefix, localName, namespace);
             if(!(namespace.equals(namespaceURI))) {
                 xsw.writeNamespace(prefix, namespace);
            }
         } else {
-            if(namespace == null || namespace.length() == 0) {
+            if(namespace == null || namespace.isEmpty()) {
                 xsw.writeStartElement(nodeName);
-                if(defaultNamespace != null &&  defaultNamespace.length() >0) {
+                if(defaultNamespace != null && !defaultNamespace.isEmpty()) {
                     //write default namespace declaration
                     xsw.writeDefaultNamespace(Constants.EMPTY_STRING);
                 }
@@ -170,7 +169,7 @@ public class DomToXMLStreamWriter{
         tempResovler.setDOM(elem);
 
         String prefix = tempResovler.resolveNamespaceURI(uri);
-        if(prefix == null || prefix.length() == 0){
+        if(prefix == null || prefix.isEmpty()){
             prefix = tempResovler.generatePrefix();
         }
         return prefix;

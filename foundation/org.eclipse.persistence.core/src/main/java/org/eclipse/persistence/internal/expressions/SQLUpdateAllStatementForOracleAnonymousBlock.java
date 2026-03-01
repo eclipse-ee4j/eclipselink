@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -15,19 +15,21 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.expressions;
 
-import java.io.*;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Vector;
-import java.util.Collection;
-
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.queries.SQLCall;
+
+import java.io.CharArrayWriter;
+import java.io.IOException;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -35,8 +37,8 @@ import java.util.Map;
  * @since TOPLink/Java 1.0
  */
 public class SQLUpdateAllStatementForOracleAnonymousBlock extends SQLModifyStatement {
-    protected HashMap tables_databaseFieldsToValues;
-    protected HashMap tablesToPrimaryKeyFields;
+    protected Map<DatabaseTable, Map<DatabaseField, Expression>> tables_databaseFieldsToValues;
+    protected Map<DatabaseTable, List<DatabaseField>> tablesToPrimaryKeyFields;
     protected SQLCall selectCall;
 
     protected static final String varSuffix = "_VAR";
@@ -51,17 +53,20 @@ public class SQLUpdateAllStatementForOracleAnonymousBlock extends SQLModifyState
     public SQLCall getSelectCall() {
         return selectCall;
     }
-    public void setTablesToPrimaryKeyFields(HashMap tablesToPrimaryKeyFields) {
+    public void setTablesToPrimaryKeyFields(Map<DatabaseTable, List<DatabaseField>> tablesToPrimaryKeyFields) {
         this.tablesToPrimaryKeyFields = tablesToPrimaryKeyFields;
     }
-    public HashMap getTablesToPrimaryKeyFields() {
+    public Map<DatabaseTable, List<DatabaseField>> getTablesToPrimaryKeyFields() {
         return tablesToPrimaryKeyFields;
     }
-    public void setTables_databaseFieldsToValues(HashMap tables_databaseFieldsToValues) {
+    public void setTables_databaseFieldsToValues(Map<DatabaseTable, Map<DatabaseField, Expression>> tables_databaseFieldsToValues) {
         this.tables_databaseFieldsToValues = tables_databaseFieldsToValues;
     }
-    public HashMap getTables_databaseFieldsToValues() {
+    public Map<DatabaseTable, Map<DatabaseField, Expression>> getTables_databaseFieldsToValues() {
         return tables_databaseFieldsToValues;
+    }
+
+    public SQLUpdateAllStatementForOracleAnonymousBlock() {
     }
 
     /**
@@ -74,16 +79,14 @@ public class SQLUpdateAllStatementForOracleAnonymousBlock extends SQLModifyState
 
         Writer writer = new CharArrayWriter(100);
 
-        Vector mainPrimaryKeys = new Vector();
-        mainPrimaryKeys.addAll((Collection)tablesToPrimaryKeyFields.get(table));
+        ArrayList<DatabaseField> mainPrimaryKeys = new ArrayList<>();
+        mainPrimaryKeys.addAll(tablesToPrimaryKeyFields.get(table));
 
-        Vector allFields = (Vector)mainPrimaryKeys.clone();
-        Iterator itDatabaseFieldsToValues = tables_databaseFieldsToValues.values().iterator();
+        @SuppressWarnings({"unchecked"})
+        List<DatabaseField> allFields = (List<DatabaseField>) mainPrimaryKeys.clone();
+        Iterator<Map<DatabaseField, Expression>> itDatabaseFieldsToValues = tables_databaseFieldsToValues.values().iterator();
         while(itDatabaseFieldsToValues.hasNext()) {
-            Iterator itDatabaseFields = ((HashMap)itDatabaseFieldsToValues.next()).keySet().iterator();
-            while(itDatabaseFields.hasNext()) {
-                allFields.addElement(itDatabaseFields.next());
-            }
+            allFields.addAll(itDatabaseFieldsToValues.next().keySet());
         }
 
         try {
@@ -91,7 +94,7 @@ public class SQLUpdateAllStatementForOracleAnonymousBlock extends SQLModifyState
             writer.write("DECLARE\n");
 
             for(int i=0; i < allFields.size(); i++) {
-                writeDeclareTypeAndVar(writer, (DatabaseField)allFields.elementAt(i), session.getPlatform());
+                writeDeclareTypeAndVar(writer, allFields.get(i), session.getPlatform());
             }
 
             //BEGIN
@@ -101,14 +104,14 @@ public class SQLUpdateAllStatementForOracleAnonymousBlock extends SQLModifyState
             String selectStr = selectCall.getSQLString();
             int index = selectStr.toUpperCase().indexOf(" FROM ");
             String firstPart = selectStr.substring(0, index);
-            String secondPart = selectStr.substring(index, selectStr.length());
+            String secondPart = selectStr.substring(index);
 
             writer.write(tab);
             writer.write(firstPart);
             writer.write(" BULK COLLECT INTO ");
 
             for(int i=0; i < allFields.size(); i++) {
-                writeVar(writer, (DatabaseField)allFields.elementAt(i), session.getPlatform());
+                writeVar(writer, allFields.get(i), session.getPlatform());
                 if(i < allFields.size() - 1) {
                     writer.write(", ");
                 }
@@ -120,27 +123,27 @@ public class SQLUpdateAllStatementForOracleAnonymousBlock extends SQLModifyState
             call.getParameterTypes().addAll(selectCall.getParameterTypes());
             call.getParameterBindings().addAll(selectCall.getParameterBindings());
 
-            DatabaseField firstMainPrimaryKey = (DatabaseField)mainPrimaryKeys.firstElement();
+            DatabaseField firstMainPrimaryKey = mainPrimaryKeys.get(0);
             writer.write(tab);
             writer.write("IF ");
             writeVar(writer, firstMainPrimaryKey, session.getPlatform());
             writer.write(".COUNT > 0 THEN\n");
 
-            Iterator itEntries = tables_databaseFieldsToValues.entrySet().iterator();
+            Iterator<Map.Entry<DatabaseTable, Map<DatabaseField, Expression>>> itEntries = tables_databaseFieldsToValues.entrySet().iterator();
             while(itEntries.hasNext()) {
                 writeForAll(writer, firstMainPrimaryKey, session.getPlatform());
                 writer.write(trpltab);
                 writer.write("UPDATE ");
-                Map.Entry entry = (Map.Entry)itEntries.next();
-                DatabaseTable t = (DatabaseTable)entry.getKey();
+                Map.Entry<DatabaseTable, Map<DatabaseField, Expression>> entry = itEntries.next();
+                DatabaseTable t = entry.getKey();
                 writer.write(t.getQualifiedNameDelimited(session.getPlatform()));
                 writer.write(" SET ");
-                HashMap databaseFieldsToValues = (HashMap)entry.getValue();
+                Map<DatabaseField, Expression> databaseFieldsToValues = entry.getValue();
                 int counter = 0;
-                Iterator itDatabaseFields = databaseFieldsToValues.keySet().iterator();
+                Iterator<DatabaseField> itDatabaseFields = databaseFieldsToValues.keySet().iterator();
                 while(itDatabaseFields.hasNext()) {
                     counter++;
-                    DatabaseField field = (DatabaseField)itDatabaseFields.next();
+                    DatabaseField field = itDatabaseFields.next();
                     writer.write(field.getNameDelimited(session.getPlatform()));
                     writer.write(" = ");
                     writeVar(writer, field, session.getPlatform());
@@ -152,13 +155,13 @@ public class SQLUpdateAllStatementForOracleAnonymousBlock extends SQLModifyState
 
                 writer.write(" WHERE ");
 
-                Vector tablePrimaryKeys = new Vector();
-                tablePrimaryKeys.addAll((Collection)tablesToPrimaryKeyFields.get(t));
+                List<DatabaseField> tablePrimaryKeys = new ArrayList<>();
+                tablePrimaryKeys.addAll(tablesToPrimaryKeyFields.get(t));
                 for(int i=0; i < mainPrimaryKeys.size(); i++) {
-                    DatabaseField tableField = (DatabaseField)tablePrimaryKeys.elementAt(i);
+                    DatabaseField tableField = tablePrimaryKeys.get(i);
                     writer.write(tableField.getNameDelimited(session.getPlatform()));
                     writer.write(" = ");
-                    DatabaseField mainField = (DatabaseField )mainPrimaryKeys.elementAt(i);
+                    DatabaseField mainField = mainPrimaryKeys.get(i);
                     writeVar(writer, mainField, session.getPlatform());
                     writer.write("(i)");
                     if(i < mainPrimaryKeys.size()-1) {

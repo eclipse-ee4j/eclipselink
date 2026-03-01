@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -43,23 +43,25 @@ import dbws.testing.DBWSTestSuite;
 public class BatchSQLTestSuite extends DBWSTestSuite {
 
     static final String CREATE_BATCH1_TABLE =
-        "CREATE TABLE IF NOT EXISTS batch1 (" +
-            "\nEMPNO NUMERIC(4)," +
-            "\nENAME VARCHAR(10)," +
-            "\nJOB VARCHAR(9)," +
-            "\nMGR NUMERIC(4)," +
-            "\nHIREDATE DATE," +
-            "\nSAL NUMERIC(7,2)," +
-            "\nCOMM NUMERIC(7,2)," +
-            "\nDEPTNO NUMERIC(2)," +
-            "\nPRIMARY KEY (EMPNO)" +
-        "\n)";
+            """
+                    CREATE TABLE IF NOT EXISTS batch1 (
+                    EMPNO NUMERIC(4),
+                    ENAME VARCHAR(10),
+                    JOB VARCHAR(9),
+                    MGR NUMERIC(4),
+                    HIREDATE DATE,
+                    SAL NUMERIC(7,2),
+                    COMM NUMERIC(7,2),
+                    DEPTNO NUMERIC(2),
+                    PRIMARY KEY (EMPNO)
+                    )""";
     static final String CREATE_BATCH2_TABLE =
-        "CREATE TABLE IF NOT EXISTS batch2 (" +
-            "\nJOB VARCHAR(9)," +
-            "\nAVGSAL NUMERIC(7,2)," +
-            "\nPRIMARY KEY (JOB)" +
-        "\n)";
+            """
+                    CREATE TABLE IF NOT EXISTS batch2 (
+                    JOB VARCHAR(9),
+                    AVGSAL NUMERIC(7,2),
+                    PRIMARY KEY (JOB)
+                    )""";
     static String[] POPULATE_BATCH1_TABLE = new String[] {
         "INSERT INTO batch1 VALUES (7369,'SMITH','CLERK',7902,'1980-12-17',800,NULL,20)",
         "INSERT INTO batch1 VALUES (7499,'ALLEN','SALESMAN',7698,'1981-2-20',1600,300,30)",
@@ -149,43 +151,16 @@ public class BatchSQLTestSuite extends DBWSTestSuite {
         DBWS_BUILDER_XML_PLATFORM =
                 "</property><property name=\"platformClassname\">";
         DBWS_BUILDER_XML_MAIN =
-                "</property>" +
-            "</properties>" +
-            "<table " +
-              "schemaPattern=\"%\" " +
-              "tableNamePattern=\"batch2\" " +
-              ">" +
-              "<sql " +
-                "name=\"getAverageSalary\" " +
-                "isCollection=\"false\" " +
-                "simpleXMLFormatTag=\"avg-salary\" " +
-                ">" +
-                  "<text><![CDATA[SELECT AVGSAL as \"clerk-avg\" FROM batch2 WHERE JOB='CLERK']]></text>" +
-                "</sql>" +
-              "</table>" +
-              "<batch-sql " +
-                "name=\"avgSalary\" " +
-                ">" +
-                "<batch-statement><![CDATA[" +
-                    "START TRANSACTION\n" +
-                    "SELECT @A:=AVG(SAL) FROM batch1 WHERE JOB='CLERK'\n" +
-                    "UPDATE batch2 SET AVGSAL=@A WHERE JOB='CLERK'\n" +
-                    "COMMIT\n" +
-                    "]]>" +
-                "</batch-statement> " +
-              "</batch-sql>" +
-              "<batch-sql " +
-              "name=\"invalidSQL\" " +
-              ">" +
-              "<batch-statement><![CDATA[" +
-                  "START TRANSACTION\n" +
-                  "SELECT @A:=666(SAL) FROM batch1 WHERE JOB='CLERK'\n" +
-                  "UPDATE batch2 SET AVGSAL=@A WHERE JOB='CLERK'\n" +
-                  "COMMIT\n" +
-                  "]]>" +
-              "</batch-statement> " +
-            "</batch-sql>" +
-          "</dbws-builder>";
+                """
+                        </property></properties><table schemaPattern="%" tableNamePattern="batch2" ><sql name="getAverageSalary" isCollection="false" simpleXMLFormatTag="avg-salary" ><text><![CDATA[SELECT AVGSAL as "clerk-avg" FROM batch2 WHERE JOB='CLERK']]></text></sql></table><batch-sql name="avgSalary" ><batch-statement><![CDATA[START TRANSACTION
+                        SELECT @A:=AVG(SAL) FROM batch1 WHERE JOB='CLERK'
+                        UPDATE batch2 SET AVGSAL=@A WHERE JOB='CLERK'
+                        COMMIT
+                        ]]></batch-statement> </batch-sql><batch-sql name="invalidSQL" ><batch-statement><![CDATA[START TRANSACTION
+                        SELECT @A:=666(SAL) FROM batch1 WHERE JOB='CLERK'
+                        UPDATE batch2 SET AVGSAL=@A WHERE JOB='CLERK'
+                        COMMIT
+                        ]]></batch-statement> </batch-sql></dbws-builder>""";
         builder = null;
         DBWSTestSuite.setUp(".");
     }

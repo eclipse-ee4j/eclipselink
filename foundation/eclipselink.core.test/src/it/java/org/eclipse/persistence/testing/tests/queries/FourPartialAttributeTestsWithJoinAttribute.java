@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,12 +14,14 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.queries;
 
-import java.util.Vector;
-
+import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.sessions.UnitOfWork;
-import org.eclipse.persistence.testing.framework.*;
-import org.eclipse.persistence.testing.models.employee.domain.*;
-import org.eclipse.persistence.queries.*;
+import org.eclipse.persistence.testing.framework.TestCase;
+import org.eclipse.persistence.testing.framework.TestErrorException;
+import org.eclipse.persistence.testing.models.employee.domain.Address;
+import org.eclipse.persistence.testing.models.employee.domain.Employee;
+
+import java.util.Vector;
 
 /**
  * Bug 5501751: USING GETALLOWINGNULL() WITH ADDPARTIALATTRIBUTE() BROKEN IN 10.1.3
@@ -97,45 +99,45 @@ public class FourPartialAttributeTestsWithJoinAttribute extends TestCase {
 
     @Override
     protected void verify() {
-        String errorMsg = "";
+        StringBuilder errorMsg = new StringBuilder();
         for(int i=0; i<4; i++) {
             Employee empA = null;
-            if(results[i].size() >= 1) {
-                empA = (Employee)results[i].elementAt(0);
+            if(!results[i].isEmpty()) {
+                empA = (Employee)results[i].get(0);
             }
             Employee empB = null;
             if(results[i].size() >= 2) {
-                empB = (Employee)results[i].elementAt(1);
+                empB = (Employee)results[i].get(1);
             }
             if(empA == null) {
-                errorMsg = errorMsg + "query"+i+" hasn't returned Employee A; ";
+                errorMsg.append("query").append(i).append(" hasn't returned Employee A; ");
             } else {
                 if(empA.getAddress() == null) {
-                    errorMsg = errorMsg + "query"+i+" returned Employee A with null Address; ";
+                    errorMsg.append("query").append(i).append(" returned Employee A with null Address; ");
                 }
             }
             if(i==0 || i==1) {
                 // i==0 || i==1 - Inner join
                 if(empB != null) {
-                    errorMsg = errorMsg + "query"+i+" has returned Employee B; ";
+                    errorMsg.append("query").append(i).append(" has returned Employee B; ");
                 }
             } else {
                 // i==2 || i==3 - Outer join
                 if(empB == null) {
-                    errorMsg = errorMsg + "query"+i+" has not returned Employee B; ";
+                    errorMsg.append("query").append(i).append(" has not returned Employee B; ");
                 } else {
                     if(i==2) {
                         // builder.getAllowingNull("address")
                         if(empB.getAddress() != null) {
-                            errorMsg = errorMsg + "query"+i+" has returned Employee B's address; ";
+                            errorMsg.append("query").append(i).append(" has returned Employee B's address; ");
                         }
                     } else {
                         // builder.getAllowingNull("address").get("city")
                         if(empB.getAddress() == null) {
-                            errorMsg = errorMsg + "query"+i+" has not returned Employee B's address; ";
+                            errorMsg.append("query").append(i).append(" has not returned Employee B's address; ");
                         } else {
                             if(empB.getAddress().getCity() != null) {
-                                errorMsg = errorMsg + "query"+i+" has returned Employee B's address with city != null; ";
+                                errorMsg.append("query").append(i).append(" has returned Employee B's address with city != null; ");
                             }
                         }
                     }
@@ -143,8 +145,8 @@ public class FourPartialAttributeTestsWithJoinAttribute extends TestCase {
             }
         }
 
-        if(errorMsg.length() > 0) {
-            throw new TestErrorException(errorMsg);
+        if(!errorMsg.isEmpty()) {
+            throw new TestErrorException(errorMsg.toString());
         }
     }
 
@@ -171,7 +173,7 @@ public class FourPartialAttributeTestsWithJoinAttribute extends TestCase {
         if(!result.isEmpty()) {
             UnitOfWork uow = getSession().acquireUnitOfWork();
             for(int i=0; i<result.size(); i++) {
-                uow.deleteObject(result.elementAt(i));
+                uow.deleteObject(result.get(i));
             }
             uow.commit();
         }

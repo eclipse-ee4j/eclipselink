@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2022 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,11 +23,6 @@
 //       - 533148 : Add the eclipselink.jpa.sql-call-deferral property
 package org.eclipse.persistence.internal.queries;
 
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.Vector;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.QueryException;
@@ -36,7 +31,6 @@ import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.databaseaccess.DatasourceCall;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
@@ -46,6 +40,12 @@ import org.eclipse.persistence.queries.DeleteAllQuery;
 import org.eclipse.persistence.queries.ReportQuery;
 import org.eclipse.persistence.queries.UpdateAllQuery;
 import org.eclipse.persistence.queries.WriteObjectQuery;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
 
 /**
  * <p><b>Purpose</b>:
@@ -61,7 +61,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
     protected DatasourceCall call;
 
     /** Normally only a single call is used, however multiple table may require multiple calls on write. */
-    protected Vector calls;
+    protected List<DatasourceCall> calls;
 
     public DatasourceCallQueryMechanism() {
     }
@@ -88,7 +88,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
      * Add the call.
      */
     public void addCall(DatasourceCall call) {
-        getCalls().addElement(call);
+        getCalls().add(call);
         call.setQuery(getQuery());
     }
 
@@ -97,13 +97,14 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
      */
     @Override
     public DatabaseQueryMechanism clone(DatabaseQuery queryClone) {
-        DatasourceCallQueryMechanism clone = (DatasourceCallQueryMechanism)super.clone(queryClone);
-        if(this.call != null) {
-            DatasourceCall callclone = (DatasourceCall)this.call.clone();
+        DatasourceCallQueryMechanism clone =  (DatasourceCallQueryMechanism) super.clone(queryClone);
+        if (this.call != null) {
+            DatasourceCall callclone = this.call.clone();
             clone.setCall(callclone);
         }
-        if(this.calls != null) {
-            Vector callsclone = (Vector)this.calls.clone();
+        if (this.calls != null) {
+            @SuppressWarnings({"unchecked"})
+            List<DatasourceCall> callsclone = (List<DatasourceCall>) ((ArrayList<?>) this.calls).clone();
             clone.setCalls(callsclone);
         }
         return clone;
@@ -156,7 +157,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
 
                 // Deletion must occur in reverse order.
                 for (int index = getCalls().size() - 1; index >= 0; index--) {
-                    DatasourceCall databseCall = (DatasourceCall)getCalls().elementAt(index);
+                    DatasourceCall databseCall = getCalls().get(index);
                     returnedRowCount = (Integer)executeCall(databseCall);
                 }
                 // returns the number of rows removed from the first table in insert order
@@ -181,7 +182,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
         // first call - crete temp table.
         // may fail in case global temp table already exists.
         try {
-            DatasourceCall databseCall = (DatasourceCall)getCalls().elementAt(getCalls().size() - 1);
+            DatasourceCall databseCall = getCalls().get(getCalls().size() - 1);
             executeCall(databseCall);
         } catch (DatabaseException databaseEx) {
             // ignore
@@ -190,7 +191,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
         // second call - populate temp table.
         // if that fails save the exception and untill cleanup
         try {
-            DatasourceCall databseCall = (DatasourceCall)getCalls().elementAt(getCalls().size() - 2);
+            DatasourceCall databseCall = getCalls().get(getCalls().size() - 2);
             executeCall(databseCall);
         } catch (DatabaseException databaseEx) {
             ex = databaseEx;
@@ -199,7 +200,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
         // third (a call per table) - delete from original tables calls.
         // if that fails save the exception untill cleanup
         for (int index = getCalls().size() - 3; index >= 1 && ex == null; index--) {
-            DatasourceCall databseCall = (DatasourceCall)getCalls().elementAt(index);
+            DatasourceCall databseCall = getCalls().get(index);
             try {
                 // returns the number of rows removed from the first table in insert order
                 returnedRowCount = (Integer)executeCall(databseCall);
@@ -211,7 +212,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
         // last call - cleanup temp table.
         // ignore exceptions here.
         try {
-            DatasourceCall databseCall = (DatasourceCall)getCalls().elementAt(0);
+            DatasourceCall databseCall = getCalls().get(0);
             executeCall(databseCall);
         } catch (DatabaseException databaseEx) {
             // ignore
@@ -236,7 +237,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
 
             // Deletion must occur in reverse order.
             for (int index = getCalls().size() - 1; index >= 0; index--) {
-                DatasourceCall databseCall = (DatasourceCall)getCalls().elementAt(index);
+                DatasourceCall databseCall = getCalls().get(index);
                 Integer rowCount = (Integer)executeCall(databseCall);
                 if ((index == (getCalls().size() - 1)) || (rowCount <= 0)) {// Row count returned must be from first table or zero if any are zero.
                     returnedRowCount = rowCount;
@@ -274,7 +275,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
         // For CR 2923 must move to session we will execute call on now
         // so correct DatasourcePlatform used by translate.
         AbstractSession sessionToUse = this.query.getExecutionSession();
-        DatasourceCall clonedCall = (DatasourceCall)databaseCall.clone();
+        DatasourceCall clonedCall = databaseCall.clone();
         clonedCall.setQuery(this.query);
         clonedCall.translate(this.query.getTranslationRow(), getModifyRow(), sessionToUse);
         return sessionToUse.executeCall(clonedCall, this.query.getTranslationRow(), this.query);
@@ -312,7 +313,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
         if (hasMultipleCalls()) {
             Integer returnedRowCount = null;
             for (int index = 0; index < getCalls().size(); index++) {
-                DatasourceCall databseCall = (DatasourceCall)getCalls().elementAt(index);
+                DatasourceCall databseCall = getCalls().get(index);
                 Integer rowCount = (Integer)executeCall(databseCall);
                 if ((index == 0) || (rowCount <= 0)) {// Row count returned must be from first table or zero if any are zero.
                     returnedRowCount = rowCount;
@@ -342,9 +343,9 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
     public Vector executeSelectCall() throws DatabaseException {
         if (hasMultipleCalls()) {
             Vector results = new Vector();
-            for (Enumeration callsEnum = getCalls().elements(); callsEnum.hasMoreElements();) {
-                DatasourceCall databseCall = (DatasourceCall)callsEnum.nextElement();
-                Helper.addAllToVector(results, (Vector)executeCall(databseCall));
+            for (Iterator iterator = getCalls().iterator(); iterator.hasNext();) {
+                DatasourceCall databseCall = (DatasourceCall) iterator.next();
+                results.addAll((Vector)executeCall(databseCall));
             }
 
             return results;
@@ -364,9 +365,9 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
      * Normally only a single call is used, however multiple table may require multiple calls on write.
      * This is lazy initialised to conserve space.
      */
-    public Vector getCalls() {
+    public List<DatasourceCall> getCalls() {
         if (calls == null) {
-            calls = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(3);
+            calls = new ArrayList<>(3);
         }
         return calls;
     }
@@ -391,7 +392,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
         if (usesSequencing) {
             shouldAcquireValueAfterInsert = descriptor.getSequence().shouldAcquireValueAfterInsert();
         }
-        Collection returnFields = null;
+        Collection<DatabaseField> returnFields = null;
         if (descriptor.getReturnFieldsToMergeInsert() != null) {
             returnFields = descriptor.getReturnFieldsToMergeInsert();
         }
@@ -408,7 +409,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
         if (hasMultipleCalls()) {
             int size = this.calls.size();
             for (int index = 0; index < size; index++) {
-                DatasourceCall databseCall = (DatasourceCall)this.calls.get(index);
+                DatasourceCall databseCall = this.calls.get(index);
                 if ((index > 0) && isExpressionQueryMechanism()
                         && this.query.shouldCascadeOnlyDependentParts() && !descriptor.hasMultipleTableConstraintDependecy()
                         && this.query.getSession().getProject().allowSQLDeferral()) {
@@ -477,7 +478,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
         if (result instanceof AbstractRecord) {
             this.query.setProperty("output", result);
         }
-        Collection returnFields = null;
+        Collection<DatabaseField> returnFields = null;
         if (this.query.getDescriptor().hasReturningPolicy()) {
             returnFields = this.query.getDescriptor().getReturningPolicy().getFieldsToMergeInsert();
         }
@@ -519,7 +520,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
         DatabaseQuery query = getQuery();
         AbstractSession executionSession = query.getExecutionSession();
         if (hasMultipleCalls()) {
-            for (DatasourceCall call : (List<DatasourceCall>)getCalls()) {
+            for (DatasourceCall call : getCalls()) {
                 call.prepare(executionSession);
             }
         } else if (getCall() != null) {
@@ -542,8 +543,8 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
     @Override
     public void prepareDeleteAll() {
         if (hasMultipleCalls()) {
-            for (Enumeration callsEnum = getCalls().elements(); callsEnum.hasMoreElements();) {
-                DatasourceCall call = (DatasourceCall)callsEnum.nextElement();
+            for (Iterator<DatasourceCall> iterator = getCalls().iterator(); iterator.hasNext();) {
+                DatasourceCall call = iterator.next();
                 call.returnNothing();
             }
         } else {
@@ -558,8 +559,8 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
     @Override
     public void prepareDeleteObject() {
         if (hasMultipleCalls()) {
-            for (Enumeration callsEnum = getCalls().elements(); callsEnum.hasMoreElements();) {
-                DatasourceCall call = (DatasourceCall)callsEnum.nextElement();
+            for (Iterator<DatasourceCall> iterator = getCalls().iterator(); iterator.hasNext();) {
+                DatasourceCall call = iterator.next();
                 call.returnNothing();
             }
         } else {
@@ -574,8 +575,8 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
     @Override
     public void prepareDoesExist(DatabaseField field) {
         if (hasMultipleCalls()) {
-            for (Enumeration callsEnum = getCalls().elements(); callsEnum.hasMoreElements();) {
-                ((DatasourceCall)callsEnum.nextElement()).returnOneRow();
+            for (Iterator<DatasourceCall> iterator = getCalls().iterator(); iterator.hasNext();) {
+                iterator.next().returnOneRow();
             }
         } else {
             getCall().returnOneRow();
@@ -589,8 +590,8 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
     @Override
     public void prepareExecuteNoSelect() {
         if (hasMultipleCalls()) {
-            for (Enumeration callsEnum = getCalls().elements(); callsEnum.hasMoreElements();) {
-                ((DatasourceCall)callsEnum.nextElement()).returnNothing();
+            for (Iterator<DatasourceCall> iterator = getCalls().iterator(); iterator.hasNext();) {
+                iterator.next().returnNothing();
             }
         } else {
             getCall().returnNothing();
@@ -601,7 +602,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
     /**
      * Pre-build configure the call. This method assumes the query was built
      * using a stored procedure query which is a single call.
-     *
+     * <p>
      * The return type on the call will already be set and
      */
     @Override
@@ -616,8 +617,8 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
     @Override
     public void prepareExecuteSelect() {
         if (hasMultipleCalls()) {
-            for (Enumeration callsEnum = getCalls().elements(); callsEnum.hasMoreElements();) {
-                DatasourceCall databseCall = (DatasourceCall)callsEnum.nextElement();
+            for (Iterator<DatasourceCall> iterator = getCalls().iterator(); iterator.hasNext();) {
+                DatasourceCall databseCall = iterator.next();
                 databseCall.returnManyRows();
             }
         } else {
@@ -634,7 +635,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
         if (hasMultipleCalls()) {
             int size = this.calls.size();
             for (int index = 0; index < size; index++) {
-                DatabaseCall call = (DatabaseCall)this.calls.get(index);
+                DatasourceCall call = this.calls.get(index);
                 if (!call.isReturnSet()) {
                     call.returnNothing();
                 }
@@ -713,8 +714,8 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
     @Override
     public void prepareSelectAllRows() {
         if (hasMultipleCalls()) {
-            for (Enumeration callsEnum = getCalls().elements(); callsEnum.hasMoreElements();) {
-                DatasourceCall databseCall = (DatasourceCall)callsEnum.nextElement();
+            for (Iterator<DatasourceCall> iterator = getCalls().iterator(); iterator.hasNext();) {
+                DatasourceCall databseCall = iterator.next();
                 databseCall.returnManyRows();
             }
         } else {
@@ -729,8 +730,8 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
     @Override
     public void prepareSelectOneRow() {
         if (hasMultipleCalls()) {
-            for (Enumeration callsEnum = getCalls().elements(); callsEnum.hasMoreElements();) {
-                DatasourceCall databseCall = (DatasourceCall)callsEnum.nextElement();
+            for (Iterator<DatasourceCall> iterator = getCalls().iterator(); iterator.hasNext();) {
+                DatasourceCall databseCall = iterator.next();
                 databseCall.returnOneRow();
             }
         } else {
@@ -747,7 +748,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
         if (hasMultipleCalls()) {
             int size = this.calls.size();
             for (int index = 0; index < size; index++) {
-                DatabaseCall call = (DatabaseCall)this.calls.get(index);
+                DatasourceCall call = this.calls.get(index);
                 if (!call.isReturnSet()) {
                     call.returnNothing();
                 }
@@ -800,8 +801,8 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
     @Override
     public AbstractRecord selectOneRow() throws DatabaseException {
         if (hasMultipleCalls()) {
-            for (Enumeration callsEnum = getCalls().elements(); callsEnum.hasMoreElements();) {
-                DatasourceCall databaseCall = (DatasourceCall)callsEnum.nextElement();
+            for (Iterator<DatasourceCall> iterator = getCalls().iterator(); iterator.hasNext();) {
+                DatasourceCall databaseCall = iterator.next();
                 AbstractRecord result = (AbstractRecord)executeCall(databaseCall);
                 if (result != null) {
                     return result;
@@ -823,8 +824,8 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
     @Override
     public AbstractRecord selectRowForDoesExist(DatabaseField field) throws DatabaseException {
         if (hasMultipleCalls()) {
-            for (Enumeration callsEnum = getCalls().elements(); callsEnum.hasMoreElements();) {
-                DatasourceCall databaseCall = (DatasourceCall)callsEnum.nextElement();
+            for (Iterator<DatasourceCall> iterator = getCalls().iterator(); iterator.hasNext();) {
+                DatasourceCall databaseCall = iterator.next();
                 AbstractRecord result = (AbstractRecord)executeCall(databaseCall);
                 if (result != null) {
                     return result;
@@ -851,7 +852,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
      * Normally only a single call is used, however multiple table may require multiple calls on write.
      * This is lazy initialised to conserve space.
      */
-    protected void setCalls(Vector calls) {
+    protected void setCalls(List<DatasourceCall> calls) {
         this.calls = calls;
     }
 
@@ -863,7 +864,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
     @Override
     public Integer updateObject() throws DatabaseException {
         ClassDescriptor descriptor = getDescriptor();
-        Collection returnFields = null;
+        Collection<DatabaseField> returnFields = null;
         if (descriptor.getReturnFieldsToMergeUpdate() != null) {
             returnFields = descriptor.getReturnFieldsToMergeUpdate();
         }
@@ -871,7 +872,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
         if (hasMultipleCalls()) {
             int size = this.calls.size();
             for (int index = 0; index < size; index++) {
-                DatasourceCall databseCall = (DatasourceCall)this.calls.get(index);
+                DatasourceCall databseCall = this.calls.get(index);
                 if ((index > 0) && isExpressionQueryMechanism()
                         && this.query.shouldCascadeOnlyDependentParts() && !descriptor.hasMultipleTableConstraintDependecy()
                         && this.query.getSession().getProject().allowSQLDeferral()) {
@@ -959,7 +960,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
         // may fail in case global temp table already exists.
         for (int index = 0; index < nTables; index++) {
             try {
-                DatasourceCall databseCall = (DatasourceCall)getCalls().elementAt(index);
+                DatasourceCall databseCall = getCalls().get(index);
                 executeCall(databseCall);
             } catch (DatabaseException databaseEx) {
                 // ignore
@@ -970,7 +971,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
         // if that fails save the exception and until cleanup
         for (int index = nTables; index < nTables*2 && ex == null; index++) {
             try {
-                DatasourceCall databseCall = (DatasourceCall)getCalls().elementAt(index);
+                DatasourceCall databseCall = getCalls().get(index);
                 executeCall(databseCall);
             } catch (DatabaseException databaseEx) {
                 ex = databaseEx;
@@ -981,7 +982,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
         // if that fails save the exception and until cleanup
         for (int index = nTables*2; index < nTables*3 && ex == null; index++) {
             try {
-                DatasourceCall databseCall = (DatasourceCall)getCalls().elementAt(index);
+                DatasourceCall databseCall = getCalls().get(index);
                 Integer rowCount = (Integer)executeCall(databseCall);
                 if ((index == nTables*2) || (rowCount <= 0)) {// Row count returned must be from first table or zero if any are zero.
                     returnedRowCount = rowCount;
@@ -995,7 +996,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
         // ignore exceptions here.
         for (int index = nTables*3; index < nTables*4; index++) {
             try {
-                DatasourceCall databseCall = (DatasourceCall)getCalls().elementAt(index);
+                DatasourceCall databseCall = getCalls().get(index);
                 executeCall(databseCall);
                 } catch (DatabaseException databaseEx) {
                     // ignore
@@ -1022,9 +1023,9 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
         AbstractSession sessionToUse = this.query.getExecutionSession();
 
         // yes - this is a bit ugly...
-        Vector calls = ((DatasourceCallQueryMechanism)this.getDescriptor().getQueryManager().getUpdateQuery().getQueryMechanism()).getCalls();
-        for (Enumeration stream = calls.elements(); stream.hasMoreElements();) {
-            DatasourceCall call = (DatasourceCall)((DatasourceCall)stream.nextElement()).clone();
+        List<DatasourceCall> calls = ((DatasourceCallQueryMechanism)this.getDescriptor().getQueryManager().getUpdateQuery().getQueryMechanism()).getCalls();
+        for (Iterator<DatasourceCall> iterator = calls.iterator(); iterator.hasNext();) {
+            DatasourceCall call = iterator.next().clone();
             call.setQuery(writeQuery);
             sessionToUse.executeCall(call, this.getTranslationRow(), writeQuery);
         }

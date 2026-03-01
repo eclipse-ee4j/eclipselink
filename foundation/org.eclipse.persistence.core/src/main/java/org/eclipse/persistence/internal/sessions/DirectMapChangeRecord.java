@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,9 +14,11 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.sessions;
 
-import java.util.*;
-
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
+
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * Change record used by DirectMapMapping.
@@ -88,7 +90,7 @@ public class DirectMapChangeRecord extends DeferrableChangeRecord {
      * Adds the items that were added to the collection.
      */
     public void addAdditionChange(HashMap additions) {
-        if (getAddObjects().size() == 0) {
+        if (getAddObjects().isEmpty()) {
             addObjectsList = additions;
             return;
         }
@@ -107,7 +109,7 @@ public class DirectMapChangeRecord extends DeferrableChangeRecord {
      * Adds the items that were removed from the collection.
      */
     public void addRemoveChange(HashMap subtractions) {
-        if (getRemoveObjects().size() == 0) {
+        if (getRemoveObjects().isEmpty()) {
             this.removeObjectsList = subtractions;
             return;
         }

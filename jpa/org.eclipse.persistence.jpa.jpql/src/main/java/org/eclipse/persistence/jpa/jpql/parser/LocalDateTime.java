@@ -58,17 +58,13 @@ public class LocalDateTime extends AbstractExpression {
          * @return {@link Identifier} matching local date/time text identifier
          *         or {@code null} when identifier is unknown.
          */
-        private static final Identifier getIdentifier(final String name) {
-            switch(name.toUpperCase()) {
-                case Expression.DATE:
-                    return DATE;
-                case Expression.TIME:
-                    return TIME;
-                case Expression.DATETIME:
-                    return DATETIME;
-                default:
-                    return null;
-            }
+        private static Identifier getIdentifier(final String name) {
+            return switch (name.toUpperCase()) {
+                case Expression.DATE -> DATE;
+                case Expression.TIME -> TIME;
+                case Expression.DATETIME -> DATETIME;
+                default -> null;
+            };
         }
 
         /**
@@ -84,23 +80,18 @@ public class LocalDateTime extends AbstractExpression {
             // Check 1st identifier chatacter:
             // - D|ATE[TIME]
             // - T|IME
-            switch(wordParser.character(position))  {
-                case 'd':
-                case 'D':
+            return switch (wordParser.character(position)) {
+                case 'd', 'D' ->
                     //  Prefix is "D" and possible options are DATE | DATETIME
-                    switch (wordParser.character(position + 4)) {
-                        // Prefix is "DATET" which points to DATETIME
-                        case 't':
-                        case 'T':
-                            return DATETIME;
-                        // Anything else points to LOCAL_DATE
-                        default:
-                            return DATE;
-                    }
+                        switch (wordParser.character(position + 4)) {
+                            // Prefix is "DATET" which points to DATETIME
+                            case 't', 'T' -> DATETIME;
+                            // Anything else points to LOCAL_DATE
+                            default -> DATE;
+                        };
                 // Anything else points to TIME
-                default:
-                    return TIME;
-            }
+                default -> TIME;
+            };
         }
 
     }
@@ -176,16 +167,12 @@ public class LocalDateTime extends AbstractExpression {
      */
     public <R> R getValueByType(Supplier<R> dateAction, Supplier<R> timeAction, Supplier<R> dateTimeAction) {
         // Make sure there is some value available.
-        switch(this.identifier != null ? this.identifier : Identifier.getIdentifier(getText())) {
-            case DATE:
-                return dateAction.get();
-            case TIME:
-                return timeAction.get();
-            case DATETIME:
-                return dateTimeAction.get();
-            default:
-                throw new IllegalStateException("Unknown value of " + getText() + " LocalDateTime expression");
-        }
+        return switch (this.identifier != null ? this.identifier : Identifier.getIdentifier(getText())) {
+            case DATE -> dateAction.get();
+            case TIME -> timeAction.get();
+            case DATETIME -> dateTimeAction.get();
+            default -> throw new IllegalStateException("Unknown value of " + getText() + " LocalDateTime expression");
+        };
     }
 
     @Override

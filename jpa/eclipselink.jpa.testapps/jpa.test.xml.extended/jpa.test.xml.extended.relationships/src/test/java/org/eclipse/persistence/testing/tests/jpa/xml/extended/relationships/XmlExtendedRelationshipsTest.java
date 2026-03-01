@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,18 +15,14 @@
 package org.eclipse.persistence.testing.tests.jpa.xml.extended.relationships;
 
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.Query;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.copying.CloneCopyPolicy;
 import org.eclipse.persistence.descriptors.copying.CopyPolicy;
 import org.eclipse.persistence.descriptors.copying.InstantiationCopyPolicy;
-import org.eclipse.persistence.sessions.DatabaseSession;
-import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.xml.relationships.Auditor;
 import org.eclipse.persistence.testing.models.jpa.xml.relationships.CEO;
-import org.eclipse.persistence.testing.models.jpa.xml.relationships.Customer;
 import org.eclipse.persistence.testing.models.jpa.xml.relationships.Item;
 import org.eclipse.persistence.testing.models.jpa.xml.relationships.Lego;
 import org.eclipse.persistence.testing.models.jpa.xml.relationships.Mattel;
@@ -35,7 +31,6 @@ import org.eclipse.persistence.testing.models.jpa.xml.relationships.Namco;
 import org.eclipse.persistence.testing.models.jpa.xml.relationships.Order;
 import org.eclipse.persistence.testing.models.jpa.xml.relationships.OrderCard;
 import org.eclipse.persistence.testing.models.jpa.xml.relationships.OrderLabel;
-import org.eclipse.persistence.testing.models.jpa.xml.relationships.RelationshipsTableManager;
 import org.eclipse.persistence.testing.models.jpa.xml.relationships.TestInstantiationCopyPolicy;
 import org.eclipse.persistence.testing.tests.jpa.xml.relationships.XmlRelationshipsTest;
 

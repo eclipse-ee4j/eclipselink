@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2018, 2019 IBM Corporation. All rights reserved.
+ * Copyright (c) 2018, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -77,7 +77,7 @@ public class TestUnidirectionalOneToMany {
             em.getTransaction().begin();
 
             PostA post = new PostA(new ComplexIdA(9));
-            post.setComments(new ArrayList<CommentA>());
+            post.setComments(new ArrayList<>());
             post.getComments().add(new CommentA());
             post.getComments().add(new CommentA());
             post.getComments().add(new CommentA());
@@ -115,7 +115,7 @@ public class TestUnidirectionalOneToMany {
             em.persist(post);
             em.flush();
 
-            post.setComments(new ArrayList<CommentA>());
+            post.setComments(new ArrayList<>());
             post.getComments().add(new CommentA());
             post.getComments().add(new CommentA());
             post.getComments().add(new CommentA());
@@ -144,7 +144,7 @@ public class TestUnidirectionalOneToMany {
             em.getTransaction().begin();
 
             PostB post = new PostB(new ComplexIdB(3, 4));
-            post.setComments(new ArrayList<CommentB>());
+            post.setComments(new ArrayList<>());
             post.getComments().add(new CommentB("a"));
             post.getComments().add(new CommentB("b"));
             post.getComments().add(new CommentB("c"));
@@ -176,7 +176,7 @@ public class TestUnidirectionalOneToMany {
             em.persist(post);
             em.flush();
 
-            post.setComments(new ArrayList<CommentB>());
+            post.setComments(new ArrayList<>());
             post.getComments().add(new CommentB("d"));
             post.getComments().add(new CommentB("e"));
             post.getComments().add(new CommentB("f"));
@@ -205,7 +205,7 @@ public class TestUnidirectionalOneToMany {
             em.getTransaction().begin();
 
             PostC post = new PostC(5L);
-            post.setComments(new ArrayList<CommentC>());
+            post.setComments(new ArrayList<>());
             post.getComments().add(new CommentC(new ComplexIdC(5L, "Type1"), "a"));
             post.getComments().add(new CommentC(new ComplexIdC(5L, "Type2"), "b"));
             post.getComments().add(new CommentC(new ComplexIdC(5L, "Type3"), "c"));
@@ -237,7 +237,7 @@ public class TestUnidirectionalOneToMany {
             em.persist(post);
             em.flush();
 
-            post.setComments(new ArrayList<CommentC>());
+            post.setComments(new ArrayList<>());
             post.getComments().add(new CommentC(new ComplexIdC(6L, "Type4"), "d"));
             post.getComments().add(new CommentC(new ComplexIdC(6L, "Type5"), "3"));
             post.getComments().add(new CommentC(new ComplexIdC(6L, "Type6"), "f"));
@@ -266,7 +266,7 @@ public class TestUnidirectionalOneToMany {
             em.getTransaction().begin();
 
             PostD post = new PostD(new ComplexIdD(20, 21));
-            post.setComments(new ArrayList<CommentD>());
+            post.setComments(new ArrayList<>());
             post.getComments().add(new CommentD(new ComplexIdD(20, 21), "a"));
 
             em.persist(post);
@@ -296,7 +296,7 @@ public class TestUnidirectionalOneToMany {
             em.persist(post);
             em.flush();
 
-            post.setComments(new ArrayList<CommentD>());
+            post.setComments(new ArrayList<>());
             post.getComments().add(new CommentD(new ComplexIdD(22, 23), "d"));
 
             em.persist(post);

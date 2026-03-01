@@ -1,6 +1,7 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,19 +27,9 @@
 //     09/21/2010-2.2 Frank Schwarz and ailitchev - Bug 325684 - QueryHints.BATCH combined with QueryHints.FETCH_GROUP_LOAD will cause NPE
 //     3/13/2015 - Will Dazey
 //       - 458301 : Added check so that aggregate results won't attempt force version lock if locking type is set
+//     10/25/2023: Tomas Kraus
+//       - New Jakarta Persistence 3.2 Features
 package org.eclipse.persistence.queries;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Vector;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
 
 import org.eclipse.persistence.annotations.BatchFetchType;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -73,6 +64,19 @@ import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.Vector;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p><b>Purpose</b>:
@@ -217,7 +221,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * 1..N: use this value to set the WAIT clause.
      */
     protected Integer waitTimeout;
-    
+
   //wait timeout unit
     protected TimeUnit waitTimeoutUnit;
 
@@ -263,6 +267,16 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      */
     public void union(ReportQuery query) {
         addUnionExpression(getExpressionBuilder().union(query));
+        copyQueryArguments(query);
+    }
+
+    /**
+     * PUBLIC:
+     * UnionAll the query results with the other query.
+     */
+    public void unionAll(ReportQuery query) {
+        addUnionExpression(getExpressionBuilder().unionAll(query));
+        copyQueryArguments(query);
     }
 
     /**
@@ -271,6 +285,16 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      */
     public void intersect(ReportQuery query) {
         addUnionExpression(getExpressionBuilder().intersect(query));
+        copyQueryArguments(query);
+    }
+
+    /**
+     * PUBLIC:
+     * IntersectAll the query results with the other query.
+     */
+    public void intersectAll(ReportQuery query) {
+        addUnionExpression(getExpressionBuilder().intersectAll(query));
+        copyQueryArguments(query);
     }
 
     /**
@@ -279,6 +303,44 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      */
     public void except(ReportQuery query) {
         addUnionExpression(getExpressionBuilder().except(query));
+        copyQueryArguments(query);
+    }
+
+    /**
+     * PUBLIC:
+     * ExceptAll the query results with the other query.
+     */
+    public void exceptAll(ReportQuery query) {
+        addUnionExpression(getExpressionBuilder().exceptAll(query));
+        copyQueryArguments(query);
+    }
+
+    // Union/intersect/except methods helper
+    // Copy arguments, argumentTypes, argumentTypeNames and nullableArguments
+    private void copyQueryArguments(ReportQuery query) {
+        List<String> arguments = query.arguments;
+        List<Class<?>> argumentTypes = query.argumentTypes;
+        // Arguments and argumentTypes Lists shall have the same size
+        int size = arguments != null ? arguments.size() : 0;
+        for (int i = 0; i < size; i++) {
+            String argument = arguments.get(i);
+            // Mark as non-nullable to avoid unnecessary DatabaseField clone
+            addArgument(argument, argumentTypes.get(i));
+            // Copy nullable information for current argument if exists
+            if (query.nullableArguments != null) {
+                List <DatabaseField> nullableArguments = query.nullableArguments;
+                DatabaseField nullable = null;
+                for (DatabaseField nullableArgument : nullableArguments) {
+                    if (nullableArgument.getQualifiedName().equals(argument)) {
+                        nullable = nullableArgument;
+                        break;
+                    }
+                }
+                if (nullable != null) {
+                    this.getNullableArguments().add(nullable);
+                }
+            }
+        }
     }
 
     /**
@@ -390,12 +452,12 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         } else if (query.hasOrderByExpressions()) {
             return false;
         }
-        if (! ((this.referenceClass == query.referenceClass) || ((this.referenceClass != null) && this.referenceClass.equals(query.referenceClass)))) {
+        if (! (Objects.equals(this.referenceClass, query.referenceClass))) {
             return false;
         }
         Expression selectionCriteria = getSelectionCriteria();
         Expression otherSelectionCriteria = query.getSelectionCriteria();
-        return ((selectionCriteria == otherSelectionCriteria) || ((selectionCriteria != null) && selectionCriteria.equals(otherSelectionCriteria)));
+        return (Objects.equals(selectionCriteria, otherSelectionCriteria));
     }
 
     /**
@@ -471,11 +533,11 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         setIsPrepared(false);
         setWasDefaultLockMode(false);
     }
-    
+
     public void setWaitTimeoutUnit(TimeUnit waitTimeoutUnit) {
         this.waitTimeoutUnit = waitTimeoutUnit;
     }
-    
+
     /**
      * INTERNAL:
      * Check and return custom query flag. Custom query flag value is initialized when stored value is {@code null}.
@@ -563,7 +625,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
     public Object deepClone() {
         ObjectLevelReadQuery clone = (ObjectLevelReadQuery)clone();
         if (getSelectionCriteria() != null) {
-            clone.setSelectionCriteria((Expression)getSelectionCriteria().clone());
+            clone.setSelectionCriteria(getSelectionCriteria().clone());
         }
         if (defaultBuilder != null) {
             clone.defaultBuilder = (ExpressionBuilder)defaultBuilder.clone();
@@ -646,7 +708,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * <p>Example:
      * The following will fetch along with Employee(s) "Jones" all projects they participate in
      * along with teamLeaders and their addresses, teamMembers and their phones.
-     *
+     * <p>
      * query.setSelectionCriteria(query.getExpressionBuilder().get("lastName").equal("Jones"));
      * Expression projects = query.getExpressionBuilder().anyOf("projects");
      * query.addJoinedAttribute(projects);
@@ -658,7 +720,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * query.addJoinedAttribute(teamMembers);
      * Expression teamMembersPhones = teamMembers.anyOfAllowingNone("phoneNumbers");
      * query.addJoinedAttribute(teamMembersPhones);
-     *
+     * <p>
      * Note that:
      * the order is essential: an expression should be added before any expression derived from it;
      * the object is built once - it won't be rebuilt if it to be read again as a joined attribute:
@@ -1631,16 +1693,16 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
 
     /**
      * INTERNAL:
-     * Return the fields required in the select clause, for patial attribute reading.
+     * Return the fields required in the select clause, for partial attribute reading.
      */
     public Vector getPartialAttributeSelectionFields(boolean isCustomSQL) {
-        Vector localFields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(getPartialAttributeExpressions().size());
+        List<DatabaseField> localFields = new ArrayList<>(getPartialAttributeExpressions().size());
         Vector foreignFields = null;
 
         //Add primary key and indicator fields.
         localFields.addAll(getDescriptor().getPrimaryKeyFields());
         if (getDescriptor().hasInheritance() && (getDescriptor().getInheritancePolicy().getClassIndicatorField() != null)) {
-            localFields.addElement(getDescriptor().getInheritancePolicy().getClassIndicatorField());
+            localFields.add(getDescriptor().getInheritancePolicy().getClassIndicatorField());
         }
 
         //Add attribute fields
@@ -1832,11 +1894,11 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
     public Integer getWaitTimeout() {
         return waitTimeout;
     }
-    
+
     public TimeUnit getWaitTimeoutUnit() {
         return waitTimeoutUnit;
     }
-    
+
     /**
      * Initialize the expression builder which should be used for this query. If
      * there is a where clause, use its expression builder, otherwise
@@ -1865,7 +1927,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
     /**
      * PUBLIC:
      * Answers if the query lock mode is known to be LOCK or LOCK_NOWAIT.
-     *
+     * <p>
      * In the case of DEFAULT_LOCK_MODE and the query reference class being a CMP entity bean,
      * at execution time LOCK, LOCK_NOWAIT, or NO_LOCK will be decided.
      * <p>
@@ -2151,6 +2213,16 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
     }
 
     /**
+     * If no wait timeout was set from a query hint, grab the
+     * default one from the session if one is available.
+     */
+    public Integer getEffectiveWaitTimeout() {
+        return this.waitTimeout == null ?
+            this.session.getPessimisticLockTimeoutDefault() :
+            this.waitTimeout;
+    }
+
+    /**
      * INTERNAL:
      * Prepare the receiver for execution in a session.
      */
@@ -2186,9 +2258,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             if (this.lockModeType.equals(NONE)) {
                 setLockMode(ObjectBuildingQuery.NO_LOCK);
             } else if (this.lockModeType.contains(PESSIMISTIC_)) {
-                // If no wait timeout was set from a query hint, grab the
-                // default one from the session if one is available.
-                Integer timeout = (this.waitTimeout == null) ? this.session.getPessimisticLockTimeoutDefault() : this.waitTimeout;
+                Integer timeout = getEffectiveWaitTimeout();
                 Long convertedTimeout =null;
                 TimeUnit timeoutUnit = (this.waitTimeoutUnit == null) ? this.session.getPessimisticLockTimeoutUnitDefault() : this.waitTimeoutUnit;
                 if (timeout == null) {
@@ -2297,7 +2367,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         // Ensure the subclass call cache is initialized if a table per class inheritance descriptor.
         // This must be initialized in the query before it is cloned, and never cloned.
         if (this.descriptor.hasTablePerClassPolicy()
-                && (this.descriptor.getTablePerClassPolicy().getChildDescriptors().size() > 0)) {
+                && (!this.descriptor.getTablePerClassPolicy().getChildDescriptors().isEmpty())) {
             getConcreteSubclassQueries();
         }
     }
@@ -2538,7 +2608,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
 
     /**
      * INTERNAL:
-     * returns the jakarta.persistence.LockModeType string value set on this query.
+     * returns the {@code jakarta.persistence.LockModeType} string value set on this query.
      */
     public String getLockModeType(){
         return this.lockModeType;
@@ -2546,16 +2616,17 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
 
     /**
      * INTERNAL:
-     * Sets a jakarta.persistence.LockModeType to used with this queries execution.
-     * The valid types are:
-     *  - WRITE
-     *  - READ
-     *  - OPTIMISTIC
-     *  - OPTIMISTIC_FORCE_INCREMENT
-     *  - PESSIMISTIC_READ
-     *  - PESSIMISTIC_WRITE
-     *  - PESSIMISTIC_FORCE_INCREMENT
-     *  - NONE
+     * Sets a {@code jakarta.persistence.LockModeType} to used with this queries execution.
+     * <p><br>
+     * The valid types are:<ul>
+     * <li>{@code WRITE}</li>
+     * <li>{@code READ}</li>
+     * <li>{@code OPTIMISTIC}</li>
+     * <li>{@code OPTIMISTIC_FORCE_INCREMENT}</li>
+     * <li>{@code PESSIMISTIC_READ}</li>
+     * <li>{@code PESSIMISTIC_WRITE}</li>
+     * <li>{@code PESSIMISTIC_FORCE_INCREMENT}</li>
+     * <li>{@code NONE}</li></ul>
      * Setting a null type will do nothing.
      * @return returns a failure flag indicating that we were UNABLE to set the
      * lock mode because of validation. Callers to this method should check the
@@ -3374,7 +3445,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             DatabaseMapping mapping = baseExpression.getMapping();
             if ((mapping != null) && mapping.isAggregateObjectMapping()) {
                 // Also prepare the nested aggregate queries, as aggregates do not have their own query.
-                baseExpression = objectExpression.getFirstNonAggregateExpressionAfterExpressionBuilder(new ArrayList(2));
+                baseExpression = objectExpression.getFirstNonAggregateExpressionAfterExpressionBuilder(new ArrayList<>(2));
                 mapping = baseExpression.getMapping();
             }
             if ((mapping != null) && mapping.isForeignReferenceMapping()) {
@@ -3396,7 +3467,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * this allows all of the data required for the parts to be read in a single query instead of (n) queries.
      * This should be used when the application knows that it requires the part for all of the objects being read.
      * This can be used for one-to-one, one-to-many, many-to-many and direct collection mappings.
-     *
+     * <p>
      * The use of the expression allows for nested batch reading to be expressed.
      * <p>Example: query.addBatchReadAttribute("phoneNumbers")
      *
@@ -3416,7 +3487,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * this allows all of the data required for the parts to be read in a single query instead of (n) queries.
      * This should be used when the application knows that it requires the part for all of the objects being read.
      * This can be used for one-to-one, one-to-many, many-to-many and direct collection mappings.
-     *
+     * <p>
      * The use of the expression allows for nested batch reading to be expressed.
      * <p>Example: query.addBatchReadAttribute(query.getExpressionBuilder().get("policies").get("claims"))
      *

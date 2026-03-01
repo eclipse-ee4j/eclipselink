@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,17 +14,7 @@
 //     Blaise Doughan - 2.4 - initial implementation
 package org.eclipse.persistence.oxm.record;
 
-import java.io.CharArrayWriter;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.Writer;
-import java.nio.charset.Charset;
-import java.nio.charset.CharsetEncoder;
-import java.util.List;
-
-import javax.xml.namespace.QName;
-
-import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.oxm.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.core.helper.CoreConversionManager;
 import org.eclipse.persistence.internal.oxm.CharacterEscapeHandler;
@@ -45,6 +35,15 @@ import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.ext.LexicalHandler;
+
+import javax.xml.namespace.QName;
+import java.io.CharArrayWriter;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.Writer;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetEncoder;
+import java.util.List;
 
 /**
  * <p>Use this type of MarshalRecord when the marshal target is a Writer and the
@@ -1025,7 +1024,7 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
         private byte[] buffer = new byte[BUFFER_SIZE];
         private int bufferIndex = 0;
         private CharacterEscapeHandler characterEscapeHandler;
-        private byte[] cr = Constants.cr().getBytes(Constants.DEFAULT_CHARSET);
+        private byte[] cr = System.lineSeparator().getBytes(Constants.DEFAULT_CHARSET);
         private XMLMarshaller marshaller;
         private char namespaceSeparator;
         private OutputStream outputStream;
@@ -1172,7 +1171,7 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
 
         private String attributePrefix;
         private CharacterEscapeHandler characterEscapeHandler;
-        private String cr = Constants.cr();
+        private String cr = System.lineSeparator();
         private XMLMarshaller marshaller;
         private char namespaceSeparator;
         private Writer writer;

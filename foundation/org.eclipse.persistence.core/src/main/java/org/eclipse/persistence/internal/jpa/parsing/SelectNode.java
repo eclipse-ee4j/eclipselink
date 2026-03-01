@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,16 +14,16 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.jpa.parsing;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReportQuery;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * INTERNAL:
@@ -35,7 +35,7 @@ import org.eclipse.persistence.queries.ReportQuery;
  *
  * <p>The SELECT statement determines the return type of an EJBQL query.
  * The SELECT may also determine the distinct state of a query
- *
+ * <p>
  * A SELECT can be one of the following:
  * <pre>
  *  1. SELECT OBJECT(someObject)... This query will return a collection of objects
@@ -165,7 +165,7 @@ public class SelectNode extends QueryNode {
             }
         }
 
-        if (readQuery instanceof ReportQuery) {
+        if (readQuery.isReportQuery()) {
             ReportQuery reportQuery = (ReportQuery)readQuery;
             reportQuery.returnWithoutReportQueryResult();
             if (isSingleSelectExpression()) {
@@ -247,7 +247,7 @@ public class SelectNode extends QueryNode {
     /**
      * Verify that the selected alias is a valid alias. If it's not valid,
      * an Exception will be thrown, likely JPQLException.aliasResolutionException.
-     *
+     * <p>
      * Valid: SELECT OBJECT(emp) FROM Employee emp WHERE ...
      * Invalid: SELECT OBJECT(badAlias) FROM Employee emp WHERE ...
      */
@@ -264,7 +264,7 @@ public class SelectNode extends QueryNode {
 
     /**
      * Answer true if the variable name given as argument is SELECTed.
-     *
+     * <p>
      * True: "SELECT OBJECT(emp) ...." &amp; variableName = "emp"
      * False: "SELECT OBJECT(somethingElse) ..." &amp; variableName = "emp"
      */
@@ -418,7 +418,7 @@ public class SelectNode extends QueryNode {
      * Returns the first select expression node.
      */
     private Node getFirstSelectExpressionNode() {
-        return selectExpressions.size() > 0 ?
+        return !selectExpressions.isEmpty() ?
                 selectExpressions.get(0) : null;
     }
 

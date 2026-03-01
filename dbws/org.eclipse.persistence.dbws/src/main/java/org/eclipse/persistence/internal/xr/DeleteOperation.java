@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,6 +20,7 @@ import static org.eclipse.persistence.internal.xr.Util.TYPE_STR;
 import static org.eclipse.persistence.internal.xr.Util.UNDERSCORE_STR;
 
 //javase imports
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
@@ -27,8 +28,7 @@ import java.util.Vector;
 
 //EclipseLink imports
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.exceptions.DBWSException;
-import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
+import org.eclipse.persistence.dbws.DBWSException;
 import org.eclipse.persistence.internal.jpa.JPAQuery;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.sessions.UnitOfWork;
@@ -114,7 +114,7 @@ public class DeleteOperation extends Operation {
         Object toBeDeleted;
 
         // a query created via ORM metadata processing does not have parameters set, however, the operation should
-        if (query.getArguments().size() == 0) {
+        if (query.getArguments().isEmpty()) {
             int idx = 0;
             for (Parameter  param : getParameters()) {
                 // for custom SQL query (as configured via ORM metadata processing) we add args by position
@@ -128,7 +128,7 @@ public class DeleteOperation extends Operation {
             // whereas named queries (SQL strings) do not...
             List<String> queryArguments = query.getArguments();
             int queryArgumentsSize = queryArguments.size();
-            Vector<Object> executeArguments = new NonSynchronizedVector<>();
+            List<Object> executeArguments = new ArrayList<>();
             for (int i = 0; i < queryArgumentsSize; i++) {
                 String argName = queryArguments.get(i);
                 executeArguments.add(invocation.getParameter(argName));
@@ -141,7 +141,7 @@ public class DeleteOperation extends Operation {
             if (((Vector) toBeDeleted).isEmpty()) {
                 toBeDeleted = null;
             } else {
-                toBeDeleted = ((Vector)toBeDeleted).firstElement();
+                toBeDeleted = ((Vector)toBeDeleted).get(0);
             }
         }
         if (toBeDeleted != null) {

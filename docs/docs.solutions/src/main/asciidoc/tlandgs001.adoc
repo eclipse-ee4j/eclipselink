@@ -1,0 +1,57 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[ELGS001]]
+=== Introduction to the Solution
+
+Oracle GlassFish Server is the reference implementation of the Java
+Platform, Enterprise Edition (Jakarta EE platform) specification. Built
+using the GlassFish Server Open Source Edition, GlassFish Server
+delivers a flexible, lightweight, and production-ready Jakarta EE
+platform.
+
+GlassFish Server is part of the Oracle Fusion Middleware application
+grid portfolio of products and is ideally suited for applications
+requiring lightweight infrastructure with the most up-to-date
+implementation of the Jakarta EE platform. GlassFish Server complements
+Oracle WebLogic Server, which is designed to run the broader portfolio
+of Oracle Fusion Middleware and large-scale enterprise applications.
+
+==== Advantages to Using EclipseLink with GlassFish Server
+
+By adding EclipseLink support, developers writing applications for the
+GlassFish Server platform can achieve full Java-to-data source
+integration that complies with the Jakarta Persistence API (JPA) 2.0
+specification. EclipseLink allows you to integrate Java applications
+with any data source, without compromising ideal application design or
+data integrity. In addition, EclipseLink gives your GlassFish Server
+platform applications the ability to store (that is, _persist_) and
+retrieve business domain objects using a relational database or an XML
+data source as a repository.
+
+While GlassFish Server can use other persistence providers and
+EclipseLink can be used with other application servers, using GlassFish
+Server with EclipseLink provides a number of advantages:
+
+* EclipseLink is included in all GlassFish Server distributions and is
+the default JPA provider.
+* EclipseLink logging integration in GlassFish Server provides a
+comprehensive, integrated logging infrastructure.
+* EclipseLink MOXy is also included in GlassFish versions 3.1.2 and
+later. Although it is not the default JAXB implementation, it can be
+used in JAX-WS and JAX-RS applications. For more information, see:
+`http://blog.bdoughan.com/2012/02/glassfish-312-is-full-of-moxy.html`

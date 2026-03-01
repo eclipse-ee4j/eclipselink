@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -180,7 +180,7 @@ import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JP
 /**
  * INTERNAL:
  * An abstract mapping accessor. Holds common metadata for all mappings.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -208,7 +208,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
     private ClassAccessor m_classAccessor;
     private DatabaseMapping m_mapping;
     private DatabaseMapping m_overrideMapping;
-    private Map<String, PropertyMetadata> m_properties = new HashMap<String, PropertyMetadata>();
+    private Map<String, PropertyMetadata> m_properties = new HashMap<>();
     private String m_attributeType;
     protected ColumnMetadata m_field;
 
@@ -331,8 +331,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (super.equals(objectToCompare) && objectToCompare instanceof MappingAccessor) {
-            MappingAccessor mappingAccessor = (MappingAccessor) objectToCompare;
+        if (super.equals(objectToCompare) && objectToCompare instanceof MappingAccessor mappingAccessor) {
 
             // For extra safety compare that the owning class accessors of these
             // mapping accessors are the same.
@@ -378,7 +377,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
      */
     protected Map<String, AssociationOverrideMetadata> getAssociationOverrides(List<AssociationOverrideMetadata> associationOverrides) {
         // TODO: Be nice to look for duplicates within the same list.
-        Map<String, AssociationOverrideMetadata> associationOverridesMap = new HashMap<String, AssociationOverrideMetadata>();
+        Map<String, AssociationOverrideMetadata> associationOverridesMap = new HashMap<>();
 
         for (AssociationOverrideMetadata associationOverride : associationOverrides) {
             String name = associationOverride.getName();
@@ -464,7 +463,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
      */
     protected Map<String, AttributeOverrideMetadata> getAttributeOverrides(List<AttributeOverrideMetadata> attributeOverrides) {
         // TODO: Be nice to look for duplicates within the same list.
-        HashMap<String, AttributeOverrideMetadata> attributeOverridesMap = new HashMap<String, AttributeOverrideMetadata>();
+        HashMap<String, AttributeOverrideMetadata> attributeOverridesMap = new HashMap<>();
 
         for (AttributeOverrideMetadata attributeOverride : attributeOverrides) {
             String name = attributeOverride.getName();
@@ -561,7 +560,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * Process column metadata details into a database field. This will set
      * correct metadata and log defaulting messages to the user. It also looks
      * for an attribute override.
-     *
+     * <p>
      * This method will call getColumn() which assumes the subclasses will
      * return the appropriate ColumnMetadata to process based on the context
      * provided.
@@ -925,7 +924,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * If no generics are used, then it will return void.class. This avoids NPE's
      * when processing JPA converters that can default (Enumerated and Temporal)
      * based on the reference class.
-     *
+     * <p>
      * Future: this method is where we would provide a more explicit reference
      * class to support an auto-apply jpa converter. Per the spec auto-apply
      * converters are applied against basics only.
@@ -1371,11 +1370,13 @@ public abstract class MappingAccessor extends MetadataAccessor {
     }
 
     protected boolean isTimeClass(MetadataClass cls) {
-        return cls.extendsClass(java.time.LocalDateTime.class) ||
+        return cls.extendsClass(java.time.Instant.class) ||
+            cls.extendsClass(java.time.LocalDateTime.class) ||
             cls.extendsClass(java.time.LocalDate.class) ||
             cls.extendsClass(java.time.LocalTime.class) ||
             cls.extendsClass(java.time.OffsetDateTime.class) ||
-            cls.extendsClass(java.time.OffsetTime.class);
+            cls.extendsClass(java.time.OffsetTime.class) ||
+            cls.extendsClass(java.time.Year.class);
     }
 
     /**
@@ -1606,24 +1607,21 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * to the given mapping.
      */
     protected void processConvert(DatabaseMapping mapping, String converterName, MetadataClass referenceClass, boolean isForMapKey, boolean hasConverts) {
-        if (converterName.equals(Convert.SERIALIZED)) {
-            processSerialized(mapping, referenceClass, isForMapKey);
-        } else if (converterName.equals(Convert.CLASS_INSTANCE)){
-            new ClassInstanceMetadata().process(mapping, this, referenceClass, isForMapKey);
-        } else if (converterName.equals(Convert.XML)){
-            new XMLMetadata().process(mapping, this, referenceClass, isForMapKey);
-        } else if (converterName.equals(Convert.JSON)){
-            new JSONMetadata().process(mapping, this, referenceClass, isForMapKey);
-        } else if (converterName.equals(Convert.KRYO)){
-            new KryoMetadata().process(mapping, this, referenceClass, isForMapKey);
-        } else {
-            AbstractConverterMetadata converter = getProject().getConverter(converterName);
+        switch (converterName) {
+            case Convert.SERIALIZED -> processSerialized(mapping, referenceClass, isForMapKey);
+            case Convert.CLASS_INSTANCE -> new ClassInstanceMetadata().process(mapping, this, referenceClass, isForMapKey);
+            case Convert.XML -> new XMLMetadata().process(mapping, this, referenceClass, isForMapKey);
+            case Convert.JSON -> new JSONMetadata().process(mapping, this, referenceClass, isForMapKey);
+            case Convert.KRYO -> new KryoMetadata().process(mapping, this, referenceClass, isForMapKey);
+            default -> {
+                AbstractConverterMetadata converter = getProject().getConverter(converterName);
 
-            if (converter == null) {
-                throw ValidationException.converterNotFound(getJavaClass(), converterName, getAnnotatedElement());
-            } else {
-                // Process the converter for this mapping.
-                converter.process(mapping, this, referenceClass, isForMapKey);
+                if (converter == null) {
+                    throw ValidationException.converterNotFound(getJavaClass(), converterName, getAnnotatedElement());
+                } else {
+                    // Process the converter for this mapping.
+                    converter.process(mapping, this, referenceClass, isForMapKey);
+                }
             }
         }
 
@@ -1926,9 +1924,9 @@ public abstract class MappingAccessor extends MetadataAccessor {
         // if we use target foreign keys to represent read-only parts of the
         // join, or if we simply set the whole mapping as read-only
         boolean allReadOnly = true;
-        Map<DatabaseField, DatabaseField> fields = new HashMap<DatabaseField, DatabaseField>();
-        List<String> sourceFields = new ArrayList<String>();
-        List<String> targetFields = new ArrayList<String>();
+        Map<DatabaseField, DatabaseField> fields = new HashMap<>();
+        List<String> sourceFields = new ArrayList<>();
+        List<String> targetFields = new ArrayList<>();
         DatabaseTable targetTable = null;
 
         // Build our fk->pk associations.
@@ -2214,7 +2212,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
                 mapping.setContainerPolicy(new CollectionContainerPolicy(java.util.Vector.class));
             } else {
                 // Use the supplied collection class type if its not an interface
-                if (mapKey == null || mapKey.equals("")){
+                if (mapKey == null || mapKey.isEmpty()){
                     if (rawClass.isList()) {
                         mapping.useListClassName(rawClass.getName());
                     } else {
@@ -2233,7 +2231,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * 1 - process any common level metadata for all mappings.
      * 2 - add the mapping to the internal descriptor.
      * 3 - store the actual database mapping associated with this accessor.
-     *
+     * <p>
      * Calling this method is a must for all mapping accessors since it will
      * help to:
      * 1 - determine if the accessor has been processed, and

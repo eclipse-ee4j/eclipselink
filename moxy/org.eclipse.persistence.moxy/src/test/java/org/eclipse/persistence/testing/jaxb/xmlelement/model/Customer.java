@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,7 +20,6 @@ import java.util.List;
 import jakarta.xml.bind.annotation.XmlAttribute;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlRootElement;
-import jakarta.xml.bind.annotation.XmlSchemaType;
 import jakarta.xml.bind.annotation.XmlTransient;
 import jakarta.xml.bind.annotation.XmlType;
 
@@ -104,18 +103,18 @@ public class Customer {
     }
 
     public String toString(){
-        String s = "Customer:" +  getId() +" " +getFirstName()+" "  + getLastName() +"\n";
-        s += "isFirstTimeCustomer:" + isFirstTimeCustomer() +"\n";
-        s += address +"\n";
+        StringBuilder s = new StringBuilder("Customer:" + getId() + " " + getFirstName() + " " + getLastName() + "\n");
+        s.append("isFirstTimeCustomer:").append(isFirstTimeCustomer()).append("\n");
+        s.append(address).append("\n");
         for(PhoneNumber p: phoneNumbers){
-            s+= p + "\n";
+            s.append(p).append("\n");
         }
-        s+= "OrderNumbers: ";
+        s.append("OrderNumbers: ");
         for(Integer i: getOrderNumbers()){
-            s+= i + ",";
+            s.append(i).append(",");
         }
-        s+="\n";
-        return s;
+        s.append("\n");
+        return s.toString();
     }
 
     public boolean equals(Object obj) {

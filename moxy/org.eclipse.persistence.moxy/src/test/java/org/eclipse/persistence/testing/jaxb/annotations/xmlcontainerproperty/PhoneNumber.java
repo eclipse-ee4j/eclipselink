@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,11 +27,10 @@ public class PhoneNumber {
     public Employee owningEmployee;
 
     public boolean equals(Object o) {
-        if(!(o instanceof PhoneNumber)) {
+        if(!(o instanceof PhoneNumber obj)) {
             return false;
         }
 
-        PhoneNumber obj = (PhoneNumber)o;
         return number.equals(obj.number) && owningEmployee.id == obj.owningEmployee.id;
 
     }

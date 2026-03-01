@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -15,25 +15,24 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.databaseaccess;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
+import org.eclipse.persistence.mappings.structures.ObjectRelationalDataTypeDescriptor;
+import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField;
+
 import java.io.Serializable;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.sql.Array;
 import java.sql.CallableStatement;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.sql.Struct;
 import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
-
-import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
-import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField;
-import org.eclipse.persistence.mappings.structures.ObjectRelationalDataTypeDescriptor;
-import org.eclipse.persistence.descriptors.ClassDescriptor;
-
-import org.eclipse.persistence.internal.sessions.AbstractRecord;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 /**
  * INTERNAL:
@@ -57,7 +56,7 @@ public class BindCallCustomParameter implements Serializable {
     * INTERNAL:
     * Binds the custom parameter (obj) into  the passed PreparedStatement
     * for the passed DatabaseCall.
-    *
+    * <p>
     * Called only by DatabasePlatform.setParameterValueInDatabaseCall method
     */
     public BindCallCustomParameter(Object obj) {
@@ -104,11 +103,11 @@ public class BindCallCustomParameter implements Serializable {
      *  1) the dbField is an ObjectRelationalDatabaseField with its sqltype set to Types.STRUCT
      *  2) parameter is not an instanceof java.sql.Struct
      *  3) There is an ObjectRelationalDataTypeDescriptor defined for the parameter object's class
-     *
+     * <p>
      * An Array object will be returned if:
      *  1) the dbField is an ObjectRelationalDatabaseField and sqltype is set to Types.ARRAY
      *  2) parameter is an instanceof collection and is not an instanceof java.sql.Array
-     *
+     * <p>
      * This method will be used recursively on the dbField's nestedField and objects in the collection
      * to build the Array object, allowing for nested structures to be produced ie arrays of arrays
      */
@@ -137,11 +136,9 @@ public class BindCallCustomParameter implements Serializable {
         if (parameter instanceof Object[]) {
             parameter = Arrays.asList((Object[])parameter);
         }
-        if ((dbField.getSqlType()!=Types.ARRAY)||(parameter instanceof Array) || !(parameter instanceof Collection) ){
+        if ((dbField.getSqlType()!=Types.ARRAY)||(parameter instanceof Array) || !(parameter instanceof Collection<?> container) ){
             return parameter;
         }
-
-        Collection<?> container = (Collection<?>)parameter;
 
         DatabaseField nestedType = ordField.getNestedTypeField();
 

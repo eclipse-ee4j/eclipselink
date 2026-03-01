@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,30 +19,37 @@
 //       - 389090: JPA 2.1 DDL Generation Support
 //     04/12/2013-2.5 Guy Pelletier
 //       - 405640: JPA 2.1 schema generation drop operation fails to include dropping defaulted fk constraints.
+//     12/05/2023: Tomas Kraus
+//       - New Jakarta Persistence 3.2 Features
 package org.eclipse.persistence.tools.schemaframework;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.Writer;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
-import java.util.Vector;
+import java.util.function.Consumer;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sequencing.Sequencing;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
+import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.sequencing.DefaultSequence;
 import org.eclipse.persistence.sequencing.NativeSequence;
 import org.eclipse.persistence.sequencing.Sequence;
 import org.eclipse.persistence.sequencing.TableSequence;
 import org.eclipse.persistence.sequencing.UnaryTableSequence;
+import org.eclipse.persistence.sessions.DatabaseSession;
 
 /**
  * <p>
@@ -69,16 +76,16 @@ public class SchemaManager {
 
     /** Flag to determine if database schemas should be created during DDL generation */
     protected boolean createDatabaseSchemas = false;
-    protected HashSet<String> createdDatabaseSchemas = new HashSet<>();
-    protected HashSet<String> createdDatabaseSchemasOnDatabase = new HashSet<>();
-    protected HashMap<String, DatabaseObjectDefinition> dropDatabaseSchemas = new HashMap<>();
+    protected Set<String> createdDatabaseSchemas = new HashSet<>();
+    protected Set<String> createdDatabaseSchemasOnDatabase = new HashSet<>();
+    protected Map<String, DatabaseObjectDefinition> dropDatabaseSchemas = new HashMap<>();
 
     public SchemaManager(DatabaseSessionImpl session) {
         this.session = session;
     }
 
-    public SchemaManager(org.eclipse.persistence.sessions.DatabaseSession session) {
-        this.session = ((DatabaseSessionImpl)session);
+    public SchemaManager(DatabaseSession session) {
+        this((DatabaseSessionImpl)session);
     }
 
     protected Writer getDropSchemaWriter() {
@@ -90,7 +97,7 @@ public class SchemaManager {
      * to that writer.
      */
     public void appendToDDLWriter(String stringToWrite) {
-        // If this method is called, we know that it is the old case and
+        // If this method is called, we know that it is the old case, and
         // it would not matter which schemaWriter we use as both the
         // create and drop schemaWriters are essentially the same.
         // So just pick one.
@@ -105,7 +112,7 @@ public class SchemaManager {
         try {
             schemaWriter.write(stringToWrite);
             schemaWriter.flush();
-        } catch (java.io.IOException ioException) {
+        } catch (IOException ioException) {
             throw ValidationException.fileError(ioException);
         }
     }
@@ -119,7 +126,6 @@ public class SchemaManager {
     }
 
     /**
-     * PUBLIC:
      * Close the schema writer.
      */
     public void closeDDLWriter() {
@@ -137,7 +143,7 @@ public class SchemaManager {
         try {
             schemaWriter.flush();
             schemaWriter.close();
-        } catch (java.io.IOException ioException) {
+        } catch (IOException ioException) {
             throw ValidationException.fileError(ioException);
         }
     }
@@ -247,7 +253,7 @@ public class SchemaManager {
     }
 
     /**
-     * Create all the receiver's sequences on the database for all of the loaded descriptors.
+     * Create all the receiver's sequences on the database for all the loaded descriptors.
      */
     public void createSequences() throws EclipseLinkException {
         createOrReplaceSequences(true);
@@ -266,7 +272,7 @@ public class SchemaManager {
     }
 
     /**
-     * Drop and recreate all the receiver's sequences on the database for all of the loaded descriptors.
+     * Drop and recreate all the receiver's sequences on the database for all the loaded descriptors.
      */
     public void replaceSequences() throws EclipseLinkException {
         createOrReplaceSequences(false);
@@ -484,24 +490,29 @@ public class SchemaManager {
         if (sequence.shouldAcquireValueAfterInsert()) {
             return null;
         }
-        if (sequence instanceof TableSequence ||
-            (sequence instanceof DefaultSequence && ((DefaultSequence)sequence).getDefaultSequence() instanceof TableSequence)) {
-            return new TableSequenceDefinition(sequence, createDatabaseSchemas);
-        } else if (sequence instanceof UnaryTableSequence ||
-                   (sequence instanceof DefaultSequence && ((DefaultSequence)sequence).getDefaultSequence() instanceof UnaryTableSequence)) {
-            return new UnaryTableSequenceDefinition(sequence, createDatabaseSchemas);
-        } else if (sequence instanceof NativeSequence ||
-                   (sequence instanceof DefaultSequence && ((DefaultSequence)sequence).getDefaultSequence() instanceof NativeSequence)) {
-            NativeSequence nativeSequence = null;
-            if (sequence instanceof NativeSequence) {
-                nativeSequence = (NativeSequence)sequence;
-            } else {
-                nativeSequence = (NativeSequence)((DefaultSequence)sequence).getDefaultSequence();
-            }
+        Sequence defaultSequence = getDefaultSequenceOrNull(sequence);
+        if (sequence.isTable() || (defaultSequence != null && defaultSequence.isTable())) {
+            TableSequenceDefinition definition = initSequenceDefinition(new TableSequenceDefinition(sequence.getName(), createDatabaseSchemas), sequence);
+            TableSequence ts = sequence.isTable() ? (TableSequence) sequence : (TableSequence) defaultSequence;
+            definition.setSequenceTableName(ts.getTableName());
+            definition.setSequenceTableQualifier(ts.getQualifier());
+            definition.setSequenceNameFieldName(ts.getNameFieldName());
+            definition.setSequenceCounterFieldName(ts.getCounterFieldName());
+            definition.setSequenceTableIndexes(ts.getTableIndexes());
+            return definition;
+        } else if (sequence.isUnaryTable() || (defaultSequence != null && defaultSequence.isUnaryTable())) {
+            UnaryTableSequenceDefinition definition = initSequenceDefinition(new UnaryTableSequenceDefinition(sequence.getName(), createDatabaseSchemas), sequence);
+            UnaryTableSequence ut = sequence.isTable() ? (UnaryTableSequence) sequence : (UnaryTableSequence) defaultSequence;
+            definition.setSequenceTableName(ut.getName());
+            definition.setSequenceTableQualifier(ut.getQualifier());
+            definition.setSequenceCounterFieldName(ut.getCounterFieldName());
+            return definition;
+        } else if (sequence.isNative() || (defaultSequence != null && defaultSequence.isNative())) {
+            NativeSequence nativeSequence = sequence.isNative() ? (NativeSequence) sequence : (NativeSequence) defaultSequence;
             if (nativeSequence.hasDelegateSequence()) {
                 return buildSequenceDefinition(((NativeSequence)sequence).getDelegateSequence());
             }
-            return new SequenceObjectDefinition(sequence);
+            return initSequenceDefinition(new SequenceObjectDefinition(sequence.getName()), sequence);
         } else {
             return null;
         }
@@ -595,9 +606,8 @@ public class SchemaManager {
     }
 
     /**
-     * PUBLIC:
      * Use this method to generate stored procedures based on the dynamic SQL generated
-     * for your mappings and descriptors.  This should be used with caution as it maintenance
+     * for your mappings and descriptors.  This should be used with caution as its maintenance
      * will be high.  Stored procedures may be generated either directly on the database
      * or to a file.
      */
@@ -606,9 +616,8 @@ public class SchemaManager {
     }
 
     /**
-     * PUBLIC:
      * Use this method to generate stored procedures based on the dynamic SQL generated
-     * for your mappings and descriptors.  This should be used with caution as it maintenance
+     * for your mappings and descriptors.  This should be used with caution as s maintenance
      * will be high.  Stored procedures may be generated either directly on the database
      * or to a file.
      */
@@ -617,9 +626,8 @@ public class SchemaManager {
     }
 
     /**
-     * PUBLIC:
      * Use this method to generate stored procedures based on the dynamic SQL generated
-     * for your mappings and descriptors.  This should be used with caution as it maintenance
+     * for your mappings and descriptors.  This should be used with caution as its maintenance
      * will be high.  Stored procedures may be generated either directly on the database
      * or to a file.
      */
@@ -633,32 +641,26 @@ public class SchemaManager {
     }
 
     /**
-     * PUBLIC:
      * Use this method to generate stored procedures based on the dynamic SQL generated
-     * for your mappings and descriptors.  This should be used with caution as it maintenance
+     * for your mappings and descriptors.  This should be used with caution as its maintenance
      * will be high.  Stored procedures may be generated either directly on the database
      * or to a file.
      */
     public void generateStoredProceduresAndAmendmentClass(String path, String fullyQualifiedClassName) throws EclipseLinkException {
-        java.io.FileWriter fileWriter = null;
-        try {
-            StoredProcedureGenerator storedProcedureGenerator = new StoredProcedureGenerator(this);
+        StoredProcedureGenerator storedProcedureGenerator = new StoredProcedureGenerator(this);
 
-            if (!(path.endsWith("\\") || path.endsWith("/"))) {
-                path = path + "\\";
-            }
+        if (!(path.endsWith("\\") || path.endsWith("/"))) {
+            path = path + "\\";
+        }
 
-            String className = fullyQualifiedClassName.substring(fullyQualifiedClassName.lastIndexOf('.') + 1);
-            String packageName = fullyQualifiedClassName.substring(0, fullyQualifiedClassName.lastIndexOf('.'));
-            String fileName = path + className + ".java";
-            fileWriter = new java.io.FileWriter(fileName);
+        String className = fullyQualifiedClassName.substring(fullyQualifiedClassName.lastIndexOf('.') + 1);
+        String packageName = fullyQualifiedClassName.substring(0, fullyQualifiedClassName.lastIndexOf('.'));
+        String fileName = path + className + ".java";
+        try (FileWriter fileWriter = new FileWriter(fileName);){
             storedProcedureGenerator.generateStoredProcedures();
             storedProcedureGenerator.generateAmendmentClass(fileWriter, packageName, className);
-            fileWriter.close();
-        } catch (java.io.IOException ioException) {
+        } catch (IOException ioException) {
             throw ValidationException.fileError(ioException);
-        } finally {
-            Helper.close(fileWriter);
         }
     }
 
@@ -707,9 +709,9 @@ public class SchemaManager {
      *  </OL>
      *
      * @param tableName a table name pattern
-     * @return a Vector of Records.
+     * @return a List of Records.
      */
-    public Vector<AbstractRecord> getAllColumnNames(String tableName) throws DatabaseException {
+    public List<AbstractRecord> getAllColumnNames(String tableName) throws DatabaseException {
         return getAccessor().getColumnInfo(null, null, tableName, null, getSession());
     }
 
@@ -750,11 +752,11 @@ public class SchemaManager {
      *  </OL>
      *
      * @param creatorName a schema name pattern; "" retrieves those
-     * without a schema
-     * @param tableName a table name pattern
-     * @return a Vector of Records.
+     *                    without a schema
+     * @param tableName   a table name pattern
+     * @return a List of Records.
      */
-    public Vector<AbstractRecord> getAllColumnNames(String creatorName, String tableName) throws DatabaseException {
+    public List<AbstractRecord> getAllColumnNames(String creatorName, String tableName) throws DatabaseException {
         return getAccessor().getColumnInfo(null, creatorName, tableName, null, getSession());
     }
 
@@ -775,9 +777,9 @@ public class SchemaManager {
      * <P><B>Note:</B> Some databases may not return information for
      * all tables.
      *
-     * @return a Vector of Records.
+     * @return a List of Records.
      */
-    public Vector<AbstractRecord> getAllTableNames() throws DatabaseException {
+    public List<AbstractRecord> getAllTableNames() throws DatabaseException {
         return getAccessor().getTableInfo(null, null, null, null, getSession());
     }
 
@@ -818,10 +820,10 @@ public class SchemaManager {
      *  </OL>
      *
      * @param creatorName a schema name pattern; "" retrieves those
-     * without a schema
-     * @return a Vector of Records.
+     *                    without a schema
+     * @return a List of Records.
      */
-    public Vector<AbstractRecord> getAllTableNames(String creatorName) throws DatabaseException {
+    public List<AbstractRecord> getAllTableNames(String creatorName) throws DatabaseException {
         return getAccessor().getTableInfo(null, creatorName, null, null, getSession());
     }
 
@@ -871,13 +873,13 @@ public class SchemaManager {
      * without a schema
      * @param tableName a table name pattern
      * @param columnName a column name pattern
-     * @return a Vector of Records.
+     * @return a List of Records.
      */
-    public Vector<AbstractRecord> getColumnInfo(String catalog, String schema, String tableName, String columnName) throws DatabaseException {
+    public List<AbstractRecord> getColumnInfo(String catalog, String schema, String tableName, String columnName) throws DatabaseException {
         return getAccessor().getColumnInfo(catalog, schema, tableName, columnName, getSession());
     }
 
-    public Vector<AbstractRecord> getColumnInfo(String tableName, String columnName) throws DatabaseException {
+    public List<AbstractRecord> getColumnInfo(String tableName, String columnName) throws DatabaseException {
         return getAccessor().getColumnInfo(tableName, columnName, getSession());
     }
 
@@ -912,14 +914,13 @@ public class SchemaManager {
      * without a schema
      * @param tableName a table name pattern
      * @param types a list of table types to include; null returns all types
-     * @return a Vector of Records.
+     * @return a List of Records.
      */
-    public Vector<AbstractRecord> getTableInfo(String catalog, String schema, String tableName, String[] types) throws DatabaseException {
+    public List<AbstractRecord> getTableInfo(String catalog, String schema, String tableName, String[] types) throws DatabaseException {
         return getAccessor().getTableInfo(catalog, schema, tableName, types, getSession());
     }
 
     /**
-     * PUBLIC:
      * Output all DDL statements directly to the database.
      */
     public void outputDDLToDatabase() {
@@ -928,7 +929,6 @@ public class SchemaManager {
     }
 
     /**
-     * PUBLIC:
      * Output all DDL statements to a file writer specified by the name in the parameter.
      */
     public void outputDDLToFile(String fileName) {
@@ -945,12 +945,12 @@ public class SchemaManager {
 
     protected Writer getWriter(String fileName) {
         try {
-            return new java.io.FileWriter(fileName);
-        } catch (java.io.IOException ioException) {
+            return new FileWriter(fileName);
+        } catch (IOException ioException) {
             // Try a url next, otherwise throw the existing error.
             try {
                 URL url = new URL(fileName);
-                return new java.io.FileWriter(url.getFile());
+                return new FileWriter(url.getFile());
             } catch (Exception e) {
                 // MalformedURLException and IOException
                 throw ValidationException.fileError(ioException);
@@ -959,7 +959,6 @@ public class SchemaManager {
     }
 
     /**
-     * PUBLIC:
      * Output all DDL statements to a writer specified in the parameter.
      */
     public void outputDDLToWriter(Writer schemaWriter) {
@@ -996,7 +995,7 @@ public class SchemaManager {
             try {
                 dropObject(databaseDefinition);
             } catch (DatabaseException exception) {
-                // Ignore error
+                session.log(SessionLog.FINEST, SessionLog.DDL, "schema_drop_object_failed", exception.getLocalizedMessage());
             } finally {
                 if (shouldLogExceptionStackTrace) {
                     getSession().getSessionLog().setShouldLogExceptionStackTrace(true);
@@ -1032,8 +1031,8 @@ public class SchemaManager {
         try {
             TableCreator tableCreator = getDefaultTableCreator(generateFKConstraints);
             tableCreator.createTables(this.session, this);
-        } catch (DatabaseException ex) {
-            // Ignore error
+        } catch (DatabaseException exception) {
+            session.log(SessionLog.FINEST, SessionLog.DDL, "schema_default_create_tables_failed", exception.getLocalizedMessage());
         } finally {
             getSession().getSessionLog().setShouldLogExceptionStackTrace(shouldLogExceptionStackTrace);
         }
@@ -1078,8 +1077,8 @@ public class SchemaManager {
             // Drop all the database schemas now if set to do so. This must be
             // called after all the constraints, tables etc. are dropped.
             dropDatabaseSchemas();
-        } catch (DatabaseException ex) {
-            // Ignore error
+        } catch (DatabaseException exception) {
+            session.log(SessionLog.FINEST, SessionLog.DDL, "schema_default_drop_tables_failed", exception.getLocalizedMessage());
         } finally {
             getSession().getSessionLog().setShouldLogExceptionStackTrace(shouldLogExceptionStackTrace);
         }
@@ -1119,7 +1118,7 @@ public class SchemaManager {
             // called after all the constraints, tables etc. are dropped.
             dropDatabaseSchemas();
         } catch (DatabaseException exception) {
-            // Ignore error
+            session.log(SessionLog.FINEST, SessionLog.DDL, "schema_default_replace_tables_failed", exception.getLocalizedMessage());
         } finally {
             this.session.getSessionLog().setShouldLogExceptionStackTrace(shouldLogExceptionStackTrace);
         }
@@ -1128,6 +1127,39 @@ public class SchemaManager {
             this.session.getDatabaseEventListener().remove(this.session);
             this.session.getDatabaseEventListener().register(this.session);
         }
+    }
+
+    /**
+     * Truncate all tables in the default table schema for the project this session is associated with.
+     *
+     * @param generateFKConstraints attempt to create fk constraints when {@code true}
+     */
+    public void truncateDefaultTables(boolean generateFKConstraints) {
+        boolean shouldLogExceptionStackTrace = getSession().getSessionLog().shouldLogExceptionStackTrace();
+        session.getSessionLog().setShouldLogExceptionStackTrace(false);
+
+        try {
+            TableCreator tableCreator = getDefaultTableCreator(generateFKConstraints);
+            tableCreator.truncateTables(session, this, generateFKConstraints);
+        } catch (DatabaseException exception) {
+            session.log(SessionLog.FINEST, SessionLog.DDL, "schema_default_truncate_tables_failed", exception.getLocalizedMessage());
+        } finally {
+            session.getSessionLog().setShouldLogExceptionStackTrace(shouldLogExceptionStackTrace);
+        }
+    }
+
+    /**
+     * Validate all tables in the default table schema for the project this session is associated with.
+     * @param onFailed optional {@link Consumer} to accept {@link List} of {@link TableValidationException}
+     *                 containing validation failures. Consumer is called <b>only</b> when validation failed
+     *                 and {@code onFailed} is not null
+     * @param generateFKConstraints attempt to create fk constraints when {@code true}
+     * @param full run full validation when {@code true} or simple when {@code false)
+     * @return value of {@code true} when validation passed or @code false} otherwise
+     */
+    public boolean validateDefaultTables(Consumer<List<TableValidationException>> onFailed, boolean generateFKConstraints, boolean full) {
+        TableCreator tableCreator = getDefaultTableCreator(generateFKConstraints);
+        return tableCreator.validateTables(session, this, onFailed, full);
     }
 
     public void setSession(DatabaseSessionImpl session) {
@@ -1144,7 +1176,6 @@ public class SchemaManager {
     }
 
     /**
-     * PUBLIC:
      * Return true if this SchemaManager should write to the database directly
      */
     public boolean shouldWriteToDatabase() {
@@ -1190,7 +1221,7 @@ public class SchemaManager {
             TableCreator tableCreator = getDefaultTableCreator(generateFKConstraints);
             tableCreator.extendTables(this.session, this);
         } catch (DatabaseException exception) {
-            // Ignore error
+            session.log(SessionLog.FINEST, SessionLog.DDL, "schema_default_extend_tables_failed", exception.getLocalizedMessage());
         } finally {
             this.session.getSessionLog().setShouldLogExceptionStackTrace(shouldLogExceptionStackTrace);
         }
@@ -1199,6 +1230,17 @@ public class SchemaManager {
             this.session.getDatabaseEventListener().remove(this.session);
             this.session.getDatabaseEventListener().register(this.session);
         }
+    }
+
+    private Sequence getDefaultSequenceOrNull(Sequence s) {
+        return s instanceof DefaultSequence ? ((DefaultSequence)s).getDefaultSequence() : null;
+    }
+
+    private <T extends SequenceDefinition> T initSequenceDefinition(T sequenceDefinition, Sequence sequence) {
+        sequenceDefinition.setQualifier(sequence.getQualifier());
+        sequenceDefinition.setPreallocationSize(sequence.getPreallocationSize());
+        sequenceDefinition.setInitialValue(sequence.getInitialValue());
+        return sequenceDefinition;
     }
 
 }

@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2006, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2024 Contributors to the Eclipse Foundation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,6 +15,8 @@
 //     Oracle - initial API and implementation
 //     04/21/2022: Tomas Kraus
 //       - Issue 1474: Update JPQL Grammar for Jakarta Persistence 2.2, 3.0 and 3.1
+//     06/02/2023: Radek Felcman
+//       - Issue 1885: Implement new JPQLGrammar for upcoming Jakarta Persistence 3.2
 package org.eclipse.persistence.jpa.tests.jpql.parser;
 
 import org.eclipse.persistence.jpa.jpql.ExpressionTools;
@@ -48,6 +51,7 @@ import org.eclipse.persistence.jpa.jpql.parser.CollectionValuedPathExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ComparisonExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CompoundExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ConcatExpression;
+import org.eclipse.persistence.jpa.jpql.parser.ConcatPipesExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ConnectByClause;
 import org.eclipse.persistence.jpa.jpql.parser.ConstructorExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CountFunction;
@@ -69,6 +73,7 @@ import org.eclipse.persistence.jpa.jpql.parser.FunctionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.GroupByClause;
 import org.eclipse.persistence.jpa.jpql.parser.HavingClause;
 import org.eclipse.persistence.jpa.jpql.parser.HierarchicalQueryClause;
+import org.eclipse.persistence.jpa.jpql.parser.IdExpression;
 import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariable;
 import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariableDeclaration;
 import org.eclipse.persistence.jpa.jpql.parser.InExpression;
@@ -79,6 +84,7 @@ import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLStatementBNF;
 import org.eclipse.persistence.jpa.jpql.parser.Join;
 import org.eclipse.persistence.jpa.jpql.parser.KeywordExpression;
+import org.eclipse.persistence.jpa.jpql.parser.LeftExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LengthExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LikeExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LocateExpression;
@@ -105,7 +111,9 @@ import org.eclipse.persistence.jpa.jpql.parser.OrderByItem.Ordering;
 import org.eclipse.persistence.jpa.jpql.parser.OrderSiblingsByClause;
 import org.eclipse.persistence.jpa.jpql.parser.RangeVariableDeclaration;
 import org.eclipse.persistence.jpa.jpql.parser.RegexpExpression;
+import org.eclipse.persistence.jpa.jpql.parser.ReplaceExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ResultVariable;
+import org.eclipse.persistence.jpa.jpql.parser.RightExpression;
 import org.eclipse.persistence.jpa.jpql.parser.SelectClause;
 import org.eclipse.persistence.jpa.jpql.parser.SelectStatement;
 import org.eclipse.persistence.jpa.jpql.parser.SimpleFromClause;
@@ -132,6 +140,7 @@ import org.eclipse.persistence.jpa.jpql.parser.UpdateClause;
 import org.eclipse.persistence.jpa.jpql.parser.UpdateItem;
 import org.eclipse.persistence.jpa.jpql.parser.UpdateStatement;
 import org.eclipse.persistence.jpa.jpql.parser.UpperExpression;
+import org.eclipse.persistence.jpa.jpql.parser.VersionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.WhenClause;
 import org.eclipse.persistence.jpa.jpql.parser.WhereClause;
 import org.eclipse.persistence.jpa.tests.jpql.JPQLBasicTest;
@@ -142,6 +151,8 @@ import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLQueryBuilder.bui
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.fail;
+
+import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar3_2;
 
 /**
  * This abstract class provides the functionality to test the parsed tree representation of a JPQL
@@ -489,6 +500,24 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
                              boolean tolerant) {
 
         testQuery(jpqlQuery, expressionTester, jpqlGrammar, jpqlQueryBNFId, formatter, tolerant);
+    }
+
+    /**
+     * Tests the parsing of the given JPQL query by comparing the parsed tree ({@link JPQLExpression})
+     * with the given tester, which is an equivalent representation of the parsed tree.
+     *
+     * @param jpqlQuery The JPQL query to parse and to test the parsed tree representation
+     * @param expressionTester The tester used to verify the parsed tree is correctly representing the
+     * JPQL query
+     */
+    protected void testJakartaDataQuery(String jpqlQuery,
+                             ExpressionTester expressionTester) {
+
+        JPQLExpression jpqlExpression = new JPQLExpression(jpqlQuery, JPQLGrammar3_2.instance(), JPQLStatementBNF.ID, true, true);
+        if (expressionTester.getClass() != JPQLExpressionTester.class) {
+            expressionTester = jpqlExpression(expressionTester);
+        }
+        expressionTester.test(jpqlExpression);
     }
 
     /**
@@ -2129,6 +2158,25 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
         }
     }
 
+    public static final class ConcatPipesExpressionTester extends CompoundExpressionTester {
+
+        protected ConcatPipesExpressionTester(ExpressionTester leftExpression,
+                                              ExpressionTester rightExpression) {
+
+            super(leftExpression, rightExpression);
+        }
+
+        @Override
+        protected Class<? extends CompoundExpression> expressionType() {
+            return ConcatPipesExpression.class;
+        }
+
+        @Override
+        protected String identifier() {
+            return CONCAT_PIPES;
+        }
+    }
+
     public static final class ConnectByClauseTester extends AbstractExpressionTester {
 
         private ExpressionTester expression;
@@ -2920,6 +2968,23 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
         }
     }
 
+    public static final class IdExpressionTester extends AbstractSingleEncapsulatedExpressionTester {
+
+        protected IdExpressionTester(ExpressionTester identificationVariable) {
+            super(identificationVariable);
+        }
+
+        @Override
+        protected Class<? extends AbstractSingleEncapsulatedExpression> expressionType() {
+            return IdExpression.class;
+        }
+
+        @Override
+        protected String identifier() {
+            return ID;
+        }
+    }
+
     public static final class IndexExpressionTester extends AbstractSingleEncapsulatedExpressionTester {
 
         protected IndexExpressionTester(ExpressionTester identificationVariable) {
@@ -3155,6 +3220,25 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
         @Override
         public String toString() {
             return keyword;
+        }
+    }
+
+    public static final class LeftExpressionTester extends AbstractDoubleEncapsulatedExpressionTester {
+
+        protected LeftExpressionTester(ExpressionTester firstExpression,
+                                          ExpressionTester secondExpression) {
+
+            super(firstExpression, secondExpression);
+        }
+
+        @Override
+        protected Class<? extends AbstractDoubleEncapsulatedExpression> expressionType() {
+            return LeftExpression.class;
+        }
+
+        @Override
+        protected String identifier() {
+            return LeftExpression.LEFT;
         }
     }
 
@@ -3803,6 +3887,26 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
         }
     }
 
+    public static final class ReplaceExpressionTester extends AbstractTripleEncapsulatedExpressionTester {
+
+        protected ReplaceExpressionTester(ExpressionTester firstExpression,
+                                          ExpressionTester secondExpression,
+                                          ExpressionTester thirdExpression) {
+
+            super(firstExpression, secondExpression, thirdExpression);
+        }
+
+        @Override
+        protected Class<? extends AbstractTripleEncapsulatedExpression> expressionType() {
+            return ReplaceExpression.class;
+        }
+
+        @Override
+        protected String identifier() {
+            return ReplaceExpression.REPLACE;
+        }
+    }
+
     public static final class ResultVariableTester extends AbstractExpressionTester {
 
         private boolean hasAs;
@@ -3852,6 +3956,25 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
             }
             sb.append(resultVariable);
             return sb.toString();
+        }
+    }
+
+    public static final class RightExpressionTester extends AbstractDoubleEncapsulatedExpressionTester {
+
+        protected RightExpressionTester(ExpressionTester firstExpression,
+                                       ExpressionTester secondExpression) {
+
+            super(firstExpression, secondExpression);
+        }
+
+        @Override
+        protected Class<? extends AbstractDoubleEncapsulatedExpression> expressionType() {
+            return RightExpression.class;
+        }
+
+        @Override
+        protected String identifier() {
+            return ReplaceExpression.RIGHT;
         }
     }
 
@@ -4632,6 +4755,23 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
         @Override
         protected String identifier() {
             return UPPER;
+        }
+    }
+
+    public static final class VersionExpressionTester extends AbstractSingleEncapsulatedExpressionTester {
+
+        protected VersionExpressionTester(ExpressionTester identificationVariable) {
+            super(identificationVariable);
+        }
+
+        @Override
+        protected Class<? extends AbstractSingleEncapsulatedExpression> expressionType() {
+            return VersionExpression.class;
+        }
+
+        @Override
+        protected String identifier() {
+            return VERSION;
         }
     }
 

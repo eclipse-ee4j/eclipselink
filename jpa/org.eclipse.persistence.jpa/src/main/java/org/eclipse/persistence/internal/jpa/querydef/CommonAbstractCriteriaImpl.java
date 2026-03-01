@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -14,10 +14,15 @@
 // Contributors:
 //     10/26/2012-2.5 Chris Delahunt
 //       - 350469: JPA 2.1 Criteria Query framework Bulk Update/Delete support
+//     08/22/2023: Tomas Kraus
+//       - New Jakarta Persistence 3.2 Features
 package org.eclipse.persistence.internal.jpa.querydef;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import jakarta.persistence.criteria.CommonAbstractCriteria;
@@ -29,7 +34,6 @@ import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.Subquery;
 import jakarta.persistence.metamodel.EntityType;
 import jakarta.persistence.metamodel.Metamodel;
-
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.expressions.ConstantExpression;
 import org.eclipse.persistence.queries.DatabaseQuery;
@@ -48,8 +52,10 @@ import org.eclipse.persistence.queries.DatabaseQuery;
  * @author Chris Delahunt
  * @since EclipseLink 2.5
  */
-public abstract class CommonAbstractCriteriaImpl<T> implements CommonAbstractCriteria, Serializable {
+public abstract class CommonAbstractCriteriaImpl<T>
+        implements CommonAbstractCriteria, Serializable, CriteriaSelectInternal<T> {
 
+    @Serial
     private static final long serialVersionUID = -2729946665208116620L;
 
     protected Metamodel metamodel;
@@ -65,6 +71,16 @@ public abstract class CommonAbstractCriteriaImpl<T> implements CommonAbstractCri
         this.queryType = resultType;
     }
 
+    // Allows complete copy of CommonAbstractCriteriaImpl. Required for cast implementation and shall remain pkg private.
+    CommonAbstractCriteriaImpl(Metamodel metamodel, Expression<Boolean> where, CriteriaBuilderImpl queryBuilder,
+                                         Class<T> queryType, Set<ParameterExpression<?>> parameters) {
+        this.metamodel = metamodel;
+        this.where = where;
+        this.queryBuilder = queryBuilder;
+        this.queryType = queryType;
+        this.parameters = parameters;
+    }
+
     /**
      * Return the predicate that corresponds to the where clause restriction(s).
      *
@@ -75,7 +91,7 @@ public abstract class CommonAbstractCriteriaImpl<T> implements CommonAbstractCri
         if (this.where == null) {
             return null;
         }
-        if (((ExpressionImpl)this.where).isPredicate()) {
+        if (((ExpressionImpl<?>)this.where).isPredicate()) {
             return (Predicate)this.where;
         }
         return this.queryBuilder.isTrue(this.where);
@@ -90,7 +106,8 @@ public abstract class CommonAbstractCriteriaImpl<T> implements CommonAbstractCri
      * Otherwise, the result type is Object.
      * @return result type
      */
-    public Class<T> getResultType(){
+    @Override
+    public Class<T> getResultType() {
         return this.queryType;
     }
 
@@ -102,8 +119,13 @@ public abstract class CommonAbstractCriteriaImpl<T> implements CommonAbstractCri
      *            metamodel entity representing the entity of type X
      * @return query root corresponding to the given entity
      */
-    public Root internalFrom(EntityType entity) {
-        RootImpl root = new RootImpl(entity, this.metamodel, entity.getBindableJavaType(), new ExpressionBuilder(entity.getBindableJavaType()), entity);
+    public <R> Root<R> internalFrom(EntityType<R> entity) {
+        RootImpl<R> root = new RootImpl<>(
+                entity,
+                this.metamodel,
+                entity.getBindableJavaType(),
+                new ExpressionBuilder(entity.getBindableJavaType()),
+                entity);
         integrateRoot(root);
         return root;
     }
@@ -116,8 +138,8 @@ public abstract class CommonAbstractCriteriaImpl<T> implements CommonAbstractCri
      *            the entity class
      * @return query root corresponding to the given entity
      */
-    public Root internalFrom(Class<?> entityClass) {
-        EntityType entity = this.metamodel.entity(entityClass);
+    public <R> Root<R> internalFrom(Class<R> entityClass) {
+        EntityType<R> entity = this.metamodel.entity(entityClass);
         return this.internalFrom(entity);
     }
 
@@ -125,8 +147,7 @@ public abstract class CommonAbstractCriteriaImpl<T> implements CommonAbstractCri
      * Modify the query to restrict the query results according to the specified
      * boolean expression. Replaces the previously added restriction(s), if any.
      *
-     * @param restriction
-     *            a simple or compound boolean expression
+     * @param restriction a simple or compound boolean expression
      * @return the modified query
      */
     public CommonAbstractCriteria where(Expression<Boolean> restriction) {
@@ -141,17 +162,27 @@ public abstract class CommonAbstractCriteriaImpl<T> implements CommonAbstractCri
      * previously added restriction(s), if any. If no restrictions are
      * specified, any previously added restrictions are simply removed.
      *
-     * @param restrictions
-     *            zero or more restriction predicates
+     * @param restrictions zero or more restriction predicates
      * @return the modified query
      */
     public CommonAbstractCriteria where(Predicate... restrictions) {
-        if (restrictions == null || restrictions.length == 0){
-            this.where = null;
-        }
-        Predicate predicate = this.queryBuilder.and(restrictions);
+        return where(restrictions != null ? List.of(restrictions) : null);
+    }
+
+    /**
+     * Modify the query to restrict the query results according to the
+     * conjunction of the specified restriction predicates. Replaces the
+     * previously added restriction(s), if any. If no restrictions are
+     * specified, any previously added restrictions are simply removed.
+     *
+     * @param restrictions zero or more restriction predicates
+     * @return the modified query
+     * @since 5.0
+     */
+    public CommonAbstractCriteria where(List<Predicate> restrictions) {
+        Predicate predicate = queryBuilder.and(restrictions);
         findRootAndParameters(predicate);
-        this.where = predicate;
+        where = predicate;
         return this;
     }
 
@@ -163,19 +194,26 @@ public abstract class CommonAbstractCriteriaImpl<T> implements CommonAbstractCri
      */
     @Override
     public <U> Subquery<U> subquery(Class<U> type) {
-        return new SubQueryImpl<U>(metamodel, type, queryBuilder, this);
+        return new SubQueryImpl<>(metamodel, type, queryBuilder, this);
+    }
+
+    @Override
+    public <U> Subquery<U> subquery(EntityType<U> type) {
+        return subquery(type.getJavaType());
     }
 
     /**
      *  Used to use a root from a different query.
      */
-    protected abstract void integrateRoot(RootImpl root);
+    protected abstract void integrateRoot(RootImpl<?> root);
 
     protected void findRootAndParameters(Expression<?> predicate) {
+        Objects.requireNonNull(predicate, "Predicate expression is null");
         ((InternalSelection) predicate).findRootAndParameters(this);
     }
 
     protected void findRootAndParameters(Order order) {
+        Objects.requireNonNull(order, "Order is null");
         ((OrderImpl) order).findRootAndParameters(this);
     }
 
@@ -183,7 +221,7 @@ public abstract class CommonAbstractCriteriaImpl<T> implements CommonAbstractCri
 
     public void addParameter(ParameterExpression<?> parameter) {
         if (this.parameters == null) {
-            this.parameters = new HashSet<ParameterExpression<?>>();
+            this.parameters = new HashSet<>();
         }
         this.parameters.add(parameter);
     }
@@ -195,9 +233,10 @@ public abstract class CommonAbstractCriteriaImpl<T> implements CommonAbstractCri
      *
      * @return the query parameters
      */
+    @Override
     public Set<ParameterExpression<?>> getParameters() {
         if (this.parameters == null) {
-            this.parameters = new HashSet<ParameterExpression<?>>();
+            this.parameters = new HashSet<>();
         }
         return this.parameters;
     }
@@ -205,11 +244,24 @@ public abstract class CommonAbstractCriteriaImpl<T> implements CommonAbstractCri
 
     /**
      * Translates from the criteria query to a EclipseLink Database Query.
+     *
+     * @return EclipseLink {@link DatabaseQuery}
      */
+    @Override
     public DatabaseQuery translate() {
-        DatabaseQuery query = getDatabaseQuery();
+        return translate(getDatabaseQuery());
+    }
+
+    /**
+     * Translates from the criteria query to a EclipseLink Database Query.
+     * Target {@link DatabaseQuery} instance is supplied.
+     *
+     * @param query target {@link DatabaseQuery} instance
+     * @return EclipseLink {@link DatabaseQuery}
+     */
+    protected DatabaseQuery translate(DatabaseQuery query) {
         for (ParameterExpression<?> parameter : getParameters()) {
-            query.addArgument(((ParameterExpressionImpl)parameter).getInternalName(), parameter.getJavaType());
+            query.addArgument(((ParameterExpressionImpl<?>)parameter).getInternalName(), parameter.getJavaType());
         }
         if (this.where != null) {
             if (((InternalExpression) this.where).isJunction()) {

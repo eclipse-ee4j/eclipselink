@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,7 +20,7 @@ import java.util.*;
 
 import jakarta.xml.bind.*;
 import jakarta.xml.bind.util.JAXBSource;
-import javax.xml.namespace.QName;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Result;
@@ -28,7 +28,6 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.*;
-import javax.xml.validation.Validator;
 
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
@@ -174,9 +173,9 @@ public class XmlVirtualAccessMethodsTestCases extends XMLTestCase {
 
         // Check Binary formats
         String base64Str =
-            XMLConversionManager.getDefaultXMLManager().convertObject(bytes, String.class, XMLConstants.BASE_64_BINARY_QNAME).toString();
+                XMLConversionManager.getDefaultXMLManager().convertObject(bytes, String.class, XMLConstants.BASE_64_BINARY_QNAME);
         String hexStr =
-            XMLConversionManager.getDefaultXMLManager().convertObject(bytes, String.class, XMLConstants.HEX_BINARY_QNAME).toString();
+                XMLConversionManager.getDefaultXMLManager().convertObject(bytes, String.class, XMLConstants.HEX_BINARY_QNAME);
 
         Element docElement = marshalDoc.getDocumentElement();
         Element flexObjectAsElem = (Element) docElement.getChildNodes().item(0);

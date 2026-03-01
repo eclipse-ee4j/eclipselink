@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,22 +17,22 @@
 //       - 355093: Add new 'includeCriteria' flag to Multitenant metadata
 package org.eclipse.persistence.annotations;
 
-import static java.lang.annotation.ElementType.TYPE;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
+
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
  * Multitenant specifies that a given entity is shared amongst multiple tenants
  * of a given application. The multitenant type specifies how the data for these
  * entities are to be stored on the database for each tenant.
- *
+ * <p>
  * Multitenant can be specified at the Entity or MappedSuperclass level.
  *
- * @see org.eclipse.persistence.annotations.MultitenantType
- * @see org.eclipse.persistence.annotations.TenantDiscriminatorColumn
- * @see org.eclipse.persistence.annotations.TenantDiscriminatorColumns
+ * @see MultitenantType
+ * @see TenantDiscriminatorColumn
+ * @see TenantDiscriminatorColumns
  *
  * @author Guy Pelletier
  * @since EclipseLink 2.3
@@ -41,14 +41,14 @@ import java.lang.annotation.Target;
 @Retention(RUNTIME)
 public @interface Multitenant {
     /**
-     * (Optional) Specify the multi-tenant strategy to use.
+     * Specify the multi-tenant strategy to use.
      */
     MultitenantType value() default MultitenantType.SINGLE_TABLE;
 
     /**
-     * (Optional) Indicate if the database requires the tenant criteria to
-     * be added to the SELECT, UPDATE, and DELETE queries. By default this is
-     * done but when set to false the queries will not be modified and it will
+     * Indicate if the database requires the tenant criteria to be added
+     * to the SELECT, UPDATE, and DELETE queries. By default, this is
+     * done but when set to false the queries will not be modified, and it will
      * be up to the application or database to ensure that the correct criteria
      * is applied to all queries.
      */

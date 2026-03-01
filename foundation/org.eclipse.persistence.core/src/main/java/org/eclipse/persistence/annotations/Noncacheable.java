@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,23 +14,24 @@
 //     Gordon Yorke - Initial Contribution
 package org.eclipse.persistence.annotations;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
 import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
 
 /**
  * The NonCacheable annotation is used to configure caching behavior for
  * relationships. If this annotation is set on a relationship that relationship
  * will not be cached even though the parent Entity may be cached. Each time the
  * Entity is retrieved the relationship will be reloaded from the data-source.
- *
+ * <p>
  * This may be useful for situations where caching of relationships is not
  * desired or when using different EclipseLink IdentityMap types and having
  * cached references extends the cache lifetime of related Entities using a
  * different caching scheme.
+ * <p>
  * For instance Entity A references Entity B, Entity A is FullIdentityMap and
  * Entity B is WeakIdentityMap. Without removing the caching of the relationship
  * the Entity B's cache effectively become a FullIdentityMap.

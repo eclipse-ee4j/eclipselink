@@ -1,4 +1,4 @@
-// Copyright (c) 2020, 2022 Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2020, 2025 Oracle and/or its affiliates. All rights reserved.
 //
 // This program and the accompanying materials are made available under the
 // terms of the Eclipse Distribution License v. 1.0, which is available at
@@ -70,7 +70,7 @@ spec:
       requests:
         memory: "4Gi"
         cpu: "1.5"
-    image: tkraus/el-build:2.0.2
+    image: rfelcman/el-build:2.0.3
     volumeMounts:
     - name: tools
       mountPath: /opt/tools
@@ -96,9 +96,12 @@ spec:
 """
         }
     }
+    environment {
+        LANG = 'en_US.UTF-8'
+    }
     tools {
         maven 'apache-maven-latest'
-        jdk 'adoptopenjdk-hotspot-jdk11-latest'
+        jdk 'openjdk-jdk21-latest'
     }
     stages {
 
@@ -145,6 +148,17 @@ spec:
         }
     }
     post {
+        always {
+            sshagent([SSH_CREDENTIALS_ID]) {
+                container('el-build') {
+                    sh """
+                            cd ${WORKSPACE}/boms/parent/target/central-publishing/
+                            ls -al
+                        """
+                    archiveArtifacts allowEmptyArchive: true, artifacts: 'boms/parent/target/central-publishing/**/*.zip', onlyIfSuccessful: false
+                }
+            }
+        }
         // Send a mail on unsuccessful and fixed builds
         unsuccessful { // means unstable || failure || aborted
             emailext subject: 'Build $BUILD_STATUS $PROJECT_NAME #$BUILD_NUMBER failed!',

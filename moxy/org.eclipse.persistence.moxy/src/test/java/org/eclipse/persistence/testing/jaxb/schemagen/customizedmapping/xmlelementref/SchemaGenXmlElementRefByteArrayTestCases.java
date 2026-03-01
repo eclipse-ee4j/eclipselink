@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -54,9 +54,9 @@ public class SchemaGenXmlElementRefByteArrayTestCases  extends TestCase {
                 JAXBContext context = (org.eclipse.persistence.jaxb.JAXBContext) org.eclipse.persistence.jaxb.JAXBContextFactory.createContext(classes, null);
                 context.generateSchema(outputResolver);
             } catch (Exception ex) {
-                fail("Schema generation failed unexpectedly: " + ex.toString());
+                fail("Schema generation failed unexpectedly: " + ex);
             }
-            assertTrue("No schemas were generated", outputResolver.schemaFiles.size() > 0);
+            assertTrue("No schemas were generated", !outputResolver.schemaFiles.isEmpty());
             assertTrue("More than one shcema was generated unxepectedly", outputResolver.schemaFiles.size() == 1);
             shouldGenerateSchema = false;
         }
@@ -74,7 +74,7 @@ public class SchemaGenXmlElementRefByteArrayTestCases  extends TestCase {
             StreamSource ss = new StreamSource(src);
             validator.validate(ss);
         } catch (Exception ex) {
-            fail("Schema validation failed unexpectedly: " + ex.toString());
+            fail("Schema validation failed unexpectedly: " + ex);
         } finally {
             if (null != src) {
                 try {

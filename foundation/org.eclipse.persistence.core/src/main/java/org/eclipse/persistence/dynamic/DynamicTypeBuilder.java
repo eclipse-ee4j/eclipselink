@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,15 +20,7 @@
 package org.eclipse.persistence.dynamic;
 
 //javase imports
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.Iterator;
 
-import jakarta.persistence.Embeddable;
-
-//EclipseLink imports
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.exceptions.ValidationException;
@@ -59,6 +51,12 @@ import org.eclipse.persistence.sessions.factories.XMLProjectReader;
 import org.eclipse.persistence.tools.schemaframework.SchemaManager;
 import org.w3c.dom.Document;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.Field;
+import java.util.Arrays;
+import java.util.Iterator;
+
 /**
  * The EntityTypeBuilder is a factory class for creating and extending dynamic
  * entity types. After being constructed in either usage the application can
@@ -81,22 +79,23 @@ public class DynamicTypeBuilder {
      * its wrapped descriptor are not automatically added to any session. This
      * must be done by the application after the type's is fully configured.
      * <p>
-     * <b>Creating new type Example</b>: <code>
+     * <b>Creating new type Example</b>:
+     * {@snippet :
      *  DynamicHelper helper = new DynamicHelper(session);
-     *  DynamicClassLoader dcl = helper.getDynamicClassLoader();<br>
-     *  <br>
-     *  Class{@literal <?>} javaType = dcl.creatDynamicClass("model.Simple");<br>
-     *  <br>
-     *  DynamicTypeBuilder typeBuilder = new JPADynamicTypeBuilder(javaType, null, "SIMPLE_TYPE");<br>
-     *  typeBuilder.setPrimaryKeyFields("SID");<br>
-     *  typeBuilder.addDirectMapping("id", int.class, "SID");<br>
-     *  typeBuilder.addDirectMapping("value1", String.class, "VAL_1");<br>
-     *  typeBuilder.addDirectMapping("value2", boolean.class, "VAL_2");<br>
-     *  typeBuilder.addDirectMapping("value3", Calendar.class, "VAL_3");<br>
-     *  typeBuilder.addDirectMapping("value4", Character.class, "VAL_4");<br>
-     *  <br>
-     *  helper.addTypes(true, true, typeBuilder.getType());<br>
-     * </code>
+     *  DynamicClassLoader dcl = helper.getDynamicClassLoader();
+     *
+     *  Class<?> javaType = dcl.creatDynamicClass("model.Simple");
+     *
+     *  DynamicTypeBuilder typeBuilder = new JPADynamicTypeBuilder(javaType, null, "SIMPLE_TYPE");
+     *  typeBuilder.setPrimaryKeyFields("SID");
+     *  typeBuilder.addDirectMapping("id", int.class, "SID");
+     *  typeBuilder.addDirectMapping("value1", String.class, "VAL_1");
+     *  typeBuilder.addDirectMapping("value2", boolean.class, "VAL_2");
+     *  typeBuilder.addDirectMapping("value3", Calendar.class, "VAL_3");
+     *  typeBuilder.addDirectMapping("value4", Character.class, "VAL_4");
+     *
+     *  helper.addTypes(true, true, typeBuilder.getType());
+     * }
      *
      */
     public DynamicTypeBuilder(Class<?> dynamicClass, DynamicType parentType, String... tableNames) {
@@ -178,7 +177,7 @@ public class DynamicTypeBuilder {
         // Configure Table names if provided
         if (tableNames != null) {
             if (tableNames.length == 0) {
-                if (descriptor.getTables().size() == 0) {
+                if (descriptor.getTables().isEmpty()) {
                     descriptor.descriptorIsAggregate();
                 }
             } else {
@@ -213,6 +212,9 @@ public class DynamicTypeBuilder {
      */
     private boolean requiresInitialization(DatabaseMapping mapping) {
         if (mapping.isDirectToFieldMapping() && mapping.getAttributeClassification() != null && mapping.getAttributeClassification().isPrimitive()) {
+            return true;
+        }
+        if (mapping.isCollectionMapping()) {
             return true;
         }
         if (mapping.isForeignReferenceMapping()) {
@@ -310,13 +312,13 @@ public class DynamicTypeBuilder {
      * {@link IndirectList}).
      *
      * @param name
-     *            attribute name to use in the dynamic entity. Also the property
+     *            attribute name to use in the dynamic entity. Also, the property
      *            name used to access the state of the entity
      * @param fkFieldNames
      *            the FK field names specified in the same order to match the PK
      *            field names of the target class
      *
-     * @return the newly created, configured mappin. It will be initialized if
+     * @return the newly created, configured mapping. It will be initialized if
      *         the descriptor is already initialized.
      */
     public OneToManyMapping addOneToManyMapping(String name, DynamicType refType, String... fkFieldNames) {
@@ -348,7 +350,7 @@ public class DynamicTypeBuilder {
      * indirection ( {@link IndirectList}).
      *
      * @param name
-     *            attribute name to use in the dynamic entity. Also the property
+     *            attribute name to use in the dynamic entity. Also, the property
      *            name used to access the state of the entity
      * @param targetTable
      *            name of table holding the direct values
@@ -361,7 +363,7 @@ public class DynamicTypeBuilder {
      *            the FK field names on the source table specified in order to
      *            match the PK field names on the source.
      * @return the new mapping configured and initialized (if the descriptor is
-     *         already initialized.
+     *         already initialized).
      */
     public DirectCollectionMapping addDirectCollectionMapping(String name, String targetTable, String valueColumn, Class<?> valueType, String... fkFieldNames) throws IllegalArgumentException {
         if (fkFieldNames == null) {
@@ -388,14 +390,14 @@ public class DynamicTypeBuilder {
     }
 
     /**
-     * Add a {@link AggregateObjectMapping} ({@link Embeddable} in JPA) to the
+     * Add a {@link AggregateObjectMapping} ({@code Embeddable} in JPA) to the
      * {@link #entityType} being built or extended.
      *
      * @param name
-     *            attribute name to use in the dynamic entity. Also the property
+     *            attribute name to use in the dynamic entity. Also, the property
      *            name used to access the state of the entity
      * @param refType
-     *            dynamic type re[presenting the Embeddable/AggregateObject
+     *            dynamic type re[presenting the {@code Embeddable}/{@code AggregateObject}
      * @param allowsNull
      *            true indicates that the attribute can be null if all values
      *            are null.
@@ -419,7 +421,7 @@ public class DynamicTypeBuilder {
      * column names if they collide with the names from the source table.
      *
      * @param name
-     *            attribute name to use in the dynamic entity. Also the property
+     *            attribute name to use in the dynamic entity. Also, the property
      *            name used to access the state of the entity
      * @param refType
      *            target dynamic entity
@@ -512,7 +514,7 @@ public class DynamicTypeBuilder {
 
     public DynamicEnumBuilder addEnum(String fieldName, String className, String columnName,
         DynamicClassLoader dcl) {
-        dcl.addEnum(className, (Object)null);
+        dcl.addEnum(className, (Object) null);
         AbstractDirectMapping adm = addDirectMappingForEnum(fieldName, className, columnName);
         return new DynamicEnumBuilder(className, adm, dcl);
     }
@@ -534,7 +536,7 @@ public class DynamicTypeBuilder {
      *         Login/Platform is being configured that the
      *         {@link ConversionManager#getLoader()} is maintained.
      *         <p>
-     *         <code>null</code> is returned if the resourcePath cannot locate a
+     *         {@code null} is returned if the resourcePath cannot locate a
      *         deployment XML
      */
     public static Project loadDynamicProject(String resourcePath, DatabaseLogin login, DynamicClassLoader dynamicClassLoader) throws IOException {
@@ -559,7 +561,7 @@ public class DynamicTypeBuilder {
      *         Login/Platform is being configured that the
      *         {@link ConversionManager#getLoader()} is maintained.
      *         <p>
-     *         <code>null</code> is returned if the resourcePath cannot locate a
+     *         {@code null} is returned if the resourcePath cannot locate a
      *         deployment XML
      */
     public static Project loadDynamicProject(InputStream resourceStream, DatabaseLogin login, DynamicClassLoader dynamicClassLoader) throws IOException {

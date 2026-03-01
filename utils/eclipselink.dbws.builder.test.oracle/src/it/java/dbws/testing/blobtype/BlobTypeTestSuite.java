@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -49,12 +49,13 @@ public class BlobTypeTestSuite extends DBWSTestSuite {
 
     // BLOB table
     static final String CREATE_BLOBDATA_TABLE =
-        "CREATE TABLE BLOBDATA (" +
-            "\nID NUMERIC(4) NOT NULL," +
-            "\nNAME VARCHAR(80)," +
-            "\nB BLOB," +
-            "\nPRIMARY KEY (ID)" +
-        "\n)";
+            """
+                    CREATE TABLE BLOBDATA (
+                    ID NUMERIC(4) NOT NULL,
+                    NAME VARCHAR(80),
+                    B BLOB,
+                    PRIMARY KEY (ID)
+                    )""";
 
     static final String INSERT_INTO_BLOBDATA = "INSERT INTO BLOBDATA VALUES(?, ?, ?)";
 
@@ -63,41 +64,47 @@ public class BlobTypeTestSuite extends DBWSTestSuite {
 
     // Top-level procedure/function
     static final String CREATE_PROCEDURE =
-        "\nCREATE OR REPLACE PROCEDURE PLEASEGETBLOB(ARG1 IN NUMBER, ARG2 OUT BLOB) AS" +
-        "\nBEGIN" +
-          "\nSELECT B INTO ARG2 FROM BLOBDATA WHERE ID = ARG1;" +
-        "\nEND PLEASEGETBLOB;";
+            """
+
+                    CREATE OR REPLACE PROCEDURE PLEASEGETBLOB(ARG1 IN NUMBER, ARG2 OUT BLOB) AS
+                    BEGIN
+                    SELECT B INTO ARG2 FROM BLOBDATA WHERE ID = ARG1;
+                    END PLEASEGETBLOB;""";
     static final String DROP_PROCEDURE =
         "DROP PROCEDURE PLEASEGETBLOB";
     static final String CREATE_FUNCTION =
-        "\nCREATE OR REPLACE FUNCTION PLEASERETURNBLOB(ARG1 IN NUMBER) RETURN BLOB AS" +
-          "\nreturnBlob BLOB;" +
-        "\nBEGIN" +
-          "\nSELECT B INTO returnBlob FROM BLOBDATA WHERE ID = ARG1;" +
-          "\nRETURN (returnBlob);" +
-        "\nEND PLEASERETURNBLOB;";
+            """
+
+                    CREATE OR REPLACE FUNCTION PLEASERETURNBLOB(ARG1 IN NUMBER) RETURN BLOB AS
+                    returnBlob BLOB;
+                    BEGIN
+                    SELECT B INTO returnBlob FROM BLOBDATA WHERE ID = ARG1;
+                    RETURN (returnBlob);
+                    END PLEASERETURNBLOB;""";
     static final String DROP_FUNCTION =
         "DROP FUNCTION PLEASERETURNBLOB";
 
     // Package
     static final String CREATE_BLOBDATA_PACKAGE =
-        "CREATE OR REPLACE PACKAGE BLOBDATA_PKG AS" +
-            "\nPROCEDURE GETBLOB(ARG1 IN NUMBER, ARG2 OUT BLOB);" +
-            "\nFUNCTION RETURNBLOB(ARG1 IN NUMBER) RETURN BLOB;" +
-        "\nEND BLOBDATA_PKG;";
+            """
+                    CREATE OR REPLACE PACKAGE BLOBDATA_PKG AS
+                    PROCEDURE GETBLOB(ARG1 IN NUMBER, ARG2 OUT BLOB);
+                    FUNCTION RETURNBLOB(ARG1 IN NUMBER) RETURN BLOB;
+                    END BLOBDATA_PKG;""";
     static final String CREATE_BLOBDATA_BODY =
-        "CREATE OR REPLACE PACKAGE BODY BLOBDATA_PKG AS" +
-            "\nPROCEDURE GETBLOB(ARG1 IN NUMBER, ARG2 OUT BLOB) AS" +
-            "\nBEGIN" +
-              "\nSELECT B INTO ARG2 FROM BLOBDATA WHERE ID = ARG1;" +
-            "\nEND GETBLOB;" +
-            "\nFUNCTION RETURNBLOB(ARG1 IN NUMBER) RETURN BLOB IS" +
-              "\nreturnBlob BLOB;" +
-            "\nBEGIN" +
-              "\nSELECT B INTO returnBlob FROM BLOBDATA WHERE ID = ARG1;" +
-              "\nRETURN returnBlob;" +
-            "\nEND RETURNBLOB;" +
-        "\nEND BLOBDATA_PKG;";
+            """
+                    CREATE OR REPLACE PACKAGE BODY BLOBDATA_PKG AS
+                    PROCEDURE GETBLOB(ARG1 IN NUMBER, ARG2 OUT BLOB) AS
+                    BEGIN
+                    SELECT B INTO ARG2 FROM BLOBDATA WHERE ID = ARG1;
+                    END GETBLOB;
+                    FUNCTION RETURNBLOB(ARG1 IN NUMBER) RETURN BLOB IS
+                    returnBlob BLOB;
+                    BEGIN
+                    SELECT B INTO returnBlob FROM BLOBDATA WHERE ID = ARG1;
+                    RETURN returnBlob;
+                    END RETURNBLOB;
+                    END BLOBDATA_PKG;""";
     static final String DROP_BLOBDATA_BODY =
         "DROP PACKAGE BODY BLOBDATA_PKG";
     static final String DROP_BLOBDATA_PACKAGE =

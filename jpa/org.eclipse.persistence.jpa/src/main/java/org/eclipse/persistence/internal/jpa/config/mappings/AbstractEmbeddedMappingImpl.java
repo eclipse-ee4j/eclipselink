@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,7 +18,6 @@ import java.util.ArrayList;
 
 import org.eclipse.persistence.internal.jpa.config.columns.AttributeOverrideImpl;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.EmbeddedAccessor;
-import org.eclipse.persistence.internal.jpa.metadata.columns.AttributeOverrideMetadata;
 import org.eclipse.persistence.jpa.config.AttributeOverride;
 
 /**
@@ -32,7 +31,7 @@ public abstract class AbstractEmbeddedMappingImpl<T extends EmbeddedAccessor, R>
     public AbstractEmbeddedMappingImpl(T t) {
         super(t);
 
-        getMetadata().setAttributeOverrides(new ArrayList<AttributeOverrideMetadata>());
+        getMetadata().setAttributeOverrides(new ArrayList<>());
     }
 
     public AttributeOverride addAttributeOverride() {

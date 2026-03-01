@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,11 +14,13 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.mapping;
 
-import java.util.*;
-import org.eclipse.persistence.testing.framework.*;
-import org.eclipse.persistence.expressions.*;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.testing.framework.TestErrorException;
+import org.eclipse.persistence.testing.framework.TransactionalTestCase;
 import org.eclipse.persistence.testing.models.mapping.Computer;
 import org.eclipse.persistence.testing.models.mapping.Employee;
+
+import java.util.Vector;
 
 public class ObjectTypeMappingDefaultNullValues extends TransactionalTestCase {
 
@@ -44,7 +46,7 @@ public class ObjectTypeMappingDefaultNullValues extends TransactionalTestCase {
     protected void verify() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
         Vector computers = getSession().readAllObjects(Computer.class, new ExpressionBuilder().get("isMacintosh").equal(null));
-        if (computers.size() == 0) {
+        if (computers.isEmpty()) {
             throw new TestErrorException("Field is empty instead of Null in Object Type Mapping");
         }
     }

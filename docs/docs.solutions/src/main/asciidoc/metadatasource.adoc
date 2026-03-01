@@ -1,0 +1,56 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[METADATASOURCE]]
+== Using an External MetaData Source
+
+This chapter provides instructions for storing mapping information in a
+metadata source that is external to the running application, so you can
+dynamically override or extend mappings in a deployed application.
+
+This chapter includes the following sections:
+
+* xref:{relativedir}/metadatasource001.adoc#METADATASOURCE001[Introduction to the Solution]
+* xref:{relativedir}/metadatasource002.adoc#METADATASOURCE002[Using the eclipselink-orm.xml File Externally]
+* xref:{relativedir}/metadatasource003.adoc#METADATASOURCE003[Main Tasks]
+* xref:{relativedir}/metadatasource004.adoc#METADATASOURCE004[Additional Resources]
+
+*Use Case*
+
+Users want to establish a SaaS environment, where applications are
+shared by multiple clients.
+
+*Solution*
+
+Employ EclipseLink SaaS features, such as extensibility, multi-tenancy,
+and external metadata sources.
+
+*Components*
+
+* EclipseLink 2.4 or later.
+
+//Introduction to the Solution
+include::{rootdir}/metadatasource001.adoc[]
+
+//Using the eclipselink-orm.xml File Externally
+include::{rootdir}/metadatasource002.adoc[]
+
+//Main Tasks
+include::{rootdir}/metadatasource003.adoc[]
+
+//Additional Resources
+include::{rootdir}/metadatasource004.adoc[]

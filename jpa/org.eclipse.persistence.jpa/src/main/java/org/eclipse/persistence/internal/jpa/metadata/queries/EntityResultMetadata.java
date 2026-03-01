@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,7 +40,7 @@ import org.eclipse.persistence.queries.EntityResult;
 /**
  * INTERNAL:
  * Object to hold onto an entity result metadata.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -56,7 +56,8 @@ import org.eclipse.persistence.queries.EntityResult;
  */
 public class EntityResultMetadata extends ORMetadata {
     private MetadataClass m_entityClass; // Required in both XML and annotations.
-    private List<FieldResultMetadata> m_fieldResults = new ArrayList<FieldResultMetadata>();
+    private List<FieldResultMetadata> m_fieldResults = new ArrayList<>();
+    private String m_lockMode;
     private String m_discriminatorColumn;
     private String m_entityClassName;
 
@@ -77,6 +78,7 @@ public class EntityResultMetadata extends ORMetadata {
 
         m_entityClass = getMetadataClass(entityResult.getAttributeString("entityClass"));
         m_discriminatorColumn = entityResult.getAttributeString("discriminatorColumn");
+        m_lockMode = entityResult.getAttributeString("lockMode");
 
         for (Object fieldResult : entityResult.getAttributeArray("fields")) {
             m_fieldResults.add(new FieldResultMetadata((MetadataAnnotation) fieldResult, accessor));
@@ -97,14 +99,17 @@ public class EntityResultMetadata extends ORMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (objectToCompare instanceof EntityResultMetadata) {
-            EntityResultMetadata entityResult = (EntityResultMetadata) objectToCompare;
+        if (objectToCompare instanceof EntityResultMetadata entityResult) {
 
             if (! valuesMatch(m_entityClass, entityResult.getEntityClass())) {
                 return false;
             }
 
             if (! valuesMatch(m_fieldResults, entityResult.getFieldResults())) {
+                return false;
+            }
+
+            if (! valuesMatch(m_lockMode, entityResult.getLockMode())) {
                 return false;
             }
 
@@ -116,9 +121,11 @@ public class EntityResultMetadata extends ORMetadata {
 
     @Override
     public int hashCode() {
-        int result = m_entityClass != null ? m_entityClass.hashCode() : 0;
+        int result = super.hashCode();
+        result = 31 * result + (m_entityClass != null ? m_entityClass.hashCode() : 0);
         result = 31 * result + (m_fieldResults != null ? m_fieldResults.hashCode() : 0);
         result = 31 * result + (m_discriminatorColumn != null ? m_discriminatorColumn.hashCode() : 0);
+        result = 31 * result + (m_lockMode != null ? m_lockMode.hashCode() : 0);
         return result;
     }
 
@@ -151,6 +158,14 @@ public class EntityResultMetadata extends ORMetadata {
      */
     public List<FieldResultMetadata> getFieldResults() {
         return m_fieldResults;
+    }
+
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public String getLockMode() {
+        return m_lockMode;
     }
 
     /**
@@ -223,5 +238,13 @@ public class EntityResultMetadata extends ORMetadata {
      */
     public void setFieldResults(List<FieldResultMetadata> fieldResults) {
         m_fieldResults = fieldResults;
+    }
+
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setLockMode(String lockMode) {
+        m_lockMode = lockMode;
     }
 }

@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2011, 2022 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2021, 2022 IBM Corporation. All rights reserved.
+ * Copyright (c) 2011, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2021, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,11 +15,17 @@
 //     Gordon Yorke - Initial development
 //     10/01/2018: Will Dazey
 //       - #253: Add support for embedded constructor results with CriteriaBuilder
+//     10/25/2023: Tomas Kraus
+//       - New Jakarta Persistence 3.2 Features
 package org.eclipse.persistence.internal.jpa.querydef;
 
 import java.lang.reflect.Constructor;
 import java.security.AccessController;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 
 import jakarta.persistence.Tuple;
 import jakarta.persistence.criteria.CriteriaQuery;
@@ -30,8 +36,8 @@ import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.Selection;
 import jakarta.persistence.metamodel.Metamodel;
 import jakarta.persistence.metamodel.Type.PersistenceType;
-
 import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.helper.BasicTypeHelperImpl;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.jpa.metamodel.MetamodelImpl;
@@ -59,24 +65,17 @@ import org.eclipse.persistence.queries.ReportQuery;
  */
 public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements CriteriaQuery<T> {
 
-    protected SelectionImpl<?> selection;
+    protected SelectionImpl<? extends T> selection;
     protected List<Order> orderBy;
 
     protected Set<FromImpl> joins;
+    // Mark this query as part of the UNION/EXCEPT/INTERSECT, default is false
+    private boolean isUnion = false;
 
     public CriteriaQueryImpl(Metamodel metamodel, ResultType queryResult, Class<T> result, CriteriaBuilderImpl queryBuilder) {
         super(metamodel, queryResult, queryBuilder, result);
     }
 
-    /**
-     * Specify the item that is to be returned in the query result. Replaces the
-     * previously specified selection, if any.
-     *
-     * @param selection
-     *            selection specifying the item that is to be returned in the
-     *            query result
-     * @return the modified query
-     */
     @Override
     public CriteriaQuery<T> select(Selection<? extends T> selection) {
         this.selection = (SelectionImpl<? extends T>) selection;
@@ -91,8 +90,8 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
                 this.queryResult = ResultType.TUPLE;
                 this.queryType = (Class<T>) Tuple.class;
             } else if (((InternalSelection) selection).isConstructor()) {
-                Selection[] selectArray = selection.getCompoundSelectionItems().toArray(new Selection[selection.getCompoundSelectionItems().size()]);
-                populateAndSetConstructorSelection((ConstructorSelectionImpl)selection, this.selection.getJavaType(), selectArray);
+                Selection[] selectArray = selection.getCompoundSelectionItems().toArray(new Selection[0]);
+                populateAndSetConstructorSelection((ConstructorSelectionImpl<T>)selection, (Class<T>) this.selection.getJavaType(), selectArray);
                 this.queryType = (Class<T>) selection.getJavaType();
             } else {
                 this.queryResult = ResultType.OBJECT_ARRAY;
@@ -117,32 +116,32 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
     /**
      * Specify the items that are to be returned in the query result. Replaces
      * the previously specified selection(s), if any.
-     *
+     * <p>
      * The type of the result of the query execution depends on the
      * specification of the criteria query object as well as the arguments to
      * the multiselect method as follows:
-     *
+     * <p>
      * If the type of the criteria query is CriteriaQuery&lt;Tuple&gt;, a Tuple object
      * corresponding to the arguments of the multiselect method will be
      * instantiated and returned for each row that results from the query
      * execution.
-     *
+     * <p>
      * If the type of the criteria query is CriteriaQuery&lt;X&gt; for some
      * user-defined class X, then the arguments to the multiselect method will
      * be passed to the X constructor and an instance of type X will be returned
      * for each row. The IllegalStateException will be thrown if a constructor
      * for the given argument types does not exist.
-     *
+     * <p>
      * If the type of the criteria query is CriteriaQuery&lt;X[]&gt; for some class X,
      * an instance of type X[] will be returned for each row. The elements of
      * the array will correspond to the arguments of the multiselect method. The
      * IllegalStateException will be thrown if the arguments to the multiselect
      * method are not of type X.
-     *
+     * <p>
      * If the type of the criteria query is CriteriaQuery&lt;Object&gt;, and only a
      * single argument is passed to the multiselect method, an instance of type
      * Object will be returned for each row.
-     *
+     * <p>
      * If the type of the criteria query is CriteriaQuery&lt;Object&gt;, and more than
      * one argument is passed to the multiselect method, an instance of type
      * Object[] will be instantiated and returned for each row. The elements of
@@ -166,7 +165,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
             populateAndSetConstructorSelection(null, this.queryType, selections);
         } else if (this.queryResult.equals(ResultType.ENTITY)) {
             if (selections.length == 1 && selections[0].getJavaType().equals(this.queryType)) {
-                this.selection = (SelectionImpl<?>) selections[0];
+                this.selection = (SelectionImpl<? extends T>) selections[0];
             } else {
                 try {
                     populateAndSetConstructorSelection(null, this.queryType, selections);//throws IllegalArgumentException if it doesn't exist
@@ -179,7 +178,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
             this.selection = new CompoundSelectionImpl(this.queryType, selections);
         } else if (this.queryResult.equals(ResultType.OTHER)) {
             if (selections.length == 1 && selections[0].getJavaType().equals(this.queryType)) {
-                this.selection = (SelectionImpl<?>) selections[0];
+                this.selection = (SelectionImpl<? extends T>) selections[0];
             } else {
                 if (!BasicTypeHelperImpl.getInstance().isDateClass(this.queryType)) {
                     throw new IllegalArgumentException(ExceptionLocalization.buildMessage("MULTIPLE_SELECTIONS_PASSED_TO_QUERY_WITH_PRIMITIVE_RESULT"));
@@ -200,33 +199,33 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
     /**
      * Specify the items that are to be returned in the query result. Replaces
      * the previously specified selection(s), if any.
-     *
+     * <p>
      * The type of the result of the query execution depends on the
      * specification of the criteria query object as well as the arguments to
      * the multiselect method as follows:
-     *
+     * <p>
      * If the type of the criteria query is CriteriaQuery&lt;Tuple&gt;, a Tuple object
      * corresponding to the items in the selection list passed to the
      * multiselect method will be instantiated and returned for each row that
      * results from the query execution.
-     *
+     * <p>
      * If the type of the criteria query is CriteriaQuery&lt;X&gt; for some
      * user-defined class X, then the items in the selection list passed to the
      * multiselect method will be passed to the X constructor and an instance of
      * type X will be returned for each row. The IllegalStateException will be
      * thrown if a constructor for the given argument types does not exist.
-     *
+     * <p>
      * If the type of the criteria query is CriteriaQuery&lt;X[]&gt; for some class X,
      * an instance of type X[] will be returned for each row. The elements of
      * the array will correspond to the items in the selection list passed to
      * the multiselect method. The IllegalStateException will be thrown if the
      * elements in the selection list passed to the multiselect method are not
      * of type X.
-     *
+     * <p>
      * If the type of the criteria query is CriteriaQuery&lt;Object&gt;, and the
      * selection list passed to the multiselect method contains only a single
      * item, an instance of type Object will be returned for each row.
-     *
+     * <p>
      * If the type of the criteria query is CriteriaQuery&lt;Object&gt;, and the
      * selection list passed to the multiselect method contains more than one
      * item, an instance of type Object[] will be instantiated and returned for
@@ -244,39 +243,22 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
             this.selection = null;
             return this;
         }
-        return this.multiselect(selectionList.toArray(new Selection[selectionList.size()]));
+        return this.multiselect(selectionList.toArray(new Selection[0]));
     }
 
     // override the return type only:
-    /**
-     * Modify the query to restrict the query result according to the specified
-     * boolean expression. Replaces the previously added restriction(s), if any.
-     * This method only overrides the return type of the corresponding
-     * AbstractQuery method.
-     *
-     * @param restriction
-     *            a simple or compound boolean expression
-     * @return the modified query
-     */
     @Override
     public CriteriaQuery<T> where(Expression<Boolean> restriction) {
         return (CriteriaQuery<T>) super.where(restriction);
     }
 
-    /**
-     * Modify the query to restrict the query result according to the
-     * conjunction of the specified restriction predicates. Replaces the
-     * previously added restriction(s), if any. If no restrictions are
-     * specified, any previously added restrictions are simply removed. This
-     * method only overrides the return type of the corresponding AbstractQuery
-     * method.
-     *
-     * @param restrictions
-     *            zero or more restriction predicates
-     * @return the modified query
-     */
     @Override
     public CriteriaQuery<T> where(Predicate... restrictions) {
+        return (CriteriaQuery<T>) super.where(restrictions);
+    }
+
+    @Override
+    public CriteriaQuery<T> where(List<Predicate> restrictions) {
         return (CriteriaQuery<T>) super.where(restrictions);
     }
 
@@ -314,35 +296,20 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
         return this;
     }
 
-    /**
-     * Specify a restriction over the groups of the query. Replaces the previous
-     * having restriction(s), if any. This method only overrides the return type
-     * of the corresponding AbstractQuery method.
-     *
-     * @param restriction
-     *            a simple or compound boolean expression
-     * @return the modified query
-     */
     @Override
     public CriteriaQuery<T> having(Expression<Boolean> restriction) {
         super.having(restriction);
         return this;
     }
 
-    /**
-     * Specify restrictions over the groups of the query according the
-     * conjunction of the specified restriction predicates. Replaces the
-     * previously added restriction(s), if any. If no restrictions are
-     * specified, any previously added restrictions are simply removed. This
-     * method only overrides the return type of the corresponding AbstractQuery
-     * method.
-     *
-     * @param restrictions
-     *            zero or more restriction predicates
-     * @return the modified query
-     */
     @Override
     public CriteriaQuery<T> having(Predicate... restrictions) {
+        super.having(restrictions);
+        return this;
+    }
+
+    @Override
+    public CriteriaQuery<T> having(List<Predicate> restrictions) {
         super.having(restrictions);
         return this;
     }
@@ -395,30 +362,33 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
      * instance or populating the one passed in as necessary.
      * Throws IllegalArgumentException if a constructor taking arguments represented
      * by the selections array doesn't exist for the given class.
-     *
+     * <p>
      * Also sets the query result to ResultType.CONSTRUCTOR
      *
      */
-    public void populateAndSetConstructorSelection(ConstructorSelectionImpl constructorSelection, Class<?> class1, Selection<?>... selections) throws IllegalArgumentException{
+    public void populateAndSetConstructorSelection(ConstructorSelectionImpl<T> constructorSelection, Class<T> class1, Selection<?>... selections) throws IllegalArgumentException{
         Class<?>[] constructorArgs = new Class<?>[selections.length];
         int count = 0;
-        for (Selection select : selections) {
+        for (Selection<?> select : selections) {
             if(select instanceof ConstructorSelectionImpl) {
-                ConstructorSelectionImpl constructorSelect = (ConstructorSelectionImpl)select;
-                Selection[] selectArray = constructorSelect.getCompoundSelectionItems().toArray(new Selection[constructorSelect.getCompoundSelectionItems().size()]);
-                populateAndSetConstructorSelection(constructorSelect, constructorSelect.getJavaType(), selectArray);
+                @SuppressWarnings("unchecked")
+                ConstructorSelectionImpl<T> constructorSelect = (ConstructorSelectionImpl<T>)select;
+                @SuppressWarnings("unchecked")
+                Selection<? extends T>[] selectArray = constructorSelect.getCompoundSelectionItems().toArray(new Selection[0]);
+                populateAndSetConstructorSelection(constructorSelect, (Class<T>) constructorSelect.getJavaType(), selectArray);
             }
             constructorArgs[count++] = select.getJavaType();
         }
-        Constructor constructor = null;
+        Constructor<? extends T> constructor = null;
         try {
+            // TODO: Remove AccessController.doPrivileged
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                 constructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor<>(class1, constructorArgs, false));
             } else {
                 constructor = PrivilegedAccessHelper.getConstructorFor(class1, constructorArgs, false);
             }
             if (constructorSelection == null){
-                constructorSelection = new ConstructorSelectionImpl(class1, selections);
+                constructorSelection = new ConstructorSelectionImpl<>(class1, selections);
             }
             this.queryResult = ResultType.CONSTRUCTOR;
             constructorSelection.setConstructor(constructor);
@@ -454,20 +424,39 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
     @Override
     public void addJoin(FromImpl from) {
         if (this.joins == null) {
-            this.joins = new LinkedHashSet<FromImpl>();
+            this.joins = new LinkedHashSet<>();
         }
         this.joins.add(from);
     }
 
-    @Override
-    protected DatabaseQuery getDatabaseQuery() {
-        ObjectLevelReadQuery query = null;
+    /**
+     * Create {@link ReadAllQuery} or {@link ReportQuery} from content of this instance.
+     * May be forced to always return {@link ReportQuery}, even when {@link ReadAllQuery} is sufficient.
+     * This is required for complex queries with {@code UNION}/{@code EXCEPT}/{@code INTERSECT}, where
+     * only {@link ReportQuery} instance is accepted as part of the query.
+     *
+     * @param toReportQuery force {@link ReportQuery} creation.
+     * @return {@link ReadAllQuery} or {@link ReportQuery} from content of this instance
+     */
+    protected ReadAllQuery getDatabaseQuery(boolean toReportQuery) {
+        ReadAllQuery query = null;
         if (this.selection == null || !this.selection.isCompoundSelection()) {
-            query = createSimpleQuery();
+            query = createSimpleQuery(toReportQuery);
         } else {
-            query = createCompoundQuery();
+            query = createCompoundQuery(toReportQuery);
         }
         return query;
+    }
+
+    /**
+     * Create {@link ReadAllQuery} or {@link ReportQuery} from content of this instance.
+     * Returned class depends on current query complexity.
+     *
+     * @return {@link ReadAllQuery} or {@link ReportQuery} from content of this instance
+     */
+    @Override
+    protected DatabaseQuery getDatabaseQuery() {
+        return getDatabaseQuery(false);
     }
 
     /**
@@ -495,8 +484,9 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
      * Translates from the criteria query to a EclipseLink Database Query.
      */
     @SuppressWarnings("deprecation")
-    protected ObjectLevelReadQuery createCompoundQuery() {
-        ObjectLevelReadQuery query = null;
+    protected ReadAllQuery createCompoundQuery(boolean toReportQuery) {
+        ReadAllQuery query = null;
+
         if (this.queryResult == ResultType.UNKNOWN) {
             if (this.selection.isConstructor()) {
                 this.queryResult = ResultType.CONSTRUCTOR;
@@ -508,9 +498,22 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
         }
 
         if (this.queryResult.equals(ResultType.PARTIAL)) {
-            ReadAllQuery raq = new ReadAllQuery(this.queryType);
-            for (Selection selection : this.selection.getCompoundSelectionItems()) {
-                raq.addPartialAttribute(((SelectionImpl) selection).currentNode);
+            ReadAllQuery raq;
+            @SuppressWarnings("unchecked")
+            List<SelectionImpl<?>> selectionItems = (List<SelectionImpl<?>>) (List<?>) this.selection.getCompoundSelectionItems();
+            if (toReportQuery) {
+                raq = createReportQuery(this.queryType);
+                for (SelectionImpl<?> nested : selectionItems) {
+                    ((ReportQuery) raq).addAttribute(nested.getAlias(), nested.getCurrentNode(), nested.getJavaType());
+                }
+            } else {
+                raq = new ReadAllQuery(this.queryType);
+            }
+            // Partial object queries are not allowed to maintain the cache or be edited. Requires dontMaintainCache().
+            // See hasPartialAttributeExpressions() in ObjectLevelReadQuery#prepareQuery()
+            raq.dontMaintainCache();
+            for (SelectionImpl<?> selection : selectionItems) {
+                raq.addPartialAttribute((selection).currentNode);
             }
             raq.setExpressionBuilder(((InternalSelection) this.selection.getCompoundSelectionItems().get(0)).getCurrentNode().getBuilder());
             query = raq;
@@ -542,7 +545,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
                             //selecting size not all databases support subselect in select clause so convert to count/groupby
                             PathImpl collectionExpression = (PathImpl) ((FunctionExpressionImpl) nested).getChildExpressions().get(0);
                             ExpressionImpl fromExpression = (ExpressionImpl) collectionExpression.getParentPath();
-                            reportQuery.addAttribute(nested.getAlias(), collectionExpression.getCurrentNode().count(), ClassConstants.INTEGER);
+                            reportQuery.addAttribute(nested.getAlias(), collectionExpression.getCurrentNode().count(), CoreClassConstants.INTEGER);
                             reportQuery.addGrouping(fromExpression.getCurrentNode());
                         } else {
                             reportQuery.addAttribute(nested.getAlias(), ((SelectionImpl) nested).getCurrentNode(), nested.getJavaType());
@@ -598,15 +601,20 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
         return query;
     }
 
-    protected ObjectLevelReadQuery createSimpleQuery() {
-        ObjectLevelReadQuery query = null;
+    protected ReadAllQuery createSimpleQuery(boolean toReportQuery) {
+        ReadAllQuery query = null;
 
         if (this.queryResult == ResultType.UNKNOWN) {
             // unknown type so let's figure this out.
             if (selection == null) {
                 if (this.roots != null && !this.roots.isEmpty()) {
-                    this.selection = (SelectionImpl<?>) this.roots.iterator().next();
-                    query = new ReadAllQuery(((FromImpl) this.selection).getJavaType());
+                    this.selection = (SelectionImpl<? extends T>) this.roots.iterator().next();
+                    if (toReportQuery) {
+                        // TODO: Test and fix
+                        query = createReportQueryWithItem(((FromImpl) this.selection).getJavaType());
+                    } else {
+                        query = new ReadAllQuery(((FromImpl) this.selection).getJavaType());
+                    }
                     List<org.eclipse.persistence.expressions.Expression> list = ((FromImpl) this.roots.iterator().next()).findJoinFetches();
                     for (org.eclipse.persistence.expressions.Expression fetch : list) {
                         query.addJoinedAttribute(fetch);
@@ -617,56 +625,58 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
                 } else if (this.roots == null || this.roots.isEmpty()) {
                     throw new IllegalArgumentException(ExceptionLocalization.buildMessage("CRITERIA_NO_ROOT_FOR_COMPOUND_QUERY"));
                 }
-
             } else {
                 // Selection is not null set type to selection
-                TypeImpl type = ((MetamodelImpl)this.metamodel).getType(selection.getJavaType());
+                TypeImpl<? extends T> type = ((MetamodelImpl)this.metamodel).getType(selection.getJavaType());
                 if (type != null && type.getPersistenceType().equals(PersistenceType.ENTITY)) {
-                    query = new ReadAllQuery(type.getJavaType());
-                    List<org.eclipse.persistence.expressions.Expression> list = ((FromImpl) this.roots.iterator().next()).findJoinFetches();
+                    if (toReportQuery) {
+                        query = createReportQueryWithItem(type.getJavaType());
+                        ((ReportQuery) query).setShouldReturnWithoutReportQueryResult(true);
+                    } else {
+                        query = new ReadAllQuery(type.getJavaType());
+                    }
+                    List<org.eclipse.persistence.expressions.Expression> list = ((FromImpl<?, ?>) this.roots.iterator().next()).findJoinFetches();
                     for (org.eclipse.persistence.expressions.Expression fetch : list) {
                         query.addJoinedAttribute(fetch);
                     }
                     query.setExpressionBuilder(((InternalSelection)selection).getCurrentNode().getBuilder());
-
                 } else {
-                    query = new ReportQuery();
-                    query.setReferenceClass(this.selection.getCurrentNode().getBuilder().getQueryClass());
-                    if (!this.selection.isCompoundSelection() && ((InternalExpression) this.selection).isCompoundExpression()) {
-                        if (((FunctionExpressionImpl) this.selection).getOperation() == CriteriaBuilderImpl.SIZE) {
-                            //selecting size not all databases support subselect in select clause so convert to count/groupby
-                            PathImpl collectionExpression = (PathImpl) ((FunctionExpressionImpl) this.selection).getChildExpressions().get(0);
-                            ExpressionImpl fromExpression = (ExpressionImpl) collectionExpression.getParentPath();
-                            ((ReportQuery) query).addAttribute(this.selection.getAlias(), collectionExpression.getCurrentNode().count(), ClassConstants.INTEGER);
-                            ((ReportQuery) query).addGrouping(fromExpression.getCurrentNode());
-                        }
-                        ((ReportQuery) query).addAttribute(this.selection.getAlias(), this.selection.getCurrentNode(), this.selection.getJavaType());
-
-                    } else {
-                        ((ReportQuery) query).addItem(this.selection.getAlias(), this.selection.getCurrentNode());
-                        ((ReportQuery) query).setShouldReturnSingleAttribute(true);
-                    }
+                    query = createReportQueryWithSelection(this.selection.getCurrentNode().getBuilder().getQueryClass());
                 }
             }
         } else if (this.queryResult.equals(ResultType.ENTITY)) {
-
-            if (this.selection != null && (!((InternalSelection) this.selection).isRoot())) {
-                query = new ReportQuery();
-                query.setReferenceClass(this.queryType);
-                ((ReportQuery) query).addItem(this.selection.getAlias(), this.selection.getCurrentNode(), ((FromImpl) this.selection).findJoinFetches());
+            boolean nonRootSelection = this.selection != null && (!((InternalSelection) this.selection).isRoot());
+            if (nonRootSelection) {
+                query = createReportQueryWithItem(this.queryType);
                 ((ReportQuery) query).setShouldReturnSingleAttribute(true);
             } else {
-                query = new ReadAllQuery(this.queryType);
+                // Tested by testUnionAllWithNoSelection
+                if (toReportQuery) {
+                    query = createReportQueryWithItem(this.queryType);
+                    ((ReportQuery) query).setShouldReturnWithoutReportQueryResult(true);
+                } else {
+                    query = new ReadAllQuery(this.queryType);
+                }
+            }
+            // Union query always needs proper ExpressionBuilder set
+            if (!nonRootSelection || isUnion) {
+                boolean doSetExpressionBuilder = true;
                 if (this.roots != null && !this.roots.isEmpty()) {
-                    List<org.eclipse.persistence.expressions.Expression> list = ((FromImpl) this.roots.iterator().next()).findJoinFetches();
+                    List<org.eclipse.persistence.expressions.Expression> list = ((FromImpl<?, ?>) this.roots.iterator().next()).findJoinFetches();
+                    // Expression builder from root selection
                     if (!list.isEmpty()) {
-                        query.setExpressionBuilder(list.get(0).getBuilder()); // set the builder to one of the fetches bases.
+                        // Set the builder to one of the fetches bases
+                        query.setExpressionBuilder(list.get(0).getBuilder());
+                        doSetExpressionBuilder = false;
                     }
-                    for (org.eclipse.persistence.expressions.Expression fetch : list) {
-                        query.addJoinedAttribute(fetch);
+                    if (this.selection == null || ((InternalSelection) this.selection).isRoot()) {
+                        for (org.eclipse.persistence.expressions.Expression fetch : list) {
+                            query.addJoinedAttribute(fetch);
+                        }
                     }
                 }
-                if (selection != null) {
+                // Set the builder to non-root selection as a fallback
+                if (doSetExpressionBuilder && selection != null) {
                     query.setExpressionBuilder(this.selection.currentNode.getBuilder());
                 }
             }
@@ -677,6 +687,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
                 list.add(this.selection);
                 reportQuery = new TupleQuery(list);
             } else {
+                // Tested by testUnionWithEntityParameterInSelection
                 reportQuery = new ReportQuery();
                 reportQuery.setShouldReturnWithoutReportQueryResult(true);
             }
@@ -686,7 +697,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
                     //selecting size not all databases support subselect in select clause so convert to count/groupby
                     PathImpl collectionExpression = (PathImpl) ((FunctionExpressionImpl)this.selection).getChildExpressions().get(0);
                     ExpressionImpl fromExpression = (ExpressionImpl) collectionExpression.getParentPath();
-                    reportQuery.addAttribute(this.selection.getAlias(), collectionExpression.getCurrentNode().count(), ClassConstants.INTEGER);
+                    reportQuery.addAttribute(this.selection.getAlias(), collectionExpression.getCurrentNode().count(), CoreClassConstants.INTEGER);
                     reportQuery.addGrouping(fromExpression.getCurrentNode());
                 }else{
                     reportQuery.addAttribute(this.selection.getAlias(), this.selection.getCurrentNode(), this.selection.getJavaType());
@@ -734,12 +745,72 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
         return query;
     }
 
+    // Create ReportQuery with provided reference class
+    private static ReportQuery createReportQuery(Class<?> classToRead) {
+        ReportQuery query = new ReportQuery();
+        query.setReferenceClass(classToRead);
+        return query;
+    }
+
+    // Create ReportQuery with provided reference class
+    // Add single result expression value
+    private ReportQuery createReportQueryWithItem(Class<?> classToRead) {
+        ReportQuery query = createReportQuery(classToRead);
+        if (selection != null) {
+            if (((InternalSelection) selection).isFrom()) {
+                query.addItem(selection.getAlias(), selection.getCurrentNode(), ((FromImpl<?, ?>) selection).findJoinFetches());
+            } else {
+                query.addAttribute(selection.getAlias(), selection.getCurrentNode(), selection.getJavaType());
+            }
+        } else {
+            FromImpl<?, ?> root = ((FromImpl<?, ?>) roots.iterator().next());
+            query.addItem(root.getAlias(), root.getCurrentNode());
+        }
+        return query;
+    }
+
+    // Create ReportQuery with provided reference class
+    // Selection exists (selection != null) and may be compound or simple
+    private ReportQuery createReportQueryWithSelection(Class<?> classToRead) {
+        ReportQuery query = createReportQuery(classToRead);
+        // Just to blame for invalid usage
+        if (selection == null) {
+            throw new IllegalStateException("Called createReportQueryWithSelection with no selection set");
+        }
+        if (!selection.isCompoundSelection() && ((InternalExpression) selection).isCompoundExpression()) {
+            // noinspection StringEquality - using String constants so instances will match
+            if (((FunctionExpressionImpl<?>) selection).getOperation() == CriteriaBuilderImpl.SIZE) {
+                // Selecting size not all databases support sub-select in select clause so convert to count/groupby
+                PathImpl<?> collectionExpression = (PathImpl<?>) ((FunctionExpressionImpl<?>) this.selection).getChildExpressions().get(0);
+                ExpressionImpl<?> fromExpression = (ExpressionImpl<?>) collectionExpression.getParentPath();
+                query.addAttribute(this.selection.getAlias(), collectionExpression.getCurrentNode().count(), CoreClassConstants.INTEGER);
+                query.addGrouping(fromExpression.getCurrentNode());
+            }
+            query.addAttribute(this.selection.getAlias(), this.selection.getCurrentNode(), this.selection.getJavaType());
+        } else {
+            query.addItem(this.selection.getAlias(), this.selection.getCurrentNode());
+            query.setShouldReturnSingleAttribute(true);
+        }
+        return query;
+    }
+
     /**
      * Translates from the criteria query to a EclipseLink Database Query.
      */
     @Override
     public DatabaseQuery translate() {
-        ObjectLevelReadQuery query = (ObjectLevelReadQuery)super.translate();
+        return translate(false);
+    }
+
+    /**
+     * Translate always to {@link ReportQuery}.
+     */
+    public ReportQuery transalteToReportQuery() {
+        return (ReportQuery) translate(true);
+    }
+
+    private ReadAllQuery translate(boolean toReportQuery) {
+        ReadAllQuery query = (ReadAllQuery) translate(getDatabaseQuery(toReportQuery));
 
         for (Iterator<Root<?>> iterator = this.getRoots().iterator(); iterator.hasNext();) {
             findJoins((FromImpl) iterator.next());
@@ -761,17 +832,27 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
         if (this.orderBy != null && !this.orderBy.isEmpty()) {
             for (Order order : this.orderBy) {
                 OrderImpl orderImpl = (OrderImpl) order;
-                org.eclipse.persistence.expressions.Expression orderExp = ((ExpressionImpl) orderImpl.getExpression()).getCurrentNode();
-                if (orderImpl.isAscending()) {
-                    orderExp = orderExp.ascending();
-                } else {
-                    orderExp = orderExp.descending();
-                }
+                org.eclipse.persistence.expressions.Expression orderExp = ((ExpressionImpl<?>) orderImpl.getExpression()).getCurrentNode();
+                orderExp = orderImpl.isAscending() ? orderExp.ascending() : orderExp.descending();
+                orderExp = switch (orderImpl.getNullPrecedence()) {
+                    case FIRST -> orderExp.nullsFirst();
+                    case LAST -> orderExp.nullsLast();
+                    default -> orderExp;
+                };
                 query.addOrdering(orderExp);
             }
         }
 
         return query;
+    }
+
+    /**
+     * Mark this query as part of the UNION/EXCEPT/INTERSECT.
+     * This will trigger ExpressionBuilder to be added to the ReportQuery during {@link #getDatabaseQuery(boolean)}
+     * execution.
+     */
+    void isUnion() {
+        isUnion = true;
     }
 
 }

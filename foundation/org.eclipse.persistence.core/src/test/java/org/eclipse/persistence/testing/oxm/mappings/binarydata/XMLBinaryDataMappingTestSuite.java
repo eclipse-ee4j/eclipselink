@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,8 +21,8 @@ import org.eclipse.persistence.testing.oxm.mappings.binarydata.identifiedbyname.
 import org.eclipse.persistence.testing.oxm.mappings.binarydata.identifiedbyname.BinaryDataIdentifiedByNameEmptyNSRNillableTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.binarydata.identifiedbyname.BinaryDataIdentifiedByNameEmptyNSRTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.binarydata.identifiedbyname.BinaryDataIdentifiedByNameNullNSRTestCases;
-import org.eclipse.persistence.testing.oxm.mappings.binarydata.identifiedbyname.BinaryDataIdentifiedByNameXOPonNSRTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.binarydata.identifiedbyname.BinaryDataIdentifiedByNameNullTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.binarydata.identifiedbyname.BinaryDataIdentifiedByNameXOPonNSRTestCases;
 public class XMLBinaryDataMappingTestSuite extends TestCase {
     public static Test suite() {
         TestSuite suite = new TestSuite("XMLBinaryDataMapping Test Suite");

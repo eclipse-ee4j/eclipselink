@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -45,7 +45,7 @@ import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 /**
  * INTERNAL:
  * A basic collection accessor.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -98,9 +98,7 @@ public class BasicMapAccessor extends BasicCollectionAccessor {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (super.equals(objectToCompare) && objectToCompare instanceof BasicMapAccessor) {
-
-            BasicMapAccessor basicMapAccessor = (BasicMapAccessor) objectToCompare;
+        if (super.equals(objectToCompare) && objectToCompare instanceof BasicMapAccessor basicMapAccessor) {
 
             if (! valuesMatch(m_keyColumn, basicMapAccessor.getKeyColumn())) {
                 return false;
@@ -142,7 +140,7 @@ public class BasicMapAccessor extends BasicCollectionAccessor {
      */
     @Override
     protected String getDefaultCollectionTableName() {
-        if (m_keyColumn != null && m_keyColumn.getTable() != null && ! m_keyColumn.getTable().equals("")) {
+        if (m_keyColumn != null && m_keyColumn.getTable() != null && !m_keyColumn.getTable().isEmpty()) {
             return m_keyColumn.getTable();
         } else {
             return super.getDefaultCollectionTableName();

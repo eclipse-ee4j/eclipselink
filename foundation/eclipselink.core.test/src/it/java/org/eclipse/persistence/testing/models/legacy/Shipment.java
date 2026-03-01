@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,9 +14,9 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.legacy;
 
-import java.math.*;
-import java.util.*;
-import java.io.*;
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.Vector;
 
 public class Shipment implements Serializable {
     public Number shipmentNumber;
@@ -41,8 +41,8 @@ public class Shipment implements Serializable {
         example.quantityShipped = "1 ton";
         example.shipMode = "Air";
 
-        example.orders.addElement(Order.example1(example, employee));
-        example.orders.addElement(Order.example2(example, employee));
+        example.orders.add(Order.example1(example, employee));
+        example.orders.add(Order.example2(example, employee));
 
         return example;
     }
@@ -57,8 +57,8 @@ public class Shipment implements Serializable {
         example.quantityShipped = "2 ton";
         example.shipMode = "Air";
 
-        example.orders.addElement(Order.example3(example, employee));
-        example.orders.addElement(Order.example4(example, employee));
+        example.orders.add(Order.example3(example, employee));
+        example.orders.add(Order.example4(example, employee));
 
         return example;
     }
@@ -73,8 +73,8 @@ public class Shipment implements Serializable {
         example.quantityShipped = "3 ton";
         example.shipMode = "Ship";
 
-        example.orders.addElement(Order.example5(example, employee));
-        example.orders.addElement(Order.example6(example, employee));
+        example.orders.add(Order.example5(example, employee));
+        example.orders.add(Order.example6(example, employee));
 
         return example;
     }
@@ -89,8 +89,8 @@ public class Shipment implements Serializable {
         example.quantityShipped = "4 ton";
         example.shipMode = "Ship";
 
-        example.orders.addElement(Order.example7(example, employee));
-        example.orders.addElement(Order.example8(example, employee));
+        example.orders.add(Order.example7(example, employee));
+        example.orders.add(Order.example8(example, employee));
 
         return example;
     }

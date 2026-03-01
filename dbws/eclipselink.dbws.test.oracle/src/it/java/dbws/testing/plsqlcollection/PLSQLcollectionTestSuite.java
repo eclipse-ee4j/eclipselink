@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,6 +19,9 @@ package dbws.testing.plsqlcollection;
 import java.io.StringReader;
 import java.lang.reflect.Field;
 import java.sql.Array;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.w3c.dom.Document;
 
 //Java extension libraries
@@ -35,7 +38,6 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.databaseaccess.Platform;
 import org.eclipse.persistence.internal.descriptors.TransformerBasedFieldTransformation;
 import org.eclipse.persistence.internal.helper.ConversionManager;
-import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.sessions.factories.ObjectPersistenceWorkbenchXMLProject;
 import org.eclipse.persistence.internal.xr.ProjectHelper;
 import org.eclipse.persistence.internal.xr.XRDynamicClassLoader;
@@ -291,7 +293,7 @@ public class PLSQLcollectionTestSuite {
         Class<?> t1Clz = t1Descriptor.getJavaClass();
         ((DatabaseSession)session).login();
         String[] elements = {"first string", "second string", "third string"};
-        NonSynchronizedVector<Object> queryArgs = new NonSynchronizedVector<>();
+        List<Object> queryArgs = new ArrayList<>();
         queryArgs.add(elements);
         queryArgs.add("barf");
         boolean worked = false;

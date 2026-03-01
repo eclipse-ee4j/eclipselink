@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,11 +26,12 @@ import java.util.StringTokenizer;
 import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
+
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDOProperty;
 import org.eclipse.persistence.sdo.SDOType;
 import org.eclipse.persistence.sdo.helper.extension.SDOUtil;
-import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.localization.ToStringLocalization;
 import org.eclipse.persistence.logging.AbstractSessionLog;
@@ -44,7 +45,7 @@ public class SDOClassGenerator {
     // Source Gen Stuff
     private String indent = SDOConstants.EMPTY_STRING;
     private static int INDENT_TAB = 3;
-    private static final String lsep = System.getProperty("line.separator");
+    private static final String lsep = System.lineSeparator();
     private static final String lsep2 = lsep + lsep;
     private static final String START_PROPERTY_INDEX = "START_PROPERTY_INDEX";
     private Map generatedBuffers;
@@ -84,32 +85,37 @@ public class SDOClassGenerator {
         AbstractSessionLog.getLog().setLevel(AbstractSessionLog.FINER);
 
         for (int i = 0; i < argsLength; i++) {
-            if (args[i].equals("-help")) {
-                generator.printUsage(null);
-                System.exit(0);
-            } else if (args[i].equals("-sourceFile")) {
-                if (i == (argsLength - 1)) {
-                    generator.printUsage("sdo_classgenerator_usage_missing_sourcefile_value");
+            switch (args[i]) {
+                case "-help" -> {
+                    generator.printUsage(null);
                     System.exit(0);
                 }
-                sourceFile = args[++i];
-            } else if (args[i].equals("-targetDirectory")) {
-                if (i == (argsLength - 1)) {
-                    generator.printUsage("sdo_classgenerator_usage_missing_targetdir");
-                    System.exit(0);
+                case "-sourceFile" -> {
+                    if (i == (argsLength - 1)) {
+                        generator.printUsage("sdo_classgenerator_usage_missing_sourcefile_value");
+                        System.exit(0);
+                    }
+                    sourceFile = args[++i];
                 }
-                sourceDir = args[++i];
-            } else if (args[i].equals("-logLevel")) {
-                // log level is optional and will default to INFO
-                if (i != (argsLength - 1)) {
-                    AbstractSessionLog.getLog().setLevel(Integer.parseInt(args[++i]));
+                case "-targetDirectory" -> {
+                    if (i == (argsLength - 1)) {
+                        generator.printUsage("sdo_classgenerator_usage_missing_targetdir");
+                        System.exit(0);
+                    }
+                    sourceDir = args[++i];
                 }
-            } else if (args[i].equals("-noInterfaces")) {
-                // This option introduced in EclipseLink 2.0
-                generator.setInterfaceGenerator(false);
-            } else if (args[i].equals("-noImpls")) {
-                // This option introduced in EclipseLink 2.0
-                generator.setImplGenerator(false);
+                case "-logLevel" -> {
+                    // log level is optional and will default to INFO
+                    if (i != (argsLength - 1)) {
+                        AbstractSessionLog.getLog().setLevel(Integer.parseInt(args[++i]));
+                    }
+                }
+                case "-noInterfaces" ->
+                    // This option introduced in EclipseLink 2.0
+                        generator.setInterfaceGenerator(false);
+                case "-noImpls" ->
+                    // This option introduced in EclipseLink 2.0
+                        generator.setImplGenerator(false);
             }
         }
         if (null == sourceFile) {
@@ -138,27 +144,27 @@ public class SDOClassGenerator {
      */
     private void printUsage(String messageID) {
         if (null != messageID) {
-            System.out.println(ToStringLocalization.buildMessage(messageID, new Object[] { Helper.getShortClassName(getClass()) }));
+            System.out.println(ToStringLocalization.buildMessage(messageID, new Object[] { getClass().getSimpleName() }));
         }
 
-        // Because we can no longer use Helper.cr() inside of message bundles, we must break
-        // up the message into separate lines and use Helper.cr() here instead. (bug6470503)
-        String messageString = ToStringLocalization.buildMessage("sdo_classgenerator_usage_help_1of8", new Object[] { Helper.getShortClassName(getClass()) });
-        messageString += Helper.cr() + Helper.cr();
+        // Because we can no longer use System.lineSeparator() inside of message bundles, we must break
+        // up the message into separate lines and use System.lineSeparator() here instead. (bug6470503)
+        String messageString = ToStringLocalization.buildMessage("sdo_classgenerator_usage_help_1of8", new Object[] { getClass().getSimpleName() });
+        messageString += System.lineSeparator() + System.lineSeparator();
         messageString += ToStringLocalization.buildMessage("sdo_classgenerator_usage_help_2of8");
-        messageString += Helper.cr();
+        messageString += System.lineSeparator();
         messageString += ToStringLocalization.buildMessage("sdo_classgenerator_usage_help_3of8");
-        messageString += Helper.cr();
+        messageString += System.lineSeparator();
         messageString += ToStringLocalization.buildMessage("sdo_classgenerator_usage_help_4of8");
-        messageString += Helper.cr();
+        messageString += System.lineSeparator();
         messageString += ToStringLocalization.buildMessage("sdo_classgenerator_usage_help_5of8");
-        messageString += Helper.cr();
+        messageString += System.lineSeparator();
         messageString += ToStringLocalization.buildMessage("sdo_classgenerator_usage_help_6of8");
-        messageString += Helper.cr();
+        messageString += System.lineSeparator();
         messageString += ToStringLocalization.buildMessage("sdo_classgenerator_usage_help_7of8");
-        messageString += Helper.cr();
+        messageString += System.lineSeparator();
         messageString += ToStringLocalization.buildMessage("sdo_classgenerator_usage_help_8of8");
-        messageString += Helper.cr();
+        messageString += System.lineSeparator();
 
         System.out.println(messageString);
     }
@@ -289,7 +295,7 @@ public class SDOClassGenerator {
 
         java.util.List documentation = (java.util.List)sdoType.get(SDOConstants.DOCUMENTATION_PROPERTY);
 
-        if ((documentation != null) && (documentation.size() > 0)) {
+        if ((documentation != null) && (!documentation.isEmpty())) {
             currentClassBuffer.append(indent);
             currentClassBuffer.append(buildJavaDoc(documentation));
         }
@@ -380,7 +386,7 @@ public class SDOClassGenerator {
             int lineCount = 0;
             while (stok.hasMoreTokens()) {
                 String nextLine = stok.nextToken().trim();
-                if (nextLine.length() > 0) {
+                if (!nextLine.isEmpty()) {
                     if (lineCount > 0 || (lineCount == 0 && !getterSetter)) {
                         javaDocBuffer.append(indent).append(SDOConstants.JAVADOC_LINE);
                     }
@@ -487,7 +493,7 @@ public class SDOClassGenerator {
         String methodName = SDOUtil.getMethodName(property.getName(), returnType);
 
         if (!(property.getType().isChangeSummaryType() && methodName.equals("getChangeSummary"))) {
-            if ((documentation != null) && (documentation.size() > 0)) {
+            if ((documentation != null) && (!documentation.isEmpty())) {
                 classBuffer.getMethodBuffer().append(buildGetterJavaDoc(documentation, property.getName()));
             }
             classBuffer.getMethodBuffer().append(indent);
@@ -507,7 +513,7 @@ public class SDOClassGenerator {
 
                 classBuffer.getMethodBuffer().append(")");
             } else {
-                if (!returnType.equals(ClassConstants.OBJECT.getName())) {
+                if (!returnType.equals(CoreClassConstants.OBJECT.getName())) {
                     classBuffer.getMethodBuffer().append("(");
                     classBuffer.getMethodBuffer().append(returnType).append(")");
                 }
@@ -537,7 +543,7 @@ public class SDOClassGenerator {
             return;
         }
 
-        if ((documentation != null) && (documentation.size() > 0)) {
+        if ((documentation != null) && (!documentation.isEmpty())) {
             classBuffer.getMethodBuffer().append(buildSetterJavaDoc(documentation, property.getName()));
         }
 
@@ -576,19 +582,15 @@ public class SDOClassGenerator {
     }
 
     private void pushIndent() {
-        StringBuffer buf = new StringBuffer();
-        for (int i = 0; i < INDENT_TAB; i++) {
-            buf.append(" ");
-        }
+        StringBuilder buf = new StringBuilder();
+        buf.append(" ".repeat(Math.max(0, INDENT_TAB)));
         indent += buf.toString();
     }
 
     private void popIndent() {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         int size = indent.length() - INDENT_TAB;
-        for (int i = 0; i < size; i++) {
-            buf.append(" ");
-        }
+        buf.append(" ".repeat(Math.max(0, size)));
         indent = buf.toString();
     }
 

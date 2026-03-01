@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -44,16 +44,18 @@ import dbws.testing.DBWSTestSuite;
 public class VeryLongIdentifierTestSuite extends DBWSTestSuite {
 
     static final String CREATE_LONGIDENTIFIER_PACKAGE =
-        "CREATE OR REPLACE PACKAGE LONGIDENTIFIERPACKAGE AS" +
-            "\nPROCEDURE PLONG(THIS_IS_A_LONG_PLSQL_IDENTIFIE IN BOOLEAN);" +
-        "\nEND LONGIDENTIFIERPACKAGE;";
+            """
+                    CREATE OR REPLACE PACKAGE LONGIDENTIFIERPACKAGE AS
+                    PROCEDURE PLONG(THIS_IS_A_LONG_PLSQL_IDENTIFIE IN BOOLEAN);
+                    END LONGIDENTIFIERPACKAGE;""";
     static final String CREATE_LONGIDENTIFIERPACKAGE_BODY =
-        "CREATE OR REPLACE PACKAGE BODY LONGIDENTIFIERPACKAGE AS" +
-            "\nPROCEDURE PLONG(THIS_IS_A_LONG_PLSQL_IDENTIFIE IN BOOLEAN) AS" +
-            "\nBEGIN" +
-                "\nnull;" +
-            "\nEND PLONG;" +
-        "\nEND LONGIDENTIFIERPACKAGE;";
+            """
+                    CREATE OR REPLACE PACKAGE BODY LONGIDENTIFIERPACKAGE AS
+                    PROCEDURE PLONG(THIS_IS_A_LONG_PLSQL_IDENTIFIE IN BOOLEAN) AS
+                    BEGIN
+                    null;
+                    END PLONG;
+                    END LONGIDENTIFIERPACKAGE;""";
 
     static final String DROP_LONGIDENTIFIERPACKAGE =
         "DROP PACKAGE LONGIDENTIFIERPACKAGE";

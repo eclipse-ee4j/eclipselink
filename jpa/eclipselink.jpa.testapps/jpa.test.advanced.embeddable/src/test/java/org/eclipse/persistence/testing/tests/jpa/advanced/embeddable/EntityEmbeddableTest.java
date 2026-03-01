@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2007, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
+ * Copyright (c) 2007, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -138,28 +139,18 @@ public class EntityEmbeddableTest extends JUnitTestCase {
      * Test native SQL query that returns result as object defined in <code>SqlResultSetMapping</code> annotation.
      */
     public void testNativeQueryWithSqlResultSetMappings() {
-        List<?> q;
-        int passCounter = 0;
         EntityManager em = createEntityManager();
         Collection<Visitor> visitors = null;
         try {
             visitors = createVisitorEntities(em);
-            if (getPersistenceUnitServerSession().getPlatform().isDerby()) {
-                q = em.createNativeQuery(
+            List<?> q = em.createNativeQuery(
                         "Select o.ID AS OID, o.NAME AS ONAME, o.COUNTRY AS OCOUNTRY, " +
                                 "o.CODE AS OCODE from CMP3_EMBED_VISITOR o WHERE (o.ID = 1)", "VisitorResults")
                         .getResultList();
-            } else {
-                q = em.createNativeQuery(
-                                "Select o.ID AS OID, o.NAME AS ONAME, o.COUNTRY AS OCOUNTRY, " +
-                                        "o.CODE AS OCODE from CMP3_EMBED_VISITOR o WHERE (o.ID = '1')", "VisitorResults")
-                        .getResultList();
-            }
             assertEquals("Size of returned list with query results should be 1.", q.size(), 1);
             for (Object obj : q) {
-                if (obj instanceof Visitor) {
-                    Visitor custReturned = (Visitor) obj;
-                    assertEquals("Visitor object primary key is invalid.", "1", custReturned.getId());
+                if (obj instanceof Visitor custReturned) {
+                    assertEquals("Visitor object primary key is invalid.", 1, custReturned.getId().intValue());
                     assertEquals("Country code is invalid.", "USA", custReturned.getCountry().getCode());
                 } else {
                     fail("Received unexpected instance: " + obj != null ? obj.getClass().getName() : "null");

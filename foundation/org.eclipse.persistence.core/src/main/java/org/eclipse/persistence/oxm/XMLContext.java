@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,22 +14,9 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.oxm;
 
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.StringTokenizer;
-
-import javax.xml.namespace.QName;
-
 import org.eclipse.persistence.core.mappings.CoreAttributeAccessor;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.oxm.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.oxm.Context;
 import org.eclipse.persistence.internal.oxm.ConversionManager;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
@@ -58,6 +45,18 @@ import org.eclipse.persistence.sessions.SessionEventListener;
 import org.eclipse.persistence.sessions.SessionEventManager;
 import org.eclipse.persistence.sessions.factories.SessionManager;
 import org.eclipse.persistence.sessions.factories.XMLSessionConfigLoader;
+
+import javax.xml.namespace.QName;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.StringTokenizer;
 
 /**
  * <p>
@@ -300,7 +299,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
      * INTERNAL: Return the session corresponding to this object. Since the
      * object may be mapped by more that one of the projects used to create the
      * XML Context, this method will return the first match.
-     *
+     * <p>
      * The session will be a unit of work if document preservation is not
      * enabled.  This method will typically  be used for unmarshalling
      * when a non-shared cache is desired.
@@ -314,7 +313,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
      * Return the session corresponding to this class. Since the class
      * may be mapped by more that one of the projects used to create the XML
      * Context, this method will return the first match.
-     *
+     * <p>
      * The session will be a unit of work if document preservation is not
      * enabled.  This method will typically  be used for unmarshalling
      * when a non-shared cache is desired.
@@ -328,7 +327,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
      * Return the session corresponding to this XMLDescriptor. Since
      * the class may be mapped by more that one of the projects used to create
      * the XML Context, this method will return the first match.
-     *
+     * <p>
      * The session will be a unit of work if document preservation is not
      * enabled.  This method will typically  be used for unmarshalling
      * when a non-shared cache is desired.
@@ -518,8 +517,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
                     //collection as a backpointer, check to see if the container policy
                     //needs to be matched with the ORM project
                     DatabaseMapping nextMapping = oxmMappingsIterator.next();
-                    if(nextMapping instanceof ObjectReferenceMapping) {
-                        ObjectReferenceMapping refMapping = (ObjectReferenceMapping)nextMapping;
+                    if(nextMapping instanceof ObjectReferenceMapping refMapping) {
                         if(refMapping.getInverseReferenceMapping().getAttributeAccessor() != null && refMapping.getInverseReferenceMapping().getContainerPolicy() != null) {
                             ClassDescriptor refDescriptor = ormSession.getClassDescriptor(refMapping.getReferenceClass());
                             if(refDescriptor != null) {

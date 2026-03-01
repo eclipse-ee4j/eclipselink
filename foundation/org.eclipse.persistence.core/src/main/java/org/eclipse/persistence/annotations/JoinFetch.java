@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,12 +17,12 @@ package org.eclipse.persistence.annotations;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * A JoinFetch annotation can be used on any relationship mapping,
+ * A JoinFetch annotation can be used on any relationship mapping
  * (OneToOne, ManyToOne, OneToMany, ManyToMany, BasicCollection, BasicMap).
  * It allows the related objects to be joined and read in the same query as the
  * source object. Join fetching can also be set at the query level, and it is
@@ -37,9 +37,10 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 public @interface JoinFetch {
     /**
-     * (Optional) The type of join-fetch to use.
+     * The type of join-fetch to use.
+     * <p>
      * Either an inner or outer-join,
-     * an outer-join allows for null/empty values, where as inner does not.
+     * an outer-join allows for null/empty values, whereas inner does not.
      */
     JoinFetchType value() default JoinFetchType.INNER;
 }

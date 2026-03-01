@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2020 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -19,33 +19,68 @@
 //       - 365931: @JoinColumn(name="FK_DEPT",insertable = false, updatable = true) causes INSERT statement to include this data value that it is associated with
 package org.eclipse.persistence.mappings;
 
-import java.util.*;
-
 import org.eclipse.persistence.annotations.CacheKeyType;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.internal.identitymaps.*;
-import org.eclipse.persistence.internal.indirection.ProxyIndirectionPolicy;
-import org.eclipse.persistence.internal.queries.ContainerPolicy;
-import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
-import org.eclipse.persistence.internal.queries.MappedKeyMapContainerPolicy;
-import org.eclipse.persistence.internal.sessions.*;
-import org.eclipse.persistence.sessions.DatabaseRecord;
-import org.eclipse.persistence.queries.*;
+import org.eclipse.persistence.exceptions.ConversionException;
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.exceptions.DescriptorException;
+import org.eclipse.persistence.exceptions.OptimisticLockException;
+import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.descriptors.CascadeLockingPolicy;
 import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.expressions.ConstantExpression;
-import org.eclipse.persistence.internal.expressions.ObjectExpression;
 import org.eclipse.persistence.internal.expressions.FieldExpression;
+import org.eclipse.persistence.internal.expressions.ObjectExpression;
 import org.eclipse.persistence.internal.expressions.ParameterExpression;
 import org.eclipse.persistence.internal.expressions.QueryKeyExpression;
 import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
+import org.eclipse.persistence.internal.helper.ConversionManager;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.identitymaps.CacheId;
+import org.eclipse.persistence.internal.identitymaps.CacheKey;
+import org.eclipse.persistence.internal.indirection.ProxyIndirectionPolicy;
+import org.eclipse.persistence.internal.queries.ContainerPolicy;
+import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
+import org.eclipse.persistence.internal.queries.MappedKeyMapContainerPolicy;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sessions.ChangeRecord;
+import org.eclipse.persistence.internal.sessions.MergeManager;
+import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.mappings.foundation.MapKeyMapping;
 import org.eclipse.persistence.mappings.querykeys.OneToOneQueryKey;
 import org.eclipse.persistence.mappings.querykeys.QueryKey;
+import org.eclipse.persistence.queries.ComplexQueryResult;
+import org.eclipse.persistence.queries.DataReadQuery;
+import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.DeleteObjectQuery;
+import org.eclipse.persistence.queries.ObjectBuildingQuery;
+import org.eclipse.persistence.queries.ObjectLevelModifyQuery;
+import org.eclipse.persistence.queries.ObjectLevelReadQuery;
+import org.eclipse.persistence.queries.ReadAllQuery;
+import org.eclipse.persistence.queries.ReadObjectQuery;
+import org.eclipse.persistence.queries.ReadQuery;
+import org.eclipse.persistence.queries.ReportQuery;
+import org.eclipse.persistence.queries.WriteObjectQuery;
+import org.eclipse.persistence.sessions.DatabaseRecord;
+
+import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.IdentityHashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * <p><b>Purpose</b>: One to one mappings are used to represent a pointer references
@@ -64,8 +99,8 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
     /** Maps the target primary/foreign key fields to the source foreign/primary key fields. */
     protected Map<DatabaseField, DatabaseField> targetToSourceKeyFields;
 
-    /** Keeps track of which fields are foreign keys on a per field basis (can have mixed foreign key relationships). */
-    /** These are used for non-unit of work modification to check if the value of the 1-1 was changed and a deletion is required. */
+    /** Keeps track of which fields are foreign keys on a per field basis (can have mixed foreign key relationships).
+        These are used for non-unit of work modification to check if the value of the 1-1 was changed and a deletion is required. */
     protected boolean shouldVerifyDelete;
     protected transient Expression privateOwnedCriteria;
 
@@ -116,11 +151,11 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      */
     public OneToOneMapping() {
         this.selectionQuery = new ReadObjectQuery();
-        this.sourceToTargetKeyFields = new HashMap(2);
-        this.targetToSourceKeyFields = new HashMap(2);
-        this.foreignKeyFields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(1);
-        this.sourceExpressionsToPostInitialize = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(1);
-        this.targetExpressionsToPostInitialize = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(1);
+        this.sourceToTargetKeyFields = new HashMap<>(2);
+        this.targetToSourceKeyFields = new HashMap<>(2);
+        this.foreignKeyFields = new ArrayList<>(1);
+        this.sourceExpressionsToPostInitialize = new ArrayList<>(1);
+        this.targetExpressionsToPostInitialize = new ArrayList<>(1);
         this.isForeignKeyRelationship = false;
         this.shouldVerifyDelete = true;
     }
@@ -178,7 +213,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
     @Override
     public void addForeignKeyField(DatabaseField sourceForeignKeyField, DatabaseField targetPrimaryKeyField) {
         setIsForeignKeyRelationship(true);
-        getForeignKeyFields().addElement(sourceForeignKeyField);
+        getForeignKeyFields().add(sourceForeignKeyField);
 
         getSourceToTargetKeyFields().put(sourceForeignKeyField, targetPrimaryKeyField);
         getTargetToSourceKeyFields().put(targetPrimaryKeyField, sourceForeignKeyField);
@@ -247,7 +282,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      * INTERNAL:
      * For mappings used as MapKeys in MappedKeyContainerPolicy.  Add the target of this mapping to the deleted
      * objects list if necessary
-     *
+     * <p>
      * This method is used for removal of private owned relationships.
      */
     @Override
@@ -445,20 +480,20 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
     public Object clone() {
         OneToOneMapping clone = (OneToOneMapping)super.clone();
         if(this.mechanism == null) {
-            clone.setForeignKeyFields(org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(getForeignKeyFields().size()));
-            clone.setSourceToTargetKeyFields(new HashMap(getSourceToTargetKeyFields().size()));
-            clone.setTargetToSourceKeyFields(new HashMap(getTargetToSourceKeyFields().size()));
+            clone.setForeignKeyFields(new ArrayList<>(getForeignKeyFields().size()));
+            clone.setSourceToTargetKeyFields(new HashMap<>(getSourceToTargetKeyFields().size()));
+            clone.setTargetToSourceKeyFields(new HashMap<>(getTargetToSourceKeyFields().size()));
 
             // DatabaseField overrides equals, so we need to use an IdentifyHashMap for this implementation
             // to make sure we are using the object references to lookup clone references
             AbstractMap<DatabaseField, DatabaseField> fieldToCloneMap = new IdentityHashMap<>(getTargetToSourceKeyFields().size());
 
             //clone foreign keys and save the clones in a lookup table
-            for (Enumeration<DatabaseField> enumtr = getForeignKeyFields().elements(); enumtr.hasMoreElements();) {
-                DatabaseField field = enumtr.nextElement();
+            for (Iterator<DatabaseField> iterator = getForeignKeyFields().iterator(); iterator.hasNext();) {
+                DatabaseField field = iterator.next();
                 DatabaseField fieldClone = field.clone();
                 fieldToCloneMap.put(field, fieldClone);
-                clone.getForeignKeyFields().addElement(fieldClone);
+                clone.getForeignKeyFields().add(fieldClone);
             }
 
             // lookup references in the map to get the associated clone reference. If it doesn't exist, create a new one.
@@ -512,9 +547,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
 
     @Override
     public void collectQueryParameters(Set<DatabaseField> cacheFields){
-        for (DatabaseField field : sourceToTargetKeyFields.keySet()) {
-            cacheFields.add(field);
-        }
+        cacheFields.addAll(sourceToTargetKeyFields.keySet());
     }
 
     /**
@@ -544,7 +577,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
     public List<Object> createMapComponentsFromSerializableKeyInfo(Object[] keyInfo, AbstractSession session){
         List<Object> orderedResult = new ArrayList<>(keyInfo.length);
         Map<Object, Object> fromCache = session.getIdentityMapAccessorInstance().getAllFromIdentityMapWithEntityPK(keyInfo, referenceDescriptor);
-        List foreignKeyValues = new ArrayList(keyInfo.length - fromCache.size());
+        List<Object> foreignKeyValues = new ArrayList<>(keyInfo.length - fromCache.size());
 
         CacheKeyType cacheKeyType = referenceDescriptor.getCachePolicy().getCacheKeyType();
         for (int index = 0; index < keyInfo.length; ++index){
@@ -564,6 +597,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
             query.addArgumentValue(foreignKeyValues);
             query.setSession(session);
             query.setSelectionCriteria(referenceDescriptor.buildBatchCriteriaByPK(query.getExpressionBuilder(), query));
+            @SuppressWarnings({"unchecked"})
             Collection<Object> temp = (Collection<Object>) session.executeQuery(query);
             for (Object element: temp){
                 Object pk = referenceDescriptor.getObjectBuilder().extractPrimaryKeyFromObject(element, session);
@@ -616,7 +650,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
     /**
      * INTERNAL:
      * For mappings used as MapKeys in MappedKeyContainerPolicy, Delete the passed object if necessary.
-     *
+     * <p>
      * This method is used for removal of private owned relationships
      *
      */
@@ -644,7 +678,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      * shouldExtendPessimisticLockScope and shouldExtendPessimisticLockScopeInSourceQuery are true.
      * Adds fields to be locked to the where clause of the source query.
      * Note that the sourceQuery must be ObjectLevelReadQuery so that it has ExpressionBuilder.
-     *
+     * <p>
      * This method must be implemented in subclasses that allow
      * setting shouldExtendPessimisticLockScopeInSourceQuery to true.
      */
@@ -700,7 +734,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
     public Map extractIdentityFieldsForQuery(Object object, AbstractSession session){
         Map keyFields = new HashMap();
          for (int index = 0; index < getForeignKeyFields().size(); index++) {
-            DatabaseField targetRelationField = getForeignKeyFields().elementAt(index);
+            DatabaseField targetRelationField = getForeignKeyFields().get(index);
             DatabaseField targetKey = getSourceToTargetKeyFields().get(targetRelationField);
             Object value = getReferenceDescriptor().getObjectBuilder().extractValueFromObjectForField(object, targetKey, session);
             keyFields.put(targetRelationField, value);
@@ -917,11 +951,11 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      * Return the foreign key field names associated with the mapping.
      * These are only the source fields that are writable.
      */
-    public Vector getForeignKeyFieldNames() {
-        Vector fieldNames = new Vector(getForeignKeyFields().size());
-        for (Enumeration<DatabaseField> fieldsEnum = getForeignKeyFields().elements();
-             fieldsEnum.hasMoreElements();) {
-            fieldNames.addElement(fieldsEnum.nextElement().getQualifiedName());
+    public List<String> getForeignKeyFieldNames() {
+        List<String> fieldNames = new ArrayList<>(getForeignKeyFields().size());
+        for (Iterator<DatabaseField> iterator = getForeignKeyFields().iterator();
+             iterator.hasNext();) {
+            fieldNames.add(iterator.next().getQualifiedName());
         }
 
         return fieldNames;
@@ -932,7 +966,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      * Return source key fields for translation by an AggregateObjectMapping
      */
     @Override
-    public Collection getFieldsForTranslationInAggregate() {
+    public Collection<DatabaseField> getFieldsForTranslationInAggregate() {
         return getSourceToTargetKeyFields().keySet();
     }
 
@@ -973,7 +1007,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
     /**
      * INTERNAL:
      * Return the query that is used when this mapping is part of a joined relationship
-     *
+     * <p>
      * This method is used when this mapping is used to map the key in a Map
      */
     @Override
@@ -987,7 +1021,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      */
     @Override
     public List<DatabaseField> getAllFieldsForMapKey(){
-        List<DatabaseField> fields = new ArrayList(getReferenceDescriptor().getAllSelectionFields().size() + getForeignKeyFields().size());
+        List<DatabaseField> fields = new ArrayList<>(getReferenceDescriptor().getAllSelectionFields().size() + getForeignKeyFields().size());
         fields.addAll(getReferenceDescriptor().getAllSelectionFields());
         fields.addAll(getForeignKeyFields());
         return fields;
@@ -995,23 +1029,23 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
 
     /**
      * INTERNAL:
-     * Return a vector of the foreign key fields in the same order
+     * Return a list of the foreign key fields in the same order
      * as the corresponding primary key fields are in their descriptor.
      */
-    public Vector getOrderedForeignKeyFields() {
+    public List<DatabaseField> getOrderedForeignKeyFields() {
         List<DatabaseField> primaryKeyFields = getPrimaryKeyDescriptor().getPrimaryKeyFields();
-        Vector result = new Vector(primaryKeyFields.size());
+        List<DatabaseField> result = new ArrayList<>(primaryKeyFields.size());
 
         for (int index = 0; index < primaryKeyFields.size(); index++) {
             DatabaseField pkField = primaryKeyFields.get(index);
             boolean found = false;
-            for (Iterator fkStream = this.getForeignKeysToPrimaryKeys().keySet().iterator();
+            for (Iterator<DatabaseField> fkStream = this.getForeignKeysToPrimaryKeys().keySet().iterator();
                      fkStream.hasNext();) {
-                DatabaseField fkField = (DatabaseField)fkStream.next();
+                DatabaseField fkField = fkStream.next();
 
                 if (this.getForeignKeysToPrimaryKeys().get(fkField).equals(pkField)) {
                     found = true;
-                    result.addElement(fkField);
+                    result.add(fkField);
                     break;
                 }
             }
@@ -1049,14 +1083,14 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      * INTERNAL:
      * Return a collection of the source to target field value associations.
      */
-    public Vector getSourceToTargetKeyFieldAssociations() {
-        Vector associations = new Vector(getSourceToTargetKeyFields().size());
+    public List<Association> getSourceToTargetKeyFieldAssociations() {
+        List<Association> associations = new ArrayList<>(getSourceToTargetKeyFields().size());
         Iterator<DatabaseField> sourceFieldEnum = getSourceToTargetKeyFields().keySet().iterator();
         Iterator<DatabaseField> targetFieldEnum = getSourceToTargetKeyFields().values().iterator();
         while (sourceFieldEnum.hasNext()) {
-            Object fieldValue = sourceFieldEnum.next().getQualifiedName();
-            Object attributeValue = targetFieldEnum.next().getQualifiedName();
-            associations.addElement(new Association(fieldValue, attributeValue));
+            String fieldValue = sourceFieldEnum.next().getQualifiedName();
+            String attributeValue = targetFieldEnum.next().getQualifiedName();
+            associations.add(new Association(fieldValue, attributeValue));
         }
 
         return associations;
@@ -1081,7 +1115,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
     /**
      * INTERNAL:
      * If required, get the targetVersion of the source object from the merge manager
-     *
+     * <p>
      * Used with MapKeyContainerPolicy to abstract getting the target version of a source key
      */
     @Override
@@ -1205,8 +1239,8 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      * The foreign keys primary keys are stored as database fields in the map.
      */
     protected void initializeForeignKeys(AbstractSession session) {
-        HashMap<DatabaseField, DatabaseField> newSourceToTargetKeyFields = new HashMap(getSourceToTargetKeyFields().size());
-        HashMap<DatabaseField, DatabaseField> newTargetToSourceKeyFields = new HashMap(getTargetToSourceKeyFields().size());
+        HashMap<DatabaseField, DatabaseField> newSourceToTargetKeyFields = new HashMap<>(getSourceToTargetKeyFields().size());
+        HashMap<DatabaseField, DatabaseField> newTargetToSourceKeyFields = new HashMap<>(getTargetToSourceKeyFields().size());
         Iterator<Map.Entry<DatabaseField, DatabaseField>> iterator = getSourceToTargetKeyFields().entrySet().iterator();
         while (iterator.hasNext()) {
             Map.Entry<DatabaseField, DatabaseField> entry = iterator.next();
@@ -1327,7 +1361,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
     public void postInitializeSourceAndTargetExpressions() {
         // EL Bug 426500
         // postInitialize and set source expression fields using my descriptor
-        if (this.sourceExpressionsToPostInitialize != null && this.sourceExpressionsToPostInitialize.size() > 0) {
+        if (this.sourceExpressionsToPostInitialize != null && !this.sourceExpressionsToPostInitialize.isEmpty()) {
             ClassDescriptor descriptor = getDescriptor();
             ObjectBuilder objectBuilder = descriptor.getObjectBuilder();
             for (Iterator<Expression> expressions = this.sourceExpressionsToPostInitialize.iterator(); expressions.hasNext();) {
@@ -1345,7 +1379,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
         }
 
         // postInitialize and set target expression fields using my reference descriptor
-        if (this.targetExpressionsToPostInitialize != null && this.targetExpressionsToPostInitialize.size() > 0) {
+        if (this.targetExpressionsToPostInitialize != null && !this.targetExpressionsToPostInitialize.isEmpty()) {
             ClassDescriptor descriptor = getReferenceDescriptor();
             ObjectBuilder objectBuilder = descriptor.getObjectBuilder();
             for (Iterator<Expression> expressions = this.targetExpressionsToPostInitialize.iterator(); expressions.hasNext();) {
@@ -1386,9 +1420,9 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
     /**
      * INTERNAL:
      * Build the selection criteria for this mapping.  Allows several variations.
-     *
+     * <p>
      * Either a parameter can be used for the join or simply the database field
-     *
+     * <p>
      * The existing selection criteria can be built upon or a whole new criteria can be built.
      */
     public Expression buildSelectionCriteria(boolean useParameter, boolean usePreviousSelectionCriteria){
@@ -1417,7 +1451,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
                     sourceKeyExpression = builder.getField(foreignKey);
                 }
 
-                if (usePreviousSelectionCriteria == false) {
+                if (!usePreviousSelectionCriteria) {
                     this.sourceExpressionsToPostInitialize.add(sourceKeyExpression);
                     this.targetExpressionsToPostInitialize.add(targetKeyExpression);
                 }
@@ -1576,7 +1610,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
         DatabaseField sourceField = new DatabaseField(sourceForeignKeyFieldName);
 
         setIsForeignKeyRelationship(true);
-        getForeignKeyFields().addElement(sourceField);
+        getForeignKeyFields().add(sourceField);
         getSourceToTargetKeyFields().put(sourceField, new DatabaseField());
     }
 
@@ -1585,10 +1619,10 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      * Return the foreign key field names associated with the mapping.
      * These are only the source fields that are writable.
      */
-    public void setForeignKeyFieldNames(Vector fieldNames) {
-        Vector fields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(fieldNames.size());
-        for (Enumeration fieldNamesEnum = fieldNames.elements(); fieldNamesEnum.hasMoreElements();) {
-            fields.addElement(new DatabaseField((String)fieldNamesEnum.nextElement()));
+    public void setForeignKeyFieldNames(List<String> fieldNames) {
+        List<DatabaseField> fields = new ArrayList<>(fieldNames.size());
+        for (Iterator<String> iterator = fieldNames.iterator(); iterator.hasNext();) {
+            fields.add(new DatabaseField(iterator.next()));
         }
 
         setForeignKeyFields(fields);
@@ -1619,12 +1653,12 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      * INTERNAL:
      * Set a collection of the source to target field associations.
      */
-    public void setSourceToTargetKeyFieldAssociations(Vector sourceToTargetKeyFieldAssociations) {
-        setSourceToTargetKeyFields(new HashMap(sourceToTargetKeyFieldAssociations.size() + 1));
-        setTargetToSourceKeyFields(new HashMap(sourceToTargetKeyFieldAssociations.size() + 1));
-        for (Enumeration associationsEnum = sourceToTargetKeyFieldAssociations.elements();
-                 associationsEnum.hasMoreElements();) {
-            Association association = (Association)associationsEnum.nextElement();
+    public void setSourceToTargetKeyFieldAssociations(List<Association> sourceToTargetKeyFieldAssociations) {
+        setSourceToTargetKeyFields(new HashMap<>(sourceToTargetKeyFieldAssociations.size() + 1));
+        setTargetToSourceKeyFields(new HashMap<>(sourceToTargetKeyFieldAssociations.size() + 1));
+        for (Iterator<Association> iterator = sourceToTargetKeyFieldAssociations.iterator();
+             iterator.hasNext();) {
+            Association association = iterator.next();
             DatabaseField sourceField = new DatabaseField((String)association.getKey());
             DatabaseField targetField = new DatabaseField((String)association.getValue());
             getSourceToTargetKeyFields().put(sourceField, targetField);
@@ -1764,8 +1798,8 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
     @Override
     public void writeFromAttributeIntoRow(Object attribute, AbstractRecord row, AbstractSession session)
     {
-          for (Enumeration<DatabaseField> fieldsEnum = getForeignKeyFields().elements(); fieldsEnum.hasMoreElements();) {
-                  DatabaseField sourceKey = fieldsEnum.nextElement();
+          for (Iterator<DatabaseField> iterator = getForeignKeyFields().iterator(); iterator.hasNext();) {
+                  DatabaseField sourceKey = iterator.next();
                   DatabaseField targetKey = getSourceToTargetKeyFields().get(sourceKey);
                   Object referenceValue = null;
                           // If privately owned part is null then method cannot be invoked.
@@ -2078,9 +2112,9 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
             return;
         }
 
-        for (Enumeration<DatabaseField> fieldsEnum = getForeignKeyFields().elements();
-             fieldsEnum.hasMoreElements();) {
-            DatabaseField sourceKey = fieldsEnum.nextElement();
+        for (Iterator<DatabaseField> iterator = getForeignKeyFields().iterator();
+             iterator.hasNext();) {
+            DatabaseField sourceKey = iterator.next();
             databaseRow.add(sourceKey, null);
         }
     }
@@ -2095,8 +2129,8 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
             return;
         }
 
-        for (Enumeration<DatabaseField> fieldsEnum = getForeignKeyFields().elements(); fieldsEnum.hasMoreElements();) {
-            DatabaseField sourceKey = fieldsEnum.nextElement();
+        for (Iterator<DatabaseField> iterator = getForeignKeyFields().iterator(); iterator.hasNext();) {
+            DatabaseField sourceKey = iterator.next();
 
             if (shouldWriteField(sourceKey, WriteType.INSERT)) {
                 databaseRow.add(sourceKey, null);
@@ -2274,9 +2308,9 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      * Return all the fields populated by this mapping, these are foreign keys only.
      */
     @Override
-    protected Vector<DatabaseField> collectFields() {
+    protected List<DatabaseField> collectFields() {
         if(this.mechanism != null) {
-            return new Vector(0);
+            return new ArrayList<>(0);
         } else {
             return super.collectFields();
         }
@@ -2288,8 +2322,8 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      */
     @Override
     public List<Expression> getOrderByNormalizedExpressions(Expression base) {
-        if (this.foreignKeyFields.size() > 0) {
-            List<Expression> orderBys = new ArrayList(this.foreignKeyFields.size());
+        if (!this.foreignKeyFields.isEmpty()) {
+            List<Expression> orderBys = new ArrayList<>(this.foreignKeyFields.size());
             for (DatabaseField field : this.foreignKeyFields) {
                 orderBys.add(((QueryKeyExpression)base).getBaseExpression().getField(field));
             }

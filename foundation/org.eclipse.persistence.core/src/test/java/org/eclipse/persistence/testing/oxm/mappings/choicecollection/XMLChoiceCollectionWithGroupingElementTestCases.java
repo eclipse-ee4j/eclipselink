@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,14 +14,13 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.oxm.mappings.choicecollection;
 
-import java.io.FileReader;
-import java.io.InputStream;
-
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.factories.XMLProjectReader;
 import org.eclipse.persistence.testing.oxm.mappings.XMLWithJSONMappingTestCases;
+
+import java.io.InputStream;
 
 public class XMLChoiceCollectionWithGroupingElementTestCases extends XMLWithJSONMappingTestCases {
 
@@ -42,7 +41,7 @@ public class XMLChoiceCollectionWithGroupingElementTestCases extends XMLWithJSON
     Employee employee = new Employee();
     employee.name = "Jane Doe";
 
-    employee.choice = new java.util.Vector<Object>();
+    employee.choice = new java.util.Vector<>();
     employee.choice.add("123 Fake Street");
     employee.choice.add(12);
     Address addr = new Address();
@@ -62,7 +61,7 @@ public class XMLChoiceCollectionWithGroupingElementTestCases extends XMLWithJSON
         Employee employee = new Employee();
         employee.name = "Jane Doe";
 
-        employee.choice = new java.util.Vector<Object>();
+        employee.choice = new java.util.Vector<>();
         employee.choice.add("123 Fake Street");
         employee.choice.add(12);
         employee.choice.add(14);

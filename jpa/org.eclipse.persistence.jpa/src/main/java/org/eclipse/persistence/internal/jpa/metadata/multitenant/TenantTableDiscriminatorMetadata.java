@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,7 +27,7 @@ import static org.eclipse.persistence.config.PersistenceUnitProperties.MULTITENA
 
 /**
  * Object to hold onto tenant table discriminator metadata.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -80,8 +80,7 @@ public class TenantTableDiscriminatorMetadata extends ORMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (objectToCompare instanceof TenantTableDiscriminatorMetadata) {
-            TenantTableDiscriminatorMetadata tenantTableDiscriminator = (TenantTableDiscriminatorMetadata) objectToCompare;
+        if (objectToCompare instanceof TenantTableDiscriminatorMetadata tenantTableDiscriminator) {
 
             if (! valuesMatch(m_contextProperty, tenantTableDiscriminator.getContextProperty())) {
                 return false;
@@ -95,7 +94,8 @@ public class TenantTableDiscriminatorMetadata extends ORMetadata {
 
     @Override
     public int hashCode() {
-        int result = m_type != null ? m_type.hashCode() : 0;
+        int result = super.hashCode();
+        result = 31 * result + (m_type != null ? m_type.hashCode() : 0);
         result = 31 * result + (m_contextProperty != null ? m_contextProperty.hashCode() : 0);
         return result;
     }

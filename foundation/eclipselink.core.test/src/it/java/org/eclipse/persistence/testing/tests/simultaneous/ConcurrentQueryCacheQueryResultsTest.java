@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,6 +14,13 @@
 //     dminsky - initial API and implementation
 package org.eclipse.persistence.testing.tests.simultaneous;
 
+import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.queries.QueryResultsCachePolicy;
+import org.eclipse.persistence.queries.ReadObjectQuery;
+import org.eclipse.persistence.sessions.UnitOfWork;
+import org.eclipse.persistence.testing.framework.TestCase;
+import org.eclipse.persistence.testing.models.employee.domain.Employee;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -22,14 +29,6 @@ import java.util.Vector;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-
-import org.eclipse.persistence.sessions.UnitOfWork;
-import org.eclipse.persistence.expressions.ExpressionBuilder;
-import org.eclipse.persistence.queries.QueryResultsCachePolicy;
-import org.eclipse.persistence.queries.ReadObjectQuery;
-
-import org.eclipse.persistence.testing.models.employee.domain.Employee;
-import org.eclipse.persistence.testing.framework.TestCase;
 
 /**
  * Bug 304423 - CacheIdentityMap is incorrectly synchronized
@@ -70,10 +69,10 @@ public class ConcurrentQueryCacheQueryResultsTest extends TestCase {
         query.setQueryResultsCachePolicy(new QueryResultsCachePolicy(CACHE_SIZE));
         getSession().addQuery(QUERY_NAME, query);
         
-        testEmployees = new ArrayList<Employee>(TESTDATA_INSTANCES);
+        testEmployees = new ArrayList<>(TESTDATA_INSTANCES);
         
         // set all test results to false
-        testResults = new ArrayList<Boolean>(NUMBER_OF_EXECUTIONS);
+        testResults = new ArrayList<>(NUMBER_OF_EXECUTIONS);
         for (int i = 0; i < NUMBER_OF_EXECUTIONS; i++) {
             testResults.add(i, Boolean.FALSE);
         }
@@ -144,7 +143,7 @@ public class ConcurrentQueryCacheQueryResultsTest extends TestCase {
             int randomNumber = new Random().nextInt(TESTDATA_INSTANCES);
             Employee randomEmployee = testEmployees.get(randomNumber);
             
-            Vector<String> args = new Vector<String>();
+            Vector<String> args = new Vector<>();
             args.add(randomEmployee.getFirstName());
             Employee employeeFound = (Employee) getSession().executeQuery(QUERY_NAME, args);
             

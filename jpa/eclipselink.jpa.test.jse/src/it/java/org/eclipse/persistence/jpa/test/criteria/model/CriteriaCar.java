@@ -47,7 +47,7 @@ public class CriteriaCar {
         @JoinColumn(name = "CAR_ID", referencedColumnName = "CAR_ID"),
         @JoinColumn(name = "CAR_VER", referencedColumnName = "CAR_VER")
     })
-    private Map<String, String> origin = new HashMap<String, String>();
+    private Map<String, String> origin = new HashMap<>();
 
     public CriteriaCar() { }
 

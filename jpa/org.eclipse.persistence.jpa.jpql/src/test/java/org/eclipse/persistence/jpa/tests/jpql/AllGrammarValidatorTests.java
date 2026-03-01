@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,6 +22,7 @@ import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLGrammarTestHelper;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLGrammarTools;
 import org.eclipse.persistence.jpa.tests.jpql.tools.DefaultGrammarValidatorTest2_0;
 import org.eclipse.persistence.jpa.tests.jpql.tools.DefaultGrammarValidatorTest2_1;
+import org.eclipse.persistence.jpa.tests.jpql.tools.DefaultGrammarValidatorTest3_2;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite.SuiteClasses;
 
@@ -36,6 +37,7 @@ import org.junit.runners.Suite.SuiteClasses;
 @SuiteClasses({
     AllGrammarValidatorTests.AllDefaultGrammarValidatorTest2_0.class,
     AllGrammarValidatorTests.AllDefaultGrammarValidatorTest2_1.class,
+    AllGrammarValidatorTests.AllDefaultGrammarValidatorTest3_2.class,
     AllGrammarValidatorTests.AllEclipseLinkGrammarValidatorTest.class,
     AllGrammarValidatorTests.AllEclipseLinkGrammarValidatorTest2_4.class,
     AllGrammarValidatorTests.AllEclipseLinkGrammarValidatorTest2_5.class,
@@ -84,6 +86,26 @@ public final class AllGrammarValidatorTests {
         @JPQLGrammarTestHelper
         static JPQLGrammar[] buildJPQLGrammars() {
             return JPQLGrammarTools.allDefaultJPQLGrammars(JPAVersion.VERSION_2_1);
+        }
+    }
+
+    /**
+     * This test suite tests JPQL queries written following the grammar defined in the JPA 3.2 spec
+     * and makes sure the various JPQL grammars that support it parses them correctly.
+     */
+    @SuiteClasses({
+            DefaultGrammarValidatorTest3_2.class,
+    })
+    @RunWith(JPQLTestRunner.class)
+    public static class AllDefaultGrammarValidatorTest3_2 {
+
+        private AllDefaultGrammarValidatorTest3_2() {
+            super();
+        }
+
+        @JPQLGrammarTestHelper
+        static JPQLGrammar[] buildJPQLGrammars() {
+            return JPQLGrammarTools.allDefaultJPQLGrammars(JPAVersion.VERSION_3_2);
         }
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,9 +14,10 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.oxm.mappings.namespaces;
 
+import org.eclipse.persistence.oxm.XMLRoot;
+
 import java.util.ArrayList;
 import java.util.List;
-import org.eclipse.persistence.oxm.XMLRoot;
 
 public class Company {
     String companyName;
@@ -93,15 +94,15 @@ public class Company {
         return true;
     }
      public String toString() {
-        String string = "Company( name:";
-          string += getCompanyName() +" ";
+        StringBuilder string = new StringBuilder("Company( name:");
+          string.append(getCompanyName()).append(" ");
           if(getManager() != null){
-            string += getManager().toString();
+            string.append(getManager().toString());
           }
 
         for (int i = 0; i < getDepartments().size(); i++) {
-            string += getDepartments().get(i).toString();
+            string.append(getDepartments().get(i).toString());
         }
-        return string;
+        return string.toString();
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,8 +14,9 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.jpql;
 
-import java.util.*;
-import org.eclipse.persistence.testing.models.employee.domain.*;
+import org.eclipse.persistence.testing.models.employee.domain.Employee;
+
+import java.util.Vector;
 
 class SelectSimpleNotEqualsVariablesIngeter extends org.eclipse.persistence.testing.tests.jpql.JPQLTestCase {
     @Override
@@ -24,7 +25,7 @@ class SelectSimpleNotEqualsVariablesIngeter extends org.eclipse.persistence.test
         Vector employeesUsed = new Vector();
 
         employeesUsed = getSomeEmployees();
-        emp1 = (Employee)getSomeEmployees().firstElement();
+        emp1 = (Employee)getSomeEmployees().get(0);
         employeesUsed.remove(emp1);
 
         String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE emp.id <> " + emp1.id;

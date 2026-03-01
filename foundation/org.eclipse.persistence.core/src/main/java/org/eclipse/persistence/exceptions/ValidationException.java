@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,20 +38,23 @@
 //       - 326728: Fix persistence root calculation for WAR files
 package org.eclipse.persistence.exceptions;
 
-import java.net.URL;
-import java.util.HashSet;
-import java.util.Vector;
-import java.lang.reflect.*;
-
-import org.eclipse.persistence.mappings.DatabaseMapping;// 78aclt
-import org.eclipse.persistence.internal.queries.*;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
-import org.eclipse.persistence.internal.helper.JavaVersion;
-import org.eclipse.persistence.internal.identitymaps.*;
-import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.i18n.ExceptionMessageGenerator;
+import org.eclipse.persistence.internal.localization.ExceptionLocalization;
+import org.eclipse.persistence.internal.queries.ContainerPolicy;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
+import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.queries.AttributeGroup;
+import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.FetchGroup;
+
+import java.io.IOException;
+import java.lang.reflect.Method;
+import java.net.URL;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p><b>Purpose</b>: This exception is used if incorrect state or method arguments are detected
@@ -150,11 +153,11 @@ public class ValidationException extends EclipseLinkException {
     public static final int ERROR_DECRYPTING_PASSWORD = 7107;
     public static final int NOT_SUPPORTED_FOR_DATASOURCE = 7108;
     public static final int PROJECT_LOGIN_IS_NULL = 7109;
+    public static final int ENCRYPTION_OLD_ALGORITHM = 7360;
 
     // for flashback:
     public static final int HISTORICAL_SESSION_ONLY_SUPPORTED_ON_ORACLE = 7110;
     public static final int CANNOT_ACQUIRE_HISTORICAL_SESSION = 7111;
-    public static final int FEATURE_NOT_SUPPORTED_IN_JDK_VERSION = 7112;
     public static final int PLATFORM_DOES_NOT_SUPPORT_CALL_WITH_RETURNING = 7113;
     public static final int ISOLATED_DATA_NOT_SUPPORTED_IN_CLIENTSESSIONBROKER = 7114;
     public static final int CLIENT_SESSION_CANNOT_USE_EXCLUSIVE_CONNECTION = 7115;
@@ -210,6 +213,9 @@ public class ValidationException extends EclipseLinkException {
     public static final int INVALID_COMPOSITE_PK_ATTRIBUTE = 7149;
     public static final int INVALID_COMPOSITE_PK_SPECIFICATION = 7150;
     public static final int INVALID_TYPE_FOR_ENUMERATED_ATTRIBUTE = 7151;
+    public static final int INCORRECT_NUMBER_ENUMERATED_VALUE = 7361;
+    public static final int INVALID_ATTRIBUTE_TYPE_FOR_ENUMERATED_ORDINAL = 7362;
+    public static final int INVALID_ATTRIBUTE_TYPE_FOR_ENUMERATED_STRING = 7363;
     public static final int MAPPING_ANNOTATIONS_APPLIED_TO_TRANSIENT_ATTRIBUTE = 7153;
     public static final int NO_MAPPED_BY_ATTRIBUTE_FOUND = 7154;
     public static final int INVALID_TYPE_FOR_SERIALIZED_ATTRIBUTE = 7155;
@@ -466,8 +472,13 @@ public class ValidationException extends EclipseLinkException {
     public static final int MULTIPLE_OUT_PARAMS_NOT_SUPPORTED = 7356;
 
     public static final int INVALID_PERSISTENCE_ROOT_URL = 7357;
+    public static final int INCORRECT_ASM_SERVICE_PROVIDED = 7358;
+    public static final int NOT_AVAILABLE_ASM_SERVICE = 7359;
+    public static final int DUPLICIT_RESULT_SET_MAPPING_IN_NATIVE_QUERY = 7364;
 
-    /* Code values in range <7500;7599> reserved for {@link org.eclipse.persistence.exceptions.BeanValidationException}. */
+    public static final int STMT_WRITER_ERROR = 7365;
+
+    /* Code values in range <7500;7599> reserved for {@link org.eclipse.persistence.jaxb.BeanValidationException}. */
 
     /**
      * INTERNAL:
@@ -729,7 +740,7 @@ public class ValidationException extends EclipseLinkException {
         return validationException;
     }
 
-    public static ValidationException ejbFinderException(Object bean, Throwable finderException, Vector primaryKey) {
+    public static ValidationException ejbFinderException(Object bean, Throwable finderException, List<?> primaryKey) {
         Object[] args = { bean, bean.getClass(), primaryKey };
 
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, EJB_FINDER_EXCEPTION, args));
@@ -903,6 +914,13 @@ public class ValidationException extends EclipseLinkException {
         return validationException;
     }
 
+    public static ValidationException errorDecryptingPasswordOldAlgorithm(Exception exception) {
+        Object[] args = {  };
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, ENCRYPTION_OLD_ALGORITHM, args), exception);
+        validationException.setErrorCode(ENCRYPTION_OLD_ALGORITHM);
+        return validationException;
+    }
+
     public static ValidationException invalidEncryptionClass(String className, Throwable throwableError) {
         Object[] args = { className };
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, INVALID_ENCRYPTION_CLASS, args));
@@ -954,13 +972,6 @@ public class ValidationException extends EclipseLinkException {
 
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, FATAL_ERROR_OCCURRED, args), exception);
         validationException.setErrorCode(FATAL_ERROR_OCCURRED);
-        return validationException;
-    }
-
-    public static ValidationException featureIsNotAvailableInRunningJDKVersion(String feature) {
-        Object[] args = { feature, JavaVersion.vmVersionString() };
-        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, FEATURE_NOT_SUPPORTED_IN_JDK_VERSION, args));
-        validationException.setErrorCode(FEATURE_NOT_SUPPORTED_IN_JDK_VERSION);
         return validationException;
     }
 
@@ -1134,6 +1145,27 @@ public class ValidationException extends EclipseLinkException {
         Object[] args = { attributeName, targetClass, entityClass };
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, INVALID_TYPE_FOR_ENUMERATED_ATTRIBUTE, args));
         validationException.setErrorCode(INVALID_TYPE_FOR_ENUMERATED_ATTRIBUTE);
+        return validationException;
+    }
+
+    public static ValidationException incorrectNumberOfEnumeratedValueAnnotation(Object targetClass) {
+        Object[] args = { targetClass };
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, INCORRECT_NUMBER_ENUMERATED_VALUE, args));
+        validationException.setErrorCode(INCORRECT_NUMBER_ENUMERATED_VALUE);
+        return validationException;
+    }
+
+    public static ValidationException invalidFieldTypeForOrdinalEnumType(String attributeName, Object targetClass) {
+        Object[] args = { attributeName, targetClass };
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, INVALID_ATTRIBUTE_TYPE_FOR_ENUMERATED_ORDINAL, args));
+        validationException.setErrorCode(INVALID_ATTRIBUTE_TYPE_FOR_ENUMERATED_ORDINAL);
+        return validationException;
+    }
+
+    public static ValidationException invalidFieldTypeForStringEnumType(String attributeName, Object targetClass) {
+        Object[] args = { attributeName, targetClass };
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, INVALID_ATTRIBUTE_TYPE_FOR_ENUMERATED_STRING, args));
+        validationException.setErrorCode(INVALID_ATTRIBUTE_TYPE_FOR_ENUMERATED_STRING);
         return validationException;
     }
 
@@ -1635,7 +1667,7 @@ public class ValidationException extends EclipseLinkException {
     * Action:  Check that the required amendment method exists on the class specified.
     */
     public static ValidationException sessionAmendmentExceptionOccured(Exception exception, String amendmentMethod, String amendmentClass, Class<?>[] parameters) {
-        StringBuffer buf = new StringBuffer(30);
+        StringBuilder buf = new StringBuilder(30);
         for (int i = 0; i < (parameters.length - 1); i++) {
             buf.append(parameters[i].getName());
             if (i != (parameters.length - 1)) {
@@ -1692,7 +1724,7 @@ public class ValidationException extends EclipseLinkException {
         return validationException;
     }
 
-    public static ValidationException nullCacheKeyFoundOnRemoval(IdentityMap map, Object clazz) {
+    public static ValidationException nullCacheKeyFoundOnRemoval(Map<?, ?> map, Object clazz) {
         Object[] args = { map, clazz, CR };
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, NULL_CACHE_KEY_FOUND_ON_REMOVAL, args));
         validationException.setErrorCode(NULL_CACHE_KEY_FOUND_ON_REMOVAL);
@@ -1792,14 +1824,11 @@ public class ValidationException extends EclipseLinkException {
     }
 
     public static ValidationException illegalOperationForUnitOfWorkLifecycle(int lifecycle, String operation) {
-        switch (lifecycle) {
-        case UnitOfWorkImpl.CommitTransactionPending:
-            return unitOfWorkInTransactionCommitPending(operation);
-        case UnitOfWorkImpl.WriteChangesFailed:
-            return unitOfWorkAfterWriteChangesFailed(operation);
-        case UnitOfWorkImpl.Death:default:
-            return inActiveUnitOfWork(operation);
-        }
+        return switch (lifecycle) {
+            case UnitOfWorkImpl.CommitTransactionPending -> unitOfWorkInTransactionCommitPending(operation);
+            case UnitOfWorkImpl.WriteChangesFailed -> unitOfWorkAfterWriteChangesFailed(operation);
+            default -> inActiveUnitOfWork(operation);
+        };
     }
 
     public static ValidationException unitOfWorkInTransactionCommitPending(String operation) {
@@ -1902,8 +1931,8 @@ public class ValidationException extends EclipseLinkException {
         return validationException;
     }
 
-    public static ValidationException multitenantContextPropertyForNonSharedEMFNotSpecified(String contextProperty) {
-        Object[] args = { contextProperty };
+    public static ValidationException multitenantContextPropertyForNonSharedEMFNotSpecified(String contextProperty, String key) {
+        Object[] args = { contextProperty, key };
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, MULTITENANT_PROPERTY_FOR_NON_SHARED_EMF_NOT_SPECIFIED, args));
         validationException.setErrorCode(MULTITENANT_PROPERTY_FOR_NON_SHARED_EMF_NOT_SPECIFIED);
         return validationException;
@@ -2639,6 +2668,13 @@ public class ValidationException extends EclipseLinkException {
         return validationException;
     }
 
+    public static ValidationException duplicitResultSetMappingInNativeQuery(String entityName, String queryName) {
+        Object[] args = { entityName, queryName };
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, DUPLICIT_RESULT_SET_MAPPING_IN_NATIVE_QUERY, args));
+        validationException.setErrorCode(DUPLICIT_RESULT_SET_MAPPING_IN_NATIVE_QUERY);
+        return validationException;
+    }
+
     public static ValidationException invalidBooleanValueForEnableStatmentsCached(String specifiedBooleanValue) {
         Object[] args = { specifiedBooleanValue };
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, INVALID_BOOLEAN_VALUE_FOR_ENABLESTATMENTSCACHED, args));
@@ -3022,5 +3058,29 @@ public class ValidationException extends EclipseLinkException {
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, INVALID_PERSISTENCE_ROOT_URL, args));
         validationException.setErrorCode(INVALID_PERSISTENCE_ROOT_URL);
         return validationException;
+    }
+
+    public static ValidationException incorrectASMServiceProvided() {
+        Object[] args = {  };
+
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, INCORRECT_ASM_SERVICE_PROVIDED, args));
+        validationException.setErrorCode(INCORRECT_ASM_SERVICE_PROVIDED);
+        return validationException;
+    }
+
+    public static ValidationException notAvailableASMService() {
+        Object[] args = {  };
+
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, NOT_AVAILABLE_ASM_SERVICE, args));
+        validationException.setErrorCode(NOT_AVAILABLE_ASM_SERVICE);
+        return validationException;
+    }
+
+    public static ValidationException tablesTruncationFailed(IOException ex) {
+        ValidationException databaseException = new ValidationException(
+                ExceptionLocalization.buildMessage("truncate_tables_failed"),
+                ex);
+        databaseException.setErrorCode(STMT_WRITER_ERROR);
+        return databaseException;
     }
 }

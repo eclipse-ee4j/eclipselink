@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2019, 2021 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
+    Copyright (c) 2019, 2025 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -13,20 +14,19 @@
 
 -->
 
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd"
          xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <modelVersion>4.0.0</modelVersion>
 
     <name>EclipseLink CORBA Extension</name>
-    <groupId>org.eclipse.persistence</groupId>
     <artifactId>org.eclipse.persistence.corba</artifactId>
     <packaging>jar</packaging>
 
     <parent>
         <groupId>org.eclipse.persistence</groupId>
-        <artifactId>org.eclipse.persistence.parent</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
+        <artifactId>org.eclipse.persistence.project</artifactId>
+        <version>5.0.0-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
@@ -106,14 +106,6 @@
     </dependencies>
 
     <build>
-        <!--Filtering enables generate/substitute test properties from Maven into *.xml files.-->
-        <testResources>
-            <testResource>
-                <directory>${integration.test.resources.directory}</directory>
-                <filtering>true</filtering>
-            </testResource>
-        </testResources>
-
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -183,7 +175,7 @@
             <!-- see https://github.com/eclipse-ee4j/orb-gmbal/issues/22 -->
             <id>corba-tests</id>
             <activation>
-                <jdk>[8,14)</jdk>
+                <jdk>[8,25)</jdk>
             </activation>
             <build>
                 <plugins>

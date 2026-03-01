@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2016, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,13 +15,6 @@
 //       - 374771 : TREAT support
 package org.eclipse.persistence.internal.expressions;
 
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.InheritancePolicy;
 import org.eclipse.persistence.exceptions.QueryException;
@@ -32,6 +25,13 @@ import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.queries.DatabaseQuery;
+
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author cdelahun
@@ -64,7 +64,7 @@ public class TreatAsExpression extends QueryKeyExpression {
     }
 
     @Override
-    public Vector getFields() {
+    public List<DatabaseField> getFields() {
         return typeExpressionBase.getFields();
     }
 
@@ -92,7 +92,7 @@ public class TreatAsExpression extends QueryKeyExpression {
      * usages (join query keys, custom defined query keys, or query keys for
      * mappings).
      * Does not apply to Treat
-     *
+     * <p>
      * Called from {@link SQLSelectStatement#appendFromClauseForOuterJoin}.
      *
      * @return DatabaseTable
@@ -308,7 +308,7 @@ public class TreatAsExpression extends QueryKeyExpression {
     }
 
     @Override
-    protected void postCopyIn(Map alreadyDone) {
+    protected void postCopyIn(Map<Expression, Expression> alreadyDone) {
         super.postCopyIn(alreadyDone);
         this.typeExpressionBase = (ObjectExpression)typeExpressionBase.copiedVersionFrom(alreadyDone);
     }
@@ -398,11 +398,11 @@ public class TreatAsExpression extends QueryKeyExpression {
      */
     public List<DatabaseTable> getOwnedSubTables() {
         ClassDescriptor parentDescriptor = this.typeExpressionBase.getDescriptor();
-        Vector<DatabaseTable> childTables = new Vector(2);
+        List<DatabaseTable> childTables = new ArrayList<>(2);
         if (parentDescriptor.hasInheritance() && parentDescriptor.getInheritancePolicy().hasMultipleTableChild() ) {
             List<DatabaseTable> parentTables = typeExpressionBase.getOwnedTables();
             //All tables for this child, including parent tables
-            Vector<DatabaseTable> tables = getDescriptor().getTables();
+            List<DatabaseTable> tables = getDescriptor().getTables();
             for (DatabaseTable table : tables) {
                 if (!parentTables.contains(table)) {
                     childTables.add(table);
@@ -439,23 +439,23 @@ public class TreatAsExpression extends QueryKeyExpression {
      * Used in case outer joins should be printed in FROM clause.
      * Each of the additional tables mapped to expressions that joins it.
      */
-    public Map additionalTreatExpressionCriteriaMap() {
+    public Map<DatabaseTable, Expression> additionalTreatExpressionCriteriaMap() {
         if (getDescriptor() == null) {
             return null;
         }
         int tableSize = 0;
-        HashMap tablesJoinExpressions = new HashMap();
+        Map<DatabaseTable, Expression> tablesJoinExpressions = new HashMap<>();
 
         ClassDescriptor parentDescriptor = this.typeExpressionBase.getDescriptor();
 
         //outerjoin our parent->child tables
         if (parentDescriptor.hasInheritance() &&
                 parentDescriptor.getInheritancePolicy().hasMultipleTableChild() ) {
-            Vector<DatabaseTable> tables = getDescriptor().getTables();//All this child's tables
+            List<DatabaseTable> tables = getDescriptor().getTables();//All this child's tables
             tableSize = tables.size();
             //look up the joins from the parent descriptor to our tables.
             for (int i=0; i < tableSize; i++) {
-                DatabaseTable table = tables.elementAt(i);
+                DatabaseTable table = tables.get(i);
                 Expression joinExpression = parentDescriptor.getInheritancePolicy().getChildrenTablesJoinExpressions().get(table);
                 //Some of our tables might be the in our parent as well, so ignore the lack of a joinExpression
                 if (joinExpression != null) {
@@ -492,14 +492,14 @@ public class TreatAsExpression extends QueryKeyExpression {
         //need to build this using just the multiple tables on this descriptor not included in the parent's join expression
         Expression criteria = null;
         if(getSession().getPlatform().shouldPrintOuterJoinInWhereClause()) {
-            Vector<DatabaseTable> tables = getDescriptor().getTables();//This child's tables
+            List<DatabaseTable> tables = getDescriptor().getTables();//This child's tables
             ClassDescriptor parentDescriptor = this.typeExpressionBase.getDescriptor();
             int tablesSize = tables.size();
             if (parentDescriptor.hasInheritance() &&
                     parentDescriptor.getInheritancePolicy().hasMultipleTableChild() ) {
                 //look up the joins from the parent descriptor to our tables.
                 for (int i=0; i < tablesSize; i++) {
-                    DatabaseTable table = tables.elementAt(i);
+                    DatabaseTable table = tables.get(i);
                     Expression joinExpression = parentDescriptor.getInheritancePolicy().getChildrenTablesJoinExpressions().get(table);
                     //Some of our tables might be the in our parent as well, so ignore the lack of a joinExpression
                     if (joinExpression != null) {
@@ -635,7 +635,7 @@ public class TreatAsExpression extends QueryKeyExpression {
         } else if (!getSession().getPlatform().shouldPrintOuterJoinInWhereClause()
                 || (!getSession().getPlatform().shouldPrintInnerJoinInWhereClause((normalizer.getStatement().getParentStatement() != null ? normalizer.getStatement().getParentStatement().getQuery() : normalizer.getStatement().getQuery())))) {
             //the base is not using an outer join, so we add a new one for this class' tables.
-            Map additionalExpMap = additionalTreatExpressionCriteriaMap();
+            Map<DatabaseTable, Expression> additionalExpMap = additionalTreatExpressionCriteriaMap();
             if (additionalExpMap!=null && !additionalExpMap.isEmpty()) {
                 statement.addOuterJoinExpressionsHolders(additionalExpMap, parentDescriptor);
             }

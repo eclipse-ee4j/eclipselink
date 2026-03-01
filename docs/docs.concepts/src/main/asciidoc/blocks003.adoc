@@ -1,0 +1,171 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[BLOCKS003]]
+=== About the MOXy Solution
+
+The MOXy component, supplied by EclipseLink, enables you to efficiently
+bind Java classes to XML schemas. MOXy implements JAXB, enabling you to
+provide your mapping information through annotations and providing
+support for storing the mappings in XML format.
+
+JAXB (Java Architecture for XML Binding—JSR 222) is the standard for XML
+Binding in Java. JAXB covers 100 percent of XML Schema concepts.
+EclipseLink provides a JAXB implementation with many extensions.
+
+When using EclipseLink MOXy as the JAXB provider, no metadata is
+required to convert your existing object model to XML. You can supply
+metadata (using annotations or XML) if you want to fine-tune the XML
+representation.
+
+MOXy includes many advanced mappings that let you handle complex XML
+structures without having to mirror the schema in your Java class model.
+
+For more information, see _Developing JAXB Applications EclipseLink
+MOXy_.
+
+The following sections describe many of these features.
+
+* link:#CHDBGGJD[Using EclipseLink MOXy as the JAXB Provider]
+* link:#CHDBDFCI[Understanding MOXy Architecture]
+* link:#CHDIJADI[Serving Metadata for MOXy]
+* link:#CHDCHHHI[About XML Bindings]
+* link:#CHDDHJAJ[Querying Objects by XPath]
+
+[[CHDBGGJD]][[OTLCG156]]
+
+==== Using EclipseLink MOXy as the JAXB Provider
+
+To use MOXy as your JAXB provider, you must identify the entry point to
+the JAXB runtime. This entry point is the EclipseLink
+`JAXBContextFactory` class.
+
+To identify the entry point, create a text file called `jaxb.properties`
+and enter the path to the `JAXBContextFactory` class as the value of the
+`jakarta.xml.bind.context.factory` context parameter, for example:
+
+[source,oac_no_warn]
+----
+jakarta.xml.bind.context.factory=org.eclipse.persistence.jaxb.JAXBContextFactory 
+----
+
+The `jaxb.properties` file must appear in the same package as the domain
+classes.
+
+[[CHDBDFCI]][[OTLCG157]]
+
+==== Understanding MOXy Architecture
+
+In the sample MOXy architecture illustrated in link:#CHDCBEEE[Figure
+2-3], the starting point is an XML schema. A binding compiler binds the
+source schema to a set of schema-derived program classes and interfaces.
+JAXB-annotated classes within the application are generated either by a
+schema compiler or the result of a developer adding JAXB annotations to
+existing Java classes. The application can either marshal data to an XML
+document or unmarshal the data to a tree of content objects. Each
+content object is an instance of either a schema derived or an existing
+program element mapped by the schema generator and corresponds to an
+instance in the XML.
+
+[[CHDCBEEE]][[OTLCG158]]
+
+*_Figure 2-3 A Sample MOXy Architecture_*
+
+image:{imagesrelativedir}/jaxb_overview.png[Process in an Object-XML project.,title="Process in an Object-XML project."] +
+xref:{imagestextrelativedir}/jaxb_overview.adoc[Description of "Figure 2-3 A Sample MOXy Architecture"] +
+
+[[CHDDHHEI]][[OTLCG159]]
+
+===== JAXB Contexts and JAXB Context Factories
+
+The `JAXBContextFactory` class is the entry point into the EclipseLink
+JAXB runtime. It provides the required factory methods and can create
+new instances of `JAXBContext` objects.
+
+The `JAXBContextFactory` class has the ability to:
+
+* Create a `JAXBContext` object from an array of classes and a
+properties object
+* Create a `JAXBContext` object from a context path and a classloader
+
+The `JAXBContext` class provides the client's entry point to the JAXB
+API. The `JAXBContext` class is responsible for interpreting the
+metadata, generating schema files, and for creating instances of these
+JAXB objects: `Marshaller`, `Unmarshaller`, `Binder`, `Introspector`,
+and `Validator`.
+
+MOXy offers several options when creating the `JAXBContext` object. You
+have the option of booting from:
+
+* A list of one or more JAXB-annotated classes
+* A list of one or more EclipseLink XML Bindings documents defining the
+mappings for your Java classes
+* A combination of classes and XML Bindings
+* A list of context paths
+
+[[CHDIJADI]][[OTLCG160]]
+
+==== Serving Metadata for MOXy
+
+In addition to the input options described in link:#CHDDHHEI[JAXB
+Contexts and JAXB Context Factories,] MOXy provides the concept of a
+`MetadataSource` object. This object lets you to store mapping
+information outside of your application and retrieve it when the
+application's `JAXBContext` object is being created or refreshed. For
+information on implementing `MetadataSource`, see _Developing JAXB
+Applications EclipseLink MOXy_.
+
+[[CHDCHHHI]][[OTLCG161]]
+
+==== About XML Bindings
+
+XML binding is how you represent information in an XML document as an
+object in computer memory. This allows applications to access the data
+in the XML from the object rather than using the Domain Object Model
+(DOM), the Simple API for XML (SAX) or the Streaming API for XML (StAX)
+to retrieve the data from a direct representation of the XML itself.
+When binding, JAXB applies a tree structure to the graph of JPA
+entities. Multiple tree representations of a graph are possible and will
+depend on the root object chosen and the direction the relationships are
+traversed.
+
+EclipseLink enables you to use all of the standard JAXB annotations. In
+addition to the standard annotations, EclipseLink offers another way of
+expressing your metadata—the EclipseLink XML Bindings document. Not only
+can XML Bindings separate your mapping information from your actual Java
+class, it can also be used for more advanced metadata tasks such as:
+
+* Augmenting or overriding existing annotations with additional mapping
+information.
+* Specifying all mappings information externally, without using Java
+annotations.
+* Defining your mappings across multiple Bindings documents.
+* Specifying virtual mappings that do not correspond to concrete Java
+fields.
+
+For more information, see _Developing JAXB Applications EclipseLink
+MOXy_.
+
+[[CHDDHJAJ]][[OTLCG163]]
+
+==== Querying Objects by XPath
+
+In addition to using conventional Java access methods to get and set
+your object's values, EclipseLink MOXy also lets you access values using
+an XPath statement. There are special APIs on EclipseLink's
+`JAXBContext` object that enable you to get and set values by XPath. For
+more information, see _Developing JAXB Applications EclipseLink MOXy_.

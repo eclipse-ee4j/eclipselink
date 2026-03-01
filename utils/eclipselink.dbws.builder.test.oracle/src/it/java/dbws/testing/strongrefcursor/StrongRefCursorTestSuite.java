@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -74,11 +74,12 @@ public class StrongRefCursorTestSuite extends DBWSTestSuite {
     static final String STRONGLY_TYPED_REF_CURSOR_TEST_PACKAGE = STRONGLY_TYPED_REF_CURSOR + "_TEST";
     static final String CREATE_TAB1_SHADOW_TYPE = "CREATE OR REPLACE TYPE " + STRONGLY_TYPED_REF_CURSOR_TEST_PACKAGE + "_STRC_TAB1 AS TABLE OF VARCHAR2(111)";
     static final String CREATE_STRC_CURSOR_SHADOW_TYPE =
-        "CREATE OR REPLACE TYPE STR_CURSOR_TEST_STR_CURSOR AS OBJECT(" +
-            "\n ID NUMBER," +
-            "\n NAME VARCHAR(25)," +
-            "\n SINCE DATE" +
-        "\n)";
+            """
+                    CREATE OR REPLACE TYPE STR_CURSOR_TEST_STR_CURSOR AS OBJECT(
+                     ID NUMBER,
+                     NAME VARCHAR(25),
+                     SINCE DATE
+                    )""";
 
     static final String CREATE_STRONGLY_TYPED_REF_CURSOR_TEST_PACKAGE =
         "CREATE OR REPLACE PACKAGE " + STRONGLY_TYPED_REF_CURSOR_TEST_PACKAGE + " AS" +
@@ -187,8 +188,8 @@ public class StrongRefCursorTestSuite extends DBWSTestSuite {
             runDdl(conn, CREATE_STRONGLY_TYPED_REF_CURSOR_TABLE, ddlDebug);
             try {
                 Statement stmt = conn.createStatement();
-                for (int i = 0; i < POPULATE_STRONGLY_TYPED_REF_CURSOR_TABLE.length; i++) {
-                    stmt.addBatch(POPULATE_STRONGLY_TYPED_REF_CURSOR_TABLE[i]);
+                for (String s : POPULATE_STRONGLY_TYPED_REF_CURSOR_TABLE) {
+                    stmt.addBatch(s);
                 }
                 stmt.executeBatch();
             }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,8 +14,6 @@
 //     11/06/2014-2.6 Tomas Kraus
 //       - 449818: Initial API and implementation.
 package org.eclipse.persistence.testing.tests.junit.mapping.conversion;
-
-import java.util.Iterator;
 
 import org.eclipse.persistence.internal.mappings.converters.AttributeNamePrefix;
 import org.eclipse.persistence.internal.mappings.converters.AttributeNameTokenizer;
@@ -48,11 +46,10 @@ public class AttributeNameTokenizerTest {
         String[] target = new String[source.length];
         for (int i = 0; i < source.length; i++) {
             final String sourceName = source[i];
-            final StringBuilder sb = new StringBuilder(sourceName.length() + prefix.length() + 1);
-            sb.append(prefix);
-            sb.append(AttributeNameTokenizer.SEPARATOR);
-            sb.append(sourceName);
-            target[i] = sb.toString();
+            String sb = prefix +
+                    AttributeNameTokenizer.SEPARATOR +
+                    sourceName;
+            target[i] = sb;
         }
         return target;
     }
@@ -66,8 +63,7 @@ public class AttributeNameTokenizerTest {
         for (int i = 0; i < prefixedNames.length; i++) {
             final String prefixedName = prefixedNames[i];
             final String result = AttributeNameTokenizer.getNameAfterKey(prefixedName);
-            Assert.assertTrue("Removal of " + AttributeNamePrefix.KEY.getName() + " prefix failed.",
-                    result.equals(ATTR_NAMES[i]));
+            Assert.assertEquals("Removal of " + AttributeNamePrefix.KEY.getName() + " prefix failed.", result, ATTR_NAMES[i]);
         }
     }
 
@@ -80,8 +76,7 @@ public class AttributeNameTokenizerTest {
         for (int i = 0; i < prefixedNames.length; i++) {
             final String prefixedName = prefixedNames[i];
             final String result = AttributeNameTokenizer.getNameAfterVersion(prefixedName);
-            Assert.assertTrue("Removal of " + AttributeNamePrefix.VALUE.getName() + " prefix failed.",
-                    result.equals(ATTR_NAMES[i]));
+            Assert.assertEquals("Removal of " + AttributeNamePrefix.VALUE.getName() + " prefix failed.", result, ATTR_NAMES[i]);
         }
     }
 
@@ -96,23 +91,21 @@ public class AttributeNameTokenizerTest {
         attrNames[0] = ATTR_NAMES;
         attrNames[1] = buildAttributeNamesWithPrefix(ATTR_NAMES, AttributeNamePrefix.KEY.getName());
         attrNames[2] = buildAttributeNamesWithPrefix(ATTR_NAMES, AttributeNamePrefix.VALUE.getName());
-        for (int i = 0; i < attrNames.length; i++) {
-            for (int j = 0; j < attrNames[i].length; j++) {
-                final String attrName = attrNames[i][j];
+        for (String[] name : attrNames) {
+            for (final String attrName : name) {
                 final String[] tokens = attrName.split(ATTR_NAME_SPLIT_REGEX);
                 int k = 0;
                 // Old style for cycle with iterator.
-                for (Iterator<String> it = new AttributeNameTokenizer(attrName).iterator(); it.hasNext(); ) {
-                    String token = it.next();
-                    Assert.assertTrue("Order of tokens did not match", token.equals(tokens[k++]));
+                for (String token : new AttributeNameTokenizer(attrName)) {
+                    Assert.assertEquals("Order of tokens did not match", token, tokens[k++]);
                 }
-                Assert.assertEquals("Token count is wrong: " + tokens.length + "!=" + k , tokens.length, k);
+                Assert.assertEquals("Token count is wrong: " + tokens.length + "!=" + k, tokens.length, k);
                 k = 0;
                 // New style for cycle.
                 for (String token : new AttributeNameTokenizer(attrName)) {
-                    Assert.assertTrue("Order of tokens did not match", token.equals(tokens[k++]));
+                    Assert.assertEquals("Order of tokens did not match", token, tokens[k++]);
                 }
-                Assert.assertEquals("Token count is wrong: " + tokens.length + "!=" + k , tokens.length, k);
+                Assert.assertEquals("Token count is wrong: " + tokens.length + "!=" + k, tokens.length, k);
             }
         }
     }
@@ -138,7 +131,7 @@ public class AttributeNameTokenizerTest {
                 TokensIterator it = new TokensIterator(attrName, true);
                 while (it.hasNext()) {
                     String token = it.next();
-                    Assert.assertTrue("Order of tokens did not match", token.equals(tokens[k++]));
+                    Assert.assertEquals("Order of tokens did not match", token, tokens[k++]);
                 }
                 Assert.assertEquals("Token count is wrong: " + tokens.length + "!=" + k , tokens.length, k);
                 AttributeNamePrefix prefix = it.getPrefix();
@@ -149,7 +142,7 @@ public class AttributeNameTokenizerTest {
                     case 2: expectedPrefix = AttributeNamePrefix.VALUE; break;
                     default: Assert.fail("Illegal attribute names array iondex.");
                 }
-                Assert.assertTrue("Returned prefix type is wrong", expectedPrefix.equals(prefix));
+                Assert.assertEquals("Returned prefix type is wrong", expectedPrefix, prefix);
             }
         }
     }

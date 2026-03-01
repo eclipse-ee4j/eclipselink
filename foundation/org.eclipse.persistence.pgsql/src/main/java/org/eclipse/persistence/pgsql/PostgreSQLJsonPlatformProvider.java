@@ -15,8 +15,6 @@
 //       - 1391: JSON support in JPA
 package org.eclipse.persistence.pgsql;
 
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
@@ -35,9 +33,7 @@ public class PostgreSQLJsonPlatformProvider implements JsonPlatformProvider {
 
     // Initialize Postgres platforms JSON extension mapping.
     private static Map<Class<? extends DatabasePlatform>, Supplier<DatabaseJsonPlatform>> initPlatforms() {
-        final Map<Class<? extends DatabasePlatform>, Supplier<DatabaseJsonPlatform>> platforms = new HashMap<>(2);
-        platforms.put(PostgreSQL10Platform.class, PostgreSQL10JsonPlatform::new);
-        return Collections.unmodifiableMap(platforms);
+        return Map.of(PostgreSQL10Platform.class, PostgreSQL10JsonPlatform::new);
     }
 
     /**

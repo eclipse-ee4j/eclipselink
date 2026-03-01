@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,7 +16,6 @@
 package org.eclipse.persistence.internal.jpa.jpql;
 
 import org.eclipse.persistence.jpa.jpql.parser.CollectionExpression;
-import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkAnonymousExpressionVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.Expression;
 import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariable;
 import org.eclipse.persistence.jpa.jpql.parser.NullExpression;
@@ -36,18 +35,12 @@ import org.eclipse.persistence.queries.ReportQuery;
  * @author Pascal Filion
  * @author John Bracken
  */
-final class ReadAllQueryBuilder extends EclipseLinkAnonymousExpressionVisitor {
+final class ReadAllQueryBuilder extends JPQLFunctionsAbstractBuilder {
 
     /**
      * The query that was created based on the type of select clause.
      */
     ReadAllQuery query;
-
-    /**
-     * The {@link JPQLQueryContext} is used to query information about the application metadata and
-     * cached information.
-     */
-    private final JPQLQueryContext queryContext;
 
     /**
      * The {@link Expression} being visited.
@@ -61,8 +54,7 @@ final class ReadAllQueryBuilder extends EclipseLinkAnonymousExpressionVisitor {
      * cached information
      */
     ReadAllQueryBuilder(JPQLQueryContext queryContext) {
-        super();
-        this.queryContext = queryContext;
+        super(queryContext);
     }
 
     private void initializeReadAllQuery() {

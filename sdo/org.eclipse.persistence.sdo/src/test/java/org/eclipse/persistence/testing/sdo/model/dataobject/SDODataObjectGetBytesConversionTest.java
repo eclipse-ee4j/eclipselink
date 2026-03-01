@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,7 +20,6 @@ import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Calendar;
 
-import junit.framework.TestCase;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDOProperty;
@@ -51,7 +50,7 @@ public class SDODataObjectGetBytesConversionTest extends SDODataObjectConversion
     public void testGetBytesFromByte() {
         SDOProperty property = dataObject.getInstanceProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_BYTE);
-        byte theByte = new String("abc").getBytes()[0];
+        byte theByte = "abc".getBytes()[0];
         dataObject.set(property, theByte);
         try {
             dataObject.getBytes(property);

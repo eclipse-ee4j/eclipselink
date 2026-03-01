@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,8 +14,6 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.jaxb.compiler;
 
-import java.awt.Image;
-import java.beans.Introspector;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
@@ -37,7 +35,7 @@ import javax.xml.namespace.QName;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 
-import org.eclipse.persistence.exceptions.BeanValidationException;
+import org.eclipse.persistence.jaxb.BeanValidationException;
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.jaxb.many.MapValue;
 import org.eclipse.persistence.internal.oxm.Constants;
@@ -64,6 +62,7 @@ import org.eclipse.persistence.internal.oxm.schema.model.SimpleContent;
 import org.eclipse.persistence.internal.oxm.schema.model.SimpleType;
 import org.eclipse.persistence.internal.oxm.schema.model.TypeDefParticle;
 import org.eclipse.persistence.internal.oxm.schema.model.TypeDefParticleOwner;
+import org.eclipse.persistence.jaxb.JAXBException;
 import org.eclipse.persistence.jaxb.compiler.builder.TransformerPropertyBuilder;
 import org.eclipse.persistence.jaxb.compiler.facets.DecimalMaxFacet;
 import org.eclipse.persistence.jaxb.compiler.facets.DecimalMinFacet;
@@ -115,6 +114,7 @@ public class SchemaGenerator {
 
     private static final String JAVAX_ACTIVATION_DATAHANDLER = "jakarta.activation.DataHandler";
     private static final String JAVAX_MAIL_INTERNET_MIMEMULTIPART = "jakarta.mail.internet.MimeMultipart";
+    private static final String AWT_IMAGE = "java.awt.Image";
     private static final String SWA_REF_IMPORT = "http://ws-i.org/profiles/basic/1.1/swaref.xsd";
 
     private static final String COLON = ":";
@@ -196,7 +196,7 @@ public class SchemaGenerator {
                 try{
                     elementName = info.getXmlNameTransformer().transformRootElementName(myClassName);
                 }catch (Exception ex){
-                    throw org.eclipse.persistence.exceptions.JAXBException.exceptionDuringNameTransformation(myClassName, info.getXmlNameTransformer().getClass().getName(), ex);
+                    throw JAXBException.exceptionDuringNameTransformation(myClassName, info.getXmlNameTransformer().getClass().getName(), ex);
                 }
             }
             rootElement.setName(elementName);
@@ -438,7 +438,7 @@ public class SchemaGenerator {
     }
     public void addToSchemaType(TypeInfo ownerTypeInfo, java.util.List<Property> properties, TypeDefParticle compositor, ComplexType type, Schema workingSchema) {
         //If there are no properties we don't want a sequence/choice or all tag written out
-        if (properties.size() == 0) {
+        if (properties.isEmpty()) {
             type.setAll(null);
             type.setSequence(null);
             type.setChoice(null);
@@ -611,7 +611,7 @@ public class SchemaGenerator {
     }
 
     public String getSchemaTypeNameForClassName(String className) {
-        return Introspector.decapitalize(className.substring(className.lastIndexOf(DOT_CHAR) + 1));
+        return org.eclipse.persistence.internal.helper.Helper.decapitalize(className.substring(className.lastIndexOf(DOT_CHAR) + 1));
     }
 
     public ArrayList<Object> getEnumerationFacetsFor(EnumTypeInfo info) {
@@ -822,7 +822,7 @@ public class SchemaGenerator {
                         QName schemaType = helper.getXMLToJavaTypeMap().get(javaClass.getRawName());
                         if (schemaType != null) {
                             element.setType(Constants.SCHEMA_PREFIX + COLON + schemaType.getLocalPart());
-                        } else if (areEquals(javaClass, JAVAX_ACTIVATION_DATAHANDLER) || areEquals(javaClass, byte[].class) || areEquals(javaClass, Byte[].class) || areEquals(javaClass, Image.class) || areEquals(javaClass, Source.class) || areEquals(javaClass, JAVAX_MAIL_INTERNET_MIMEMULTIPART)) {
+                        } else if (areEquals(javaClass, JAVAX_ACTIVATION_DATAHANDLER) || areEquals(javaClass, byte[].class) || areEquals(javaClass, Byte[].class) || areEquals(javaClass, AWT_IMAGE) || areEquals(javaClass, Source.class) || areEquals(javaClass, JAVAX_MAIL_INTERNET_MIMEMULTIPART)) {
                             schemaType = Constants.BASE_64_BINARY_QNAME;
                             if(nextElement.getTypeMappingInfo() != null) {
                                 if(nextElement.isXmlAttachmentRef()) {
@@ -1161,7 +1161,7 @@ public class SchemaGenerator {
 
             // handle Attribute case
             if (frag.isAttribute()) {
-                if (fragSchema == null || (fragSchema.isAttributeFormDefault() && !fragUri.equals(targetNS)) || (!fragSchema.isAttributeFormDefault() && fragUri.length() > 0)) {
+                if (fragSchema == null || (fragSchema.isAttributeFormDefault() && !fragUri.equals(targetNS)) || (!fragSchema.isAttributeFormDefault() && !fragUri.isEmpty())) {
                     // must generate a global attribute and create a reference to it
                     // if the global attribute exists, use it; otherwise create a new one
                     // if fragSchema is null, just generate the ref
@@ -1202,7 +1202,7 @@ public class SchemaGenerator {
             }
 
             // here we are dealing with an Element
-            if ((fragSchema.isElementFormDefault() && !fragUri.equals(targetNS)) || (!fragSchema.isElementFormDefault() && fragUri.length() > 0)) {
+            if ((fragSchema.isElementFormDefault() && !fragUri.equals(targetNS)) || (!fragSchema.isElementFormDefault() && !fragUri.isEmpty())) {
                 // must generate a global element and create a reference to it
                 // if the global element exists, use it; otherwise create a new one
                 globalElement = fragSchema.getTopLevelElements().get(frag.getLocalName());
@@ -1311,7 +1311,7 @@ public class SchemaGenerator {
      * @param particle the sequence/choice/all to search for an existing element
      */
     protected Element elementExistsInParticle(String elementName, String refString, TypeDefParticle particle) {
-        if (particle == null || particle.getElements() == null || particle.getElements().size() == 0) {
+        if (particle == null || particle.getElements() == null || particle.getElements().isEmpty()) {
             return null;
         }
         java.util.List<Element> existingElements = particle.getElements();
@@ -2433,7 +2433,7 @@ public class SchemaGenerator {
      *
      * CAUTION - ORDER SENSITIVE: Longer patterns should come first, because they may contain one of the shorter pattern.
      * <p>
-     * Changes to this class should also be reflected in the opposite {@link org.eclipse.persistence.jaxb.plugins.BeanValidationPlugin.RegexMutator RegexMutator} class within XJC BeanValidation Plugin.
+     * Changes to this class should also be reflected in the opposite {@code org.eclipse.persistence.jaxb.plugins.BeanValidationPlugin.RegexMutator} class within XJC BeanValidation Plugin.
      *
      * @see <a href="http://stackoverflow.com/questions/4304928/unicode-equivalents-for-w-and-b-in-java-regular-expressions">tchrist's work</a>
      * @see <a href="http://www.regular-expressions.info/shorthand.html#xml">Special shorthands in XML Schema.</a>

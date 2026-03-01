@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,22 +20,7 @@
 package org.eclipse.persistence.testing.tests.dynamic.projectxml;
 
 //javase imports
-import java.io.IOException;
-import java.math.BigInteger;
-import java.sql.Date;
-import java.util.List;
 
-//JUnit4 imports
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-//EclipseLink imports
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
 import org.eclipse.persistence.dynamic.DynamicEntity;
@@ -51,10 +36,22 @@ import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.tools.schemaframework.DynamicSchemaManager;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
-//domain-specific (testing) imports
+import java.io.IOException;
+import java.math.BigInteger;
+import java.sql.Date;
+import java.util.List;
+
 import static org.eclipse.persistence.testing.tests.dynamic.DynamicTestingHelper.createLogin;
 import static org.eclipse.persistence.testing.tests.dynamic.DynamicTestingHelper.logLevel;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /*
  * Test cases verifying the use of simple-map-project.xml

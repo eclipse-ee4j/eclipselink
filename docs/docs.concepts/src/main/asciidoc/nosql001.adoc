@@ -1,0 +1,65 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[NOSQL001]]
+=== NoSQL Platform Concepts
+
+NoSQL is a classification of database systems that do not support the
+SQL standard.The NoSQL classification can be expanded to include
+Enterprise Information Systems (EIS) including application databases,
+legacy databases, messaging systems, and transaction processing
+monitors, such as IMS, VSAM, and ADABASE.
+
+EclipseLink's NoSQL support includes:
+
+* MongoDB
+* Oracle NoSQL
+* XML files
+* JMS
+* Oracle AQ
+
+A complete description of EclipseLink support for NoSQL is described in
+xref:app_tl_ext003.adoc#APP_TL_EXT003[Non-SQL Standard Database Support: NoSQL.]
+
+NoSQL and EIS data-sources have a Java Connector Architecture (JCA)
+resource adapter that supports the Java Connector Architecture Common
+Client Interface (JCA CCI).
+
+There are many different ways to access NoSQL and EIS data-sources. Many
+NoSQL data-sources provide a Java API. For EIS data-sources, there are
+many third party and custom Java adapters. These APIs are normally
+non-standard, and low-level, similar to JDBC. EclipseLink NoSQL support
+is built on top of such APIs, and offers the rich, high-level and
+standard JPA API.
+
+Some NoSQL data-sources support the JDBC API and a subset of the SQL
+language. Many third-party vendors provide JDBC drivers for EIS
+data-sources. EclipseLink regular JPA support can be used with any
+compliant JDBC driver. So, if JDBC access is an option, EclipseLink's
+NoSQL support is not required, as EclipseLink standard JPA support can
+be used.
+
+Some NoSQL data-sources may support JCA. JCA is a Java Enterprise
+Edition API that allows connecting to more generic systems than JDBC.
+JCA is composed of two parts, a resource adapter layer, and the Common
+Client Interface (CCI). EclipseLink NoSQL and EIS support is based on
+the JCA CCI. For MongoDB, Oracle NoSQL, XML files, JMS, and Oracle AQ,
+EclipseLink provides the JCA adapter and EclipseLink `EISPlatform` and
+`ConnectionSpec` classes. Third party JCA adapters can also be used with
+EclipseLink as long as they support the CCI. There are third party JCA
+vendors, such as Attunity, that support various EIS data-sources such as
+IMS, VSAM and ADABASE.

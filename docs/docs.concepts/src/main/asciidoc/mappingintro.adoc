@@ -1,0 +1,51 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+
+:description: EclipseLink
+:keywords: eclipselink, java, jpa, persistence, concepts, mapping
+[[MAPPINGINTRO]]
+== Understanding Mappings
+
+This chapter introduces and describes mappings. EclipseLink can
+transform data between an object representation and a representation
+specific to a data source. This transformation is called mapping and it
+is the core of EclipseLink projects.
+
+A mapping corresponds to a single data member of a domain object. It
+associates the object data member with its data source representation
+and defines the means of performing the two-way conversion between
+object and data source.
+
+This chapter includes the following sections:
+
+* link:#MAPPINGINTRO001[Common Mapping Concepts]
+* link:#MAPPINGINTRO002[Object-Relational Mapping Concepts]
+* link:#MAPPINGINTRO003[MOXy Mapping Concepts]
+* link:#MAPPINGINTRO004[Object-JSON Mapping Concepts]
+
+//Common Mapping Concepts
+include::{rootdir}/mappingintro001.adoc[]
+
+//Object-Relational Mapping Concepts
+include::{rootdir}/mappingintro002.adoc[]
+
+//MOXy Mapping Concepts
+include::{rootdir}/mappingintro003.adoc[]
+
+//Object-JSON Mapping Concepts
+include::{rootdir}/mappingintro004.adoc[]

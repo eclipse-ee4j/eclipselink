@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -17,13 +17,12 @@
 package org.eclipse.persistence.platform.database.oracle.plsql;
 
 // javase imports
-import static java.lang.Integer.MIN_VALUE;
-
-import org.eclipse.persistence.internal.helper.ComplexDatabaseType;
-// EclipseLink imports
-import org.eclipse.persistence.internal.helper.DatabaseType;
 
 import org.eclipse.persistence.internal.databaseaccess.DatasourceCall.ParameterType;
+import org.eclipse.persistence.internal.helper.ComplexDatabaseType;
+import org.eclipse.persistence.internal.helper.DatabaseType;
+
+import static java.lang.Integer.MIN_VALUE;
 
 /**
  * <p>
@@ -87,14 +86,14 @@ public class PLSQLargument implements Cloneable {
     /**
      * Sets flag on this argument's database type indicating that it represents a
      * non-associative collection, i.e. Nested Table (as opposed to a Varray).
-     *
+     * <p>
      * The value should be false (default) for associative/indexed collections
      * (Varrays), and true for non-associative collections (Nested Tables).
-     *
+     * <p>
      * It is assumed that the database type has been determined to be a PLSQLCollection
      * prior to calling this method - if this argument's database type is not a
      * PLSQLCollection, no operation is performed.
-     *
+     * <p>
      * The preferred method of flagging a PLSQCollection as a Nested Table is to use the
      * setIsNestedTable(boolean) method directly on PLSQLCollection.
      *

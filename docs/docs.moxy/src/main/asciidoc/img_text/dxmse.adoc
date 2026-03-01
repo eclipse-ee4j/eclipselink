@@ -1,0 +1,9 @@
+:nofooter:
+This figure illustrates an XML direct mapping to a text element in a
+subnode of a corresponding XML document. The *Customer* class contains
+two attributes: *firstName* and *lastName*. The *firstName* attribute
+maps to the *<first-name>* element in the XML document; the *lastName*
+attribute maps to the *<last-name>* element, both subnodes of the
+*<personal-info>* element. The XPath for the *firstName* is
+*personal-info/first-name/text()*; the *lastName* is
+*personal-info/last-name/text()*.

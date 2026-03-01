@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,8 +19,6 @@ package org.eclipse.persistence.internal.jpa.metadata.accessors;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Locale;
-
-import org.eclipse.persistence.internal.helper.StringHelper;
 
 /**
  * <p><b>Purpose</b>: Define any useful static methods to manipulate with descriptors content.</p>
@@ -67,7 +65,7 @@ public class MetadataHelper {
                 if (i > 0) {
                     target.append(separator);
                 }
-                target.append(StringHelper.QUESTION_MARK);
+                target.append('?');
             }
         }
     }

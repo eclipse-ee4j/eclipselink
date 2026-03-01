@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,9 +20,6 @@ import jakarta.xml.bind.annotation.XmlAttribute;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlID;
 import jakarta.xml.bind.annotation.XmlRootElement;
-import jakarta.xml.bind.annotation.XmlTransient;
-
-import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
 
 @XmlRootElement(name="address")
 public class Address {
@@ -45,10 +42,9 @@ public class Address {
     public List<Object> emp;
 
     public boolean equals(Object obj) {
-        if (obj == null || !(obj instanceof Address)) {
+        if (obj == null || !(obj instanceof Address tgtAddress)) {
             return false;
         }
-        Address tgtAddress = (Address) obj;
         return (tgtAddress.city.equals(city) &&
                 tgtAddress.country.equals(country) &&
                 tgtAddress.id.equals(id) &&

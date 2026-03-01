@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -12,9 +12,7 @@
 
 package org.eclipse.persistence.testing.tests.events;
 
-import java.util.Vector;
-
-import org.eclipse.persistence.config.CacheIsolationType;
+import org.eclipse.persistence.annotations.CacheIsolationType;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.testing.framework.TestErrorException;
@@ -24,6 +22,8 @@ import org.eclipse.persistence.testing.models.events.Customer;
 import org.eclipse.persistence.testing.models.events.EmailAccount;
 import org.eclipse.persistence.testing.models.events.Order;
 import org.eclipse.persistence.testing.models.events.Phone;
+
+import java.util.Vector;
 
 public class CloneEventOnIsolatedSessionTest extends EventHookTestCase {
     Vector<ClassDescriptor> issolatedDescriptors;

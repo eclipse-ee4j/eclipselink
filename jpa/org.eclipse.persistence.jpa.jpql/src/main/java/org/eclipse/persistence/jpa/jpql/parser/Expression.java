@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,6 +15,8 @@
 //     04/21/2022: Tomas Kraus
 //       - Issue 1474: Update JPQL Grammar for Jakarta Persistence 2.2, 3.0 and 3.1
 //       - Issue 317: Implement LOCAL DATE, LOCAL TIME and LOCAL DATETIME.
+//     06/02/2023: Radek Felcman
+//       - Issue 1885: Implement new JPQLGrammar for upcoming Jakarta Persistence 3.2
 package org.eclipse.persistence.jpa.jpql.parser;
 
 import org.eclipse.persistence.jpa.jpql.utility.iterable.ListIterable;
@@ -140,6 +142,11 @@ public interface Expression {
      * The constant for 'CONCAT'.
      */
     String CONCAT = "CONCAT";
+
+    /**
+     * The constant for String concat operation like SQL '||'.
+     */
+    String CONCAT_PIPES = "||";
 
     /**
      * The constant for 'CONNECT BY'.
@@ -322,6 +329,13 @@ public interface Expression {
     String HAVING = "HAVING";
 
     /**
+     * The constant for 'ID'.
+     *
+     * @since 5.0
+     */
+    String ID = "ID";
+
+    /**
      * The constant for 'IN'.
      */
     String IN = "IN";
@@ -407,6 +421,8 @@ public interface Expression {
 
     /**
      * The constant for 'LEFT'.
+     * Primary usage is as the constant for 'LEFT' String function, but
+     * it also used to parse JOIN expression e.g. LEFT JOIN
      */
     String LEFT = "LEFT";
 
@@ -667,6 +683,16 @@ public interface Expression {
     String REGEXP = "REGEXP";
 
     /**
+     * The constant for 'REPLACE'.
+     */
+    String REPLACE = "REPLACE";
+
+    /**
+     * The constant for 'RIGHT'.
+     */
+    String RIGHT = "RIGHT";
+
+    /**
      * The constant for 'ROUND'.
      */
     String ROUND = "ROUND";
@@ -744,6 +770,11 @@ public interface Expression {
     String THEN = "THEN";
 
     /**
+     * The constant for 'this'.
+     */
+    String THIS = "this";
+
+    /**
      * The constant for 'TIME'.
      */
     String TIME = "TIME";
@@ -806,6 +837,13 @@ public interface Expression {
      * The constant for 'VALUE'.
      */
     String VALUE = "VALUE";
+
+    /**
+     * The constant for 'VERSION'.
+     *
+     * @since 5.0
+     */
+    String VERSION = "VERSION";
 
     /**
      * The constant for the identifier 'WHEN'.

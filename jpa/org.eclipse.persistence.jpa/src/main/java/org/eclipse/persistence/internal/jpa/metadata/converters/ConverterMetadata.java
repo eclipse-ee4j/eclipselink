@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,7 +36,7 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 /**
  * INTERNAL:
  * Object to hold onto a custom converter metadata.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -74,8 +74,7 @@ public class ConverterMetadata extends AbstractConverterMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (super.equals(objectToCompare) && objectToCompare instanceof ConverterMetadata) {
-            ConverterMetadata converter = (ConverterMetadata) objectToCompare;
+        if (super.equals(objectToCompare) && objectToCompare instanceof ConverterMetadata converter) {
 
             if (! valuesMatch(getName(), converter.getName())) {
                 return false;

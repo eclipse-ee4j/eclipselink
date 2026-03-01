@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,9 +14,9 @@
 //     bdoughan - June 24/2009 - 2.0 - Initial implementation
 package org.eclipse.persistence.internal.oxm.record;
 
-import javax.xml.stream.XMLStreamReader;
-
 import org.xml.sax.InputSource;
+
+import javax.xml.stream.XMLStreamReader;
 
 /**
  * This class is used to expose an XMLStreamReader as an InputSource.

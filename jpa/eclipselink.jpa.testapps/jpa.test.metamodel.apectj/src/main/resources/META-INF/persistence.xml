@@ -1,0 +1,37 @@
+<!--
+
+    Copyright (c) 2023 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0 which is available at
+    http://www.eclipse.org/legal/epl-2.0,
+    or the Eclipse Distribution License v. 1.0 which is available at
+    http://www.eclipse.org/org/documents/edl-v10.php.
+
+    SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+
+-->
+
+<persistence version="3.0" xmlns="https://jakarta.ee/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence https://jakarta.ee/xml/ns/persistence/persistence_3_0.xsd">
+    <persistence-unit name="ignore" transaction-type="JTA">
+        <description>This PU is for validation purpose only - it should not
+            break the rest of the tests</description>
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <jta-data-source>java:comp/DefaultDataSource</jta-data-source>
+    </persistence-unit>
+
+    <persistence-unit name="metamodel1_aspectj">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <class>org.eclipse.persistence.testing.models.jpa.weaving.aspectj.ItemAspectJ</class>
+        <class>org.eclipse.persistence.testing.models.jpa.weaving.aspectj.EntityListenerAspectJ</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <properties>
+            <property name="eclipselink.session-name" value="isolated-session1053"/>
+            <property name="eclipselink.cache.shared.default" value="false"/>
+            <property name="eclipselink.logging.level" value="${eclipselink.logging.level}"/>
+            <property name="eclipselink.logging.level.sql" value="${eclipselink.logging.sql.level}"/>
+            <property name="eclipselink.logging.parameters" value="${eclipselink.logging.parameters}"/>
+        </properties>
+    </persistence-unit>
+</persistence>

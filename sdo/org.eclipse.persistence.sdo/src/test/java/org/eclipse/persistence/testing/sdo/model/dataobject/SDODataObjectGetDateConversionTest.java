@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,12 +20,10 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
-import junit.framework.TestCase;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOProperty;
 import org.eclipse.persistence.sdo.SDOConstants;
-import org.eclipse.persistence.sdo.SDOType;
-import org.eclipse.persistence.exceptions.SDOException;
+import org.eclipse.persistence.sdo.SDOException;
 
 public class SDODataObjectGetDateConversionTest extends SDODataObjectConversionTestCases {
     public SDODataObjectGetDateConversionTest(String name) {
@@ -53,7 +51,7 @@ public class SDODataObjectGetDateConversionTest extends SDODataObjectConversionT
     public void testGetDateFromByte() {
         SDOProperty property = dataObject.getInstanceProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_BYTE);
-        dataObject.set(property, new String("Abc").getBytes()[0]);
+        dataObject.set(property, "Abc".getBytes()[0]);
         try {
             dataObject.getDate(property);
             fail("ClassCastException should be thrown.");
@@ -188,7 +186,7 @@ public class SDODataObjectGetDateConversionTest extends SDODataObjectConversionT
     public void testGetDateFromBytes() {
         SDOProperty property = dataObject.getInstanceProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_BYTES);
-        dataObject.set(property, new String("abcd").getBytes());
+        dataObject.set(property, "abcd".getBytes());
         try {
             dataObject.getDate(property);
             fail("ClassCastException should be thrown.");

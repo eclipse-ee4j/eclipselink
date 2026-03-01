@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -15,14 +15,22 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.sessions;
 
-import java.util.*;
-import java.io.*;
-import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.core.sessions.CoreSessionEventManager;
-import org.eclipse.persistence.internal.databaseaccess.*;
-import org.eclipse.persistence.internal.sessions.*;
+import org.eclipse.persistence.internal.databaseaccess.Accessor;
+import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
+import org.eclipse.persistence.internal.databaseaccess.DatasourceCall;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet;
+import org.eclipse.persistence.queries.Call;
+import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.ModifyQuery;
 import org.eclipse.persistence.sessions.broker.SessionBroker;
 import org.eclipse.persistence.sessions.server.ClientSession;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * <p><b>Purpose</b>: Used to support session events.
@@ -351,6 +359,23 @@ public class SessionEventManager extends CoreSessionEventManager<SessionEventLis
 
     /**
      * INTERNAL:
+     * Post flush unit of work.
+     */
+    public void postFlushUnitOfWork() {
+        if (!hasListeners()) {
+            return;
+        }
+        startOperationProfile();
+        SessionEvent event = new SessionEvent(SessionEvent.PostFlushUnitOfWork, getSession());
+        List<SessionEventListener> listeners = this.listeners;
+        for (SessionEventListener listener : listeners) {
+            listener.postFlushUnitOfWork(event);
+        }
+        endOperationProfile();
+    }
+
+    /**
+     * INTERNAL:
      * Raised after connecting.
      */
     public void postConnect(Accessor accessor) {
@@ -605,6 +630,23 @@ public class SessionEventManager extends CoreSessionEventManager<SessionEventLis
         int size = listeners.size();
         for (int index = 0; index < size; index++) {
             listeners.get(index).preCommitUnitOfWork(event);
+        }
+        endOperationProfile();
+    }
+
+    /**
+     * INTERNAL:
+     * Pre flush unit of work.
+     */
+    public void preFlushUnitOfWork() {
+        if (!hasListeners()) {
+            return;
+        }
+        startOperationProfile();
+        SessionEvent event = new SessionEvent(SessionEvent.PreFlushUnitOfWork, getSession());
+        List<SessionEventListener> listeners = this.listeners;
+        for (SessionEventListener listener : listeners) {
+            listener.preFlushUnitOfWork(event);
         }
         endOperationProfile();
     }

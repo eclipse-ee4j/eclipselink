@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,7 +17,6 @@ package org.eclipse.persistence.testing.tests.validation;
 import org.eclipse.persistence.sessions.DataRecord;
 
 import java.sql.Time;
-
 import java.util.Vector;
 
 
@@ -57,7 +56,7 @@ public class EmployeeWithProblems extends org.eclipse.persistence.testing.models
     }
 
     public void addCourse(String input) {
-        getCourses().add(new String(input));
+        getCourses().add(input);
     }
 
     public String getIllegalAccess() throws java.lang.IllegalAccessException {

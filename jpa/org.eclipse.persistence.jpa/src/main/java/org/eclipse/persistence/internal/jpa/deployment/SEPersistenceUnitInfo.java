@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,15 +22,19 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Properties;
 
-import jakarta.persistence.PersistenceException;
+import javax.sql.DataSource;
+
+import jakarta.persistence.PersistenceConfiguration;
+import jakarta.persistence.PersistenceUnitTransactionType;
 import jakarta.persistence.SharedCacheMode;
 import jakarta.persistence.ValidationMode;
 import jakarta.persistence.spi.ClassTransformer;
 import jakarta.persistence.spi.PersistenceUnitInfo;
-import jakarta.persistence.spi.PersistenceUnitTransactionType;
-import javax.sql.DataSource;
+import org.eclipse.persistence.config.PersistenceUnitProperties;
+import org.eclipse.persistence.internal.jpa.jdbc.DataSourceImpl;
 
 /**
  * Internal implementation of the PersistenceUnitInfo detailed in the EJB 3.0 specification
@@ -39,6 +43,7 @@ import javax.sql.DataSource;
  */
 public class SEPersistenceUnitInfo implements jakarta.persistence.spi.PersistenceUnitInfo {
 
+    private String schemaVersion;
     // What about 2.0 in 1.0 container here ...
     protected SharedCacheMode cacheMode;
     protected ValidationMode validationMode;
@@ -48,18 +53,24 @@ public class SEPersistenceUnitInfo implements jakarta.persistence.spi.Persistenc
     protected DataSource nonJtaDataSource;
     protected PersistenceUnitTransactionType persistenceUnitTransactionType;
     protected List<String> mappingFiles;
+    private List<String> qualifierAnnNames;
+    private String scopeAnnName;
 
     // names of jars specified in persistence.xml. they are later on used
     // to build jar-file URL.
-    private Collection<String> jarFiles = new ArrayList<String>();
+    private final Collection<String> jarFiles = new ArrayList<>();
     protected List<URL> jarFileUrls;
     protected List<String> managedClassNames;
+    // persistence.xml root URL
     protected URL persistenceUnitRootUrl;
+    // PersistenceConfiguration hash of programmatically defined PU, value is null for PU defined in persistence.xml
+    private String configHash;
+
     protected boolean excludeUnlistedClasses = true;
 
     // Persistence.xml loaded from the canonical model processor will
     // populate the properties into this collection.
-    protected List<SEPersistenceUnitProperty> persistenceUnitProperties = new ArrayList<SEPersistenceUnitProperty>();
+    protected List<SEPersistenceUnitProperty> persistenceUnitProperties = new ArrayList<>();
     // Persistence.xml loaded from the metadata processor will populate the
     // properties into this properties map.
     protected Properties properties;
@@ -68,11 +79,66 @@ public class SEPersistenceUnitInfo implements jakarta.persistence.spi.Persistenc
     protected ClassLoader realClassLoader;
 
     public SEPersistenceUnitInfo(){
-        mappingFiles = new ArrayList<String>();
-        managedClassNames = new ArrayList<String>();
+        mappingFiles = new ArrayList<>();
+        managedClassNames = new ArrayList<>();
         properties = new Properties();
         persistenceUnitTransactionType = PersistenceUnitTransactionType.RESOURCE_LOCAL;
+        // DISABLE_SELECTIVE is our default (same as if UNSPECIFIED),
+        // see also MetadataProject.isSharedCacheModeDisableSelective()
+        cacheMode = SharedCacheMode.DISABLE_SELECTIVE;
+        // Default per spec
+        validationMode = ValidationMode.AUTO;
+        qualifierAnnNames = new ArrayList<>();
         // don't initialize jarFileUrls as it is lazily initialized
+    }
+
+    /**
+     * Creates internal implementation of the {@link PersistenceUnitInfo}
+     * from {@link PersistenceConfiguration} content.
+     *
+     * @param configuration configuration of a persistence unit
+     * @param rootURL root {@link URL} of the persistence unit
+     */
+    public SEPersistenceUnitInfo(PersistenceConfiguration configuration, URL rootURL) {
+        persistenceUnitName = configuration.name();
+        persistenceProviderClassName = configuration.provider();
+        if (configuration.jtaDataSource() != null && !configuration.jtaDataSource().isEmpty()) {
+            jtaDataSource = new DataSourceImpl(configuration.jtaDataSource(), null, null, null);
+        }
+        if (configuration.nonJtaDataSource() != null && !configuration.nonJtaDataSource().isEmpty()) {
+            nonJtaDataSource = new DataSourceImpl(configuration.nonJtaDataSource(), null, null, null);
+        }
+        cacheMode = configuration.sharedCacheMode();
+        validationMode = configuration.validationMode();
+        persistenceUnitTransactionType = configuration.transactionType();
+        mappingFiles = configuration.mappingFiles();
+        managedClassNames = configuration.managedClasses()
+                .stream()
+                .map(Class::getName)
+                .toList();
+        properties = new Properties();
+        properties.putAll(configuration.properties());
+        if (properties.contains(PersistenceUnitProperties.CLASSLOADER)) {
+            realClassLoader = (ClassLoader) properties.get(PersistenceUnitProperties.CLASSLOADER);
+        } else {
+            realClassLoader = Thread.currentThread().getContextClassLoader();
+        }
+        persistenceUnitRootUrl = rootURL;
+        configHash = Integer.toString(persistenceConfigurationHashCode(configuration));
+    }
+
+    // TODO: Remove when fixed by implementing hashCode in jakarta.persistence API
+    private static int persistenceConfigurationHashCode(PersistenceConfiguration configuration) {
+        return Objects.hash(configuration.name(),
+                                configuration.provider(),
+                                configuration.jtaDataSource(),
+                                configuration.nonJtaDataSource(),
+                                configuration.sharedCacheMode(),
+                                configuration.validationMode(),
+                                configuration.transactionType(),
+                                configuration.managedClasses(),
+                                configuration.mappingFiles(),
+                                configuration.properties());
     }
 
     /**
@@ -113,23 +179,72 @@ public class SEPersistenceUnitInfo implements jakarta.persistence.spi.Persistenc
         return persistenceProviderClassName;
     }
 
+    public void setScopeAnnotationName(String scopeAnnName) {
+        this.scopeAnnName = scopeAnnName;
+    }
+
+    @Override
+    public String getScopeAnnotationName() {
+        return scopeAnnName;
+    }
+
+    public void setQualifierAnnotationNames(List<String> qualifierAnnNames) {
+        this.qualifierAnnNames = qualifierAnnNames;
+    }
+
+    @Override
+    public List<String> getQualifierAnnotationNames() {
+        return qualifierAnnNames;
+    }
+
     public void setPersistenceProviderClassName(String persistenceProviderClassName){
         this.persistenceProviderClassName = persistenceProviderClassName;
     }
 
     /**
-    * @return The transaction type of the entity managers created
-    * by the EntityManagerFactory.
-    * The transaction type corresponds to the transaction-type
-    * attribute in the persistence.xml file.
-    */
+     * Get the transaction type of the persistence unit.
+     * The transaction type corresponds to the transaction-type attribute
+     * in the {@code persistence.xml} file.
+     *
+     * @return The transaction type of the entity managers created
+     *         by the EntityManagerFactory.
+     * @deprecated Use {@link PersistenceUnitTransactionType}
+     *             instead of {@link jakarta.persistence.spi.PersistenceUnitTransactionType}
+     */
     @Override
-    public PersistenceUnitTransactionType getTransactionType(){
-        return persistenceUnitTransactionType;
+    @Deprecated
+    @SuppressWarnings("removal")
+    public jakarta.persistence.spi.PersistenceUnitTransactionType getTransactionType() {
+        return switch (persistenceUnitTransactionType) {
+            case JTA -> jakarta.persistence.spi.PersistenceUnitTransactionType.JTA;
+            case RESOURCE_LOCAL -> jakarta.persistence.spi.PersistenceUnitTransactionType.RESOURCE_LOCAL;
+        };
     }
 
-    public void setTransactionType(PersistenceUnitTransactionType persistenceUnitTransactionType){
-        this.persistenceUnitTransactionType = persistenceUnitTransactionType;
+    /**
+     * Specify the transaction type of the persistence unit.
+     *
+     * @param transactionType the transaction type of the entity managers
+     *                        created by the EntityManagerFactory.
+     * @deprecated Use {@link PersistenceUnitTransactionType}
+     *             instead of {@link jakarta.persistence.spi.PersistenceUnitTransactionType}
+     */
+    @Deprecated
+    @SuppressWarnings("removal")
+    public void setTransactionType(jakarta.persistence.spi.PersistenceUnitTransactionType transactionType) {
+        persistenceUnitTransactionType = switch (transactionType) {
+            case JTA -> PersistenceUnitTransactionType.JTA;
+            case RESOURCE_LOCAL -> PersistenceUnitTransactionType.RESOURCE_LOCAL;
+        };
+    }
+
+    /**
+     * Specify the transaction type for the persistence unit.
+     *
+     * @param transactionType the transaction type
+     */
+    public void setTransactionType(PersistenceUnitTransactionType transactionType){
+        persistenceUnitTransactionType = transactionType;
     }
 
     /**
@@ -192,7 +307,7 @@ public class SEPersistenceUnitInfo implements jakarta.persistence.spi.Persistenc
     @Override
     public List<URL> getJarFileUrls(){
         if (jarFileUrls == null) { // lazy initialization
-            List<URL> jarFileUrls = new ArrayList<URL>(jarFiles.size());
+            List<URL> jarFileUrls = new ArrayList<>(jarFiles.size());
             for (String jarFile : jarFiles) {
                 try {
                     // build a URL relative to the PU Root
@@ -226,6 +341,15 @@ public class SEPersistenceUnitInfo implements jakarta.persistence.spi.Persistenc
 
     public void setPersistenceUnitRootUrl(URL persistenceUnitRootUrl){
         this.persistenceUnitRootUrl = persistenceUnitRootUrl;
+    }
+
+    /**
+     * Get programmatically defined persistence unit hash.
+     *
+     * @return persistence unit hash or {@code null} if this unit was not defined programmatically
+     */
+    String getConfigHash() {
+        return configHash;
     }
 
     /**
@@ -352,8 +476,11 @@ public class SEPersistenceUnitInfo implements jakarta.persistence.spi.Persistenc
      */
     @Override
     public String getPersistenceXMLSchemaVersion() {
-        // TODO
-        throw new PersistenceException("Not Yet Implemented");
+        return schemaVersion;
+    }
+
+    public void setPersistenceXMLSchemaVersion(String schemaVersion) {
+        this.schemaVersion = schemaVersion;
     }
 
     /**

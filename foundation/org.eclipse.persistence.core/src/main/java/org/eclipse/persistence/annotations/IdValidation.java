@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,31 +14,29 @@
 //     James Sutherland - allow for zero ids
 package org.eclipse.persistence.annotations;
 
-
-import org.eclipse.persistence.descriptors.ClassDescriptor;
-
 /**
- * IdValidation configures which id values are considered valid when loading
- * from the database. This configuration is set either using the
- * {@link PrimaryKey} annotation or using the {@link ClassDescriptor} API.
- * This configuration is also used to determine if a sequence number is
- * required.
+ * IdValidation configures which id values are considered valid when loading from the database.
+ * This configuration is set either using the {@linkplain PrimaryKey} annotation
+ * or using the {@linkplain org.eclipse.persistence.descriptors.ClassDescriptor} API.
+ * This configuration is also used to determine if a sequence number is required.
  *
  * @see PrimaryKey#validation()
- * @see ClassDescriptor#setIdValidation(IdValidation)
+ * @see org.eclipse.persistence.descriptors.ClassDescriptor#setIdValidation(IdValidation)
  * @author James Sutherland
  * @since EclipseLink 1.0
  */
 public enum IdValidation {
     /**
-     * Only null is invalid All other values are considered valid. This is the
-     * default configuration when composite identifiers are used and sequencing is not used.
+     * Only null is invalid All other values are considered valid.
+     * <p>
+     * This is the default configuration when composite identifiers are used and sequencing is not used.
      */
     NULL,
 
     /**
-     * null and 0 are not allowed for primitive int and long ids. This is the
-     * default configuration for a simple identifier.
+     * null and 0 are not allowed for primitive int and long ids.
+     * <p>
+     * This is the default configuration for a simple identifier.
      */
     ZERO,
 

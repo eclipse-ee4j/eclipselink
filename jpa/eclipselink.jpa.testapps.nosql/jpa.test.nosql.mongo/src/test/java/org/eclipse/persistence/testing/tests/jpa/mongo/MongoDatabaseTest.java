@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,8 +14,9 @@
 //     Oracle - initial API and implementation
 package org.eclipse.persistence.testing.tests.jpa.mongo;
 
-import com.mongodb.MongoClient;
-import com.mongodb.MongoClientURI;
+import com.mongodb.ConnectionString;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
@@ -30,12 +31,12 @@ import org.eclipse.persistence.dynamic.DynamicClassLoader;
 import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.eis.interactions.MappedInteraction;
 import org.eclipse.persistence.eis.interactions.QueryStringInteraction;
-import org.eclipse.persistence.internal.nosql.adapters.mongo.MongoDatabaseConnection;
-import org.eclipse.persistence.internal.nosql.adapters.mongo.MongoDatabaseConnectionFactory;
+import org.eclipse.persistence.internal.nosql.adapters.mongo.MongoConnection;
+import org.eclipse.persistence.internal.nosql.adapters.mongo.MongoConnectionFactory;
 import org.eclipse.persistence.internal.nosql.adapters.mongo.MongoOperation;
 import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.jpa.dynamic.JPADynamicHelper;
-import org.eclipse.persistence.nosql.adapters.mongo.Mongo3ConnectionSpec;
+import org.eclipse.persistence.nosql.adapters.mongo.MongoConnectionSpec;
 import org.eclipse.persistence.nosql.adapters.mongo.MongoPlatform;
 import org.eclipse.persistence.sessions.DataRecord;
 import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
@@ -68,6 +69,8 @@ public class MongoDatabaseTest extends JUnitTestCase {
     private static final String PROPERTY_PORT_KEY = PersistenceUnitProperties.NOSQL_PROPERTY + "mongo.port";
     /** The persistence unit property key for the MongoDB database name. */
     private static final String PROPERTY_DB_KEY = PersistenceUnitProperties.NOSQL_PROPERTY + "mongo.db";
+    /** The persistence unit property key for the MongoDB auth source database. */
+    private static final String PROPERTY_AUTH_SOURCE_KEY = PersistenceUnitProperties.NOSQL_PROPERTY + "mongo.auth-source";
     /** The database (MongoDB) connection URL. */
     private static final String DB_URL_KEY = JUnitTestCaseHelper.insertIndex(JUnitTestCaseHelper.DB_URL_KEY, null);
     /** The database (MongoDB) connection user name test configuration property key. */
@@ -81,7 +84,7 @@ public class MongoDatabaseTest extends JUnitTestCase {
      *  data source. */
     private static final String DB_SPEC_KEY = JUnitTestCaseHelper.insertIndex(JUnitTestCaseHelper.DB_SPEC_KEY, null);
     private static final String SERVER_SELECTION_TIMEOUT_PROPERTY = PersistenceUnitProperties.NOSQL_PROPERTY
-            + Mongo3ConnectionSpec.SERVER_SELECTION_TIMEOUT;
+            + MongoConnectionSpec.SERVER_SELECTION_TIMEOUT;
     private static final String SERVER_SELECTION_TIMEOUT = "100";
 
     public static Order existingOrder;
@@ -109,7 +112,7 @@ public class MongoDatabaseTest extends JUnitTestCase {
         EntityManager em = createEntityManager();
         try {
             beginTransaction(em);
-            MongoDatabaseConnection con = ((MongoDatabaseConnection)em.unwrap(jakarta.resource.cci.Connection.class));
+            MongoConnection con = ((MongoConnection)em.unwrap(jakarta.resource.cci.Connection.class));
             String version = con.getMetaData().getEISProductVersion();
             return version.compareTo("2.6") > 0;
         } catch (Throwable e) {
@@ -145,6 +148,7 @@ public class MongoDatabaseTest extends JUnitTestCase {
             suite.addTest(new MongoDatabaseTest("testNativeQuery"));
             suite.addTest(new MongoDatabaseTest("testExternalFactory"));
             suite.addTest(new MongoDatabaseTest("testUserPassword"));
+            suite.addTest(new MongoDatabaseTest("testUserPasswordAuthSource"));
             suite.addTest(new MongoDatabaseTest("testDynamicEntities"));
         }
         return suite;
@@ -168,17 +172,18 @@ public class MongoDatabaseTest extends JUnitTestCase {
         final String dbUrl = JUnitTestCaseHelper.getProperty(DB_URL_KEY);
         final String dbUser = JUnitTestCaseHelper.getProperty(DB_USER_KEY);
         final String dbPwd = JUnitTestCaseHelper.getProperty(DB_PWD_KEY);
+        final String authSource = JUnitTestCaseHelper.getProperty(PROPERTY_AUTH_SOURCE_KEY);
         final String platform = JUnitTestCaseHelper.getProperty(DB_PLATFORM_KEY);
         final String dbSpec = JUnitTestCaseHelper.getProperty(DB_SPEC_KEY);
         final String logLevel = JUnitTestCaseHelper.getProperty(JUnitTestCaseHelper.LOGGING_LEVEL_KEY);
         String uriUser = null;
         char[] uriPwd = null;
         if (dbUrl != null) {
-            final MongoClientURI uri = new MongoClientURI(dbUrl);
-            final List<String> hosts = uri.getHosts();
-            final String name = uri.getDatabase();
-            uriUser = uri.getUsername();
-            uriPwd = uri.getPassword();
+            ConnectionString connectionString = new ConnectionString(dbUrl);
+            final List<String> hosts = connectionString.getHosts();
+            final String name = connectionString.getDatabase();
+            uriUser = connectionString.getUsername();
+            uriPwd = connectionString.getPassword();
             if (hosts.size() > 0) {
                 final String hostPort = hosts.get(0);
                 final int splitPos = hostPort.indexOf(':');
@@ -195,6 +200,9 @@ public class MongoDatabaseTest extends JUnitTestCase {
             }
             if (name != null && name.length() > 0) {
                 properties.put(PROPERTY_DB_KEY, name);
+            }
+            if (authSource != null && authSource.length() > 0) {
+                properties.put(PROPERTY_AUTH_SOURCE_KEY, authSource);
             }
         }
         // Database connection user name from db.user has higher priority than from URL.
@@ -259,6 +267,22 @@ public class MongoDatabaseTest extends JUnitTestCase {
         }
     }
 
+     /**
+     * Update the connection auth source persistence unit property value.
+     * @param properties The properties {@link Map} to be modified.
+     * @param key The connection user name persistence unit property key ({@code PROPERTY_AUTH_SOURCE_KEY}).
+     * @param value The connection user name persistence unit property value.
+     */
+    private static void updateAuthSourceProperty(
+            final Map<String, String> properties, final String key, final String value) {
+        if (key.equals(MongoDatabaseTest.PROPERTY_AUTH_SOURCE_KEY)) {
+            properties.remove(MongoDatabaseTest.PROPERTY_AUTH_SOURCE_KEY);
+            properties.put(key, value);
+        } else {
+            throw new IllegalArgumentException("Invalid auth-source persistence property key");
+        }
+    }
+
     /**
      * Get the MongoDB persistence unit properties {@link Map}.
      * @return The MongoDB persistence unit properties {@link Map}.
@@ -275,7 +299,7 @@ public class MongoDatabaseTest extends JUnitTestCase {
         EntityManager em = createEntityManager();
         // First clear old database.
         beginTransaction(em);
-        MongoDatabase db = ((MongoDatabaseConnection)em.unwrap(jakarta.resource.cci.Connection.class)).getDB();
+        MongoDatabase db = ((MongoConnection)em.unwrap(jakarta.resource.cci.Connection.class)).getDB();
         db.drop();
         commitTransaction(em);
         beginTransaction(em);
@@ -391,10 +415,10 @@ public class MongoDatabaseTest extends JUnitTestCase {
      * Test pass an external factory when connecting.
      */
     public void testExternalFactory() {
-        Map<String, MongoDatabaseConnectionFactory> properties = new HashMap<>();
-        MongoClient mongo = new MongoClient();
+        Map<String, MongoConnectionFactory> properties = new HashMap<>();
+        MongoClient mongo = MongoClients.create();
         MongoDatabase db = mongo.getDatabase("mydb");
-        properties.put(PersistenceUnitProperties.NOSQL_CONNECTION_FACTORY, new MongoDatabaseConnectionFactory(db));
+        properties.put(PersistenceUnitProperties.NOSQL_CONNECTION_FACTORY, new MongoConnectionFactory(db));
         EntityManagerFactory factory = Persistence.createEntityManagerFactory(getPersistenceUnitName(), properties);
         EntityManager em = factory.createEntityManager();
         em.close();
@@ -436,6 +460,68 @@ public class MongoDatabaseTest extends JUnitTestCase {
         properties = new HashMap<>(this.properties);
         updateUserProperty(properties, PersistenceUnitProperties.NOSQL_USER, "unknownuser");
         updatePasswordProperty(properties, PersistenceUnitProperties.NOSQL_PASSWORD, "password");
+        properties.put(SERVER_SELECTION_TIMEOUT_PROPERTY, SERVER_SELECTION_TIMEOUT);
+        errorCaught = false;
+        factory = null;
+        em = null;
+        try {
+            factory = Persistence.createEntityManagerFactory(getPersistenceUnitName(), properties);
+            em = factory.createEntityManager();
+        } catch (Exception expected) {
+            //Different MONGO DB drivers (versions) prints different error messages
+            if (!expected.getMessage().contains("Authentication failed") && !expected.getMessage().contains("auth failed") && !expected.getMessage().contains("Exception authenticating")) {
+                throw expected;
+            }
+            errorCaught = true;
+        } finally {
+            if (em != null) {
+                em.close();
+            }
+            if (factory != null) {
+                factory.close();
+            }
+        }
+        if (!errorCaught) {
+            fail("authentication should have failed");
+        }
+    }
+
+    /**
+     * Test user/password/auth-source connecting.
+     */
+    public void testUserPasswordAuthSource() {
+        Map<String, String> properties = new HashMap<>(this.properties);
+        updateUserProperty(properties, PersistenceUnitProperties.JDBC_USER, "unknownuser");
+        updatePasswordProperty(properties, PersistenceUnitProperties.JDBC_PASSWORD, "password");
+        updateAuthSourceProperty(properties, MongoDatabaseTest.PROPERTY_AUTH_SOURCE_KEY, "noexists_db");
+        properties.put(SERVER_SELECTION_TIMEOUT_PROPERTY, SERVER_SELECTION_TIMEOUT);
+        boolean errorCaught = false;
+        EntityManagerFactory factory = null;
+        EntityManager em = null;
+        try {
+            factory = Persistence.createEntityManagerFactory(getPersistenceUnitName(), properties);
+            em = factory.createEntityManager();
+        } catch (Exception expected) {
+            //Different MONGO DB drivers (versions) prints different error messages
+            if (!expected.getMessage().contains("Authentication failed") && !expected.getMessage().contains("auth failed") && !expected.getMessage().contains("Exception authenticating")) {
+                throw expected;
+            }
+            errorCaught = true;
+        } finally {
+            if (em != null) {
+                em.close();
+            }
+            if (factory != null) {
+                factory.close();
+            }
+        }
+        if (!errorCaught) {
+            fail("authentication should have failed");
+        }
+        properties = new HashMap<>(this.properties);
+        updateUserProperty(properties, PersistenceUnitProperties.NOSQL_USER, "unknownuser");
+        updatePasswordProperty(properties, PersistenceUnitProperties.NOSQL_PASSWORD, "password");
+        updateAuthSourceProperty(properties, MongoDatabaseTest.PROPERTY_AUTH_SOURCE_KEY, "noexists_db");
         properties.put(SERVER_SELECTION_TIMEOUT_PROPERTY, SERVER_SELECTION_TIMEOUT);
         errorCaught = false;
         factory = null;
@@ -927,14 +1013,16 @@ public class MongoDatabaseTest extends JUnitTestCase {
         }
 
         QueryStringInteraction mqlInteraction = new QueryStringInteraction();
-        mqlInteraction.setQueryString("db.ORDER.findOne({\"_id\":\"" + existingOrder.id + "\"})");
+        //mongosh command e.g. db.ORDER.findOne({"_id":"654364FB87F4B027C9D7EEAF"})
+        mqlInteraction.setQueryString("{find: 'ORDER', filter:{'_id':'" + existingOrder.id + "'}}");
         query = em.unwrap(JpaEntityManager.class).createQuery(mqlInteraction, Order.class);
         order = (Order)query.getSingleResult();
         if ((order == null) || (!order.id.equals(existingOrder.id))) {
             fail("Incorrect result: " + order);
         }
 
-        query = em.createNativeQuery("db.ORDER.findOne({\"_id\":\"" + existingOrder.id + "\"})", Order.class);
+        //mongosh command e.g. db.ORDER.findOne({"_id":"654364FB87F4B027C9D7EEAF"})
+        query = em.createNativeQuery("{find: 'ORDER', filter:{'_id':'" + existingOrder.id + "'}}", Order.class);
         order = (Order)query.getSingleResult();
         if ((order == null) || (!order.id.equals(existingOrder.id))) {
             fail("Incorrect result: " + order);

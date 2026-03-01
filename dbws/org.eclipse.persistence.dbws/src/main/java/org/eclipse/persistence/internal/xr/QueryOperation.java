@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,7 +16,7 @@
 package org.eclipse.persistence.internal.xr;
 
 // Javase imports
-import static org.eclipse.persistence.internal.helper.ClassConstants.STRING;
+import static org.eclipse.persistence.internal.core.helper.CoreClassConstants.STRING;
 import static org.eclipse.persistence.internal.oxm.Constants.BASE_64_BINARY_QNAME;
 import static org.eclipse.persistence.internal.oxm.Constants.DATE_QNAME;
 import static org.eclipse.persistence.internal.oxm.Constants.DATE_TIME_QNAME;
@@ -49,6 +49,7 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HexFormat;
 import java.util.List;
 import java.util.Vector;
 
@@ -58,14 +59,13 @@ import javax.xml.namespace.QName;
 
 // EclipseLink imports
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.exceptions.DBWSException;
+import org.eclipse.persistence.dbws.DBWSException;
 import org.eclipse.persistence.exceptions.DescriptorException;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.databaseaccess.DatasourceCall;
 import org.eclipse.persistence.internal.databaseaccess.OutputParameterForCallableStatement;
 import org.eclipse.persistence.internal.descriptors.InstantiationPolicy;
-import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.jpa.JPAQuery;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.conversion.Base64;
@@ -378,7 +378,7 @@ public class QueryOperation extends Operation {
         // a named query created via ORM metadata processing does not have
         // parameters set, however, the operation should
         List<Object> argVals = new ArrayList<>();
-        if (query.getArguments().size() == 0) {
+        if (query.getArguments().isEmpty()) {
             int idx = 0;
             for (Parameter param : getParameters()) {
                 // for custom SQL query (as configured via ORM metadata
@@ -403,7 +403,7 @@ public class QueryOperation extends Operation {
         if (value != null) {
             // a recent change in core results in an empty vector being returned in cases
             // where before we'd expect an int value (typically 1) - need to handle this
-            if (result != null && (result.getType() == INT_QNAME || result.getType().equals(SXF_QNAME))) {
+            if (result != null && (INT_QNAME.equals(result.getType()) || SXF_QNAME.equals(result.getType()))) {
                 if (value instanceof ArrayList && ((ArrayList<?>) value).isEmpty()) {
                     ((ArrayList<Integer>) value).add(1);
                 } else  if (value instanceof Vector && ((Vector<?>) value).isEmpty()) {
@@ -413,10 +413,8 @@ public class QueryOperation extends Operation {
 
             // JPA spec returns an ArrayList<Object[]> for stored procedure queries - will need to unwrap.
             // Note that for legacy deployment XML projects this is not the case.
-            if (value instanceof ArrayList) {
-                ArrayList<?> returnedList = (ArrayList<?>) value;
-                if (returnedList.size() > 0 && returnedList.get(0) instanceof Object[]) {
-                    Object[] objs = (Object[]) returnedList.get(0);
+            if (value instanceof ArrayList<?> returnedList) {
+                if (!returnedList.isEmpty() && returnedList.get(0) instanceof Object[] objs) {
                     if (isCollection()) {
                         value = new ArrayList<>();
                         for (Object obj : objs) {
@@ -432,12 +430,12 @@ public class QueryOperation extends Operation {
             if (isSimpleXMLFormat()) {
                 value = createSimpleXMLFormat(xrService, value);
             } else {
-                if (!isCollection() && value instanceof Vector) {
+                if (!isCollection() && value instanceof Vector<?> v) {
                     // JPAQuery will return a single result in a Vector
-                    if (((Vector<?>) value).isEmpty()) {
+                    if (v.isEmpty()) {
                         return null;
                     }
-                    value = ((Vector<?>) value).firstElement();
+                    value = v.get(0);
                 }
 
                 QName resultType = getResultType();
@@ -452,7 +450,7 @@ public class QueryOperation extends Operation {
                         if (value instanceof Blob) {
                             value = xrService.getOXSession().
                                     getDatasourcePlatform().getConversionManager().
-                                    convertObject(value, ClassConstants.APBYTE);
+                                    convertObject(value, CoreClassConstants.APBYTE);
                         }
                         return AttachmentHelper.buildAttachmentHandler((byte[])value, mimeType);
                     }
@@ -482,7 +480,7 @@ public class QueryOperation extends Operation {
                                 }
                             } else if (isCollection() && value instanceof Vector) {
                                 // could be a collection of populated objects, in which case we just return it
-                                if (((Vector<?>) value).size() > 0 && !(((Vector<?>) value).get(0) instanceof AbstractRecord)) {
+                                if (!((Vector<?>) value).isEmpty() && !(((Vector<?>) value).get(0) instanceof AbstractRecord)) {
                                     return value;
                                 }
                                 XRDynamicEntity_CollectionWrapper xrCollWrapper = new XRDynamicEntity_CollectionWrapper();
@@ -516,7 +514,7 @@ public class QueryOperation extends Operation {
         return value;
     }
 
-    protected void populateTargetObjectFromRecord(Vector<DatabaseMapping> mappings,
+    protected void populateTargetObjectFromRecord(List<DatabaseMapping> mappings,
         AbstractRecord record, Object targetObject, AbstractSession session) {
         ReadObjectQuery roq = new ReadObjectQuery();
         roq.setSession(session);
@@ -540,7 +538,7 @@ public class QueryOperation extends Operation {
         if (xmlTag != null && !EMPTY_STR.equals(xmlTag)) {
             tempXMLTag = xmlTag;
         }
-        Vector<DatabaseRecord> records = null;
+        List<DatabaseRecord> records = null;
         if (value instanceof ArrayList) {
             // JPA query results in a list of raw values
             // Here we have raw values returned as opposed to DatabaseRecords - this means
@@ -553,8 +551,7 @@ public class QueryOperation extends Operation {
             for (Object obj : dsCall.getParameters()) {
                 if (obj instanceof OutputParameterForCallableStatement) {
                     paramFlds.add(((OutputParameterForCallableStatement) obj).getOutputField());
-                } else if (obj instanceof Object[]) {
-                    Object[] objArray = (Object[]) obj;
+                } else if (obj instanceof Object[] objArray) {
                     for (int i = 0; i < objArray.length; i++) {
                         Object o = objArray[i];
                         if (o instanceof OutputParameterForCallableStatement) {
@@ -565,27 +562,27 @@ public class QueryOperation extends Operation {
             }
             // now create a record using DatabaseField/value pairs
             DatabaseRecord dr = new DatabaseRecord();
-            if (paramFlds.size() > 0) {
+            if (!paramFlds.isEmpty()) {
                 for (int i=0; i <  ((ArrayList<?>) value).size(); i++) {
                     dr.add(paramFlds.get(i), ((ArrayList<?>) value).get(i));
                 }
             } else {
                 dr.add(new DatabaseField(RESULT_STR), ((ArrayList<?>) value).get(0));
             }
-            records = new Vector<>();
+            records = new ArrayList<>();
             records.add(dr);
         } else if (value instanceof Vector) {
-            Class<?> vectorContent = ((Vector<?>)value).firstElement().getClass();
+            Class<?> vectorContent = ((Vector<?>)value).get(0).getClass();
             if (DatabaseRecord.class.isAssignableFrom(vectorContent)) {
                 records = (Vector<DatabaseRecord>)value;
             } else {
-                records = new Vector<>();
+                records = new ArrayList<>();
                 DatabaseRecord dr = new DatabaseRecord();
-                dr.add(new DatabaseField(RESULT_STR), ((Vector<?>)value).firstElement());
+                dr.add(new DatabaseField(RESULT_STR), ((Vector<?>)value).get(0));
                 records.add(dr);
             }
         } else {
-            records = new Vector<>();
+            records = new ArrayList<>();
             DatabaseRecord dr = new DatabaseRecord();
             dr.add(new DatabaseField(RESULT_STR), value);
             records.add(dr);
@@ -598,8 +595,7 @@ public class QueryOperation extends Operation {
             Element rowElement = TEMP_DOC.createElement(tempXMLTag);
             for (DatabaseField field : dr.getFields()) {
                 // handle complex types, i.e. ones we have a descriptor for
-                if (field instanceof ObjectRelationalDatabaseField) {
-                    ObjectRelationalDatabaseField ordtField = (ObjectRelationalDatabaseField) field;
+                if (field instanceof ObjectRelationalDatabaseField ordtField) {
                     if (xrService.getOXSession().getDescriptor(ordtField.getType()) != null) {
                         xrService.getXMLContext().createMarshaller().marshal(dr.get(field), rowElement);
                         continue;
@@ -607,21 +603,17 @@ public class QueryOperation extends Operation {
                 }
                 Object fieldValue = dr.get(field);
                 if (fieldValue != null) {
-                    if (fieldValue instanceof Calendar) {
-                        Calendar cValue = (Calendar)fieldValue;
+                    if (fieldValue instanceof Calendar cValue) {
                         fieldValue = conversionManager.convertObject(cValue, STRING, DATE_TIME_QNAME);
                     }
-                    if (fieldValue instanceof Date) {
-                        Date dValue = (Date)fieldValue;
+                    if (fieldValue instanceof Date dValue) {
                         fieldValue = conversionManager.convertObject(dValue, STRING, DATE_QNAME);
-                    } else if (fieldValue instanceof Time) {
-                        Time tValue = (Time)fieldValue;
+                    } else if (fieldValue instanceof Time tValue) {
                         fieldValue = conversionManager.convertObject(tValue, STRING, TIME_QNAME);
-                    } else if (fieldValue instanceof Timestamp) {
-                        Timestamp tsValue = (Timestamp)fieldValue;
+                    } else if (fieldValue instanceof Timestamp tsValue) {
                         fieldValue = conversionManager.convertObject(tsValue, STRING, DATE_TIME_QNAME);
                     } else if (fieldValue instanceof Blob) {
-                        fieldValue = conversionManager.convertObject(fieldValue, ClassConstants.APBYTE);
+                        fieldValue = conversionManager.convertObject(fieldValue, CoreClassConstants.APBYTE);
                     } else if (SQLXML.class.isAssignableFrom(fieldValue.getClass())) {
                         // handle XMLType case where an oracle.jdbc.driver.OracleSQLXML instance was returned
                         SQLXML sqlXml = (SQLXML) fieldValue;
@@ -672,7 +664,7 @@ public class QueryOperation extends Operation {
                     String fieldValueString = fieldValue.toString();
                     // handle binary content - attachments dealt with in invoke() above
                     if (result.getType().equals(BASE_64_BINARY_QNAME)) {
-                        fieldValueString = Helper.buildHexStringFromBytes(Base64.base64Encode((byte[])fieldValue));
+                        fieldValueString = HexFormat.of().formatHex(Base64.base64Encode((byte[])fieldValue));
                         columnElement.setAttributeNS(XMLNS_URL, XSD_STR, SCHEMA_URL);
                         columnElement.setAttributeNS(XMLNS_URL, XSI_STR, SCHEMA_INSTANCE_URL);
                         columnElement.setAttributeNS(SCHEMA_INSTANCE_URL, XSITYPE_STR, BASE64_BINARY_STR);

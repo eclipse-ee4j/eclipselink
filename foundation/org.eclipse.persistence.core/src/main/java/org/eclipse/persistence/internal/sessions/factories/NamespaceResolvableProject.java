@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,17 +16,15 @@
 package org.eclipse.persistence.internal.sessions.factories;
 
 //javase imports
-import java.util.Iterator;
+
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.oxm.XMLDescriptor;
+import org.eclipse.persistence.sessions.Project;
 
 import javax.xml.namespace.QName;
 
 import static javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI;
 import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
-
-// EclipseLink imports
-import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.oxm.XMLDescriptor;
-import org.eclipse.persistence.sessions.Project;
 
 public abstract class NamespaceResolvableProject extends Project {
 
@@ -69,11 +67,11 @@ public abstract class NamespaceResolvableProject extends Project {
         ns.put("xsi", W3C_XML_SCHEMA_INSTANCE_NS_URI);
         ns.put("xsd", W3C_XML_SCHEMA_NS_URI);
         String ns1 = getPrimaryNamespacePrefix();
-        if (ns1 != null && ns1.length() > 0) {
+        if (ns1 != null && !ns1.isEmpty()) {
             ns.putPrimary(ns1, getPrimaryNamespace());
         }
         String ns2 = getSecondaryNamespacePrefix();
-        if (ns2 != null && ns2.length() > 0) {
+        if (ns2 != null && !ns2.isEmpty()) {
             ns.putSecondary(ns2, getSecondaryNamespace());
         }
     }
@@ -115,8 +113,8 @@ public abstract class NamespaceResolvableProject extends Project {
     protected abstract void buildDescriptors();
 
     protected void setNamespaceResolverOnDescriptors() {
-        for (Iterator<ClassDescriptor> descriptors = getDescriptors().values().iterator(); descriptors.hasNext();) {
-            XMLDescriptor descriptor = (XMLDescriptor)descriptors.next();
+        for (ClassDescriptor classDescriptor : getDescriptors().values()) {
+            XMLDescriptor descriptor = (XMLDescriptor) classDescriptor;
             descriptor.setNamespaceResolver(ns);
         }
     }

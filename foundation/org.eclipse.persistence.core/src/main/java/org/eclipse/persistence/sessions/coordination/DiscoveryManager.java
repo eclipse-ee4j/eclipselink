@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,11 +14,13 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.sessions.coordination;
 
-import java.net.*;
-import java.io.IOException;
-import org.eclipse.persistence.exceptions.DiscoveryException;
-import org.eclipse.persistence.internal.sessions.coordination.*;
+import org.eclipse.persistence.internal.sessions.coordination.ServiceAnnouncement;
 import org.eclipse.persistence.sessions.SessionProfiler;
+
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.InetAddress;
+import java.net.MulticastSocket;
 
 /**
  * <p>
@@ -357,7 +359,7 @@ public class DiscoveryManager implements Runnable {
      * PUBLIC:
      * Set the number of hops the data packets of the session announcement will take before expiring.
      * The default is 2, a hub and an interface card to prevent the data packets from leaving the local network.
-     *
+     * <p>
      * Note that if sessions are hosted on different LANs that are part of WAN, the announcement sending by one session
      * may not reach other sessions.  In this case, consult your network administrator for the right time-to-live value
      * or test your network by increase the value until sessions receive announcement sent by others.

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,8 +14,6 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.returning.model;
 
-import java.util.Iterator;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.mappings.DatabaseMapping;
@@ -25,7 +23,8 @@ import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.sessions.changesets.ChangeRecord;
 import org.eclipse.persistence.sessions.changesets.ObjectChangeSet;
 import org.eclipse.persistence.sessions.changesets.UnitOfWorkChangeSet;
-import org.eclipse.persistence.testing.framework.*;
+import org.eclipse.persistence.testing.framework.TestCase;
+import org.eclipse.persistence.testing.framework.TestErrorException;
 
 public class ReturningUpdateTestCase extends TestCase {
 
@@ -94,24 +93,22 @@ public class ReturningUpdateTestCase extends TestCase {
         if(useUOW) {
             ClassDescriptor descriptor = getSession().getDescriptor(Class1.class);
             ObjectChangeSet changeSet = uowChangeSet.getObjectChangeSetForClone(cloneWorkingObject);
-            Iterator<ChangeRecord> it = changeSet.getChanges().iterator();
-            while(it.hasNext()) {
-                ChangeRecord changeRecord = it.next();
+            for (ChangeRecord changeRecord : changeSet.getChanges()) {
                 String attributeName = changeRecord.getAttribute();
                 DatabaseMapping mapping = descriptor.getMappingForAttributeName(attributeName);
                 Object beforeChangeValue = mapping.getAttributeValueFromObject(objectBeforeChange);
                 Object changeRecordOldValue = changeRecord.getOldValue();
-                if(beforeChangeValue == null) {
-                    if(changeRecordOldValue != null) {
+                if (beforeChangeValue == null) {
+                    if (changeRecordOldValue != null) {
                         throw new TestErrorException(attributeName + ": before change value was null, not " + changeRecordOldValue);
                     }
                 } else {
-                    if(beforeChangeValue.getClass().isArray()) {
-                        if(!Helper.compareArrays((Object[]) beforeChangeValue, (Object[]) changeRecordOldValue)) {
+                    if (beforeChangeValue.getClass().isArray()) {
+                        if (!Helper.compareArrays((Object[]) beforeChangeValue, (Object[]) changeRecordOldValue)) {
                             throw new TestErrorException(attributeName + ": arrays are not equal");
                         }
                     } else {
-                        if(!beforeChangeValue.equals(changeRecordOldValue)) {
+                        if (!beforeChangeValue.equals(changeRecordOldValue)) {
                             throw new TestErrorException(attributeName + ": before change value was " + beforeChangeValue + ", not " + changeRecordOldValue);
                         }
                     }

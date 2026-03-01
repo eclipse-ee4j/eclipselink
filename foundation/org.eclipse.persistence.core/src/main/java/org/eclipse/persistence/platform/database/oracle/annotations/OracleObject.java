@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,6 +14,7 @@
 //     Oracle - initial API and implementation
 package org.eclipse.persistence.platform.database.oracle.annotations;
 
+import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
@@ -30,21 +31,23 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  */
 @Target({TYPE})
 @Retention(RUNTIME)
+@Repeatable(OracleObjects.class)
 public @interface OracleObject {
 
     /**
-     * (Required) The name of the OBJECT type in the database.
+     * The name of the OBJECT type in the database.
      */
     String name();
 
     /**
-     * (Optional) The Java class to map the OBJECT type to.
-     * This class must be mapped using a @Struct annotation.
+     * The Java class to map the OBJECT type to.
+     * <p>
+     * This class must be mapped using a {@linkplain org.eclipse.persistence.annotations.Struct} annotation.
      */
     Class<?> javaType() default void.class;
 
     /**
-     * (Required) Defines the fields in the record type.
+     * Defines the fields in the record type.
      */
     PLSQLParameter[] fields();
 }

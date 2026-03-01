@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,15 +14,14 @@
 //     dminsky - initial API and implementation
 package org.eclipse.persistence.testing.tests.queries;
 
-import java.util.List;
-import java.util.Vector;
-
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ScrollableCursor;
 import org.eclipse.persistence.testing.framework.TestCase;
+import org.eclipse.persistence.testing.framework.TestWarningException;
 import org.eclipse.persistence.testing.models.employee.domain.Employee;
 
-import org.eclipse.persistence.testing.framework.TestWarningException;
+import java.util.List;
+import java.util.Vector;
 
 /**
  * Test using a ScrollableCursor with a simple joined attribute.

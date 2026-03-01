@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,11 +14,11 @@
 //     John Vandale - initial API and implementation
 package org.eclipse.persistence.testing.tests.mapping;
 
-import org.eclipse.persistence.testing.framework.TestCase;
-import org.eclipse.persistence.sessions.UnitOfWork;
-import org.eclipse.persistence.testing.models.mapping.Employee;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.sessions.UnitOfWork;
+import org.eclipse.persistence.testing.framework.TestCase;
+import org.eclipse.persistence.testing.models.mapping.Employee;
 
 /* Bug 306075 - Tests that deleting an item with a null value in a DirectCollectionMapping
  * actually removes the item from the DB table.

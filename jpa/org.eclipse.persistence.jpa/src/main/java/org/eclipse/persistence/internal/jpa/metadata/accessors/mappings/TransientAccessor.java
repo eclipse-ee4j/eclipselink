@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,13 +20,11 @@
 //       - 337323: Multi-tenant with shared schema support (part 1)
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
-import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.MappingAccessor;
-
 /**
  * INTERNAL:
  * An transient accessor ... which does nothing ... just a clever way to
  * make sure we don't process the accessible object for annotations.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,13 +14,14 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.queries;
 
-import java.util.Collection;
-import java.util.Vector;
-
 import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+
+import java.util.Collection;
+import java.util.Vector;
 
 /**
  * <p><b>Purpose</b>: A CollectionContainerPolicy is ContainerPolicy whose container class
@@ -72,12 +73,8 @@ public class CollectionContainerPolicy extends InterfaceContainerPolicy {
         }
         try {
             return ((Collection)container).add(elementToAdd);
-        } catch (ClassCastException ex1) {
+        } catch (ClassCastException | UnsupportedOperationException | IllegalArgumentException ex1) {
             throw QueryException.cannotAddElement(element, container, ex1);
-        } catch (IllegalArgumentException ex2) {
-            throw QueryException.cannotAddElement(element, container, ex2);
-        } catch (UnsupportedOperationException ex3) {
-            throw QueryException.cannotAddElement(element, container, ex3);
         }
     }
 
@@ -144,7 +141,7 @@ public class CollectionContainerPolicy extends InterfaceContainerPolicy {
 
     @Override
     public Class<?> getInterfaceType() {
-        return ClassConstants.Collection_Class;
+        return CoreClassConstants.Collection_Class;
     }
 
     /**

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,17 +14,14 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.oxm.inheritance;
 
-import java.io.InputStream;
-import java.io.FileOutputStream;
-import java.io.StringReader;
-import java.io.StringWriter;
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
-import javax.xml.transform.dom.DOMResult;
+import org.eclipse.persistence.oxm.exceptions.XMLMarshalException;
+import org.eclipse.persistence.oxm.XMLContext;
+import org.eclipse.persistence.oxm.XMLMarshaller;
+import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.testing.oxm.OXTestCase;
-import org.eclipse.persistence.oxm.*;
-import org.eclipse.persistence.exceptions.XMLMarshalException;
+
+import java.io.InputStream;
+import java.io.StringWriter;
 
 public class InheritanceMissingDescriptorTestCases extends OXTestCase {
     public XMLMarshaller marshaller;
@@ -50,13 +47,13 @@ public class InheritanceMissingDescriptorTestCases extends OXTestCase {
             StringWriter writer = new StringWriter();
             marshaller.marshal(car, writer);
         } catch (XMLMarshalException exception) {
-            assertTrue("An incorrect XMLValidation was thrown.", exception.getErrorCode() == XMLMarshalException.DESCRIPTOR_NOT_FOUND_IN_PROJECT);
+            assertEquals("An incorrect XMLValidation was thrown.", XMLMarshalException.DESCRIPTOR_NOT_FOUND_IN_PROJECT, exception.getErrorCode());
             return;
         } catch (Exception exception) {
-            assertTrue("An unexpected exception was thrown.", false);
+            fail("An unexpected exception was thrown.");
             return;
         }
-        assertTrue("An XMLValidation should have been caught but wasn't.", false);
+        fail("An XMLValidation should have been caught but wasn't.");
     }
 
     public void testMissingDescriptorRead() {
@@ -64,12 +61,12 @@ public class InheritanceMissingDescriptorTestCases extends OXTestCase {
             InputStream carStream = getClass().getClassLoader().getResourceAsStream("org/eclipse/persistence/testing/oxm/inheritance/car.xml");
             Object car = unmarshaller.unmarshal(carStream);
         } catch (XMLMarshalException exception) {
-            assertTrue("An incorrect XMLValidation was thrown.", exception.getErrorCode() == XMLMarshalException.NO_DESCRIPTOR_WITH_MATCHING_ROOT_ELEMENT);
+            assertEquals("An incorrect XMLValidation was thrown.", XMLMarshalException.NO_DESCRIPTOR_WITH_MATCHING_ROOT_ELEMENT, exception.getErrorCode());
             return;
         } catch (Exception exception) {
-            assertTrue("An unexpected exception was caught.", false);
+            fail("An unexpected exception was caught.");
             return;
         }
-        assertTrue("An XMLValidation should have been caught but wasn't.", false);
+        fail("An XMLValidation should have been caught but wasn't.");
     }
 }

@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2022 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,23 +28,6 @@
 //     02/20/2018-2.7 Will Dazey
 //       - 529602: Added support for CLOBs in DELETE statements for Oracle
 package org.eclipse.persistence.internal.descriptors;
-
-import java.io.Serializable;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Vector;
-import java.util.concurrent.Semaphore;
 
 import org.eclipse.persistence.annotations.BatchFetchType;
 import org.eclipse.persistence.annotations.CacheKeyType;
@@ -107,6 +90,7 @@ import org.eclipse.persistence.mappings.AggregateObjectMapping;
 import org.eclipse.persistence.mappings.ContainerMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
+import org.eclipse.persistence.mappings.DirectToFieldMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.mappings.ObjectReferenceMapping;
 import org.eclipse.persistence.mappings.foundation.AbstractColumnMapping;
@@ -114,7 +98,6 @@ import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.mappings.foundation.AbstractTransformationMapping;
 import org.eclipse.persistence.mappings.querykeys.DirectQueryKey;
 import org.eclipse.persistence.mappings.querykeys.QueryKey;
-import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.queries.AttributeGroup;
 import org.eclipse.persistence.queries.DataReadQuery;
 import org.eclipse.persistence.queries.FetchGroup;
@@ -131,6 +114,26 @@ import org.eclipse.persistence.sessions.CopyGroup;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.sessions.SessionProfiler;
 import org.eclipse.persistence.sessions.remote.DistributedSession;
+
+import java.io.Serializable;
+import java.lang.reflect.RecordComponent;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Vector;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * <p><b>Purpose</b>: Object builder is one of the behavior class attached to descriptor.
@@ -186,10 +189,11 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
     /** PERF: is there an cache index field that's would not be selected by SOP query. Ignored unless descriptor uses SOP and CachePolicy has cache indexes. */
     protected boolean hasCacheIndexesInSopObject = false;
     /** Semaphore related properties. Transient to avoid serialization in clustered/replicated environments see CORBA tests*/
-    private static final transient ThreadLocal<Boolean> SEMAPHORE_THREAD_LOCAL_VAR = new ThreadLocal<>();
-    private static final transient int SEMAPHORE_MAX_NUMBER_THREADS = ConcurrencyUtil.SINGLETON.getNoOfThreadsAllowedToObjectBuildInParallel();
-    private static final transient Semaphore SEMAPHORE_LIMIT_MAX_NUMBER_OF_THREADS_OBJECT_BUILDING = new Semaphore(SEMAPHORE_MAX_NUMBER_THREADS);
+    private static final ThreadLocal<Boolean> SEMAPHORE_THREAD_LOCAL_VAR = new ThreadLocal<>();
+    private static final int SEMAPHORE_MAX_NUMBER_THREADS = ConcurrencyUtil.SINGLETON.getNoOfThreadsAllowedToObjectBuildInParallel();
+    private static final Semaphore SEMAPHORE_LIMIT_MAX_NUMBER_OF_THREADS_OBJECT_BUILDING = new Semaphore(SEMAPHORE_MAX_NUMBER_THREADS);
     private transient ConcurrencySemaphore objectBuilderSemaphore = new ConcurrencySemaphore(SEMAPHORE_THREAD_LOCAL_VAR, SEMAPHORE_MAX_NUMBER_THREADS, SEMAPHORE_LIMIT_MAX_NUMBER_OF_THREADS_OBJECT_BUILDING, this, "object_builder_semaphore_acquired_01");
+    private final Lock instanceLock  = new ReentrantLock();
 
     public ObjectBuilder(ClassDescriptor descriptor) {
         this.descriptor = descriptor;
@@ -704,7 +708,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
      * If called with usesOptimisticLocking==true the caller should make sure that descriptor uses optimistic locking policy.
      */
     public Expression buildDeleteExpression(DatabaseTable table, AbstractRecord row, boolean usesOptimisticLocking) {
-        if (usesOptimisticLocking && (this.descriptor.getTables().firstElement().equals(table))) {
+        if (usesOptimisticLocking && (this.descriptor.getTables().get(0).equals(table))) {
             return this.descriptor.getOptimisticLockingPolicy().buildDeleteExpression(table, primaryKeyExpression, row);
         } else {
             return buildPrimaryKeyExpression(table);
@@ -746,6 +750,64 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
     @Override
     public Object buildNewInstance() {
         return this.descriptor.getInstantiationPolicy().buildNewInstance();
+    }
+
+    /**
+     * Return a new {@code java.lang.Record} instance.
+     * As this kind of class is immutable all values must be passed during creation as constructor parameters.
+     */
+    public Object buildNewRecordInstance(Class<Record> clazz, List<DatabaseMapping> mappings, AbstractRecord databaseRow, AbstractSession session) {
+        class TypeValue {
+            public TypeValue(Class<?> type) {
+                this.type = type;
+            }
+            Class<?> type;
+            Object value;
+        }
+        Map<String, TypeValue> typeValueMap = new LinkedHashMap<>();
+        // Set class at construction time for record classes
+        ReadObjectQuery query = new ReadObjectQuery(clazz);
+        query.setSession(session);
+        for (RecordComponent component : clazz.getRecordComponents()) {
+            typeValueMap.put(component.getName(), new TypeValue(component.getType()));
+        }
+        for (DatabaseMapping mapping: mappings) {
+            Object value = null;
+            if (mapping instanceof DirectToFieldMapping) {
+                value = mapping.valueFromRow(databaseRow, null, query, true);
+            } if (mapping instanceof AggregateObjectMapping aggregateObjectMapping) {
+                ClassDescriptor descriptor = session.getClassDescriptor(aggregateObjectMapping.getReferenceClass());
+                //Handle nested records
+                if (aggregateObjectMapping.getReferenceClass().isRecord()) {
+                    value = descriptor.getObjectBuilder().buildNewRecordInstance((Class<Record>) aggregateObjectMapping.getReferenceClass(), descriptor.getMappings(), databaseRow, session);
+                } else {
+                    value = descriptor.getObjectBuilder().buildNewInstance();
+                }
+            }
+            TypeValue typeValue = typeValueMap.get(mapping.getAttributeName());
+            typeValue.value = value;
+        }
+        RecordInstantiationPolicy recordInstantiationPolicy = null;
+        if (this.descriptor.getJavaClass().isRecord()) {
+            //Usually for java.lang.Records used with @Embeddable (@EmbeddedId, @Embedded attribute) with their own descriptor
+            recordInstantiationPolicy = ((RecordInstantiationPolicy) this.descriptor.getInstantiationPolicy());
+        } else {
+            //Handle case if descriptor is for entity with IdClass (record). IdClasses doesn't have descriptor.
+            recordInstantiationPolicy = new RecordInstantiationPolicy<>(clazz);
+        }
+        instanceLock.lock();
+        try {
+            List values = new ArrayList<>();
+            for (TypeValue typeValue: typeValueMap.values()) {
+                values.add(typeValue.value);
+            }
+            recordInstantiationPolicy.setValues(values);
+            return recordInstantiationPolicy.buildNewInstance();
+        } catch (Throwable t) {
+            throw t;
+        } finally {
+            instanceLock.unlock();
+        }
     }
 
     /**
@@ -1194,7 +1256,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                 }
             }
         }
-        if (query instanceof ObjectLevelReadQuery) {
+        if (query.isObjectLevelReadQuery()) {
             LoadGroup group = query.getLoadGroup();
             if (group != null) {
                 session.load(domainObject, group, query.getDescriptor(), false);
@@ -1570,8 +1632,8 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             if (policy.shouldAddAll()) {
                 List domainObjectsIn = new ArrayList();
                 List<AbstractRecord> databaseRowsIn = new ArrayList();
-                for (Enumeration iterator = ((Vector)databaseRows).elements(); iterator.hasMoreElements(); ) {
-                    AbstractRecord databaseRow = (AbstractRecord)iterator.nextElement();
+                for (Iterator iterator1 = databaseRows.iterator(); iterator1.hasNext(); ) {
+                    AbstractRecord databaseRow = (AbstractRecord) iterator1.next();
                     // PERF: 1-m joining nulls out duplicate rows.
                     if (databaseRow != null) {
                         domainObjectsIn.add(buildObject(query, databaseRow, joinManager, session, this.descriptor, inheritancePolicy,
@@ -1582,8 +1644,8 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                 policy.addAll(domainObjectsIn, domainObjects, session, databaseRowsIn, query, null, true);
             } else {
                 boolean quickAdd = (domainObjects instanceof Collection) && !this.hasWrapperPolicy;
-                for (Enumeration iterator = ((Vector)databaseRows).elements(); iterator.hasMoreElements(); ) {
-                    AbstractRecord databaseRow = (AbstractRecord)iterator.nextElement();
+                for (Iterator iterator1 = databaseRows.iterator(); iterator1.hasNext(); ) {
+                    AbstractRecord databaseRow = (AbstractRecord) iterator1.next();
                     // PERF: 1-m joining nulls out duplicate rows.
                     if (databaseRow != null) {
                         Object domainObject = buildObject(query, databaseRow, joinManager, session, this.descriptor, inheritancePolicy,
@@ -1606,7 +1668,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
      * Build the primary key expression for the secondary table.
      */
     public Expression buildPrimaryKeyExpression(DatabaseTable table) throws DescriptorException {
-        if (this.descriptor.getTables().firstElement().equals(table)) {
+        if (this.descriptor.getTables().get(0).equals(table)) {
             return getPrimaryKeyExpression();
         }
 
@@ -3050,8 +3112,9 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             for (int index = 0; index < primaryKeyFields.size(); index++) {
                 DatabaseField primaryKeyField = primaryKeyFields.get(index);
                 String fieldClassificationClassName = null;
-                if (this.getBaseMappingForField(primaryKeyField) instanceof AbstractDirectMapping) {
-                    fieldClassificationClassName = ((AbstractDirectMapping)this.getBaseMappingForField(primaryKeyField)).getFieldClassificationClassName();
+                DatabaseMapping mapping = this.getBaseMappingForField(primaryKeyField);
+                if (mapping != null && mapping.isAbstractDirectMapping()) {
+                    fieldClassificationClassName = ((AbstractDirectMapping) mapping).getFieldClassificationClassName();
                 }
                 subExpression = ((DatasourcePlatform)session.getDatasourcePlatform()).createExpressionFor(primaryKeyField, builder, fieldClassificationClassName);
 
@@ -3764,10 +3827,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             nonPrimaryKeyMappings = new ArrayList(10);
         }
 
-        for (Enumeration<DatabaseMapping> mappings = this.descriptor.getMappings().elements();
-             mappings.hasMoreElements();) {
-            DatabaseMapping mapping = mappings.nextElement();
-
+        for (DatabaseMapping mapping: this.descriptor.getMappings()) {
             // Add attribute to mapping association
             if (!mapping.isWriteOnly()) {
                 getMappingsByAttribute().put(mapping.getAttributeName(), mapping);
@@ -4357,7 +4417,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                             }
                             AbstractSession session = query.getExecutionSession();
                             mapping.readFromRowIntoObject(databaseRow, joinManager, sourceObject, cacheKey, query, query.getExecutionSession(),isTargetProtected);
-                            session.getIdentityMapAccessorInstance().getIdentityMap(concreteDescriptor).lazyRelationshipLoaded(sourceObject, (ValueHolderInterface) ((ForeignReferenceMapping)mapping).getIndirectionPolicy().getOriginalValueHolder(attributeValue, session), (ForeignReferenceMapping)mapping);
+                            session.getIdentityMapAccessorInstance().getIdentityMap(concreteDescriptor).lazyRelationshipLoaded(sourceObject, (ValueHolderInterface<?>) ((ForeignReferenceMapping)mapping).getIndirectionPolicy().getOriginalValueHolder(attributeValue, session), (ForeignReferenceMapping)mapping);
                         }
                     }
                 }
@@ -4403,7 +4463,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                             }
                             AbstractSession session = query.getExecutionSession();
                             mapping.readFromRowIntoObject(databaseRow, joinManager, intermediateValue, cacheKey, query, query.getExecutionSession(), isTargetProtected);
-                            session.getIdentityMapAccessorInstance().getIdentityMap(concreteDescriptor).lazyRelationshipLoaded(intermediateValue, (ValueHolderInterface) ((ForeignReferenceMapping)mapping).getIndirectionPolicy().getOriginalValueHolder(attributeValue, session), (ForeignReferenceMapping)mapping);
+                            session.getIdentityMapAccessorInstance().getIdentityMap(concreteDescriptor).lazyRelationshipLoaded(intermediateValue, (ValueHolderInterface<?>) ((ForeignReferenceMapping)mapping).getIndirectionPolicy().getOriginalValueHolder(attributeValue, session), (ForeignReferenceMapping)mapping);
                         }
                     }
                 }
@@ -4535,7 +4595,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
 
     @Override
     public String toString() {
-        return Helper.getShortClassName(getClass()) + "(" + this.descriptor.toString() + ")";
+        return getClass().getSimpleName() + "(" + this.descriptor.toString() + ")";
     }
 
     /**
@@ -4611,14 +4671,11 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                 return false;
             }
         } else {
-            for (Enumeration<DatabaseTable> tables = this.descriptor.getTables().elements();
-                 tables.hasMoreElements();) {
-                DatabaseTable table = tables.nextElement();
-
+            for (DatabaseTable table: this.descriptor.getTables()) {
                 SQLSelectStatement sqlStatement = new SQLSelectStatement();
                 sqlStatement.addTable(table);
-                if (table == this.descriptor.getTables().firstElement()) {
-                    sqlStatement.setWhereClause((Expression)getPrimaryKeyExpression().clone());
+                if (table == this.descriptor.getTables().get(0)) {
+                    sqlStatement.setWhereClause(getPrimaryKeyExpression().clone());
                 } else {
                     sqlStatement.setWhereClause(buildPrimaryKeyExpression(table));
                 }
@@ -4640,10 +4697,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
         }
 
         // now ask each of the mappings to verify that the object has been deleted.
-        for (Enumeration<DatabaseMapping> mappings = this.descriptor.getMappings().elements();
-             mappings.hasMoreElements();) {
-            DatabaseMapping mapping = mappings.nextElement();
-
+        for (DatabaseMapping mapping: this.descriptor.getMappings()) {
             if (!mapping.verifyDelete(object, session)) {
                 return false;
             }
@@ -4712,8 +4766,4 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
         return this.hasCacheIndexesInSopObject;
     }
 
-    @Override
-    public AbstractRecord createRecordFromXMLContext(XMLContext context) {
-        return createRecord((AbstractSession)context.getSession());
-    }
 }

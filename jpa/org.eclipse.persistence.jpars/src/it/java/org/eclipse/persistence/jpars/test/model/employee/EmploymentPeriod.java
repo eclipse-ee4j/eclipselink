@@ -12,19 +12,20 @@
 
 package org.eclipse.persistence.jpars.test.model.employee;
 
-import static jakarta.persistence.TemporalType.DATE;
-
 import java.util.Calendar;
 
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 
 @Embeddable
 public class EmploymentPeriod {
 
-    @Temporal(DATE)
+    @Temporal(TemporalType.DATE)
+    @SuppressWarnings("deprecation")
     private Calendar startDate;
-    @Temporal(DATE)
+    @Temporal(TemporalType.DATE)
+    @SuppressWarnings("deprecation")
     private Calendar endDate;
 
     public Calendar getStartDate() {

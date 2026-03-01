@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,6 +30,7 @@ import java.io.Writer;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
 
@@ -93,7 +94,7 @@ public class TestExecutor {
     /** Allow only errors to be logged. */
     protected boolean shouldLogOnlyErrors = false;
 
-    public static String CR = org.eclipse.persistence.internal.helper.Helper.cr();
+    public static String CR = System.lineSeparator();
 
     /**
      * Return a default executor.  Used as the executor for tests run in JUnit, or by themselves.
@@ -174,7 +175,7 @@ public class TestExecutor {
      */
     public void addConfigureSystem(TestSystem system) {
         if (!configuredSystemsContainsInstanceOf(system)) {
-            getConfiguredSystems().addElement(system);
+            getConfiguredSystems().add(system);
         }
     }
 
@@ -183,8 +184,8 @@ public class TestExecutor {
      * The access other model to reuse their to setup.
      */
     public void addLoadedModels(Vector<TestModel> models) {
-        for (Enumeration<TestModel>theModels = models.elements(); theModels.hasMoreElements();) {
-            TestModel model = theModels.nextElement();
+        for (Iterator<TestModel> iterator = models.iterator(); iterator.hasNext();) {
+            TestModel model = iterator.next();
             getLoadedModels().put(model.getName(), model);
         }
     }
@@ -196,7 +197,7 @@ public class TestExecutor {
         if (!configuredSystemsContainsInstanceOf(system)) {
             system.run(getSession());
             getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
-            getConfiguredSystems().addElement(system);
+            getConfiguredSystems().add(system);
         }
     }
 
@@ -204,9 +205,9 @@ public class TestExecutor {
      * Return true if the configuredSystems contains an instance of the class of the TestSystem parameter.
      */
     public boolean configuredSystemsContainsInstanceOf(TestSystem system) {
-        for (Enumeration<TestSystem> configuredSystemsEnum = getConfiguredSystems().elements();
-                 configuredSystemsEnum.hasMoreElements();) {
-            if (configuredSystemsEnum.nextElement().getClass().equals(system.getClass())) {
+        for (Iterator<TestSystem> iterator = getConfiguredSystems().iterator();
+             iterator.hasNext();) {
+            if (iterator.next().getClass().equals(system.getClass())) {
                 return true;
             }
         }
@@ -515,8 +516,7 @@ public class TestExecutor {
         }
 
         if (shouldLogResults()) {
-            if (test instanceof TestEntity) {
-                TestEntity testEntity = (TestEntity)test;
+            if (test instanceof TestEntity testEntity) {
                 testEntity.resetNestedCounter();
                 if (regression) {
                     testEntity.logRegressionResult(log);
@@ -644,18 +644,18 @@ public class TestExecutor {
     public void removeFromConfiguredSystemsInstanceOf(TestSystem system) {
         // find and record the systems to remove
         Vector<TestSystem> systemsToRemove = new Vector<>();
-        for (Enumeration<TestSystem> systemEnum = getConfiguredSystems().elements();
-                 systemEnum.hasMoreElements();) {
-            TestSystem aSystem = systemEnum.nextElement();
+        for (Iterator<TestSystem> iterator = getConfiguredSystems().iterator();
+             iterator.hasNext();) {
+            TestSystem aSystem = iterator.next();
             if (aSystem.getClass().equals(system.getClass())) {
-                systemsToRemove.addElement(aSystem);
+                systemsToRemove.add(aSystem);
             }
         }
 
         // Do the removing
-        for (Enumeration<TestSystem> systemsToRemoveEnum = systemsToRemove.elements();
-                 systemsToRemoveEnum.hasMoreElements();) {
-            getConfiguredSystems().removeElement(systemsToRemoveEnum.nextElement());
+        for (Iterator<TestSystem> iterator = systemsToRemove.iterator();
+             iterator.hasNext();) {
+            getConfiguredSystems().remove(iterator.next());
         }
     }
 
@@ -676,8 +676,7 @@ public class TestExecutor {
         boolean hasSession = true;
 
         setShouldStopExecution(false);
-        if ((getSession() == null) && (test instanceof TestEntity)) {
-            TestEntity testEntity = (TestEntity)test;
+        if ((getSession() == null) && (test instanceof TestEntity testEntity)) {
             hasSession = false;
             if (shouldHandleErrors()) {
                 try {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -72,12 +72,10 @@ public class Project {
 
     public boolean equals(Object object)
     {
-     if(!(object instanceof Project))
+     if(!(object instanceof Project projectObject))
       return false;
 
-     Project projectObject = (Project)object;
-
-     if( (this.getId() == projectObject.getId()) &&(this.getName().equals(projectObject.getName()))){
+        if( (this.getId() == projectObject.getId()) &&(this.getName().equals(projectObject.getName()))){
          if( ((this.getLeader() == null) && projectObject.getLeader() ==null) || (this.getLeader().equals(projectObject.getLeader())) ){
                       if( (this.getType() == null && projectObject.getType() == null) ||(this.getType().equals(projectObject.getType()))    ){
                             return true;

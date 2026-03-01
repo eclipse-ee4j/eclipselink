@@ -1,0 +1,49 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[ENTITIES008]]
+=== Extensible Entities
+
+JPA entities and JAXB beans can be made extensible by adding or
+modifying mappings externally. There is no need to modify the entity or
+bean source file nor do you have to redeploy the persistence unit.
+
+Extensible entities are useful in a multi-tenant (or SaaS) architecture
+where a shared, generic application can be used by multiple clients
+(tenants). Tenants have private access to their own data, and to data
+shared with other tenants.
+
+Using extensible entities, you can:
+
+* Build an application where some mappings are common to all users and
+some mappings are user-specific.
+* Add mappings to an application after it is made available to a
+customer (even post-deployment).
+* Use the same `EntityManagerFactory` interface to work with data after
+mappings have changed.
+* Provide an additional source of metadata to be used by an application.
+
+Use the `@VirtualAccessMethods` annotation to specify that a JPA entity
+is extensible and use the `@XmlVirtualAccessMethods` annotation to
+specify that a JAXB bean is extensible. In both cases, you use virtual
+properties to specify external mappings. This allows you to modify the
+mappings without modifying source files and without redeploying the
+persistence unit.
+
+For information on how to make JPA entities and JAXB beans extensible,
+see "Making JPA Entities and JAXB Beans Extensible" in _Solutions Guide
+for EclipseLink_.

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,16 +14,25 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.descriptors;
 
-import java.util.*;
+import org.eclipse.persistence.exceptions.OptimisticLockException;
+import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
-import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.internal.identitymaps.CacheKey;
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.exceptions.*;
+import org.eclipse.persistence.queries.DeleteObjectQuery;
+import org.eclipse.persistence.queries.ObjectLevelModifyQuery;
+import org.eclipse.persistence.queries.WriteObjectQuery;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p><b>Purpose</b>: An abstract superclass of some implementations of the OptimisticLockingPolicy
@@ -171,7 +180,7 @@ public abstract class FieldsLockingPolicy implements OptimisticLockingPolicy {
      *    doesn't work for fields locking.
      *    It degenerates into useless pattern: "if the original locking value is unchanged
      *    then the object hasn't been changed".
-     *
+     * <p>
      * Use compareWriteLockValues method only if this method returns true.
      */
     @Override
@@ -311,7 +320,7 @@ public abstract class FieldsLockingPolicy implements OptimisticLockingPolicy {
     @Override
     public void initialize(AbstractSession session) {
         // If the version field is not in the primary table, then they cannot be batched together.
-        if (this.descriptor.getTables().size() > 0) {
+        if (!this.descriptor.getTables().isEmpty()) {
             this.descriptor.setHasMultipleTableConstraintDependecy(true);
         }
     }
@@ -401,7 +410,7 @@ public abstract class FieldsLockingPolicy implements OptimisticLockingPolicy {
     /**
      * INTERNAL:
      * This method should merge changes from the parent into the child.
-     *
+     * <p>
      * #see this method in VersionLockingPolicy
      */
     @Override

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -111,8 +111,7 @@ public class OracleNoSQLPlatform extends EISPlatform {
             }
             if (consistency instanceof Consistency) {
                 noSqlSpec.setConsistency((Consistency)consistency);
-            } else if (consistency instanceof String) {
-                String constant = (String)consistency;
+            } else if (consistency instanceof String constant) {
                 if (constant.equals("ABSOLUTE")) {
                     noSqlSpec.setConsistency(Consistency.ABSOLUTE);
                 } else if (constant.equals("NONE_REQUIRED")) {
@@ -130,16 +129,12 @@ public class OracleNoSQLPlatform extends EISPlatform {
             }
             if (durability instanceof Durability) {
                 noSqlSpec.setDurability((Durability)durability);
-            } else if (durability instanceof String) {
-                String constant = (String)durability;
-                if (constant.equals("COMMIT_NO_SYNC")) {
-                    noSqlSpec.setDurability(Durability.COMMIT_NO_SYNC);
-                } else if (constant.equals("COMMIT_SYNC")) {
-                    noSqlSpec.setDurability(Durability.COMMIT_SYNC );
-                }  else if (constant.equals("COMMIT_WRITE_NO_SYNC")) {
-                    noSqlSpec.setDurability(Durability.COMMIT_WRITE_NO_SYNC );
-                } else {
-                    throw new EISException("Invalid durability property value: " + constant);
+            } else if (durability instanceof String constant) {
+                switch (constant) {
+                    case "COMMIT_NO_SYNC" -> noSqlSpec.setDurability(Durability.COMMIT_NO_SYNC);
+                    case "COMMIT_SYNC" -> noSqlSpec.setDurability(Durability.COMMIT_SYNC);
+                    case "COMMIT_WRITE_NO_SYNC" -> noSqlSpec.setDurability(Durability.COMMIT_WRITE_NO_SYNC);
+                    default -> throw new EISException("Invalid durability property value: " + constant);
                 }
             }
 
@@ -328,7 +323,7 @@ public class OracleNoSQLPlatform extends EISPlatform {
     protected Object createMajorKey(ClassDescriptor descriptor, AbstractRecord record, EISInteraction interaction, EISAccessor accessor) {
         Object id = descriptor.getObjectBuilder().extractPrimaryKeyFromRow(record, interaction.getQuery().getSession());
         List<String> key = new ArrayList<>(descriptor.getPrimaryKeyFields().size() + 1);
-        if (((EISDescriptor)descriptor).getDataTypeName().length() > 0) {
+        if (!((EISDescriptor) descriptor).getDataTypeName().isEmpty()) {
             key.add(((EISDescriptor)descriptor).getDataTypeName());
         }
         if (id != null) {
@@ -357,7 +352,7 @@ public class OracleNoSQLPlatform extends EISPlatform {
         }
         EISDOMRecord domRecord = null;
         OracleNoSQLRecord noSqlRecord = (OracleNoSQLRecord)record;
-        if (noSqlRecord.size() == 0) {
+        if (noSqlRecord.isEmpty()) {
             return null;
         } else if (noSqlRecord.size() == 1) {
             domRecord = new EISDOMRecord();

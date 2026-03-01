@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,8 +14,8 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.oxm;
 
-import org.eclipse.persistence.internal.databaseaccess.*;
-import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.databaseaccess.Accessor;
+import org.eclipse.persistence.internal.databaseaccess.Platform;
 import org.eclipse.persistence.internal.oxm.mappings.Login;
 import org.eclipse.persistence.oxm.documentpreservation.DocumentPreservationPolicy;
 import org.eclipse.persistence.oxm.platform.SAXPlatform;
@@ -75,7 +75,7 @@ public class XMLLogin extends DatasourceLogin implements Login<Platform> {
      */
     @Override
     public String toString() {
-        return Helper.getShortClassName(this) + "(" + this.getUserName() + ")\n\t( " + this.getPlatformClassName() + ")";
+        return getClass().getSimpleName() + "(" + this.getUserName() + ")\n\t( " + this.getPlatformClassName() + ")";
     }
 
     @Override

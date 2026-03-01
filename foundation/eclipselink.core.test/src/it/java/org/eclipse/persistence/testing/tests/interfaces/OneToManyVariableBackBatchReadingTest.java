@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,11 +14,12 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.interfaces;
 
-import java.util.*;
+import org.eclipse.persistence.queries.ReadAllQuery;
+import org.eclipse.persistence.testing.framework.AutoVerifyTestCase;
+import org.eclipse.persistence.testing.models.interfaces.Actor;
+import org.eclipse.persistence.testing.models.interfaces.Documentary;
 
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.testing.framework.*;
-import org.eclipse.persistence.testing.models.interfaces.*;
+import java.util.List;
 
 public class OneToManyVariableBackBatchReadingTest extends AutoVerifyTestCase {
     public List result;
@@ -31,8 +32,8 @@ public class OneToManyVariableBackBatchReadingTest extends AutoVerifyTestCase {
     public void test() {
         // First instantiate programs.
         List actors = getSession().readAllObjects(Actor.class);
-        for (Iterator iterator = actors.iterator(); iterator.hasNext(); ) {
-            ((Actor)iterator.next()).program.getName();
+        for (Object actor : actors) {
+            ((Actor) actor).program.getName();
         }
         ReadAllQuery query = new ReadAllQuery();
         query.setReferenceClass(Documentary.class);
@@ -44,7 +45,7 @@ public class OneToManyVariableBackBatchReadingTest extends AutoVerifyTestCase {
     @Override
     public void verify() {
         Documentary documentary = (Documentary)result.get(0);
-        strongAssert((documentary.actors.size() > 0), "Test failed. Batched objects were not read.");
+        strongAssert((!documentary.actors.isEmpty()), "Test failed. Batched objects were not read.");
     }
 
     @Override

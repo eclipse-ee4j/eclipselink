@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,7 +15,6 @@
 package org.eclipse.persistence.tools.sessionconsole;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.identitymaps.IdentityMap;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -727,7 +726,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
         showBusyCursor();
         try {
             String sql = getSQLText().getSelectedText();
-            if ((sql == null) || (sql.length() == 0)) {
+            if ((sql == null) || (sql.isEmpty())) {
                 return;
             }
             getSession().executeNonSelectingCall(new SQLCall(sql));
@@ -743,7 +742,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
             getSession().getProject().getJPQLParseCache().getCache().clear();
 
             String jpql = getJPQLText().getSelectedText();
-            if ((jpql == null) || (jpql.length() == 0)) {
+            if ((jpql == null) || (jpql.isEmpty())) {
                 return;
             }
             DatabaseQuery query = ((AbstractSession)getSession()).getQueryBuilder().buildQuery(jpql, (AbstractSession)getSession());
@@ -767,7 +766,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
         showBusyCursor();
         try {
             String java = getJavaText().getSelectedText();
-            if ((java == null) || (java.length() == 0)) {
+            if ((java == null) || (java.isEmpty())) {
                 return;
             }
 
@@ -3094,7 +3093,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
     public void inspect(Object object) {
         getLogText().append(String.valueOf(object));
-        getLogText().append(Helper.cr());
+        getLogText().append(System.lineSeparator());
         getLogBook().setSelectedComponent(getLogPage());
     }
 
@@ -3112,7 +3111,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
         if (index < 0) {
             return;
         }
-        Object result = getCacheResults().elementAt(index);
+        Object result = getCacheResults().get(index);
         if (result == null) {
             return;
         }
@@ -3125,7 +3124,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
         if (index < 0) {
             return;
         }
-        Object result = getResults().elementAt(index);
+        Object result = getResults().get(index);
         if (result == null) {
             return;
         }
@@ -3267,9 +3266,8 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
                 getSession().getSessionLog().setShouldPrintThread(true);
             }
             // Also update all sessions in session manager.
-            Iterator<Session> iterator = SessionManager.getManager().getSessions().values().iterator();
-            while (iterator.hasNext()) {
-                iterator.next().setSessionLog(getSession().getSessionLog());
+            for (Session session : SessionManager.getManager().getSessions().values()) {
+                session.setSessionLog(getSession().getSessionLog());
             }
         }
     }
@@ -3439,7 +3437,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
         for (Enumeration<CacheKey> cacheEnum = map.keys(); cacheEnum.hasMoreElements();) {
             CacheKey key = cacheEnum.nextElement();
             if (info.descriptor.getJavaClass().isInstance(key.getObject())) {
-                cacheResults.addElement(key);
+                cacheResults.add(key);
             }
         }
 
@@ -3450,9 +3448,8 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
         columns[3] = "Object";
 
         model.setColumnIdentifiers(columns);
-        for (Enumeration<CacheKey> cacheEnumeration = cacheResults.elements(); cacheEnumeration
-                .hasMoreElements();) {
-            CacheKey key = cacheEnumeration.nextElement();
+        for (Iterator<CacheKey> iterator = cacheResults.iterator(); iterator.hasNext();) {
+            CacheKey key = iterator.next();
             String[] values = new String[4];
             values[0] = key.getKey().toString();
             values[1] = Integer.valueOf(key.getObject().hashCode()).toString();
@@ -3474,9 +3471,8 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
         ClassInfo[] classes = new ClassInfo[(getSession()).getDescriptors()
                 .size()];
         int index = 0;
-        for (Iterator<ClassDescriptor> iterator = (getSession()).getDescriptors().values()
-                .iterator(); iterator.hasNext();) {
-            classes[index] = new ClassInfo(iterator.next(),
+        for (ClassDescriptor classDescriptor : (getSession()).getDescriptors().values()) {
+            classes[index] = new ClassInfo(classDescriptor,
                     useFullNames);
             index = index + 1;
         }
@@ -3495,7 +3491,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
         showBusyCursor();
         try {
             String sql = getSQLText().getSelectedText();
-            if ((sql == null) || (sql.length() == 0)) {
+            if ((sql == null) || (sql.isEmpty())) {
                 return;
             }
             @SuppressWarnings({"unchecked"})
@@ -3537,17 +3533,16 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
 
         String[] columns = new String[descriptor.getMappings().size()];
         for (int index = 0; index < descriptor.getMappings().size(); index++) {
-            columns[index] = (descriptor.getMappings().elementAt(index))
+            columns[index] = (descriptor.getMappings().get(index))
                     .getAttributeName();
         }
 
         model.setColumnIdentifiers(columns);
-        for (Enumeration<Object> objectsEnumeration = resultObjects.elements(); objectsEnumeration
-                .hasMoreElements();) {
-            Object object = objectsEnumeration.nextElement();
+        for (Iterator<Object> iterator = resultObjects.iterator(); iterator.hasNext();) {
+            Object object = iterator.next();
             String[] values = new String[descriptor.getMappings().size()];
             for (int index = 0; index < descriptor.getMappings().size(); index++) {
-                DatabaseMapping mapping = descriptor.getMappings().elementAt(
+                DatabaseMapping mapping = descriptor.getMappings().get(
                         index);
                 values[index] = String.valueOf(mapping
                         .getAttributeValueFromObject(object));
@@ -3567,20 +3562,18 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
             getResultsTable().repaint();
             return;
         }
-        DatabaseRecord firstRow = resultRows.firstElement();
+        DatabaseRecord firstRow = resultRows.get(0);
         String[] columns = new String[firstRow.getFields().size()];
         for (int index = 0; index < firstRow.getFields().size(); index++) {
-            columns[index] = firstRow.getFields().elementAt(
-                    index).getName();
+            columns[index] = firstRow.getFields().get(index).getName();
         }
         model.setColumnIdentifiers(columns);
-        for (Enumeration<DatabaseRecord> rowsEnumeration = resultRows.elements(); rowsEnumeration
-                .hasMoreElements();) {
-            DatabaseRecord row = rowsEnumeration.nextElement();
+        for (Iterator<DatabaseRecord> iterator = resultRows.iterator(); iterator.hasNext();) {
+            DatabaseRecord row = iterator.next();
             String[] values = new String[row.getValues().size()];
             for (int index = 0; index < row.getValues().size(); index++) {
                 values[index] = String
-                        .valueOf(row.getValues().elementAt(index));
+                        .valueOf(row.getValues().get(index));
             }
             model.addRow(values);
         }
@@ -3605,8 +3598,8 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
                 columns[index] = result.getNames().get(index);
             }
             model.setColumnIdentifiers(columns);
-            for (Iterator<?> iterator = results.iterator(); iterator.hasNext();) {
-                result = (ReportQueryResult) iterator.next();
+            for (Object o : results) {
+                result = (ReportQueryResult) o;
                 String[] values = new String[result.getResults().size()];
                 for (int index = 0; index < result.getResults().size(); index++) {
                     values[index] = String.valueOf(result.getByIndex(index));
@@ -3620,8 +3613,8 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
                 columns[index] = String.valueOf(index);
             }
             model.setColumnIdentifiers(columns);
-            for (Iterator<?> iterator = results.iterator(); iterator.hasNext();) {
-                result = (Object[]) iterator.next();
+            for (Object o : results) {
+                result = (Object[]) o;
                 String[] values = new String[result.length];
                 for (int index = 0; index < result.length; index++) {
                     values[index] = String.valueOf(result[index]);
@@ -3632,8 +3625,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
             String[] columns = new String[1];
             columns[0] = "value";
             model.setColumnIdentifiers(columns);
-            for (Iterator<?> iterator = results.iterator(); iterator.hasNext();) {
-                Object result = iterator.next();
+            for (Object result : results) {
                 String[] values = new String[1];
                 values[0] = String.valueOf(result);
                 model.addRow(values);

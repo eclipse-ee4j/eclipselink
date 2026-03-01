@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -321,7 +321,7 @@ public class CompilerHelper {
             JAXBElement<org.eclipse.persistence.jaxb.xmlmodel.XmlElement> jelt = unmarshaller.unmarshal(xmlElementNode, org.eclipse.persistence.jaxb.xmlmodel.XmlElement.class);
             return jelt.getValue();
         } catch (jakarta.xml.bind.JAXBException jaxbEx) {
-            throw org.eclipse.persistence.exceptions.JAXBException.couldNotUnmarshalMetadata(jaxbEx);
+            throw org.eclipse.persistence.jaxb.JAXBException.couldNotUnmarshalMetadata(jaxbEx);
         }
     }
 
@@ -510,10 +510,10 @@ public class CompilerHelper {
             try {
                 xmlBindingsModelContext = (JAXBContext) JAXBContextFactory.createContext(METADATA_MODEL_PACKAGE,CompilerHelper.class.getClassLoader());
             } catch (JAXBException e) {
-                throw org.eclipse.persistence.exceptions.JAXBException.couldNotCreateContextForXmlModel(e);
+                throw org.eclipse.persistence.jaxb.JAXBException.couldNotCreateContextForXmlModel(e);
             }
             if (xmlBindingsModelContext == null) {
-                throw org.eclipse.persistence.exceptions.JAXBException.couldNotCreateContextForXmlModel();
+                throw org.eclipse.persistence.jaxb.JAXBException.couldNotCreateContextForXmlModel();
             }
         }
         return xmlBindingsModelContext;

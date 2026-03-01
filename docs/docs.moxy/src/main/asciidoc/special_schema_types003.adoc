@@ -1,0 +1,312 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[SPECIALSCHEMATYPES003]]
+=== Binary Types
+
+There are additional items to consider when mapping to binary type
+fields, such as `byte[]` or `Byte[]`.
+
+==== Specifying Binary Formats Base64 and Hex
+
+EclipseLink supports marshalling and unmarshalling binary data in two
+different representation formats: `base64Binary` (default) and
+`hexBinary`. You can specify the desired binary format using the
+`@XmlSchemaType` annotation, or `<xml-schema-type>` element in
+EclipseLink OXM. The examples below shows the result of marshalling the
+same `byte[]` to each of these formats.
+
+[[sthref103]]
+
+*_Example 5-7 Annotations_*
+
+[source,oac_no_warn]
+----
+package example;
+ 
+import jakarta.xml.bind.annotation.*;
+ 
+@XmlRootElement
+public class BinaryData {
+ 
+   @XmlSchemaType(name="hexBinary")
+   public byte[] hexBytes;
+ 
+   @XmlSchemaType(name="base64Binary")
+   public byte[] base64Bytes;
+ 
+}
+ 
+----
+
+[[sthref104]]
+
+*_Example 5-8 EclipseLink OXM_*
+
+[source,oac_no_warn]
+----
+...
+<java-type name="example.BinaryData">
+    <xml-root-element/>
+    <java-attributes>
+        <xml-element java-attribute="hexBytes">
+            <xml-schema-type name="hexBinary"/>
+        </xml-element>
+        <xml-element java-attribute="base64Bytes">
+            <xml-schema-type name="base64Binary"/>
+        </xml-element>
+    </java-attributes>
+</java-type>
+...
+ 
+----
+
+[source,oac_no_warn]
+----
+BinaryData b = new BinaryData();
+b.hexBytes = new byte[] {2,4,8,16,32,64};
+b.base64Bytes = b.hexBytes;
+
+jaxbContext.createMarshaller().marshal(b, System.out);
+----
+
+[[sthref105]]
+
+*_Example 5-9 Output_*
+
+[source,oac_no_warn]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<binaryData>
+   <hexBytes>020308102040</hexBytes>
+   <base64Bytes>AgMIECBA</base64Bytes>
+</binaryData>
+ 
+----
+
+==== Understanding byte[] versus Byte[]
+
+Unlike other Java primitive/wrapper types, EclipseLink differentiates
+between `byte[]` (primitive) and `Byte[]` (wrapper) data types. By
+default, `byte[]` will marshal to a single element or attribute, whereas
+`Byte[]` will marshal each `byte` as its own element, as illustrated by
+the following example:
+
+[[sthref107]]
+
+*_Example 5-10 Using byte[] and Byte[]_*
+
+[source,oac_no_warn]
+----
+package example;
+ 
+import jakarta.xml.bind.annotation.*;
+ 
+@XmlRootElement
+public class BinaryData {
+ 
+   public byte[] primitiveBytes;
+   public Byte[] byteObjects;
+ 
+}
+ 
+----
+
+[source,oac_no_warn]
+----
+BinaryData b = new BinaryData();
+b.primitiveBytes = new byte[] {34,45,56,67,78,89,89,34,23,12,12,11,2};
+b.byteObjects = new Byte[] {23,1,112,12,1,64,1,14,3,2};
+ 
+jaxbContext.createMarshaller().marshal(b, System.out);
+ 
+----
+
+[[sthref108]]
+
+*_Example 5-11 Output_*
+
+[source,oac_no_warn]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<binaryData>
+   <primitiveBytes>Ii04Q05ZWSIXDAwLAg==</primitiveBytes>
+   <byteObjects>23</byteObjects>
+   <byteObjects>1</byteObjects>
+   <byteObjects>112</byteObjects>
+   <byteObjects>12</byteObjects>
+   <byteObjects>1</byteObjects>
+   <byteObjects>64</byteObjects>
+   <byteObjects>1</byteObjects>
+   <byteObjects>14</byteObjects>
+   <byteObjects>3</byteObjects>
+   <byteObjects>2</byteObjects>
+</binaryData>
+ 
+----
+
+[[sthref109]]
+
+==== Working with SOAP Attachments
+
+If you are using EclipseLink MOXy in a Web Services environment, certain
+types of binary data may be created as an MTOM/XOP Attachment, instead
+of written directly into an XML element or attribute. This is done as an
+optimization for large amounts of binary data.
+
+The following table shows the Java types that are automatically treated
+as Attachments, along with their corresponding MIME type:
+
+[[sthref110]]
+
+*_Table 5-1 Java Attributes Treated as Attachments_*
+
+|===
+|*Java Type* |*MIME Type*
+|java.awt.Image |image/gif
+|java.awt.Image |image/jpeg
+|javax.xml.transform.Source |text/xml
+|application/xml a|
+*
+|javax.activation.DataHandler a|
+*/*
+|===
+
+NOTE: For more information on the basics of SOAP Attachments, see "Appendix H:
+Enhanced Binary Data Handling" of the Java Architecture for XML Binding
+(JAXB) Specification (http://jcp.org/en/jsr/detail?id=222).
+
+The following Java class contains two binary fields: a simple `byte[]`,
+and a `java.awt.Image`. In a Web Services environment, the Image data
+will automatically be created as an attachment.
+
+[[CHDCHBCE]]
+
+*_Example 5-12 Sample Java Class_*
+
+[source,oac_no_warn]
+----
+package example;
+ 
+import java.awt.Image;
+ 
+import jakarta.xml.bind.annotation.*;
+ 
+@XmlRootElement
+public class BinaryData {
+ 
+   public byte[] bytes;
+ 
+   public Image photo;
+ 
+}
+ 
+----
+
+Marshalling the object in link:#CHDCHBCE[Example 5-12] in a Web Services
+environment would look something like link:#CHDECIAJ[Example 5-13] (the
+actual appearance will depend on your application server's
+implementation of `AttachmentMarshaller`):
+
+[[CHDECIAJ]]
+
+*_Example 5-13 Resulting XML_*
+
+[source,oac_no_warn]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<binaryData>
+   <bytes>Ii04Q05ZWSIXDAwLAg==</bytes>
+   <photo>
+      <xop:Include href="cid:1" xmlns:xop="http://www.w3.org/2004/08/xop/include"/>
+   </photo>
+</binaryData>
+ 
+----
+
+===== Using @XmlInlineBinaryData
+
+If you would like to force your binary data to be written as an inline
+`string` in your XML, you can annotate the field with the
+`@XmlInlineBinaryData` annotation:
+
+[[sthref113]]
+
+*_Example 5-14 Using the @XmlInlineBinaryData Annotation_*
+
+[source,oac_no_warn]
+----
+package example;
+ 
+import java.awt.Image;
+ 
+import jakarta.xml.bind.annotation.*;
+ 
+@XmlRootElement
+public class BinaryData {
+ 
+   public byte[] bytes;
+ 
+   @XmlInlineBinaryData
+   public Image photo;
+ 
+}
+ 
+----
+
+This will result in an XML document like this:
+
+[source,oac_no_warn]
+----
+ 
+<?xml version="1.0" encoding="UTF-8"?>
+<binaryData>
+   <bytes>Ii04Q05ZWSIXDAwLAg==</bytes>
+   <photo>/9j/4AAQSkZJRgABAgAAAQABAAD/2wBDAAgGBgcGBQgHB ... Af/2Q==</photo>
+</binaryData>
+ 
+----
+
+===== Using @XmlMimeType
+
+You can explicitly set the MIME Type for an binary field using the
+`@XmlMimeType` annotation. Your application's `AttachmentMarshaller` and
+`AttachmentUnmarshaller` will be responsible for processing this
+information.
+
+[[sthref115]]
+
+*_Example 5-15 Using the @XmlMimeType Annotation_*
+
+[source,oac_no_warn]
+----
+package example;
+ 
+import java.awt.Image;
+ 
+import jakarta.xml.bind.annotation.*;
+ 
+@XmlRootElement
+public class BinaryData {
+ 
+   public byte[] bytes;
+ 
+   @XmlMimeType("image/gif")
+   public Image photo;
+ 
+}
+----

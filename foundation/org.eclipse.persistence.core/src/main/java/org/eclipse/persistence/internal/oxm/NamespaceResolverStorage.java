@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2020, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -12,6 +12,7 @@
 
 package org.eclipse.persistence.internal.oxm;
 
+import java.io.Serial;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -24,6 +25,7 @@ import static org.eclipse.persistence.internal.oxm.VectorUtils.emptyVector;
 import static org.eclipse.persistence.internal.oxm.VectorUtils.unmodifiableVector;
 
 public class NamespaceResolverStorage extends LinkedHashMap<String, String> {
+    @Serial
     private static final long serialVersionUID = -4697397620139076774L;
     private transient Vector<Namespace> namespaces = emptyVector();
     private transient boolean modified = false;
@@ -124,7 +126,7 @@ public class NamespaceResolverStorage extends LinkedHashMap<String, String> {
         Vector<Namespace> names = new Vector<>(size());
         for (Map.Entry<String, String> entry : entrySet()) {
             Namespace namespace = new Namespace(entry.getKey(), entry.getValue());
-            names.addElement(namespace);
+            names.add(namespace);
         }
         return unmodifiableVector(names);
     }

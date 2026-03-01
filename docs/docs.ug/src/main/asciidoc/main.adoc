@@ -1,0 +1,5 @@
+= EclipseLink User Guide
+:toc:
+:doctype: book
+
+include::sdo/sdo-main.adoc[]

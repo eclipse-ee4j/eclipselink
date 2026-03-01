@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,7 +14,7 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.legacy;
 
-import java.math.*;
+import java.math.BigDecimal;
 
 public class InsuredShipment extends Shipment {
     public double insuranceAmount;
@@ -34,8 +34,8 @@ public class InsuredShipment extends Shipment {
         example.shipMode = "Train";
         example.insuranceAmount = 50.00;
 
-        example.orders.addElement(Order.example9(example, employee));
-        example.orders.addElement(Order.example10(example, employee));
+        example.orders.add(Order.example9(example, employee));
+        example.orders.add(Order.example10(example, employee));
 
         return example;
     }
@@ -51,8 +51,8 @@ public class InsuredShipment extends Shipment {
         example.shipMode = "Air";
         example.insuranceAmount = 1250.00;
 
-        example.orders.addElement(Order.example11(example, employee));
-        example.orders.addElement(Order.example12(example, employee));
+        example.orders.add(Order.example11(example, employee));
+        example.orders.add(Order.example12(example, employee));
 
         return example;
     }
@@ -68,8 +68,8 @@ public class InsuredShipment extends Shipment {
         example.shipMode = "Mail";
         example.insuranceAmount = 5.00;
 
-        example.orders.addElement(Order.example13(example, employee));
-        example.orders.addElement(Order.example14(example, employee));
+        example.orders.add(Order.example13(example, employee));
+        example.orders.add(Order.example14(example, employee));
 
         return example;
     }

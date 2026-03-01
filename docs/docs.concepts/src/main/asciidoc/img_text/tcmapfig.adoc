@@ -1,0 +1,6 @@
+:nofooter:
+This illustration shows a type conversion mapping (relational). Because
+the java.util.Date class is stored by default as a Timestamp in the
+database, it must first be converted to an explicit database type such
+as java.sql.Date (required only for DB2; most other databases have a
+single date data-type that can store any date or time).

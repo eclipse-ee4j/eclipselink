@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,6 +37,7 @@ import org.eclipse.persistence.jpa.jpql.parser.CompoundExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ConcatExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ConstructorExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CountFunction;
+import org.eclipse.persistence.jpa.jpql.parser.DatabaseType;
 import org.eclipse.persistence.jpa.jpql.parser.DateTime;
 import org.eclipse.persistence.jpa.jpql.parser.DivisionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.EmptyCollectionComparisonExpression;
@@ -47,10 +48,12 @@ import org.eclipse.persistence.jpa.jpql.parser.Expression;
 import org.eclipse.persistence.jpa.jpql.parser.FunctionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariable;
 import org.eclipse.persistence.jpa.jpql.parser.InExpression;
+import org.eclipse.persistence.jpa.jpql.parser.IdExpression;
 import org.eclipse.persistence.jpa.jpql.parser.IndexExpression;
 import org.eclipse.persistence.jpa.jpql.parser.InputParameter;
 import org.eclipse.persistence.jpa.jpql.parser.KeyExpression;
 import org.eclipse.persistence.jpa.jpql.parser.KeywordExpression;
+import org.eclipse.persistence.jpa.jpql.parser.LeftExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LengthExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LikeExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LocateExpression;
@@ -65,6 +68,8 @@ import org.eclipse.persistence.jpa.jpql.parser.NullIfExpression;
 import org.eclipse.persistence.jpa.jpql.parser.NumericLiteral;
 import org.eclipse.persistence.jpa.jpql.parser.ObjectExpression;
 import org.eclipse.persistence.jpa.jpql.parser.OrExpression;
+import org.eclipse.persistence.jpa.jpql.parser.ReplaceExpression;
+import org.eclipse.persistence.jpa.jpql.parser.RightExpression;
 import org.eclipse.persistence.jpa.jpql.parser.SizeExpression;
 import org.eclipse.persistence.jpa.jpql.parser.SqrtExpression;
 import org.eclipse.persistence.jpa.jpql.parser.StateFieldPathExpression;
@@ -76,6 +81,7 @@ import org.eclipse.persistence.jpa.jpql.parser.TrimExpression;
 import org.eclipse.persistence.jpa.jpql.parser.TypeExpression;
 import org.eclipse.persistence.jpa.jpql.parser.UpdateItem;
 import org.eclipse.persistence.jpa.jpql.parser.UpperExpression;
+import org.eclipse.persistence.jpa.jpql.parser.VersionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ValueExpression;
 import org.eclipse.persistence.jpa.jpql.parser.WhenClause;
 
@@ -306,6 +312,11 @@ public abstract class ParameterTypeVisitor extends AbstractTraverseParentVisitor
     }
 
     @Override
+    public void visit(DatabaseType expression) {
+        type = Object.class;
+    }
+
+    @Override
     public void visit(DateTime expression) {
         // A date/time always have a type
         this.expression = expression;
@@ -356,6 +367,11 @@ public abstract class ParameterTypeVisitor extends AbstractTraverseParentVisitor
     }
 
     @Override
+    public void visit(IdExpression expression) {
+        super.visit(expression);
+    }
+
+    @Override
     public void visit(IndexExpression expression) {
         this.expression = expression;
     }
@@ -393,6 +409,19 @@ public abstract class ParameterTypeVisitor extends AbstractTraverseParentVisitor
     @Override
     public void visit(KeywordExpression expression) {
         this.expression = expression;
+    }
+
+    @Override
+    public void visit(LeftExpression expression) {
+
+        // The string primary is always a string
+        if (expression.getFirstExpression().isAncestor(inputParameter)) {
+            type = String.class;
+        }
+        // The second arithmetic expression is always an integer
+        else if (expression.getSecondExpression().isAncestor(inputParameter)) {
+            type = Integer.class;
+        }
     }
 
     @Override
@@ -513,6 +542,29 @@ public abstract class ParameterTypeVisitor extends AbstractTraverseParentVisitor
     }
 
     @Override
+    public void visit(ReplaceExpression expression) {
+        // All parameters are always a string
+        if (expression.getFirstExpression().isAncestor(inputParameter) ||
+            expression.getSecondExpression().isAncestor(inputParameter) ||
+            expression.getThirdExpression() .isAncestor(inputParameter)) {
+            type = String.class;
+        }
+    }
+
+    @Override
+    public void visit(RightExpression expression) {
+
+        // The string primary is always a string
+        if (expression.getFirstExpression().isAncestor(inputParameter)) {
+            type = String.class;
+        }
+        // The second arithmetic expression is always an integer
+        else if (expression.getSecondExpression().isAncestor(inputParameter)) {
+            type = Integer.class;
+        }
+    }
+
+    @Override
     public void visit(SizeExpression expression) {
         // The modulo function always have a return type
         this.expression = expression;
@@ -597,6 +649,11 @@ public abstract class ParameterTypeVisitor extends AbstractTraverseParentVisitor
     public void visit(ValueExpression expression) {
         // VALUE() always have a type
         this.expression = expression;
+    }
+
+    @Override
+    public void visit(VersionExpression expression) {
+        super.visit(expression);
     }
 
     @Override

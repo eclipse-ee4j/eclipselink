@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -142,7 +142,7 @@ public class JAXBContextFactory {
      * JAXBContext with an array of TypeMappingInfo objects.
      */
     public static jakarta.xml.bind.JAXBContext createContext(Type[] typesToBeBound, Map<String, Object> properties, ClassLoader classLoader) throws JAXBException {
-        Map<Type, TypeMappingInfo> typeToTypeMappingInfo = new HashMap<Type, TypeMappingInfo>();
+        Map<Type, TypeMappingInfo> typeToTypeMappingInfo = new HashMap<>();
         TypeMappingInfo[] typeMappingInfos = new TypeMappingInfo[typesToBeBound.length];
         for(int i = 0; i < typesToBeBound.length; i++) {
             TypeMappingInfo tmi = new TypeMappingInfo();
@@ -202,7 +202,7 @@ public class JAXBContextFactory {
      * </pre>
      */
     public static Map<String, XmlBindings> getXmlBindingsFromProperties(Map<String, Object> properties, ClassLoader classLoader) {
-        Map<String, List<XmlBindings>> bindings = new HashMap<String, List<XmlBindings>>();
+        Map<String, List<XmlBindings>> bindings = new HashMap<>();
         Object value = null;
         if (properties != null) {
             if ((value = properties.get(JAXBContextProperties.OXM_METADATA_SOURCE)) == null) {
@@ -217,22 +217,22 @@ public class JAXBContextFactory {
                 try {
                     metadataFiles = (Map<String, Object>) value;
                 } catch (ClassCastException x) {
-                    throw org.eclipse.persistence.exceptions.JAXBException.incorrectValueParameterTypeForOxmXmlKey();
+                    throw org.eclipse.persistence.jaxb.JAXBException.incorrectValueParameterTypeForOxmXmlKey();
                 }
                 for(Entry<String, Object> entry : metadataFiles.entrySet()) {
                     String key = null;
-                    List<XmlBindings> xmlBindings = new ArrayList<XmlBindings>();
+                    List<XmlBindings> xmlBindings = new ArrayList<>();
                     try {
                         key = entry.getKey();
                         if (key == null) {
-                            throw org.eclipse.persistence.exceptions.JAXBException.nullMapKey();
+                            throw org.eclipse.persistence.jaxb.JAXBException.nullMapKey();
                         }
                     } catch (ClassCastException cce) {
-                        throw org.eclipse.persistence.exceptions.JAXBException.incorrectKeyParameterType();
+                        throw org.eclipse.persistence.jaxb.JAXBException.incorrectKeyParameterType();
                     }
                     Object metadataSource = entry.getValue();
                     if (metadataSource == null) {
-                        throw org.eclipse.persistence.exceptions.JAXBException.nullMetadataSource(key);
+                        throw org.eclipse.persistence.jaxb.JAXBException.nullMetadataSource(key);
                     }
                     if(metadataSource instanceof List) {
                         for(Object next: (List)metadataSource) {
@@ -255,7 +255,7 @@ public class JAXBContextFactory {
             } else if (value instanceof List) {
                 for (Object metadataSource : (List) value) {
                     if (metadataSource == null) {
-                        throw org.eclipse.persistence.exceptions.JAXBException.nullMetadataSource();
+                        throw org.eclipse.persistence.jaxb.JAXBException.nullMetadataSource();
                     }
                     bindings = processBindingFile(bindings, metadataSource, classLoader, properties);
                 }
@@ -264,7 +264,7 @@ public class JAXBContextFactory {
                 bindings = processBindingFile(bindings, value, classLoader, properties);
             }
         }
-        Map<String, XmlBindings> mergedBindings = new HashMap<String, XmlBindings>(bindings.size());
+        Map<String, XmlBindings> mergedBindings = new HashMap<>(bindings.size());
         for(Entry<String, List<XmlBindings>> next:bindings.entrySet()) {
             mergedBindings.put(next.getKey(), XMLProcessor.mergeXmlBindings(next.getValue()));
         }
@@ -283,13 +283,13 @@ public class JAXBContextFactory {
         if (binding != null) {
             String key = binding.getPackageName();
             if (key.equals(XMLProcessor.DEFAULT)) {
-                throw org.eclipse.persistence.exceptions.JAXBException.packageNotSetForBindingException();
+                throw org.eclipse.persistence.jaxb.JAXBException.packageNotSetForBindingException();
             }
             List<XmlBindings> existingBindings = originalBindings.get(key);
             if(existingBindings != null) {
                 existingBindings.add(binding);
             } else {
-                existingBindings = new ArrayList<XmlBindings>();
+                existingBindings = new ArrayList<>();
                 existingBindings.add(binding);
                 originalBindings.put(key, existingBindings);
             }
@@ -352,15 +352,15 @@ public class JAXBContextFactory {
                         if(openedStream != null){
                             bindingsJaxbElement = unmarshaller.unmarshal(new StreamSource(openedStream), XmlBindings.class);
                         }else{
-                            throw org.eclipse.persistence.exceptions.JAXBException.couldNotUnmarshalMetadata(e);
+                            throw org.eclipse.persistence.jaxb.JAXBException.couldNotUnmarshalMetadata(e);
                         }
                     }
                 } else{
-                    throw org.eclipse.persistence.exceptions.JAXBException.incorrectValueParameterTypeForOxmXmlKey();
+                    throw org.eclipse.persistence.jaxb.JAXBException.incorrectValueParameterTypeForOxmXmlKey();
                 }
                 if(bindingsJaxbElement == null){
                     if(source == null){
-                        throw org.eclipse.persistence.exceptions.JAXBException.incorrectValueParameterTypeForOxmXmlKey();
+                        throw org.eclipse.persistence.jaxb.JAXBException.incorrectValueParameterTypeForOxmXmlKey();
                     }else{
                         bindingsJaxbElement = unmarshaller.unmarshal(source, XmlBindings.class);
                     }
@@ -369,17 +369,15 @@ public class JAXBContextFactory {
             if(bindingsJaxbElement != null){
                 return bindingsJaxbElement.getValue();
             }
-            throw org.eclipse.persistence.exceptions.JAXBException.incorrectValueParameterTypeForOxmXmlKey();
-        }catch(jakarta.xml.bind.JAXBException ex){
-            throw org.eclipse.persistence.exceptions.JAXBException.couldNotUnmarshalMetadata(ex);
-        }catch(IOException ioException){
-             throw org.eclipse.persistence.exceptions.JAXBException.couldNotUnmarshalMetadata(ioException);
-        }finally{
+            throw org.eclipse.persistence.jaxb.JAXBException.incorrectValueParameterTypeForOxmXmlKey();
+        }catch(JAXBException | IOException ex){
+            throw org.eclipse.persistence.jaxb.JAXBException.couldNotUnmarshalMetadata(ex);
+        } finally{
             if(openedStream != null){
                 try {
                     openedStream.close();
                 } catch (IOException e) {
-                    throw org.eclipse.persistence.exceptions.JAXBException.couldNotUnmarshalMetadata(e);
+                    throw org.eclipse.persistence.jaxb.JAXBException.couldNotUnmarshalMetadata(e);
                 }
             }
         }

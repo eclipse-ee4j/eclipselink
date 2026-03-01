@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -15,8 +15,11 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.sessions;
 
-import java.util.*;
-import org.eclipse.persistence.queries.*;
+import org.eclipse.persistence.queries.Call;
+import org.eclipse.persistence.queries.DatabaseQuery;
+
+import java.util.EventObject;
+import java.util.Hashtable;
 
 /**
  * <p><b>Purpose</b>: Encapsulate the information provided with session events.
@@ -65,6 +68,10 @@ public class SessionEvent extends EventObject {
     public static final int PostReleaseUnitOfWork = 13;
     public static final int PrepareUnitOfWork = 14;
     public static final int PostResumeUnitOfWork = 15;
+
+    public static final int PreFlushUnitOfWork = 38;
+
+    public static final int PostFlushUnitOfWork = 39;
 
     // Three-tier events, only raised on server/client session.
     public static final int PostAcquireClientSession = 16;

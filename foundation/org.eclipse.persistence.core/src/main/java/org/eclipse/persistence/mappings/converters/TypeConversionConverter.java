@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,18 +17,19 @@
 //         "java.lang.NoClassDefFoundError: org/eclipse/persistence/testing/models/jpa21/advanced/enums/Gender"
 package org.eclipse.persistence.mappings.converters;
 
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
-
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.descriptors.ClassNameConversionRequired;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DirectCollectionMapping;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.sessions.Session;
+
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
 
 /**
  * <b>Purpose</b>: Type conversion converters are used to explicitly map a database type to a
@@ -209,7 +210,12 @@ public class TypeConversionConverter implements Converter, ClassNameConversionRe
     @Override
     public Object convertObjectValueToDataValue(Object attributeValue, Session session) {
         try {
-            return session.getDatasourcePlatform().convertObject(attributeValue, getDataClass());
+            if (session.isConnected()) {
+                //Should handle conversions where DB connection is needed like String -> java.sql.Clob
+                return session.getDatasourcePlatform().convertObject(attributeValue, getDataClass(), (AbstractSession)session);
+            } else {
+                return session.getDatasourcePlatform().convertObject(attributeValue, getDataClass());
+            }
         } catch (ConversionException e) {
             throw ConversionException.couldNotBeConverted(mapping, mapping.getDescriptor(), e);
         }

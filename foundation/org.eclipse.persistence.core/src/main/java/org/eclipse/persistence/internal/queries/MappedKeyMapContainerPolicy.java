@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,15 +18,6 @@
 //     14/05/2012-2.4 Guy Pelletier
 //       - 376603: Provide for table per tenant support for multitenant applications
 package org.eclipse.persistence.internal.queries;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 
 import org.eclipse.persistence.annotations.CacheKeyType;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -69,14 +60,23 @@ import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.queries.WriteObjectQuery;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+
 /**
  * A MappedKeyMapContainerPolicy should be used for mappings to implementers of Map.
  * It differs from MapContainerPolicy by allowing the MapKey to be an otherwise unmapped
  * column in a table rather than a mapped element of the value in the map.
- *
+ * <p>
  * This container policy holds a reference to a KeyMapping that will be used to construct the key
  * from the database and a reference to its owner which creates the value for the map.
- *
+ * <p>
  * The key of the map can be any implementer of MapKeyMapping and the data representing the
  * key can either be stored in the target table of the value mapping, or in a collection table that
  * associates the source to the target.   The data can either be everything necessary to compose the
@@ -175,8 +175,7 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements C
      */
     @Override
     public boolean addInto(Object element, Object container, AbstractSession session) {
-        if (element instanceof Map.Entry) {
-            Map.Entry record = (Map.Entry)element;
+        if (element instanceof Map.Entry record) {
             Object key = record.getKey();
             Object value = record.getValue();
             return addInto(key, value, container, session);
@@ -635,7 +634,7 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements C
      * INTERNAL:
      * This method is used to check the key mapping to ensure that it does not write to
      * a field that is written by another mapping.  There are two possibilities:
-     *
+     * <p>
      * 1. The conflicting mapping has already been processed.  In that case, we add MultipleWritableMappings
      * exception to the integrity checker right away
      * 2. There are no conflicting mappings.  In that case, we store the list of fields that this mapping

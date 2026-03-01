@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,7 +28,7 @@ import jakarta.ws.rs.core.StreamingOutput;
 
 import junit.framework.TestCase;
 
-import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.jaxb.rs.MOXyJsonProvider;
 
 public class IsWriteableTestCases extends TestCase {
@@ -52,7 +52,7 @@ public class IsWriteableTestCases extends TestCase {
     }
 
     public void testPrimitiveByteArrayNotWriteable() {
-        assertFalse(moxyJsonProvider.isWriteable(ClassConstants.APBYTE, null, null, null));
+        assertFalse(moxyJsonProvider.isWriteable(CoreClassConstants.APBYTE, null, null, null));
     }
 
     public void testFileNotWriteable() {
@@ -91,7 +91,7 @@ public class IsWriteableTestCases extends TestCase {
         Field integerField = IsWriteableTestCases.class.getDeclaredField("integerField");
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         moxyJsonProvider.writeTo(123, integerField.getType(), integerField.getType(), null, null, null, baos);
-        assertEquals(JSON_INTEGER, new String(baos.toByteArray()));
+        assertEquals(JSON_INTEGER, baos.toString());
         baos.close();
     }
 

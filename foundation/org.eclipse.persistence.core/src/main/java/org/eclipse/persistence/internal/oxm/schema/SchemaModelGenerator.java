@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -13,21 +13,6 @@
 // Contributors:
 // dmccann - Mar 2/2009 - 2.0 - Initial implementation
 package org.eclipse.persistence.internal.oxm.schema;
-
-import java.io.IOException;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Properties;
-import java.util.Vector;
-
-import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.core.descriptors.CoreInheritancePolicy;
 import org.eclipse.persistence.core.mappings.CoreMapping;
@@ -79,6 +64,19 @@ import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
 import org.eclipse.persistence.sessions.Project;
+
+import javax.xml.namespace.QName;
+import java.io.IOException;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Properties;
+import java.util.Vector;
 
 /**
  * INTERNAL:
@@ -218,7 +216,7 @@ public class SchemaModelGenerator {
             } else {
                 // at this point there is no schema reference set, but if a descriptor has a
                 // default root element set we will need to generate a global element for it
-                for (DatabaseTable table : (Vector<DatabaseTable>)desc.getTables()) {
+                for (DatabaseTable table : (List<DatabaseTable>)desc.getTables()) {
                     namespace = getDefaultRootElementAsQName(desc, table.getName()).getNamespaceURI();
                     workingSchema = getSchema(namespace, desc.getNamespaceResolver(), schemaForNamespace, properties);
                     addNamespacesToWorkingSchema(desc.getNamespaceResolver(), workingSchema);
@@ -303,7 +301,7 @@ public class SchemaModelGenerator {
                 workingSchema.addTopLevelElement(buildElement(desc, schemaForNamespace, workingSchema, properties, descriptors, simple));
             }
 
-            for (DatabaseTable table :  (Vector<DatabaseTable>)desc.getTables()) {
+            for (DatabaseTable table :  (List<DatabaseTable>)desc.getTables()) {
                 String localName = getDefaultRootElementAsQName(desc, table.getName()).getLocalPart();
                 // don't overwrite existing top level elements
                 if (workingSchema.getTopLevelElements().get(localName) != null) {
@@ -326,7 +324,7 @@ public class SchemaModelGenerator {
         } else {
             // here we have a descriptor that does not have a schema reference set, but since
             // there is a default root element set we need to generate a global element
-            for (DatabaseTable table :  (Vector<DatabaseTable>)desc.getTables()) {
+            for (DatabaseTable table :  (List<DatabaseTable>)desc.getTables()) {
                 String localName = getDefaultRootElementAsQName(desc, table.getName()).getLocalPart();
                 // a global element may have been created while generating an element ref
                 if (workingSchema.getTopLevelElements().get(localName) == null) {
@@ -444,7 +442,7 @@ public class SchemaModelGenerator {
             ct.setComplexContent(complexContent);
         }
         Sequence seq = new Sequence();
-        for (CoreMapping mapping : (Vector<CoreMapping>)desc.getMappings()) {
+        for (CoreMapping mapping : (List<CoreMapping>)desc.getMappings()) {
             processMapping(mapping, seq, ct, schemaForNamespace, workingSchema, properties, descriptors);
         }
         if (extension != null) {
@@ -466,7 +464,7 @@ public class SchemaModelGenerator {
         Extension extension = new Extension();
         sc.setExtension(extension);
         ct.setSimpleContent(sc);
-        for (CoreMapping mapping : (Vector<CoreMapping>)desc.getMappings()) {
+        for (CoreMapping mapping : (List<CoreMapping>)desc.getMappings()) {
             Field xFld = (Field) mapping.getField();
             if (xFld.getXPath().equals(TEXT)) {
                 extension.setBaseType(getSchemaTypeForDirectMapping((DirectMapping) mapping, workingSchema));
@@ -481,7 +479,7 @@ public class SchemaModelGenerator {
 
     /**
      * Return the schema type for a given mapping's xmlfield.  If the field does not have a schema type
-     * set, the attribute classification will be used if non-null.  Otherwise, ClassConstants.STRING
+     * set, the attribute classification will be used if non-null.  Otherwise, CoreClassConstants.STRING
      * will be returned.
      *
      */
@@ -491,7 +489,7 @@ public class SchemaModelGenerator {
 
     /**
      * Return the schema type for a given xmlfield.  If the field does not have a schema type set,
-     * the attribute classification will be used if non-null.  Otherwise, ClassConstants.STRING
+     * the attribute classification will be used if non-null.  Otherwise, CoreClassConstants.STRING
      * will be returned.
      *
      */
@@ -858,13 +856,12 @@ public class SchemaModelGenerator {
         Map<Field, Field> associations = mapping.getSourceToTargetKeyFieldAssociations();
         for (Entry<Field, Field> entry : associations.entrySet()) {
             Field tgtField = entry.getValue();
-            Vector mappings = tgtDesc.getMappings();
+            List<DatabaseMapping> mappings = tgtDesc.getMappings();
             // Until IDREF support is added, we want the source type to be that of the target
             //schemaTypeString = Constants.SCHEMA_PREFIX + COLON + IDREF;
-            for (Enumeration mappingsNum = mappings.elements(); mappingsNum.hasMoreElements();) {
-                Mapping nextMapping = (Mapping)mappingsNum.nextElement();
-                if (nextMapping.getField() != null && nextMapping.getField() instanceof Field) {
-                    Field xFld = (Field) nextMapping.getField();
+            for (Iterator mappingsNum = mappings.iterator(); mappingsNum.hasNext();) {
+                Mapping nextMapping = (Mapping)mappingsNum.next();
+                if (nextMapping.getField() != null && nextMapping.getField() instanceof Field xFld) {
                     if (xFld == tgtField) {
                         schemaTypeString = getSchemaTypeForElement(tgtField, nextMapping.getAttributeClassification(), workingSchema);
                     }
@@ -935,7 +932,7 @@ public class SchemaModelGenerator {
         // may need to add a global element
         Schema s = getSchema(fragUri, null, schemaForNamespace, properties);
         String targetNS = workingSchema.getTargetNamespace();
-        if ((s.isElementFormDefault() && !fragUri.equals(targetNS)) || (!s.isElementFormDefault() && fragUri.length() > 0)) {
+        if ((s.isElementFormDefault() && !fragUri.equals(targetNS)) || (!s.isElementFormDefault() && !fragUri.isEmpty())) {
             if (s.getTopLevelElements().get(frag.getLocalName()) == null) {
                 Element globalElement = new Element();
                 globalElement.setName(frag.getLocalName());
@@ -962,7 +959,7 @@ public class SchemaModelGenerator {
         Element globalElement = null;
         Schema s = getSchema(fragUri, null, schemaForNamespace, properties);
         String targetNS = workingSchema.getTargetNamespace();
-        if ((s.isElementFormDefault() && !fragUri.equals(targetNS)) || (!s.isElementFormDefault() && fragUri.length() > 0)) {
+        if ((s.isElementFormDefault() && !fragUri.equals(targetNS)) || (!s.isElementFormDefault() && !fragUri.isEmpty())) {
             globalElement = s.getTopLevelElements().get(frag.getLocalName());
             if (globalElement == null) {
                 globalElement = new Element();
@@ -1037,7 +1034,7 @@ public class SchemaModelGenerator {
         if (fragUri != null) {
             Schema s = getSchema(fragUri, null, schemaForNamespace, properties);
             String targetNS = workingSchema.getTargetNamespace();
-            if ((s.isElementFormDefault() && !fragUri.equals(targetNS)) || (!s.isElementFormDefault() && fragUri.length() > 0)) {
+            if ((s.isElementFormDefault() && !fragUri.equals(targetNS)) || (!s.isElementFormDefault() && !fragUri.isEmpty())) {
                 // must generate a global element are create a reference to it
                 // if the global element exists, use it; otherwise create a new one
                 globalElement = s.getTopLevelElements().get(frag.getLocalName());
@@ -1154,15 +1151,12 @@ public class SchemaModelGenerator {
         String uri = schemaType.getNamespaceURI();
         String prefix = workingSchema.getNamespaceResolver().resolveNamespaceURI(uri);
         if (prefix == null && !areNamespacesEqual(uri, workingSchema.getDefaultNamespace())) {
-            if (uri.equals(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI)) {
-                prefix = workingSchema.getNamespaceResolver().generatePrefix(Constants.SCHEMA_PREFIX);
-            } else if (uri.equals(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI)) {
-                prefix = workingSchema.getNamespaceResolver().generatePrefix(Constants.SCHEMA_INSTANCE_PREFIX);
-            } else if (uri.equals(Constants.REF_URL)) {
-                prefix = workingSchema.getNamespaceResolver().generatePrefix(Constants.REF_PREFIX);
-            } else {
-                prefix = workingSchema.getNamespaceResolver().generatePrefix();
-            }
+            prefix = switch (uri) {
+                case javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI -> workingSchema.getNamespaceResolver().generatePrefix(Constants.SCHEMA_PREFIX);
+                case javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI -> workingSchema.getNamespaceResolver().generatePrefix(Constants.SCHEMA_INSTANCE_PREFIX);
+                case Constants.REF_URL -> workingSchema.getNamespaceResolver().generatePrefix(Constants.REF_PREFIX);
+                default -> workingSchema.getNamespaceResolver().generatePrefix();
+            };
             workingSchema.getNamespaceResolver().put(prefix, uri);
         }
         if (prefix != null) {
@@ -1290,7 +1284,7 @@ public class SchemaModelGenerator {
             // may need to add a global element
             Schema s = getSchema(fragUri, null, schemaForNamespace, properties);
             String targetNS = workingSchema.getTargetNamespace();
-            if ((s.isElementFormDefault() && !fragUri.equals(targetNS)) || (!s.isElementFormDefault() && fragUri.length() > 0)) {
+            if ((s.isElementFormDefault() && !fragUri.equals(targetNS)) || (!s.isElementFormDefault() && !fragUri.isEmpty())) {
                 if (s.getTopLevelElements().get(frag.getShortName()) == null) {
                     Element globalElement = new Element();
                     globalElement.setName(frag.getLocalName());
@@ -1353,7 +1347,7 @@ public class SchemaModelGenerator {
      */
     protected boolean isSimple(Descriptor desc) {
         boolean isSimple = false;
-        for (CoreMapping mapping : (Vector<CoreMapping>)desc.getMappings()) {
+        for (CoreMapping mapping : (List<CoreMapping>)desc.getMappings()) {
             if (mapping.isDirectToFieldMapping()) {
                 Field xFld = (Field) mapping.getField();
                 if (xFld.getXPath().equals(TEXT)) {
@@ -1415,7 +1409,7 @@ public class SchemaModelGenerator {
      */
     protected boolean isFragPrimaryKey(XPathFragment frag, DirectMapping mapping) {
         /* Uncomment the following when ID support is needed
-        Vector<String> pkFieldNames = mapping.getDescriptor().getPrimaryKeyFieldNames();
+        List<String> pkFieldNames = mapping.getDescriptor().getPrimaryKeyFieldNames();
         if (pkFieldNames != null) {
             if (frag.isAttribute()) {
                 return pkFieldNames.contains(XMLConstants.ATTRIBUTE + frag.getLocalName());

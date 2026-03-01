@@ -1,0 +1,254 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[RUNTIME006]]
+=== Validating Against an XML Schema
+
+If you would like to validate your objects against an XML Schema during
+marshalling and unmarshalling, you can make use of JAXB's
+`ValidationEventHandler`.
+
+[[sthref44]]
+
+*_Example 2-25 Sample XML Schema_*
+
+In this example we would like to validate our objects against the
+following XML schema:
+
+[source,oac_no_warn]
+----
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+ 
+    <xs:element name="customer">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="name" type="stringMaxSize5"/>
+                <xs:element ref="phone-number" maxOccurs="2"/>
+             </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+ 
+    <xs:element name="phone-number">
+        <xs:complexType>
+            <xs:sequence/>
+        </xs:complexType>
+    </xs:element>
+ 
+    <xs:simpleType name="stringMaxSize5">
+        <xs:restriction base="xs:string">
+            <xs:maxLength value="5"/>
+        </xs:restriction>
+    </xs:simpleType>
+ 
+</xs:schema>
+----
+
+Notice the following constraints:
+
+* The customer's name cannot be longer than five (5) characters.
+* The customer cannot have more than two (2) phone numbers.
+
+The *Customer* class is shown below. Notice that the class _does not_
+contain any validation code.
+
+[[sthref45]]
+
+*_Example 2-26 Sample Customer Class_*
+
+[source,oac_no_warn]
+----
+package example;
+ 
+import java.util.ArrayList;
+import java.util.List;
+ 
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
+ 
+@XmlRootElement
+public class Customer {
+   private String name;
+ 
+   private List<PhoneNumber> phoneNumbers = new ArrayList<PhoneNumber>();
+ 
+   public String getName() {
+      return name;
+   }
+ 
+   public void setName(String name) {
+      this.name = name;
+   }
+ 
+   @XmlElement(name="phone-number")
+   public List<PhoneNumber> getPhoneNumbers() {
+      return phoneNumbers;
+   }
+ 
+   public void setPhoneNumbers(List<PhoneNumber> phoneNumbers) {
+      this.phoneNumbers = phoneNumbers;
+   }
+}
+ 
+----
+
+==== Using a ValidationEventHandler
+
+You can receive JAXB validation events by providing your own subclass of
+`ValidationEventHandler`. The event is represented as an instance of
+`ValidationEvent`, and provides many details about the issue. The data
+is similar to what is available from a `SAXParseException`.
+
+* Returning *false* from the `handleEvent` method will cause the JAXB
+operation to stop.
+* Returning *true* will allow the method to continue, if possible.
+
+In link:#CACGDDBA[Example 2-27], we will simply print out an event's
+data when one is received:
+
+[[CACGDDBA]]
+
+*_Example 2-27 Sample ValidationEventHandler_*
+
+[source,oac_no_warn]
+----
+package example;
+ 
+import jakarta.xml.bind.ValidationEvent;
+import jakarta.xml.bind.ValidationEventHandler;
+ 
+public class MyValidationEventHandler implements ValidationEventHandler {
+ 
+    public boolean handleEvent(ValidationEvent event) {
+        System.out.println("\nEVENT");
+        System.out.println("SEVERITY:  " + event.getSeverity());
+        System.out.println("MESSAGE:  " + event.getMessage());
+        System.out.println("LINKED EXCEPTION:  " + event.getLinkedException());
+        System.out.println("LOCATOR");
+        System.out.println("    LINE NUMBER:  " + event.getLocator().getLineNumber());
+        System.out.println("    COLUMN NUMBER:  " + event.getLocator().getColumnNumber());
+        System.out.println("    OFFSET:  " + event.getLocator().getOffset());
+        System.out.println("    OBJECT:  " + event.getLocator().getObject());
+        System.out.println("    NODE:  " + event.getLocator().getNode());
+        System.out.println("    URL:  " + event.getLocator().getURL());
+        return true;
+    }
+ 
+}
+ 
+----
+
+==== Enabling Validation
+
+In addition to providing an implementation of `ValidationEventHandler`,
+an instance of `Schema` must be set on the `Marshaller` or
+`Unmarshaller`.
+
+[[sthref48]]
+
+*_Example 2-28 Sample Java Code_*
+
+[source,oac_no_warn]
+----
+package example;
+ 
+import java.io.File;
+import javax.xml.XMLConstants;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.Unmarshaller;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+ 
+public class UnmarshalDemo {
+ 
+    public static void main(String[] args) throws Exception {
+        SchemaFactory sf = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+        Schema schema = sf.newSchema(new File("customer.xsd"));
+ 
+        JAXBContext jc = JAXBContext.newInstance(Customer.class);
+ 
+        Unmarshaller unmarshaller = jc.createUnmarshaller();
+        unmarshaller.setSchema(schema);
+        unmarshaller.setEventHandler(new MyValidationEventHandler());
+        Customer customer = (Customer) unmarshaller.unmarshal(new File("input.xml"));
+    }
+ 
+}
+ 
+----
+
+==== Input (input.xml File)
+
+[source,oac_no_warn]
+----
+<customer>
+   <name>Jane Doe</name>
+   <phone-number/>
+   <phone-number/>
+   <phone-number/>
+</customer>
+----
+
+==== Output
+
+The validation performed during the unmarshal raised three events. The
+first two events are related to the text value of the *name* element
+being too long. The third event is related to the extra *phone-number*
+element.
+
+[source,oac_no_warn]
+----
+EVENT
+SEVERITY:  1
+MESSAGE:  cvc-maxLength-valid: Value 'Jane Doe' with length = '8' is not facet-valid with respect
+          to maxLength '5' for type 'stringWithMaxSize5'.
+LINKED EXCEPTION:  org.xml.sax.SAXParseException: cvc-maxLength-valid: Value 'Jane Doe' with length = '8'
+                   is not facet-valid with respect to maxLength '5' for type 'stringWithMaxSize5'.
+LOCATOR
+    LINE NUMBER:  3
+    COLUMN NUMBER:  25
+    OFFSET:  -1
+    OBJECT:  null
+    NODE:  null
+    URL:  null
+ 
+EVENT
+SEVERITY:  1
+MESSAGE:  cvc-type.3.1.3: The value 'Jane Doe' of element 'name' is not valid.
+LINKED EXCEPTION:  org.xml.sax.SAXParseException: cvc-type.3.1.3: The value 'Jane Doe' of element
+                   'name' is not valid.
+LOCATOR
+    LINE NUMBER:  3
+    COLUMN NUMBER:  25
+    OFFSET:  -1
+    OBJECT:  null
+    NODE:  null
+    URL:  null
+ 
+EVENT
+SEVERITY:  1
+MESSAGE:  cvc-complex-type.2.4.d: Invalid content was found starting with element 'customer'. No child
+          element '{phone-number}' is expected at this point.
+LINKED EXCEPTION:  org.xml.sax.SAXParseException: cvc-complex-type.2.4.d: Invalid content was found starting
+                   with element 'customer'. No child element '{phone-number}' is expected at this point.
+LOCATOR
+    LINE NUMBER:  7
+    COLUMN NUMBER:  12
+    OFFSET:  -1
+    OBJECT:  null
+    NODE:  null
+    URL:  null
+----

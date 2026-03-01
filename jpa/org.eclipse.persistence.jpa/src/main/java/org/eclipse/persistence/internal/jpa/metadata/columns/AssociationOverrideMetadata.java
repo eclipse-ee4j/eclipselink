@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,7 +38,7 @@ import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 
 /**
  * Object to hold onto an association override meta data.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -53,7 +53,7 @@ import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 public class AssociationOverrideMetadata extends OverrideMetadata {
     private ForeignKeyMetadata m_foreignKey;
     private JoinTableMetadata m_joinTable;
-    private List<JoinColumnMetadata> m_joinColumns = new ArrayList<JoinColumnMetadata>();
+    private List<JoinColumnMetadata> m_joinColumns = new ArrayList<>();
 
     /**
      * INTERNAL:
@@ -89,8 +89,7 @@ public class AssociationOverrideMetadata extends OverrideMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (super.equals(objectToCompare) && objectToCompare instanceof AssociationOverrideMetadata) {
-            AssociationOverrideMetadata associationOverride = (AssociationOverrideMetadata) objectToCompare;
+        if (super.equals(objectToCompare) && objectToCompare instanceof AssociationOverrideMetadata associationOverride) {
 
             if (! valuesMatch(m_joinColumns, associationOverride.getJoinColumns())) {
                 return false;
@@ -108,7 +107,8 @@ public class AssociationOverrideMetadata extends OverrideMetadata {
 
     @Override
     public int hashCode() {
-        int result = m_foreignKey != null ? m_foreignKey.hashCode() : 0;
+        int result = super.hashCode();
+        result = 31 * result + (m_foreignKey != null ? m_foreignKey.hashCode() : 0);
         result = 31 * result + (m_joinTable != null ? m_joinTable.hashCode() : 0);
         result = 31 * result + (m_joinColumns != null ? m_joinColumns.hashCode() : 0);
         return result;

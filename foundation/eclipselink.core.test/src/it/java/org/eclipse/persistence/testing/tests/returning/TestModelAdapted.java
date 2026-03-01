@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,10 +14,12 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.returning;
 
-import java.util.Vector;
+import org.eclipse.persistence.testing.framework.TestCollection;
+import org.eclipse.persistence.testing.framework.TestEntity;
+import org.eclipse.persistence.testing.framework.TestModel;
+import org.eclipse.persistence.testing.framework.TestSystem;
 
-import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.testing.framework.*;
+import java.util.Vector;
 
 public class TestModelAdapted extends TestModel {
     public TestModelAdapted() {
@@ -30,12 +32,12 @@ public class TestModelAdapted extends TestModel {
         // move original tests
         Vector testsToAdd = (Vector)getTestModel().getTests().clone();
         for (int i = 0; i < testsToAdd.size(); i++) {
-            TestEntity testEntity = (TestEntity)testsToAdd.elementAt(i);
+            TestEntity testEntity = (TestEntity)testsToAdd.get(i);
             testEntity.setContainer(this);
         }
         getTestModel().getTests().clear();
         setAdapter(adapter);
-        setName(getTestModel().getName() + " using " + Helper.getShortClassName(getAdapter()));
+        setName(getTestModel().getName() + " using " + getAdapter().getClass().getSimpleName());
     }
 
     public TestModelAdapted(TestModel testModelToBeAdapted, ProjectAndDatabaseAdapter adapter, String[] testNamesToExclude) {
@@ -80,7 +82,7 @@ public class TestModelAdapted extends TestModel {
     public void addForcedRequiredSystems() {
         Vector systems = getTestModel().buildForcedRequiredSystems();
         for (int i = 0; i < systems.size(); i++) {
-            TestSystemAdapted testSystemAdapted = new TestSystemAdapted((TestSystem)systems.elementAt(i), getAdapter());
+            TestSystemAdapted testSystemAdapted = new TestSystemAdapted((TestSystem)systems.get(i), getAdapter());
             addForcedRequiredSystem(testSystemAdapted);
         }
     }
@@ -89,7 +91,7 @@ public class TestModelAdapted extends TestModel {
     public void addRequiredSystems() {
         Vector systems = getTestModel().buildRequiredSystems();
         for (int i = 0; i < systems.size(); i++) {
-            TestSystemAdapted testSystemAdapted = new TestSystemAdapted((TestSystem)systems.elementAt(i), getAdapter());
+            TestSystemAdapted testSystemAdapted = new TestSystemAdapted((TestSystem)systems.get(i), getAdapter());
             addRequiredSystem(testSystemAdapted);
         }
     }
@@ -104,7 +106,7 @@ public class TestModelAdapted extends TestModel {
         getTestModel().addTests();
         Vector testsToAdd = (Vector)getTestModel().getTests().clone();
         for (int i = 0; i < testsToAdd.size(); i++) {
-            TestEntity testEntity = (TestEntity)testsToAdd.elementAt(i);
+            TestEntity testEntity = (TestEntity)testsToAdd.get(i);
             testEntity.setContainer(this);
         }
         getTestModel().getTests().clear();
@@ -119,26 +121,26 @@ public class TestModelAdapted extends TestModel {
     }
 
     protected String excludeTests(TestCollection testCollection) {
-        String suffix = "";
+        StringBuilder suffix = new StringBuilder();
         Vector tests = testCollection.getTests();
         for (int i = tests.size() - 1; i >= 0; i--) {
-            TestEntity testEntity = (TestEntity)tests.elementAt(i);
+            TestEntity testEntity = (TestEntity)tests.get(i);
             if (shouldBeExcluded(testEntity)) {
-                tests.removeElementAt(i);
-                suffix = suffix + testEntity.getName() + ' ';
+                tests.remove(i);
+                suffix.append(testEntity.getName()).append(' ');
             } else if (testEntity instanceof TestCollection) {
-                suffix = suffix + excludeTests((TestCollection)testEntity);
+                suffix.append(excludeTests((TestCollection) testEntity));
             }
         }
-        if (suffix.length() != 0) {
+        if (!suffix.isEmpty()) {
             testCollection.setName(testCollection.getName() + " without " + suffix);
         }
-        return suffix;
+        return suffix.toString();
     }
 
     protected boolean shouldBeExcluded(TestEntity testEntity) {
-        for (int i = 0; i < testNamesToExclude.length; i++) {
-            if (testEntity.getName().equals(testNamesToExclude[i])) {
+        for (String s : testNamesToExclude) {
+            if (testEntity.getName().equals(s)) {
                 return true;
             }
         }

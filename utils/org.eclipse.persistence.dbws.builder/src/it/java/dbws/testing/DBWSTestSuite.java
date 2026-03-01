@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -371,7 +371,7 @@ public class DBWSTestSuite {
         for (int x = nodeList.getLength() - 1; x >= 0; x--) {
             childNode = nodeList.item(x);
             if (childNode.getNodeType() == Node.TEXT_NODE) {
-                if (childNode.getNodeValue().trim().equals("")) {
+                if (childNode.getNodeValue().trim().isEmpty()) {
                     node.removeChild(childNode);
                 }
             } else if (childNode.getNodeType() == Node.ELEMENT_NODE) {
@@ -437,11 +437,11 @@ public class DBWSTestSuite {
         }
 
         public boolean hasMessages() {
-            return messages != null && messages.size() > 0;
+            return messages != null && !messages.isEmpty();
         }
 
         public boolean hasWarnings() {
-            if (messages != null || messages.size() > 0) {
+            if (messages != null || !messages.isEmpty()) {
                 for (String message : messages) {
                     if (message.startsWith("WARNING")) {
                         return true;
@@ -453,7 +453,7 @@ public class DBWSTestSuite {
 
         public List<String> getWarnings() {
             List<String> warnings = null;
-            if (messages != null || messages.size() > 0) {
+            if (messages != null || !messages.isEmpty()) {
                 warnings = new ArrayList<String>();
                 for (String message : messages) {
                     if (message.startsWith("WARNING")) {

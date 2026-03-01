@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -12,11 +12,12 @@
 
 package org.eclipse.persistence.testing.models.optimisticlocking;
 
-import java.util.Vector;
-
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.descriptors.VersionLockingPolicy;
 import org.eclipse.persistence.tools.schemaframework.TableDefinition;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ListItem {
 
@@ -55,8 +56,8 @@ public class ListItem {
 
         // SECTION: DESCRIPTOR
         descriptor.setJavaClass(ListItem.class);
-        Vector vector = new Vector();
-        vector.addElement("OL_ITEM");
+        List<String> vector = new ArrayList<>();
+        vector.add("OL_ITEM");
         descriptor.setTableNames(vector);
         descriptor.addPrimaryKeyFieldName("OL_ITEM.ID");
 

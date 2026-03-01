@@ -1,0 +1,149 @@
+*TOC* Special:Whatlinkshere_Configuring_an_EIS_Login_(ELUG)[Related
+Topics]
+
+[#Table 95-1]## *_Configurable Options for EIS Login_*
+
+[width="100%",cols="<63%,<20%,<17%",options="header",]
+|===
+|*Option to Configure* |*Workbench* |*Java*
+|link:#Configuring_an_EIS_Data_Source_Platform_at_the_Session_Level[Data
+source platform at the session level]
+|image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:#Configuring_EIS_Connection_Specification_Options_at_the_Session_Level[Connection
+specification options at the session level]
+|image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Data%20Source%20Login%20(ELUG)#Configuring_User_Name_and_Password[User
+name and password] |image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Data%20Source%20Login%20(ELUG)#Configuring_Password_Encryption[Password
+encryption] |image:unsupport.gif[Unsupported,title="Unsupported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Data%20Source%20Login%20(ELUG)#Configuring_External_Connection_Pooling[External
+connection pooling] |image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Data%20Source%20Login%20(ELUG)#Configuring_Properties[Properties]
+|image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+|===
+
+== Configuring an EIS Data Source Platform at the Session Level
+
+For each EIS session, you must specify the platform (such as AQ). This
+platform configuration overrides the platform at the project level, if
+configured.
+
+For more information, see the following:
+
+* link:Configuring%20a%20Relational%20Project%20(ELUG)#Configuring_Relational_Database_Platform_at_the_Project_Level[Configuring
+Relational Database Platform at the Project Level]
+* link:Introduction%20to%20Data%20Access%20(ELUG)#Data_Source_Login_Types[Data
+Source Login Types]
+
+=== How to Configure an EIS Data Source Platform at the Session Level Using Workbench
+
+To specify the database platform options for an EIS session login, use
+this procedure:
+
+[arabic]
+. Select an EIS session in the *Navigator*. Its properties appear in the
+Editor.
+. Click the *Login* tab. The Login tab appears.
+. Click the *Connection* subtab. The Connection subtab appears. *_Login
+Tab, Connection Subtab, Platform Options_* image:eispla.gif[Connection
+Subtab, Platform Options,title="Connection Subtab, Platform Options"]
+. Complete the *Platform* option on the Connection tab.
+
+Use the following information to enter data in the Platform field on the
+Connection tab to configure the platform:
+
+[width="100%",cols="<9%,<91%",options="header",]
+|===
+|*Field* |*Description*
+|*Platform* |The EIS platform for the session. Select from the menu of
+options. This menu includes all instances of `+EISPlatform+` in the
+EclipseLink classpath.
+|===
+
+See Also:
+
+link:Configuring%20a%20Relational%20Project%20(ELUG)#Configuring_Relational_Database_Platform_at_the_Project_Level[Configuring
+Relational Database Platform at the Project Level]
+
+== Configuring EIS Connection Specification Options at the Session Level
+
+You can configure connection information at the session level for an EIS
+application. This information is stored in the `+sessions.xml+` file.
+The EclipseLink runtime uses this information whenever you perform a
+persistence operation using the session in your EIS application.
+
+This connection configuration overrides the connection information at
+the project level, if configured. For more information about
+project-level configuration, see
+link:Configuring%20a%20Relational%20Project%20(ELUG)#Configuring_Development_and_Deployment_Logins[Configuring
+Development and Deployment Logins] and
+link:Configuring%20an%20EIS%20Project%20(ELUG)#Configuring_EIS_Connection_Specification_Options_at_the_Project_Level[Configuring
+EIS Connection Specification Options at the Project Level].
+
+This connection configuration is overridden by the connection
+information at the connection pool level. For more information about
+connection pool-level configuration, see
+link:Configuring%20an%20Internal%20Connection%20Pool%20(ELUG)#Configuring_Connection_Pool_Connection_Options[Configuring
+Connection Pool Connection Options].
+
+=== How to Configure EIS Connection Specification Options at the Session Level Using Workbench
+
+Use this procedure to specify the connection options for an EIS session
+login.
+
+[arabic]
+. Select an EIS session in the Navigator window. Its properties appear
+in the Editor window.
+. Click the *Login* tab. The Login tab appears.
+. Click the *Connection* subtab. The Connection tab appears.
+[#Figure 95-2]##*_Login Tab, Connection Subtab_* image:eisconn.gif[Login
+Tab, Connection Subtab,title="Login Tab, Connection Subtab"]
+. Complete fields on the Login-–Connection tab.
+
+Use the following information to enter data in the connection fields on
+the tab:
+
+Field
+
+Description
+
+Connection Specification Class
+
+Specify the appropriate connection specification class for the selected
+Platform. Click Browse to choose from all the classes in the EclipseLink
+classpath. (For example: if Platform is
+org.eclipse.persistence.eis.aq.AQPlatform, use
+org.eclipse.persistence.eis.aq.AQEISConnectionSpec).
+
+For more information on platform configuration, see Configuring an EIS
+Data Source Platform at the Session Level.
+
+Connection Factory URL
+
+Specify the appropriate connection factory URL for the selected
+Connection Specification Class (For example:
+jdbc:oracle:thin@:localhost:1521:orcl).
+
+See Also:
+
+link:Configuring%20a%20Relational%20Project%20(ELUG)#Configuring_Development_and_Deployment_Logins[Configuring
+Development and Deployment Logins]
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Release_1[Category: Release 1] Category:_Task[Category: Task]
+Category:_EIS[Category: EIS]

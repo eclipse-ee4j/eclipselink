@@ -1,0 +1,258 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[ELJBOSS002]]
+=== Implementing the Solution
+
+To develop, deploy and run EclipseLink applications in JBoss Application
+Server 7, you must create EclipseLink as a module of JBoss. You must
+also create other modules, such as a JDBC driver, etc., in order to run
+applications.
+
+This section contains the following tasks for using EclipseLink with
+JBoss 7.1:
+
+* link:#BEIFFJAJ[Task 1: Prerequisites]
+* link:#BEIHHAHD[Task 2: Configure EclipseLink as a Module in JBoss]
+* link:#BEIHDIBG[Task 3: Add ojdbc6.jar as a Module in JBoss]
+* link:#BEIIFFGB[Task 4: Create the Driver Definition and the Datasource]
+* link:#BEIDFCFI[Task 5: Create Users]
+* link:#BEIGFJIG[Task 6: Modify JBoss Properties]
+* link:#BEIHGDBJ[Task 7: Other Requirements]
+* link:#BEIGADEE[Task 8: Start JBoss]
+
+[[BEIFFJAJ]]
+
+==== Task 1: Prerequisites
+
+Ensure that you have installed the following components:
+
+* JBoss, version 7 or later. These instructions are based on JBoss
+release 7.1.1.
++
+Download JBoss from `http://www.jboss.org/jbossas/downloads/` . The
+version of JBoss must be identified as "Certified Jakarta EE6." Version
+7.1.1 or later is recommended.
+* EclipseLink 2.4 or later.
++
+Download EclipseLink from
+`http://www.eclipse.org/eclipselink/downloads/`.
+* Any compliant Java Database Connectivity (JDBC) database including
+Oracle Database, Oracle Express, MySQL, the HSQL database embedded in
+JBoss Application Server, and so on.
+
+NOTE: Oracle XML DB (XDB) and JBoss Application Server both use port `8080` by
+default. If you have both available at the same URI, for example
+`localhost`, you must reconfigure one or the other to use a different
+port, for example `8081`.
+
+For the Oracle Database, see
+`http://www.oracle.com/technetwork/database/enterprise-edition/overview/index.html`.
+For the Oracle Database, Express Edition, see
+`http://www.oracle.com/technetwork/database/express-edition/overview/index.html`.
+For MySQL, see `http://www.oracle.com/us/products/mysql/index.html`. For
+information about the embedded HSQL database, see the JBoss
+documentation.
+* While it is not required, you may want to use a Java development
+environment (IDE) for convenience during development. For example
+JDeveloper, Oracle Enterprise Pack for Eclipse, and NetBeans all provide
+sophisticated Jakarta EE development tools that support EclipseLink.
+
+For JDeveloper, see
+`http://www.oracle.com/technetwork/developer-tools/jdev/downloads/index.html`.
+For Oracle Enterprise Pack for Eclipse, see
+`http://www.oracle.com/technetwork/developer-tools/eclipse/overview/index.html`.
+For NetBeans, see `http://www.oracle.com/us/products/tools/050845.html`.
+
+[[BEIHHAHD]]
+
+==== Task 2: Configure EclipseLink as a Module in JBoss
+
+To configure EclipseLink as a module in JBoss:
+
+. Create a directory as follows:
++
+__`JBOSS_ HOME`__`\modules\org\eclipse\persistence\main`
+. Copy `eclipselink.jar` to the directory created in step
+link:#BEIJEJDJ[1]. (The `eclipselink.jar` file is located in the
+`eclipselink/jlib` directory of the `eclipselink-`__`ver_no`__`.zip`
+file.)
+. Create a `module.xml` file in the directory created in step
+link:#BEIJEJDJ[1], with the following content:
++
+[source,oac_no_warn]
+----
+<module xmlns="urn:jboss:module:1.1" name="org.eclipse.persistence">
+   <resources>
+       <resource-root path="eclipselink.jar"/>
+       <!-- Insert resources here -->
+   </resources>
+   <dependencies>
+      <module name="javax.api"/>
+      <module name="jakarta.persistence.api"/>
+      <module name="javax.transaction.api"/>
+      <module name="javax.validation.api"/>
+      <module name="jakarta.xml.bind.api"/>
+      <module name="org.antlr"/>
+      <module name="org.apache.commons.collections"/>
+      <module name="org.dom4j"/>
+      <module name="org.javassist"/>
+      <module name="org.jboss.logging"/>
+      <module name="com.oracle.ojdbc6"/>
+   </dependencies>
+</module>
+----
+
+[[BEIHDIBG]]
+
+==== Task 3: Add ojdbc6.jar as a Module in JBoss
+
+Add the Oracle thin driver `ojdbc6.jar` as a module within JBoss, as
+follows:
+
+. Create the module directory:
++
+__`JBOSS_ HOME`__`\modules\com\oracle\ojdbc6\main`
+. Copy `ojdbc6.jar` to the module directory created in step
+link:#BEIBFGCF[1].
+. Create a `module.xml` file in the module directory created in step
+link:#BEIBFGCF[1], with the following contents:
++
+[source,oac_no_warn]
+----
+<module xmlns="urn:jboss:module:1.1" name="com.oracle.ojdbc6">
+    <resources>
+        <resource-root path="ojdbc6.jar"/>
+        <!-- Insert resources here -->
+    </resources>
+    <dependencies>
+        <module name="javax.api"/>
+    </dependencies>
+</module>
+----
+
+[[BEIIFFGB]]
+
+==== Task 4: Create the Driver Definition and the Datasource
+
+Create the driver definition and create the datasource.
+
+The following instructions tell how to configure JBoss for running in
+standalome mode, using the `standalone.xml` configuration file. For
+instructions on how to use `domain.xml` to configure JBoss for running
+in domain mode, see the JBoss documentation.
+
+. In the standalone configuration file
+`JBOSS_ HOME``\standalone\configuration\standalone.xml`, find the
+following:
++
+`<subsystem xmlns="urn:jboss:domain:datasources:1.0">`
+. In that section, configure the datasource. The following example shows
+a configuration for the Oracle Database, using the Oracle JDBC Thin
+driver. For instructions on configuring other datasources, see the JBoss
+documentation.
+
+[source,oac_no_warn]
+----
+<subsystem xmlns="urn:jboss:domain:datasources:1.0">
+   <datasources>
+      <datasource jndi-name="java:/EclipseLinkDS" 
+            pool-name="EclipseLinkDS" 
+            enabled="true" 
+            jta="true" 
+            use-java-context="true" 
+            use-ccm="true">
+         <connection-url>jdbc:oracle:thin:node_name.example.com:1521:TOPLINK</connection-url>
+         <driver>oracle</driver>
+         <transaction-isolation>TRANSACTION_READ_COMMITTED</transaction-isolation>
+         <pool>
+            <prefill>true</prefill>
+            <use-strict-min>false</use-strict-min>
+            <flush-strategy>FailingConnectionOnly</flush-strategy>
+         </pool>
+         <security>
+            <user-name>Smith</user-name>
+            <password>password</password>
+         </security>
+       </datasource>
+       <driver name="oracle" module="com.oracle.ojdbc6">
+         <xa-datasource-class>oracle.jdbc.OracleDriver</xa-datasource-class>
+       </driver>
+    </datasources>
+</subsystem>
+----
+
+[[BEIDFCFI]]
+
+==== Task 5: Create Users
+
+Starting with JBoss Application Server 7.1, you must create an
+Application User to get started, because remote access to the JNDI tree
+is secured by default, and you must provide login credentials.
+Therefore, at a minimum, you just create an Application User to be able
+to deploy an application to the server. If you want to use the JBoss
+administration console for administration tasks, for example to view the
+JNDI tree, you must also create an Administration User.
+
+To create user credentials, use the JBoss `add-user.bat` utility,
+located in __`JBOSS_HOME`__`\bin\`.
+
+For more information about security in JBoss Application Server, refer
+to the JBoss documentation.
+
+[[BEIGFJIG]]
+
+==== Task 6: Modify JBoss Properties
+
+Modify JBoss properties, as follows:
+
+[source,oac_no_warn]
+----
+## JBoss-7.x
+server.factory=org.jboss.naming.remote.client.InitialContextFactory
+java.naming.factory.url.pkgs=org.jboss.ejb.client.naming
+server.depend=jboss-client.jar
+jboss.server=${jboss.home}/standalone
+server.lib=${jboss.home}/bin/client
+server.url=remote://localhost:4447
+server.user=usera
+server.pwd=passworda
+jboss.naming.client.ejb.context=true
+----
+
+[[BEIHGDBJ]]
+
+==== Task 7: Other Requirements
+
+. Add `junit.jar` in the `ear` under the `\lib` directory.
+. Because of a classloading issue in JBoss, you must list all your
+entity classes in `persistence.xml`. You can use either `<class>`
+elements or a global
+`<exclude-unlisted-classes>false</exclude-unlisted-classes>` element.
+. Add both `jndi.properties` and `jboss-ejb-client.properties` in the
+client classpath.
+
+[[BEIGADEE]]
+
+==== Task 8: Start JBoss
+
+Start JBoss by running `standalone.bat` (for a single-server
+configuration) or `domain.bat` file (in a clustered environment) in
+__`JBOSS_ HOME`__`\bin\`.
+
+For information on different ways to configure and start JBoss, see the
+JBoss documentation.

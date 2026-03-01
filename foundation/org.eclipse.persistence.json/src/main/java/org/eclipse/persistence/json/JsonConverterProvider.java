@@ -15,8 +15,6 @@
 //       - 1391: JSON support in JPA
 package org.eclipse.persistence.json;
 
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
@@ -33,9 +31,7 @@ public class JsonConverterProvider implements ConverterProvider {
 
     // Initialize metadata class name to converter instance Supplier mapping.
     private static Map<String, Supplier<Converter>> initConverters() {
-        final Map<String, Supplier<Converter>> converters = new HashMap<>(2);
-        converters.put("org.eclipse.persistence.internal.jpa.metadata.converters.JsonValueMetadata", JsonTypeConverter::new);
-        return Collections.unmodifiableMap(converters);
+        return Map.of("org.eclipse.persistence.internal.jpa.metadata.converters.JsonValueMetadata", JsonTypeConverter::new);
     }
 
     /**

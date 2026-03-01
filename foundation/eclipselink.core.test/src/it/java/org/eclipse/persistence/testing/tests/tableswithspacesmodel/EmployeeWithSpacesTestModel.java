@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,10 +14,20 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.tableswithspacesmodel;
 
-import org.eclipse.persistence.testing.framework.*;
-import org.eclipse.persistence.testing.models.employee.domain.*;
-import org.eclipse.persistence.tools.schemaframework.PopulationManager;
 import org.eclipse.persistence.queries.SQLCall;
+import org.eclipse.persistence.testing.framework.InsertObjectTest;
+import org.eclipse.persistence.testing.framework.ReadAllCallTest;
+import org.eclipse.persistence.testing.framework.ReadAllTest;
+import org.eclipse.persistence.testing.framework.ReadObjectTest;
+import org.eclipse.persistence.testing.framework.TestModel;
+import org.eclipse.persistence.testing.framework.TestSuite;
+import org.eclipse.persistence.testing.framework.WriteObjectTest;
+import org.eclipse.persistence.testing.models.employee.domain.Employee;
+import org.eclipse.persistence.testing.models.employee.domain.EmployeePopulator;
+import org.eclipse.persistence.testing.models.employee.domain.LargeProject;
+import org.eclipse.persistence.testing.models.employee.domain.Project;
+import org.eclipse.persistence.testing.models.employee.domain.SmallProject;
+import org.eclipse.persistence.tools.schemaframework.PopulationManager;
 
 /**
  * This model tests reading/writing/deleting through using the employee demo.

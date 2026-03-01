@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -113,8 +113,7 @@ public class Beer<PK, ALCOHOL_CONTENT_TYPE, BeerDoubleType> extends Beverage<Bee
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Beer)) return false;
-        Beer<?, ?, ?> beer = (Beer<?, ?, ?>) o;
+        if (!(o instanceof Beer<?, ?, ?> beer)) return false;
         return Objects.equals(getId(), beer.getId()) && Objects.equals(getClass(), beer.getClass());
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,10 +14,10 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.identitymaps;
 
-import java.util.*;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+
+import java.util.HashMap;
 
 /**
  * Unit of work specific identity map which avoid additional overhead not required in unit of work,
@@ -34,7 +34,7 @@ public class UnitOfWorkIdentityMap extends FullIdentityMap {
         super();
         this.maxSize = size;
         // PERF: Use a HashMap as more efficient than a ConcurrentMap and single threaded.
-        this.cacheKeys = new HashMap(size);
+        this.cacheKeys = new HashMap<>(size);
         this.descriptor = descriptor;
         this.session = session;
         this.isIsolated = isolated;

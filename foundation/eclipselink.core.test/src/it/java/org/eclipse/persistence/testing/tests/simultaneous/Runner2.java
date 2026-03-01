@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,7 +35,7 @@ public class Runner2 implements Runnable {
     public void run() {
         try {
 
-            UnitOfWorkImpl uow = (UnitOfWorkImpl)this.session.acquireUnitOfWork();;
+            UnitOfWorkImpl uow = (UnitOfWorkImpl)this.session.acquireUnitOfWork();
             ReadObjectQuery roq = new ReadObjectQuery(Employee.class);
             roq.setSelectionCriteria(roq.getExpressionBuilder().get("id").equal(empPK));
             Employee emp = (Employee)uow.executeQuery(roq);

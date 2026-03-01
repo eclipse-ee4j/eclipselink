@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,14 +14,21 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.isolatedsession;
 
-import java.util.*;
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.RelationalDescriptor;
+import org.eclipse.persistence.descriptors.VersionLockingPolicy;
+import org.eclipse.persistence.exceptions.DescriptorException;
+import org.eclipse.persistence.exceptions.EclipseLinkException;
+import org.eclipse.persistence.exceptions.IntegrityException;
+import org.eclipse.persistence.mappings.DirectToFieldMapping;
+import org.eclipse.persistence.mappings.OneToOneMapping;
+import org.eclipse.persistence.sessions.Session;
+import org.eclipse.persistence.sessions.server.ServerSession;
+import org.eclipse.persistence.testing.framework.TestCase;
+import org.eclipse.persistence.testing.framework.TestErrorException;
 
-import org.eclipse.persistence.testing.framework.*;
-import org.eclipse.persistence.sessions.*;
-import org.eclipse.persistence.sessions.server.*;
-import org.eclipse.persistence.mappings.*;
-import org.eclipse.persistence.descriptors.*;
-import org.eclipse.persistence.exceptions.*;
+import java.util.List;
+import java.util.Vector;
 
 public class ExceptionOnIsolatedReference extends TestCase {
     protected ServerSession server;
@@ -32,8 +39,8 @@ public class ExceptionOnIsolatedReference extends TestCase {
     public void copyDescriptors(Session session) {
         Vector descriptors = new Vector();
 
-        for (Iterator<ClassDescriptor> iterator = session.getDescriptors().values().iterator(); iterator.hasNext(); ) {
-            descriptors.addElement(iterator.next());
+        for (ClassDescriptor classDescriptor : session.getDescriptors().values()) {
+            descriptors.add(classDescriptor);
         }
         this.server.addDescriptors(descriptors);
     }
@@ -52,9 +59,9 @@ public class ExceptionOnIsolatedReference extends TestCase {
                 throw new TestErrorException("Shared Cache Descriptor was not switched to Protected when referencing Isolated data");
             }
         } catch (IntegrityException ex) {
-            Vector exceptions = ex.getIntegrityChecker().getCaughtExceptions();
-            for (int index = 0; index < exceptions.size(); ++index) {
-                if (((EclipseLinkException)exceptions.get(index)).getErrorCode() == DescriptorException.ISOLATED_DESCRIPTOR_REFERENCED_BY_SHARED_DESCRIPTOR) {
+            List<Exception> exceptions = ex.getIntegrityChecker().getCaughtExceptions();
+            for (Object exception : exceptions) {
+                if (((EclipseLinkException) exception).getErrorCode() == DescriptorException.ISOLATED_DESCRIPTOR_REFERENCED_BY_SHARED_DESCRIPTOR) {
                     throw new TestErrorException("Validation Exception error  thrown.  Non-isolated data was not allowed to reference isolated Data");
                 }
             }

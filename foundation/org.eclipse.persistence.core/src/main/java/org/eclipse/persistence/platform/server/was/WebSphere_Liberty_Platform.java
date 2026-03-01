@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2014, 2021 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2014, 2018 IBM Corporation. All rights reserved.
+ * Copyright (c) 2014, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,18 +15,18 @@
 //     Rick Curtis - Add support for WebSphere Liberty.
 package org.eclipse.persistence.platform.server.was;
 
-import java.sql.Connection;
-
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.ExternalTransactionController;
 import org.eclipse.persistence.transaction.was.WebSphereLibertyTransactionController;
 
+import java.sql.Connection;
+
 /**
  * PUBLIC:
- *
+ * <p>
  * This is the concrete subclass responsible for representing WebSphere-specific server behavior.
- *
+ * <p>
  * This platform has:
  * <ul>
  * <li>WebSphereLibertyTransactionController (JTA integration).

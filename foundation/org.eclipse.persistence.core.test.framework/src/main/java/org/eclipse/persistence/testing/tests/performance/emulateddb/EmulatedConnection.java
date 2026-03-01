@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -45,9 +45,18 @@ import java.util.concurrent.Executor;
 public class EmulatedConnection implements Connection {
     protected Map<String, List<DatabaseRecord>> rows;
     protected Connection connection;
+    protected DatabaseMetaData databaseMetaData;
+    private String url;
+    private Properties info;
 
     public EmulatedConnection() {
         this.rows = new HashMap<>();
+    }
+
+    public EmulatedConnection(String url, Properties info) {
+        this();
+        this.url = url;
+        this.info = info;
     }
 
     public EmulatedConnection(Connection connection) {
@@ -330,7 +339,10 @@ public class EmulatedConnection implements Connection {
         if (connection != null) {
             return connection.getMetaData();
         }
-        return null;
+        if (this.databaseMetaData == null) {
+            this.databaseMetaData = new EmulatedDatabaseMetaData(this);
+        }
+        return this.databaseMetaData;
     }
 
     /**
@@ -685,7 +697,6 @@ public class EmulatedConnection implements Connection {
      */
     @Override
     public void rollback(Savepoint savepoint) throws SQLException {
-        return;
     }
 
     /**
@@ -701,7 +712,6 @@ public class EmulatedConnection implements Connection {
      */
     @Override
     public void releaseSavepoint(Savepoint savepoint)throws SQLException  {
-        return;
     }
 
     /**
@@ -1023,4 +1033,12 @@ public class EmulatedConnection implements Connection {
 
     @Override
     public void setSchema(String schema) throws SQLException {}
+
+    public String getURL() {
+        return this.url;
+    }
+
+    public Properties getInfo() {
+        return this.info;
+    }
 }

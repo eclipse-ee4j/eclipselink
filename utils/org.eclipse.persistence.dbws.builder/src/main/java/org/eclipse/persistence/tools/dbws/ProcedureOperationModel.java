@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,7 +29,7 @@ public class ProcedureOperationModel extends ModelWithBuildSql {
     protected String schemaPattern;
     protected String procedurePattern;
     //cache resolved DatabaseType's
-    transient protected List<ProcedureType> dbStoredProcedures = new ArrayList<ProcedureType>();
+    transient protected List<ProcedureType> dbStoredProcedures = new ArrayList<>();
 
     //TODO - do we really need any of these?
     protected int overload; // Oracle-specific
@@ -144,7 +144,7 @@ public class ProcedureOperationModel extends ModelWithBuildSql {
      */
     public void addArgumentTypes(DatabaseType[] dbTypes) {
         if (argumentTypes == null) {
-            argumentTypes = new ArrayList<DatabaseType[]>();
+            argumentTypes = new ArrayList<>();
         }
         argumentTypes.add(dbTypes);
     }

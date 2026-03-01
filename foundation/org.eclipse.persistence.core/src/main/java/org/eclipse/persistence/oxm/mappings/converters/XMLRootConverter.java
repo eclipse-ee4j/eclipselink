@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,13 +14,13 @@
 // mmacivor - June 05/2008 - 1.0 - Initial implementation
 package org.eclipse.persistence.oxm.mappings.converters;
 
-import org.eclipse.persistence.mappings.DatabaseMapping;
-import org.eclipse.persistence.oxm.XMLMarshaller;
-import org.eclipse.persistence.oxm.XMLUnmarshaller;
-import org.eclipse.persistence.oxm.XMLRoot;
-import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
+import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.oxm.XMLField;
+import org.eclipse.persistence.oxm.XMLMarshaller;
+import org.eclipse.persistence.oxm.XMLRoot;
+import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.sessions.Session;
 
 /**

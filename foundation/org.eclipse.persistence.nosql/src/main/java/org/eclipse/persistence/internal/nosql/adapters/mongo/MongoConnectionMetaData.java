@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,11 +14,11 @@
 //     Oracle - initial API and implementation
 package org.eclipse.persistence.internal.nosql.adapters.mongo;
 
-import jakarta.resource.*;
-import jakarta.resource.cci.*;
+import jakarta.resource.ResourceException;
+import jakarta.resource.cci.ConnectionMetaData;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.CommandResult;
+import org.bson.BsonDocument;
+import org.bson.BsonString;
 
 /**
  * Defines the meta-data for the Mongo adaptor
@@ -43,9 +43,11 @@ public class MongoConnectionMetaData implements ConnectionMetaData {
     }
 
     protected String getVersion() {
-        BasicDBObject command = new BasicDBObject("buildInfo", null);
-        CommandResult buildInfo = this.connection.getDB().command(command);
-        return buildInfo.getString("version");
+        String version = this.connection.getClient().getDatabase(this.connection.getDatabaseName())
+                .runCommand(new BsonDocument("buildinfo", new BsonString("")))
+                .get("version")
+                .toString();
+        return version;
     }
 
     @Override
@@ -69,7 +71,7 @@ public class MongoConnectionMetaData implements ConnectionMetaData {
     @Override
     public String getUserName() throws ResourceException {
         try {
-            return "";
+            return this.connection.getConnectionSpec().getUser();
         } catch (Exception exception) {
             throw new ResourceException(exception.toString());
         }

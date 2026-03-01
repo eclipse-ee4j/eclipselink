@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -98,7 +98,7 @@ public class SDOTestCase extends junit.framework.TestCase {
         loggingLevelFinest = Boolean.getBoolean("loggingLevelFinest");
         classgenCompilePath = System.getProperty("sdo.classgen.compile.path");
         tempFileDir = System.getProperty("tempFileDir");
-        if(null == tempFileDir || tempFileDir.length() < 1) {
+        if(null == tempFileDir || tempFileDir.isEmpty()) {
             tempFileDir = ".";
         }
 
@@ -236,7 +236,7 @@ public class SDOTestCase extends junit.framework.TestCase {
             is = new FileInputStream(fileName);
             return getSchema(is, fileName);
         } catch (Exception e) {
-            log(getClass().toString() + ": Reading error for : " + fileName + " message: " + e.getClass() + " " + e.getMessage());
+            log(getClass() + ": Reading error for : " + fileName + " message: " + e.getClass() + " " + e.getMessage());
         } finally {
             try {
                 if (null != is) {
@@ -258,7 +258,7 @@ public class SDOTestCase extends junit.framework.TestCase {
             log(xsdSchema);
             return xsdSchema;
         } catch (Exception e) {
-            log(getClass().toString() + ": Reading error for : " + fileName + " message: " + e.getClass() + " " + e.getMessage());
+            log(getClass() + ": Reading error for : " + fileName + " message: " + e.getClass() + " " + e.getMessage());
         } finally {
             try {
                 if (null != is) {
@@ -596,9 +596,9 @@ public class SDOTestCase extends junit.framework.TestCase {
         // purchase order
         assertFalse(undoneDO == originalDO);
         // verify that CS is cleared but logging is unchanged
-        assertTrue(aChangeSummary.getChangedDataObjects().size() == 0);
-        assertTrue(aChangeSummary.getOldValues(undoneDO).size() == 0);
-        assertTrue(aChangeSummary.getOldValues(originalDO).size() == 0);
+        assertTrue(aChangeSummary.getChangedDataObjects().isEmpty());
+        assertTrue(aChangeSummary.getOldValues(undoneDO).isEmpty());
+        assertTrue(aChangeSummary.getOldValues(originalDO).isEmpty());
     }
 
     /**
@@ -901,11 +901,11 @@ public class SDOTestCase extends junit.framework.TestCase {
     }
 
     protected String log(byte[] bytes) {
-        String s = new String();
+        StringBuilder s = new StringBuilder();
         for (int i = 0; i < bytes.length; i++) {
-            s += bytes[i];
+            s.append(bytes[i]);
         }
-        return s;
+        return s.toString();
     }
 
     protected Document getDocument(String fileName) {
@@ -967,7 +967,7 @@ public class SDOTestCase extends junit.framework.TestCase {
         for (int x = nodeList.getLength() - 1; x >= 0; x--) {
             childNode = nodeList.item(x);
             if (childNode.getNodeType() == Node.TEXT_NODE) {
-                if (childNode.getNodeValue().trim().equals("")) {
+                if (childNode.getNodeValue().trim().isEmpty()) {
                     node.removeChild(childNode);
                 }
             } else if (childNode.getNodeType() == Node.ELEMENT_NODE) {

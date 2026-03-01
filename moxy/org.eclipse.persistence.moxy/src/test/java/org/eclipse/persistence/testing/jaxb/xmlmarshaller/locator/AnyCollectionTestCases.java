@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -13,20 +13,6 @@
 // Contributors:
 //     Blaise Doughan - 2.2 - initial implementation
 package org.eclipse.persistence.testing.jaxb.xmlmarshaller.locator;
-
-import java.io.InputStream;
-import java.io.StringWriter;
-
-import javax.xml.XMLConstants;
-import jakarta.xml.bind.JAXBException;
-import jakarta.xml.bind.Marshaller;
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;
-
-import org.eclipse.persistence.jaxb.JAXBContextFactory;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
-import org.eclipse.persistence.testing.oxm.OXTestCase;
 
 public class AnyCollectionTestCases extends LocatorTestCase {
 

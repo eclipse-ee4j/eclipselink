@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,11 +14,8 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.mapping;
 
-import java.util.Vector;
-
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.internal.identitymaps.FullIdentityMap;
-
 import org.eclipse.persistence.mappings.DirectCollectionMapping;
 import org.eclipse.persistence.mappings.DirectToFieldMapping;
 import org.eclipse.persistence.mappings.ManyToManyMapping;
@@ -28,9 +25,10 @@ import org.eclipse.persistence.mappings.TransformationMapping;
 import org.eclipse.persistence.mappings.converters.ObjectTypeConverter;
 import org.eclipse.persistence.mappings.converters.SerializedObjectConverter;
 import org.eclipse.persistence.mappings.converters.TypeConversionConverter;
-
 import org.eclipse.persistence.sessions.Project;
 
+import java.util.ArrayList;
+import java.util.List;
 
 public class MappingProject extends Project {
     public MappingProject() {
@@ -56,8 +54,8 @@ public class MappingProject extends Project {
 
         // SECTION: DESCRIPTOR
         descriptor.setJavaClass(Address.class);
-        Vector vector = new Vector();
-        vector.addElement("MAP_ADD");
+        List<String> vector = new ArrayList<>();
+        vector.add("MAP_ADD");
         descriptor.setTableNames(vector);
         descriptor.addPrimaryKeyFieldName("MAP_ADD.A_ID");
 
@@ -113,8 +111,8 @@ public class MappingProject extends Project {
 
         // SECTION: DESCRIPTOR
         descriptor.setJavaClass(CompanyCard.class);
-        Vector vector = new Vector();
-        vector.addElement("MAP_CARD");
+        List<String> vector = new ArrayList<>();
+        vector.add("MAP_CARD");
         descriptor.setTableNames(vector);
         descriptor.addPrimaryKeyFieldName("MAP_CARD.COM_ID");
 
@@ -161,8 +159,8 @@ public class MappingProject extends Project {
         // SECTION: DESCRIPTOR
         descriptor.setJavaClass(Computer.class);
         descriptor.getInheritancePolicy().setParentClass(Hardware.class);
-        Vector vector = new Vector();
-        vector.addElement("MAP_COM");
+        List<String> vector = new ArrayList<>();
+        vector.add("MAP_COM");
         descriptor.setTableNames(vector);
         descriptor.addPrimaryKeyFieldName("MAP_COM.ID");
 
@@ -230,8 +228,8 @@ public class MappingProject extends Project {
 
         // SECTION: DESCRIPTOR
         descriptor.setJavaClass(Cubicle.class);
-        Vector vector = new Vector();
-        vector.addElement("MAP_CUB");
+        List<String> vector = new ArrayList<>();
+        vector.add("MAP_CUB");
         descriptor.setTableNames(vector);
         descriptor.addPrimaryKeyFieldName("MAP_CUB.C_ID");
 
@@ -283,8 +281,8 @@ public class MappingProject extends Project {
 
         // SECTION: DESCRIPTOR
         descriptor.setJavaClass(EmergencyExit.class);
-        Vector vector = new Vector();
-        vector.addElement("MAP_EMERGENCYEXIT");
+        List<String> vector = new ArrayList<>();
+        vector.add("MAP_EMERGENCYEXIT");
         descriptor.setTableNames(vector);
         descriptor.addPrimaryKeyFieldName("MAP_EMERGENCYEXIT.EXIT_ID");
 
@@ -320,8 +318,8 @@ public class MappingProject extends Project {
 
         // SECTION: DESCRIPTOR
         descriptor.setJavaClass(Employee.class);
-        Vector vector = new Vector();
-        vector.addElement("MAP_EMP");
+        List<String> vector = new ArrayList<>();
+        vector.add("MAP_EMP");
         descriptor.setTableNames(vector);
         descriptor.addPrimaryKeyFieldName("MAP_EMP.FNAME");
         descriptor.addPrimaryKeyFieldName("MAP_EMP.LNAME");
@@ -500,8 +498,8 @@ public class MappingProject extends Project {
 
         // SECTION: DESCRIPTOR
         descriptor.setJavaClass(Identification.class);
-        Vector vector = new Vector();
-        vector.addElement("MAP_IDENTIFICATION");
+        List<String> vector = new ArrayList<>();
+        vector.add("MAP_IDENTIFICATION");
         descriptor.setTableNames(vector);
         descriptor.addPrimaryKeyFieldName("MAP_IDENTIFICATION.ID");
 
@@ -530,8 +528,8 @@ public class MappingProject extends Project {
 
         // SECTION: DESCRIPTOR
         descriptor.setJavaClass(Hardware.class);
-        Vector vector = new Vector();
-        vector.addElement("MAP_HRW");
+        List<String> vector = new ArrayList<>();
+        vector.add("MAP_HRW");
         descriptor.setTableNames(vector);
         descriptor.addPrimaryKeyFieldName("MAP_HRW.ID");
 
@@ -584,8 +582,8 @@ public class MappingProject extends Project {
         // SECTION: DESCRIPTOR
         descriptor.setJavaClass(Monitor.class);
         descriptor.getInheritancePolicy().setParentClass(Hardware.class);
-        Vector vector = new Vector();
-        vector.addElement("MAP_MON");
+        List<String> vector = new ArrayList<>();
+        vector.add("MAP_MON");
         descriptor.setTableNames(vector);
         descriptor.addPrimaryKeyFieldName("MAP_MON.ID");
 
@@ -645,8 +643,8 @@ public class MappingProject extends Project {
 
         // SECTION: DESCRIPTOR
         descriptor.setJavaClass(Phone.class);
-        Vector vector = new Vector();
-        vector.addElement("MAP_PHO");
+        List<String> vector = new ArrayList<>();
+        vector.add("MAP_PHO");
         descriptor.setTableNames(vector);
         descriptor.addPrimaryKeyFieldName("MAP_PHO.P_ID");
 
@@ -690,8 +688,8 @@ public class MappingProject extends Project {
 
         // SECTION: DESCRIPTOR
         descriptor.setJavaClass(SecureSystem.class);
-        Vector vector = new Vector();
-        vector.addElement("MAP_SECURE");
+        List<String> vector = new ArrayList<>();
+        vector.add("MAP_SECURE");
         descriptor.setTableNames(vector);
         descriptor.addPrimaryKeyFieldName("MAP_SECURE.MANUFACTURER");
         descriptor.addPrimaryKeyFieldName("MAP_SECURE.IDENTIFICATION_ID");
@@ -728,8 +726,8 @@ public class MappingProject extends Project {
 
         // SECTION: DESCRIPTOR
         descriptor.setJavaClass(Shipment.class);
-        Vector vector = new Vector();
-        vector.addElement("MAP_SHIP");
+        List<String> vector = new ArrayList<>();
+        vector.add("MAP_SHIP");
         descriptor.setTableNames(vector);
         descriptor.addPrimaryKeyFieldName("MAP_SHIP.SP_TS");
         descriptor.addPrimaryKeyFieldName("MAP_SHIP.SP_TSMIL");

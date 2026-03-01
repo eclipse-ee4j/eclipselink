@@ -1,0 +1,3 @@
+:nofooter:
+This figure illustrates a simple Java class. The class *PhoneNumber*
+contains two attributes: *areaCode* and *number*, both of type *Object*.

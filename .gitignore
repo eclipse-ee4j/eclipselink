@@ -9,3 +9,5 @@ target/
 test_*.properties
 .sonar
 *~
+.polyglot*
+*.tycho

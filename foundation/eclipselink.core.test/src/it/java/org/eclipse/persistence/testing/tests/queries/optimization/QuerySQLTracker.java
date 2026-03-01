@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,22 +14,24 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.queries.optimization;
 
-import java.util.ArrayList;
-import java.util.List;
 import org.eclipse.persistence.logging.DefaultSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
-import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.logging.SessionLogEntry;
+import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.SessionEvent;
 import org.eclipse.persistence.sessions.SessionEventAdapter;
 import org.eclipse.persistence.sessions.SessionEventListener;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This class can be used to replace the session log. It stores the SQL and TopLink queries produced
  * during a session.  This allows you to ensure proper amounts of SQL are run in various scenarios.
  */
 public class QuerySQLTracker extends DefaultSessionLog {
-    private Session session;
+    // DefaultSessionLog does not contain session, so it must be stored locally.
+    private final Session session;
     private SessionLog originalLog;
     private SessionEventListener listener;
     private List sqlStatements = new ArrayList();
@@ -40,13 +42,14 @@ public class QuerySQLTracker extends DefaultSessionLog {
      * and store the old log.  The old log will be replaced when remove() is called.
      */
     public QuerySQLTracker(Session session) {
+        this.session = session;
         this.originalLog = session.getSessionLog();
         setLevel(SessionLog.FINEST);
-        setSession(session);
+        setSessionName(session.getName());
         setWriter(this.originalLog.getWriter());
-        getSession().setSessionLog(this);
+        session.setSessionLog(this);
         this.listener = buildListener();
-        getSession().getEventManager().addListener(this.listener);
+        session.getEventManager().addListener(this.listener);
     }
 
     /**
@@ -54,8 +57,8 @@ public class QuerySQLTracker extends DefaultSessionLog {
      * logging to progress as normal.
      * */
     public void remove() {
-        getSession().setSessionLog(originalLog);
-        getSession().getEventManager().removeListener(this.listener);
+        session.setSessionLog(originalLog);
+        session.getEventManager().removeListener(this.listener);
     }
 
     @Override

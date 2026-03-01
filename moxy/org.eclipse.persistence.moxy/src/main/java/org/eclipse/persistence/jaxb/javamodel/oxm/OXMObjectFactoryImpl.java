@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -61,8 +61,8 @@ public class OXMObjectFactoryImpl implements JavaClass {
 
     private XmlRegistry registry;
     private JavaModel javaModel;
-    private ArrayList<JavaMethod> methods = new ArrayList<JavaMethod>();
-    private ArrayList<JavaAnnotation> annotations = new ArrayList<JavaAnnotation>();
+    private ArrayList<JavaMethod> methods = new ArrayList<>();
+    private ArrayList<JavaAnnotation> annotations = new ArrayList<>();
 
     public OXMObjectFactoryImpl(XmlRegistry xmlRegistry) {
         this.registry = xmlRegistry;
@@ -79,7 +79,7 @@ public class OXMObjectFactoryImpl implements JavaClass {
             JavaClass jaxbElementClass = new OXMJAXBElementImpl(paramType, this.javaModel);
             methods.add(new OXMJavaMethodImpl(xmlElementDecl.getJavaMethod(), jaxbElementClass, this));
 
-            HashMap<String, Object> components = new HashMap<String, Object>();
+            HashMap<String, Object> components = new HashMap<>();
             components.put(NAME, xmlElementDecl.getName());
             components.put(NAMESPACE, xmlElementDecl.getNamespace());
             components.put(SUBSTITUTION_HEAD_NAME, xmlElementDecl.getSubstitutionHeadName());
@@ -93,7 +93,7 @@ public class OXMObjectFactoryImpl implements JavaClass {
 
     @Override
     public Collection<JavaClass> getActualTypeArguments() {
-        return new ArrayList<JavaClass>();
+        return new ArrayList<>();
     }
 
     @Override
@@ -108,14 +108,14 @@ public class OXMObjectFactoryImpl implements JavaClass {
 
     @Override
     public Collection<JavaConstructor> getConstructors() {
-        ArrayList<JavaConstructor> constructors = new ArrayList<JavaConstructor>(1);
+        ArrayList<JavaConstructor> constructors = new ArrayList<>(1);
         constructors.add(new OXMJavaConstructorImpl(this));
         return constructors;
     }
 
     @Override
     public Collection<JavaClass> getDeclaredClasses() {
-        return new ArrayList<JavaClass>();
+        return new ArrayList<>();
     }
 
     @Override
@@ -125,7 +125,7 @@ public class OXMObjectFactoryImpl implements JavaClass {
 
     @Override
     public Collection<JavaConstructor> getDeclaredConstructors() {
-        ArrayList<JavaConstructor> constructors = new ArrayList<JavaConstructor>(1);
+        ArrayList<JavaConstructor> constructors = new ArrayList<>(1);
         constructors.add(new OXMJavaConstructorImpl(this));
         return constructors;
     }

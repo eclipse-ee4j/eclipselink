@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,11 +15,6 @@
 //
 package org.eclipse.persistence.internal.jpa.jpql;
 
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import org.eclipse.persistence.config.PersistenceUnitProperties;
-import org.eclipse.persistence.dynamic.DynamicClassLoader;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractEclipseLinkExpressionVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractPathExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CollectionExpression;
@@ -32,6 +27,10 @@ import org.eclipse.persistence.jpa.jpql.parser.SelectStatement;
 import org.eclipse.persistence.jpa.jpql.parser.StateFieldPathExpression;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.queries.DatabaseQuery;
+
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * This object scans a {@link DatabaseQuery} and checks if it's a constructor query. If it is one,
@@ -188,9 +187,9 @@ public final class ConstructorQueryMappings {
             this.queryContext = queryContext;
         }
 
-        private DynamicClassLoader classLoader() {
-            return (DynamicClassLoader) queryContext.getSession().getProperty(PersistenceUnitProperties.CLASSLOADER);
-        }
+//        private DynamicClassLoader classLoader() {
+//            return (DynamicClassLoader) queryContext.getSession().getProperty(PersistenceUnitProperties.CLASSLOADER);
+//        }
 
         @Override
         public void visit(ConstructorExpression expression) {

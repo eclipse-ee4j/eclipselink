@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2020, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,7 +21,16 @@ import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 
 import java.io.StringWriter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.IdentityHashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Vector;
 
 /**
  * The purpose of this class is to try explain the nature of a dead lock
@@ -865,7 +874,7 @@ public class ExplainDeadLockUtil {
 
     /**
      * This method is nothing more than copy paste code from the algorithm
-     *
+     * <p>
      * {@link ConcurrencyManager#isBuildObjectOnThreadComplete(Thread, Map, List, boolean)}
      *
      * We re-write this code to instead of returning true/false return an actual DTO object that can allow our dead lock
@@ -903,8 +912,8 @@ public class ExplainDeadLockUtil {
         }
 
         Vector<ConcurrencyManager> deferredLocks = lockManager.getDeferredLocks();
-        for (Enumeration<ConcurrencyManager> deferredLocksEnum = deferredLocks.elements(); deferredLocksEnum.hasMoreElements();) {
-            ConcurrencyManager deferedLock = deferredLocksEnum.nextElement();
+        for (Iterator<ConcurrencyManager> iterator = deferredLocks.iterator(); iterator.hasNext();) {
+            ConcurrencyManager deferedLock = iterator.next();
             Thread activeThread = null;
             if (deferedLock.isAcquired()) {
                 activeThread = deferedLock.getActiveThread();

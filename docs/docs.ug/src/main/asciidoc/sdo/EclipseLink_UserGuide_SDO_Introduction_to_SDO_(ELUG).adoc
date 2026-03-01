@@ -1,0 +1,123 @@
+This section introduces concepts of Service Data Objects (SDO) and
+provides general information on it.
+
+[#sdo-intro]
+== What Is SDO?
+
+SDO is designed to be a unified view of data, similarly to POJO in Java
+EE. There are several programming languages (of which Java is one) that
+support the SDO specification.
+
+You can use SDO to develop data-oriented applications. SDO includes an
+architecture and an API.
+
+The following are possible expressions of SDO:
+
+* <<sdo-intro-dynamic>>
+* <<sdo-intro-typed>>
+* <<sdo-intro-xml>>
+* <<sdo-intro-disconnected>>
+
+For more information, see http://jcp.org/en/jsr/detail?id=235[SDO Specification].
+
+[#sdo-intro-dynamic]
+=== Dynamic Object Model
+
+SDO metadata is represented as
+http://help.eclipse.org/help32/index.jsp?topic=/org.eclipse.emf.ecore.sdo.doc/references/javadoc/commonj/sdo/Type.html[`+Type+`]
+and
+http://help.eclipse.org/help32/index.jsp?topic=/org.eclipse.emf.ecore.sdo.doc/references/javadoc/commonj/sdo/Property.html[`+Property+`]
+objects. A `+Type+` is comparable to a Java class, and a `+Property+` –
+to a Java field. You define this metadata at run time either
+programmatically or from an XML schema, as follows:
+
+[source,java]
+----
+Type customerType = TypeHelper.INSTANCE.getType("urn:example", "customer");
+Property firstNameProperty = customerType.getProperty("first-name");
+
+Type addressType = TypeHelper.INSTANCE.getType("urn:example", "address");
+----
+
+Data is represented as instances of `+Type+` called
+http://help.eclipse.org/help32/index.jsp?topic=/org.eclipse.emf.ecore.sdo.doc/references/javadoc/commonj/sdo/DataObject.html[`+DataObject+`].
+The `+DataObject+` in SDO corresponds to a Java `+Object+` and have many
+generic accessors that you can use to manipulate the data, as the
+following example shows:
+
+[source,java]
+----
+DataObject customerDO = DataFactory.INSTANCE.create(customerType);
+customerDO.setString(firstNameProperty, "Jane");
+
+DataObject addressDO = DataFactory.INSTANCE.create("urn:example", address);
+addressDO.set("street", "123 Any Street");
+----
+
+A `+DataObject+`’s properties can contain simple values, other data
+objects, or ``+List+``s of simple values or ``+DataObject+``s. Data objects
+can contain references to other data objects, or they can contain them.
+
+[#sdo-intro-typed]
+=== Typed Object Model
+
+SDO as a dynamic object model is useful in certain frameworks based on
+the fact that dynamic models let you add metadata without requiring a
+redeployment of your application. However, in some cases a strongly
+typed model is required that allows for code completion in an IDE. You
+can perform a code generation step to produce typed interfaces complete
+with bean-style accessors, as the following example shows:
+
+[source,java]
+----
+Customer customerDO = (Customer) DataFactory.INSTANCE.create(customerType);
+CustomerDO.setFirstName("Jane");
+----
+For more information, see the <<sdo-example-compiler>>
+and <<sdo-example-static>> examples.
+
+[#sdo-intro-xml]
+=== XML Representation
+
+SDO has a built-in support for handling XML. You can introspect the SDO
+metadata to determine the corresponding XML representation, as the
+following EclipseLink example shows:
+
+[source,java]
+----
+XSDHelper.INSTANCE.isMixed(customerType);
+XSDHelper.INSTANCE.isElement(firstNameProperty);
+----
+
+You can then convert the `+DataObject+` instances to and from XML, as
+follows:
+
+[source,java]
+----
+XMLHelper.INSTANCE.save(customerDO, "urn:example", "customer", System.out);
+----
+
+For more information, see the following:
+
+* <<sdo-introel-xsdhelper>>
+* <<sdo-usage-xmlhelper>>
+
+[#sdo-intro-disconnected]
+=== Disconnected Object
+
+SDO was designed to represent disconnected data in a Service Component
+Architecture (SCA) environment. You can do so by using the
+http://help.eclipse.org/help32/index.jsp?topic=/org.eclipse.emf.ecore.sdo.doc/references/javadoc/commonj/sdo/DataObject.html[`+ChangeSummary+`]
+that tracks changes made to data objects over time. Note that this
+applies to `+DataObject+` instances that have a `+ChangeSummary+`
+property. Consider the following example:
+
+[source,java]
+----
+List changed = customerDO.getChangeSummary().getChangedDataObjects();
+----
+
+EclipseLink is focused on separating data from its messaging or
+persisted representations. With SDO support this data can be a POJO or a
+data object, which allows you to work with data in both Java EE and SCA
+environments.

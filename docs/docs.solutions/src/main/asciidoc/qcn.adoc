@@ -1,0 +1,71 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[QCN]]
+== Using Database Events to Invalidate the Cache
+
+This chapter describes EclipseLink Database Change Notification (DCN),
+which allows you to use caching with a shared database in JPA.
+
+This chapter includes the following sections:
+
+* xref:{relativedir}/qcn001.adoc#QCN001[Introduction to the Solution]
+* xref:{relativedir}/qcn002.adoc#QCN002[Implementing the Solution]
+* xref:{relativedir}/qcn003.adoc#QCN003[Limitations on the Solution]
+* xref:{relativedir}/qcn004.adoc#QCN004[Additional Resources]
+
+*Use Case*
+
+Users want to use a shared cache with their JPA application, however,
+external applications update the same database data, or the cache is in
+a clustered environment. The cache may retain stale data.
+
+*Solution*
+
+EclipseLink provides an API which allows the database to notify
+EclipseLink of database changes. The changed objects can then be
+invalidated in the EclipseLink shared cache. Stale data can be
+discarded, even if other applications access the same data in the
+database.
+
+*Components*
+
+* Oracle 11__g__R2 (11.2) (or higher) database
+* EclipseLink 2.4 or later.
+** EclipseLink library: eclipselink.jar
+** JDBC library: `ojdbc6.jar`.
+** JPA library: `persistence.jar`.
+
+*Sample*
+
+For sample files that illustrate the use of Database Change Notification
+and shared caching in an application that uses JPA, see
+"EclipseLink/Examples/JPA/DCN" in the EclipseLink documentation.
+
+`http://wiki.eclipse.org/EclipseLink/Examples/JPA/DCN`
+
+//Introduction to the Solution
+include::{rootdir}/qcn001.adoc[]
+
+//Implementing the Solution
+include::{rootdir}/qcn002.adoc[]
+
+//Limitations on the Solution
+include::{rootdir}/qcn003.adoc[]
+
+//Additional Resources
+include::{rootdir}/qcn004.adoc[]

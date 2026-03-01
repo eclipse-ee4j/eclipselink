@@ -1,0 +1,649 @@
+image:Elug_draft_icon.png[Image:Elug draft
+icon.png,title="Image:Elug draft icon.png"] *For the latest EclipseLink
+documentation, please see
+http://www.eclipse.org/eclipselink/documentation/*
+
+'''''
+
+*TOC* Special:Whatlinkshere_Introduction_to_Data_Access_(ELUG)[Related
+Topics]
+
+One of the most important functions of a session is to provide access to
+a data source.
+
+== Data Access Concepts
+
+This section describes concepts unique to EclipseLink data access.
+
+=== Externally Managed Transactional Data Sources
+
+A EclipseLink transactional data source is _externally managed_ if the
+connection pool is managed by a transaction service (such as an
+application server controlled transaction or a JTA transaction). A JTA
+managed data source or connection pool is commonly used in Java EE
+applications and normally required in EJB applications. Use an
+externally-managed connection pool as follows:
+
+* Configure the session to use an `+ExternalTransactionController+` to
+integrate EclipseLink’s unit of work with the external transaction
+service (see
+link:Using%20Advanced%20Unit%20of%20Work%20API%20(ELUG)#Integrating_the_Unit_of_Work_with_an_External_Transaction_Service[Integrating
+the Unit of Work with an External Transaction Service]).
+* Use the `+external-transaction-control+` option to specify the
+connection’s login and inform EclipseLink that the connection is
+maintained by the external controller (see
+link:Configuring%20a%20Data%20Source%20Login%20(ELUG)#Configuring_External_Connection_Pooling[Configuring
+External Connection Pooling]).
+* You may need to configure the EclipseLink read connection pool or
+sequence connection pool to use a non-JTA connection pool in order to
+avoid transactional overhead (see
+link:#Default_(Write)_and_Read_Connection_Pools[Default (Write) and Read
+Connection Pools]).
+
+For more information on transactional data sources, see the following:
+
+* link:Introduction%20to%20EclipseLink%20Transactions_(ELUG)#JTA_Controlled_Transactions[JTA
+Controlled Transactions]
+* link:Introduction%20to%20EclipseLink%20Transactions_(ELUG)#OTS_Controlled_Transactions[OTS
+Controlled Transactions]
+
+Refer to
+link:Introduction%20to%20EclipseLink%20Transactions_(ELUG)[Introduction
+to EclipseLink Transactions] for more information on EclipseLink
+transactions.
+
+=== Data Source Login Types
+
+The login (if any) associated with a session determines how the
+EclipseLink runtime connects to the project’s data source.
+
+A login includes details of data source access, such as authentication,
+use of connection pools, and use of external transaction controllers. A
+`+Login+` owns a data source platform.
+
+A data source platform includes options specific to a particular data
+source including such as binding, use of native SQL, use of batch
+writing, and sequencing. For more information about platforms, see
+link:#Data_Source_Platform_Types[Data Source Platform Types].
+
+For projects that do not persist to a data source, a login is not
+required. For projects that do persist to a data source, a login is
+always required.
+
+In Workbench, the project type determines the type of login that the
+project uses, if applicable.
+
+You can use a login in a variety of roles. A login’s role determines
+where and how you create it. The login role you choose depends on the
+type of project you are creating and how you intend to use the login, as
+follows:
+
+* link:Introduction%20to%20Projects_(ELUG)#POJO_Session_Role[POJO
+Session Role]
+* link:Introduction%20to%20Projects_(ELUG)#Development_Role[Development
+Role]
+
+There is a session login type for each project type that persists to a
+data source. The following are the types:
+
+* link:#DatabaseLogin[DatabaseLogin]
+* link:#EISLogin[EISLogin]
+
+Note that there is no XML login. EclipseLink XML projects are used for
+nonpersistent, in-memory object to XML data transformation and
+consequently there is no data source to log in to. For more information
+about persistent and nonpersistent projects, see
+link:Introduction%20to%20Projects_(ELUG)#Persistent_and_Nonpersistent_Projects[Persistent
+and Nonpersistent Projects].
+
+For additional information, see the following:
+
+* link:Introduction%20to%20Projects_(ELUG)#Projects_and_Login[Projects
+and Login]
+* link:Configuring%20a%20Data%20Source%20Login%20(ELUG)#Configuring_Common_Data_Source_Login_Options[Configuring
+Common Data Source Login Options]
+
+==== DatabaseLogin
+
+If you are creating a project that accesses a relational database, you
+must configure the project with a `+DatabaseLogin+`. Your choice of
+`+DatabasePlatform+` further customizes your project for a particular
+type of database (see link:#Database_Platforms[Database Platforms]).
+
+For more information, see
+link:Configuring%20a%20Database%20Login%20(ELUG)#Introduction_to_Database_Login_Configuration[Introduction
+to Database Login Configuration].
+
+==== EISLogin
+
+If you are creating a project that accesses a nonrelational data source
+using a JCA adapter, you must configure the project with an
+`+EISLogin+`. Your choice of `+EISPlatform+` further customizes your
+project for a particular JCA adapter and specifies what record type
+EclipseLink uses to exchange data with the EIS (see
+link:#EIS_Platforms[EIS Platforms]).
+
+For more information, see
+link:Configuring%20an%20EIS%20Login%20(ELUG)#Introduction_to_EIS_Login_Configuration[Introduction
+to EIS Login Configuration].
+
+=== Data Source Platform Types
+
+EclipseLink abstracts the details of your underlying data source using
+data source platform classes. EclipseLink provides the following data
+source platforms:
+
+* link:#Database_Platforms[Database Platforms]
+* link:#EIS_Platforms[EIS Platforms]
+
+A data source platform is owned by your project’s `+Login+`. For more
+information about logins, see link:#Data_Source_Login_Types[Data Source
+Login Types].
+
+To configure most platform options, you must use an amendment method
+(see
+link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Amendment_Methods[Configuring
+Amendment Methods]), or a `+preLogin+` event listener (see
+link:Introduction%20to%20EclipseLink%20Sessions%20(ELUG)#Managing_Session_Events_with_the_Session_Event_Manager[Managing
+Session Events with the Session Event Manager]).
+
+==== Database Platforms
+
+EclipseLink interacts with databases using structured query language
+(SQL). Because each database platform uses its own variation on the
+basic SQL language, EclipseLink must adjust the SQL it uses to
+communicate with the database to ensure that the application runs
+smoothly.
+
+The type of database platform you choose determines the specific means
+by which the EclipseLink runtime accesses the database, including the
+type of Java Database Connectivity (JDBC) driver to use. JDBC is an
+application programming interface (API) that gives Java applications
+access to a database. EclipseLink relational projects rely on JDBC
+connections to read objects from, and write objects to, the database.
+EclipseLink applications use either individual JDBC connections or a
+JDBC connection pool (see link:#Connection_Pools[Connection Pools]),
+depending on the application architecture.
+
+EclipseLink provides a variety of database-specific platforms that let
+you customize your project for your target database.
+
+Oracle Database platforms are located in
+`+org.eclipse.persistence.platform.database.oracle+` package and include
+the following:
+
+* `+OraclePlatform+`
+* `+Oracle8Platform+`
+* `+Oracle9Platform+`
+* `+Oracle10Platform+`
+* `+Oracle11Platform+`
+
+Non-Oracle Database platforms are located in
+`+org.eclipse.persistence.platform.database+` package and include the
+following:
+
+* `+AccessPlatform+` for Microsoft Access databases
+* `+AttunityPlatform+` for Attunity Connect JDBC drivers
+* `+CloudscapePlatform+`
+* `+DB2MainframePlatform+`
+* `+DB2Platform+`
+* `+DBasePlatform+`
+* `+DerbyPlatform+`
+* `+HSQLPlatform+`
+* `+InformixPlatform+`
+* `+JavaDBPlatform+`
+* `+MySQLPlatform+`
+* `+PointBasePlatform+`
+* `+PostgreSQLPlatform+`
+* `+SQLAnyWherePlatform+`
+* `+SQLServerPlatform+`
+* `+SybasePlatform+`
+* `+TimesTen7Platform+` for TimesTen 7 database
+
+Specify your database platform at the project level (see
+link:Configuring%20a%20Relational%20Project%20(ELUG)#Configuring_Relational_Database_Platform_at_the_Project_Level[Configuring
+Relational Database Platform at the Project Level]) for all sessions, or
+override this project-level configuration at the session level (see
+link:Configuring%20a%20Database%20Login%20(ELUG)#Configuring_a_Relational_Database_Platform_at_the_Session_Level[Configuring
+a Relational Database Platform at the Session Level]).
+
+If you set your database platform in Workbench, then Workbench manages
+the database platform configuration for you automatically.
+
+==== EIS Platforms
+
+EclipseLink interacts with an EIS data source indirectly by way of a JCA
+adapter. EclipseLink abstracts the details of an EIS data source using
+the `+org.eclipse.persistence.eis.EISPlatform+` class.
+
+The type of EIS platform you choose determines the specific means by
+which the EclipseLink runtime accesses the EIS, including the type of
+JCA adapter to use. EclipseLink EIS projects rely on EIS connections to
+read objects from, and write objects to, the EIS. EclipseLink
+applications use individual EIS connections returned by the EIS
+connection factory specified by the EIS platform.
+
+EclipseLink provides a variety of `+EISPlaform+` classes that let you
+customize your project for your target EIS.
+
+EIS platforms for production are located in
+`+org.eclipse.persistence.eis.adapters+` package and include the
+following:
+
+* `+org.eclipse.persistence.eis.adapters.aq.AQPlatform+` to access an
+EIS using Oracle Advanced Queuing messages.
+* `+org.eclipse.persistence.eis.adapters.attunity.AttunityPlatform+` to
+access an EIS using an Attunity JCA adapter.
+* `+org.eclipse.persistence.eis.adapters.jms.JMSPlatform+` to access an
+EIS using JMS messages.
+* `+org.eclipse.persistence.eis.adapters.mqseries.MQPlatform+` to access
+an EIS using IBM MQSeries messages.
+
+EIS platforms for testing are also located in
+`+org.eclipse.persistence.eis.adapters+` and include the following:
+
+* `+org.eclipse.persistence.eis.adapters.blackbox.BlackBoxPlatform+` for
+testing your EIS project with the Sun BlackBox reference adapter using
+indexed records only.
+* `+org.eclipse.persistence.eis.adapters.xmlfile.XMLFilePlatform+` for
+testing your EIS project with an EIS emulated as one or more XML files
+in the local file system using XML records.
+
+Specify your EIS platform at the session level (see
+link:Configuring%20an%20EIS%20Login%20(ELUG)#Configuring_an_EIS_Data_Source_Platform_at_the_Session_Level[Configuring
+an EIS Data Source Platform at the Session Level]).
+
+If you set your platform in Workbench, then Workbench manages the EIS
+platform configuration for you automatically.
+
+=== Authentication
+
+*Authentication* is the means by which a data source validates a user’s
+identity and determines whether or not the user has sufficient
+privileges to perform a given action.
+
+For two-tier applications, simple JDBC authentication is usually
+sufficient (see link:#Simple_JDBC_Authentication[Simple JDBC
+Authentication]).
+
+For three-tier applications, you can use simple JDBC authentication or,
+proxy authentication (see
+link:#Oracle_Database_Proxy_Authentication[Oracle Database Proxy
+Authentication]) when using the Oracle Call Interface (OCI) JDBC driver.
+
+Authentication plays a central role in data security and user
+accountability and auditing (see link:#Auditing[Auditing]).
+
+==== Simple JDBC Authentication
+
+When you configure a EclipseLink database login with a user name and
+password (see
+link:Configuring%20a%20Data%20Source%20Login%20(ELUG)#Configuring_User_Name_and_Password[Configuring
+User Name and Password]), EclipseLink provides these credentials to the
+JDBC driver that you configure your application to use (see
+link:Configuring%20a%20Database%20Login%20(ELUG)#Configuring_Database_Login_Connection_Options[Configuring
+Database Login Connection Options]).
+
+By default, EclipseLink writes passwords to and reads them from the
+`+sessions.xml+` file in encrypted form using JCE encryption.
+Optionally, you can configure a different encryption class (see
+link:Configuring%20a%20Data%20Source%20Login%20(ELUG)#Configuring_Password_Encryption[Configuring
+Password Encryption]).
+
+==== Oracle Database Proxy Authentication
+
+EclipseLink supports proxy authentication with the Oracle Database in
+JSE applications and JEE applications using OC4J native or managed data
+sources with Oracle JDBC driver release 10.1.0.2.0 or later and external
+connection pools only (see link:#External_Connection_Pools[External
+Connection Pools]).
+
+[width="100%",cols="<100%",]
+|===
+|*Note:* EclipseLink does not support Oracle Database proxy
+authentication with JTA.
+|===
+
+Oracle Database proxy authentication delivers the following security
+benefits:
+
+* A limited trust model, by controlling the users on whose behalf middle
+tiers can connect, and the roles the middle tiers can assume for the
+user.
+* Scalability, by supporting user sessions through Oracle Call Interface
+(OCI) and thick JDBC, and eliminating the overhead of reauthenticating
+clients.
+* Accountability, by preserving the identity of the real user through to
+the database, and enabling auditing of actions taken on behalf of the
+real user.
+* Flexibility, by supporting environments in which users are known to
+the database, and in which users are merely "`application users`" of
+which the database has no awareness.
+
+[width="100%",cols="<100%",]
+|===
+|*Note:* Oracle Database supports proxy authentication in three-tiers
+only; it does not support it across multiple middle tiers.
+|===
+
+For more information about authentication in an Oracle Database, see
+"`Preserving User Identity in Multitiered Environments`" in the
+_http://www.oracle.com/technology/documentation/index.html[Oracle
+Database Security Guide]_.
+
+Configure your EclipseLink database login to use proxy authentication
+(see
+link:Configuring%20a%20Database%20Login%20(ELUG)#Configuring_Oracle_Database_Proxy_Authentication[Configuring
+Oracle Database Proxy Authentication]) to do the following:
+
+* address the complexities of authentication in a three-tier
+architecture (such as client-to-middle-tier and middle-tier-to-database
+authentication, and client reauthentication through the middle -tier to
+the database);
+* enhance database audit information (for even triggers and stored
+procedures) by using a specific user for database operations, rather
+than the generic pool user;
+* simplify VPD/OLS configuration (see
+link:Introduction%20to%20EclipseLink%20Sessions%20(ELUG)#Isolated_Client_Sessions_and_Oracle_Virtual_Private_Database_(VPD)[Isolated
+Client Sessions and Oracle Virtual Private Database (VPD)]) by using a
+proxy user, rather than setting user information directly in the session
+context with stored procedures.
+
+==== Auditing
+
+Regardless of what type of authentication you choose, EclipseLink logs
+the name of the user associated with all database operations. This
+example shows the `+CONFIG+` level EclipseLink logs when a
+`+ServerSession+` connects through the main connection for the sample
+user "`scott`", and a `+ClientSession+` uses proxy connection "`jeff`".
+
+[#Example 92-1]## *_EclipseLink Logs with Oracle Database Proxy
+Authentication_*
+
+`+[EclipseLink Config]--ServerSession(13)--Connection(14)--Thread(Thread[main,5,main])--connecting(DatabaseLogin( platform=>Oracle9Platform   user name=> "scott" connector=>OracleJDBC10_1_0_2ProxyConnector datasource name=>DS))+`
+`+[EclipseLink Config]--ServerSession(13)--Connection(34)--Thread(Thread[main,5,main])--Connected: jdbc:oracle:thin:@localhost:1521:orcl+`
+`+User: SCOTT+`
+`+[EclipseLink Config]--ClientSession(53)--Connection(54)--Thread(Thread[main,5,main])--connecting(DatabaseLogin(platform=>Oracle9Platform user name=> "scott" connector=>OracleJDBC10_1_0_2ProxyConnector datasource name=>DS))+`
+`+[EclipseLink Config]--ClientSession(53)--Connection(56)--Thread(Thread[main,5,main])--Connected: jdbc:oracle:thin:@localhost:1521:orcl+`
+`+User: jeff+`
+
+For more information on configuring EclipseLink log level and log
+options, see
+link:Configuring%20a%20Session%20(ELUG)#Configuring_Logging[Configuring
+Logging].
+
+Your database server likely provides additional user auditing options.
+Consult your database server documentation for details.
+
+Alternatively, you may consider using the EclipseLink unit of work in
+conjunction with your database schema for auditing purposes (see
+link:Using%20Advanced%20Unit%20of%20Work%20API%20(ELUG)#Implementing_User_and_Date_Auditing_with_the_Unit_of_Work[Implementing
+User and Date Auditing with the Unit of Work]).
+
+=== Connections
+
+A connection is an object that provides access to a data source by way
+of the driver you configure your application to use (see
+link:Configuring%20a%20Database%20Login%20(ELUG)#Configuring_Database_Login_Connection_Options[Configuring
+Database Login Connection Options]). Relational projects use JDBC to
+connect to the data source; EIS and XML projects use JCA. EclipseLink
+uses the interface
+`+org.eclipse.persistence.internal.databaseaccess.Accessor+` to wrap
+data source connections. This interface is accessible from certain
+events (see
+link:Introduction%20to%20Descriptors%20(ELUG)#Descriptor_Event_Manager[Descriptor
+Event Manager]).
+
+Typically, when using a server session, EclipseLink uses a a different
+connection for both reading and writing. This lets you use
+nontransactional connections for reading and avoid maintaining
+connections when not required. See
+link:Using%20Advanced%20Unit%20of%20Work%20API%20(ELUG)#Reading_Through_the_Write_Connection[Reading
+Through the Write Connection] and
+link:Configuring%20a%20Session%20(ELUG)#Exclusive_Write_Connections[Exclusive
+Write Connections] for more information.
+
+By default, a EclipseLink server session acquires connections lazily:
+that is, only during the commit operation of a unit of work.
+Alternatively, you can configure EclipseLink to acquire a write
+connections at the time you acquire a client sessions (see
+link:Configuring%20a%20Session%20(ELUG)#Lazy_Connection_Acquisition[Lazy
+Connection Acquisition]).
+
+Connections can be allocated from internal or external connection pools
+(see link:#Connection_Pools[Connection Pools]).
+
+=== Connection Pools
+
+A *connection pool* is a service that creates and maintains a shared
+collection (pool) of data source connections on behalf of one or more
+clients. The connection pool provides a connection to a process on
+request, and returns the connection to the pool when the process is
+finished using it. When it is returned to the pool, the connection is
+available for other processes. Because establishing a connection to a
+data source can be time-consuming, reusing such connections in a
+connection pool can improve performance.
+
+EclipseLink uses connection pools to manage and share the connections
+used by server and client sessions. This feature reduces the number of
+connections required and allows your application to support many
+clients.
+
+You can configure your session to use internal connection pools provided
+by EclipseLink or external connection pools provided by a JDBC driver or
+Java EE container.
+
+You can use the following connection pools in your EclipseLink
+application for a variety of purposes, such as reading, writing,
+sequencing, and other application-specific functions:
+
+* link:#Internal_Connection_Pools[Internal Connection Pools]
+* link:#External_Connection_Pools[External Connection Pools]
+* link:#Default_(Write)_and_Read_Connection_Pools[Default (Write) and
+Read Connection Pools]
+* link:#Sequence_Connection_Pools[Sequence Connection Pools]
+* link:#Application-Specific_Connection_Pools[Application-Specific
+Connection Pools]
+
+==== Internal Connection Pools
+
+For non-Java EE applications, you typically use _internal_ connection
+pools. By default, EclipseLink sessions use internal connection pools.
+
+Using internal connection pools, you can use Workbench to configure the
+default (write) and read connection pools (see
+link:#Default_(Write)_and_Read_Connection_Pools[Default (Write) and Read
+Connection Pools]) and you can create additional connection pools for
+object identity (see link:#Sequence_Connection_Pools[Sequence Connection
+Pools]), or any other purpose (see
+link:#Application-Specific_Connection_Pools[Application-Specific
+Connection Pools]).
+
+Using internal connection pools, you can optimize the creation of read
+connections for applications that read data only to display it and only
+infrequently modify data (see
+link:Configuring%20an%20Internal%20Connection%20Pool%20(ELUG)#Configuring_a_Nontransactional_Read_Login[Configuring
+a Nontransactional Read Login]).
+
+For information on selecting the type of connection pool to use, see
+link:Configuring%20a%20Data%20Source%20Login%20(ELUG)#Configuring_External_Connection_Pooling[Configuring
+External Connection Pooling].
+
+For more information on creating and configuring internal connection
+pools, see the following:
+
+* link:Creating%20an%20Internal%20Connection%20Pool%20(ELUG)#Introduction_to_the_Internal_Connection_Pool_Creation[Introduction
+to the Internal Connection Pool Creation]
+* link:Configuring%20an%20Internal%20Connection%20Pool%20(ELUG)#Introduction_to_the_Internal_Connection_Pool_Configuration[Introduction
+to the Internal Connection Pool Configuration]
+
+==== External Connection Pools
+
+For Java EE applications, you typically use _external_ connection pools.
+
+If you are using an external transaction controller (JTA), you must use
+external connection pools to integrate with the JTA (see
+link:Using%20Advanced%20Unit%20of%20Work%20API%20(ELUG)#Integrating_the_Unit_of_Work_with_an_External_Transaction_Service[Integrating
+the Unit of Work with an External Transaction Service]).
+
+Using external connection pools, you can use either Workbench or Java to
+configure the default (write) and read connection pools (see
+link:#Default_(Write)_and_Read_Connection_Pools[Default (Write) and Read
+Connection Pools]) and create additional connection pools for object
+identity (see link:#Sequence_Connection_Pools[Sequence Connection
+Pools]), or any other purpose (see
+link:#Application-Specific_Connection_Pools[Application-Specific
+Connection Pools]).
+
+For more information on selecting the type of connection pool to use,
+see
+link:Configuring%20a%20Data%20Source%20Login%20(ELUG)#Configuring_External_Connection_Pooling[Configuring
+External Connection Pooling].
+
+==== Default (Write) and Read Connection Pools
+
+A server session provides a read connection pool and a write connection
+pool. These could be different pools, or if you use external connection
+pooling, the same connection pool.
+
+All read queries use connections from the read connection pool and all
+queries that write changes to the data source use connections from the
+write connection pool. You can configure attributes of the default read
+and write connection pools.
+
+Whenever a new connection is established, EclipseLink uses the
+connection configuration you specify in your session’s
+`+DatasourceLogin+`. Alternatively, when you use an external transaction
+controller, you can define a separate connection configuration for a
+read connection pool to avoid the additional overhead, if appropriate
+(see
+link:Configuring%20an%20Internal%20Connection%20Pool%20(ELUG)#Configuring_a_Nontransactional_Read_Login[Configuring
+a Nontransactional Read Login]).
+
+For more information on configuring read and write connection pools, see
+link:Configuring%20an%20Internal%20Connection%20Pool%20(ELUG)#Introduction_to_the_Internal_Connection_Pool_Configuration[Introduction
+to the Internal Connection Pool Configuration].
+
+==== Sequence Connection Pools
+
+An essential part of maintaining object identity (see
+link:Introduction%20to%20Cache%20(ELUG)#Cache_Type_and_Object_Identity[Cache
+Type and Object Identity]) is sequencing–managing the assignment of
+unique values to distinguish one instance from another. For more
+information, see
+link:Introduction%20to%20Projects_(ELUG)#Projects_and_Sequencing[Projects
+and Sequencing].
+
+Sequencing involves reading and writing a special sequence resource
+maintained by your data source.
+
+By default, EclipseLink includes sequence operations in a separate
+transaction. This avoids complications during the write transaction,
+which may lead to deadlocks over the sequence resource. However, when
+using an external transaction controller (such as a JTA data source or
+connection pool), EclipseLink cannot use a different transaction for
+sequencing. Use a sequence connection pool to configure a non-JTA
+transaction pool for sequencing. This is required only for table
+sequencing–not native sequencing.
+
+In each server session, you can create one connection pool, called a
+sequence connection pool, that EclipseLink uses exclusively for
+sequencing. With a sequence connection pool, EclipseLink satisfies a
+request for a new object identifier outside of the transaction from
+which the request originates. This allows EclipseLink to immediately
+commit an update to the sequence resource, which avoids deadlocks.
+
+[width="100%",cols="<100%",]
+|===
+|*Note*: If you use a sequence connection pool and the original
+transaction fails, the sequence operation does not roll back.
+|===
+
+You should use a sequence connection pool, if the following applies:
+
+* You use table sequencing (that is, non-native sequencing). See
+link:Introduction%20to%20Relational%20Projects%20(ELUG)#Table_Sequencing[Table
+Sequencing] and
+link:Introduction%20to%20Relational%20Projects%20(ELUG)#Unary_Table_Sequencing[Unary
+Table Sequencing] for more information.
+* You use external transaction controller (JTA).
+
+You should not use a sequence connection pool, if the following applies:
+
+* You do not use sequencing, or use the data source’s native sequencing
+(see
+link:Introduction%20to%20Relational%20Projects%20(ELUG)#Native_Sequencing_with_an_Oracle_Database_Platform[Native
+Sequencing with an Oracle Database Platform] and
+link:Introduction%20to%20Relational%20Projects%20(ELUG)#Native_Sequencing_with_a_Non-Oracle_Database_Platform[Native
+Sequencing with a Non-Oracle Database Platform]).
+* You have configured the sequence table to avoid deadlocks.
+* You use non-JTA data sources.
+
+For more information, see the following:
+
+* link:Creating%20an%20Internal%20Connection%20Pool%20(ELUG)#Introduction_to_the_Internal_Connection_Pool_Creation[Introduction
+to the Internal Connection Pool Creation]
+* link:Configuring%20an%20Internal%20Connection%20Pool%20(ELUG)#Introduction_to_the_Internal_Connection_Pool_Configuration[Introduction
+to the Internal Connection Pool Configuration]
+
+==== Application-Specific Connection Pools
+
+When you use internal EclipseLink connection pools in a session, you can
+create one or more connection pools that you can use for any application
+purpose. These are called named connection pools, as you can give them
+any name you want and use them for any purpose.
+
+Typically, use these named connection pools to provide pools of
+different security levels. For example, the "`default`" connection pool
+may only allow access to specific tables but the "`admin`" connection
+pool may allow access to all tables.
+
+For more information, see the following:
+
+* link:Creating%20an%20Internal%20Connection%20Pool%20(ELUG)#Introduction_to_the_Internal_Connection_Pool_Creation[Introduction
+to the Internal Connection Pool Creation]
+* link:Configuring%20an%20Internal%20Connection%20Pool%20(ELUG)#Introduction_to_the_Internal_Connection_Pool_Configuration[Introduction
+to the Internal Connection Pool Configuration]
+* link:Acquiring%20and%20Using%20Sessions%20at%20Run%20Time%20(ELUG)#How_to_Acquire_a_Client_Session_that_Uses_a_Named_Connection_Pool[How
+to Acquire a Client Session that Uses a Named Connection Pool]
+
+== Data Access API
+
+Consider the following types of inheritance hierarchy:
+
+* link:#Login_Inheritance_Hierarchy[Login Inheritance Hierarchy]
+* link:#Platform_Inheritance_Hierarchy[Platform Inheritance Hierarchy]
+
+=== Login Inheritance Hierarchy
+
+This example illustrates the login types that are derived from the
+abstract class `+org.eclipse.persistence.sessions.DatasourceLogin+`.
+
+[#Example 92-2]## *_Login Inheritance Hierarchy_*
+
+`+class org.eclipse.persistence.sessions.DatasourceLogin+`
+`+    class org.eclipse.persistence.sessions.DatabaseLogin+`
+`+    class org.eclipse.persistence.eis.EISLogin+`
+
+=== Platform Inheritance Hierarchy
+
+This example illustrates the platform type class hierarchy.
+
+[#Example 92-3]## *_Platform Inheritance Hierarchy_*
+
+`+org.eclipse.persistence.platform.database+` `+   AccessPlatform+`
+`+   AttunityPlatform+` `+   CloudscapePlatform+`
+`+   DatabasePlatform+` `+   DB2MainframePlatform+` `+   DB2Platform+`
+`+   DBasePlatform+` `+   DerbyPlatform+` `+   HSQLPlatform+`
+`+   InformixPlatform+` `+   JavaDBPlatform+` `+   PointBasePlatform+`
+`+   PostgreSQLPlatform+` `+   SQLAnyWherePlatform+`
+`+   SQLServerPlatform+` `+   SybasePlatform+` `+   TimesTen7Platform+`
+`+org.eclipse.persistence.platform.database.oracle+`
+`+   Oracle8Platform+` `+   Oracle9Platform+` `+   OraclePlatform+`
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Concept[Category: Concept] Category:_Task[Category: Task]

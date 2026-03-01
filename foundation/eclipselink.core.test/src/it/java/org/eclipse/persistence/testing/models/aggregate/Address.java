@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,8 +14,9 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.aggregate;
 
-import java.io.*;
 import org.eclipse.persistence.tools.schemaframework.TableDefinition;
+
+import java.io.Serializable;
 
 public class Address implements Serializable {
     public Number id;
@@ -25,7 +26,6 @@ public class Address implements Serializable {
         Address example = new Address();
 
         example.setAddress("1-1129 Meadowlands, Ottawa");
-        ;
         return example;
     }
 
@@ -33,7 +33,6 @@ public class Address implements Serializable {
         Address example = new Address();
 
         example.setAddress("2-1120 Meadowlands, Ottawa");
-        ;
         return example;
     }
 
@@ -41,7 +40,6 @@ public class Address implements Serializable {
         Address example = new Address();
 
         example.setAddress("3-1130 Meadowlands, Ottawa");
-        ;
         return example;
     }
 
@@ -49,7 +47,6 @@ public class Address implements Serializable {
         Address example = new Address();
 
         example.setAddress("4-1130 Meadowlands, Ottawa");
-        ;
         return example;
     }
 
@@ -57,7 +54,6 @@ public class Address implements Serializable {
         Address example = new Address();
 
         example.setAddress("5-1130 Meadowlands, Ottawa");
-        ;
         return example;
     }
 
@@ -65,7 +61,6 @@ public class Address implements Serializable {
         Address example = new Address();
 
         example.setAddress("6-1130 Meadowlands, Ottawa");
-        ;
         return example;
     }
 
@@ -73,7 +68,6 @@ public class Address implements Serializable {
         Address example = new Address();
 
         example.setAddress("Address Changed");
-        ;
         return example;
     }
 

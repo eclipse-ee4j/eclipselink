@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,14 +22,17 @@
 //       - 354678: Temp classloader is still being used during metadata processing
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+
+import org.eclipse.persistence.descriptors.InstantLockingPolicy;
+import org.eclipse.persistence.descriptors.LocalDateTimeLockingPolicy;
 import org.eclipse.persistence.descriptors.TimestampLockingPolicy;
 import org.eclipse.persistence.descriptors.VersionLockingPolicy;
-
 import org.eclipse.persistence.exceptions.ValidationException;
-
+import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
-
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotatedElement;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
@@ -38,7 +41,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataC
 /**
  * INTERNAL:
  * A basic version accessor.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -82,14 +85,6 @@ public class VersionAccessor extends BasicAccessor {
 
     /**
      * INTERNAL:
-     * Returns true if the given class is a valid timestamp locking type.
-     */
-    protected boolean isValidTimestampVersionLockingType(MetadataClass cls) {
-        return cls.isClass(java.sql.Timestamp.class);
-    }
-
-    /**
-     * INTERNAL:
      * Returns true if the given class is a valid version locking type.
      */
     protected boolean isValidVersionLockingType(MetadataClass cls) {
@@ -98,7 +93,10 @@ public class VersionAccessor extends BasicAccessor {
                 cls.isClass(short.class) ||
                 cls.isClass(Short.class) ||
                 cls.isClass(long.class) ||
-                cls.isClass(Long.class));
+                cls.isClass(Long.class) ||
+                cls.isClass(java.sql.Timestamp.class) ||
+                cls.isClass(LocalDateTime.class) ||
+                cls.isClass(Instant.class));
     }
 
     /**
@@ -118,9 +116,9 @@ public class VersionAccessor extends BasicAccessor {
             MetadataClass lockType = getRawClass();
             getDatabaseField().setTypeName(getJavaClassName(lockType));
 
-            if (isValidVersionLockingType(lockType) || isValidTimestampVersionLockingType(lockType)) {
+            if (isValidVersionLockingType(lockType)) {
                 for (MetadataDescriptor owningDescriptor : getOwningDescriptors()) {
-                    VersionLockingPolicy policy = isValidVersionLockingType(lockType) ? new VersionLockingPolicy(getDatabaseField()) : new TimestampLockingPolicy(getDatabaseField());
+                    VersionLockingPolicy policy = createVersionLockingPolicy(lockType.getName(), getDatabaseField());
                     policy.storeInObject();
                     policy.setIsCascaded(getDescriptor().usesCascadedOptimisticLocking());
                     owningDescriptor.setOptimisticLockingPolicy(policy);
@@ -130,4 +128,28 @@ public class VersionAccessor extends BasicAccessor {
             }
         }
     }
+
+    // Create VersionLockingPolicy corresponding to field type name
+    private static VersionLockingPolicy createVersionLockingPolicy(String typeName, DatabaseField field) {
+        switch (typeName) {
+            case "int":
+            case "java.lang.Integer":
+            case "long":
+            case "java.lang.Long":
+            case "short":
+            case "java.lang.Short":
+                return new VersionLockingPolicy(field);
+            case "java.sql.Timestamp":
+                return new TimestampLockingPolicy(field);
+            case "java.time.LocalDateTime":
+                return new LocalDateTimeLockingPolicy(field);
+            case "java.time.Instant":
+                return new InstantLockingPolicy(field);
+            // This is not accessible as long as isValidTimestampVersionLockingType(MetadataClass) check
+            // is not broken so this exception always means bug in the code.
+            default:
+                throw new UnsupportedOperationException("Cannot create VersionLockingPolicy for " + typeName);
+        }
+    }
+
 }

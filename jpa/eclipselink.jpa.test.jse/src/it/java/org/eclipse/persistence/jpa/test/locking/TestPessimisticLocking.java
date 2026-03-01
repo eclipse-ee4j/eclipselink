@@ -1,6 +1,7 @@
 /*
- * Copyright (c) 2015, 2022 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2015, 2022 IBM Corporation and/or its affiliates. All rights reserved.
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
+ * Copyright (c) 2015, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2024 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -81,7 +82,7 @@ public class TestPessimisticLocking {
     @Before
     public void before() {
         EntityManager em = emf.createEntityManager();
-        dogs = new ArrayList<LockingDog>();
+        dogs = new ArrayList<>();
         try {
             em.getTransaction().begin();
             for (int i = 0; i < 10; i++) {
@@ -108,7 +109,7 @@ public class TestPessimisticLocking {
 
             LockingDog locked = em.find(LockingDog.class, dogs.get(0).getId(), LockModeType.PESSIMISTIC_READ);
             Assert.assertNotNull(locked);
-            Callable<LockingDog> blocked = new Callable<LockingDog>() {
+            Callable<LockingDog> blocked = new Callable<>() {
                 @Override
                 public LockingDog call() {
                     cdl.countDown();
@@ -136,7 +137,7 @@ public class TestPessimisticLocking {
 
     @Test
     public void testFirstResultPessimisticRead() throws Exception {
-        Platform platform = ((EntityManagerFactoryImpl) emf).getServerSession().getDatasourcePlatform();
+        Platform platform = getPlatform();
         // Pessimistic locking with query row limits is not supported on Oracle
         Assume.assumeFalse("Platform " + platform + " is not supported for this test", platform.isOracle());
 
@@ -148,7 +149,7 @@ public class TestPessimisticLocking {
             em.createNamedQuery("find.lockingdogs", LockingDog.class).setLockMode(LockModeType.PESSIMISTIC_READ).setMaxResults(1).setFirstResult(4).getResultList();
             // This worker should block as he is trying to lock already locked
             // rows
-            Future<Boolean> result = executor.submit(new Callable<Boolean>() {
+            Future<Boolean> result = executor.submit(new Callable<>() {
                 @Override
                 public Boolean call() throws Exception {
                     em2.createNamedQuery("find.lockingdogs", LockingDog.class).setLockMode(LockModeType.PESSIMISTIC_READ).setMaxResults(1).setFirstResult(5).getResultList();
@@ -174,7 +175,7 @@ public class TestPessimisticLocking {
 
     @Test
     public void testMaxResultPessimisticRead() {
-        Platform platform = ((EntityManagerFactoryImpl) emf).getServerSession().getDatasourcePlatform();
+        Platform platform = getPlatform();
         // Pessimistic locking with query row limits is not supported on Oracle
         Assume.assumeFalse("Platform " + platform + " is not supported for this test", platform.isOracle());
 
@@ -197,7 +198,7 @@ public class TestPessimisticLocking {
 
     @Test
     public void testFirstResultMaxResultPessimisticRead() {
-        Platform platform = ((EntityManagerFactoryImpl) emf).getServerSession().getDatasourcePlatform();
+        Platform platform = getPlatform();
         // Pessimistic locking with query row limits is not supported on Oracle
         Assume.assumeFalse("Platform " + platform + " is not supported for this test", platform.isOracle());
 
@@ -220,13 +221,10 @@ public class TestPessimisticLocking {
      */
     @Test
     public void testAggregateResultPessimisticForceIncrement() {
-        Platform platform = ((EntityManagerFactoryImpl) emf).getServerSession().getDatasourcePlatform();
+        Platform platform = getPlatform();
         // ORA-01786: FOR UPDATE of this query expression is not allowed
-        Assume.assumeFalse("Platform " + platform + " is not supported for this test", platform.isDerby() || platform.isOracle());
+        Assume.assumeFalse("Platform " + platform + " is not supported for this test", platform.isDerby() || platform.isOracle() || platform.isPostgreSQL());
 
-        if (((EntityManagerFactoryImpl) emf).getServerSession().getDatasourcePlatform().isDerby()) {
-            return;
-        }
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();

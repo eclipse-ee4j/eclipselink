@@ -1,0 +1,50 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[DATA_ACCESS002]]
+=== About Data Source Login Types
+
+The login (if any) associated with a session determines how the
+EclipseLink runtime connects to the project's data source. For projects
+that do not persist to a data source, a login is not required. For
+projects that do persist to a data source, a login is always required. A
+login includes details of data source access, such as authentication,
+use of connection pools, and use of external transaction controllers. A
+`Login` owns a data source platform.
+
+A data source platform includes options specific to a particular data
+source including binding, use of native SQL, use of batch writing, and
+sequencing.
+
+You can use a login in a variety of roles. A login's role determines
+where and how you create it. The login role you choose depends on the
+type of project you are creating and how you intend to use the login.
+
+There is a session login type for each project type that persists to a
+data source.
+
+Note that there is no XML login. EclipseLink XML projects are used for
+nonpersistent, in-memory object to XML data transformation and
+consequently there is no data source to log in to.
+
+If you are creating a project that accesses a relational database, you
+must configure the project with a `DatabaseLogin`. Your choice of
+`DatabasePlatform` further customizes your project for a particular type
+of database. can be configured through the `datasource-login`
+persistence unit option. This option contains attributes for configuring
+user name, password, the name of the class implementing the data source
+platform, and others.

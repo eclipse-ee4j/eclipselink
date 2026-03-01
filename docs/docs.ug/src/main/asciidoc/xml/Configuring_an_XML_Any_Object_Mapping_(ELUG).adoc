@@ -1,0 +1,42 @@
+*TOC*
+Special:Whatlinkshere_Configuring_an_XML_Any_Object_Mapping_(ELUG)[Related
+Topics]
+
+For information on how to create EclipseLink mappings, see
+link:Creating%20a%20Mapping%20(ELUG)[Creating a Mapping].
+
+This table lists the configurable options for an XML any object mapping.
+
+[#Table 64-1]##
+
+Option to Configure
+
+Workbench
+
+Java
+
+Configuring XPath
+
+Configuring Maps to Wildcard
+
+Configuring Method or Direct Field Accessing at the Mapping Level
+
+Configuring Read-Only Mappings
+
+Configuring Mapping Comments
+
+For more information, see the following:
+
+* link:Introduction%20to%20XML%20Mappings%20(ELUG)#XML_Any_Object_Mapping[XML
+Any Object Mapping]
+* link:Configuring%20an%20XML%20Mapping%20(ELUG)[Configuring an XML
+Mapping]
+* link:Configuring%20a%20Mapping%20(ELUG)[Configuring a Mapping]
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Task[Category: Task] Category:_Release_1[Category: Release 1]
+Category:_XML[Category: XML]

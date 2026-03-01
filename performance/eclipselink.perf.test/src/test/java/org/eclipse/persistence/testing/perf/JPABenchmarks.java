@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -11,11 +11,13 @@
  */
 
 // Contributors:
-//              ljungmann - initial implementation
+//              Oracle - initial implementation
 package org.eclipse.persistence.testing.perf;
 
-import org.eclipse.persistence.testing.perf.jpa.tests.basic.JPAMetadataProcessingTests;
-import org.eclipse.persistence.testing.perf.jpa.tests.basic.MethodHandleComparisonTests;
+import org.eclipse.persistence.testing.perf.jpa.tests.basic.JPAReadLargeAmmountCacheTests;
+import org.eclipse.persistence.testing.perf.jpa.tests.basic.JPAReadLargeAmmountNoCacheTests;
+import org.eclipse.persistence.testing.perf.jpa.tests.basic.JPAReadSmallAmmountCacheTests;
+import org.eclipse.persistence.testing.perf.jpa.tests.basic.JPAReadSmallAmmountNoCacheTests;
 import org.openjdk.jmh.results.format.ResultFormatType;
 import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.RunnerException;
@@ -28,6 +30,7 @@ public class JPABenchmarks {
 
         int warmupIterations = 20;
         int measurementIterations = 20;
+        int threads = 10;
         String resultFile = "jmh-jpa-result.txt";
         String resultFormat = "text";
 
@@ -39,14 +42,17 @@ public class JPABenchmarks {
         }
 
         Options opt = new OptionsBuilder()
-                .include(getInclude(JPAMetadataProcessingTests.class))
-                .include(getInclude(MethodHandleComparisonTests.class))
+                .include(getInclude(JPAReadSmallAmmountCacheTests.class))
+                .include(getInclude(JPAReadSmallAmmountNoCacheTests.class))
+                .include(getInclude(JPAReadLargeAmmountCacheTests.class))
+                .include(getInclude(JPAReadLargeAmmountNoCacheTests.class))
                 .jvmArgsPrepend("-javaagent:" + System.getProperty("eclipselink.agent"))
                 .result(resultFile)
                 .resultFormat(ResultFormatType.valueOf(resultFormat.toUpperCase()))
                 .warmupIterations(warmupIterations)
                 .measurementIterations(measurementIterations)
                 .forks(1)
+                .threads(threads)
                 .build();
 
         new Runner(opt).run();

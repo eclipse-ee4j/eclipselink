@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,17 +14,15 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.sdo.model.dataobject;
 
-import commonj.sdo.Property;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Calendar;
 
-import junit.framework.TestCase;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOProperty;
 import org.eclipse.persistence.sdo.SDOConstants;
-import org.eclipse.persistence.exceptions.SDOException;
+import org.eclipse.persistence.sdo.SDOException;
 
 public class SDODataObjectGetBytesWithIndexConversionTest extends SDODataObjectConversionTestCases {
     public SDODataObjectGetBytesWithIndexConversionTest(String name) {
@@ -53,7 +51,7 @@ public class SDODataObjectGetBytesWithIndexConversionTest extends SDODataObjectC
     public void testGetBytesFromByte() {
         SDOProperty property = dataObject.getInstanceProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_BYTE);
-        dataObject.set(property, new String("ddd").getBytes()[0]);
+        dataObject.set(property, "ddd".getBytes()[0]);
         try {
             dataObject.getBytes(PROPERTY_INDEX);
             fail("ClassCastException should be thrown.");
@@ -153,7 +151,7 @@ public class SDODataObjectGetBytesWithIndexConversionTest extends SDODataObjectC
         SDOProperty property = dataObject.getInstanceProperty(PROPERTY_NAME);
         property.setType(SDOConstants.SDO_STRING);
 
-        dataObject.set(property, new String("0A64"));
+        dataObject.set(property, "0A64");
 
         try {
             byte[] value = dataObject.getBytes(PROPERTY_INDEX);

@@ -1,0 +1,37 @@
+*NOTOC*
+
+[width="100%",cols="36%,64%",]
+|===
+|image:Eclipselink_sdo.png‎[Image:Eclipselink
+sdo.png‎,title="Image:Eclipselink sdo.png‎"] |This page lists all sections
+in the _link:EclipseLink_UserGuide[EclipseLink User’s Guide]_ for *SDO*
+(Service Data Objects) projects.
+|===
+
+== Developing EclipseLink Applications using SDO
+
+== Step 1
+
+Initialize.
+
+* loadSchema();
+
+* Define SDO Types and Properties from an XML Schema
+
+== Step 2
+
+Unmarshall the XML document.
+
+== Step 3
+
+Modify the data objects.
+
+* augmentDocument
+
+== Step 4
+
+Marshall the data objects.
+
+* marshallDataObject
+
+Category:EclipseLink_User's_Guide[Category:EclipseLink User’s Guide]

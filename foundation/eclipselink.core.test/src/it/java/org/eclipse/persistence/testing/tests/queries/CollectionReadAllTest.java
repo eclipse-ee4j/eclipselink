@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,10 +14,12 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.queries;
 
-import java.util.*;
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.testing.framework.*;
-import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.queries.ReadAllQuery;
+import org.eclipse.persistence.testing.framework.TestErrorException;
+
+import java.util.Collection;
+import java.util.Map;
 
 /**
  * Test that a ReadAllQuery will return the appropriate collection depending on
@@ -29,7 +31,7 @@ public class CollectionReadAllTest extends org.eclipse.persistence.testing.frame
     public CollectionReadAllTest(Class<?> referenceClass, int originalObjectsSize, ReadAllQuery query) {
         super(referenceClass, originalObjectsSize);
         this.setQuery(query);
-        setName("CollectionReadAllTest(" + org.eclipse.persistence.internal.helper.Helper.getShortClassName(getQuery().getContainerPolicy().getContainerClass()) + "," + org.eclipse.persistence.internal.helper.Helper.getShortClassName(referenceClass) + ")");
+        setName("CollectionReadAllTest(" + getQuery().getContainerPolicy().getContainerClass().getSimpleName() + "," + referenceClass.getSimpleName() + ")");
     }
 
     /**
@@ -62,7 +64,7 @@ public class CollectionReadAllTest extends org.eclipse.persistence.testing.frame
     protected void verify() {
         Class<?> queryContainerClass = getQuery().getContainerPolicy().getContainerClass();
         if (!queryContainerClass.isInstance(dbContainter)) {
-            throw new TestErrorException("The container class returned was" + dbContainter.getClass().toString() + " we expected a " + queryContainerClass.toString() + " to be returned.");
+            throw new TestErrorException("The container class returned was" + dbContainter.getClass() + " we expected a " + queryContainerClass + " to be returned.");
         }
 
         // check size

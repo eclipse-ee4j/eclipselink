@@ -18,7 +18,6 @@ package org.eclipse.persistence.internal.jpa.querydef;
 import java.lang.reflect.Constructor;
 
 import jakarta.persistence.criteria.Selection;
-
 import org.eclipse.persistence.internal.queries.ReportItem;
 import org.eclipse.persistence.queries.ConstructorReportItem;
 
@@ -29,17 +28,18 @@ import org.eclipse.persistence.queries.ConstructorReportItem;
  * <p>
  * <b>Description</b>: The Selection is the expression describing what should be returned by the query.
  *
+ * @param <X> the type of the selection item
  * @see jakarta.persistence.criteria Join
  *
  * @author gyorke
  * @since EclipseLink 1.2
  */
-public class ConstructorSelectionImpl extends CompoundSelectionImpl {
+public class ConstructorSelectionImpl<X> extends CompoundSelectionImpl<X> {
 
-    protected transient Constructor constructor;
+    protected transient Constructor<? extends X> constructor;
     protected Class<?>[] constructorArgTypes;
 
-    public ConstructorSelectionImpl(Class<?> javaType, Selection[] subSelections) {
+    public ConstructorSelectionImpl(Class<? extends X> javaType, Selection<?>[] subSelections) {
         super(javaType, subSelections, true);//need to validate selection items
     }
 
@@ -47,12 +47,12 @@ public class ConstructorSelectionImpl extends CompoundSelectionImpl {
         ConstructorReportItem item = new ConstructorReportItem(this.getAlias());
         item.setResultType(this.getJavaType());
         item.setConstructor(constructor);
-        for(Selection selection : this.getCompoundSelectionItems()){
+        for(Selection<?> selection : this.getCompoundSelectionItems()) {
             if (selection.isCompoundSelection()){
-                item.addItem(((ConstructorSelectionImpl)selection).translate());
+                item.addItem(((ConstructorSelectionImpl<?>)selection).translate());
             }else{
                 ReportItem reportItem = new ReportItem(item.getName()+item.getReportItems().size(),
-                        ((SelectionImpl)selection).getCurrentNode());
+                        ((SelectionImpl<?>)selection).getCurrentNode());
                 //bug: 297385 - set type here because the selection already knows the type
                 reportItem.setResultType(selection.getJavaType());
                 item.addItem(reportItem);
@@ -71,7 +71,7 @@ public class ConstructorSelectionImpl extends CompoundSelectionImpl {
      * INTERNAL:
      * Set the constructor.
      */
-    public void setConstructor(Constructor constructor){
+    public void setConstructor(Constructor<? extends X> constructor){
         this.constructor = constructor;
     }
 

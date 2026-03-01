@@ -1,0 +1,95 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[QUERY003]]
+=== About SQL Query Language
+
+Using EclipseLink, you can express a query using the following query
+languages:
+
+* SQL Queries
+* EclipseLink Expressions (see xref:expressions001.adoc#EXPRESSIONS001[Chapter 10,
+"Understanding EclipseLink Expressions"])
+* link:#CIHEBJDC[Stored Procedures]
+
+SQL is the most common query language for applications that use a
+relational database data source. In most cases, you can compose a query
+directly in a given query language or, preferably, you can construct a
+`DatabaseQuery` with an appropriate `Call` and specify selection
+criteria using an `Expression` object. Although composing a query
+directly in SQL appears to be the simplest approach (and for simple
+operations or operations on unmapped data, it is), using the
+`DatabaseQuery` approach offers the compelling advantage of confining
+your query to your domain object model and avoiding dependence on data
+source schema implementation details.
+
+Oracle recommends that you compose your queries using `Expression`.
+
+You can execute custom SQL directly using `Session` methods
+`executeSelectingCall` and `executeNonSelectingCall`, or you can
+construct a `DatabaseQuery` with an appropriate `Call`.
+
+EclipseLink provides a variety of SQL `Call` objects for use with stored
+procedures and, with Oracle Database, stored functions. EclipseLink also
+supports PLSQL call for Oracle stored procedures with PLSQL data types.
+
+[[CIHEBJDC]]
+
+==== Stored Procedures
+
+As described in the "Stored Procedures" section of the JPA specification
+(`http://jcp.org/en/jsr/detail?id=338`), native SQL allows you to use
+named stored procedures either dynamically or specified by the
+`NamedStoredProcedureQuery` annotation. If you use annotations, the
+stored procedure must exist in the database. The annotation allows you
+to specify the types of all parameters to the stored procedure, their
+corresponding parameter modes, and the mapping of the result sets.
+
+Metadata must be provided for all parameters by using the
+`StoredProcedureParameter` annotation. Parameters must be specified in
+the order in which they occur in the parameter list of the stored
+procedure. If parameter names are used, the parameter name is used to
+bind the parameter value and to extract the output value (if the
+parameter is an `INOUT` or `OUT` parameter).
+
+If the stored procedure is not defined using metadata, then parameter
+and result set information must be provided dynamically.
+
+[[sthref63]]
+
+===== EclipseLink Extensions to Stored Procedures
+
+EclipseLink defines annotation extensions that allow the use of PLSQL
+stored procedures (such as `@NamedPLSQLStoredProcedureQuery`) and stored
+functions (such as `@NamedPLSQLStoredFunctionQuery`). The PLSQL
+annotations allow you to use complex PLSQL types such as `RECORD` and
+`TABLE`, that are not accessible from JDBC. The annotations contain
+attributes for specifying the function (or procedure) name, the return
+value of the stored function, any query hints, the parameters for the
+stored function, and the name of the `SQLResultMapping`.
+
+Parameters for the stored function (or procedure) are specified with the
+`@PLSQLParameter` annotation. The `@PLSQLRecord` annotation defines a
+database PLSQL `RECORD` type for use within PLSQL procedures.
+
+EclipseLink also defines annotation extensions that allow the use of
+non-PLSQL stored procedures (such as `@NamedStoredProcedureQuery`) and
+stored functions (such as `@NamedStoredFunctionQuery`).
+
+For a list of the EclipseLink extensions for stored procedures and links
+to their descriptions, see "Stored Procedure and Function Annotations"
+in _Jakarta Persistence API (JPA) Extensions Reference for EclipseLink_.

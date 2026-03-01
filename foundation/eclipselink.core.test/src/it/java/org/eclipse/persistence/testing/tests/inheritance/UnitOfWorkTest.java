@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,17 +14,21 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.inheritance;
 
-import java.util.*;
-import org.eclipse.persistence.testing.framework.*;
-import org.eclipse.persistence.sessions.*;
-import org.eclipse.persistence.exceptions.*;
+import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.sessions.UnitOfWork;
+import org.eclipse.persistence.testing.framework.TestErrorException;
+import org.eclipse.persistence.testing.framework.TestWarningException;
+import org.eclipse.persistence.testing.framework.WriteObjectTest;
 import org.eclipse.persistence.testing.models.inheritance.Bicycle;
+import org.eclipse.persistence.testing.models.inheritance.Bus;
 import org.eclipse.persistence.testing.models.inheritance.Car;
+import org.eclipse.persistence.testing.models.inheritance.Company;
 import org.eclipse.persistence.testing.models.inheritance.Computer;
 import org.eclipse.persistence.testing.models.inheritance.Vehicle;
-import org.eclipse.persistence.testing.models.inheritance.Bus;
-import org.eclipse.persistence.testing.models.inheritance.Company;
+
+import java.util.Enumeration;
+import java.util.Vector;
 
 /**
  * <p>
@@ -80,10 +84,10 @@ public class UnitOfWorkTest extends WriteObjectTest {
         }
 
         //adding new vehicles
-        vehicles.addElement(Bicycle.example3(company));
-        vehicles.addElement(Bicycle.example2(company));
-        vehicles.addElement(car);
-        vehicles.addElement(Bus.example2(company));
+        vehicles.add(Bicycle.example3(company));
+        vehicles.add(Bicycle.example2(company));
+        vehicles.add(car);
+        vehicles.add(Bus.example2(company));
     }
 
     @Override

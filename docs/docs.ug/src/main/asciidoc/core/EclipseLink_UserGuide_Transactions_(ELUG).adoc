@@ -1,0 +1,24 @@
+== Transactions
+
+The following sections describe how to use the EclipseLink unit of work
+to transactionally perform create, read, update, and delete operations
+with and without an external transaction processor:
+
+* link:Introduction_to_EclipseLink_Transactions_(ELUG)[Introduction to
+EclipseLink Transactions] - describes how to use the unit of work, the
+EclipseLink wrapper for a transaction, and how EclipseLink integrates
+with transaction management and other important query concepts.
+
+* link:Using_Basic_Unit_of_Work_API_(ELUG)[Using Basic Unit of Work API]
+
+* link:Using_Advanced_Unit_of_Work_API_(ELUG)[Using Advanced Unit of
+Work API]
+
+*Special:Whatlinkshere:EclipseLink_UserGuide_Transactions_(ELUG)[Related
+Topics]*
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]

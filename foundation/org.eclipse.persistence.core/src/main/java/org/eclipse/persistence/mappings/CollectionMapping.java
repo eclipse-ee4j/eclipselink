@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,31 +29,88 @@
 //       - 500441: Eclipselink core has System.getProperty() calls that are not potentially executed under doPriv()
 package org.eclipse.persistence.mappings;
 
-import java.beans.PropertyChangeListener;
-import java.util.*;
-
 import org.eclipse.persistence.annotations.OrderCorrectionType;
 import org.eclipse.persistence.config.SystemProperties;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.descriptors.changetracking.*;
-import org.eclipse.persistence.internal.descriptors.changetracking.*;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.indirection.*;
-import org.eclipse.persistence.internal.descriptors.*;
-import org.eclipse.persistence.internal.expressions.*;
-import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.descriptors.changetracking.ChangeTracker;
+import org.eclipse.persistence.descriptors.changetracking.CollectionChangeEvent;
+import org.eclipse.persistence.descriptors.changetracking.CollectionChangeTracker;
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.exceptions.DescriptorException;
+import org.eclipse.persistence.exceptions.OptimisticLockException;
+import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.indirection.IndirectCollection;
+import org.eclipse.persistence.indirection.IndirectList;
+import org.eclipse.persistence.indirection.IndirectSet;
+import org.eclipse.persistence.indirection.ValueHolder;
+import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
+import org.eclipse.persistence.internal.descriptors.InstanceVariableAttributeAccessor;
+import org.eclipse.persistence.internal.descriptors.MethodAttributeAccessor;
+import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
+import org.eclipse.persistence.internal.descriptors.changetracking.AttributeChangeListener;
+import org.eclipse.persistence.internal.descriptors.changetracking.ObjectChangeListener;
+import org.eclipse.persistence.internal.expressions.FunctionExpression;
+import org.eclipse.persistence.internal.expressions.ObjectExpression;
+import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.helper.IdentityHashSet;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
-import org.eclipse.persistence.internal.indirection.*;
-import org.eclipse.persistence.internal.queries.*;
+import org.eclipse.persistence.internal.indirection.TransparentIndirectionPolicy;
+import org.eclipse.persistence.internal.queries.AttributeItem;
+import org.eclipse.persistence.internal.queries.CollectionContainerPolicy;
+import org.eclipse.persistence.internal.queries.ContainerPolicy;
+import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
+import org.eclipse.persistence.internal.queries.ListContainerPolicy;
+import org.eclipse.persistence.internal.queries.MapContainerPolicy;
+import org.eclipse.persistence.internal.queries.OrderedListContainerPolicy;
+import org.eclipse.persistence.internal.queries.SortedCollectionContainerPolicy;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.sessions.remote.*;
-import org.eclipse.persistence.internal.sessions.*;
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.sessions.remote.*;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sessions.ChangeRecord;
+import org.eclipse.persistence.internal.sessions.CollectionChangeRecord;
+import org.eclipse.persistence.internal.sessions.MergeManager;
+import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
+import org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet;
+import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
+import org.eclipse.persistence.internal.sessions.remote.ObjectDescriptor;
+import org.eclipse.persistence.internal.sessions.remote.RemoteSessionController;
+import org.eclipse.persistence.queries.Call;
+import org.eclipse.persistence.queries.ComplexQueryResult;
+import org.eclipse.persistence.queries.DataModifyQuery;
+import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.DeleteObjectQuery;
+import org.eclipse.persistence.queries.InsertObjectQuery;
+import org.eclipse.persistence.queries.ModifyQuery;
+import org.eclipse.persistence.queries.ObjectBuildingQuery;
+import org.eclipse.persistence.queries.ObjectLevelModifyQuery;
+import org.eclipse.persistence.queries.ObjectLevelReadQuery;
+import org.eclipse.persistence.queries.QueryByExamplePolicy;
+import org.eclipse.persistence.queries.ReadAllQuery;
+import org.eclipse.persistence.queries.ReadQuery;
+import org.eclipse.persistence.queries.WriteObjectQuery;
 import org.eclipse.persistence.sessions.CopyGroup;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.sessions.Project;
+import org.eclipse.persistence.sessions.remote.DistributedSession;
+
+import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.IdentityHashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.StringTokenizer;
+import java.util.Vector;
 
 /**
  * <p><b>Purpose</b>: Abstract class for relationship mappings which store collection of objects
@@ -164,7 +221,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
             expression = expression.get(queryKeyName);
         } else {
             // Single level aggregate
-            if (aggregateName.equals("")) {
+            if (aggregateName.isEmpty()) {
                 expression = builder.get(queryKeyName);
             } else {
                 expression = builder.get(aggregateName).get(queryKeyName);
@@ -299,16 +356,12 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
     public Object buildElementUnitOfWorkClone(Object element, Object parent, Integer refreshCascade, UnitOfWorkImpl unitOfWork, boolean isExisting, boolean isFromSharedCache) {
         // optimize registration to knowledge of existence
         if (refreshCascade != null ){
-            switch(refreshCascade){
-            case ObjectBuildingQuery.CascadeAllParts :
-                return unitOfWork.mergeClone(element, MergeManager.CASCADE_ALL_PARTS, true);
-            case ObjectBuildingQuery.CascadePrivateParts :
-                return unitOfWork.mergeClone(element, MergeManager.CASCADE_PRIVATE_PARTS, true);
-            case ObjectBuildingQuery.CascadeByMapping :
-                return unitOfWork.mergeClone(element, MergeManager.CASCADE_BY_MAPPING, true);
-            default:
-                return unitOfWork.mergeClone(element, MergeManager.NO_CASCADE, true);
-            }
+            return switch (refreshCascade) {
+                case ObjectBuildingQuery.CascadeAllParts -> unitOfWork.mergeClone(element, MergeManager.CASCADE_ALL_PARTS, true);
+                case ObjectBuildingQuery.CascadePrivateParts -> unitOfWork.mergeClone(element, MergeManager.CASCADE_PRIVATE_PARTS, true);
+                case ObjectBuildingQuery.CascadeByMapping -> unitOfWork.mergeClone(element, MergeManager.CASCADE_BY_MAPPING, true);
+                default -> unitOfWork.mergeClone(element, MergeManager.NO_CASCADE, true);
+            };
         }else{
             if (isExisting) {
                 return unitOfWork.registerExistingObject(element, isFromSharedCache);
@@ -341,7 +394,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
     @Override
     public Expression buildExpression(Object queryObject, QueryByExamplePolicy policy, Expression expressionBuilder, Map processedObjects, AbstractSession session) {
         String bypassProperty = PrivilegedAccessHelper.getSystemProperty(SystemProperties.DO_NOT_PROCESS_XTOMANY_FOR_QBE);
-        if (this.getContainerPolicy().isMapPolicy() ||  (bypassProperty != null && bypassProperty.toLowerCase().equals("true")) ){
+        if (this.getContainerPolicy().isMapPolicy() ||  (bypassProperty != null && bypassProperty.equalsIgnoreCase("true")) ){
             // not supported
             return super.buildExpression(queryObject, policy, expressionBuilder, processedObjects, session);
         }
@@ -458,8 +511,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
     public void cascadeDiscoverAndPersistUnregisteredNewObjects(Object object, Map newObjects, Map unregisteredExistingObjects, Map visitedObjects, UnitOfWorkImpl uow, Set cascadeErrors) {
         Object cloneAttribute = getAttributeValueFromObject(object);
         if ((cloneAttribute == null) || (!this.indirectionPolicy.objectIsInstantiated(cloneAttribute))) {
-            if (cloneAttribute instanceof IndirectCollection)  {
-                IndirectCollection collection = (IndirectCollection)cloneAttribute;
+            if (cloneAttribute instanceof IndirectCollection collection)  {
                 if (collection.hasDeferredChanges()) {
                     Iterator iterator = collection.getAddedElements().iterator();
                     boolean cascade = isCascadePersist();
@@ -988,11 +1040,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                 Object eachReferenceObject = queryContainerPolicy.next(objectsIterator, session);
                 AbstractRecord row = rowsIterator.next();
                 Object eachReferenceKey = extractKeyFromTargetRow(row, session);
-                List[] objectsAndRows = referenceObjectsAndRowsByKey.get(eachReferenceKey);
-                if (objectsAndRows == null) {
-                    objectsAndRows = new List[]{new ArrayList(), new ArrayList()};
-                    referenceObjectsAndRowsByKey.put(eachReferenceKey, objectsAndRows);
-                }
+                List[] objectsAndRows = referenceObjectsAndRowsByKey.computeIfAbsent(eachReferenceKey, k -> new List[]{new ArrayList(), new ArrayList()});
                 objectsAndRows[0].add(eachReferenceObject);
                 objectsAndRows[1].add(row);
             }
@@ -1315,7 +1363,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
     /**
      * ADVANCED:
      * This method should only be called after this mapping's indirection policy has been set
-     *
+     * <p>
      * IndirectList and IndirectSet can be configured not to instantiate the list from the
      * database when you add and remove from them.  IndirectList defaults to this behavior. When
      * Set to true, the collection associated with this TransparentIndirection will be setup so as
@@ -2053,7 +2101,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * ADVANCED:
      * Calling this method will only affect behavior of mappings using transparent indirection
      * This method should only be called after this mapping's indirection policy has been set
-     *
+     * <p>
      * IndirectList and IndirectSet can be configured not to instantiate the list from the
      * database when you add and remove from them.  IndirectList defaults to this behavior. When
      * Set to true, the collection associated with this TransparentIndirection will be setup so as

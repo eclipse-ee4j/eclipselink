@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,21 +16,28 @@ package org.eclipse.persistence.config;
 
 /**
  * Hint values.
- *
+ * <p>
  * The class defines boolean values used by some EclipseLink query hints.
  *
- * <p>JPA Query Hint Usage:
- *
- * <p><code>query.setHint(QueryHints.REFRESH, HintValues.TRUE);</code>
+ * <p>JPA Query Hint usage:
+ * {@snippet :
+ *  query.setHint(QueryHints.REFRESH, HintValues.TRUE);
+ * }
  * <p>or
- * <p><code>@QueryHint(name=QueryHints.REFRESH, value=HintValues.TRUE)</code>
+ * {@snippet :
+ *  @QueryHint(name=QueryHints.REFRESH, value=HintValues.TRUE)
+ * }
  *
  * <p>Hint values are case-insensitive.
  *
  * @see QueryHints
  */
-public class HintValues {
+public final class HintValues {
     public static final String TRUE = "True";
     public static final String FALSE = "False";
     public static final String PERSISTENCE_UNIT_DEFAULT = "PersistenceUnitDefault";
+
+    private HintValues() {
+        // no instance please
+    }
 }

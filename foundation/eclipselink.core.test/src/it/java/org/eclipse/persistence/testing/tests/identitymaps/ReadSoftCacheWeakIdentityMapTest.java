@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,10 +14,15 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.identitymaps;
 
-import java.util.*;
 import org.eclipse.persistence.internal.helper.linkedlist.ExposedNodeLinkedList;
-import org.eclipse.persistence.internal.identitymaps.*;
-import org.eclipse.persistence.testing.framework.*;
+import org.eclipse.persistence.internal.identitymaps.CacheKey;
+import org.eclipse.persistence.internal.identitymaps.IdentityMap;
+import org.eclipse.persistence.internal.identitymaps.SoftCacheWeakIdentityMap;
+import org.eclipse.persistence.testing.framework.TestErrorException;
+import org.eclipse.persistence.testing.framework.TestWarningException;
+
+import java.util.Map;
+import java.util.Vector;
 
 /**
  * Test the SoftCacheIdentityMap.
@@ -49,7 +54,7 @@ public class ReadSoftCacheWeakIdentityMapTest extends ReadWeakIdentityMapTest {
         // The jdk1.2.0 on the Testing machine treats the weak reference as a softweak reference so we must waste memory
         Vector vector = new Vector(10000);
         for (int i = 0; i < 10000; ++i) {
-            vector.addElement(new java.math.BigDecimal(i));
+            vector.add(new java.math.BigDecimal(i));
         }
 
         // Force garbage collection, which should clear the cache.
@@ -64,8 +69,7 @@ public class ReadSoftCacheWeakIdentityMapTest extends ReadWeakIdentityMapTest {
         // if not all through warning as different VM have different gc behavior.
         Map<Object, CacheKey> cache = getIdentityMap().getCacheKeys();
         int numObjects = 0;
-        for (Iterator<CacheKey> iterator = cache.values().iterator(); iterator.hasNext();) {
-            CacheKey key = iterator.next();
+        for (CacheKey key : cache.values()) {
             if (key.getObject() != null) {
                 numObjects++;
             }

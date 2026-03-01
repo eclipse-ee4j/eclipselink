@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -39,25 +39,11 @@
 //       - 541873: ENTITYMANAGER.DETACH() TRIGGERS LAZY LOADING INTO THE PERSISTENCE CONTEXT
 package org.eclipse.persistence.internal.sessions;
 
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.IdentityHashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Vector;
-
 import org.eclipse.persistence.annotations.CacheKeyType;
 import org.eclipse.persistence.config.ReferenceMode;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.DescriptorEvent;
 import org.eclipse.persistence.descriptors.DescriptorEventManager;
-import org.eclipse.persistence.descriptors.changetracking.AttributeChangeTrackingPolicy;
 import org.eclipse.persistence.descriptors.changetracking.ObjectChangePolicy;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.DescriptorException;
@@ -77,7 +63,6 @@ import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.descriptors.PersistenceEntity;
 import org.eclipse.persistence.internal.helper.ConcurrencyManager;
 import org.eclipse.persistence.internal.helper.ConcurrencyUtil;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.helper.IdentityHashSet;
 import org.eclipse.persistence.internal.helper.IdentityWeakHashMap;
 import org.eclipse.persistence.internal.identitymaps.CacheId;
@@ -109,6 +94,19 @@ import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.SessionProfiler;
 import org.eclipse.persistence.sessions.coordination.MergeChangeSetCommand;
+
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.IdentityHashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Vector;
+import java.util.stream.Collectors;
 
 /**
  * Implementation of org.eclipse.persistence.sessions.UnitOfWork
@@ -146,8 +144,8 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     public final long CREATION_THREAD_HASHCODE = Thread.currentThread().hashCode();
     private String creationThreadStackTrace;
 
-    /** Fix made for weak caches to avoid garbage collection of the originals. **/
-    /** As well as used as lookup in merge algorithm for aggregates and others **/
+    /* Fix made for weak caches to avoid garbage collection of the originals. */
+    /* As well as used as lookup in merge algorithm for aggregates and others */
     protected transient Map<Object, Object> cloneToOriginals;
     protected transient AbstractSession parent;
 
@@ -155,6 +153,11 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     protected Map<Object, Object> cloneMapping;
     protected Map<Object, Object> newObjectsCloneToOriginal;
     protected Map<Object, Object> newObjectsOriginalToClone;
+
+    /**
+     * Map of primary key to list of new objects. Used to speedup in-memory querying.
+     */
+    protected Map<Object, IdentityHashSet> primaryKeyToNewObjects;
     /**
      * Stores a map from the clone to the original merged object, as a different instance is used as the original for merges.
      */
@@ -444,7 +447,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     public void addDeletedPrivateOwnedObjects(DatabaseMapping mapping, Object object)
     {
         if(deletedPrivateOwnedObjects == null){
-            deletedPrivateOwnedObjects = new IdentityHashMap();
+            deletedPrivateOwnedObjects = new IdentityHashMap<>();
         }
         List<Object> list = deletedPrivateOwnedObjects.get(mapping);
         if(list == null){
@@ -544,6 +547,8 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             ObjectBuilder builder = descriptor.getObjectBuilder();
             try {
                 value = builder.assignSequenceNumber(object, this);
+                getPrimaryKeyToNewObjects().putIfAbsent(value, new IdentityHashSet());
+                getPrimaryKeyToNewObjects().get(value).add(object);
             } catch (RuntimeException exception) {
                 handleException(exception);
             } finally {
@@ -580,6 +585,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         }
         if (hasNewObjects()) {
             assignSequenceNumbers(getNewObjectsCloneToOriginal());
+            setupPrimaryKeyToNewObjects();
         }
     }
 
@@ -703,8 +709,9 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
 
         // Second calculate changes for all registered objects.
         Iterator objects = allObjects.keySet().iterator();
-        Map changedObjects = new IdentityHashMap();
-        Map visitedNodes = new IdentityHashMap();
+        int allObjectsSize = allObjects.size();
+        Map changedObjects = new IdentityHashMap(allObjectsSize);
+        Map visitedNodes = new IdentityHashMap(allObjectsSize);
         while (objects.hasNext()) {
             Object object = objects.next();
 
@@ -780,7 +787,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
 
         if (this.shouldDiscoverNewObjects && !changedObjects.isEmpty()) {
             // Third discover any new objects from the new or changed objects.
-            Map newObjects = new IdentityHashMap();
+            Map newObjects = new IdentityHashMap(changedObjects.size());
             // Bug 294259 -  Do not replace the existingObjects list
             // Iterate over the changed objects only.
             discoverUnregisteredNewObjects(changedObjects, newObjects, getUnregisteredExistingObjects(), visitedNodes);
@@ -801,8 +808,9 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         // Remove any orphaned privately owned objects from the UnitOfWork and ChangeSets,
         // these are the objects remaining in the UnitOfWork privateOwnedObjects map
         if (hasPrivateOwnedObjects()) {
-            Map visitedObjects = new IdentityHashMap();
-            for (Set privateOwnedObjects : getPrivateOwnedObjects().values()) {
+            Collection<Set> values = getPrivateOwnedObjects().values();
+            Map visitedObjects = new IdentityHashMap(values.stream().collect(Collectors.summingInt(Set::size)));
+            for (Set privateOwnedObjects : values) {
                 for (Object objectToRemove : privateOwnedObjects) {
                     performRemovePrivateOwnedObjectFromChangeSet(objectToRemove, visitedObjects);
                 }
@@ -967,7 +975,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     protected Object cloneAndRegisterNewObject(Object original, boolean isShallowClone) {
         ClassDescriptor descriptor = getDescriptor(original);
         //Nested unit of work is not supported for attribute change tracking
-        if (this.isNestedUnitOfWork && (descriptor.getObjectChangePolicy() instanceof AttributeChangeTrackingPolicy)) {
+        if (this.isNestedUnitOfWork && (descriptor.getObjectChangePolicy().isAttributeChangeTrackingPolicy())) {
             throw ValidationException.nestedUOWNotSupportedForAttributeTracking();
         }
         ObjectBuilder builder = descriptor.getObjectBuilder();
@@ -1066,6 +1074,9 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             }
         }
         try {
+            if (isConsideredInvalid(original, parentCacheKey, descriptor) && unitOfWorkCacheKey.getObject() != null) {
+                original = unitOfWorkCacheKey.getObject();
+            }
             // bug:6167576   Must acquire the lock before cloning.
             workingClone = builder.instantiateWorkingCopyClone(original, this);
             // PERF: Cache the primary key if implements PersistenceEntity.
@@ -1304,7 +1315,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     @Override
     public void commitAndResumeOnFailure() throws DatabaseException, OptimisticLockException {
         // First clone the identity map, on failure replace the clone back as the cache.
-        IdentityMapManager failureManager = (IdentityMapManager)getIdentityMapAccessorInstance().getIdentityMapManager().clone();
+        IdentityMapManager failureManager = getIdentityMapAccessorInstance().getIdentityMapManager().clone();
         try {
             // Call commitAndResume.
             // Oct 13, 2000 - JED PRS #13551
@@ -1525,10 +1536,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                 try {
                     acquireWriteLocks();
                     commitTransaction();
-                } catch (RuntimeException throwable) {
-                    releaseWriteLocks();
-                    throw throwable;
-                } catch (Error throwable) {
+                } catch (RuntimeException | Error throwable) {
                     releaseWriteLocks();
                     throw throwable;
                 }
@@ -1605,20 +1613,13 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                             setWasNonObjectLevelModifyQueryExecuted(false);
                             try {
                                 commitTransaction();
-                            } catch (RuntimeException commitFailed) {
+                            } catch (RuntimeException | Error commitFailed) {
                                 try {
                                     rollbackTransaction();
                                 } catch (RuntimeException ignore) {
                                     // Ignore
                                 }
                                 throw commitFailed;
-                            } catch (Error error) {
-                                try {
-                                    rollbackTransaction();
-                                } catch (RuntimeException ignore) {
-                                    // Ignore
-                                }
-                                throw error;
                             }
                         }
                     }
@@ -1738,7 +1739,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      */
     // Added Nov 8, 2000 JED for Patch 2.5.1.8, Ref: Prs 24502
     @Override
-    public Vector copyReadOnlyClasses() {
+    public List<Class<?>> copyReadOnlyClasses() {
         return new Vector(getReadOnlyClasses());
     }
 
@@ -1924,10 +1925,10 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * when the object is changed in UnitOfWork. The cloneFromUOW must be the clone of from this
      * UnitOfWork and it must implements version locking or timestamp locking.
      * The SQL would look like the followings.
-     *
+     * <p>
      * If shouldModifyVersionField is true,
      * "UPDATE EMPLOYEE SET VERSION = 2 WHERE EMP_ID = 9 AND VERSION = 1"
-     *
+     * <p>
      * If shouldModifyVersionField is false,
      * "UPDATE EMPLOYEE SET VERSION = 1 WHERE EMP_ID = 9 AND VERSION = 1"
      */
@@ -2020,9 +2021,9 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             // bug 327900
             if ((object.getClass() == theClass) || (readSubclassesOrNoInheritance && (theClass.isInstance(object)))) {
                 if (selectionCriteria == null) {
-                    objects.addElement(object);
+                    objects.add(object);
                 } else if (selectionCriteria.doesConform(object, this, translationRow, valueHolderPolicy)) {
-                    objects.addElement(object);
+                    objects.add(object);
                 }
             }
         }
@@ -2327,7 +2328,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * @see org.eclipse.persistence.sessions.Project#setDefaultReadOnlyClasses(Collection)
      */
     @Override
-    public Vector getDefaultReadOnlyClasses() {
+    public List<Class<?>> getDefaultReadOnlyClasses() {
         return this.parent.getDefaultReadOnlyClasses();
     }
 
@@ -2392,6 +2393,18 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             newObjectsCloneToOriginal = new IdentityHashMap();
         }
         return newObjectsCloneToOriginal;
+    }
+
+    /**
+     * INTERNAL:
+     * The primaryKeyToNewObjects stores a list of objects for every primary key.
+     * It is used to speed up in-memory-querying.
+     */
+    public Map<Object, IdentityHashSet> getPrimaryKeyToNewObjects() {
+        if (primaryKeyToNewObjects == null) {
+            primaryKeyToNewObjects = new HashMap<>();
+        }
+        return primaryKeyToNewObjects;
     }
 
     /**
@@ -2544,15 +2557,12 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         boolean readSubclassesOrNoInheritance = (!descriptor.hasInheritance() || descriptor.getInheritancePolicy().shouldReadSubclasses());
 
         ObjectBuilder objectBuilder = descriptor.getObjectBuilder();
-        for (Iterator newObjectsEnum = getNewObjectsCloneToOriginal().keySet().iterator();
-                 newObjectsEnum.hasNext();) {
+        for (Iterator newObjectsEnum = getPrimaryKeyToNewObjects().getOrDefault(selectionKey, new IdentityHashSet(0)).iterator();
+             newObjectsEnum.hasNext(); ) {
             Object object = newObjectsEnum.next();
             // bug 327900
             if ((object.getClass() == theClass) || (readSubclassesOrNoInheritance && (theClass.isInstance(object)))) {
-                Object primaryKey = objectBuilder.extractPrimaryKeyFromObject(object, this, true);
-                if ((primaryKey != null) && primaryKey.equals(selectionKey)) {
                     return object;
-                }
             }
         }
         return null;
@@ -3007,7 +3017,27 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         }
         Object result = query.executeInUnitOfWork(this, databaseRow);
         executeDeferredEvents();
+        if (query instanceof ReadQuery && (project.isAllowQueryResultsCacheValidation() || ((ReadQuery)query).shouldAllowQueryResultsCacheValidation())) {
+            validateObjectTree(result);
+        }
         return result;
+    }
+
+    private void validateObjectTree(Object startNode) {
+        log(SessionLog.FINER, SessionLog.TRANSACTION, "validate_object_space");
+        // This defines an inner class for process the iteration operation, don't be scared, it's just an inner class.
+        DescriptorIterator iterator = new DescriptorIterator() {
+            @Override
+            public void iterate(Object object) {
+                if (object != null && !isObjectRegistered(object) && getVisitedStack() != null && !getVisitedStack().isEmpty()) {
+                    log(SessionLog.FINEST, SessionLog.CACHE, "stack_of_visited_objects_that_refer_to_the_corrupt_object", getVisitedStack());
+                    log(SessionLog.FINER, SessionLog.CACHE, "corrupt_object_referenced_through_mapping", getCurrentMapping());
+                    log(SessionLog.FINER, SessionLog.CACHE, "corrupt_object", object);
+                }
+            }
+        };
+        iterator.setSession(this);
+        iterator.startIterationOn(startNode);
     }
 
     /**
@@ -3477,7 +3507,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * RMI serialization (or another serialization mechanism), because the RMI object
      * will be a clone this will merge its attributes correctly to preserve object
      * identity within the unit of work and record its changes.
-     *
+     * <p>
      * The object and its private owned parts are merged.
      *
      * @return the registered version for the clone being merged.
@@ -3543,7 +3573,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * RMI serialization (or another serialization mechanism), because the RMI object
      * will be a clone this will merge its attributes correctly to preserve object
      * identity within the unit of work and record its changes.
-     *
+     * <p>
      * The object and its private owned parts are merged. This will include references from
      * dependent objects to independent objects.
      *
@@ -3563,7 +3593,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * RMI serialization (or another serialization mechanism), because the RMI object
      * will be a clone this will merge its attributes correctly to preserve object
      * identity within the unit of work and record its changes.
-     *
+     * <p>
      * The object and its private owned parts are merged. This will include references from
      * dependent objects to independent objects.
      *
@@ -3582,7 +3612,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * RMI serialization (or another serialization mechanism), because the RMI object
      * will be a clone this will merge its attributes correctly to preserve object
      * identity within the unit of work and record its changes.
-     *
+     * <p>
      * The object and its private owned parts are merged. This will include references from
      * dependent objects to independent objects.
      *
@@ -3612,7 +3642,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * RMI serialization (or another serialization mechanism), because the RMI object
      * will be a clone this will merge its attributes correctly to preserve object
      * identity within the unit of work and record its changes.
-     *
+     * <p>
      * The object and its private owned parts are merged. This will include references from
      * dependent objects to independent objects.
      *
@@ -3841,6 +3871,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                     Object referenceObjectToRemove = getNewObjectsCloneToOriginal().get(removedObject);
                     if (referenceObjectToRemove != null) {
                         getNewObjectsCloneToOriginal().remove(removedObject);
+                        removeObjectFromPrimaryKeyToNewObjects(removedObject);
                         getNewObjectsOriginalToClone().remove(referenceObjectToRemove);
                     }
                 }
@@ -3915,7 +3946,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * Print the objects in the unit of work.
      */
     protected void basicPrintRegisteredObjects() {
-        String cr = Helper.cr();
+        String cr = System.lineSeparator();
         StringWriter writer = new StringWriter();
         writer.write(LoggingLocalization.buildMessage("unitofwork_identity_hashcode", new Object[] { cr, String.valueOf(System.identityHashCode(this)) }));
         if (hasDeletedObjects()) {
@@ -3956,7 +3987,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     public Vector registerAllObjects(Collection domainObjects) {
         Vector clones = new Vector(domainObjects.size());
         for (Iterator objectsEnum = domainObjects.iterator(); objectsEnum.hasNext();) {
-            clones.addElement(registerObject(objectsEnum.next()));
+            clones.add(registerObject(objectsEnum.next()));
         }
         return clones;
     }
@@ -3974,8 +4005,8 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      */
     public Vector registerAllObjects(Vector domainObjects) throws DatabaseException, OptimisticLockException {
         Vector clones = new Vector(domainObjects.size());
-        for (Enumeration objectsEnum = domainObjects.elements(); objectsEnum.hasMoreElements();) {
-            clones.addElement(registerObject(objectsEnum.nextElement()));
+        for (Iterator iterator = domainObjects.iterator(); iterator.hasNext();) {
+            clones.add(registerObject(iterator.next()));
         }
         return clones;
     }
@@ -4243,7 +4274,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     /**
      * INTERNAL:
      * Updated to allow passing in of the object's descriptor
-     *
+     * <p>
      * Register the new object with the unit of work.
      * This will register the new object without cloning.
      * Normally the registerObject method should be used for all registration of new and existing objects.
@@ -4460,6 +4491,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         registerNewObjectInIdentityMap(clone, original, descriptor);
 
         getNewObjectsCloneToOriginal().put(clone, original);
+        addNewObjectToPrimaryKeyToNewObjects(clone,descriptor);
         if (original != null) {
             getNewObjectsOriginalToClone().put(original, clone);
         }
@@ -4529,14 +4561,14 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * INTERNAL:
      * Allows for calling method to provide the descriptor information for this
      * object.  Prevents double lookup of descriptor.
-     *
+     * <p>
      *
      * Register the object with the unit of work.
      * All newly created root domain objects must be registered to be inserted on commit.
      * Also any existing objects that will be edited and were not read from this unit of work
      * must also be registered.
      * Once registered any changes to the objects will be committed to the database on commit.
-     *
+     * <p>
      * calling this method will also sort the objects into different different groups
      * depending on if the object being registered is a bean or a regular Java
      * object and if its updates are deferred, non-deferred or if all modifications
@@ -4980,6 +5012,70 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      */
     protected void setNewObjectsCloneToOriginal(Map newObjects) {
         this.newObjectsCloneToOriginal = newObjects;
+        setupPrimaryKeyToNewObjects();
+    }
+
+    /**
+     * INTERNAL:
+     * Create the map of primary key to new objects used to speed up in-memory querying.
+     */
+    protected void setupPrimaryKeyToNewObjects() {
+        primaryKeyToNewObjects = null;
+        if (hasNewObjects()) {
+            Map newObjects = getNewObjectsCloneToOriginal();
+            primaryKeyToNewObjects = new HashMap<>(newObjects.size());
+            newObjects.forEach((object, o2) -> {
+                addNewObjectToPrimaryKeyToNewObjects(object);
+            });
+        }
+    }
+
+    /**
+     * INTERNAL:
+     * Extracts the primary key from a new object and puts it in primaryKeyToNewObjects.
+     */
+    protected void addNewObjectToPrimaryKeyToNewObjects(Object newObject){
+        ClassDescriptor descriptor = getDescriptor(newObject.getClass());
+        addNewObjectToPrimaryKeyToNewObjects(newObject,descriptor);
+    }
+
+    /**
+     * INTERNAL:
+     * Extracts the primary key from a new object and puts it in primaryKeyToNewObjects.
+     * Allows passing of the ClassDescriptor.
+     */
+    protected void addNewObjectToPrimaryKeyToNewObjects(Object newObject, ClassDescriptor descriptor){
+        ObjectBuilder objectBuilder = descriptor.getObjectBuilder();
+        Object pk = objectBuilder.extractPrimaryKeyFromObject(newObject, this, true);
+        if(pk!=null) {
+            getPrimaryKeyToNewObjects().putIfAbsent(pk, new IdentityHashSet());
+            getPrimaryKeyToNewObjects().get(pk).add(newObject);
+        }
+    }
+    /**
+     * INTERNAL:
+     * Extracts the primary key and removes an object from primaryKeyToNewObjects.
+     */
+    protected void removeObjectFromPrimaryKeyToNewObjects(Object object){
+        ClassDescriptor descriptor = getDescriptor(object.getClass());
+        ObjectBuilder objectBuilder = descriptor.getObjectBuilder();
+        Object pk = objectBuilder.extractPrimaryKeyFromObject(object, this, true);
+        removeObjectFromPrimaryKeyToNewObjects(object,pk);
+    }
+
+    /**
+     * INTERNAL:
+     * Removes an object from primaryKeyToNewObjects.
+     */
+    protected void removeObjectFromPrimaryKeyToNewObjects(Object object, Object primaryKey){
+        Map<Object, IdentityHashSet> pkToNewObjects = getPrimaryKeyToNewObjects();
+        if (pkToNewObjects.containsKey(primaryKey)) {
+            IdentityHashSet newObjects = pkToNewObjects.get(primaryKey);
+            newObjects.remove(object);
+            if (newObjects.isEmpty()) {
+               pkToNewObjects.remove(primaryKey);
+            }
+        }
     }
 
     /**
@@ -5215,7 +5311,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * RMI serialization (or other serialization mechanisms), because the RMI object will
      * be a clone this will merge its attributes correctly to preserve object identity
      * within the unit of work and record its changes.
-     *
+     * <p>
      * Only direct attributes are merged.
      *
      * @return the registered version for the clone being merged.
@@ -5439,6 +5535,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             }
             this.newObjectsCloneToOriginal = null;
             this.newObjectsOriginalToClone = null;
+            this.primaryKeyToNewObjects = null;
         }
         this.unregisteredExistingObjects = null;
         this.unregisteredNewObjects = null;
@@ -5559,6 +5656,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                 // PERF: Avoid initialization of new objects if none.
                 if (hasNewObjects()) {
                     Object original = getNewObjectsCloneToOriginal().remove(object);
+                    removeObjectFromPrimaryKeyToNewObjects(object, primaryKey);
                     if (original != null) {
                         getNewObjectsOriginalToClone().remove(original);
                     }
@@ -5579,8 +5677,13 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         if (forDetach){
             CascadeCondition detached = iterator.new CascadeCondition(){
                 @Override
+                public boolean shouldCascade(DatabaseMapping mapping){
+                    return mapping.isForeignReferenceMapping() && ((ForeignReferenceMapping)mapping).isCascadeDetach();
+                }
+
+                @Override
                 public boolean shouldNotCascade(DatabaseMapping mapping){
-                    return ! (mapping.isForeignReferenceMapping() && ((ForeignReferenceMapping)mapping).isCascadeDetach());
+                    return !shouldCascade(mapping);
                 }
             };
             iterator.setCascadeCondition(detached);
@@ -5750,10 +5853,11 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             throw ValidationException.writeChangesOnNestedUnitOfWork();
         }
         log(SessionLog.FINER, SessionLog.TRANSACTION, "begin_unit_of_work_flush");
-        mergeBmpAndWsEntities();
         if (this.eventManager != null) {
-            this.eventManager.preCommitUnitOfWork();
+            this.eventManager.preFlushUnitOfWork();
         }
+        mergeBmpAndWsEntities();
+
         setLifecycle(CommitPending);
         try {
             commitToDatabaseWithChangeSet(false);
@@ -5765,6 +5869,9 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         }
         setLifecycle(CommitTransactionPending);
         log(SessionLog.FINER, SessionLog.TRANSACTION, "end_unit_of_work_flush");
+        if (this.eventManager != null) {
+            this.eventManager.postFlushUnitOfWork();
+        }
     }
 
     /**
@@ -5864,7 +5971,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * Return true if there are any pessimistic locked objects in this unit of work, false otherwise.
      */
     public boolean hasPessimisticLockedObjects() {
-        return (this.pessimisticLockedObjects != null) && (this.pessimisticLockedObjects.size() != 0);
+        return (this.pessimisticLockedObjects != null) && (!this.pessimisticLockedObjects.isEmpty());
     }
 
     /**
@@ -5922,6 +6029,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         this.cloneMapping = null;
         this.newObjectsCloneToOriginal = null;
         this.newObjectsOriginalToClone = null;
+        this.primaryKeyToNewObjects = null;
         this.deletedObjects = null;
         this.allClones = null;
         this.objectsDeletedDuringCommit = null;
@@ -6042,6 +6150,15 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         return this.changeTrackedHardList;
     }
 
+    @Override
+    public <T> T getReference(T entity) {
+        ClassDescriptor descriptor = getDescriptor(entity);
+        return getReferenceInternal(descriptor.getJavaClass(),
+                                    descriptor.getObjectBuilder()
+                                            .extractPrimaryKeyFromObject(entity, this),
+                                    descriptor);
+    }
+
     /**
      * Get an instance, whose state may be lazily fetched.
      * If the requested instance does not exist in the database, null is returned, or the object will fail when accessed.
@@ -6049,25 +6166,29 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * @param id The primary key of the object, either as a List, singleton, IdClass or an instance of the object.
      */
     @Override
-    public Object getReference(Class<?> theClass, Object id) {
-        ClassDescriptor descriptor = getDescriptor(theClass);
+    public <T> T getReference(Class<T> theClass, Object id) {
+        return getReferenceInternal(theClass, id, getDescriptor(theClass));
+    }
+
+    // Get an instance, whose state may be lazily fetched.
+    public <T> T getReferenceInternal(Class<T> theClass, Object id, ClassDescriptor descriptor) {
         if (descriptor == null || descriptor.isDescriptorTypeAggregate()) {
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("unknown_bean_class", new Object[] { theClass }));
         }
-        Object reference;
         if (id == null) { //gf721 - check for null PK
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("null_pk"));
         }
+        Object reference;
         Object primaryKey;
         if (id instanceof List) {
             if (descriptor.getCachePolicy().getCacheKeyType() == CacheKeyType.ID_VALUE) {
-                if (((List)id).isEmpty()) {
+                if (((List<?>)id).isEmpty()) {
                     primaryKey = null;
                 } else {
-                    primaryKey = ((List)id).get(0);
+                    primaryKey = ((List<?>)id).get(0);
                 }
             } else {
-                primaryKey = new CacheId(((List)id).toArray());
+                primaryKey = new CacheId(((List<?>)id).toArray());
             }
         } else if (id instanceof CacheId) {
             primaryKey = id;
@@ -6106,7 +6227,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             query.setIsExecutionClone(true);
             reference = executeQuery(query);
         }
-        return reference;
+        return theClass.cast(reference);
     }
 
     /**

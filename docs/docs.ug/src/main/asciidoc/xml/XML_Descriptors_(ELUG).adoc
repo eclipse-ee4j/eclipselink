@@ -1,0 +1,21 @@
+== Creating and Configuring XML Descriptors
+
+The following sections contain general information about XML
+descriptors, as well as detailed information on how to create and
+configure these descriptors:
+
+* link:Introduction_to_XML_Descriptors_(ELUG)[Introduction to XML
+Descriptors]
+
+* link:Creating_an_XML_Descriptor_(ELUG)[Creating an XML Descriptor]
+
+* link:Configuring_an_XML_Descriptor_(ELUG)[Configuring an XML
+Descriptor]
+
+*Special:Whatlinkshere_XML_Descriptors_(ELUG)[Related Topics]*
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]

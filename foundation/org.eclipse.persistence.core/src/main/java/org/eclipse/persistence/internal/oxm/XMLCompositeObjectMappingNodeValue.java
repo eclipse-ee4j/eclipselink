@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,16 +14,11 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.oxm;
 
-import java.lang.reflect.Modifier;
-import java.util.List;
-
-import javax.xml.namespace.QName;
-
 import org.eclipse.persistence.core.queries.CoreAttributeGroup;
 import org.eclipse.persistence.core.queries.CoreAttributeItem;
 import org.eclipse.persistence.core.sessions.CoreSession;
 import org.eclipse.persistence.exceptions.DescriptorException;
-import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.oxm.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.mappings.CompositeObjectMapping;
 import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
@@ -50,6 +45,10 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
+
+import javax.xml.namespace.QName;
+import java.lang.reflect.Modifier;
+import java.util.List;
 
 /**
  * INTERNAL:
@@ -109,8 +108,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
         } else {
             UnmarshalKeepAsElementPolicy keepAsElementPolicy = getMapping().getKeepAsElementPolicy();
             if(null != keepAsElementPolicy && (keepAsElementPolicy.isKeepAllAsElement() || keepAsElementPolicy.isKeepUnknownAsElement())) {
-                if(objectValue instanceof Node) {
-                    Node rootNode = (Node)objectValue;
+                if(objectValue instanceof Node rootNode) {
                     NamedNodeMap attributes = rootNode.getAttributes();
                     for(int i = 0; i < attributes.getLength(); i++) {
                         Attr next = (Attr)attributes.item(i);
@@ -308,10 +306,10 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
                             frag.setNamespaceAware(unmarshalRecord.isNamespaceAware());
                             String xpath = leafType.getLocalPart();
                             String uri = leafType.getNamespaceURI();
-                            if (uri != null && uri.length() > 0) {
+                            if (uri != null && !uri.isEmpty()) {
                                 frag.setNamespaceURI(uri);
                                 String prefix = ((Descriptor)xmlCompositeObjectMapping.getDescriptor()).getNonNullNamespaceResolver().resolveNamespaceURI(uri);
-                                if (prefix != null && prefix.length() > 0) {
+                                if (prefix != null && !prefix.isEmpty()) {
                                     xpath = prefix + Constants.COLON + xpath;
                                 }
                             }
@@ -399,7 +397,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
             SAXFragmentBuilder builder = unmarshalRecord.getFragmentBuilder();
             UnmarshalKeepAsElementPolicy keepAsElementPolicy = xmlCompositeObjectMapping.getKeepAsElementPolicy();
 
-            if (null != keepAsElementPolicy && (keepAsElementPolicy.isKeepUnknownAsElement() || keepAsElementPolicy.isKeepAllAsElement()) && builder.getNodes().size() != 0) {
+            if (null != keepAsElementPolicy && (keepAsElementPolicy.isKeepUnknownAsElement() || keepAsElementPolicy.isKeepAllAsElement()) && !builder.getNodes().isEmpty()) {
 
                 if(unmarshalRecord.getTypeQName() != null){
                     Class<Object> theClass = unmarshalRecord.getConversionManager().javaType(unmarshalRecord.getTypeQName());
@@ -464,7 +462,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
             UnmarshalKeepAsElementPolicy keepAsElementPolicy = xmlCompositeObjectMapping.getKeepAsElementPolicy();
 
             SAXFragmentBuilder builder = unmarshalRecord.getFragmentBuilder();
-            if ((((keepAsElementPolicy.isKeepUnknownAsElement()) || (keepAsElementPolicy.isKeepAllAsElement())))&& (builder.getNodes().size() != 0) ) {
+            if ((((keepAsElementPolicy.isKeepUnknownAsElement()) || (keepAsElementPolicy.isKeepAllAsElement())))&& (!builder.getNodes().isEmpty()) ) {
                 if(unmarshalRecord.getTypeQName() != null){
                     Class<Object> theClass = unmarshalRecord.getConversionManager().javaType(unmarshalRecord.getTypeQName());
                     if(theClass != null){
@@ -559,7 +557,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
                         // on the mapping -  make sure it is non-abstract
                         if (Modifier.isAbstract(xmlDescriptor.getJavaClass().getModifiers())) {
                             // need to throw an exception here
-                            throw DescriptorException.missingClassIndicatorField(unmarshalRecord, (org.eclipse.persistence.oxm.XMLDescriptor)xmlDescriptor.getInheritancePolicy().getDescriptor());
+                            throw DescriptorException.missingClassIndicatorField(unmarshalRecord.toString(), (org.eclipse.persistence.oxm.XMLDescriptor)xmlDescriptor.getInheritancePolicy().getDescriptor());
                         }
                     }
                 }

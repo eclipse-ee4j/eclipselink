@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,13 +14,20 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.expressions;
 
-import java.io.*;
-import java.util.*;
-import org.eclipse.persistence.exceptions.*;
+import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.expressions.Expression;
-import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.queries.*;
+import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.queries.SQLCall;
+
+import java.io.CharArrayWriter;
+import java.io.IOException;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
 
 /**
  * <p><b>Purpose</b>: Print UPDATE statement.
@@ -31,6 +38,9 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
  *    @since TOPLink/Java 1.0
  */
 public class SQLUpdateStatement extends SQLModifyStatement {
+
+    public SQLUpdateStatement() {
+    }
 
     /**
      * Append the string containing the SQL insert string for the given table.
@@ -52,15 +62,15 @@ public class SQLUpdateStatement extends SQLModifyStatement {
 
             ExpressionSQLPrinter printer = null;
 
-            Vector fieldsForTable = new Vector();
-            Enumeration valuesEnum = getModifyRow().getValues().elements();
+            List<DatabaseField> fieldsForTable = new ArrayList<>();
+            Iterator iterator = getModifyRow().getValues().iterator();
             Vector values = new Vector();
             for (Enumeration fieldsEnum = getModifyRow().keys(); fieldsEnum.hasMoreElements();) {
                 DatabaseField field = (DatabaseField)fieldsEnum.nextElement();
-                Object value = valuesEnum.nextElement();
+                Object value = iterator.next();
                 if (field.getTable().equals(getTable()) || (!field.hasTableName())) {
-                    fieldsForTable.addElement(field);
-                    values.addElement(value);
+                    fieldsForTable.add(field);
+                    values.add(value);
                 }
             }
 
@@ -69,12 +79,11 @@ public class SQLUpdateStatement extends SQLModifyStatement {
             }
 
             for (int i = 0; i < fieldsForTable.size(); i++) {
-                DatabaseField field = (DatabaseField)fieldsForTable.elementAt(i);
+                DatabaseField field = fieldsForTable.get(i);
                 writer.write(field.getNameDelimited(session.getPlatform()));
                 writer.write(" = ");
-                if(values.elementAt(i) instanceof Expression) {
+                if(values.get(i) instanceof Expression exp) {
                     // the value in the modify row is an expression - assign it.
-                    Expression exp = (Expression)values.elementAt(i);
                     if(printer == null) {
                         printer = new ExpressionSQLPrinter(session, getTranslationRow(), call, false, getBuilder());
                         printer.setWriter(writer);
@@ -91,7 +100,7 @@ public class SQLUpdateStatement extends SQLModifyStatement {
                 }
             }
 
-            if (!(getWhereClause() == null)) {
+            if (getWhereClause() != null) {
                 writer.write(" WHERE ");
                 if(printer == null) {
                     printer = new ExpressionSQLPrinter(session, getTranslationRow(), call, false, getBuilder());

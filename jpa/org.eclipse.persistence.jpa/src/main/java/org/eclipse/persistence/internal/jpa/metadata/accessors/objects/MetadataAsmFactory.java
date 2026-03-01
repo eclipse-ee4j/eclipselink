@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2018 Hans Harz, Andrew Rustleund, IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Hans Harz, Andrew Rustleund, IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,20 +34,21 @@ import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.persistence.asm.ASMFactory;
+import org.eclipse.persistence.asm.AnnotationVisitor;
+import org.eclipse.persistence.asm.EclipseLinkAnnotationVisitor;
+import org.eclipse.persistence.asm.Attribute;
+import org.eclipse.persistence.asm.ClassReader;
+import org.eclipse.persistence.asm.EclipseLinkClassVisitor;
+import org.eclipse.persistence.asm.EclipseLinkFieldVisitor;
+import org.eclipse.persistence.asm.FieldVisitor;
+import org.eclipse.persistence.asm.EclipseLinkMethodVisitor;
+import org.eclipse.persistence.asm.MethodVisitor;
+import org.eclipse.persistence.asm.Opcodes;
+import org.eclipse.persistence.asm.Type;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
-import org.eclipse.persistence.internal.libraries.asm.AnnotationVisitor;
-import org.eclipse.persistence.internal.libraries.asm.EclipseLinkAnnotationVisitor;
-import org.eclipse.persistence.internal.libraries.asm.Attribute;
-import org.eclipse.persistence.internal.libraries.asm.ClassReader;
-import org.eclipse.persistence.internal.libraries.asm.EclipseLinkClassVisitor;
-import org.eclipse.persistence.internal.libraries.asm.EclipseLinkFieldVisitor;
-import org.eclipse.persistence.internal.libraries.asm.EclipseLinkClassReader;
-import org.eclipse.persistence.internal.libraries.asm.FieldVisitor;
-import org.eclipse.persistence.internal.libraries.asm.EclipseLinkMethodVisitor;
-import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
-import org.eclipse.persistence.internal.libraries.asm.Type;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.logging.AbstractSessionLog;
@@ -90,21 +91,15 @@ public class MetadataAsmFactory extends MetadataFactory {
     protected void buildClassMetadata(MetadataClass metadataClass, String className, boolean isLazy) {
         ClassMetadataVisitor visitor = new ClassMetadataVisitor(metadataClass, isLazy);
         InputStream stream = null;
+        String resourceString = className.replace('.', '/') + ".class";
+        boolean markSupported = false;
         try {
-            String resourceString = className.replace('.', '/') + ".class";
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                final String f_resourceString = resourceString;
-                stream = AccessController.doPrivileged(new PrivilegedAction<InputStream>() {
-                    @Override
-                    public InputStream run() {
-                        return m_loader.getResourceAsStream(f_resourceString);
-                    }
-                });
-            } else {
-                stream = m_loader.getResourceAsStream(resourceString);
+            stream = readResource(resourceString);
+            if (markSupported = stream.markSupported()) {
+                stream.mark(Integer.MAX_VALUE);
             }
 
-            ClassReader reader = new ClassReader(stream);
+            ClassReader reader = ASMFactory.createClassReader(stream);
             Attribute[] attributes = new Attribute[0];
             reader.accept(visitor, attributes, ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
         } catch (IllegalArgumentException iae) {
@@ -113,8 +108,29 @@ public class MetadataAsmFactory extends MetadataFactory {
             // in such case log a warning and try to re-read the class
             // without class version check
             if (stream != null) {
+                if (markSupported) {
+                    try {
+                        stream.reset();
+                    } catch (IOException e) {
+                        try {
+                            stream.close();
+                        } catch (IOException ex) {
+                            //ignore
+                        }
+                        stream = readResource(resourceString);
+                    }
+                } else {
+                    try {
+                        stream.close();
+                    } catch (IOException ex) {
+                        //ignore
+                    }
+                    stream = readResource(resourceString);
+                }
                 try {
-                    ClassReader reader = new EclipseLinkClassReader(stream);
+                    //Second argument checkClassVersion=false means, that EclipseLink ASM implementation is used
+                    //as checkClassVersion is not visible by public constructor
+                    ClassReader reader = ASMFactory.createClassReader(stream, false);
                     Attribute[] attributes = new Attribute[0];
                     reader.accept(visitor, attributes, ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
                 } catch (Exception e) {
@@ -122,9 +138,8 @@ public class MetadataAsmFactory extends MetadataFactory {
                             ? getLogger().getSession().getSessionLog() : AbstractSessionLog.getLog();
                     // our fall-back failed, this is severe
                     if (log.shouldLog(SessionLog.SEVERE, SessionLog.METADATA)) {
-                        SessionLogEntry entry = new SessionLogEntry(getLogger().getSession(), SessionLog.SEVERE, SessionLog.METADATA, e);
-                        entry.setMessage(ExceptionLocalization.buildMessage("unsupported_classfile_version", new Object[] { className }));
-                        log.log(entry);
+                        String sessionId = getLogger().getSession() != null ? getLogger().getSession().getSessionId() : null;
+                        log.log(new SessionLogEntry(SessionLog.SEVERE, SessionLog.METADATA, sessionId, ExceptionLocalization.buildMessage("unsupported_classfile_version", new Object[] {className}), e));
                     }
                     addMetadataClass(getVirtualMetadataClass(className));
                 }
@@ -228,6 +243,24 @@ public class MetadataAsmFactory extends MetadataFactory {
         }
     }
 
+    private InputStream readResource(String name) {
+        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+            return AccessController.doPrivileged(new PrivilegedAction<>() {
+                @Override
+                public InputStream run() {
+                    return m_loader.getResourceAsStream(name);
+                }
+            });
+        } else {
+            return m_loader.getResourceAsStream(name);
+        }
+    }
+
+    @Override
+    public boolean isInterface(MetadataClass metadataClass) {
+        return (Opcodes.ACC_INTERFACE & metadataClass.getModifiers()) != 0;
+    }
+
     /**
      * Walk the class byte codes and collect the class info.
      */
@@ -239,6 +272,7 @@ public class MetadataAsmFactory extends MetadataFactory {
 
         ClassMetadataVisitor(MetadataClass metadataClass, boolean isLazy) {
             super();
+            super.setCustomClassVisitor(this);
             this.isLazy = isLazy;
             this.classMetadata = metadataClass;
         }
@@ -272,7 +306,7 @@ public class MetadataAsmFactory extends MetadataFactory {
         @Override
         public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
             this.processedMemeber = true;
-            if (this.classMetadata.isLazy() || name.indexOf("init>") != -1) {
+            if (this.classMetadata.isLazy() || name.contains("init>")) {
                 return null;
             }
             return new MetadataMethodVisitor(this.classMetadata, access, name, signature, desc, exceptions);
@@ -315,6 +349,10 @@ public class MetadataAsmFactory extends MetadataFactory {
             return new MetadataAnnotationVisitor(this.classMetadata, desc, isJPA || desc.startsWith("Lorg/eclipse/persistence"));
         }
 
+        @Override
+        public void visitEnd() {
+            //TODO should lead into infinite loop if visitEnd() is not implemented here
+        }
     }
 
     /**
@@ -343,6 +381,7 @@ public class MetadataAsmFactory extends MetadataFactory {
 
         MetadataAnnotationVisitor(MetadataAnnotatedElement element, String name, boolean isRegular) {
             super();
+            super.setCustomAnnotationVisitor(this);
             this.element = element;
             this.annotation = new MetadataAnnotation();
             this.annotation.setName(processDescription(name, false).get(0));
@@ -351,6 +390,7 @@ public class MetadataAsmFactory extends MetadataFactory {
 
         public MetadataAnnotationVisitor(MetadataAnnotation annotation) {
             super();
+            super.setCustomAnnotationVisitor(this);
             this.annotation = annotation;
         }
 
@@ -403,9 +443,10 @@ public class MetadataAsmFactory extends MetadataFactory {
 
         public MetadataAnnotationArrayVisitor(MetadataAnnotation annotation, String name) {
             super();
+            super.setCustomAnnotationVisitor(this);
             this.annotation = annotation;
             this.attributeName = name;
-            this.values = new ArrayList<Object>();
+            this.values = new ArrayList<>();
         }
 
         @Override
@@ -442,6 +483,7 @@ public class MetadataAsmFactory extends MetadataFactory {
 
         public MetadataFieldVisitor(MetadataClass classMetadata, int access, String name, String desc, String signature, Object value) {
             super();
+            super.setCustomFieldVisitor(this);
             this.field = new MetadataField(classMetadata);
             this.field.setModifiers(access);
             this.field.setName(name);
@@ -477,6 +519,7 @@ public class MetadataAsmFactory extends MetadataFactory {
 
         public MetadataMethodVisitor(MetadataClass classMetadata, int access, String name, String desc, String signature, String[] exceptions) {
             super();
+            super.setCustomMethodVisitor(this);
             this.method = new MetadataMethod(MetadataAsmFactory.this, classMetadata);
 
             this.method.setName(name);
@@ -500,6 +543,11 @@ public class MetadataAsmFactory extends MetadataFactory {
                 return new MetadataAnnotationVisitor(this.method, desc);
             }
             return null;
+        }
+
+        @Override
+        public void visitAttribute(Attribute attr) {
+            super.visitAttributeSuper(attr);
         }
 
         /**
@@ -568,7 +616,7 @@ public class MetadataAsmFactory extends MetadataFactory {
         if (desc == null) {
             return null;
         }
-        List<String> arguments = new ArrayList<String>();
+        List<String> arguments = new ArrayList<>();
         int index = 0;
         int length = desc.length();
         boolean isGenericTyped=false;
@@ -604,13 +652,11 @@ public class MetadataAsmFactory extends MetadataFactory {
                 } else if (next == '[') {
                     // Arrays.
                     int start = index;
-                    index++;
-                    next = chars[index];
                     // Nested arrays.
-                    while (next == '[') {
+                    do {
                         index++;
                         next = chars[index];
-                    }
+                    } while (next == '[');
                     if (PRIMITIVES.indexOf(next) == -1) {
                         while (next != ';') {
                             index++;
@@ -693,9 +739,7 @@ public class MetadataAsmFactory extends MetadataFactory {
      * Convert the annotation value into the value used in the meta model
      */
     private static Object annotationValue(String description, Object value) {
-        if (value instanceof Type) {
-            return ((Type) value).getClassName();
-        }
-        return value;
+        Object className = Type.getTypeClassName(value);
+        return (className != null) ? className: value;
     }
 }

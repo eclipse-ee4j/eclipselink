@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -53,7 +53,7 @@ import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 /**
  * Object to represent all the attributes of an XML defined entity,
  * mapped-superclass or embeddable.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -98,8 +98,7 @@ public class XMLAttributes extends ORMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (objectToCompare instanceof XMLAttributes) {
-            XMLAttributes attributes = (XMLAttributes) objectToCompare;
+        if (objectToCompare instanceof XMLAttributes attributes) {
 
             if (! valuesMatch(m_embeddedId, attributes.getEmbeddedId())) {
                 return false;
@@ -173,7 +172,8 @@ public class XMLAttributes extends ORMetadata {
 
     @Override
     public int hashCode() {
-        int result = m_embeddedId != null ? m_embeddedId.hashCode() : 0;
+        int result = super.hashCode();
+        result = 31 * result + (m_embeddedId != null ? m_embeddedId.hashCode() : 0);
         result = 31 * result + (m_basics != null ? m_basics.hashCode() : 0);
         result = 31 * result + (m_basicCollections != null ? m_basicCollections.hashCode() : 0);
         result = 31 * result + (m_basicMaps != null ? m_basicMaps.hashCode() : 0);
@@ -200,7 +200,7 @@ public class XMLAttributes extends ORMetadata {
      * this method is called (which should only ever be once!)
      */
     public List<MappingAccessor> getAccessors() {
-        List<MappingAccessor> accessors = new ArrayList<MappingAccessor>();
+        List<MappingAccessor> accessors = new ArrayList<>();
 
         if (m_embeddedId != null) {
             accessors.add(m_embeddedId);

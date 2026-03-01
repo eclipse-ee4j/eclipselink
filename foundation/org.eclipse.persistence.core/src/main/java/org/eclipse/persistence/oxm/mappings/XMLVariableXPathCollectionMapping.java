@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,13 +14,9 @@
 //     Matt MacIvor - 2.5.1 - Initial Implementation
 package org.eclipse.persistence.oxm.mappings;
 
-import java.util.Vector;
-
-import javax.xml.namespace.QName;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DescriptorException;
-import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.oxm.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.descriptors.InstanceVariableAttributeAccessor;
 import org.eclipse.persistence.internal.descriptors.MethodAttributeAccessor;
 import org.eclipse.persistence.internal.helper.DatabaseField;
@@ -39,6 +35,10 @@ import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.eclipse.persistence.sessions.Session;
+
+import javax.xml.namespace.QName;
+import java.util.List;
+
 public class XMLVariableXPathCollectionMapping extends XMLCompositeCollectionMapping implements VariableXPathCollectionMapping<AbstractSession, AttributeAccessor, ContainerPolicy, Converter, ClassDescriptor, DatabaseField, XMLMarshaller, Session, XMLUnmarshaller, XMLRecord>, XMLMapping, XMLContainerMapping {
 
     protected String variableAttributeName;
@@ -95,7 +95,7 @@ public class XMLVariableXPathCollectionMapping extends XMLCompositeCollectionMap
        }
 
     @Override
-    protected Vector collectFields() {
+    protected List<DatabaseField> collectFields() {
         if(field != null){
             return super.collectFields();
         }
@@ -105,10 +105,10 @@ public class XMLVariableXPathCollectionMapping extends XMLCompositeCollectionMap
         return NO_FIELDS;
     }
 
-@Override
-public Vector getFields() {
-    return collectFields();
-}
+    @Override
+    public List<DatabaseField> getFields() {
+        return collectFields();
+    }
 
 //    public Vector getFields() {
   //      return fields;
@@ -233,14 +233,14 @@ public Vector getFields() {
             }
             XPathFragment frag = new XPathFragment();
             frag.setLocalName(returnString);
-            if(isNamespaceAware && uri != null && uri.length() >0){
+            if(isNamespaceAware && uri != null && !uri.isEmpty()){
                 String prefix = nr.resolveNamespaceURI(uri);
                 if(prefix == null){
                        prefix = nr.generatePrefix();
                     //marshalRecord.namespaceDeclaration(prefix, uri);
                        frag.setGeneratedPrefix(true);
                 }
-                if(prefix != null && prefix.length() >0){
+                if(prefix != null && !prefix.isEmpty()){
                     frag.setPrefix(prefix);
                     //returnString = prefix + sep + returnString;
                 }

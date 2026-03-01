@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,7 +15,6 @@
 package org.eclipse.persistence.testing.tests;
 
 import junit.framework.Test;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.testing.framework.TestModel;
 
@@ -157,20 +156,15 @@ public class TestRunModel extends TestModel {
 
         for (int index = 0; index < tests.size(); ++index) {
             try {
-                addTest((TestModel)Class.forName(tests.elementAt(index)).getConstructor().newInstance());
+                addTest((TestModel)Class.forName(tests.get(index)).getConstructor().newInstance());
             } catch (Throwable exception) {
-                System.out.println("Failed to set up " + tests.elementAt(index) + " \n" + exception);
+                System.out.println("Failed to set up " + tests.get(index) + " \n" + exception);
                 //exception.printStackTrace();
             }
         }
 
         // Sort the tests alphabetically.
-        this.getTests().sort(new Comparator<Object>() {
-            @Override
-            public int compare(Object left, Object right) {
-                return Helper.getShortClassName(left.getClass()).compareTo(Helper.getShortClassName(right.getClass()));
-            }
-        });
+        this.getTests().sort(Comparator.comparing(left -> left.getClass().getSimpleName()));
         testList = tests;
     }
 
@@ -204,9 +198,9 @@ public class TestRunModel extends TestModel {
         manual.setName("Manual Tests");
         for (int index = 0; index < manualTest.size(); ++index) {
             try {
-                manual.addTest((TestModel)Class.forName(manualTest.elementAt(index)).getConstructor().newInstance());
+                manual.addTest((TestModel)Class.forName(manualTest.get(index)).getConstructor().newInstance());
             } catch (Exception exception) {
-                System.out.println("Failed to set up " + manualTest.elementAt(index) + " \n" + exception);
+                System.out.println("Failed to set up " + manualTest.get(index) + " \n" + exception);
             }
         }
         models.add(manual);
@@ -223,11 +217,11 @@ public class TestRunModel extends TestModel {
 
         TestModel model = new TestModel();
         model.setName("JPA Tests");
-        for (int index = 0; index < tests.size(); ++index) {
+        for (String test : tests) {
             try {
-                model.addTest((TestModel)Class.forName(tests.get(index)).getConstructor().newInstance());
+                model.addTest((TestModel) Class.forName(test).getConstructor().newInstance());
             } catch (Throwable exception) {
-                System.out.println("Failed to set up " + tests.get(index) + " \n" + exception);
+                System.out.println("Failed to set up " + test + " \n" + exception);
             }
         }
         return model;
@@ -247,18 +241,18 @@ public class TestRunModel extends TestModel {
 
         TestModel model = new TestModel();
         model.setName("Oracle Tests");
-        for (int index = 0; index < tests.size(); ++index) {
+        for (String test : tests) {
             Class<?> cls;
             try {
-                cls = Class.forName(tests.get(index));
-                if(TestModel.class.isAssignableFrom(cls)) {
-                    model.addTest((TestModel)cls.getConstructor().newInstance());
+                cls = Class.forName(test);
+                if (TestModel.class.isAssignableFrom(cls)) {
+                    model.addTest((TestModel) cls.getConstructor().newInstance());
                 } else {
                     Method suite = cls.getDeclaredMethod("suite");
-                    model.addTest((Test)suite.invoke(null, new Object[]{}));
+                    model.addTest((Test) suite.invoke(null, new Object[]{}));
                 }
             } catch (Throwable exception) {
-                System.out.println("Failed to set up " + tests.get(index) + " \n" + exception);
+                System.out.println("Failed to set up " + test + " \n" + exception);
             }
         }
         return model;
@@ -276,18 +270,18 @@ public class TestRunModel extends TestModel {
 
         TestModel model = new TestModel();
         model.setName("Oracle NoSQL Tests");
-        for (int index = 0; index < tests.size(); ++index) {
+        for (String test : tests) {
             Class<?> cls;
             try {
-                cls = Class.forName(tests.get(index));
-                if(TestModel.class.isAssignableFrom(cls)) {
-                    model.addTest((TestModel)cls.getConstructor().newInstance());
+                cls = Class.forName(test);
+                if (TestModel.class.isAssignableFrom(cls)) {
+                    model.addTest((TestModel) cls.getConstructor().newInstance());
                 } else {
                     Method suite = cls.getDeclaredMethod("suite");
-                    model.addTest((Test)suite.invoke(null, new Object[]{}));
+                    model.addTest((Test) suite.invoke(null, new Object[]{}));
                 }
             } catch (Throwable exception) {
-                System.out.println("Failed to set up " + tests.get(index) + " \n" + exception);
+                System.out.println("Failed to set up " + test + " \n" + exception);
             }
         }
         return model;
@@ -304,18 +298,18 @@ public class TestRunModel extends TestModel {
 
         TestModel model = new TestModel();
         model.setName("NoSQL Tests");
-        for (int index = 0; index < tests.size(); ++index) {
+        for (String test : tests) {
             Class<?> cls;
             try {
-                cls = Class.forName(tests.get(index));
-                if(TestModel.class.isAssignableFrom(cls)) {
-                    model.addTest((TestModel)cls.getConstructor().newInstance());
+                cls = Class.forName(test);
+                if (TestModel.class.isAssignableFrom(cls)) {
+                    model.addTest((TestModel) cls.getConstructor().newInstance());
                 } else {
                     Method suite = cls.getDeclaredMethod("suite");
-                    model.addTest((Test)suite.invoke(null, new Object[]{}));
+                    model.addTest((Test) suite.invoke(null, new Object[]{}));
                 }
             } catch (Throwable exception) {
-                System.out.println("Failed to set up " + tests.get(index) + " \n" + exception);
+                System.out.println("Failed to set up " + test + " \n" + exception);
             }
         }
         return model;
@@ -408,9 +402,9 @@ public class TestRunModel extends TestModel {
         performanceModel.setName("Performance Tests");
         for (int index = 0; index < performanceTests.size(); ++index) {
             try {
-                performanceModel.addTest((TestModel)Class.forName(performanceTests.elementAt(index)).getConstructor().newInstance());
+                performanceModel.addTest((TestModel)Class.forName(performanceTests.get(index)).getConstructor().newInstance());
             } catch (Exception exception) {
-                System.out.println("Failed to set up " + performanceTests.elementAt(index) + " \n" + exception);
+                System.out.println("Failed to set up " + performanceTests.get(index) + " \n" + exception);
             }
         }
         return performanceModel;
@@ -428,9 +422,9 @@ public class TestRunModel extends TestModel {
         performanceModel.setName("Jakarta Persistence Performance Tests");
         for (int index = 0; index < performanceTests.size(); ++index) {
             try {
-                performanceModel.addTest((TestModel)Class.forName(performanceTests.elementAt(index)).getConstructor().newInstance());
+                performanceModel.addTest((TestModel)Class.forName(performanceTests.get(index)).getConstructor().newInstance());
             } catch (Exception exception) {
-                System.out.println("Failed to set up " + performanceTests.elementAt(index) + " \n" + exception);
+                System.out.println("Failed to set up " + performanceTests.get(index) + " \n" + exception);
             }
         }
         return performanceModel;

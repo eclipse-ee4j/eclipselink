@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,11 +14,11 @@
 //     rbarkhouse - 2009-10-07 13:24:58 - initial implementation
 package org.eclipse.persistence.testing.oxm.mappings.collectionreference.reuse;
 
+import org.eclipse.persistence.testing.oxm.mappings.XMLWithJSONMappingTestCases;
+
 import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
-
-import org.eclipse.persistence.testing.oxm.mappings.XMLWithJSONMappingTestCases;
 
 public class CollectionReferenceReuseTestCases extends XMLWithJSONMappingTestCases {
 
@@ -52,7 +52,7 @@ public class CollectionReferenceReuseTestCases extends XMLWithJSONMappingTestCas
         other.info = "Site 17 RR#4, Boonies NY, 78112";
         other.type = "other";
 
-        List<Address> addresses = new LinkedList<Address>();
+        List<Address> addresses = new LinkedList<>();
         addresses.add(home);
         addresses.add(work);
         addresses.add(other);

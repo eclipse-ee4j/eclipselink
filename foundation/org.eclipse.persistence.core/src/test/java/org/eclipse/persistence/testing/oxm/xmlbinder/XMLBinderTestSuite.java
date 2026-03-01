@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,14 +14,13 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.oxm.xmlbinder;
 
-import org.eclipse.persistence.testing.oxm.xmlbinder.anymappingtests.XMLBinderAnyCollectionTestCases;
-import org.eclipse.persistence.testing.oxm.xmlbinder.basictests.XMLBinderBasicTestCases;
-import org.eclipse.persistence.testing.oxm.xmlbinder.anymappingtests.XMLBinderAnyObjectTestCases;
-import org.eclipse.persistence.testing.oxm.xmlbinder.keybasedmappingtests.XMLBinderKeyBasedMappingTests;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
+import org.eclipse.persistence.testing.oxm.xmlbinder.anymappingtests.XMLBinderAnyCollectionTestCases;
+import org.eclipse.persistence.testing.oxm.xmlbinder.anymappingtests.XMLBinderAnyObjectTestCases;
+import org.eclipse.persistence.testing.oxm.xmlbinder.basictests.XMLBinderBasicTestCases;
+import org.eclipse.persistence.testing.oxm.xmlbinder.keybasedmappingtests.XMLBinderKeyBasedMappingTests;
 
 /**
  *  @version $Header: DocumentPreservationTestSuite.java 06-jun-2005.13:43:48 dmahar Exp $

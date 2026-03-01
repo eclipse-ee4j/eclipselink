@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,6 +15,8 @@
 //     04/21/2022: Tomas Kraus
 //       - Issue 1474: Update JPQL Grammar for Jakarta Persistence 2.2, 3.0 and 3.1
 //       - Issue 317: Implement LOCAL DATE, LOCAL TIME and LOCAL DATETIME.
+//     06/02/2023: Radek Felcman
+//       - Issue 1885: Implement new JPQLGrammar for upcoming Jakarta Persistence 3.2
 package org.eclipse.persistence.jpa.jpql.parser;
 
 /**
@@ -122,12 +124,22 @@ public abstract class AnonymousExpressionVisitor implements ExpressionVisitor {
     }
 
     @Override
+    public void visit(ConcatPipesExpression expression) {
+        visit((Expression) expression);
+    }
+
+    @Override
     public void visit(ConstructorExpression expression) {
         visit((Expression) expression);
     }
 
     @Override
     public void visit(CountFunction expression) {
+        visit((Expression) expression);
+    }
+
+    @Override
+    public void visit(DatabaseType expression) {
         visit((Expression) expression);
     }
 
@@ -180,6 +192,11 @@ public abstract class AnonymousExpressionVisitor implements ExpressionVisitor {
     }
 
     @Override
+    public void visit(CastExpression expression) {
+        visit((Expression) expression);
+    }
+
+    @Override
     public void visit(FromClause expression) {
         visit((Expression) expression);
     }
@@ -206,6 +223,11 @@ public abstract class AnonymousExpressionVisitor implements ExpressionVisitor {
 
     @Override
     public void visit(IdentificationVariableDeclaration expression) {
+        visit((Expression) expression);
+    }
+
+    @Override
+    public void visit(IdExpression expression) {
         visit((Expression) expression);
     }
 
@@ -241,6 +263,11 @@ public abstract class AnonymousExpressionVisitor implements ExpressionVisitor {
 
     @Override
     public void visit(KeywordExpression expression) {
+        visit((Expression) expression);
+    }
+
+    @Override
+    public void visit(LeftExpression expression) {
         visit((Expression) expression);
     }
 
@@ -385,7 +412,17 @@ public abstract class AnonymousExpressionVisitor implements ExpressionVisitor {
     }
 
     @Override
+    public void visit(ReplaceExpression expression) {
+        visit((Expression) expression);
+    }
+
+    @Override
     public void visit(ResultVariable expression) {
+        visit((Expression) expression);
+    }
+
+    @Override
+    public void visit(RightExpression expression) {
         visit((Expression) expression);
     }
 
@@ -500,12 +537,22 @@ public abstract class AnonymousExpressionVisitor implements ExpressionVisitor {
     }
 
     @Override
+    public void visit(VersionExpression expression) {
+        visit((Expression) expression);
+    }
+
+    @Override
     public void visit(WhenClause expression) {
         visit((Expression) expression);
     }
 
     @Override
     public void visit(WhereClause expression) {
+        visit((Expression) expression);
+    }
+
+    @Override
+    public void visit(UnionClause expression) {
         visit((Expression) expression);
     }
 }

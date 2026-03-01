@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -16,20 +16,20 @@
 //     IBM - Bug 537795: CASE THEN and ELSE scalar expression Constants should not be casted to CASE operand type
 package org.eclipse.persistence.internal.expressions;
 
-import java.util.Map;
-
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.expressions.ListExpressionOperator;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 
+import java.util.Map;
+
 /**
  * INTERNAL:
  * This an extended FunctionExpression that allows the argument list to grow after it is created.
  * New expressions may be added to the list and the printing of the database string is handled automatically
- *
+ * <p>
  * This expression's addChild() method is used to construct the list.
- *
+ * <p>
  * Note: This expression is designed to handle addition of children up until the first normalization (execution)
  * of a query involving this expression.  After normalization, the behavior is undefined.
  *
@@ -42,6 +42,9 @@ import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 public class ArgumentListFunctionExpression extends FunctionExpression {
 
     protected Boolean hasLastChild = Boolean.FALSE;
+
+    public ArgumentListFunctionExpression() {
+    }
 
     /**
      * INTERNAL:
@@ -56,7 +59,7 @@ public class ArgumentListFunctionExpression extends FunctionExpression {
         } else {
             super.addChild(argument);
         }
-        setBaseExpression(getChildren().firstElement());
+        setBaseExpression(getChildren().get(0));
     }
 
     /**
@@ -94,16 +97,15 @@ public class ArgumentListFunctionExpression extends FunctionExpression {
      */
     @Override
     public void printSQL(ExpressionSQLPrinter printer) {
-        ListExpressionOperator realOperator;
-        realOperator = (ListExpressionOperator)getPlatformOperator(printer.getPlatform());
+        ListExpressionOperator realOperator = (ListExpressionOperator) getPlatformOperator(printer.getPlatform());
         operator.copyTo(realOperator);
-        ((ListExpressionOperator) realOperator).setIsComplete(true);
+        realOperator.setIsComplete(true);
         realOperator.printCollection(this.children, printer);
     }
 
 
     @Override
-    protected void postCopyIn(Map alreadyDone) {
+    protected void postCopyIn(Map<Expression, Expression> alreadyDone) {
         Boolean hasLastChildCopy = hasLastChild;
         hasLastChild = null;
         super.postCopyIn(alreadyDone);

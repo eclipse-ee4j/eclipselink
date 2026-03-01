@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -753,7 +753,7 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
             assertFalse(phonesIL.isInstantiated());
             assertEquals(2, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
 
-            assertTrue(emp.getPhoneNumbers().size() > 0);
+            assertTrue(!emp.getPhoneNumbers().isEmpty());
             assertEquals(3, getQuerySQLTracker(em).getTotalSQLSELECTCalls());
         } finally {
             if (isTransactionActive(em)){
@@ -1510,7 +1510,7 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
 
     @Test
     public void attrAndVHContainSameObjectAfterGetRealAttributeValue() {
-        String errorMsg = "";
+        String errorMsg;
         EntityManager em = createEntityManager();
         try {
             beginTransaction(em);
@@ -1531,7 +1531,8 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
 
              AbstractSession session = (AbstractSession)((EntityManagerImpl)em.getDelegate()).getActiveSession();
 
-             for(Employee emp : employees) {
+            StringBuilder errorMsgBuilder = new StringBuilder();
+            for(Employee emp : employees) {
                  String localErrorMsg = "";
                  Address addressVH = (Address)addressMapping.getRealAttributeValueFromObject(emp, session);
                  Address addressAttr = (Address)addressAccessor.getAttributeValueFromObject(emp);
@@ -1543,18 +1544,19 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
                  if(managerVH != managerAttr) {
                      localErrorMsg += "\n\tmanagerVH = " + managerVH + " != managerAttr = " + managerAttr;
                  }
-                 if(localErrorMsg.length() > 0) {
+                 if(!localErrorMsg.isEmpty()) {
                      localErrorMsg = emp.toString() + localErrorMsg + "\n";
-                     errorMsg += localErrorMsg;
+                     errorMsgBuilder.append(localErrorMsg);
                  }
              }
+            errorMsg = errorMsgBuilder.toString();
         } finally {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
             }
             closeEntityManager(em);
         }
-        if(errorMsg.length() > 0) {
+        if(!errorMsg.isEmpty()) {
             errorMsg = '\n' + errorMsg;
             fail(errorMsg);
         }

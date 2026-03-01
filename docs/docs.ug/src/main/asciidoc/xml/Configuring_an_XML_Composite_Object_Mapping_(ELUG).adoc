@@ -1,0 +1,43 @@
+*TOC*
+Special:Whatlinkshere_Configuring_an_XML_Composite_Object_Mapping_%28ELUG%29[Related
+Topics]
+
+For information on how to create EclipseLink mappings, see
+link:Creating%20a%20Mapping%20(ELUG)[Creating a Mapping].
+
+This table lists the configurable options for an XML composite object
+mapping.
+
+[#Table 62-1]##
+
+Option to Configure
+
+Workbench
+
+Java
+
+XPath
+
+Reference descriptor
+
+Method or direct field access
+
+Read-only
+
+Comments
+
+For more information, see the following:
+
+* link:Introduction%20to%20XML%20Mappings%20(ELUG)#XML_Composite_Object_Mapping[XML
+Composite Object Mapping]
+* link:Configuring%20an%20XML%20Mapping%20(ELUG)[Configuring an XML
+Mapping]
+* link:Configuring%20a%20Mapping%20(ELUG)[Configuring a Mapping].
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Release_1[Category: Release 1] Category:_Task[Category: Task]
+Category:_XML[Category: XML]

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,6 +36,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -59,12 +60,13 @@ import dbws.testing.DBWSTestSuite;
 public class SimpleTableWithNestedSQLTestSuite extends DBWSTestSuite {
 
     static final String CREATE_SIMPLE_TABLE =
-        "CREATE TABLE SIMPLETABLE2 (" +
-            "\nID NUMBER NOT NULL," +
-            "\nNAME VARCHAR(25)," +
-            "\nSINCE DATE," +
-            "\nPRIMARY KEY (ID)" +
-        "\n)";
+            """
+                    CREATE TABLE SIMPLETABLE2 (
+                    ID NUMBER NOT NULL,
+                    NAME VARCHAR(25),
+                    SINCE DATE,
+                    PRIMARY KEY (ID)
+                    )""";
     static final String[] POPULATE_SIMPLE_TABLE = new String[] {
         "INSERT INTO SIMPLETABLE2 (ID, NAME, SINCE) VALUES (1, 'mike', " +
             "TO_DATE('2001-12-25 00:00:00','YYYY-MM-DD HH24:MI:SS'))",
@@ -110,8 +112,8 @@ public class SimpleTableWithNestedSQLTestSuite extends DBWSTestSuite {
             runDdl(conn, CREATE_SIMPLE_TABLE, ddlDebug);
             try {
                 Statement stmt = conn.createStatement();
-                for (int i = 0; i < POPULATE_SIMPLE_TABLE.length; i++) {
-                    stmt.addBatch(POPULATE_SIMPLE_TABLE[i]);
+                for (String s : POPULATE_SIMPLE_TABLE) {
+                    stmt.addBatch(s);
                 }
                 stmt.executeBatch();
             }
@@ -212,6 +214,6 @@ public class SimpleTableWithNestedSQLTestSuite extends DBWSTestSuite {
                 schema.getTopLevelComplexTypes().get(FINDBYNAME_RESPONSETYPE);
         Element result = findByNameResponseType.getSequence().getElements().get(0);
         Element unnamed = result.getComplexType().getSequence().getElements().get(0);
-        assertTrue("wrong refType for " + FINDBYNAME_RESPONSETYPE, TABLE_ALIAS.equals(unnamed.getRef()));
+        assertEquals("wrong refType for " + FINDBYNAME_RESPONSETYPE, TABLE_ALIAS, unnamed.getRef());
     }
 }

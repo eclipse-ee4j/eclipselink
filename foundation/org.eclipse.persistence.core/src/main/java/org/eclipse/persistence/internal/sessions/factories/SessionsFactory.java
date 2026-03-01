@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,21 +15,11 @@
 //     cdelahun - Bug 214534: changes for JMSPublishingTransportManager configuration via session.xml
 package org.eclipse.persistence.internal.sessions.factories;
 
-import java.lang.reflect.Constructor;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import org.eclipse.persistence.config.SessionCustomizer;
+import org.eclipse.persistence.sessions.SessionCustomizer;
 import org.eclipse.persistence.eis.EISConnectionSpec;
 import org.eclipse.persistence.eis.EISLogin;
 import org.eclipse.persistence.exceptions.ExceptionHandler;
-import org.eclipse.persistence.exceptions.SessionLoaderException;
+import org.eclipse.persistence.sessions.factories.SessionLoaderException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
@@ -117,6 +107,14 @@ import org.eclipse.persistence.sessions.server.ReadConnectionPool;
 import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.tools.profiler.PerformanceProfiler;
 
+import java.lang.reflect.Constructor;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
  * INTERNAL:
  * Builds EclipseLink Sessions from the XML Session Config model.
@@ -160,11 +158,8 @@ public class SessionsFactory {
         m_sessions = new HashMap<>();
         m_classLoader = classLoader;
         List<SessionBrokerConfig> sessionBrokerConfigs = new ArrayList<>();
-        Enumeration<SessionConfig> e = eclipseLinkSessions.getSessionConfigs().elements();
 
-        while (e.hasMoreElements()) {
-            SessionConfig sessionConfig = e.nextElement();
-
+        for (SessionConfig sessionConfig : eclipseLinkSessions.getSessionConfigs()) {
             if (sessionConfig instanceof SessionBrokerConfig) {
                 // Hold all the session brokers till all the sessions have been built
                 sessionBrokerConfigs.add((SessionBrokerConfig) sessionConfig);
@@ -300,10 +295,9 @@ public class SessionsFactory {
         // Append descriptors from all subsequent project.xml and project classes
         // to the mainProject
         if (sessionConfig.getAdditionalProjects() != null) {
-            Enumeration<ProjectConfig> additionalProjects = sessionConfig.getAdditionalProjects().elements();
 
-            while (additionalProjects.hasMoreElements()) {
-                Project subProject = loadProjectConfig(additionalProjects.nextElement());
+            for (ProjectConfig projectConfig : sessionConfig.getAdditionalProjects()) {
+                Project subProject = loadProjectConfig(projectConfig);
                 primaryProject.addDescriptors(subProject, sessionToReturn);
             }
         }
@@ -551,23 +545,21 @@ public class SessionsFactory {
         if (converterClassConfig != null) {
             Platform platform = login.getDatasourcePlatform();
             if (platform instanceof DatabasePlatform){
-                Iterator<String> i = converterClassConfig.getStructConverterClasses().iterator();
 
-                while (i.hasNext()) {
-                    String converterClassName = i.next();
+                for (String converterClassName : converterClassConfig.getStructConverterClasses()) {
                     try {
                         Class<StructConverter> converterClass = (Class<StructConverter>) m_classLoader.loadClass(converterClassName);
                         StructConverter converter = null;
-                        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                            try{
+                        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+                            try {
                                 converter = AccessController.doPrivileged(new PrivilegedNewInstanceFromClass<>(converterClass));
-                            }catch (PrivilegedActionException ex){
-                                throw (Exception)ex.getCause();
+                            } catch (PrivilegedActionException ex) {
+                                throw (Exception) ex.getCause();
                             }
-                        }else{
+                        } else {
                             converter = PrivilegedAccessHelper.newInstanceFromClass(converterClass);
                         }
-                        ((DatabasePlatform)platform).addStructConverter(converter);
+                        ((DatabasePlatform) platform).addStructConverter(converter);
                     } catch (Exception exception) {
                         throw SessionLoaderException.failedToLoadTag("struct-converter", converterClassName, exception);
                     }
@@ -627,10 +619,9 @@ public class SessionsFactory {
             }
 
             if ((loginConfig.getSequencingConfig().getSequenceConfigs() != null) && !loginConfig.getSequencingConfig().getSequenceConfigs().isEmpty()) {
-                Enumeration<SequenceConfig> eSequenceConfigs = loginConfig.getSequencingConfig().getSequenceConfigs().elements();
 
-                while (eSequenceConfigs.hasMoreElements()) {
-                    Sequence sequence = buildSequence(eSequenceConfigs.nextElement());
+                for (SequenceConfig sequenceConfig : loginConfig.getSequencingConfig().getSequenceConfigs()) {
+                    Sequence sequence = buildSequence(sequenceConfig);
                     login.addSequence(sequence);
                 }
             }
@@ -638,10 +629,8 @@ public class SessionsFactory {
 
         // Properties (assumes they are all valid)
         if (loginConfig.getPropertyConfigs() != null) {
-            Enumeration<PropertyConfig> e = loginConfig.getPropertyConfigs().elements();
 
-            while (e.hasMoreElements()) {
-                PropertyConfig propertyConfig = e.nextElement();
+            for (PropertyConfig propertyConfig : loginConfig.getPropertyConfigs()) {
                 login.getProperties().put(propertyConfig.getName(), propertyConfig.getValue());
             }
         }
@@ -672,9 +661,7 @@ public class SessionsFactory {
             }
 
             // Connection pools
-            Enumeration<ConnectionPoolConfig> e = poolsConfig.getConnectionPoolConfigs().elements();
-            while (e.hasMoreElements()) {
-                ConnectionPoolConfig connectionPoolConfig = e.nextElement();
+            for (ConnectionPoolConfig connectionPoolConfig : poolsConfig.getConnectionPoolConfigs()) {
                 serverSession.addConnectionPool(buildConnectionPoolConfig(connectionPoolConfig, serverSession));
             }
         }
@@ -994,11 +981,9 @@ public class SessionsFactory {
             return new DefaultSequence(name, size);
         } else if (sequenceConfig instanceof NativeSequenceConfig) {
             return new NativeSequence(name, size);
-        } else if (sequenceConfig instanceof TableSequenceConfig) {
-            TableSequenceConfig tsc = (TableSequenceConfig)sequenceConfig;
+        } else if (sequenceConfig instanceof TableSequenceConfig tsc) {
             return new TableSequence(name, size, tsc.getTable(), tsc.getNameField(), tsc.getCounterField());
-        } else if (sequenceConfig instanceof UnaryTableSequenceConfig) {
-            UnaryTableSequenceConfig utsc = (UnaryTableSequenceConfig)sequenceConfig;
+        } else if (sequenceConfig instanceof UnaryTableSequenceConfig utsc) {
             return new UnaryTableSequence(name, size, utsc.getCounterField());
         } else if (sequenceConfig instanceof XMLFileSequenceConfig) {
             try {
@@ -1129,10 +1114,8 @@ public class SessionsFactory {
         tm.setInitialContextFactoryName(namingConfig.getInitialContextFactoryName());
 
         // Properties (assumes they are all valid)
-        Enumeration<PropertyConfig> e = namingConfig.getPropertyConfigs().elements();
 
-        while (e.hasMoreElements()) {
-            PropertyConfig propertyConfig = e.nextElement();
+        for (PropertyConfig propertyConfig : namingConfig.getPropertyConfigs()) {
             tm.getRemoteContextProperties().put(propertyConfig.getName(), propertyConfig.getValue());
         }
     }
@@ -1177,17 +1160,14 @@ public class SessionsFactory {
      */
     protected void processSessionEventManagerConfig(SessionEventManagerConfig sessionEventManagerConfig, AbstractSession session) {
         if (sessionEventManagerConfig != null) {
-            Enumeration<String> e = sessionEventManagerConfig.getSessionEventListeners().elements();
 
-            while (e.hasMoreElements()) {
-                String listenerClassName = e.nextElement();
-
+            for (String listenerClassName : sessionEventManagerConfig.getSessionEventListeners()) {
                 try {
                     @SuppressWarnings({"unchecked"})
                     Class<SessionEventListener> listenerClass = (Class<SessionEventListener>) m_classLoader.loadClass(listenerClassName);
-                    if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+                    if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                         session.getEventManager().addListener(AccessController.doPrivileged(new PrivilegedNewInstanceFromClass<>(listenerClass)));
-                    }else{
+                    } else {
 
                     }
                     session.getEventManager().addListener(PrivilegedAccessHelper.newInstanceFromClass(listenerClass));
@@ -1223,10 +1203,10 @@ public class SessionsFactory {
             // use ConversionManager to avoid loading the JDK 1.4 class unless it is needed.
             ConversionManager conversionManager = new ConversionManager();
             conversionManager.setLoader(getClass().getClassLoader());
-            javaLog = ((Class<SessionLog>)conversionManager.convertObject("org.eclipse.persistence.logging.JavaLog", Class.class)).getConstructor().newInstance();
-            javaLog.setSession(session);
+            javaLog = ((Class<SessionLog>)conversionManager.convertObject("org.eclipse.persistence.logging.jul.JavaLog", Class.class)).getConstructor().newInstance();
+            javaLog.setSessionName(session.getName());
         } catch (Exception exception) {
-            throw ValidationException.unableToLoadClass("org.eclipse.persistence.logging.JavaLog", exception);
+            throw ValidationException.unableToLoadClass("org.eclipse.persistence.logging.jul.JavaLog", exception);
         }
 
         // Process the common elements from LogConfig
@@ -1319,12 +1299,10 @@ public class SessionsFactory {
         SessionBroker sessionBroker = new SessionBroker();
 
         // Session names
-        Enumeration<String> sessionNames = sessionBrokerConfig.getSessionNames().elements();
 
-        while (sessionNames.hasMoreElements()) {
+        for (String sessionName : sessionBrokerConfig.getSessionNames()) {
             // Register the sessions
-            String sessionName = sessionNames.nextElement();
-            sessionBroker.registerSession(sessionName, (AbstractSession)m_sessions.get(sessionName));
+            sessionBroker.registerSession(sessionName, (AbstractSession) m_sessions.get(sessionName));
         }
 
         // Process the common elements in SessionConfig

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,20 +14,22 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.readonly;
 
-import java.util.*;
-import org.eclipse.persistence.sessions.*;
-import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.testing.models.inheritance.Bicycle;
-import org.eclipse.persistence.testing.models.inheritance.FueledVehicle;
-import org.eclipse.persistence.testing.models.inheritance.Car;
-import org.eclipse.persistence.testing.models.inheritance.Boat;
-import org.eclipse.persistence.testing.models.inheritance.SportsCar;
-import org.eclipse.persistence.testing.models.inheritance.Vehicle;
-import org.eclipse.persistence.testing.models.inheritance.Bus;
-import org.eclipse.persistence.testing.models.inheritance.Company;
-import org.eclipse.persistence.testing.models.inheritance.NonFueledVehicle;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.testing.framework.AutoVerifyTestCase;
 import org.eclipse.persistence.testing.framework.TestErrorException;
+import org.eclipse.persistence.testing.models.inheritance.Bicycle;
+import org.eclipse.persistence.testing.models.inheritance.Boat;
+import org.eclipse.persistence.testing.models.inheritance.Bus;
+import org.eclipse.persistence.testing.models.inheritance.Car;
+import org.eclipse.persistence.testing.models.inheritance.Company;
+import org.eclipse.persistence.testing.models.inheritance.FueledVehicle;
+import org.eclipse.persistence.testing.models.inheritance.NonFueledVehicle;
+import org.eclipse.persistence.testing.models.inheritance.SportsCar;
+import org.eclipse.persistence.testing.models.inheritance.Vehicle;
+
+import java.util.Vector;
 
 /**
  * <p>
@@ -61,7 +63,7 @@ public class ReadOnlyClassOneToManyTestCase extends AutoVerifyTestCase {
         beginTransaction();
         originalCompany = (Company)getSession().readObject(Company.class);
 
-        originalVehicle = (Vehicle)((Vector)originalCompany.getVehicles().getValue()).firstElement();
+        originalVehicle = (Vehicle)((Vector)originalCompany.getVehicles().getValue()).get(0);
 
         origCapacity = originalVehicle.passengerCapacity;
         uow = getSession().acquireUnitOfWork();
@@ -76,7 +78,7 @@ public class ReadOnlyClassOneToManyTestCase extends AutoVerifyTestCase {
         Company cloneCompany = (Company)uow.registerObject(originalCompany);
 
         // Change the one of the Company's Vehicles
-        ((Vehicle)((Vector)cloneCompany.getVehicles().getValue()).firstElement()).setPassengerCapacity(origCapacity + 1);
+        ((Vehicle)((Vector)cloneCompany.getVehicles().getValue()).get(0)).setPassengerCapacity(origCapacity + 1);
     }
 
     @Override

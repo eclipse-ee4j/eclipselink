@@ -1,0 +1,783 @@
+image:Elug_draft_icon.png[Image:Elug draft
+icon.png,title="Image:Elug draft icon.png"] *For the latest EclipseLink
+documentation, please see
+http://www.eclipse.org/eclipselink/documentation/*
+
+'''''
+
+*TOC*
+Special:Whatlinkshere_Introduction_to_EclipseLink_Transactions_(ELUG)[Related
+Topics]
+
+This section explains how transactions are implemented in EclipseLink.
+
+== Unit of Work Architecture
+
+A database *transaction* is a set of operations (create, read, update,
+or delete) that either succeed or fail as a single operation. The
+database discards, or _rolls back_, unsuccessful transactions, leaving
+the database in its original state. Transactions may be _internal_ (that
+is, provided by EclipseLink) or _external_ (that is, provided by a
+source external to the application, such as an application server).
+
+In EclipseLink, transactions are contained in the unit of work object.
+You
+link:Using%20Basic%20Unit%20of%20Work%20API%20(ELUG)#Acquiring_a_Unit_of_Work[acquire
+a unit of work from a session] and using its API, you can control
+transactions directly or through a Java 2 Enterprise Edition (Java EE)
+application server transaction controller such as the Java Transaction
+API (JTA).
+
+Transactions execute in their own context, or logical space, isolated
+from other transactions and database operations.
+
+The transaction context is demarcated; that is, it has a defined
+structure that includes the following:
+
+* A *begin* point, where the operations within the transaction begin. At
+this point, the transaction begins to execute its operations.
+* A *commit* point, where the operations are complete and the
+transaction attempts to formalize changes on the database.
+
+The degree to which concurrent (parallel) transactions on the same data
+are allowed to interact is determined by the level of _transaction
+isolation_ configured. ANSI/SQL defines four levels of database
+transaction isolation, as shown in link:#Table_109-1[Transaction
+Isolation Levels]. Each offers a trade-off between performance and
+resistance from the following unwanted actions:
+
+* Dirty read: a transaction reads uncommitted data written by a
+concurrent transaction.
+* Nonrepeatable read: a transaction rereads data and finds it has been
+modified by some other transaction that was committed after the initial
+read operation.
+* Phantom read: a transaction reexecutes a query and the returned data
+has changed due to some other transaction that was committed after the
+initial read operation.
+
+[#Table 109-1]## *_Transaction Isolation Levels_*
+
+[width="100%",cols="<38%,<17%,<26%,<19%",options="header",]
+|===
+|*Transaction Isolation Level* |*Dirty Read* |*Nonrepeatable Read*
+|*Phantom Read*
+|Read Uncommitted |Yes |Yes |Yes
+
+|Read Committed |No |Yes |Yes
+
+|Repeatable Read |No |No |Yes
+
+|Serializable |No |No |No
+|===
+
+As a transaction is committed, the database maintains a log of all
+changes to the data. If all operations in the transaction succeed, the
+database allows the changes; if any part of the transaction fails, the
+database uses the log to roll back the changes.
+
+Like any transaction, a unit of work transaction provides the following:
+
+* link:#Unit_of_Work_Transaction_Context[Unit of Work Transaction
+Context]
+* link:#Unit_of_Work_Transaction_Demarcation[Unit of Work Transaction
+Demarcation]
+* link:#Unit_of_Work_Transaction_Isolation[Unit of Work Transaction
+Isolation]
+
+=== Unit of Work Transaction Context
+
+Unit of work operations occur within a unit of work _context_, in which
+writes are isolated from the database until commit time. The unit of
+work executes changes on copies, or _clones_, of objects in its own
+internal cache, and if successful, applies changes to objects in the
+database and the session cache.
+
+=== Unit of Work Transaction Demarcation
+
+In a standalone EclipseLink application, your application demarcates
+transactions using the unit of work.
+
+If your application includes a Java EE container that provides
+container-managed transactions, your application server demarcates
+transactions using its own transaction service. You configure
+EclipseLink to integrate with the container’s transaction service by
+specifying an EclipseLink external transaction controller.
+
+An EclipseLink external transaction controller class integrates the unit
+of work with an application server’s transaction service. Using an
+external transaction controller, your application can participate in
+transactions that span multiple data sources and that are managed by the
+application server. The external transaction controller coordinates
+messages and callbacks between the application server’s transaction
+service and the unit of work.
+
+When you configure your application to use an external transaction
+controller (see
+link:Configuring%20a%20Session%20(ELUG)#Configuring_the_Server_Platform[Configuring
+the Server Platform]), the unit of work executes as part of an external
+transaction. The unit of work still manages its own internal operations,
+but it waits for the external transaction to tell it to write changes
+back to the database and to the session cache.
+
+Note that because the transaction happens outside of the unit of work
+context and is controlled by the application server’s transaction
+service, errors can be more difficult to diagnose and fix because
+exceptions may occur outside of your application code, for example,
+during application server initiated call-backs.
+
+You can integrate the unit of work with the following:
+
+* link:#JTA_Controlled_Transactions[JTA Controlled Transactions]
+* link:#OTS_Controlled_Transactions[OTS Controlled Transactions]
+
+==== JTA Controlled Transactions
+
+The Java Transaction API (JTA) is the application programming interface
+you use to interact with a transaction manager.
+
+Using JTA, your application can participate in a distributed
+transaction. A transaction manager that implements JTA provides
+transaction management and connection pooling and enables your
+application to interact with multiple data sources transparently by
+using JTA.
+
+For more information, see
+link:Using%20Advanced%20Unit%20of%20Work%20API%20(ELUG)#Integrating_the_Unit_of_Work_with_an_External_Transaction_Service[Integrating
+the Unit of Work with an External Transaction Service].
+
+==== OTS Controlled Transactions
+
+The CORBA Object Transaction Service (OTS) specification is part of the
+Common Object Request Brokers Architecture (CORBA) Object Services model
+and is the standard for Object Request Broker (ORB) implementations.
+Some servers implement the Java APIs for the OTS rather than for JTA
+(see link:#JTA_Controlled_Transactions[JTA Controlled Transactions]).
+
+Use EclipseLink OTS support with the unit of work to directly access the
+Java OTS interfaces of servers that do not support JTA.
+
+To integrate your application with an OTS transaction service, you must
+configure your application to use a custom server platform (see
+link:Configuring%20a%20Session%20(ELUG)#Configuring_the_Server_Platform[Configuring
+the Server Platform]).
+
+For more information, see
+link:Using%20Advanced%20Unit%20of%20Work%20API%20(ELUG)#Integrating_the_Unit_of_Work_with_an_External_Transaction_Service[Integrating
+the Unit of Work with an External Transaction Service].
+
+=== Unit of Work Transaction Isolation
+
+The unit of work does not directly participate in database transaction
+isolation. Because the unit of work may execute queries outside the
+database transaction (and, by interacting with the cache, outside the
+database itself), the database does not have control over this data and
+its visibility.
+
+However, by default, EclipseLink provides a degree of transaction
+isolation regardless of what database transaction isolation has been
+configured on the underlying database.
+
+Each unit of work instance operates on its own copy (clone) of
+registered objects (see link:#Clones_and_the_Unit_of_Work[Clones and the
+Unit of Work]). In this case, because the unit of work provides an API
+that allows querying to be done on object changes within a unit of work
+(see
+link:Using%20Advanced%20Unit%20of%20Work%20API%20(ELUG)#Using_Conforming_Queries_and_Descriptors[Using
+Conforming Queries and Descriptors]), the unit of work provides read
+committed operations.
+
+Optimistic locking, optimistic read locking, or pessimistic locking can
+be used to further manage concurrency (see
+link:#Locking_and_the_Unit_of_Work[Locking and the Unit of Work]).
+
+Changes are committed to the database only when the unit of work
+`+commit+` method is called (either directly or by way of an external
+transaction controller).
+
+For detailed information on configuring and using EclipseLink to achieve
+a particular level of transaction isolation and transaction isolation
+level limitations, see
+link:Using%20Advanced%20Unit%20of%20Work%20API%20(ELUG)#Database_Transaction_Isolation_Levels[Database
+Transaction Isolation Levels].
+
+== Unit of Work Concepts
+
+This section introduces transaction concepts unique to EclipseLink,
+including the following:
+
+* link:#Unit_of_Work_Benefits[Unit of Work Benefits]
+* link:#Unit_of_Work_Life_Cycle[Unit of Work Life Cycle]
+* link:#Unit_of_Work_and_Change_Policy[Unit of Work and Change Policy]
+* link:#Clones_and_the_Unit_of_Work[Clones and the Unit of Work]
+* link:#Nested_and_Parallel_Units_of_Work[Nested and Parallel Units of
+Work]
+* link:#Commit_and_Rollback_Transactions[Commit and Rollback
+Transactions]
+* link:#Primary_Keys[Primary Keys]
+* link:#Unit_of_Work_Optimization[Unit of Work Optimization]
+
+=== Unit of Work Benefits
+
+The EclipseLink unit of work simplifies transactions and improves
+transactional performance. It is the preferred method of writing to a
+database in EclipseLink because it performs the following:
+
+* Sends a minimal amount of SQL to the database during the commit by
+updating only the exact changes down to the field level
+* Reduces database traffic by isolating transaction operations in their
+own memory space
+* Optimizes cache coordination, in applications that use multiple
+caches, by passing change sets (rather than objects) between caches
+* Isolates object modifications in their own transaction space to allow
+parallel transactions on the same objects
+* Ensures referential integrity and minimizes deadlocks by automatically
+maintaining SQL ordering
+* Orders database insert, update, and delete operations to maintain
+referential integrity for mapped objects
+* Resolves bidirectional references automatically
+* Frees the application from tracking or recording its changes
+* Simplifies persistence with _persistence by reachability_ (see
+link:Using%20Basic%20Unit%20of%20Work%20API%20(ELUG)#Associating_a_New_Source_to_an_Existing_Target_Object[Associating
+a New Source to an Existing Target Object])
+
+=== Unit of Work Life Cycle
+
+EclipseLink uses the unit of work as follows:
+
+[arabic]
+. The client application acquires a unit of work from a session object.
+. The client application queries EclipseLink to obtain a cache object it
+wants to modify, and then registers the cache object with the unit of
+work.
+. The unit of work registers the object according to the object’s change
+policy. For more information about how change policy affects
+registration, see link:#Unit_of_Work_and_Change_Policy[Unit of Work and
+Change Policy]. By default, as each object is registered, the unit of
+work accesses the object from the session cache or database and creates
+a backup clone and working clone (see
+link:#Clones_and_the_Unit_of_Work[Clones and the Unit of Work]). The
+unit of work returns the working clone to the client application. If
+change tracking is used, the unit of work does not create backup clones
+and intercepts the changes through weaving (see
+link:Optimizing%20the%20EclipseLink%20Application%20(ELUG)#Optimizing_Using_Weaving[Optimizing
+Using Weaving]).
+. The client application modifies the working object returned by the
+unit of work.
+. The client application (or external transaction controller) commits
+the transaction.
+. The unit of work calculates the change set for each registered object
+according to the object’s change policy. For more information about how
+change policy affects change set calculation, see
+link:#Unit_of_Work_and_Change_Policy[Unit of Work and Change Policy]. By
+default, at commit time, the unit of work compares the working clones to
+the backup clones and calculates the change set (that is, determines the
+minimum changes required). The comparison is done with a backup clone so
+that concurrent changes to the same objects will not result in incorrect
+changes being identified. The unit of work then attempts to commit any
+new or changed objects to the database. If the commit transaction
+succeeds, the unit of work merges changes into the shared session cache.
+Otherwise, no changes are made to the objects in the shared cache. For
+more details, see link:#Commit_and_Rollback_Transactions[Commit and
+Rollback Transactions]. If there are no changes, the unit of work does
+not start a new transaction.
+
+[#Figure 109-1]## *_The Life Cycle of a Unit of Work_*
+
+.The Life Cycle of a Unit of Work
+image::uow.gif[The Life Cycle of a Unit of
+Work,title="The Life Cycle of a Unit of Work"]
+
+The following example shows the default life cycle in code.
+
+[#Example 109-1]## *_Unit of Work Life Cycle_*
+
+*`+//\'\' \'\'The\'\' \'\'application\'\' \'\'reads\'\' \'\'a\'\' \'\'set\'\' \'\'of\'\' \'\'objects\'\' \'\'from\'\' \'\'the\'\' \'\'database+`*
+
+`+List employees = session.readAllObjects(Employee.class);+`
+
+*`+//\'\' \'\'The\'\' \'\'application\'\' \'\'specifies\'\' \'\'an\'\' \'\'employee\'\' \'\'to\'\' \'\'edit+`*
+`+. . .+` `+Employee employee = (Employee) employees.get(index);+`
+
+`+try {+`
+`+    +`*`+//\'\' \'\'Acquire\'\' \'\'a\'\' \'\'unit\'\' \'\'of\'\' \'\'work\'\' \'\'from\'\' \'\'the\'\' \'\'session+`*
+`+    UnitOfWork uow = session.acquireUnitOfWork();+`
+`+    +`*`+//\'\' \'\'Register\'\' \'\'the\'\' \'\'object\'\' \'\'that\'\' \'\'is\'\' \'\'to\'\' \'\'be\'\' \'\'changed.\'\' \'\'Unit\'\' \'\'of\'\' \'\'work\'\' \'\'returns\'\' \'\'a\'\' \'\'clone+`*
+`+    +`*`+//\'\' \'\'of\'\' \'\'the\'\' \'\'object\'\' \'\'and\'\' \'\'makes\'\' \'\'a\'\' \'\'backup\'\' \'\'copy\'\' \'\'of\'\' \'\'the\'\' \'\'original\'\' \'\'employee+`*
+`+    Employee employeeClone = (Employee)uow.registerObject(employee);+`
+`+    +`*`+//\'\' \'\'Make\'\' \'\'changes\'\' \'\'to\'\' \'\'the\'\' \'\'employee\'\' \'\'clone\'\' \'\'by\'\' \'\'adding\'\' \'\'a\'\' \'\'new\'\' \'\'phoneNumber.+`*
+
+`+    +`*`+//\'\' \'\'If\'\' \'\'a\'\' \'\'new\'\' \'\'object\'\' \'\'is\'\' \'\'referred\'\' \'\'to\'\' \'\'by\'\' \'\'a\'\' \'\'clone,\'\' \'\'it\'\' \'\'does\'\' \'\'not\'\' \'\'have\'\' \'\'to\'\' \'\'be+`*
+`+    +`*`+//\'\' \'\'registered.\'\' \'\'Unit\'\' \'\'of\'\' \'\'work\'\' \'\'determines\'\' \'\'it\'\' \'\'is\'\' \'\'a\'\' \'\'new\'\' \'\'object\'\' \'\'at\'\' \'\'commit\'\' \'\'time+`*
+`+    PhoneNumber newPhoneNumber = new PhoneNumber("cell","212","765-9002");+`
+`+    employeeClone.addPhoneNumber(newPhoneNumber);+`
+`+    +`*`+//\'\' \'\'Commit\'\' \'\'the\'\' \'\'transaction:\'\' \'\'unit\'\' \'\'of\'\' \'\'work\'\' \'\'compares\'\' \'\'the\'\' \'\'employeeClone\'\' \'\'with+`*
+`+    +`*`+//\'\' \'\'the\'\' \'\'backup\'\' \'\'copy\'\' \'\'of\'\' \'\'the\'\' \'\'employee,\'\' \'\'begins\'\' \'\'a\'\' \'\'transaction,\'\' \'\'and\'\' \'\'updates\'\' \'\'the+`*
+`+    +`*`+//\'\' \'\'database\'\' \'\'with\'\' \'\'the\'\' \'\'changes.\'\' \'\'If\'\' \'\'successful,\'\' \'\'the\'\' \'\'transaction\'\' \'\'is\'\' \'\'committed+`*
+`+    +`*`+//\'\' \'\'and\'\' \'\'the\'\' \'\'changes\'\' \'\'in\'\' \'\'employeeClone\'\' \'\'are\'\' \'\'merged\'\' \'\'into\'\' \'\'employee.\'\' \'\'If\'\' \'\'there\'\' \'\'is+`*
+`+    +`*`+//\'\' \'\'an\'\' \'\'error\'\' \'\'updating\'\' \'\'the\'\' \'\'database,\'\' \'\'the\'\' \'\'transaction\'\' \'\'is\'\' \'\'rolled\'\' \'\'back\'\' \'\'and\'\' \'\'the+`*
+`+    +`*`+//\'\' \'\'changes\'\' \'\'are\'\' \'\'not\'\' \'\'merged\'\' \'\'into\'\' \'\'the\'\' \'\'original\'\' \'\'employee\'\' \'\'object+`*
+`+    uow.commit();+` `+} +` `+catch (DatabaseException ex) {+`
+`+    +`*`+//\'\' \'\'If\'\' \'\'the\'\' \'\'commit\'\' \'\'fails,\'\' \'\'the\'\' \'\'database\'\' \'\'is\'\' \'\'not\'\' \'\'changed.\'\' \'\'The\'\' \'\'unit\'\' \'\'of\'\' \'\'work\'\' \'\'should+`*
+`+    +`*`+//\'\' \'\'be\'\' \'\'thrown\'\' \'\'away\'\' \'\'and\'\' \'\'application-specific\'\' \'\'action\'\' \'\'taken+`*
+`+}+`
+*`+//\'\' \'\'After\'\' \'\'the\'\' \'\'commit,\'\' \'\'the\'\' \'\'unit\'\' \'\'of\'\' \'\'work\'\' \'\'is\'\' \'\'no\'\' \'\'longer\'\' \'\'valid.\'\' \'\'Do\'\' \'\'not\'\' \'\'use\'\' \'\'further+`*
+
+=== Unit of Work and Change Policy
+
+The unit of work tracks changes for a registered object based on the
+change policy you configure for the object’s descriptor. If there are no
+changes, the unit of work will not start a database transaction. This
+table lists the change policies that EclipseLink provides.
+
+[#Table 109-2]## *_EclipseLink Change Policies_*
+
+Change Policy
+
+Applicable to…
+
+Deferred Change Detection Policy
+
+Wide range of object change characteristics.The default change policy.
+
+Object-Level Change Tracking Policy
+
+Objects with few attributes or with many attributes and many changed
+attributes.
+
+Attribute Change Tracking Policy
+
+Objects with many attributes and few changed attributes.
+
+The most efficient change policy.
+
+The default change policy for JPA.
+
+For more information, see
+link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Change_Policy[Configuring
+Change Policy].
+
+==== Deferred Change Detection Policy
+
+The `+DeferredChangeDetectionPolicy+` is the change policy that all
+persistent objects use by default.
+
+This option provides good unit of work commit performance for a wide
+range of object change characteristics.
+
+When you register in a unit of work an object whose descriptor is
+configured with a `+DeferredChangeDetectionPolicy+` (see
+link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Deferred_Change_Detection_Policy[Configuring
+Deferred Change Detection Policy]), a backup clone is made of the object
+(see link:#Clones_and_the_Unit_of_Work[Clones and the Unit of Work]) and
+at commit time, the unit of work computes changes by making an
+attribute-by-attribute comparison between the backup clone and the
+original object.
+
+This change policy is applicable to all mapping types.
+
+==== Object-Level Change Tracking Policy
+
+The `+ObjectChangeTrackingPolicy+` optimizes the unit of work commit
+transaction by including objects in the change set calculation only if
+at least one attribute has changed.
+
+This option provides improved unit of work commit performance for
+objects with few attributes, or with many attributes and many changed
+attributes.
+
+When you register in a unit of work an object whose descriptor is
+configured with `+ObjectChangeTracking+` change policy, a backup clone
+is made of the object and at commit time, the unit of work computes
+changes by comparing the backup to the current object if and only if at
+least one attribute is changed (if the object’s `+hasChanges+` method
+returns `+true+`). If a registered object has no changes, the unit of
+work does not compare it to the backup clone.
+
+[width="100%",cols="<100%",]
+|===
+|*Note:* If you modify an object’s field through reflection, EclipseLink
+will not detect the change. However, if you disable change tracking,
+EclipseLink _will_ detect the change.
+|===
+
+This change policy is applicable to a subset of mapping types (see
+link:#Change_Policy_Mapping_Support[Change Policy Mapping Support]).
+
+For JPA applications, when you configure a descriptor for an entity with
+an ObjectChangeTrackingPolicy, EclipseLink code generates a concrete
+subclass to implement the EclipseLink ChangeTracker interface at deploy
+time (see
+link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Object_Change_Tracking_Policy[Configuring
+Object Change Tracking Policy]).
+
+==== Attribute Change Tracking Policy
+
+The `+AttributeChangeTrackingPolicy+` optimizes the unit of work commit
+transaction by tracking all object changes at the attribute level. This
+eliminates two unit of work operations: backup clone creation and change
+detection through comparison.
+
+This option provides improved unit of work commit performance for
+objects with many attributes, and few changed attributes. Generally,
+this is the most efficient change policy.
+
+This change policy is applicable to a subset of mapping types (see
+link:#Change_Policy_Mapping_Support[Change Policy Mapping Support]).
+
+[width="100%",cols="<100%",]
+|===
+|*Note:* You cannot use the `+AttributeChangeTrackingPolicy+` if you are
+using any instance of `+FieldsLockingPolicy+` (see
+link:Introduction%20to%20Descriptors%20(ELUG)#Optimistic_Field_Locking_Policies[Optimistic
+Field Locking Policies]).
+|===
+
+EclipseLink provides different levels of support for this change policy:
+
+===== Support for JPA Entities
+
+For JPA entities, you can configure EclipseLink to automatically weave
+attribute level change tracking.
+
+EclipseLink only supports change tracking with lazy collection
+relationships, not with eager collection relationship.
+
+For more information, see
+link:Using%20EclipseLink%20JPA%20Extensions%20(ELUG)#What_You_May_Need_to_Know_About_Weaving_JPA_Entities[What
+You May Need to Know About Weaving JPA Entities].
+
+===== Support for Plain Old Java Object (POJO) Classes
+
+For POJO classes, you can configure EclipseLink to automatically weave
+attribute level change tracking.
+
+EclipseLink can weave both transparent indirect container indirection
+(lazy loading) and change tracking for collection mappings. If you
+manually configure a collection mapping with non-transparent indirection
+(either value holder indirection or proxy indirection), EclipseLink does
+not automatically weave change tracking.
+
+For more information, see
+link:Introduction_to_EclipseLink%20Application%20Development%20(ELUG)#What_You_May_Need_to_Know_About_Weaving_and_POJO_Classes[What
+You May Need to Know About Weaving and POJO Classes].
+
+==== Change Policy Mapping Support
+
+EclipseLink supports alternative change tracking policies (policies
+other than `+DeferredChangeDetectionPolicy+`) for attributes that use
+any of the following mapping types:
+
+* link:Introduction%20to%20Relational%20Mappings%20(ELUG)#Direct-to-Field_Mapping[Direct-to-Field
+Mapping]
+* link:Introduction%20to%20Relational%20Mappings%20(ELUG)#Transformation_Mapping[Transformation
+Mapping] (immutable mappings only)
+* link:Introduction%20to%20Relational%20Mappings%20(ELUG)#One-to-One_Mapping[One-to-One
+Mapping]
+* link:Introduction%20to%20Relational%20Mappings%20(ELUG)#Variable_One-to-One_Mapping[Variable
+One-to-One Mapping]
+* link:Introduction%20to%20Relational%20Mappings%20(ELUG)#One-to-Many_Mapping[One-to-Many
+Mapping]
+* link:Introduction%20to%20Relational%20Mappings%20(ELUG)#Many-to-Many_Mapping[Many-to-Many
+Mapping]
+* link:Introduction%20to%20Relational%20Mappings%20(ELUG)#Direct_Collection_Mapping[Direct
+Collection Mapping]
+* link:Introduction%20to%20Relational%20Mappings%20(ELUG)#Direct_Map_Mapping[Direct
+Map Mapping]
+* link:Introduction%20to%20Relational%20Mappings%20(ELUG)#Aggregate_Object_Mapping[Aggregate
+Object Mapping]
+* link:Introduction%20to%20EIS%20Mappings%20(ELUG)#EIS_Transformation_Mapping[EIS
+Transformation Mapping] (immutable mappings only)
+
+EclipseLink uses the `+DeferredChangeDetectionPolicy+` (see
+link:#Deferred_Change_Detection_Policy[Deferred Change Detection
+Policy]) for attributes that use any other type of mapping.
+
+If a transformation mapping maps a mutable value, EclipseLink must clone
+and compare the value in a unit of work (see
+link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Copy_Policy[Configuring
+Copy Policy]).
+
+By default, EclipseLink assumes that all transformation mappings are
+mutable. If the mapping maps a simple immutable value, you can improve
+unit of work performance by configuring the *IsMutable* option to
+`+false+`.
+
+Mutable basic mappings affect the overhead of change tracking.
+EclipseLink can only weave an attribute change tracking policy for
+immutable mappings.
+
+For more information, see
+link:Introduction_to_EclipseLink%20Application%20Development%20(ELUG)#Mutability[Mutability].
+
+=== Clones and the Unit of Work
+
+When using the `+DefrerredChangeDetectionPolicy+` or the
+`+ObjectLevelChangeTrackingPolicy+` (see
+link:#Deferred_Change_Detection_Policy[Deferred Change Detection
+Policy]), the unit of work maintains the following two copies of the
+original objects registered with it:
+
+* working clones;
+* backup clones.
+
+After you change the working clones and the transaction is committed,
+the unit of work compares the working clones to the backup clones, and
+writes any changes to the database. The unit of work uses clones to
+allow parallel units of work (see
+link:#Nested_and_Parallel_Units_of_Work[Nested and Parallel Units of
+Work]) to exist, a requirement in multiuser three-tier applications.
+
+The EclipseLink cloning process is efficient in that it clones only the
+mapped attributes of registered objects, and stops at indirection
+(lazily loaded) objects unless you trigger the indirection. For more
+information, see
+link:Configuring%20a%20Mapping%20(ELUG)#Configuring_Indirection_(Lazy_Loading)[Configuring
+Indirection (Lazy Loading)].
+
+You can customize the cloning process using the descriptor’s copy
+policy. For more information, see
+link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Copy_Policy[Configuring
+Copy Policy].
+
+You should discontinue the use of the unit of work clones after the
+transaction has been committed, as it is beyond the scope of a server
+request. If you choose to continue using the clones, be aware that these
+objects may include a reference to the unit of work and not let the
+garbage collection to proceed until they are released. For more
+information, see
+link:Using%20Advanced%20Unit%20of%20Work%20API%20(ELUG)[Resuming a Unit
+of Work After Commit].
+
+=== Nested and Parallel Units of Work
+
+You can use EclipseLink to create the following:
+
+* link:#Nested_Unit_of_Work[Nested Unit of Work]
+* link:#Parallel_Unit_of_Work[Parallel Unit of Work]
+
+For additional information and examples on using nested and parallel
+units of work, see
+link:Using%20Advanced%20Unit%20of%20Work%20API%20(ELUG)#Using_a_Nested_or_Parallel_Unit_of_Work[Using
+a Nested or Parallel Unit of Work].
+
+==== Nested Unit of Work
+
+You can nest a unit of work (the _child_) within another unit of work
+(the _parent_). A nested unit of work does not commit changes to the
+database. Instead, it passes its changes to the parent unit of work, and
+the parent attempts to commit the changes at commit time. Nesting units
+of work lets you break a large transaction into smaller isolated
+transactions, and ensures that:
+
+* Changes from each nested unit of work commit or fail as a group.
+* Failure of a nested unit of work does not affect the commit or
+rollback transaction of other operations in the parent unit of work.
+* Changes are presented to the database as a single transaction.
+
+==== Parallel Unit of Work
+
+You can modify the same objects in multiple unit of work instances in
+parallel because the unit of work manipulates copies of objects.
+EclipseLink resolves any concurrency issues when the Units of Work
+commits the changes.
+
+=== Commit and Rollback Transactions
+
+When a unit of work transaction is committed, it either succeeds, or
+fails and rolls back. A commit transaction can be initiated by your
+application or by a Java EE container.
+
+==== Commit Transactions
+
+At commit time, the unit of work compares the working clones and backup
+clones to calculate the change set (that is, to determine the minimum
+changes required). Changes include updates to or deletion of existing
+objects, and the creation of new objects. The unit of work then begins a
+database transaction, and attempts to write the changes to the database.
+If all changes commit successfully on the database, the unit of work
+merges the changed objects into the session cache. If any one of the
+changes fail on the database, the unit of work rolls back any changes on
+the database, and does not merge changes into the session cache.
+
+The unit of work calculates commit order using foreign key information
+from one-to-one and one-to-many mappings. If you encounter constraint
+problems during a commit transaction, verify your mapping definitions.
+The order in which you register objects with the `+registerObject+`
+method does not affect the commit order.
+
+===== Commit and JTA
+
+When your application uses JTA, the unit of work commit transaction acts
+differently than in a non-JTA application. In most cases, the unit of
+work attaches itself to an external transaction. If no transaction
+exists, the unit of work creates a transaction. This distinction affects
+commit activity as follows:
+
+* _If the unit of work attaches to an existing transaction_, the unit of
+work ignores the `+commit+` call. The transaction commits the unit of
+work when the entire external transaction is complete.
+* _If the unit of work starts the external transaction_, the transaction
+treats the unit of work `+commit+` call as a request to commit the
+external transaction. The external transaction then calls its own commit
+code on the database.
+
+In either case, only the external transaction can call `+commit+` on the
+database because it owns the database connection.
+
+For more information, see
+link:Using%20Advanced%20Unit%20of%20Work%20API%20(ELUG)#Integrating_the_Unit_of_Work_with_an_External_Transaction_Service[Integrating
+the Unit of Work with an External Transaction Service].
+
+==== Rollback Transactions
+
+A unit of work commit transaction must succeed or fail as a unit.
+Failure in writing changes to the database causes the unit of work to
+roll back the database to its previous state. Nothing changes in the
+database, and the unit of work does not merge changes into the session
+cache.
+
+===== Rollback and JTA
+
+In a JTA environment, the unit of work does not own the database
+connection. In this case, the unit of work sends the rollback call to
+the external transaction rather than the database, and the external
+transaction treats the rollback call as a request to roll the
+transaction back.
+
+For more information, see
+link:Using%20Advanced%20Unit%20of%20Work%20API%20(ELUG)#Integrating_the_Unit_of_Work_with_an_External_Transaction_Service[Integrating
+the Unit of Work with an External Transaction Service].
+
+=== Primary Keys
+
+You cannot modify the primary key attribute of an object in a unit of
+work. This is an unsupported operation and doing so will result in
+unexpected behavior (exceptions or database corruption).
+
+To replace one instance of an object with unique constraints with
+another, see
+link:Using%20Advanced%20Unit%20of%20Work%20API%20(ELUG)#How_to_Use_the_setShouldPerformDeletesFirst_Method_of_the_Unit_of_Work[How
+to Use the setShouldPerformDeletesFirst Method of the Unit of Work].
+
+=== Unit of Work Optimization
+
+By default, the unit of work performs change set calculation efficiently
+for a wide range of object change characteristics. However, there are
+various ways you can use the unit of work to enhance application
+performance.
+
+One way to improve performance is to consider using an alternative
+change policy (see link:#Unit_of_Work_and_Change_Policy[Unit of Work and
+Change Policy]).
+
+For more performance options, see
+link:Optimizing%20the%20EclipseLink%20Application%20(ELUG)#Optimizing_the_Unit_of_Work[Optimizing
+the Unit of Work].
+
+== Unit of Work API
+
+You do not instantiate an instance of
+`+org.eclipse.persistence.sessions.UnitOfWork+`. Rather, you acquire a
+unit of work from an instance of
+`+org.eclipse.persistence.sessions.Session+` or from another unit of
+work.
+
+For more information on creating sessions, see
+link:Creating%20a%20Session%20(ELUG)#Creating_a_Session[Creating a
+Session].
+
+For more information on acquiring a unit of work, see
+link:Using%20Basic%20Unit%20of%20Work%20API%20(ELUG)#Acquiring_a_Unit_of_Work[Acquiring
+a Unit of Work].
+
+For more information on using the basic API of the unit of work, see
+link:Using%20Basic%20Unit%20of%20Work%20API%20(ELUG)[Using Basic Unit of
+Work API].
+
+For more information on using the advanced API of the unit of work, see
+link:Using%20Advanced%20Unit%20of%20Work%20API%20(ELUG)[Using Advanced
+Unit of Work API].
+
+=== Unit of Work as Session
+
+The unit of work extends the interface
+`+org.eclipse.persistence.sessions.Session+`, and implements all the
+usual session API. When using session API from a unit of work, you
+should consider the following:
+
+* link:#Reading_and_Querying_Objects_with_the_Unit_of_Work[Reading and
+Querying Objects with the Unit of Work]
+* link:#Locking_and_the_Unit_of_Work[Locking and the Unit of Work]
+
+==== Reading and Querying Objects with the Unit of Work
+
+A unit of work offers the same set of database access methods as a
+regular session.
+
+When called from a unit of work, these methods access the objects in the
+unit of work, register the selected objects automatically, and return
+clones.
+
+Although this makes it unnecessary for you to call the
+`+registerObject+` and `+registerAllObjects+` methods, be aware of the
+restrictions on registering objects described in
+link:Using%20Basic%20Unit%20of%20Work%20API%20(ELUG)#Creating_an_Object[Creating
+an Object] and
+link:Using%20Basic%20Unit%20of%20Work%20API%20(ELUG)#Associating_a_New_Source_to_an_Existing_Target_Object[Associating
+a New Source to an Existing Target Object].
+
+===== Reading Objects with the Unit of Work
+
+As with regular sessions, you use the `+readObject+` and
+`+readAllObjects+` methods to read objects from the database.
+
+===== Querying Objects with the Unit of Work
+
+You can execute queries in a unit of work with the `+executeQuery+`
+method.
+
+[width="100%",cols="<100%",]
+|===
+|*Note*: Because a unit of work manages changes to existing objects and
+the creation of new objects, modifying queries such as
+`+InsertObjectQuery+` or `+UpdateObjectQuery+` are not necessary and
+therefore are not supported by the unit of work.
+|===
+
+==== Locking and the Unit of Work
+
+For information on locking API generic to all sessions, see the
+following:
+
+* link:Introduction_to_EclipseLink%20Application%20Development%20(ELUG)#Locking[Locking]
+* link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Locking_Policy[Configuring
+Locking Policy]
+
+For information on locking API specific to a unit of work, see
+link:Using%20Advanced%20Unit%20of%20Work%20API%20(ELUG)#Using_Optimistic_Read_Locking_with_the_forceUpdateToVersionField_Method[Using
+Optimistic Read Locking with the forceUpdateToVersionField Method].
+
+== Example Model Object and Schema
+
+Throughout the chapters in this part, the following object model and
+schema are used in the examples provided. The example object model
+appears in the link:#Figure_109-2[Example Object Model] figure, and the
+example entity-relationship (data model) diagram appears in the
+link:#Figure_109-3[Example Data Model] figure.
+
+[#Figure 109-2]## *_Example Object Model_*
+
+.Example Object Model
+image::xobjmod.gif[Example Object Model,title="Example Object Model"]
+
+[#Figure 109-3]## *_Example Data Model_*
+
+.Example Data Model
+image::xdatmod.gif[Example Data Model,title="Example Data Model"]
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Release_1[Category: Release 1]

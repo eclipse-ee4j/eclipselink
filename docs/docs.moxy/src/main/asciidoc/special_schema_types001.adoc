@@ -1,0 +1,152 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[SPECIALSCHEMATYPES001]]
+=== Mapping Dates and Times
+
+You can use the `@XmlSchemaType` annotation to customize the XML
+representation of date and time information. Additionally, EclipseLink
+MOXy supports the following types which are not covered in the JAXB
+specification (JSR-222):
+
+* `java.sql.Date`
+* `java.sql.Time`
+* `java.sql.Timestamp`
+
+The following XML schema contains a *date-of-birth* element of type
+`xsd:date`:
+
+[[sthref90]]
+
+*_Example 5-1 Sample XML Schema_*
+
+[source,oac_no_warn]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <xsd:element name="customer">
+      <xsd:complexType>
+         <xsd:sequence>
+            <xsd:element name="date-of-birth" type="xsd:date" minOccurs="0"/>
+         </xsd:sequence>
+      </xsd:complexType>
+   </xsd:element>
+</xsd:schema>
+ 
+----
+
+==== Understanding the Generated Model
+
+The JAXB XML Schema to Java compiler (XJC) can be used to generate a
+class model from the sample schema. For example:
+
+[source,oac_no_warn]
+----
+> xjc -d output-dir -p example date.xsd
+ 
+----
+
+will generate the following *Customer* class:
+
+[[sthref92]]
+
+*_Example 5-2 Sample Customer Class_*
+
+[source,oac_no_warn]
+----
+package example;
+ 
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlSchemaType;
+import jakarta.xml.bind.annotation.XmlType;
+import javax.xml.datatype.XMLGregorianCalendar;
+ 
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "", propOrder = {"dateOfBirth"})
+@XmlRootElement(name = "customer")
+public class Customer {
+ 
+    @XmlElement(name = "date-of-birth")
+    @XmlSchemaType(name = "date")
+    protected XMLGregorianCalendar dateOfBirth;
+ 
+    public XMLGregorianCalendar getDateOfBirth() {
+        return dateOfBirth;
+    }
+ 
+    public void setDateOfBirth(XMLGregorianCalendar value) {
+        this.dateOfBirth = value;
+    }
+ 
+}
+ 
+----
+
+Notice that:
+
+* The `dateOfBirth` property is of type
+`javax.xml.datatype.XMLGregorianCalendar`
+* The `dateOfBirth` property uses the `@XmlSchemaType` annotation
+
+Some Java data types (like *XMLGregorianCalendar*) have multiple XML
+representations (such as `xsd:date`, `xsd:time`, or *xsd:dateTime*). Use
+`@XmlSchemaType` to select the appropriate representation.
+
+==== Using a Different Date (or Calendar) Property
+
+By default, the JAXB XML schema to Java compiler (XJC) generates a
+property of type `XMLGregorianCalendar`. However, you can easily change
+this to `java.util.Date` or `java.util.Calendar`, as shown in
+link:#BABJAHAF[Example 5-3]:
+
+[[BABJAHAF]]
+
+*_Example 5-3 Using java.util.Date_*
+
+[source,oac_no_warn]
+----
+package blog.date;
+ 
+import java.util.Date;
+ 
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlSchemaType;
+ 
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlRootElement(name = "customer")
+public class Customer {
+ 
+    @XmlElement(name = "date-of-birth")
+    @XmlSchemaType(name = "date")
+    protected Date dateOfBirth;
+ 
+    public Date getDateOfBirth() {
+        return dateOfBirth;
+    }
+ 
+    public void setDateOfBirth(Date value) {
+        this.dateOfBirth = value;
+    }
+ 
+}
+----

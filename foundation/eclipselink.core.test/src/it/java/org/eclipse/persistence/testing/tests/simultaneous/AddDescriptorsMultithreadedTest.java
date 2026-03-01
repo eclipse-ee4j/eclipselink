@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,15 +14,9 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.simultaneous;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Vector;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.logging.SessionLog;
-
 import org.eclipse.persistence.queries.DeleteAllQuery;
 import org.eclipse.persistence.queries.SQLCall;
 import org.eclipse.persistence.sequencing.DefaultSequence;
@@ -36,8 +30,14 @@ import org.eclipse.persistence.testing.framework.TestCase;
 import org.eclipse.persistence.testing.framework.TestErrorException;
 import org.eclipse.persistence.testing.framework.TestProblemException;
 import org.eclipse.persistence.testing.framework.TestWarningException;
+import org.eclipse.persistence.testing.models.employee.domain.Address;
+import org.eclipse.persistence.testing.models.employee.domain.Employee;
+import org.eclipse.persistence.testing.models.employee.domain.SmallProject;
 import org.eclipse.persistence.testing.models.interfaces.InterfaceHashtableProject;
-import org.eclipse.persistence.testing.models.employee.domain.*;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Vector;
 
 /**
  * Tests several scenarios of adding sequences and descriptors, sequence preallocation; inserting objects concurrently.
@@ -84,8 +84,8 @@ public class AddDescriptorsMultithreadedTest extends MultithreadTestCase {
     void generateTestName() {
         ArrayList<String> testNames = new ArrayList();
         HashMap<String, Integer> map = new HashMap();
-        for (int i=0; i < this.test.length; i++) {
-            String testName = this.test[i].getName();
+        for (TestCase testCase : this.test) {
+            String testName = testCase.getName();
             if (testNames.contains(testName)) {
                 int count = map.get(testName);
                 map.put(testName, count + 1);
@@ -94,19 +94,19 @@ public class AddDescriptorsMultithreadedTest extends MultithreadTestCase {
                 map.put(testName, 1);
             }
         }
-        String name = "";
+        StringBuilder name = new StringBuilder();
         for(int k=0; k < testNames.size(); k++) {
             String testName = testNames.get(k);
             if (k > 0) {
-                name += ";_";
+                name.append(";_");
             }
-            name += testName;
+            name.append(testName);
             int count = map.get(testName);
             if (count > 1) {
-                name += "_" + map.get(testName)+"threads";
+                name.append("_").append(map.get(testName)).append("threads");
             }
         }
-        setName(name);
+        setName(name.toString());
     }
 
     /*
@@ -163,7 +163,7 @@ public class AddDescriptorsMultithreadedTest extends MultithreadTestCase {
             // if numberOfTests = 10 then the first test uses k = 0, 10, 20 etc; the second k = 1, 11, 21 etc.
             for (int k = testNumber; k < nSize; k = k + numberOfTests) {
                 ClassDescriptor descriptor = project.getOrderedDescriptors().get(k);
-                getAbstractSession().log(SessionLog.FINEST, SessionLog.MISC, "AddDescriptorsTest adding descriptor for class = " + Helper.getShortClassName(descriptor.getJavaClass()), new Object[]{}, null, false);
+                getAbstractSession().log(SessionLog.FINEST, SessionLog.MISC, "AddDescriptorsTest adding descriptor for class = " + descriptor.getJavaClass().getSimpleName(), new Object[]{}, null, false);
                 DatabaseField sequenceNumberField = descriptor.getMappingForAttributeName("id").getField();
                 descriptor.setSequenceNumberField(sequenceNumberField);
                 String seqName = "SEQ_" + sequenceNumberField.getTableName();

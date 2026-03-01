@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,7 +14,7 @@
 //     Oracle - initial API and implementation
 package org.eclipse.persistence.testing.tests.distributedservers.rcm.jgroups;
 
-import org.eclipse.persistence.exceptions.RemoteCommandManagerException;
+import org.eclipse.persistence.sessions.coordination.RemoteCommandManagerException;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.sessions.coordination.RemoteCommandManager;
 import org.eclipse.persistence.sessions.coordination.TransportManager;

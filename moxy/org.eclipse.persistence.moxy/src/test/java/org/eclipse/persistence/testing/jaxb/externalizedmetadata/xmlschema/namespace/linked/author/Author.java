@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2016, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -41,10 +41,9 @@ public class Author {
         if (obj == null) {
             return false;
         }
-        if (!(obj instanceof Author)) {
+        if (!(obj instanceof Author other)) {
             return false;
         }
-        Author other = (Author) obj;
         if (address == null) {
             if (other.address != null) {
                 return false;

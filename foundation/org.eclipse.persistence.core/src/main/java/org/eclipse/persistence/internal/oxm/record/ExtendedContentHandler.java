@@ -23,7 +23,7 @@ import org.xml.sax.SAXException;
  */
 public interface ExtendedContentHandler extends ContentHandler {
 
-    /*
+    /**
      * This method is an alternate to the characters method on ContentHandler.
      * If this method is called other characters methods must not be called.
      */

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -62,7 +62,7 @@ import org.eclipse.persistence.annotations.ReadTransformer;
 import org.eclipse.persistence.annotations.TypeConverter;
 import org.eclipse.persistence.annotations.WriteTransformer;
 import org.eclipse.persistence.annotations.WriteTransformers;
-import org.eclipse.persistence.config.CacheIsolationType;
+import org.eclipse.persistence.annotations.CacheIsolationType;
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.sessions.DataRecord;
 import org.eclipse.persistence.sessions.Session;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,10 +14,14 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.tools.schemaframework;
 
-import java.util.*;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.sessions.Session;
+
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -43,10 +47,10 @@ public class PopulationManager {
     }
 
     /**
-     * Add all of the objects of the class and all of its subclasses.
+     * Add all the objects of the class and all of its subclasses.
      * The session is needed because there is no other way to find all subclasses.
      */
-    public void addAllObjectsForAbstractClass(Class<?> objectsClass, AbstractSession session, Vector<Object> allObjects) {
+    public void addAllObjectsForAbstractClass(Class<?> objectsClass, AbstractSession session, List<Object> allObjects) {
         ClassDescriptor descriptor = session.getDescriptor(objectsClass);
         addAllObjectsForClass(objectsClass, allObjects);
         for (ClassDescriptor child : descriptor.getInheritancePolicy().getChildDescriptors()) {
@@ -55,24 +59,22 @@ public class PopulationManager {
     }
 
     /**
-     * Add all of the objects of the class and all of its subclasses.
+     * Add all the objects of the class and all of its subclasses.
      * The session is needed because there is no other way to find all subclasses.
      */
-    public void addAllObjectsForAbstractClass(Class<?> objectsClass, org.eclipse.persistence.sessions.Session session, Vector<Object> allObjects) {
+    public void addAllObjectsForAbstractClass(Class<?> objectsClass, Session session, List<Object> allObjects) {
         addAllObjectsForAbstractClass(objectsClass, (AbstractSession)session, allObjects);
     }
 
     /**
-     * Add all of the objects of the class.
+     * Add all the objects of the class.
      */
     public void addAllObjectsForClass(Class<?> objectsClass, List<Object> allObjects) {
         if (!getRegisteredObjects().containsKey(objectsClass)) {
             return;
         }
 
-        for (Object object : getRegisteredObjects().get(objectsClass).values()) {
-            allObjects.add(object);
-        }
+        allObjects.addAll(getRegisteredObjects().get(objectsClass).values());
     }
 
     /**
@@ -90,19 +92,17 @@ public class PopulationManager {
     }
 
     /**
-     * Return all of the objects registered.
+     * Return all the objects registered.
      */
     public List<Class<?>> getAllClasses() {
-        Vector<Class<?>> allClasses = new Vector<>();
-        allClasses.addAll(getRegisteredObjects().keySet());
-        return allClasses;
+        return new ArrayList<>(getRegisteredObjects().keySet());
     }
 
     /**
-     * Return all of the objects registered.
+     * Return all the objects registered.
      */
-    public Vector<Object> getAllObjects() {
-        Vector<Object> allObjects = new Vector<> ();
+    public List<Object> getAllObjects() {
+        List<Object> allObjects = new ArrayList<> ();
         for (Class<?> eachClass : getAllClasses()) {
             addAllObjectsForClass(eachClass, allObjects);
         }
@@ -111,21 +111,21 @@ public class PopulationManager {
     }
 
     /**
-     * Return all of the objects of the class and all of its subclasses.
+     * Return all the objects of the class and all of its subclasses.
      */
     public List<Object> getAllObjectsForAbstractClass(Class<?> objectsClass) {
-        List<Object> allObjects = new Vector<>();
+        List<Object> allObjects = new ArrayList<>();
         // hummm, how can this be done....
         return allObjects;
     }
 
     /**
-     * Return all of the objects of the class and all of its subclasses.
+     * Return all the objects of the class and all of its subclasses.
      * The session is needed because there is no other way to find all subclasses.
      */
     public List<Object> getAllObjectsForAbstractClass(Class<?> objectsClass, AbstractSession session) {
         ClassDescriptor descriptor = session.getDescriptor(objectsClass);
-        List<Object> allObjects = new Vector<>();
+        List<Object> allObjects = new ArrayList<>();
         addAllObjectsForClass(objectsClass, allObjects);
         if (descriptor.hasInheritance()) {
             for (ClassDescriptor child : descriptor.getInheritancePolicy().getChildDescriptors()) {
@@ -137,10 +137,10 @@ public class PopulationManager {
     }
 
     /**
-     * Return all of the objects of the class.
+     * Return all the objects of the class.
      */
-    public Vector<Object> getAllObjectsForClass(Class<?> objectsClass) {
-        Vector<Object> allObjects = new Vector<>();
+    public List<Object> getAllObjectsForClass(Class<?> objectsClass) {
+        List<Object> allObjects = new ArrayList<>();
         addAllObjectsForClass(objectsClass, allObjects);
 
         return allObjects;

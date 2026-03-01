@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -45,15 +45,16 @@ public class AttachedBinaryBuilderTestSuite extends DBWSTestSuite {
     };
 
     public static final String CREATE_FUNCTION =
-        "CREATE OR REPLACE FUNCTION GETBLOBBYID(PK IN NUMBER) RETURN BLOB IS" +
-        "\nblb BLOB := EMPTY_BLOB();" +
-        "\nBEGIN" +
-            "\nSELECT B INTO blb FROM ATTACHEDBINARY WHERE ID=PK;" +
-            "\nRETURN(BLB);" +
-            "\nEXCEPTION" +
-                "\nWHEN NO_DATA_FOUND THEN" +
-                    "\nRAISE_APPLICATION_ERROR(-20001, 'GETBLOBBYID FAILED WITH NO DATA FOUND');" +
-        "\nEND;";
+            """
+                    CREATE OR REPLACE FUNCTION GETBLOBBYID(PK IN NUMBER) RETURN BLOB IS
+                    blb BLOB := EMPTY_BLOB();
+                    BEGIN
+                    SELECT B INTO blb FROM ATTACHEDBINARY WHERE ID=PK;
+                    RETURN(BLB);
+                    EXCEPTION
+                    WHEN NO_DATA_FOUND THEN
+                    RAISE_APPLICATION_ERROR(-20001, 'GETBLOBBYID FAILED WITH NO DATA FOUND');
+                    END;""";
 
     public static final String DROP_TABLE =
         "DROP TABLE ATTACHEDBINARY";

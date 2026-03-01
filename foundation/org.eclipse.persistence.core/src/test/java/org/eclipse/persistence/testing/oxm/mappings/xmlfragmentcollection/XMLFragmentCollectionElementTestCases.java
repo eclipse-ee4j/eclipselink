@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,14 +15,13 @@
 
 package org.eclipse.persistence.testing.oxm.mappings.xmlfragmentcollection;
 
-import java.io.InputStream;
-import java.util.ArrayList;
-
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
 import org.w3c.dom.Document;
-import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
+import java.io.InputStream;
+import java.util.ArrayList;
 
 public class XMLFragmentCollectionElementTestCases extends XMLMappingTestCases {
 
@@ -48,7 +47,7 @@ public class XMLFragmentCollectionElementTestCases extends XMLMappingTestCases {
             Document xdoc = parser.parse(inputStream);
             removeEmptyTextNodes(xdoc);
             inputStream.close();
-            employee.xmlnodes = new ArrayList<Node>();
+            employee.xmlnodes = new ArrayList<>();
             NodeList xmlnodes = xdoc.getElementsByTagName("xml-node");
             for (int i = 0; i < xmlnodes.getLength(); i++) {
                 employee.xmlnodes.add(xmlnodes.item(i));

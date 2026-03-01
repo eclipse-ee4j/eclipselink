@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,8 +14,8 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.jpa.advanced;
 
-import org.eclipse.persistence.config.DescriptorCustomizer;
-import org.eclipse.persistence.config.SessionCustomizer;
+import org.eclipse.persistence.descriptors.DescriptorCustomizer;
+import org.eclipse.persistence.sessions.SessionCustomizer;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.SerializedObjectPolicy;
 import org.eclipse.persistence.descriptors.VersionLockingPolicy;
@@ -218,6 +218,19 @@ public class Customizer implements SessionCustomizer, DescriptorCustomizer {
                     builder.getTable("CMP3_EMP_PROJ").getField("EMPLOYEES_EMP_ID").equal(
                     builder.getField("CMP3_EMPLOYEE.EMP_ID")))));
             descriptor.addQueryKey(employesQueryKey);
+
+            // Project leader's manager
+            ManyToManyQueryKey projectLeaderManager = new ManyToManyQueryKey();
+            projectLeaderManager.setName("projectLeaderManager");
+            projectLeaderManager.setReferenceClass(Employee.class);
+            builder = new ExpressionBuilder();
+
+            projectLeaderManager.setJoinCriteria(
+                    (builder.getParameter("CMP3_PROJECT.LEADER_ID").equal(
+                            builder.getTable("CMP3_EMPLOYEE").getField("EMP_ID")).and(
+                            builder.getTable("CMP3_EMPLOYEE").getField("MANAGER_EMP_ID").equal(
+                                    builder.getField("CMP3_EMPLOYEE.EMP_ID")))));
+            descriptor.addQueryKey(projectLeaderManager);
         }
     }
     //**temp

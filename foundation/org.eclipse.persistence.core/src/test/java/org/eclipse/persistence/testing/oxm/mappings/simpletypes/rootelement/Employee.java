@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -51,21 +51,17 @@ public class Employee  {
     }
 
     public boolean equals(Object object) {
-        if(!(object instanceof Employee)) {
+        if(!(object instanceof Employee emp)) {
             return false;
         }
 
-        Employee emp = ((Employee)object);
         if(emp.isMarried() != this.isMarried())
         {
             return false;
         }
-        if(((emp.getName()==null && this.getName()==null)|| (emp.getName().equals(this.getName()))) &&
-            ((emp.getLastName()==null && this.getLastName()==null)  || (emp.getLastName().equals(this.getLastName())) )&&
-                (emp.getAge() == this.getAge())){
-            return true;
-        }
-        return false;
+        return ((emp.getName() == null && this.getName() == null) || (emp.getName().equals(this.getName()))) &&
+                ((emp.getLastName() == null && this.getLastName() == null) || (emp.getLastName().equals(this.getLastName()))) &&
+                (emp.getAge() == this.getAge());
     }
 
 

@@ -1,0 +1,4 @@
+:nofooter:
+This graphic depicts the EclipseLink XR architecture. It shows the
+different layers and components, including deployment, XR services
+provider, and the metadata layer.

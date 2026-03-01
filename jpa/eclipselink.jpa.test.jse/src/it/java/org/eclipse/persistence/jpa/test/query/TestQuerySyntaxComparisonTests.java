@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2022 IBM Corporation. All rights reserved.
+ * Copyright (c) 2025 Contributors to the Eclipse Foundation.
+ * Copyright (c) 2022, 2023 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -39,6 +40,7 @@ import org.eclipse.persistence.jpa.test.query.model.QuerySyntaxEntity;
 import org.eclipse.persistence.jpa.test.query.model.QuerySyntaxEntity_;
 import org.eclipse.persistence.platform.database.DatabasePlatform;
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -257,7 +259,7 @@ public class TestQuerySyntaxComparisonTests {
             query.setParameter(2, -2);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT INTVAL1, (4 + -2) FROM QUERYSYNTAXENTITY WHERE (4 = (INTVAL1 + ABS(-2)))", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1, (? + ?) FROM QUERYSYNTAXENTITY WHERE (? = (INTVAL1 + ABS(?)))", _sql.remove(0));
@@ -266,7 +268,7 @@ public class TestQuerySyntaxComparisonTests {
             query = em.createQuery("SELECT s.intVal1, 4 + -2 FROM QuerySyntaxEntity s WHERE 4 = (s.intVal1 + ABS(-2))");
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT INTVAL1, (4 + -2) FROM QUERYSYNTAXENTITY WHERE (4 = (INTVAL1 + ABS(-2)))", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1, (? + ?) FROM QUERYSYNTAXENTITY WHERE (? = (INTVAL1 + ABS(?)))", _sql.remove(0));
@@ -276,7 +278,7 @@ public class TestQuerySyntaxComparisonTests {
             query.setParameter(2, -2);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT INTVAL1, (4 + -2) FROM QUERYSYNTAXENTITY WHERE (4 = (INTVAL1 + ABS(-2)))", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1, (? + ?) FROM QUERYSYNTAXENTITY WHERE (? = (INTVAL1 + ABS(?)))", _sql.remove(0));
@@ -297,7 +299,7 @@ public class TestQuerySyntaxComparisonTests {
             query.setParameter(intParam2, -2);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT INTVAL1, (4 + -2) FROM QUERYSYNTAXENTITY WHERE (4 = (INTVAL1 + ABS(-2)))", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1, (? + ?) FROM QUERYSYNTAXENTITY WHERE (? = (INTVAL1 + ABS(?)))", _sql.remove(0));
@@ -312,7 +314,7 @@ public class TestQuerySyntaxComparisonTests {
             query = em.createQuery(cquery2);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT INTVAL1, (4 + -2) FROM QUERYSYNTAXENTITY WHERE (4 = (INTVAL1 + ABS(-2)))", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1, (? + ?) FROM QUERYSYNTAXENTITY WHERE (? = (INTVAL1 + ABS(?)))", _sql.remove(0));
@@ -329,7 +331,7 @@ public class TestQuerySyntaxComparisonTests {
             query.setParameter(intParam6, -2);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT INTVAL1, (4 + -2) FROM QUERYSYNTAXENTITY WHERE (4 = (INTVAL1 + ABS(-2)))", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1, (? + ?) FROM QUERYSYNTAXENTITY WHERE (? = (INTVAL1 + ABS(?)))", _sql.remove(0));
@@ -752,7 +754,7 @@ public class TestQuerySyntaxComparisonTests {
             query.setParameter(2, 10);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT STRVAL1 FROM QUERYSYNTAXENTITY WHERE ((5 + 10) < INTVAL1)", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT STRVAL1 FROM QUERYSYNTAXENTITY WHERE ((? + ?) < INTVAL1)", _sql.remove(0));
@@ -761,7 +763,7 @@ public class TestQuerySyntaxComparisonTests {
             query = em.createQuery("SELECT s.strVal1 FROM QuerySyntaxEntity s WHERE (5 + 10) < (s.intVal1)");
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT STRVAL1 FROM QUERYSYNTAXENTITY WHERE ((5 + 10) < INTVAL1)", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT STRVAL1 FROM QUERYSYNTAXENTITY WHERE ((? + ?) < INTVAL1)", _sql.remove(0));
@@ -771,7 +773,7 @@ public class TestQuerySyntaxComparisonTests {
             query.setParameter(2, 10);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT STRVAL1 FROM QUERYSYNTAXENTITY WHERE ((5 + 10) < INTVAL1)", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT STRVAL1 FROM QUERYSYNTAXENTITY WHERE ((? + ?) < INTVAL1)", _sql.remove(0));
@@ -792,7 +794,7 @@ public class TestQuerySyntaxComparisonTests {
             query.setParameter(intParam2, 10);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT STRVAL1 FROM QUERYSYNTAXENTITY WHERE ((5 + 10) < INTVAL1)", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT STRVAL1 FROM QUERYSYNTAXENTITY WHERE ((? + ?) < INTVAL1)", _sql.remove(0));
@@ -807,7 +809,7 @@ public class TestQuerySyntaxComparisonTests {
             query = em.createQuery(cquery2);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT STRVAL1 FROM QUERYSYNTAXENTITY WHERE ((5 + 10) < INTVAL1)", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT STRVAL1 FROM QUERYSYNTAXENTITY WHERE ((? + ?) < INTVAL1)", _sql.remove(0));
@@ -824,7 +826,7 @@ public class TestQuerySyntaxComparisonTests {
             query.setParameter(intParam3, 10);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT STRVAL1 FROM QUERYSYNTAXENTITY WHERE ((5 + 10) < INTVAL1)", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT STRVAL1 FROM QUERYSYNTAXENTITY WHERE ((? + ?) < INTVAL1)", _sql.remove(0));
@@ -1223,7 +1225,7 @@ public class TestQuerySyntaxComparisonTests {
             query.setParameter(2, "%ORL%");
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE 'WORLD' LIKE '%ORL%'", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE ? LIKE ?", _sql.remove(0));
@@ -1232,7 +1234,7 @@ public class TestQuerySyntaxComparisonTests {
             query = em.createQuery("SELECT s.intVal1 FROM QuerySyntaxEntity s WHERE 'WORLD' LIKE '%ORL%'");
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE 'WORLD' LIKE '%ORL%'", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE ? LIKE ?", _sql.remove(0));
@@ -1242,7 +1244,7 @@ public class TestQuerySyntaxComparisonTests {
             query.setParameter(1, "%ORL%");
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE 'WORLD' LIKE '%ORL%'", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE ? LIKE ?", _sql.remove(0));
@@ -1264,7 +1266,7 @@ public class TestQuerySyntaxComparisonTests {
             query.setParameter(strParam2, "%ORL%");
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE 'WORLD' LIKE '%ORL%'", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE ? LIKE ?", _sql.remove(0));
@@ -1280,7 +1282,7 @@ public class TestQuerySyntaxComparisonTests {
             query = em.createQuery(cquery2);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE 'WORLD' LIKE '%ORL%'", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE ? LIKE ?", _sql.remove(0));
@@ -1298,7 +1300,7 @@ public class TestQuerySyntaxComparisonTests {
             query.setParameter(strParam3, "%ORL%");
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE 'WORLD' LIKE '%ORL%'", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE ? LIKE ?", _sql.remove(0));
@@ -1643,13 +1645,23 @@ public class TestQuerySyntaxComparisonTests {
         EntityManager em = emf.createEntityManager();
         DatabasePlatform platform = getPlatform(emf);
 
+        /* Disabling the test for DB2 zOS because support for the ESCAPE clause is dependent on the database configuration.
+         * Since we can't determine the configured support, disabling the test for now.
+         * 
+         * https://www.ibm.com/docs/en/db2-for-zos/11?topic=predicates-like-predicate
+         * An escape clause is allowed for Unicode mixed (UTF-8) data, but is restricted for ASCII and EBCDIC mixed data.
+         */
+        if(platform.isDB2Z()) {
+            Assume.assumeTrue("Test disabled for Platform " + platform, false);
+        }
+
         try {
             Query query = em.createQuery("SELECT s.intVal1 FROM QuerySyntaxEntity s WHERE s.strVal1 LIKE ?1 ESCAPE ?2");
             query.setParameter(1, "HELLO");
             query.setParameter(2, 'R');
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDerby()) {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE STRVAL1 LIKE 'HELLO' ESCAPE 'R'", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE STRVAL1 LIKE ? ESCAPE ?", _sql.remove(0));
@@ -1658,7 +1670,7 @@ public class TestQuerySyntaxComparisonTests {
             query = em.createQuery("SELECT s.intVal1 FROM QuerySyntaxEntity s WHERE s.strVal1 LIKE 'HELLO' ESCAPE 'R'");
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDerby()) {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE STRVAL1 LIKE 'HELLO' ESCAPE 'R'", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE STRVAL1 LIKE ? ESCAPE ?", _sql.remove(0));
@@ -1680,7 +1692,7 @@ public class TestQuerySyntaxComparisonTests {
             query.setParameter(chaParam1, 'R');
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDerby()) {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE STRVAL1 LIKE 'HELLO' ESCAPE 'R'", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE STRVAL1 LIKE ? ESCAPE ?", _sql.remove(0));
@@ -1695,7 +1707,7 @@ public class TestQuerySyntaxComparisonTests {
             query = em.createQuery(cquery2);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDerby()) {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE STRVAL1 LIKE 'HELLO' ESCAPE 'R'", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE STRVAL1 LIKE ? ESCAPE ?", _sql.remove(0));
@@ -1718,13 +1730,23 @@ public class TestQuerySyntaxComparisonTests {
         EntityManager em = emf2.createEntityManager();
         DatabasePlatform platform = getPlatform(emf2);
 
+        /* Disabling the test for DB2 zOS because support for the ESCAPE clause is dependent on the database configuration.
+         * Since we can't determine the configured support, disabling the test for now.
+         * 
+         * https://www.ibm.com/docs/en/db2-for-zos/11?topic=predicates-like-predicate
+         * An escape clause is allowed for Unicode mixed (UTF-8) data, but is restricted for ASCII and EBCDIC mixed data.
+         */
+        if(platform.isDB2Z()) {
+            Assume.assumeTrue("Test disabled for Platform " + platform, false);
+        }
+
         try {
             Query query = em.createQuery("SELECT s.intVal1 FROM QuerySyntaxEntity s WHERE s.strVal1 LIKE ?1 ESCAPE ?2");
             query.setParameter(1, "HELLO");
             query.setParameter(2, 'R');
             query.getResultList();
             Assert.assertEquals(1, _sql2.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2() || platform.isDerby()) {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE STRVAL1 LIKE ? ESCAPE ?", _sql2.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE STRVAL1 LIKE ? ESCAPE ?", _sql2.remove(0));
@@ -1733,7 +1755,7 @@ public class TestQuerySyntaxComparisonTests {
             query = em.createQuery("SELECT s.intVal1 FROM QuerySyntaxEntity s WHERE s.strVal1 LIKE 'HELLO' ESCAPE 'R'");
             query.getResultList();
             Assert.assertEquals(1, _sql2.size());
-            if(platform.isDB2Z() || platform.isDB2()) {
+            if(platform.isDB2()) {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE STRVAL1 LIKE ? ESCAPE ?", _sql2.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE STRVAL1 LIKE ? ESCAPE ?", _sql2.remove(0));
@@ -1755,7 +1777,7 @@ public class TestQuerySyntaxComparisonTests {
             query.setParameter(chaParam1, 'R');
             query.getResultList();
             Assert.assertEquals(1, _sql2.size());
-            if(platform.isDB2Z() || platform.isDB2()) {
+            if(platform.isDB2()) {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE STRVAL1 LIKE ? ESCAPE ?", _sql2.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE STRVAL1 LIKE ? ESCAPE ?", _sql2.remove(0));
@@ -1770,7 +1792,7 @@ public class TestQuerySyntaxComparisonTests {
             query = em.createQuery(cquery2);
             query.getResultList();
             Assert.assertEquals(1, _sql2.size());
-            if(platform.isDB2Z() || platform.isDB2()) {
+            if(platform.isDB2()) {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE STRVAL1 LIKE ? ESCAPE ?", _sql2.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE STRVAL1 LIKE ? ESCAPE ?", _sql2.remove(0));
@@ -1793,13 +1815,23 @@ public class TestQuerySyntaxComparisonTests {
         EntityManager em = emf3.createEntityManager();
         DatabasePlatform platform = getPlatform(emf3);
 
+        /* Disabling the test for DB2 zOS because support for the ESCAPE clause is dependent on the database configuration.
+         * Since we can't determine the configured support, disabling the test for now.
+         * 
+         * https://www.ibm.com/docs/en/db2-for-zos/11?topic=predicates-like-predicate
+         * An escape clause is allowed for Unicode mixed (UTF-8) data, but is restricted for ASCII and EBCDIC mixed data.
+         */
+        if(platform.isDB2Z()) {
+            Assume.assumeTrue("Test disabled for Platform " + platform, false);
+        }
+
         try {
             Query query = em.createQuery("SELECT s.intVal1 FROM QuerySyntaxEntity s WHERE s.strVal1 LIKE ?1 ESCAPE ?2");
             query.setParameter(1, "HELLO");
             query.setParameter(2, 'R');
             query.getResultList();
             Assert.assertEquals(1, _sql3.size());
-            if(platform.isDB2Z() || platform.isDB2()) {
+            if(platform.isDB2()) {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE STRVAL1 LIKE ? ESCAPE ?", _sql3.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE STRVAL1 LIKE ? ESCAPE ?", _sql3.remove(0));
@@ -1808,7 +1840,7 @@ public class TestQuerySyntaxComparisonTests {
             query = em.createQuery("SELECT s.intVal1 FROM QuerySyntaxEntity s WHERE s.strVal1 LIKE 'HELLO' ESCAPE 'R'");
             query.getResultList();
             Assert.assertEquals(1, _sql3.size());
-            if(platform.isDB2Z() || platform.isDB2()) {
+            if(platform.isDB2()) {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE STRVAL1 LIKE ? ESCAPE ?", _sql3.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE STRVAL1 LIKE ? ESCAPE ?", _sql3.remove(0));
@@ -1830,7 +1862,7 @@ public class TestQuerySyntaxComparisonTests {
             query.setParameter(chaParam1, 'R');
             query.getResultList();
             Assert.assertEquals(1, _sql3.size());
-            if(platform.isDB2Z() || platform.isDB2()) {
+            if(platform.isDB2()) {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE STRVAL1 LIKE ? ESCAPE ?", _sql3.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE STRVAL1 LIKE ? ESCAPE ?", _sql3.remove(0));
@@ -1845,7 +1877,7 @@ public class TestQuerySyntaxComparisonTests {
             query = em.createQuery(cquery2);
             query.getResultList();
             Assert.assertEquals(1, _sql3.size());
-            if(platform.isDB2Z() || platform.isDB2()) {
+            if(platform.isDB2()) {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE STRVAL1 LIKE ? ESCAPE ?", _sql3.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE STRVAL1 LIKE ? ESCAPE ?", _sql3.remove(0));
@@ -1875,7 +1907,7 @@ public class TestQuerySyntaxComparisonTests {
             query.setParameter(3, 'A');
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE 'HELLO' LIKE 'WORLD' ESCAPE 'A'", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE ? LIKE ? ESCAPE ?", _sql.remove(0));
@@ -1884,7 +1916,7 @@ public class TestQuerySyntaxComparisonTests {
             query = em.createQuery("SELECT s.intVal1 FROM QuerySyntaxEntity s WHERE 'HELLO' LIKE 'WORLD' ESCAPE 'A'");
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE 'HELLO' LIKE 'WORLD' ESCAPE 'A'", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE ? LIKE ? ESCAPE ?", _sql.remove(0));
@@ -1895,7 +1927,7 @@ public class TestQuerySyntaxComparisonTests {
             query.setParameter(2, 'A');
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE 'HELLO' LIKE 'WORLD' ESCAPE 'A'", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE ? LIKE ? ESCAPE ?", _sql.remove(0));
@@ -1919,7 +1951,7 @@ public class TestQuerySyntaxComparisonTests {
             query.setParameter(chaParam1, 'A');
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE 'HELLO' LIKE 'WORLD' ESCAPE 'A'", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE ? LIKE ? ESCAPE ?", _sql.remove(0));
@@ -1934,7 +1966,7 @@ public class TestQuerySyntaxComparisonTests {
             query = em.createQuery(cquery2);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE 'HELLO' LIKE 'WORLD' ESCAPE 'A'", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE ? LIKE ? ESCAPE ?", _sql.remove(0));
@@ -1954,7 +1986,7 @@ public class TestQuerySyntaxComparisonTests {
             query.setParameter(chaParam2, 'A');
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE 'HELLO' LIKE 'WORLD' ESCAPE 'A'", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE ? LIKE ? ESCAPE ?", _sql.remove(0));
@@ -1975,6 +2007,7 @@ public class TestQuerySyntaxComparisonTests {
             return;
 
         EntityManager em = emf2.createEntityManager();
+        DatabasePlatform platform = getPlatform(emf2);
 
         try {
             Query query = em.createQuery("SELECT s.intVal1 FROM QuerySyntaxEntity s WHERE ?1 LIKE ?2 ESCAPE ?3");
@@ -1983,19 +2016,31 @@ public class TestQuerySyntaxComparisonTests {
             query.setParameter(3, 'A');
             query.getResultList();
             Assert.assertEquals(1, _sql2.size());
-            Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE ? LIKE ? ESCAPE ?", _sql2.remove(0));
+            if(platform.isDB2Z()) {
+                Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE ? LIKE ? ESCAPE 'A'", _sql2.remove(0));
+            } else {
+                Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE ? LIKE ? ESCAPE ?", _sql2.remove(0));
+            }
 
             query = em.createQuery("SELECT s.intVal1 FROM QuerySyntaxEntity s WHERE 'HELLO' LIKE 'WORLD' ESCAPE 'A'");
             query.getResultList();
             Assert.assertEquals(1, _sql2.size());
-            Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE ? LIKE ? ESCAPE ?", _sql2.remove(0));
+            if(platform.isDB2Z()) {
+                Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE ? LIKE ? ESCAPE 'A'", _sql2.remove(0));
+            } else {
+                Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE ? LIKE ? ESCAPE ?", _sql2.remove(0));
+            }
 
             query = em.createQuery("SELECT s.intVal1 FROM QuerySyntaxEntity s WHERE 'HELLO' LIKE ?1 ESCAPE ?2");
             query.setParameter(1, "WORLD");
             query.setParameter(2, 'A');
             query.getResultList();
             Assert.assertEquals(1, _sql2.size());
-            Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE ? LIKE ? ESCAPE ?", _sql2.remove(0));
+            if(platform.isDB2Z()) {
+                Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE ? LIKE ? ESCAPE 'A'", _sql2.remove(0));
+            } else {
+                Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE ? LIKE ? ESCAPE ?", _sql2.remove(0));
+            }
 
             // -----------------------
 
@@ -2015,7 +2060,11 @@ public class TestQuerySyntaxComparisonTests {
             query.setParameter(chaParam1, 'A');
             query.getResultList();
             Assert.assertEquals(1, _sql2.size());
-            Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE ? LIKE ? ESCAPE ?", _sql2.remove(0));
+            if(platform.isDB2Z()) {
+                Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE ? LIKE ? ESCAPE 'A'", _sql2.remove(0));
+            } else {
+                Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE ? LIKE ? ESCAPE ?", _sql2.remove(0));
+            }
 
             CriteriaBuilder cb2 = em.getCriteriaBuilder();
             CriteriaQuery<Object[]> cquery2 = cb2.createQuery(Object[].class);
@@ -2026,7 +2075,11 @@ public class TestQuerySyntaxComparisonTests {
             query = em.createQuery(cquery2);
             query.getResultList();
             Assert.assertEquals(1, _sql2.size());
-            Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE ? LIKE ? ESCAPE ?", _sql2.remove(0));
+            if(platform.isDB2Z()) {
+                Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE ? LIKE ? ESCAPE 'A'", _sql2.remove(0));
+            } else {
+                Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE ? LIKE ? ESCAPE ?", _sql2.remove(0));
+            }
 
             CriteriaBuilder cb3 = em.getCriteriaBuilder();
             CriteriaQuery<Object[]> cquery3 = cb3.createQuery(Object[].class);
@@ -2042,7 +2095,11 @@ public class TestQuerySyntaxComparisonTests {
             query.setParameter(chaParam2, 'A');
             query.getResultList();
             Assert.assertEquals(1, _sql2.size());
-            Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE ? LIKE ? ESCAPE ?", _sql2.remove(0));
+            if(platform.isDB2Z()) {
+                Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE ? LIKE ? ESCAPE 'A'", _sql2.remove(0));
+            } else {
+                Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE ? LIKE ? ESCAPE ?", _sql2.remove(0));
+            }
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -2059,6 +2116,7 @@ public class TestQuerySyntaxComparisonTests {
             return;
 
         EntityManager em = emf3.createEntityManager();
+        DatabasePlatform platform = getPlatform(emf3);
 
         try {
             Query query = em.createQuery("SELECT s.intVal1 FROM QuerySyntaxEntity s WHERE ?1 LIKE ?2 ESCAPE ?3");
@@ -2067,19 +2125,31 @@ public class TestQuerySyntaxComparisonTests {
             query.setParameter(3, 'A');
             query.getResultList();
             Assert.assertEquals(1, _sql3.size());
-            Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE ? LIKE ? ESCAPE ?", _sql3.remove(0));
+            if(platform.isDB2Z()) {
+                Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE ? LIKE ? ESCAPE 'A'", _sql3.remove(0));
+            } else {
+                Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE ? LIKE ? ESCAPE ?", _sql3.remove(0));
+            }
 
             query = em.createQuery("SELECT s.intVal1 FROM QuerySyntaxEntity s WHERE 'HELLO' LIKE 'WORLD' ESCAPE 'A'");
             query.getResultList();
             Assert.assertEquals(1, _sql3.size());
-            Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE ? LIKE ? ESCAPE ?", _sql3.remove(0));
+            if(platform.isDB2Z()) {
+                Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE ? LIKE ? ESCAPE 'A'", _sql3.remove(0));
+            } else {
+                Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE ? LIKE ? ESCAPE ?", _sql3.remove(0));
+            }
 
             query = em.createQuery("SELECT s.intVal1 FROM QuerySyntaxEntity s WHERE 'HELLO' LIKE ?1 ESCAPE ?2");
             query.setParameter(1, "WORLD");
             query.setParameter(2, 'A');
             query.getResultList();
             Assert.assertEquals(1, _sql3.size());
-            Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE ? LIKE ? ESCAPE ?", _sql3.remove(0));
+            if(platform.isDB2Z()) {
+                Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE ? LIKE ? ESCAPE 'A'", _sql3.remove(0));
+            } else {
+                Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE ? LIKE ? ESCAPE ?", _sql3.remove(0));
+            }
 
             // -----------------------
 
@@ -2099,7 +2169,11 @@ public class TestQuerySyntaxComparisonTests {
             query.setParameter(chaParam1, 'A');
             query.getResultList();
             Assert.assertEquals(1, _sql3.size());
-            Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE ? LIKE ? ESCAPE ?", _sql3.remove(0));
+            if(platform.isDB2Z()) {
+                Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE ? LIKE ? ESCAPE 'A'", _sql3.remove(0));
+            } else {
+                Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE ? LIKE ? ESCAPE ?", _sql3.remove(0));
+            }
 
             CriteriaBuilder cb2 = em.getCriteriaBuilder();
             CriteriaQuery<Object[]> cquery2 = cb2.createQuery(Object[].class);
@@ -2110,7 +2184,11 @@ public class TestQuerySyntaxComparisonTests {
             query = em.createQuery(cquery2);
             query.getResultList();
             Assert.assertEquals(1, _sql3.size());
-            Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE ? LIKE ? ESCAPE ?", _sql3.remove(0));
+            if(platform.isDB2Z()) {
+                Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE ? LIKE ? ESCAPE 'A'", _sql3.remove(0));
+            } else {
+                Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE ? LIKE ? ESCAPE ?", _sql3.remove(0));
+            }
 
             CriteriaBuilder cb3 = em.getCriteriaBuilder();
             CriteriaQuery<Object[]> cquery3 = cb3.createQuery(Object[].class);
@@ -2126,7 +2204,11 @@ public class TestQuerySyntaxComparisonTests {
             query.setParameter(chaParam2, 'A');
             query.getResultList();
             Assert.assertEquals(1, _sql3.size());
-            Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE ? LIKE ? ESCAPE ?", _sql3.remove(0));
+            if(platform.isDB2Z()) {
+                Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE ? LIKE ? ESCAPE 'A'", _sql3.remove(0));
+            } else {
+                Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE ? LIKE ? ESCAPE ?", _sql3.remove(0));
+            }
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -5954,7 +6036,7 @@ public class TestQuerySyntaxComparisonTests {
             query.setParameter(3, 9);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE (4 BETWEEN 2 AND 9)", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE (? BETWEEN ? AND ?)", _sql.remove(0));
@@ -5963,7 +6045,7 @@ public class TestQuerySyntaxComparisonTests {
             query = em.createQuery("SELECT s.intVal1 FROM QuerySyntaxEntity s WHERE 4 BETWEEN 2 AND 9");
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE (4 BETWEEN 2 AND 9)", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE (? BETWEEN ? AND ?)", _sql.remove(0));
@@ -5974,7 +6056,7 @@ public class TestQuerySyntaxComparisonTests {
             query.setParameter(2, 9);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE (4 BETWEEN 2 AND 9)", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE (? BETWEEN ? AND ?)", _sql.remove(0));
@@ -5998,7 +6080,7 @@ public class TestQuerySyntaxComparisonTests {
             query.setParameter(intParam3, 9);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE (4 BETWEEN 2 AND 9)", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE (? BETWEEN ? AND ?)", _sql.remove(0));
@@ -6013,7 +6095,7 @@ public class TestQuerySyntaxComparisonTests {
             query = em.createQuery(cquery2);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE (4 BETWEEN 2 AND 9)", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE (? BETWEEN ? AND ?)", _sql.remove(0));
@@ -6033,7 +6115,7 @@ public class TestQuerySyntaxComparisonTests {
             query.setParameter(intParam5, 9);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE (4 BETWEEN 2 AND 9)", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE (? BETWEEN ? AND ?)", _sql.remove(0));
@@ -6755,7 +6837,7 @@ public class TestQuerySyntaxComparisonTests {
             query.setParameter(3, 9);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE NOT ((4 BETWEEN 2 AND 9))", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE NOT ((? BETWEEN ? AND ?))", _sql.remove(0));
@@ -6764,7 +6846,7 @@ public class TestQuerySyntaxComparisonTests {
             query = em.createQuery("SELECT s.intVal1 FROM QuerySyntaxEntity s WHERE 4 NOT BETWEEN 2 AND 9");
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE NOT ((4 BETWEEN 2 AND 9))", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE NOT ((? BETWEEN ? AND ?))", _sql.remove(0));
@@ -6775,7 +6857,7 @@ public class TestQuerySyntaxComparisonTests {
             query.setParameter(2, 9);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE NOT ((4 BETWEEN 2 AND 9))", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE NOT ((? BETWEEN ? AND ?))", _sql.remove(0));
@@ -6799,7 +6881,7 @@ public class TestQuerySyntaxComparisonTests {
             query.setParameter(intParam3, 9);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE NOT ((4 BETWEEN 2 AND 9))", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE NOT ((? BETWEEN ? AND ?))", _sql.remove(0));
@@ -6815,7 +6897,7 @@ public class TestQuerySyntaxComparisonTests {
             query = em.createQuery(cquery2);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE NOT ((4 BETWEEN 2 AND 9))", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE NOT ((? BETWEEN ? AND ?))", _sql.remove(0));
@@ -6835,7 +6917,7 @@ public class TestQuerySyntaxComparisonTests {
             query.setParameter(intParam5, 9);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE NOT ((4 BETWEEN 2 AND 9))", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE NOT ((? BETWEEN ? AND ?))", _sql.remove(0));
@@ -7084,7 +7166,7 @@ public class TestQuerySyntaxComparisonTests {
             query.setParameter(1, "HELLO");
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE ('HELLO' IS NULL)", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE (? IS NULL)", _sql.remove(0));
@@ -7093,7 +7175,7 @@ public class TestQuerySyntaxComparisonTests {
             query = em.createQuery("SELECT s.intVal1 FROM QuerySyntaxEntity s WHERE 'HELLO' IS NULL");
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE ('HELLO' IS NULL)", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE (? IS NULL)", _sql.remove(0));
@@ -7113,7 +7195,7 @@ public class TestQuerySyntaxComparisonTests {
             query.setParameter(strParam1, "HELLO");
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE ('HELLO' IS NULL)", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE (? IS NULL)", _sql.remove(0));
@@ -7129,7 +7211,7 @@ public class TestQuerySyntaxComparisonTests {
             query = em.createQuery(cquery2);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE ('HELLO' IS NULL)", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE (? IS NULL)", _sql.remove(0));
@@ -7303,7 +7385,7 @@ public class TestQuerySyntaxComparisonTests {
             query.setParameter(1, "HELLO");
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE ('HELLO' IS NOT NULL)", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE (? IS NOT NULL)", _sql.remove(0));
@@ -7312,7 +7394,7 @@ public class TestQuerySyntaxComparisonTests {
             query = em.createQuery("SELECT s.intVal1 FROM QuerySyntaxEntity s WHERE 'HELLO' IS NOT NULL");
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE ('HELLO' IS NOT NULL)", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE (? IS NOT NULL)", _sql.remove(0));
@@ -7332,7 +7414,7 @@ public class TestQuerySyntaxComparisonTests {
             query.setParameter(strParam1, "HELLO");
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE ('HELLO' IS NOT NULL)", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE (? IS NOT NULL)", _sql.remove(0));
@@ -7348,7 +7430,7 @@ public class TestQuerySyntaxComparisonTests {
             query = em.createQuery(cquery2);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE ('HELLO' IS NOT NULL)", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE (? IS NOT NULL)", _sql.remove(0));
@@ -7522,17 +7604,21 @@ public class TestQuerySyntaxComparisonTests {
             query.setParameter(1, "HELLO");
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT t0.INTVAL1 FROM QUERYSYNTAXENTITY t0 WHERE EXISTS (SELECT 1 FROM QUERYSYNTAXENTITY t1 WHERE (t1.STRVAL1 = 'HELLO'))", _sql.remove(0));
-            } else {
+            } else if(platform.isDB2()) {
+                Assert.assertEquals("SELECT t0.INTVAL1 FROM QUERYSYNTAXENTITY t0 WHERE EXISTS (SELECT 1 FROM QUERYSYNTAXENTITY t1 WHERE (t1.STRVAL1 = ?))", _sql.remove(0));
+            }else {
                 Assert.assertEquals("SELECT t0.INTVAL1 FROM QUERYSYNTAXENTITY t0 WHERE EXISTS (SELECT ? FROM QUERYSYNTAXENTITY t1 WHERE (t1.STRVAL1 = ?))", _sql.remove(0));
             }
 
             query = em.createQuery("SELECT s.intVal1 FROM QuerySyntaxEntity s WHERE EXISTS (SELECT u.intVal2 FROM QuerySyntaxEntity u WHERE u.strVal1 = 'HELLO')");
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT t0.INTVAL1 FROM QUERYSYNTAXENTITY t0 WHERE EXISTS (SELECT 1 FROM QUERYSYNTAXENTITY t1 WHERE (t1.STRVAL1 = 'HELLO'))", _sql.remove(0));
+            } else if(platform.isDB2()) {
+                Assert.assertEquals("SELECT t0.INTVAL1 FROM QUERYSYNTAXENTITY t0 WHERE EXISTS (SELECT 1 FROM QUERYSYNTAXENTITY t1 WHERE (t1.STRVAL1 = ?))", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT t0.INTVAL1 FROM QUERYSYNTAXENTITY t0 WHERE EXISTS (SELECT ? FROM QUERYSYNTAXENTITY t1 WHERE (t1.STRVAL1 = ?))", _sql.remove(0));
             }
@@ -7748,8 +7834,10 @@ public class TestQuerySyntaxComparisonTests {
             query.setParameter(3, false);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT CASE  WHEN EXISTS (SELECT 1 FROM QUERYSYNTAXENTITY t1 WHERE (t1.STRVAL1 = 'HELLO')) THEN 1 ELSE 0 END FROM QUERYSYNTAXENTITY t0", _sql.remove(0));
+            } else if(platform.isDB2()) {
+                Assert.assertEquals("SELECT CASE  WHEN EXISTS (SELECT 1 FROM QUERYSYNTAXENTITY t1 WHERE (t1.STRVAL1 = ?)) THEN 1 ELSE 0 END FROM QUERYSYNTAXENTITY t0", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT CASE  WHEN EXISTS (SELECT ? FROM QUERYSYNTAXENTITY t1 WHERE (t1.STRVAL1 = ?)) THEN ? ELSE ? END FROM QUERYSYNTAXENTITY t0", _sql.remove(0));
             }
@@ -7757,9 +7845,11 @@ public class TestQuerySyntaxComparisonTests {
             query = em.createQuery("SELECT CASE WHEN EXISTS (SELECT u.intVal2 FROM QuerySyntaxEntity u WHERE u.strVal1 = 'HELLO') THEN TRUE ELSE FALSE END FROM QuerySyntaxEntity s");
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT CASE  WHEN EXISTS (SELECT 1 FROM QUERYSYNTAXENTITY t1 WHERE (t1.STRVAL1 = 'HELLO')) THEN 1 ELSE 0 END FROM QUERYSYNTAXENTITY t0", _sql.remove(0));
-            } else {
+            } else if(platform.isDB2()) {
+                Assert.assertEquals("SELECT CASE  WHEN EXISTS (SELECT 1 FROM QUERYSYNTAXENTITY t1 WHERE (t1.STRVAL1 = ?)) THEN 1 ELSE 0 END FROM QUERYSYNTAXENTITY t0", _sql.remove(0));
+            }else {
                 Assert.assertEquals("SELECT CASE  WHEN EXISTS (SELECT ? FROM QUERYSYNTAXENTITY t1 WHERE (t1.STRVAL1 = ?)) THEN ? ELSE ? END FROM QUERYSYNTAXENTITY t0", _sql.remove(0));
             }
 
@@ -7790,9 +7880,11 @@ public class TestQuerySyntaxComparisonTests {
             query.setParameter(resultParam2, false);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT CASE WHEN EXISTS (SELECT t1.INTVAL2 FROM QUERYSYNTAXENTITY t1 WHERE (t1.STRVAL1 = 'HELLO')) THEN 1 ELSE 0 END  FROM QUERYSYNTAXENTITY t0", _sql.remove(0));
-            } else {
+            } else if(platform.isDB2()) {
+                Assert.assertEquals("SELECT CASE WHEN EXISTS (SELECT t1.INTVAL2 FROM QUERYSYNTAXENTITY t1 WHERE (t1.STRVAL1 = ?)) THEN 1 ELSE 0 END  FROM QUERYSYNTAXENTITY t0", _sql.remove(0));
+            }else {
                 Assert.assertEquals("SELECT CASE WHEN EXISTS (SELECT t1.INTVAL2 FROM QUERYSYNTAXENTITY t1 WHERE (t1.STRVAL1 = ?)) THEN ? ELSE ? END  FROM QUERYSYNTAXENTITY t0", _sql.remove(0));
             }
 
@@ -7814,8 +7906,10 @@ public class TestQuerySyntaxComparisonTests {
             query = em.createQuery(cquery2);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT CASE WHEN EXISTS (SELECT t1.INTVAL2 FROM QUERYSYNTAXENTITY t1 WHERE (t1.STRVAL1 = 'HELLO')) THEN 1 ELSE 0 END  FROM QUERYSYNTAXENTITY t0", _sql.remove(0));
+            } else if(platform.isDB2()) {
+                Assert.assertEquals("SELECT CASE WHEN EXISTS (SELECT t1.INTVAL2 FROM QUERYSYNTAXENTITY t1 WHERE (t1.STRVAL1 = ?)) THEN 1 ELSE 0 END  FROM QUERYSYNTAXENTITY t0", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT CASE WHEN EXISTS (SELECT t1.INTVAL2 FROM QUERYSYNTAXENTITY t1 WHERE (t1.STRVAL1 = ?)) THEN ? ELSE ? END  FROM QUERYSYNTAXENTITY t0", _sql.remove(0));
             }
@@ -8034,8 +8128,10 @@ public class TestQuerySyntaxComparisonTests {
             query.setParameter(1, "HELLO");
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT t0.INTVAL1 FROM QUERYSYNTAXENTITY t0 WHERE NOT EXISTS (SELECT 1 FROM QUERYSYNTAXENTITY t1 WHERE (t1.STRVAL1 = 'HELLO'))", _sql.remove(0));
+            } else if(platform.isDB2()) {
+                Assert.assertEquals("SELECT t0.INTVAL1 FROM QUERYSYNTAXENTITY t0 WHERE NOT EXISTS (SELECT 1 FROM QUERYSYNTAXENTITY t1 WHERE (t1.STRVAL1 = ?))", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT t0.INTVAL1 FROM QUERYSYNTAXENTITY t0 WHERE NOT EXISTS (SELECT ? FROM QUERYSYNTAXENTITY t1 WHERE (t1.STRVAL1 = ?))", _sql.remove(0));
             }
@@ -8043,8 +8139,10 @@ public class TestQuerySyntaxComparisonTests {
             query = em.createQuery("SELECT s.intVal1 FROM QuerySyntaxEntity s WHERE NOT EXISTS (SELECT u.intVal2 FROM QuerySyntaxEntity u WHERE u.strVal1 = 'HELLO')");
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT t0.INTVAL1 FROM QUERYSYNTAXENTITY t0 WHERE NOT EXISTS (SELECT 1 FROM QUERYSYNTAXENTITY t1 WHERE (t1.STRVAL1 = 'HELLO'))", _sql.remove(0));
+            } else if(platform.isDB2()) {
+                Assert.assertEquals("SELECT t0.INTVAL1 FROM QUERYSYNTAXENTITY t0 WHERE NOT EXISTS (SELECT 1 FROM QUERYSYNTAXENTITY t1 WHERE (t1.STRVAL1 = ?))", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT t0.INTVAL1 FROM QUERYSYNTAXENTITY t0 WHERE NOT EXISTS (SELECT ? FROM QUERYSYNTAXENTITY t1 WHERE (t1.STRVAL1 = ?))", _sql.remove(0));
             }
@@ -8264,8 +8362,10 @@ public class TestQuerySyntaxComparisonTests {
             query.setParameter(3, false);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT CASE  WHEN NOT EXISTS (SELECT 1 FROM QUERYSYNTAXENTITY t1 WHERE (t1.STRVAL1 = 'HELLO')) THEN 1 ELSE 0 END FROM QUERYSYNTAXENTITY t0", _sql.remove(0));
+            } else if(platform.isDB2()) {
+                Assert.assertEquals("SELECT CASE  WHEN NOT EXISTS (SELECT 1 FROM QUERYSYNTAXENTITY t1 WHERE (t1.STRVAL1 = ?)) THEN 1 ELSE 0 END FROM QUERYSYNTAXENTITY t0", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT CASE  WHEN NOT EXISTS (SELECT ? FROM QUERYSYNTAXENTITY t1 WHERE (t1.STRVAL1 = ?)) THEN ? ELSE ? END FROM QUERYSYNTAXENTITY t0", _sql.remove(0));
             }
@@ -8273,9 +8373,11 @@ public class TestQuerySyntaxComparisonTests {
             query = em.createQuery("SELECT CASE WHEN NOT EXISTS (SELECT u.intVal2 FROM QuerySyntaxEntity u WHERE u.strVal1 = 'HELLO') THEN TRUE ELSE FALSE END FROM QuerySyntaxEntity s");
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT CASE  WHEN NOT EXISTS (SELECT 1 FROM QUERYSYNTAXENTITY t1 WHERE (t1.STRVAL1 = 'HELLO')) THEN 1 ELSE 0 END FROM QUERYSYNTAXENTITY t0", _sql.remove(0));
-            } else {
+            } else if(platform.isDB2()) {
+                Assert.assertEquals("SELECT CASE  WHEN NOT EXISTS (SELECT 1 FROM QUERYSYNTAXENTITY t1 WHERE (t1.STRVAL1 = ?)) THEN 1 ELSE 0 END FROM QUERYSYNTAXENTITY t0", _sql.remove(0));
+            }else {
                 Assert.assertEquals("SELECT CASE  WHEN NOT EXISTS (SELECT ? FROM QUERYSYNTAXENTITY t1 WHERE (t1.STRVAL1 = ?)) THEN ? ELSE ? END FROM QUERYSYNTAXENTITY t0", _sql.remove(0));
             }
 
@@ -8307,8 +8409,10 @@ public class TestQuerySyntaxComparisonTests {
             query.setParameter(resultParam2, false);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT CASE WHEN NOT (EXISTS (SELECT t1.INTVAL2 FROM QUERYSYNTAXENTITY t1 WHERE (t1.STRVAL1 = 'HELLO'))) THEN 1 ELSE 0 END  FROM QUERYSYNTAXENTITY t0", _sql.remove(0));
+            } else if(platform.isDB2()) {
+                Assert.assertEquals("SELECT CASE WHEN NOT (EXISTS (SELECT t1.INTVAL2 FROM QUERYSYNTAXENTITY t1 WHERE (t1.STRVAL1 = ?))) THEN 1 ELSE 0 END  FROM QUERYSYNTAXENTITY t0", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT CASE WHEN NOT (EXISTS (SELECT t1.INTVAL2 FROM QUERYSYNTAXENTITY t1 WHERE (t1.STRVAL1 = ?))) THEN ? ELSE ? END  FROM QUERYSYNTAXENTITY t0", _sql.remove(0));
             }
@@ -8331,8 +8435,10 @@ public class TestQuerySyntaxComparisonTests {
             query = em.createQuery(cquery2);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT CASE WHEN NOT (EXISTS (SELECT t1.INTVAL2 FROM QUERYSYNTAXENTITY t1 WHERE (t1.STRVAL1 = 'HELLO'))) THEN 1 ELSE 0 END  FROM QUERYSYNTAXENTITY t0", _sql.remove(0));
+            } else if(platform.isDB2()) {
+                Assert.assertEquals("SELECT CASE WHEN NOT (EXISTS (SELECT t1.INTVAL2 FROM QUERYSYNTAXENTITY t1 WHERE (t1.STRVAL1 = ?))) THEN 1 ELSE 0 END  FROM QUERYSYNTAXENTITY t0", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT CASE WHEN NOT (EXISTS (SELECT t1.INTVAL2 FROM QUERYSYNTAXENTITY t1 WHERE (t1.STRVAL1 = ?))) THEN ? ELSE ? END  FROM QUERYSYNTAXENTITY t0", _sql.remove(0));
             }
@@ -8557,8 +8663,10 @@ public class TestQuerySyntaxComparisonTests {
             query.setParameter(5, 26);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = CASE INTVAL2 WHEN 5 THEN 6 WHEN 15 THEN 16 ELSE 26 END)", _sql.remove(0));
+            } else if(platform.isDB2()) { 
+                Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = CASE INTVAL2 WHEN ? THEN 6 WHEN ? THEN 16 ELSE 26 END)", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = CASE INTVAL2 WHEN ? THEN ? WHEN ? THEN ? ELSE ? END)", _sql.remove(0));
             }
@@ -8566,8 +8674,10 @@ public class TestQuerySyntaxComparisonTests {
             query = em.createQuery("SELECT s.intVal1 FROM QuerySyntaxEntity s WHERE s.intVal1 = CASE s.intVal2 WHEN 5 THEN 6 WHEN 15 THEN 16 ELSE 26 END");
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = CASE INTVAL2 WHEN 5 THEN 6 WHEN 15 THEN 16 ELSE 26 END)", _sql.remove(0));
+            } else if(platform.isDB2()) { 
+                Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = CASE INTVAL2 WHEN ? THEN 6 WHEN ? THEN 16 ELSE 26 END)", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = CASE INTVAL2 WHEN ? THEN ? WHEN ? THEN ? ELSE ? END)", _sql.remove(0));
             }
@@ -8577,8 +8687,10 @@ public class TestQuerySyntaxComparisonTests {
             query.setParameter(2, 6);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = CASE INTVAL2 WHEN 5 THEN 6 WHEN 15 THEN 16 ELSE 26 END)", _sql.remove(0));
+            } else if(platform.isDB2()) { 
+                Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = CASE INTVAL2 WHEN ? THEN 6 WHEN ? THEN 16 ELSE 26 END)", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = CASE INTVAL2 WHEN ? THEN ? WHEN ? THEN ? ELSE ? END)", _sql.remove(0));
             }
@@ -8639,8 +8751,10 @@ public class TestQuerySyntaxComparisonTests {
             query = em.createQuery(cquery2);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = CASE INTVAL2 WHEN 5 THEN 6 WHEN 15 THEN 16 ELSE 26 END)", _sql.remove(0));
+            } else if(platform.isDB2()) { 
+                Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = CASE INTVAL2 WHEN ? THEN 6 WHEN ? THEN 16 ELSE 26 END)", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = CASE INTVAL2 WHEN ? THEN ? WHEN ? THEN ? ELSE ? END)", _sql.remove(0));
             }
@@ -8991,8 +9105,10 @@ public class TestQuerySyntaxComparisonTests {
             query.setParameter(5, 26);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = CASE  WHEN (INTVAL2 = 5) THEN 6 WHEN (INTVAL2 = 15) THEN 16 ELSE 26 END)", _sql.remove(0));
+            } else if(platform.isDB2()) {
+                Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = CASE  WHEN (INTVAL2 = ?) THEN 6 WHEN (INTVAL2 = ?) THEN 16 ELSE 26 END)", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = CASE  WHEN (INTVAL2 = ?) THEN ? WHEN (INTVAL2 = ?) THEN ? ELSE ? END)", _sql.remove(0));
             }
@@ -9000,8 +9116,10 @@ public class TestQuerySyntaxComparisonTests {
             query = em.createQuery("SELECT s.intVal1 FROM QuerySyntaxEntity s WHERE s.intVal1 = CASE WHEN s.intVal2 = 5 THEN 6 WHEN s.intVal2 = 15 THEN 16 ELSE 26 END");
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = CASE  WHEN (INTVAL2 = 5) THEN 6 WHEN (INTVAL2 = 15) THEN 16 ELSE 26 END)", _sql.remove(0));
+            } else if(platform.isDB2()) {
+                Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = CASE  WHEN (INTVAL2 = ?) THEN 6 WHEN (INTVAL2 = ?) THEN 16 ELSE 26 END)", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = CASE  WHEN (INTVAL2 = ?) THEN ? WHEN (INTVAL2 = ?) THEN ? ELSE ? END)", _sql.remove(0));
             }
@@ -9011,8 +9129,10 @@ public class TestQuerySyntaxComparisonTests {
             query.setParameter(2, 6);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = CASE  WHEN (INTVAL2 = 5) THEN 6 WHEN (INTVAL2 = 15) THEN 16 ELSE 26 END)", _sql.remove(0));
+            } else if(platform.isDB2()) {
+                Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = CASE  WHEN (INTVAL2 = ?) THEN 6 WHEN (INTVAL2 = ?) THEN 16 ELSE 26 END)", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = CASE  WHEN (INTVAL2 = ?) THEN ? WHEN (INTVAL2 = ?) THEN ? ELSE ? END)", _sql.remove(0));
             }
@@ -9046,8 +9166,10 @@ public class TestQuerySyntaxComparisonTests {
             query.setParameter(resultParam3, 26);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = CASE WHEN (INTVAL2 = 5) THEN 6 WHEN (INTVAL2 = 15) THEN 16 ELSE 26 END )", _sql.remove(0));
+            } else if(platform.isDB2()) {
+                Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = CASE WHEN (INTVAL2 = ?) THEN 6 WHEN (INTVAL2 = ?) THEN 16 ELSE 26 END )", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = CASE WHEN (INTVAL2 = ?) THEN ? WHEN (INTVAL2 = ?) THEN ? ELSE ? END )", _sql.remove(0));
             }
@@ -9068,8 +9190,10 @@ public class TestQuerySyntaxComparisonTests {
             query = em.createQuery(cquery2);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = CASE WHEN (INTVAL2 = 5) THEN 6 WHEN (INTVAL2 = 15) THEN 16 ELSE 26 END )", _sql.remove(0));
+            } else if(platform.isDB2()) {
+                Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = CASE WHEN (INTVAL2 = ?) THEN 6 WHEN (INTVAL2 = ?) THEN 16 ELSE 26 END )", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = CASE WHEN (INTVAL2 = ?) THEN ? WHEN (INTVAL2 = ?) THEN ? ELSE ? END )", _sql.remove(0));
             }
@@ -9095,8 +9219,10 @@ public class TestQuerySyntaxComparisonTests {
             query.setParameter(resultParam4, 6);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = CASE WHEN (INTVAL2 = 5) THEN 6 WHEN (INTVAL2 = 15) THEN 16 ELSE 26 END )", _sql.remove(0));
+            } else if(platform.isDB2()) {
+                Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = CASE WHEN (INTVAL2 = ?) THEN 6 WHEN (INTVAL2 = ?) THEN 16 ELSE 26 END )", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = CASE WHEN (INTVAL2 = ?) THEN ? WHEN (INTVAL2 = ?) THEN ? ELSE ? END )", _sql.remove(0));
             }
@@ -9400,8 +9526,10 @@ public class TestQuerySyntaxComparisonTests {
             query.setParameter(6, 99);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT CASE INTVAL2 WHEN 5 THEN 6 WHEN 15 THEN 16 ELSE 26 END FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = 99)", _sql.remove(0));
+            } else if(platform.isDB2()) {
+                Assert.assertEquals("SELECT CASE INTVAL2 WHEN ? THEN 6 WHEN ? THEN 16 ELSE 26 END FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT CASE INTVAL2 WHEN ? THEN ? WHEN ? THEN ? ELSE ? END FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql.remove(0));
             }
@@ -9409,8 +9537,10 @@ public class TestQuerySyntaxComparisonTests {
             query = em.createQuery("SELECT CASE s.intVal2 WHEN 5 THEN 6 WHEN 15 THEN 16 ELSE 26 END FROM QuerySyntaxEntity s WHERE s.intVal1 = 99");
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT CASE INTVAL2 WHEN 5 THEN 6 WHEN 15 THEN 16 ELSE 26 END FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = 99)", _sql.remove(0));
+            } else if(platform.isDB2()) {
+                Assert.assertEquals("SELECT CASE INTVAL2 WHEN ? THEN 6 WHEN ? THEN 16 ELSE 26 END FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT CASE INTVAL2 WHEN ? THEN ? WHEN ? THEN ? ELSE ? END FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql.remove(0));
             }
@@ -9421,8 +9551,10 @@ public class TestQuerySyntaxComparisonTests {
             query.setParameter(3, 99);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT CASE INTVAL2 WHEN 5 THEN 6 WHEN 15 THEN 16 ELSE 26 END FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = 99)", _sql.remove(0));
+            } else if(platform.isDB2()) {
+                Assert.assertEquals("SELECT CASE INTVAL2 WHEN ? THEN 6 WHEN ? THEN 16 ELSE 26 END FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT CASE INTVAL2 WHEN ? THEN ? WHEN ? THEN ? ELSE ? END FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql.remove(0));
             }
@@ -9483,8 +9615,10 @@ public class TestQuerySyntaxComparisonTests {
             query = em.createQuery(cquery2);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT CASE INTVAL2 WHEN 5 THEN 6 WHEN 15 THEN 16 ELSE 26 END FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = 99)", _sql.remove(0));
+            } else if(platform.isDB2()) {
+                Assert.assertEquals("SELECT CASE INTVAL2 WHEN ? THEN 6 WHEN ? THEN 16 ELSE 26 END FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT CASE INTVAL2 WHEN ? THEN ? WHEN ? THEN ? ELSE ? END FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql.remove(0));
             }
@@ -9839,8 +9973,10 @@ public class TestQuerySyntaxComparisonTests {
             query.setParameter(6, 99);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT CASE  WHEN (INTVAL2 = 5) THEN 6 WHEN (INTVAL2 = 15) THEN 16 ELSE 26 END FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = 99)", _sql.remove(0));
+            } else if(platform.isDB2()) {
+                Assert.assertEquals("SELECT CASE  WHEN (INTVAL2 = ?) THEN 6 WHEN (INTVAL2 = ?) THEN 16 ELSE 26 END FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT CASE  WHEN (INTVAL2 = ?) THEN ? WHEN (INTVAL2 = ?) THEN ? ELSE ? END FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql.remove(0));
             }
@@ -9848,8 +9984,10 @@ public class TestQuerySyntaxComparisonTests {
             query = em.createQuery("SELECT CASE WHEN s.intVal2 = 5 THEN 6 WHEN s.intVal2 = 15 THEN 16 ELSE 26 END FROM QuerySyntaxEntity s WHERE s.intVal1 = 99");
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT CASE  WHEN (INTVAL2 = 5) THEN 6 WHEN (INTVAL2 = 15) THEN 16 ELSE 26 END FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = 99)", _sql.remove(0));
+            } else if(platform.isDB2()) {
+                Assert.assertEquals("SELECT CASE  WHEN (INTVAL2 = ?) THEN 6 WHEN (INTVAL2 = ?) THEN 16 ELSE 26 END FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT CASE  WHEN (INTVAL2 = ?) THEN ? WHEN (INTVAL2 = ?) THEN ? ELSE ? END FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql.remove(0));
             }
@@ -9860,8 +9998,10 @@ public class TestQuerySyntaxComparisonTests {
             query.setParameter(3, 99);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT CASE  WHEN (INTVAL2 = 5) THEN 6 WHEN (INTVAL2 = 15) THEN 16 ELSE 26 END FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = 99)", _sql.remove(0));
+            } else if(platform.isDB2()) {
+                Assert.assertEquals("SELECT CASE  WHEN (INTVAL2 = ?) THEN 6 WHEN (INTVAL2 = ?) THEN 16 ELSE 26 END FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT CASE  WHEN (INTVAL2 = ?) THEN ? WHEN (INTVAL2 = ?) THEN ? ELSE ? END FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql.remove(0));
             }
@@ -9896,8 +10036,10 @@ public class TestQuerySyntaxComparisonTests {
             query.setParameter(checkParam3, 99);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT CASE WHEN (INTVAL2 = 5) THEN 6 WHEN (INTVAL2 = 15) THEN 16 ELSE 26 END  FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = 99)", _sql.remove(0));
+            } else if(platform.isDB2()) {
+                Assert.assertEquals("SELECT CASE WHEN (INTVAL2 = ?) THEN 6 WHEN (INTVAL2 = ?) THEN 16 ELSE 26 END  FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT CASE WHEN (INTVAL2 = ?) THEN ? WHEN (INTVAL2 = ?) THEN ? ELSE ? END  FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql.remove(0));
             }
@@ -9917,8 +10059,10 @@ public class TestQuerySyntaxComparisonTests {
             query = em.createQuery(cquery2);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT CASE WHEN (INTVAL2 = 5) THEN 6 WHEN (INTVAL2 = 15) THEN 16 ELSE 26 END  FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = 99)", _sql.remove(0));
+            } else if(platform.isDB2()) {
+                Assert.assertEquals("SELECT CASE WHEN (INTVAL2 = ?) THEN 6 WHEN (INTVAL2 = ?) THEN 16 ELSE 26 END  FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT CASE WHEN (INTVAL2 = ?) THEN ? WHEN (INTVAL2 = ?) THEN ? ELSE ? END  FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql.remove(0));
             }
@@ -9945,8 +10089,10 @@ public class TestQuerySyntaxComparisonTests {
             query.setParameter(checkParam5, 99);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT CASE WHEN (INTVAL2 = 5) THEN 6 WHEN (INTVAL2 = 15) THEN 16 ELSE 26 END  FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = 99)", _sql.remove(0));
+            } else if(platform.isDB2()) {
+                Assert.assertEquals("SELECT CASE WHEN (INTVAL2 = ?) THEN 6 WHEN (INTVAL2 = ?) THEN 16 ELSE 26 END  FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT CASE WHEN (INTVAL2 = ?) THEN ? WHEN (INTVAL2 = ?) THEN ? ELSE ? END  FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql.remove(0));
             }
@@ -10252,18 +10398,22 @@ public class TestQuerySyntaxComparisonTests {
             query.setParameter(2, "WORLD");
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY WHERE ('HELLO' = NULLIF(STRVAL1, 'WORLD'))", _sql.remove(0));
-            } else {
+            } else if(platform.isDB2()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY WHERE (? = NULLIF(STRVAL1, ?))", _sql.remove(0));
+            }else {
                 Assert.assertEquals("SELECT ? FROM QUERYSYNTAXENTITY WHERE (? = NULLIF(STRVAL1, ?))", _sql.remove(0));
             }
 
             query = em.createQuery("SELECT 1 FROM QuerySyntaxEntity s WHERE 'HELLO' = NULLIF(s.strVal1, 'WORLD')");
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY WHERE ('HELLO' = NULLIF(STRVAL1, 'WORLD'))", _sql.remove(0));
-            } else {
+            } else if(platform.isDB2()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY WHERE (? = NULLIF(STRVAL1, ?))", _sql.remove(0));
+            }else {
                 Assert.assertEquals("SELECT ? FROM QUERYSYNTAXENTITY WHERE (? = NULLIF(STRVAL1, ?))", _sql.remove(0));
             }
 
@@ -10282,8 +10432,10 @@ public class TestQuerySyntaxComparisonTests {
             query.setParameter(strParam2, "WORLD");
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY WHERE ('HELLO' = NULLIF(STRVAL1, 'WORLD'))", _sql.remove(0));
+            } else if(platform.isDB2()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY WHERE (? = NULLIF(STRVAL1, ?))", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT ? FROM QUERYSYNTAXENTITY WHERE (? = NULLIF(STRVAL1, ?))", _sql.remove(0));
             }
@@ -10297,8 +10449,10 @@ public class TestQuerySyntaxComparisonTests {
             query = em.createQuery(cquery2);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY WHERE ('HELLO' = NULLIF(STRVAL1, 'WORLD'))", _sql.remove(0));
+            } else if(platform.isDB2()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY WHERE (? = NULLIF(STRVAL1, ?))", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT ? FROM QUERYSYNTAXENTITY WHERE (? = NULLIF(STRVAL1, ?))", _sql.remove(0));
             }
@@ -10474,8 +10628,10 @@ public class TestQuerySyntaxComparisonTests {
             query.setParameter(2, "WORLD");
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY WHERE ('HELLO' = NULLIF('WORLD', STRVAL1))", _sql.remove(0));
+            } else if(platform.isDB2()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY WHERE (? = NULLIF(?, STRVAL1))", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT ? FROM QUERYSYNTAXENTITY WHERE (? = NULLIF(?, STRVAL1))", _sql.remove(0));
             }
@@ -10483,8 +10639,10 @@ public class TestQuerySyntaxComparisonTests {
             query = em.createQuery("SELECT 1 FROM QuerySyntaxEntity s WHERE 'HELLO' = NULLIF('WORLD', s.strVal1)");
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY WHERE ('HELLO' = NULLIF('WORLD', STRVAL1))", _sql.remove(0));
+            } else if(platform.isDB2()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY WHERE (? = NULLIF(?, STRVAL1))", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT ? FROM QUERYSYNTAXENTITY WHERE (? = NULLIF(?, STRVAL1))", _sql.remove(0));
             }
@@ -10504,8 +10662,10 @@ public class TestQuerySyntaxComparisonTests {
             query.setParameter(strParam2, "WORLD");
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY WHERE ('HELLO' = NULLIF('WORLD', STRVAL1))", _sql.remove(0));
+            } else if(platform.isDB2()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY WHERE (? = NULLIF(?, STRVAL1))", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT ? FROM QUERYSYNTAXENTITY WHERE (? = NULLIF(?, STRVAL1))", _sql.remove(0));
             }
@@ -10519,8 +10679,10 @@ public class TestQuerySyntaxComparisonTests {
             query = em.createQuery(cquery2);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY WHERE ('HELLO' = NULLIF('WORLD', STRVAL1))", _sql.remove(0));
+            } else if(platform.isDB2()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY WHERE (? = NULLIF(?, STRVAL1))", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT ? FROM QUERYSYNTAXENTITY WHERE (? = NULLIF(?, STRVAL1))", _sql.remove(0));
             }
@@ -10696,18 +10858,22 @@ public class TestQuerySyntaxComparisonTests {
             query.setParameter(2, "WORLD");
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT NULLIF('HELLO', 'WORLD') FROM QUERYSYNTAXENTITY", _sql.remove(0));
-            } else {
+            } else if(platform.isDB2()) {
+                Assert.assertEquals("SELECT NULLIF(?, 'WORLD') FROM QUERYSYNTAXENTITY", _sql.remove(0));
+            }else {
                 Assert.assertEquals("SELECT NULLIF(?, ?) FROM QUERYSYNTAXENTITY", _sql.remove(0));
             }
 
             query = em.createQuery("SELECT NULLIF('HELLO', 'WORLD') FROM QuerySyntaxEntity s");
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT NULLIF('HELLO', 'WORLD') FROM QUERYSYNTAXENTITY", _sql.remove(0));
-            } else {
+            } else if(platform.isDB2()) {
+                Assert.assertEquals("SELECT NULLIF(?, 'WORLD') FROM QUERYSYNTAXENTITY", _sql.remove(0));
+            }else {
                 Assert.assertEquals("SELECT NULLIF(?, ?) FROM QUERYSYNTAXENTITY", _sql.remove(0));
             }
 
@@ -10715,9 +10881,11 @@ public class TestQuerySyntaxComparisonTests {
             query.setParameter(1, "HELLO");
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT NULLIF('HELLO', 'WORLD') FROM QUERYSYNTAXENTITY", _sql.remove(0));
-            } else {
+            } else if(platform.isDB2()) {
+                Assert.assertEquals("SELECT NULLIF(?, 'WORLD') FROM QUERYSYNTAXENTITY", _sql.remove(0));
+            }else {
                 Assert.assertEquals("SELECT NULLIF(?, ?) FROM QUERYSYNTAXENTITY", _sql.remove(0));
             }
 
@@ -10735,9 +10903,11 @@ public class TestQuerySyntaxComparisonTests {
             query.setParameter(strParam2, "WORLD");
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT NULLIF('HELLO', 'WORLD') FROM QUERYSYNTAXENTITY", _sql.remove(0));
-            } else {
+            } else if(platform.isDB2()) {
+                Assert.assertEquals("SELECT NULLIF(?, 'WORLD') FROM QUERYSYNTAXENTITY", _sql.remove(0));
+            }else {
                 Assert.assertEquals("SELECT NULLIF(?, ?) FROM QUERYSYNTAXENTITY", _sql.remove(0));
             }
 
@@ -10749,9 +10919,11 @@ public class TestQuerySyntaxComparisonTests {
             query = em.createQuery(cquery2);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT NULLIF('HELLO', 'WORLD') FROM QUERYSYNTAXENTITY", _sql.remove(0));
-            } else {
+            } else if(platform.isDB2()) {
+                Assert.assertEquals("SELECT NULLIF(?, 'WORLD') FROM QUERYSYNTAXENTITY", _sql.remove(0));
+            }else {
                 Assert.assertEquals("SELECT NULLIF(?, ?) FROM QUERYSYNTAXENTITY", _sql.remove(0));
             }
 
@@ -10765,9 +10937,11 @@ public class TestQuerySyntaxComparisonTests {
             query.setParameter(strParam3, "HELLO");
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT NULLIF('HELLO', 'WORLD') FROM QUERYSYNTAXENTITY", _sql.remove(0));
-            } else {
+            } else if(platform.isDB2()) {
+                Assert.assertEquals("SELECT NULLIF(?, 'WORLD') FROM QUERYSYNTAXENTITY", _sql.remove(0));
+            }else {
                 Assert.assertEquals("SELECT NULLIF(?, ?) FROM QUERYSYNTAXENTITY", _sql.remove(0));
             }
         } finally {
@@ -11526,11 +11700,15 @@ public class TestQuerySyntaxComparisonTests {
             } catch(Exception e) {
                 exception = e;
             } finally {
-                if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+                if(platform.isDB2Z() || platform.isDerby()) {
                     Assert.assertNotNull("Expected query '" + _sql.remove(0) + "' to fail", exception);
                 } else {
                     Assert.assertNull(exception);
-                    Assert.assertEquals("SELECT STRVAL2 FROM QUERYSYNTAXENTITY WHERE (COALESCE(?, ?, ?, ?, ?) = INTVAL2)", _sql.remove(0));
+                    if (platform.isDB2()) {
+                        Assert.assertEquals("SELECT STRVAL2 FROM QUERYSYNTAXENTITY WHERE (COALESCE(?, ?, ?, ?, 12) = INTVAL2)", _sql.remove(0));
+                    } else {
+                        Assert.assertEquals("SELECT STRVAL2 FROM QUERYSYNTAXENTITY WHERE (COALESCE(?, ?, ?, ?, ?) = INTVAL2)", _sql.remove(0));
+                    }
                 }
             }
 
@@ -11546,12 +11724,13 @@ public class TestQuerySyntaxComparisonTests {
                     // DB2 z throws `DB2 SQL Error: SQLCODE=-206, SQLSTATE=42703` because a "NULL" value is being passed
                     // Derby throws `ERROR 42X01: Syntax error: Encountered "NULL" at line 1, column 50.`
                     Assert.assertNotNull("Expected query '" + _sql.remove(0) + "' to fail", exception);
-                } else if(platform.isDB2()) {
-                    Assert.assertNull(exception);
-                    Assert.assertEquals("SELECT STRVAL2 FROM QUERYSYNTAXENTITY WHERE (COALESCE(NULL, 7, 5, 9, 12) = INTVAL2)", _sql.remove(0));
                 } else {
                     Assert.assertNull(exception);
-                    Assert.assertEquals("SELECT STRVAL2 FROM QUERYSYNTAXENTITY WHERE (COALESCE(?, ?, ?, ?, ?) = INTVAL2)", _sql.remove(0));
+                    if (platform.isDB2()) {
+                        Assert.assertEquals("SELECT STRVAL2 FROM QUERYSYNTAXENTITY WHERE (COALESCE(?, ?, ?, ?, 12) = INTVAL2)", _sql.remove(0));
+                    } else {
+                        Assert.assertEquals("SELECT STRVAL2 FROM QUERYSYNTAXENTITY WHERE (COALESCE(?, ?, ?, ?, ?) = INTVAL2)", _sql.remove(0));
+                    }
                 }
             }
 
@@ -11588,11 +11767,15 @@ public class TestQuerySyntaxComparisonTests {
             } catch(Exception e) {
                 exception = e;
             } finally {
-                if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+                if(platform.isDB2Z() || platform.isDerby()) {
                     Assert.assertNotNull("Expected query '" + _sql.remove(0) + "' to fail", exception);
                 } else {
                     Assert.assertNull(exception);
-                    Assert.assertEquals("SELECT STRVAL2 FROM QUERYSYNTAXENTITY WHERE (COALESCE(?, ?, ?, ?, ?) = INTVAL2)", _sql.remove(0));
+                    if (platform.isDB2()) {
+                        Assert.assertEquals("SELECT STRVAL2 FROM QUERYSYNTAXENTITY WHERE (COALESCE(?, ?, ?, ?, 12) = INTVAL2)", _sql.remove(0));
+                    } else {
+                        Assert.assertEquals("SELECT STRVAL2 FROM QUERYSYNTAXENTITY WHERE (COALESCE(?, ?, ?, ?, ?) = INTVAL2)", _sql.remove(0));
+                    }
                 }
             }
 
@@ -11621,12 +11804,13 @@ public class TestQuerySyntaxComparisonTests {
                     // DB2 z throws `DB2 SQL Error: SQLCODE=-206, SQLSTATE=42703` because a "NULL" value is being passed
                     // Derby throws `ERROR 42X01: Syntax error: Encountered "NULL" at line 1, column 50.`
                     Assert.assertNotNull("Expected query '" + _sql.remove(0) + "' to fail", exception);
-                } else if(platform.isDB2()) {
-                    Assert.assertNull(exception);
-                    Assert.assertEquals("SELECT STRVAL2 FROM QUERYSYNTAXENTITY WHERE (COALESCE(NULL, 7, 5, 9, 12) = INTVAL2)", _sql.remove(0));
                 } else {
                     Assert.assertNull(exception);
-                    Assert.assertEquals("SELECT STRVAL2 FROM QUERYSYNTAXENTITY WHERE (COALESCE(?, ?, ?, ?, ?) = INTVAL2)", _sql.remove(0));
+                    if (platform.isDB2()) {
+                        Assert.assertEquals("SELECT STRVAL2 FROM QUERYSYNTAXENTITY WHERE (COALESCE(?, ?, ?, ?, 12) = INTVAL2)", _sql.remove(0));
+                    } else {
+                        Assert.assertEquals("SELECT STRVAL2 FROM QUERYSYNTAXENTITY WHERE (COALESCE(?, ?, ?, ?, ?) = INTVAL2)", _sql.remove(0));
+                    }
                 }
             }
         } finally {
@@ -11886,6 +12070,2375 @@ public class TestQuerySyntaxComparisonTests {
                     Assert.assertNull(exception);
                     Assert.assertEquals("SELECT STRVAL2 FROM QUERYSYNTAXENTITY WHERE (COALESCE(?, ?, ?, ?, ?) = INTVAL2)", _sql3.remove(0));
                 }
+            }
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            if(em.isOpen()) {
+                em.close();
+            }
+        }
+    }
+
+    @Test
+    public void testRound1_Default() {
+        if (emf == null)
+            return;
+
+        EntityManager em = emf.createEntityManager();
+        DatabasePlatform platform = getPlatform(emf);
+
+        try {
+            Query query = em.createQuery("SELECT ROUND(?1, ?2) FROM QuerySyntaxEntity s WHERE s.intVal1 = ?3");
+            query.setParameter(1, 1.1);
+            query.setParameter(2, 3);
+            query.setParameter(3, 9);
+            query.getResultList();
+            Assert.assertEquals(1, _sql.size());
+            if (platform.isDerby()) {
+                Assert.assertEquals("SELECT FLOOR((1.1)*1e3+0.5)/1e3 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = 9)", _sql.remove(0));
+            } else if (platform.isPostgreSQL()) {
+                Assert.assertEquals("SELECT FLOOR((?)*10^(?)+0.5)/10^(?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql.remove(0));
+            } else if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT ROUND(1.1, 3) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = 9)", _sql.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT ROUND(?, 3) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql.remove(0));
+            } else {
+                Assert.assertEquals("SELECT ROUND(?, ?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql.remove(0));
+            }
+
+            query = em.createQuery("SELECT ROUND(1.1, 3) FROM QuerySyntaxEntity s WHERE s.intVal1 = 9");
+            query.getResultList();
+            Assert.assertEquals(1, _sql.size());
+            if (platform.isDerby()) {
+                Assert.assertEquals("SELECT FLOOR((1.1)*1e3+0.5)/1e3 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = 9)", _sql.remove(0));
+            } else if (platform.isPostgreSQL()) {
+                Assert.assertEquals("SELECT FLOOR((?)*10^(?)+0.5)/10^(?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql.remove(0));
+            } else if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT ROUND(1.1, 3) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = 9)", _sql.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT ROUND(?, 3) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql.remove(0));
+            } else {
+                Assert.assertEquals("SELECT ROUND(?, ?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql.remove(0));
+            }
+
+            query = em.createQuery("SELECT ROUND(1.1, ?1) FROM QuerySyntaxEntity s WHERE s.intVal1 = 9");
+            query.setParameter(1, 3);
+            query.getResultList();
+            Assert.assertEquals(1, _sql.size());
+            if (platform.isDerby()) {
+                Assert.assertEquals("SELECT FLOOR((1.1)*1e3+0.5)/1e3 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = 9)", _sql.remove(0));
+            } else if (platform.isPostgreSQL()) {
+                Assert.assertEquals("SELECT FLOOR((?)*10^(?)+0.5)/10^(?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql.remove(0));
+            } else if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT ROUND(1.1, 3) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = 9)", _sql.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT ROUND(?, 3) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql.remove(0));
+            } else {
+                Assert.assertEquals("SELECT ROUND(?, ?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql.remove(0));
+            }
+
+            // -----------------------
+
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<Object> cquery = cb.createQuery(Object.class);
+            Root<QuerySyntaxEntity> root = cquery.from(QuerySyntaxEntity.class);
+            ParameterExpression<Float> floatParam1 = cb.parameter(Float.class);
+            ParameterExpression<Integer> intParam2 = cb.parameter(Integer.class);
+            cquery.select(cb.round(floatParam1, 3));
+            cquery.where(cb.equal(root.get(QuerySyntaxEntity_.intVal1), intParam2));
+
+            query = em.createQuery(cquery);
+            query.setParameter(floatParam1, 1.1f);
+            query.setParameter(intParam2, 9);
+            query.getResultList();
+            Assert.assertEquals(1, _sql.size());
+            if (platform.isDerby()) {
+                Assert.assertEquals("SELECT FLOOR((1.1)*1e3+0.5)/1e3 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = 9)", _sql.remove(0));
+            } else if (platform.isPostgreSQL()) {
+                Assert.assertEquals("SELECT FLOOR((?)*10^(?)+0.5)/10^(?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql.remove(0));
+            } else if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT ROUND(1.1, 3) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = 9)", _sql.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT ROUND(?, 3) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql.remove(0));
+            } else {
+                Assert.assertEquals("SELECT ROUND(?, ?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql.remove(0));
+            }
+
+            CriteriaBuilder cb2 = em.getCriteriaBuilder();
+            CriteriaQuery<Object> cquery2 = cb2.createQuery(Object.class);
+            Root<QuerySyntaxEntity> root2 = cquery2.from(QuerySyntaxEntity.class);
+            cquery2.select(cb2.round(cb2.literal(1.1f), 3));
+            cquery2.where(cb2.equal(root2.get(QuerySyntaxEntity_.intVal1), cb2.literal(9)));
+
+            query = em.createQuery(cquery2);
+            query.getResultList();
+            Assert.assertEquals(1, _sql.size());
+            if (platform.isDerby()) {
+                Assert.assertEquals("SELECT FLOOR((1.1)*1e3+0.5)/1e3 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = 9)", _sql.remove(0));
+            } else if (platform.isPostgreSQL()) {
+                Assert.assertEquals("SELECT FLOOR((?)*10^(?)+0.5)/10^(?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql.remove(0));
+            } else if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT ROUND(1.1, 3) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = 9)", _sql.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT ROUND(?, 3) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql.remove(0));
+            } else {
+                Assert.assertEquals("SELECT ROUND(?, ?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql.remove(0));
+            }
+
+            CriteriaBuilder cb3 = em.getCriteriaBuilder();
+            CriteriaQuery<Object> cquery3 = cb3.createQuery(Object.class);
+            Root<QuerySyntaxEntity> root3 = cquery3.from(QuerySyntaxEntity.class);
+            ParameterExpression<Float> floatParam2 = cb.parameter(Float.class);
+            cquery3.select(cb3.round(floatParam2, 3));
+            cquery3.where(cb3.equal(root3.get(QuerySyntaxEntity_.intVal1), cb3.literal(9)));
+
+            query = em.createQuery(cquery3);
+            query.setParameter(floatParam2, 1.1f);
+            query.getResultList();
+            Assert.assertEquals(1, _sql.size());
+            if (platform.isDerby()) {
+                Assert.assertEquals("SELECT FLOOR((1.1)*1e3+0.5)/1e3 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = 9)", _sql.remove(0));
+            } else if (platform.isPostgreSQL()) {
+                Assert.assertEquals("SELECT FLOOR((?)*10^(?)+0.5)/10^(?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql.remove(0));
+            } else if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT ROUND(1.1, 3) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = 9)", _sql.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT ROUND(?, 3) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql.remove(0));
+            } else {
+                Assert.assertEquals("SELECT ROUND(?, ?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql.remove(0));
+            }
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            if(em.isOpen()) {
+                em.close();
+            }
+        }
+    }
+
+    @Test
+    public void testRound1_PartialBind() {
+        if (emf2 == null)
+            return;
+
+        EntityManager em = emf2.createEntityManager();
+        DatabasePlatform platform = getPlatform(emf2);
+
+        try {
+            Query query = em.createQuery("SELECT ROUND(?1, ?2) FROM QuerySyntaxEntity s WHERE s.intVal1 = ?3");
+            query.setParameter(1, 1.1);
+            query.setParameter(2, 3);
+            query.setParameter(3, 9);
+            query.getResultList();
+            Assert.assertEquals(1, _sql2.size());
+            if (platform.isDerby()) {
+                Assert.assertEquals("SELECT FLOOR((1.1)*1e3+0.5)/1e3 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            } else if (platform.isPostgreSQL()) {
+                Assert.assertEquals("SELECT FLOOR((?)*10^(?)+0.5)/10^(?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql.remove(0));
+            } else if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT ROUND(1.1, 3) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT ROUND(?, 3) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            } else {
+                Assert.assertEquals("SELECT ROUND(?, ?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            }
+
+            query = em.createQuery("SELECT ROUND(1.1, 3) FROM QuerySyntaxEntity s WHERE s.intVal1 = 9");
+            query.getResultList();
+            Assert.assertEquals(1, _sql2.size());
+            if (platform.isDerby()) {
+                Assert.assertEquals("SELECT FLOOR((1.1)*1e3+0.5)/1e3 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            } else if (platform.isPostgreSQL()) {
+                Assert.assertEquals("SELECT FLOOR((?)*10^(?)+0.5)/10^(?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql.remove(0));
+            } else if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT ROUND(1.1, 3) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT ROUND(?, 3) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            } else {
+                Assert.assertEquals("SELECT ROUND(?, ?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            }
+
+            query = em.createQuery("SELECT ROUND(1.1, ?1) FROM QuerySyntaxEntity s WHERE s.intVal1 = 9");
+            query.setParameter(1, 3);
+            query.getResultList();
+            Assert.assertEquals(1, _sql2.size());
+            if (platform.isDerby()) {
+                Assert.assertEquals("SELECT FLOOR((1.1)*1e3+0.5)/1e3 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            } else if (platform.isPostgreSQL()) {
+                Assert.assertEquals("SELECT FLOOR((?)*10^(?)+0.5)/10^(?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql.remove(0));
+            } else if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT ROUND(1.1, 3) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT ROUND(?, 3) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            } else {
+                Assert.assertEquals("SELECT ROUND(?, ?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            }
+
+            // -----------------------
+
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<Object> cquery = cb.createQuery(Object.class);
+            Root<QuerySyntaxEntity> root = cquery.from(QuerySyntaxEntity.class);
+            ParameterExpression<Float> floatParam1 = cb.parameter(Float.class);
+            ParameterExpression<Integer> intParam2 = cb.parameter(Integer.class);
+            cquery.select(cb.round(floatParam1, 3));
+            cquery.where(cb.equal(root.get(QuerySyntaxEntity_.intVal1), intParam2));
+
+            query = em.createQuery(cquery);
+            query.setParameter(floatParam1, 1.1f);
+            query.setParameter(intParam2, 9);
+            query.getResultList();
+            Assert.assertEquals(1, _sql2.size());
+            if (platform.isDerby()) {
+                Assert.assertEquals("SELECT FLOOR((1.1)*1e3+0.5)/1e3 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            } else if (platform.isPostgreSQL()) {
+                Assert.assertEquals("SELECT FLOOR((?)*10^(?)+0.5)/10^(?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql.remove(0));
+            } else if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT ROUND(1.1, 3) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT ROUND(?, 3) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            } else {
+                Assert.assertEquals("SELECT ROUND(?, ?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            }
+
+            CriteriaBuilder cb2 = em.getCriteriaBuilder();
+            CriteriaQuery<Object> cquery2 = cb2.createQuery(Object.class);
+            Root<QuerySyntaxEntity> root2 = cquery2.from(QuerySyntaxEntity.class);
+            cquery2.select(cb2.round(cb2.literal(1.1f), 3));
+            cquery2.where(cb2.equal(root2.get(QuerySyntaxEntity_.intVal1), cb2.literal(9)));
+
+            query = em.createQuery(cquery2);
+            query.getResultList();
+            Assert.assertEquals(1, _sql2.size());
+            if (platform.isDerby()) {
+                Assert.assertEquals("SELECT FLOOR((1.1)*1e3+0.5)/1e3 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            } else if (platform.isPostgreSQL()) {
+                Assert.assertEquals("SELECT FLOOR((?)*10^(?)+0.5)/10^(?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql.remove(0));
+            } else if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT ROUND(1.1, 3) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT ROUND(?, 3) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            } else {
+                Assert.assertEquals("SELECT ROUND(?, ?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            }
+
+            CriteriaBuilder cb3 = em.getCriteriaBuilder();
+            CriteriaQuery<Object> cquery3 = cb3.createQuery(Object.class);
+            Root<QuerySyntaxEntity> root3 = cquery3.from(QuerySyntaxEntity.class);
+            ParameterExpression<Float> floatParam2 = cb.parameter(Float.class);
+            cquery3.select(cb3.round(floatParam2, 3));
+            cquery3.where(cb3.equal(root3.get(QuerySyntaxEntity_.intVal1), cb3.literal(9)));
+
+            query = em.createQuery(cquery3);
+            query.setParameter(floatParam2, 1.1f);
+            query.getResultList();
+            Assert.assertEquals(1, _sql2.size());
+            if (platform.isDerby()) {
+                Assert.assertEquals("SELECT FLOOR((1.1)*1e3+0.5)/1e3 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            } else if (platform.isPostgreSQL()) {
+                Assert.assertEquals("SELECT FLOOR((?)*10^(?)+0.5)/10^(?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql.remove(0));
+            } else if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT ROUND(1.1, 3) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT ROUND(?, 3) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            } else {
+                Assert.assertEquals("SELECT ROUND(?, ?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            }
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            if(em.isOpen()) {
+                em.close();
+            }
+        }
+    }
+
+    @Test
+    public void testRound1_PartialBind_BindLiteral() {
+        if (emf3 == null)
+            return;
+
+        EntityManager em = emf3.createEntityManager();
+        DatabasePlatform platform = getPlatform(emf3);
+
+        try {
+            Query query = em.createQuery("SELECT ROUND(?1, ?2) FROM QuerySyntaxEntity s WHERE s.intVal1 = ?3");
+            query.setParameter(1, 1.1);
+            query.setParameter(2, 3);
+            query.setParameter(3, 9);
+            query.getResultList();
+            Assert.assertEquals(1, _sql3.size());
+            if (platform.isDerby()) {
+                Assert.assertEquals("SELECT FLOOR((1.1)*1e3+0.5)/1e3 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            } else if (platform.isPostgreSQL()) {
+                Assert.assertEquals("SELECT FLOOR((?)*10^(?)+0.5)/10^(?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql.remove(0));
+            } else if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT ROUND(1.1, 3) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT ROUND(?, 3) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            } else {
+                Assert.assertEquals("SELECT ROUND(?, ?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            }
+
+            query = em.createQuery("SELECT ROUND(1.1, 3) FROM QuerySyntaxEntity s WHERE s.intVal1 = 9");
+            query.getResultList();
+            Assert.assertEquals(1, _sql3.size());
+            if (platform.isDerby()) {
+                Assert.assertEquals("SELECT FLOOR((1.1)*1e3+0.5)/1e3 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            } else if (platform.isPostgreSQL()) {
+                Assert.assertEquals("SELECT FLOOR((?)*10^(?)+0.5)/10^(?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql.remove(0));
+            } else if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT ROUND(1.1, 3) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT ROUND(?, 3) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            } else {
+                Assert.assertEquals("SELECT ROUND(?, ?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            }
+
+            query = em.createQuery("SELECT ROUND(1.1, ?1) FROM QuerySyntaxEntity s WHERE s.intVal1 = 9");
+            query.setParameter(1, 3);
+            query.getResultList();
+            Assert.assertEquals(1, _sql3.size());
+            if (platform.isDerby()) {
+                Assert.assertEquals("SELECT FLOOR((1.1)*1e3+0.5)/1e3 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            } else if (platform.isPostgreSQL()) {
+                Assert.assertEquals("SELECT FLOOR((?)*10^(?)+0.5)/10^(?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql.remove(0));
+            } else if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT ROUND(1.1, 3) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT ROUND(?, 3) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            } else {
+                Assert.assertEquals("SELECT ROUND(?, ?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            }
+            // -----------------------
+
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<Object> cquery = cb.createQuery(Object.class);
+            Root<QuerySyntaxEntity> root = cquery.from(QuerySyntaxEntity.class);
+            ParameterExpression<Float> floatParam1 = cb.parameter(Float.class);
+            ParameterExpression<Integer> intParam2 = cb.parameter(Integer.class);
+            cquery.select(cb.round(floatParam1, 3));
+            cquery.where(cb.equal(root.get(QuerySyntaxEntity_.intVal1), intParam2));
+
+            query = em.createQuery(cquery);
+            query.setParameter(floatParam1, 1.1f);
+            query.setParameter(intParam2, 9);
+            query.getResultList();
+            Assert.assertEquals(1, _sql3.size());
+            if (platform.isDerby()) {
+                Assert.assertEquals("SELECT FLOOR((1.1)*1e3+0.5)/1e3 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            } else if (platform.isPostgreSQL()) {
+                Assert.assertEquals("SELECT FLOOR((?)*10^(?)+0.5)/10^(?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql.remove(0));
+            } else if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT ROUND(1.1, 3) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT ROUND(?, 3) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            } else {
+                Assert.assertEquals("SELECT ROUND(?, ?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            }
+
+            CriteriaBuilder cb2 = em.getCriteriaBuilder();
+            CriteriaQuery<Object> cquery2 = cb2.createQuery(Object.class);
+            Root<QuerySyntaxEntity> root2 = cquery2.from(QuerySyntaxEntity.class);
+            cquery2.select(cb2.round(cb2.literal(1.1f), 3));
+            cquery2.where(cb2.equal(root2.get(QuerySyntaxEntity_.intVal1), cb2.literal(9)));
+
+            query = em.createQuery(cquery2);
+            query.getResultList();
+            Assert.assertEquals(1, _sql3.size());
+            if (platform.isDerby()) {
+                Assert.assertEquals("SELECT FLOOR((1.1)*1e3+0.5)/1e3 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            } else if (platform.isPostgreSQL()) {
+                Assert.assertEquals("SELECT FLOOR((?)*10^(?)+0.5)/10^(?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql.remove(0));
+            } else if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT ROUND(1.1, 3) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT ROUND(?, 3) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            } else {
+                Assert.assertEquals("SELECT ROUND(?, ?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            }
+
+            CriteriaBuilder cb3 = em.getCriteriaBuilder();
+            CriteriaQuery<Object> cquery3 = cb3.createQuery(Object.class);
+            Root<QuerySyntaxEntity> root3 = cquery3.from(QuerySyntaxEntity.class);
+            ParameterExpression<Float> floatParam2 = cb.parameter(Float.class);
+            cquery3.select(cb3.round(floatParam2, 3));
+            cquery3.where(cb3.equal(root3.get(QuerySyntaxEntity_.intVal1), cb3.literal(9)));
+
+            query = em.createQuery(cquery3);
+            query.setParameter(floatParam2, 1.1f);
+            query.getResultList();
+            Assert.assertEquals(1, _sql3.size());
+            if (platform.isDerby()) {
+                Assert.assertEquals("SELECT FLOOR((1.1)*1e3+0.5)/1e3 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            } else if (platform.isPostgreSQL()) {
+                Assert.assertEquals("SELECT FLOOR((?)*10^(?)+0.5)/10^(?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql.remove(0));
+            } else if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT ROUND(1.1, 3) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT ROUND(?, 3) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            } else {
+                Assert.assertEquals("SELECT ROUND(?, ?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            }
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            if(em.isOpen()) {
+                em.close();
+            }
+        }
+    }
+
+    @Test
+    public void testCeiling1_Default() {
+        if (emf == null)
+            return;
+
+        EntityManager em = emf.createEntityManager();
+        DatabasePlatform platform = getPlatform(emf);
+
+        try {
+            Query query = em.createQuery("SELECT CEILING(?1) FROM QuerySyntaxEntity s WHERE s.intVal1 = ?2");
+            query.setParameter(1, 1.1);
+            query.setParameter(2, 3);
+            query.getResultList();
+            Assert.assertEquals(1, _sql.size());
+            if (platform.isDB2Z() || platform.isDerby()) {
+                Assert.assertEquals("SELECT CEIL(1.1) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = 3)", _sql.remove(0));
+            } else {
+                Assert.assertEquals("SELECT CEIL(?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql.remove(0));
+            }
+
+            query = em.createQuery("SELECT CEILING(1.1) FROM QuerySyntaxEntity s WHERE s.intVal1 = 3");
+            query.getResultList();
+            Assert.assertEquals(1, _sql.size());
+            if (platform.isDB2Z() || platform.isDerby()) {
+                Assert.assertEquals("SELECT CEIL(1.1) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = 3)", _sql.remove(0));
+            } else {
+                Assert.assertEquals("SELECT CEIL(?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql.remove(0));
+            }
+
+            // -----------------------
+
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<Object> cquery = cb.createQuery(Object.class);
+            Root<QuerySyntaxEntity> root = cquery.from(QuerySyntaxEntity.class);
+            ParameterExpression<Float> floatParam1 = cb.parameter(Float.class);
+            ParameterExpression<Integer> intParam2 = cb.parameter(Integer.class);
+            cquery.select(cb.ceiling(floatParam1));
+            cquery.where(cb.equal(root.get(QuerySyntaxEntity_.intVal1), intParam2));
+
+            query = em.createQuery(cquery);
+            query.setParameter(floatParam1, 1.1f);
+            query.setParameter(intParam2, 3);
+            query.getResultList();
+            Assert.assertEquals(1, _sql.size());
+            if (platform.isDB2Z() || platform.isDerby()) {
+                Assert.assertEquals("SELECT CEIL(1.1) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = 3)", _sql.remove(0));
+            } else {
+                Assert.assertEquals("SELECT CEIL(?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql.remove(0));
+            }
+
+            CriteriaBuilder cb2 = em.getCriteriaBuilder();
+            CriteriaQuery<Object> cquery2 = cb2.createQuery(Object.class);
+            Root<QuerySyntaxEntity> root2 = cquery2.from(QuerySyntaxEntity.class);
+            cquery2.select(cb2.ceiling(cb2.literal(1.1f)));
+            cquery2.where(cb2.equal(root2.get(QuerySyntaxEntity_.intVal1), cb2.literal(3)));
+
+            query = em.createQuery(cquery2);
+            query.getResultList();
+            Assert.assertEquals(1, _sql.size());
+            if (platform.isDB2Z() || platform.isDerby()) {
+                Assert.assertEquals("SELECT CEIL(1.1) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = 3)", _sql.remove(0));
+            } else {
+                Assert.assertEquals("SELECT CEIL(?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql.remove(0));
+            }
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            if(em.isOpen()) {
+                em.close();
+            }
+        }
+    }
+
+    @Test
+    public void testCeiling1_PartialBind() {
+        if (emf2 == null)
+            return;
+
+        EntityManager em = emf2.createEntityManager();
+        DatabasePlatform platform = getPlatform(emf2);
+
+        try {
+            Query query = em.createQuery("SELECT CEILING(?1) FROM QuerySyntaxEntity s WHERE s.intVal1 = ?2");
+            query.setParameter(1, 1.1);
+            query.setParameter(2, 3);
+            query.getResultList();
+            Assert.assertEquals(1, _sql2.size());
+            if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT CEIL(1.1) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            } else {
+                Assert.assertEquals("SELECT CEIL(?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            }
+
+            query = em.createQuery("SELECT CEILING(1.1) FROM QuerySyntaxEntity s WHERE s.intVal1 = 3");
+            query.getResultList();
+            Assert.assertEquals(1, _sql2.size());
+            if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT CEIL(1.1) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            } else {
+                Assert.assertEquals("SELECT CEIL(?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            }
+
+            // -----------------------
+
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<Object> cquery = cb.createQuery(Object.class);
+            Root<QuerySyntaxEntity> root = cquery.from(QuerySyntaxEntity.class);
+            ParameterExpression<Float> floatParam1 = cb.parameter(Float.class);
+            ParameterExpression<Integer> intParam2 = cb.parameter(Integer.class);
+            cquery.select(cb.ceiling(floatParam1));
+            cquery.where(cb.equal(root.get(QuerySyntaxEntity_.intVal1), intParam2));
+
+            query = em.createQuery(cquery);
+            query.setParameter(floatParam1, 1.1f);
+            query.setParameter(intParam2, 3);
+            query.getResultList();
+            Assert.assertEquals(1, _sql2.size());
+            if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT CEIL(1.1) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            } else {
+                Assert.assertEquals("SELECT CEIL(?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            }
+
+            CriteriaBuilder cb2 = em.getCriteriaBuilder();
+            CriteriaQuery<Object> cquery2 = cb2.createQuery(Object.class);
+            Root<QuerySyntaxEntity> root2 = cquery2.from(QuerySyntaxEntity.class);
+            cquery2.select(cb2.ceiling(cb2.literal(1.1f)));
+            cquery2.where(cb2.equal(root2.get(QuerySyntaxEntity_.intVal1), cb2.literal(3)));
+
+            query = em.createQuery(cquery2);
+            query.getResultList();
+            Assert.assertEquals(1, _sql2.size());
+            if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT CEIL(1.1) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            } else {
+                Assert.assertEquals("SELECT CEIL(?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            }
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            if(em.isOpen()) {
+                em.close();
+            }
+        }
+    }
+
+    @Test
+    public void testCeiling1_PartialBind_BindLiteral() {
+        if (emf3 == null)
+            return;
+
+        EntityManager em = emf3.createEntityManager();
+        DatabasePlatform platform = getPlatform(emf3);
+
+        try {
+            Query query = em.createQuery("SELECT CEILING(?1) FROM QuerySyntaxEntity s WHERE s.intVal1 = ?2");
+            query.setParameter(1, 1.1);
+            query.setParameter(2, 3);
+            query.getResultList();
+            Assert.assertEquals(1, _sql3.size());
+            if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT CEIL(1.1) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            } else {
+                Assert.assertEquals("SELECT CEIL(?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            }
+
+            query = em.createQuery("SELECT CEILING(1.1) FROM QuerySyntaxEntity s WHERE s.intVal1 = 3");
+            query.getResultList();
+            Assert.assertEquals(1, _sql3.size());
+            if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT CEIL(1.1) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            } else {
+                Assert.assertEquals("SELECT CEIL(?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            }
+
+            // -----------------------
+
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<Object> cquery = cb.createQuery(Object.class);
+            Root<QuerySyntaxEntity> root = cquery.from(QuerySyntaxEntity.class);
+            ParameterExpression<Float> floatParam1 = cb.parameter(Float.class);
+            ParameterExpression<Integer> intParam2 = cb.parameter(Integer.class);
+            cquery.select(cb.ceiling(floatParam1));
+            cquery.where(cb.equal(root.get(QuerySyntaxEntity_.intVal1), intParam2));
+
+            query = em.createQuery(cquery);
+            query.setParameter(floatParam1, 1.1f);
+            query.setParameter(intParam2, 3);
+            query.getResultList();
+            Assert.assertEquals(1, _sql3.size());
+            if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT CEIL(1.1) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            } else {
+                Assert.assertEquals("SELECT CEIL(?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            }
+
+            CriteriaBuilder cb2 = em.getCriteriaBuilder();
+            CriteriaQuery<Object> cquery2 = cb2.createQuery(Object.class);
+            Root<QuerySyntaxEntity> root2 = cquery2.from(QuerySyntaxEntity.class);
+            cquery2.select(cb2.ceiling(cb2.literal(1.1f)));
+            cquery2.where(cb2.equal(root2.get(QuerySyntaxEntity_.intVal1), cb2.literal(3)));
+
+            query = em.createQuery(cquery2);
+            query.getResultList();
+            Assert.assertEquals(1, _sql3.size());
+            if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT CEIL(1.1) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            } else {
+                Assert.assertEquals("SELECT CEIL(?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            }
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            if(em.isOpen()) {
+                em.close();
+            }
+        }
+    }
+
+    @Test
+    public void testFloor1_Default() {
+        if (emf == null)
+            return;
+
+        EntityManager em = emf.createEntityManager();
+        DatabasePlatform platform = getPlatform(emf);
+
+        try {
+            Query query = em.createQuery("SELECT FLOOR(?1) FROM QuerySyntaxEntity s WHERE s.intVal1 = ?2");
+            query.setParameter(1, 1.1);
+            query.setParameter(2, 3);
+            query.getResultList();
+            Assert.assertEquals(1, _sql.size());
+            if (platform.isDB2Z() || platform.isDerby()) {
+                Assert.assertEquals("SELECT FLOOR(1.1) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = 3)", _sql.remove(0));
+            } else {
+                Assert.assertEquals("SELECT FLOOR(?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql.remove(0));
+            }
+
+            query = em.createQuery("SELECT FLOOR(1.1) FROM QuerySyntaxEntity s WHERE s.intVal1 = 3");
+            query.getResultList();
+            Assert.assertEquals(1, _sql.size());
+            if (platform.isDB2Z() || platform.isDerby()) {
+                Assert.assertEquals("SELECT FLOOR(1.1) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = 3)", _sql.remove(0));
+            } else {
+                Assert.assertEquals("SELECT FLOOR(?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql.remove(0));
+            }
+
+            // -----------------------
+
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<Object> cquery = cb.createQuery(Object.class);
+            Root<QuerySyntaxEntity> root = cquery.from(QuerySyntaxEntity.class);
+            ParameterExpression<Float> floatParam1 = cb.parameter(Float.class);
+            ParameterExpression<Integer> intParam2 = cb.parameter(Integer.class);
+            cquery.select(cb.floor(floatParam1));
+            cquery.where(cb.equal(root.get(QuerySyntaxEntity_.intVal1), intParam2));
+
+            query = em.createQuery(cquery);
+            query.setParameter(floatParam1, 1.1f);
+            query.setParameter(intParam2, 3);
+            query.getResultList();
+            Assert.assertEquals(1, _sql.size());
+            if (platform.isDB2Z() || platform.isDerby()) {
+                Assert.assertEquals("SELECT FLOOR(1.1) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = 3)", _sql.remove(0));
+            } else {
+                Assert.assertEquals("SELECT FLOOR(?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql.remove(0));
+            }
+
+            CriteriaBuilder cb2 = em.getCriteriaBuilder();
+            CriteriaQuery<Object> cquery2 = cb2.createQuery(Object.class);
+            Root<QuerySyntaxEntity> root2 = cquery2.from(QuerySyntaxEntity.class);
+            cquery2.select(cb2.floor(cb2.literal(1.1f)));
+            cquery2.where(cb2.equal(root2.get(QuerySyntaxEntity_.intVal1), cb2.literal(3)));
+
+            query = em.createQuery(cquery2);
+            query.getResultList();
+            Assert.assertEquals(1, _sql.size());
+            if (platform.isDB2Z() || platform.isDerby()) {
+                Assert.assertEquals("SELECT FLOOR(1.1) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = 3)", _sql.remove(0));
+            } else {
+                Assert.assertEquals("SELECT FLOOR(?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql.remove(0));
+            }
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            if(em.isOpen()) {
+                em.close();
+            }
+        }
+    }
+
+    @Test
+    public void testFloor1_PartialBind() {
+        if (emf2 == null)
+            return;
+
+        EntityManager em = emf2.createEntityManager();
+        DatabasePlatform platform = getPlatform(emf2);
+
+        try {
+            Query query = em.createQuery("SELECT FLOOR(?1) FROM QuerySyntaxEntity s WHERE s.intVal1 = ?2");
+            query.setParameter(1, 1.1);
+            query.setParameter(2, 3);
+            query.getResultList();
+            Assert.assertEquals(1, _sql2.size());
+            if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT FLOOR(1.1) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            } else {
+                Assert.assertEquals("SELECT FLOOR(?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            }
+
+            query = em.createQuery("SELECT FLOOR(1.1) FROM QuerySyntaxEntity s WHERE s.intVal1 = 3");
+            query.getResultList();
+            Assert.assertEquals(1, _sql2.size());
+            if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT FLOOR(1.1) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            } else {
+                Assert.assertEquals("SELECT FLOOR(?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            }
+
+            // -----------------------
+
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<Object> cquery = cb.createQuery(Object.class);
+            Root<QuerySyntaxEntity> root = cquery.from(QuerySyntaxEntity.class);
+            ParameterExpression<Float> floatParam1 = cb.parameter(Float.class);
+            ParameterExpression<Integer> intParam2 = cb.parameter(Integer.class);
+            cquery.select(cb.floor(floatParam1));
+            cquery.where(cb.equal(root.get(QuerySyntaxEntity_.intVal1), intParam2));
+
+            query = em.createQuery(cquery);
+            query.setParameter(floatParam1, 1.1f);
+            query.setParameter(intParam2, 3);
+            query.getResultList();
+            Assert.assertEquals(1, _sql2.size());
+            if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT FLOOR(1.1) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            } else {
+                Assert.assertEquals("SELECT FLOOR(?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            }
+
+            CriteriaBuilder cb2 = em.getCriteriaBuilder();
+            CriteriaQuery<Object> cquery2 = cb2.createQuery(Object.class);
+            Root<QuerySyntaxEntity> root2 = cquery2.from(QuerySyntaxEntity.class);
+            cquery2.select(cb2.floor(cb2.literal(1.1f)));
+            cquery2.where(cb2.equal(root2.get(QuerySyntaxEntity_.intVal1), cb2.literal(3)));
+
+            query = em.createQuery(cquery2);
+            query.getResultList();
+            Assert.assertEquals(1, _sql2.size());
+            if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT FLOOR(1.1) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            } else {
+                Assert.assertEquals("SELECT FLOOR(?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            }
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            if(em.isOpen()) {
+                em.close();
+            }
+        }
+    }
+
+    @Test
+    public void testFloor1_PartialBind_BindLiteral() {
+        if (emf3 == null)
+            return;
+
+        EntityManager em = emf3.createEntityManager();
+        DatabasePlatform platform = getPlatform(emf3);
+
+        try {
+            Query query = em.createQuery("SELECT FLOOR(?1) FROM QuerySyntaxEntity s WHERE s.intVal1 = ?2");
+            query.setParameter(1, 1.1);
+            query.setParameter(2, 3);
+            query.getResultList();
+            Assert.assertEquals(1, _sql3.size());
+            if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT FLOOR(1.1) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            } else {
+                Assert.assertEquals("SELECT FLOOR(?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            }
+
+            query = em.createQuery("SELECT FLOOR(1.1) FROM QuerySyntaxEntity s WHERE s.intVal1 = 3");
+            query.getResultList();
+            Assert.assertEquals(1, _sql3.size());
+            if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT FLOOR(1.1) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            } else {
+                Assert.assertEquals("SELECT FLOOR(?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            }
+
+            // -----------------------
+
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<Object> cquery = cb.createQuery(Object.class);
+            Root<QuerySyntaxEntity> root = cquery.from(QuerySyntaxEntity.class);
+            ParameterExpression<Float> floatParam1 = cb.parameter(Float.class);
+            ParameterExpression<Integer> intParam2 = cb.parameter(Integer.class);
+            cquery.select(cb.floor(floatParam1));
+            cquery.where(cb.equal(root.get(QuerySyntaxEntity_.intVal1), intParam2));
+
+            query = em.createQuery(cquery);
+            query.setParameter(floatParam1, 1.1f);
+            query.setParameter(intParam2, 3);
+            query.getResultList();
+            Assert.assertEquals(1, _sql3.size());
+            if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT FLOOR(1.1) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            } else {
+                Assert.assertEquals("SELECT FLOOR(?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            }
+
+            CriteriaBuilder cb2 = em.getCriteriaBuilder();
+            CriteriaQuery<Object> cquery2 = cb2.createQuery(Object.class);
+            Root<QuerySyntaxEntity> root2 = cquery2.from(QuerySyntaxEntity.class);
+            cquery2.select(cb2.floor(cb2.literal(1.1f)));
+            cquery2.where(cb2.equal(root2.get(QuerySyntaxEntity_.intVal1), cb2.literal(3)));
+
+            query = em.createQuery(cquery2);
+            query.getResultList();
+            Assert.assertEquals(1, _sql3.size());
+            if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT FLOOR(1.1) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            } else {
+                Assert.assertEquals("SELECT FLOOR(?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            }
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            if(em.isOpen()) {
+                em.close();
+            }
+        }
+    }
+
+    @Test
+    public void testExp1_Default() {
+        if (emf == null)
+            return;
+
+        EntityManager em = emf.createEntityManager();
+        DatabasePlatform platform = getPlatform(emf);
+
+        try {
+            Query query = em.createQuery("SELECT EXP(?1) FROM QuerySyntaxEntity s WHERE s.intVal1 = ?2");
+            query.setParameter(1, 1.1);
+            query.setParameter(2, 3);
+            query.getResultList();
+            Assert.assertEquals(1, _sql.size());
+            if (platform.isDB2Z() || platform.isDerby()) {
+                Assert.assertEquals("SELECT EXP(1.1) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = 3)", _sql.remove(0));
+            } else {
+                Assert.assertEquals("SELECT EXP(?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql.remove(0));
+            }
+
+            query = em.createQuery("SELECT EXP(1.1) FROM QuerySyntaxEntity s WHERE s.intVal1 = 3");
+            query.getResultList();
+            Assert.assertEquals(1, _sql.size());
+            if (platform.isDB2Z() || platform.isDerby()) {
+                Assert.assertEquals("SELECT EXP(1.1) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = 3)", _sql.remove(0));
+            } else {
+                Assert.assertEquals("SELECT EXP(?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql.remove(0));
+            }
+
+            // -----------------------
+
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<Object> cquery = cb.createQuery(Object.class);
+            Root<QuerySyntaxEntity> root = cquery.from(QuerySyntaxEntity.class);
+            ParameterExpression<Float> floatParam1 = cb.parameter(Float.class);
+            ParameterExpression<Integer> intParam2 = cb.parameter(Integer.class);
+            cquery.select(cb.exp(floatParam1));
+            cquery.where(cb.equal(root.get(QuerySyntaxEntity_.intVal1), intParam2));
+
+            query = em.createQuery(cquery);
+            query.setParameter(floatParam1, 1.1f);
+            query.setParameter(intParam2, 3);
+            query.getResultList();
+            Assert.assertEquals(1, _sql.size());
+            if (platform.isDB2Z() || platform.isDerby()) {
+                Assert.assertEquals("SELECT EXP(1.1) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = 3)", _sql.remove(0));
+            } else {
+                Assert.assertEquals("SELECT EXP(?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql.remove(0));
+            }
+
+            CriteriaBuilder cb2 = em.getCriteriaBuilder();
+            CriteriaQuery<Object> cquery2 = cb2.createQuery(Object.class);
+            Root<QuerySyntaxEntity> root2 = cquery2.from(QuerySyntaxEntity.class);
+            cquery2.select(cb2.exp(cb2.literal(1.1f)));
+            cquery2.where(cb2.equal(root2.get(QuerySyntaxEntity_.intVal1), cb2.literal(3)));
+
+            query = em.createQuery(cquery2);
+            query.getResultList();
+            Assert.assertEquals(1, _sql.size());
+            if (platform.isDB2Z() || platform.isDerby()) {
+                Assert.assertEquals("SELECT EXP(1.1) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = 3)", _sql.remove(0));
+            } else {
+                Assert.assertEquals("SELECT EXP(?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql.remove(0));
+            }
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            if(em.isOpen()) {
+                em.close();
+            }
+        }
+    }
+
+    @Test
+    public void testExp1_PartialBind() {
+        if (emf2 == null)
+            return;
+
+        EntityManager em = emf2.createEntityManager();
+        DatabasePlatform platform = getPlatform(emf2);
+
+        try {
+            Query query = em.createQuery("SELECT EXP(?1) FROM QuerySyntaxEntity s WHERE s.intVal1 = ?2");
+            query.setParameter(1, 1.1);
+            query.setParameter(2, 3);
+            query.getResultList();
+            Assert.assertEquals(1, _sql2.size());
+            if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT EXP(1.1) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            } else {
+                Assert.assertEquals("SELECT EXP(?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            }
+
+            query = em.createQuery("SELECT EXP(1.1) FROM QuerySyntaxEntity s WHERE s.intVal1 = 3");
+            query.getResultList();
+            Assert.assertEquals(1, _sql2.size());
+            if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT EXP(1.1) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            } else {
+                Assert.assertEquals("SELECT EXP(?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            }
+
+            // -----------------------
+
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<Object> cquery = cb.createQuery(Object.class);
+            Root<QuerySyntaxEntity> root = cquery.from(QuerySyntaxEntity.class);
+            ParameterExpression<Float> floatParam1 = cb.parameter(Float.class);
+            ParameterExpression<Integer> intParam2 = cb.parameter(Integer.class);
+            cquery.select(cb.exp(floatParam1));
+            cquery.where(cb.equal(root.get(QuerySyntaxEntity_.intVal1), intParam2));
+
+            query = em.createQuery(cquery);
+            query.setParameter(floatParam1, 1.1f);
+            query.setParameter(intParam2, 3);
+            query.getResultList();
+            Assert.assertEquals(1, _sql2.size());
+            if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT EXP(1.1) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            } else {
+                Assert.assertEquals("SELECT EXP(?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            }
+
+            CriteriaBuilder cb2 = em.getCriteriaBuilder();
+            CriteriaQuery<Object> cquery2 = cb2.createQuery(Object.class);
+            Root<QuerySyntaxEntity> root2 = cquery2.from(QuerySyntaxEntity.class);
+            cquery2.select(cb2.exp(cb2.literal(1.1f)));
+            cquery2.where(cb2.equal(root2.get(QuerySyntaxEntity_.intVal1), cb2.literal(3)));
+
+            query = em.createQuery(cquery2);
+            query.getResultList();
+            Assert.assertEquals(1, _sql2.size());
+            if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT EXP(1.1) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            } else {
+                Assert.assertEquals("SELECT EXP(?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            }
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            if(em.isOpen()) {
+                em.close();
+            }
+        }
+    }
+
+    @Test
+    public void testExp1_PartialBind_BindLiteral() {
+        if (emf3 == null)
+            return;
+
+        EntityManager em = emf3.createEntityManager();
+        DatabasePlatform platform = getPlatform(emf3);
+
+        try {
+            Query query = em.createQuery("SELECT EXP(?1) FROM QuerySyntaxEntity s WHERE s.intVal1 = ?2");
+            query.setParameter(1, 1.1);
+            query.setParameter(2, 3);
+            query.getResultList();
+            Assert.assertEquals(1, _sql3.size());
+            if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT EXP(1.1) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            } else {
+                Assert.assertEquals("SELECT EXP(?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            }
+
+            query = em.createQuery("SELECT EXP(1.1) FROM QuerySyntaxEntity s WHERE s.intVal1 = 3");
+            query.getResultList();
+            Assert.assertEquals(1, _sql3.size());
+            if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT EXP(1.1) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            } else {
+                Assert.assertEquals("SELECT EXP(?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            }
+
+            // -----------------------
+
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<Object> cquery = cb.createQuery(Object.class);
+            Root<QuerySyntaxEntity> root = cquery.from(QuerySyntaxEntity.class);
+            ParameterExpression<Float> floatParam1 = cb.parameter(Float.class);
+            ParameterExpression<Integer> intParam2 = cb.parameter(Integer.class);
+            cquery.select(cb.exp(floatParam1));
+            cquery.where(cb.equal(root.get(QuerySyntaxEntity_.intVal1), intParam2));
+
+            query = em.createQuery(cquery);
+            query.setParameter(floatParam1, 1.1f);
+            query.setParameter(intParam2, 3);
+            query.getResultList();
+            Assert.assertEquals(1, _sql3.size());
+            if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT EXP(1.1) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            } else {
+                Assert.assertEquals("SELECT EXP(?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            }
+
+            CriteriaBuilder cb2 = em.getCriteriaBuilder();
+            CriteriaQuery<Object> cquery2 = cb2.createQuery(Object.class);
+            Root<QuerySyntaxEntity> root2 = cquery2.from(QuerySyntaxEntity.class);
+            cquery2.select(cb2.exp(cb2.literal(1.1f)));
+            cquery2.where(cb2.equal(root2.get(QuerySyntaxEntity_.intVal1), cb2.literal(3)));
+
+            query = em.createQuery(cquery2);
+            query.getResultList();
+            Assert.assertEquals(1, _sql3.size());
+            if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT EXP(1.1) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            } else {
+                Assert.assertEquals("SELECT EXP(?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            }
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            if(em.isOpen()) {
+                em.close();
+            }
+        }
+    }
+
+    @Test
+    public void testLn1_Default() {
+        if (emf == null)
+            return;
+
+        EntityManager em = emf.createEntityManager();
+        DatabasePlatform platform = getPlatform(emf);
+
+        try {
+            Query query = em.createQuery("SELECT LN(?1) FROM QuerySyntaxEntity s WHERE s.intVal1 = ?2");
+            query.setParameter(1, 1.1);
+            query.setParameter(2, 3);
+            query.getResultList();
+            Assert.assertEquals(1, _sql.size());
+            if (platform.isDB2Z() || platform.isDerby()) {
+                Assert.assertEquals("SELECT LN(1.1) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = 3)", _sql.remove(0));
+            } else {
+                Assert.assertEquals("SELECT LN(?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql.remove(0));
+            }
+
+            query = em.createQuery("SELECT LN(1.1) FROM QuerySyntaxEntity s WHERE s.intVal1 = 3");
+            query.getResultList();
+            Assert.assertEquals(1, _sql.size());
+            if (platform.isDB2Z() || platform.isDerby()) {
+                Assert.assertEquals("SELECT LN(1.1) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = 3)", _sql.remove(0));
+            } else {
+                Assert.assertEquals("SELECT LN(?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql.remove(0));
+            }
+
+            // -----------------------
+
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<Object> cquery = cb.createQuery(Object.class);
+            Root<QuerySyntaxEntity> root = cquery.from(QuerySyntaxEntity.class);
+            ParameterExpression<Float> floatParam1 = cb.parameter(Float.class);
+            ParameterExpression<Integer> intParam2 = cb.parameter(Integer.class);
+            cquery.select(cb.ln(floatParam1));
+            cquery.where(cb.equal(root.get(QuerySyntaxEntity_.intVal1), intParam2));
+
+            query = em.createQuery(cquery);
+            query.setParameter(floatParam1, 1.1f);
+            query.setParameter(intParam2, 3);
+            query.getResultList();
+            Assert.assertEquals(1, _sql.size());
+            if (platform.isDB2Z() || platform.isDerby()) {
+                Assert.assertEquals("SELECT LN(1.1) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = 3)", _sql.remove(0));
+            } else {
+                Assert.assertEquals("SELECT LN(?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql.remove(0));
+            }
+
+            CriteriaBuilder cb2 = em.getCriteriaBuilder();
+            CriteriaQuery<Object> cquery2 = cb2.createQuery(Object.class);
+            Root<QuerySyntaxEntity> root2 = cquery2.from(QuerySyntaxEntity.class);
+            cquery2.select(cb2.ln(cb2.literal(1.1f)));
+            cquery2.where(cb2.equal(root2.get(QuerySyntaxEntity_.intVal1), cb2.literal(3)));
+
+            query = em.createQuery(cquery2);
+            query.getResultList();
+            Assert.assertEquals(1, _sql.size());
+            if (platform.isDB2Z() || platform.isDerby()) {
+                Assert.assertEquals("SELECT LN(1.1) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = 3)", _sql.remove(0));
+            } else {
+                Assert.assertEquals("SELECT LN(?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql.remove(0));
+            }
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            if(em.isOpen()) {
+                em.close();
+            }
+        }
+    }
+
+    @Test
+    public void testLn1_PartialBind() {
+        if (emf2 == null)
+            return;
+
+        EntityManager em = emf2.createEntityManager();
+        DatabasePlatform platform = getPlatform(emf2);
+
+        try {
+            Query query = em.createQuery("SELECT LN(?1) FROM QuerySyntaxEntity s WHERE s.intVal1 = ?2");
+            query.setParameter(1, 1.1);
+            query.setParameter(2, 3);
+            query.getResultList();
+            Assert.assertEquals(1, _sql2.size());
+            if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT LN(1.1) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            } else {
+                Assert.assertEquals("SELECT LN(?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            }
+
+            query = em.createQuery("SELECT LN(1.1) FROM QuerySyntaxEntity s WHERE s.intVal1 = 3");
+            query.getResultList();
+            Assert.assertEquals(1, _sql2.size());
+            if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT LN(1.1) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            } else {
+                Assert.assertEquals("SELECT LN(?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            }
+
+            // -----------------------
+
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<Object> cquery = cb.createQuery(Object.class);
+            Root<QuerySyntaxEntity> root = cquery.from(QuerySyntaxEntity.class);
+            ParameterExpression<Float> floatParam1 = cb.parameter(Float.class);
+            ParameterExpression<Integer> intParam2 = cb.parameter(Integer.class);
+            cquery.select(cb.ln(floatParam1));
+            cquery.where(cb.equal(root.get(QuerySyntaxEntity_.intVal1), intParam2));
+
+            query = em.createQuery(cquery);
+            query.setParameter(floatParam1, 1.1f);
+            query.setParameter(intParam2, 3);
+            query.getResultList();
+            Assert.assertEquals(1, _sql2.size());
+            if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT LN(1.1) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            } else {
+                Assert.assertEquals("SELECT LN(?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            }
+
+            CriteriaBuilder cb2 = em.getCriteriaBuilder();
+            CriteriaQuery<Object> cquery2 = cb2.createQuery(Object.class);
+            Root<QuerySyntaxEntity> root2 = cquery2.from(QuerySyntaxEntity.class);
+            cquery2.select(cb2.ln(cb2.literal(1.1f)));
+            cquery2.where(cb2.equal(root2.get(QuerySyntaxEntity_.intVal1), cb2.literal(3)));
+
+            query = em.createQuery(cquery2);
+            query.getResultList();
+            Assert.assertEquals(1, _sql2.size());
+            if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT LN(1.1) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            } else {
+                Assert.assertEquals("SELECT LN(?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            }
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            if(em.isOpen()) {
+                em.close();
+            }
+        }
+    }
+
+    @Test
+    public void testLn1_PartialBind_BindLiteral() {
+        if (emf3 == null)
+            return;
+
+        EntityManager em = emf3.createEntityManager();
+        DatabasePlatform platform = getPlatform(emf3);
+
+        try {
+            Query query = em.createQuery("SELECT LN(?1) FROM QuerySyntaxEntity s WHERE s.intVal1 = ?2");
+            query.setParameter(1, 1.1);
+            query.setParameter(2, 3);
+            query.getResultList();
+            Assert.assertEquals(1, _sql3.size());
+            if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT LN(1.1) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            } else {
+                Assert.assertEquals("SELECT LN(?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            }
+
+            query = em.createQuery("SELECT LN(1.1) FROM QuerySyntaxEntity s WHERE s.intVal1 = 3");
+            query.getResultList();
+            Assert.assertEquals(1, _sql3.size());
+            if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT LN(1.1) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            } else {
+                Assert.assertEquals("SELECT LN(?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            }
+
+            // -----------------------
+
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<Object> cquery = cb.createQuery(Object.class);
+            Root<QuerySyntaxEntity> root = cquery.from(QuerySyntaxEntity.class);
+            ParameterExpression<Float> floatParam1 = cb.parameter(Float.class);
+            ParameterExpression<Integer> intParam2 = cb.parameter(Integer.class);
+            cquery.select(cb.ln(floatParam1));
+            cquery.where(cb.equal(root.get(QuerySyntaxEntity_.intVal1), intParam2));
+
+            query = em.createQuery(cquery);
+            query.setParameter(floatParam1, 1.1f);
+            query.setParameter(intParam2, 3);
+            query.getResultList();
+            Assert.assertEquals(1, _sql3.size());
+            if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT LN(1.1) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            } else {
+                Assert.assertEquals("SELECT LN(?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            }
+
+            CriteriaBuilder cb2 = em.getCriteriaBuilder();
+            CriteriaQuery<Object> cquery2 = cb2.createQuery(Object.class);
+            Root<QuerySyntaxEntity> root2 = cquery2.from(QuerySyntaxEntity.class);
+            cquery2.select(cb2.ln(cb2.literal(1.1f)));
+            cquery2.where(cb2.equal(root2.get(QuerySyntaxEntity_.intVal1), cb2.literal(3)));
+
+            query = em.createQuery(cquery2);
+            query.getResultList();
+            Assert.assertEquals(1, _sql3.size());
+            if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT LN(1.1) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            } else {
+                Assert.assertEquals("SELECT LN(?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            }
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            if(em.isOpen()) {
+                em.close();
+            }
+        }
+    }
+
+    @Test
+    public void testSign1_Default() {
+        if (emf == null)
+            return;
+
+        EntityManager em = emf.createEntityManager();
+        DatabasePlatform platform = getPlatform(emf);
+
+        try {
+            Query query = em.createQuery("SELECT SIGN(?1) FROM QuerySyntaxEntity s WHERE s.intVal1 = ?2");
+            query.setParameter(1, 1.1);
+            query.setParameter(2, 3);
+            query.getResultList();
+            Assert.assertEquals(1, _sql.size());
+            if (platform.isDB2Z() || platform.isDerby()) {
+                Assert.assertEquals("SELECT SIGN(1.1) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = 3)", _sql.remove(0));
+            } else {
+                Assert.assertEquals("SELECT SIGN(?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql.remove(0));
+            }
+
+            query = em.createQuery("SELECT SIGN(1.1) FROM QuerySyntaxEntity s WHERE s.intVal1 = 3");
+            query.getResultList();
+            Assert.assertEquals(1, _sql.size());
+            if (platform.isDB2Z() || platform.isDerby()) {
+                Assert.assertEquals("SELECT SIGN(1.1) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = 3)", _sql.remove(0));
+            } else {
+                Assert.assertEquals("SELECT SIGN(?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql.remove(0));
+            }
+
+            // -----------------------
+
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<Object> cquery = cb.createQuery(Object.class);
+            Root<QuerySyntaxEntity> root = cquery.from(QuerySyntaxEntity.class);
+            ParameterExpression<Float> floatParam1 = cb.parameter(Float.class);
+            ParameterExpression<Integer> intParam2 = cb.parameter(Integer.class);
+            cquery.select(cb.sign(floatParam1));
+            cquery.where(cb.equal(root.get(QuerySyntaxEntity_.intVal1), intParam2));
+
+            query = em.createQuery(cquery);
+            query.setParameter(floatParam1, 1.1f);
+            query.setParameter(intParam2, 3);
+            query.getResultList();
+            Assert.assertEquals(1, _sql.size());
+            if (platform.isDB2Z() || platform.isDerby()) {
+                Assert.assertEquals("SELECT SIGN(1.1) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = 3)", _sql.remove(0));
+            } else {
+                Assert.assertEquals("SELECT SIGN(?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql.remove(0));
+            }
+
+            CriteriaBuilder cb2 = em.getCriteriaBuilder();
+            CriteriaQuery<Object> cquery2 = cb2.createQuery(Object.class);
+            Root<QuerySyntaxEntity> root2 = cquery2.from(QuerySyntaxEntity.class);
+            cquery2.select(cb2.sign(cb2.literal(1.1f)));
+            cquery2.where(cb2.equal(root2.get(QuerySyntaxEntity_.intVal1), cb2.literal(3)));
+
+            query = em.createQuery(cquery2);
+            query.getResultList();
+            Assert.assertEquals(1, _sql.size());
+            if (platform.isDB2Z() || platform.isDerby()) {
+                Assert.assertEquals("SELECT SIGN(1.1) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = 3)", _sql.remove(0));
+            } else {
+                Assert.assertEquals("SELECT SIGN(?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql.remove(0));
+            }
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            if(em.isOpen()) {
+                em.close();
+            }
+        }
+    }
+
+    @Test
+    public void testSign1_PartialBind() {
+        if (emf2 == null)
+            return;
+
+        EntityManager em = emf2.createEntityManager();
+        DatabasePlatform platform = getPlatform(emf2);
+
+        try {
+            Query query = em.createQuery("SELECT SIGN(?1) FROM QuerySyntaxEntity s WHERE s.intVal1 = ?2");
+            query.setParameter(1, 1.1);
+            query.setParameter(2, 3);
+            query.getResultList();
+            Assert.assertEquals(1, _sql2.size());
+            if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT SIGN(1.1) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            } else {
+                Assert.assertEquals("SELECT SIGN(?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            }
+
+            query = em.createQuery("SELECT SIGN(1.1) FROM QuerySyntaxEntity s WHERE s.intVal1 = 3");
+            query.getResultList();
+            Assert.assertEquals(1, _sql2.size());
+            if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT SIGN(1.1) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            } else {
+                Assert.assertEquals("SELECT SIGN(?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            }
+
+            // -----------------------
+
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<Object> cquery = cb.createQuery(Object.class);
+            Root<QuerySyntaxEntity> root = cquery.from(QuerySyntaxEntity.class);
+            ParameterExpression<Float> floatParam1 = cb.parameter(Float.class);
+            ParameterExpression<Integer> intParam2 = cb.parameter(Integer.class);
+            cquery.select(cb.sign(floatParam1));
+            cquery.where(cb.equal(root.get(QuerySyntaxEntity_.intVal1), intParam2));
+
+            query = em.createQuery(cquery);
+            query.setParameter(floatParam1, 1.1f);
+            query.setParameter(intParam2, 3);
+            query.getResultList();
+            Assert.assertEquals(1, _sql2.size());
+            if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT SIGN(1.1) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            } else {
+                Assert.assertEquals("SELECT SIGN(?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            }
+
+            CriteriaBuilder cb2 = em.getCriteriaBuilder();
+            CriteriaQuery<Object> cquery2 = cb2.createQuery(Object.class);
+            Root<QuerySyntaxEntity> root2 = cquery2.from(QuerySyntaxEntity.class);
+            cquery2.select(cb2.sign(cb2.literal(1.1f)));
+            cquery2.where(cb2.equal(root2.get(QuerySyntaxEntity_.intVal1), cb2.literal(3)));
+
+            query = em.createQuery(cquery2);
+            query.getResultList();
+            Assert.assertEquals(1, _sql2.size());
+            if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT SIGN(1.1) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            } else {
+                Assert.assertEquals("SELECT SIGN(?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql2.remove(0));
+            }
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            if(em.isOpen()) {
+                em.close();
+            }
+        }
+    }
+
+    @Test
+    public void testSign1_PartialBind_BindLiteral() {
+        if (emf3 == null)
+            return;
+
+        EntityManager em = emf3.createEntityManager();
+        DatabasePlatform platform = getPlatform(emf3);
+
+        try {
+            Query query = em.createQuery("SELECT SIGN(?1) FROM QuerySyntaxEntity s WHERE s.intVal1 = ?2");
+            query.setParameter(1, 1.1);
+            query.setParameter(2, 3);
+            query.getResultList();
+            Assert.assertEquals(1, _sql3.size());
+            if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT SIGN(1.1) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            } else {
+                Assert.assertEquals("SELECT SIGN(?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            }
+
+            query = em.createQuery("SELECT SIGN(1.1) FROM QuerySyntaxEntity s WHERE s.intVal1 = 3");
+            query.getResultList();
+            Assert.assertEquals(1, _sql3.size());
+            if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT SIGN(1.1) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            } else {
+                Assert.assertEquals("SELECT SIGN(?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            }
+
+            // -----------------------
+
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<Object> cquery = cb.createQuery(Object.class);
+            Root<QuerySyntaxEntity> root = cquery.from(QuerySyntaxEntity.class);
+            ParameterExpression<Float> floatParam1 = cb.parameter(Float.class);
+            ParameterExpression<Integer> intParam2 = cb.parameter(Integer.class);
+            cquery.select(cb.sign(floatParam1));
+            cquery.where(cb.equal(root.get(QuerySyntaxEntity_.intVal1), intParam2));
+
+            query = em.createQuery(cquery);
+            query.setParameter(floatParam1, 1.1f);
+            query.setParameter(intParam2, 3);
+            query.getResultList();
+            Assert.assertEquals(1, _sql3.size());
+            if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT SIGN(1.1) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            } else {
+                Assert.assertEquals("SELECT SIGN(?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            }
+
+            CriteriaBuilder cb2 = em.getCriteriaBuilder();
+            CriteriaQuery<Object> cquery2 = cb2.createQuery(Object.class);
+            Root<QuerySyntaxEntity> root2 = cquery2.from(QuerySyntaxEntity.class);
+            cquery2.select(cb2.sign(cb2.literal(1.1f)));
+            cquery2.where(cb2.equal(root2.get(QuerySyntaxEntity_.intVal1), cb2.literal(3)));
+
+            query = em.createQuery(cquery2);
+            query.getResultList();
+            Assert.assertEquals(1, _sql3.size());
+            if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT SIGN(1.1) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            } else {
+                Assert.assertEquals("SELECT SIGN(?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?)", _sql3.remove(0));
+            }
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            if(em.isOpen()) {
+                em.close();
+            }
+        }
+    }
+
+    @Test
+    public void testRound2_Default() {
+        if (emf == null)
+            return;
+
+        EntityManager em = emf.createEntityManager();
+        DatabasePlatform platform = getPlatform(emf);
+
+        try {
+            Query query = em.createQuery("SELECT ?1 FROM QuerySyntaxEntity s WHERE s.intVal1 = ROUND(?2, ?3)");
+            query.setParameter(1, 1);
+            query.setParameter(2, 3.3);
+            query.setParameter(3, 9);
+            query.getResultList();
+            Assert.assertEquals(1, _sql.size());
+            if (platform.isDerby()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = FLOOR((3.3)*1e9+0.5)/1e9)", _sql.remove(0));
+            } else if (platform.isPostgreSQL()) {
+                Assert.assertEquals("SELECT ? FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = FLOOR((?)*10^(?)+0.5)/10^(?))", _sql.remove(0));
+            } else if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ROUND(3.3, 9))", _sql.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ROUND(?, 9))", _sql.remove(0));
+            } else {
+                Assert.assertEquals("SELECT ? FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ROUND(?, ?))", _sql.remove(0));
+            }
+
+            query = em.createQuery("SELECT 1 FROM QuerySyntaxEntity s WHERE s.intVal1 = ROUND(3.3, 9)");
+            query.getResultList();
+            Assert.assertEquals(1, _sql.size());
+            if (platform.isDerby()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = FLOOR((3.3)*1e9+0.5)/1e9)", _sql.remove(0));
+            } else if (platform.isPostgreSQL()) {
+                Assert.assertEquals("SELECT ? FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = FLOOR((?)*10^(?)+0.5)/10^(?))", _sql.remove(0));
+            } else if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ROUND(3.3, 9))", _sql.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ROUND(?, 9))", _sql.remove(0));
+            } else {
+                Assert.assertEquals("SELECT ? FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ROUND(?, ?))", _sql.remove(0));
+            }
+
+            query = em.createQuery("SELECT 1 FROM QuerySyntaxEntity s WHERE s.intVal1 = ROUND(?1, 9)");
+            query.setParameter(1, 3.3);
+            query.getResultList();
+            Assert.assertEquals(1, _sql.size());
+            if (platform.isDerby()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = FLOOR((3.3)*1e9+0.5)/1e9)", _sql.remove(0));
+            } else if (platform.isPostgreSQL()) {
+                Assert.assertEquals("SELECT ? FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = FLOOR((?)*10^(?)+0.5)/10^(?))", _sql.remove(0));
+            } else if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ROUND(3.3, 9))", _sql.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ROUND(?, 9))", _sql.remove(0));
+            } else {
+                Assert.assertEquals("SELECT ? FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ROUND(?, ?))", _sql.remove(0));
+            }
+
+            // -----------------------
+
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<Object> cquery = cb.createQuery(Object.class);
+            Root<QuerySyntaxEntity> root = cquery.from(QuerySyntaxEntity.class);
+            ParameterExpression<Integer> intParam1 = cb.parameter(Integer.class);
+            ParameterExpression<Float> floatParam1 = cb.parameter(Float.class);
+            cquery.select(intParam1);
+            cquery.where(cb.equal(root.get(QuerySyntaxEntity_.intVal1), cb.round(floatParam1, 9)));
+
+            query = em.createQuery(cquery);
+            query.setParameter(intParam1, 1);
+            query.setParameter(floatParam1, 3.3f);
+            query.getResultList();
+            Assert.assertEquals(1, _sql.size());
+            if (platform.isDerby()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = FLOOR((3.3)*1e9+0.5)/1e9)", _sql.remove(0));
+            } else if (platform.isPostgreSQL()) {
+                Assert.assertEquals("SELECT ? FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = FLOOR((?)*10^(?)+0.5)/10^(?))", _sql.remove(0));
+            } else if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ROUND(3.3, 9))", _sql.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ROUND(?, 9))", _sql.remove(0));
+            } else {
+                Assert.assertEquals("SELECT ? FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ROUND(?, ?))", _sql.remove(0));
+            }
+
+            CriteriaBuilder cb2 = em.getCriteriaBuilder();
+            CriteriaQuery<Object> cquery2 = cb2.createQuery(Object.class);
+            Root<QuerySyntaxEntity> root2 = cquery2.from(QuerySyntaxEntity.class);
+            cquery2.select(cb2.literal(1));
+            cquery2.where(cb2.equal(root2.get(QuerySyntaxEntity_.intVal1), cb2.round(cb2.literal(3.3f), 9)));
+
+            query = em.createQuery(cquery2);
+            query.getResultList();
+            Assert.assertEquals(1, _sql.size());
+            if (platform.isDerby()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = FLOOR((3.3)*1e9+0.5)/1e9)", _sql.remove(0));
+            } else if (platform.isPostgreSQL()) {
+                Assert.assertEquals("SELECT ? FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = FLOOR((?)*10^(?)+0.5)/10^(?))", _sql.remove(0));
+            } else if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ROUND(3.3, 9))", _sql.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ROUND(?, 9))", _sql.remove(0));
+            } else {
+                Assert.assertEquals("SELECT ? FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ROUND(?, ?))", _sql.remove(0));
+            }
+
+            CriteriaBuilder cb3 = em.getCriteriaBuilder();
+            CriteriaQuery<Object> cquery3 = cb3.createQuery(Object.class);
+            Root<QuerySyntaxEntity> root3 = cquery3.from(QuerySyntaxEntity.class);
+            ParameterExpression<Float> floatParam2 = cb3.parameter(Float.class);
+            cquery3.select(cb3.literal(1));
+            cquery3.where(cb3.equal(root3.get(QuerySyntaxEntity_.intVal1), cb3.round(floatParam2, 9)));
+
+            query = em.createQuery(cquery3);
+            query.setParameter(floatParam2, 3.3f);
+            query.getResultList();
+            Assert.assertEquals(1, _sql.size());
+            if (platform.isDerby()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = FLOOR((3.3)*1e9+0.5)/1e9)", _sql.remove(0));
+            } else if (platform.isPostgreSQL()) {
+                Assert.assertEquals("SELECT ? FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = FLOOR((?)*10^(?)+0.5)/10^(?))", _sql.remove(0));
+            } else if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ROUND(3.3, 9))", _sql.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ROUND(?, 9))", _sql.remove(0));
+            } else {
+                Assert.assertEquals("SELECT ? FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ROUND(?, ?))", _sql.remove(0));
+            }
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            if(em.isOpen()) {
+                em.close();
+            }
+        }
+    }
+
+    @Test
+    public void testRound2_PartialBind() {
+        if (emf2 == null)
+            return;
+
+        EntityManager em = emf2.createEntityManager();
+        DatabasePlatform platform = getPlatform(emf2);
+
+        try {
+            Query query = em.createQuery("SELECT ?1 FROM QuerySyntaxEntity s WHERE s.intVal1 = ROUND(?2, ?3)");
+            query.setParameter(1, 1);
+            query.setParameter(2, 3.3);
+            query.setParameter(3, 9);
+            query.getResultList();
+            Assert.assertEquals(1, _sql2.size());
+            if (platform.isDerby()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = FLOOR((3.3)*1e9+0.5)/1e9)", _sql2.remove(0));
+            } else if (platform.isPostgreSQL()) {
+                Assert.assertEquals("SELECT ? FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = FLOOR((?)*10^(?)+0.5)/10^(?))", _sql2.remove(0));
+            } else if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ROUND(3.3, 9))", _sql2.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ROUND(?, 9))", _sql2.remove(0));
+            } else {
+                Assert.assertEquals("SELECT ? FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ROUND(?, ?))", _sql2.remove(0));
+            }
+
+            query = em.createQuery("SELECT 1 FROM QuerySyntaxEntity s WHERE s.intVal1 = ROUND(3.3, 9)");
+            query.getResultList();
+            Assert.assertEquals(1, _sql2.size());
+            if (platform.isDerby()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = FLOOR((3.3)*1e9+0.5)/1e9)", _sql2.remove(0));
+            } else if (platform.isPostgreSQL()) {
+                Assert.assertEquals("SELECT ? FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = FLOOR((?)*10^(?)+0.5)/10^(?))", _sql2.remove(0));
+            } else if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ROUND(3.3, 9))", _sql2.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ROUND(?, 9))", _sql2.remove(0));
+            } else {
+                Assert.assertEquals("SELECT ? FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ROUND(?, ?))", _sql2.remove(0));
+            }
+
+            query = em.createQuery("SELECT 1 FROM QuerySyntaxEntity s WHERE s.intVal1 = ROUND(?1, 9)");
+            query.setParameter(1, 3.3);
+            query.getResultList();
+            Assert.assertEquals(1, _sql2.size());
+            if (platform.isDerby()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = FLOOR((3.3)*1e9+0.5)/1e9)", _sql2.remove(0));
+            } else if (platform.isPostgreSQL()) {
+                Assert.assertEquals("SELECT ? FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = FLOOR((?)*10^(?)+0.5)/10^(?))", _sql2.remove(0));
+            } else if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ROUND(3.3, 9))", _sql2.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ROUND(?, 9))", _sql2.remove(0));
+            } else {
+                Assert.assertEquals("SELECT ? FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ROUND(?, ?))", _sql2.remove(0));
+            }
+
+            // -----------------------
+
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<Object> cquery = cb.createQuery(Object.class);
+            Root<QuerySyntaxEntity> root = cquery.from(QuerySyntaxEntity.class);
+            ParameterExpression<Integer> intParam1 = cb.parameter(Integer.class);
+            ParameterExpression<Float> floatParam1 = cb.parameter(Float.class);
+            cquery.select(intParam1);
+            cquery.where(cb.equal(root.get(QuerySyntaxEntity_.intVal1), cb.round(floatParam1, 9)));
+
+            query = em.createQuery(cquery);
+            query.setParameter(intParam1, 1);
+            query.setParameter(floatParam1, 3.3f);
+            query.getResultList();
+            Assert.assertEquals(1, _sql2.size());
+            if (platform.isDerby()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = FLOOR((3.3)*1e9+0.5)/1e9)", _sql2.remove(0));
+            } else if (platform.isPostgreSQL()) {
+                Assert.assertEquals("SELECT ? FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = FLOOR((?)*10^(?)+0.5)/10^(?))", _sql2.remove(0));
+            } else if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ROUND(3.3, 9))", _sql2.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ROUND(?, 9))", _sql2.remove(0));
+            } else {
+                Assert.assertEquals("SELECT ? FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ROUND(?, ?))", _sql2.remove(0));
+            }
+
+            CriteriaBuilder cb2 = em.getCriteriaBuilder();
+            CriteriaQuery<Object> cquery2 = cb2.createQuery(Object.class);
+            Root<QuerySyntaxEntity> root2 = cquery2.from(QuerySyntaxEntity.class);
+            cquery2.select(cb2.literal(1));
+            cquery2.where(cb2.equal(root2.get(QuerySyntaxEntity_.intVal1), cb2.round(cb2.literal(3.3f), 9)));
+
+            query = em.createQuery(cquery2);
+            query.getResultList();
+            Assert.assertEquals(1, _sql2.size());
+            if (platform.isDerby()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = FLOOR((3.3)*1e9+0.5)/1e9)", _sql2.remove(0));
+            } else if (platform.isPostgreSQL()) {
+                Assert.assertEquals("SELECT ? FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = FLOOR((?)*10^(?)+0.5)/10^(?))", _sql2.remove(0));
+            } else if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ROUND(3.3, 9))", _sql2.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ROUND(?, 9))", _sql2.remove(0));
+            } else {
+                Assert.assertEquals("SELECT ? FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ROUND(?, ?))", _sql2.remove(0));
+            }
+
+            CriteriaBuilder cb3 = em.getCriteriaBuilder();
+            CriteriaQuery<Object> cquery3 = cb3.createQuery(Object.class);
+            Root<QuerySyntaxEntity> root3 = cquery3.from(QuerySyntaxEntity.class);
+            ParameterExpression<Float> floatParam2 = cb3.parameter(Float.class);
+            cquery3.select(cb3.literal(1));
+            cquery3.where(cb3.equal(root3.get(QuerySyntaxEntity_.intVal1), cb3.round(floatParam2, 9)));
+
+            query = em.createQuery(cquery3);
+            query.setParameter(floatParam2, 3.3f);
+            query.getResultList();
+            Assert.assertEquals(1, _sql2.size());
+            if (platform.isDerby()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = FLOOR((3.3)*1e9+0.5)/1e9)", _sql2.remove(0));
+            } else if (platform.isPostgreSQL()) {
+                Assert.assertEquals("SELECT ? FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = FLOOR((?)*10^(?)+0.5)/10^(?))", _sql2.remove(0));
+            } else if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ROUND(3.3, 9))", _sql2.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ROUND(?, 9))", _sql2.remove(0));
+            } else {
+                Assert.assertEquals("SELECT ? FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ROUND(?, ?))", _sql2.remove(0));
+            }
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            if(em.isOpen()) {
+                em.close();
+            }
+        }
+    }
+
+    @Test
+    public void testRound2_PartialBind_BindLiteral() {
+        if (emf3 == null)
+            return;
+
+        EntityManager em = emf3.createEntityManager();
+        DatabasePlatform platform = getPlatform(emf3);
+
+        try {
+            Query query = em.createQuery("SELECT ?1 FROM QuerySyntaxEntity s WHERE s.intVal1 = ROUND(?2, ?3)");
+            query.setParameter(1, 1);
+            query.setParameter(2, 3.3);
+            query.setParameter(3, 9);
+            query.getResultList();
+            Assert.assertEquals(1, _sql3.size());
+            if (platform.isDerby()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = FLOOR((3.3)*1e9+0.5)/1e9)", _sql3.remove(0));
+            } else if (platform.isPostgreSQL()) {
+                Assert.assertEquals("SELECT ? FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = FLOOR((?)*10^(?)+0.5)/10^(?))", _sql3.remove(0));
+            } else if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ROUND(3.3, 9))", _sql3.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ROUND(?, 9))", _sql3.remove(0));
+            } else {
+                Assert.assertEquals("SELECT ? FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ROUND(?, ?))", _sql3.remove(0));
+            }
+
+            query = em.createQuery("SELECT 1 FROM QuerySyntaxEntity s WHERE s.intVal1 = ROUND(3.3, 9)");
+            query.getResultList();
+            Assert.assertEquals(1, _sql3.size());
+            if (platform.isDerby()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = FLOOR((3.3)*1e9+0.5)/1e9)", _sql3.remove(0));
+            } else if (platform.isPostgreSQL()) {
+                Assert.assertEquals("SELECT ? FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = FLOOR((?)*10^(?)+0.5)/10^(?))", _sql3.remove(0));
+            } else if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ROUND(3.3, 9))", _sql3.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ROUND(?, 9))", _sql3.remove(0));
+            } else {
+                Assert.assertEquals("SELECT ? FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ROUND(?, ?))", _sql3.remove(0));
+            }
+
+            query = em.createQuery("SELECT 1 FROM QuerySyntaxEntity s WHERE s.intVal1 = ROUND(?1, 9)");
+            query.setParameter(1, 3.3);
+            query.getResultList();
+            Assert.assertEquals(1, _sql3.size());
+            if (platform.isDerby()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = FLOOR((3.3)*1e9+0.5)/1e9)", _sql3.remove(0));
+            } else if (platform.isPostgreSQL()) {
+                Assert.assertEquals("SELECT ? FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = FLOOR((?)*10^(?)+0.5)/10^(?))", _sql3.remove(0));
+            } else if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ROUND(3.3, 9))", _sql3.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ROUND(?, 9))", _sql3.remove(0));
+            } else {
+                Assert.assertEquals("SELECT ? FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ROUND(?, ?))", _sql3.remove(0));
+            }
+
+            // -----------------------
+
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<Object> cquery = cb.createQuery(Object.class);
+            Root<QuerySyntaxEntity> root = cquery.from(QuerySyntaxEntity.class);
+            ParameterExpression<Integer> intParam1 = cb.parameter(Integer.class);
+            ParameterExpression<Float> floatParam1 = cb.parameter(Float.class);
+            cquery.select(intParam1);
+            cquery.where(cb.equal(root.get(QuerySyntaxEntity_.intVal1), cb.round(floatParam1, 9)));
+
+            query = em.createQuery(cquery);
+            query.setParameter(intParam1, 1);
+            query.setParameter(floatParam1, 3.3f);
+            query.getResultList();
+            Assert.assertEquals(1, _sql3.size());
+            if (platform.isDerby()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = FLOOR((3.3)*1e9+0.5)/1e9)", _sql3.remove(0));
+            } else if (platform.isPostgreSQL()) {
+                Assert.assertEquals("SELECT ? FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = FLOOR((?)*10^(?)+0.5)/10^(?))", _sql3.remove(0));
+            } else if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ROUND(3.3, 9))", _sql3.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ROUND(?, 9))", _sql3.remove(0));
+            } else {
+                Assert.assertEquals("SELECT ? FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ROUND(?, ?))", _sql3.remove(0));
+            }
+
+            CriteriaBuilder cb2 = em.getCriteriaBuilder();
+            CriteriaQuery<Object> cquery2 = cb2.createQuery(Object.class);
+            Root<QuerySyntaxEntity> root2 = cquery2.from(QuerySyntaxEntity.class);
+            cquery2.select(cb2.literal(1));
+            cquery2.where(cb2.equal(root2.get(QuerySyntaxEntity_.intVal1), cb2.round(cb2.literal(3.3f), 9)));
+
+            query = em.createQuery(cquery2);
+            query.getResultList();
+            Assert.assertEquals(1, _sql3.size());
+            if (platform.isDerby()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = FLOOR((3.3)*1e9+0.5)/1e9)", _sql3.remove(0));
+            } else if (platform.isPostgreSQL()) {
+                Assert.assertEquals("SELECT ? FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = FLOOR((?)*10^(?)+0.5)/10^(?))", _sql3.remove(0));
+            } else if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ROUND(3.3, 9))", _sql3.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ROUND(?, 9))", _sql3.remove(0));
+            } else {
+                Assert.assertEquals("SELECT ? FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ROUND(?, ?))", _sql3.remove(0));
+            }
+
+            CriteriaBuilder cb3 = em.getCriteriaBuilder();
+            CriteriaQuery<Object> cquery3 = cb3.createQuery(Object.class);
+            Root<QuerySyntaxEntity> root3 = cquery3.from(QuerySyntaxEntity.class);
+            ParameterExpression<Float> floatParam2 = cb3.parameter(Float.class);
+            cquery3.select(cb3.literal(1));
+            cquery3.where(cb3.equal(root3.get(QuerySyntaxEntity_.intVal1), cb3.round(floatParam2, 9)));
+
+            query = em.createQuery(cquery3);
+            query.setParameter(floatParam2, 3.3f);
+            query.getResultList();
+            Assert.assertEquals(1, _sql3.size());
+            if (platform.isDerby()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = FLOOR((3.3)*1e9+0.5)/1e9)", _sql3.remove(0));
+            } else if (platform.isPostgreSQL()) {
+                Assert.assertEquals("SELECT ? FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = FLOOR((?)*10^(?)+0.5)/10^(?))", _sql3.remove(0));
+            } else if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ROUND(3.3, 9))", _sql3.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ROUND(?, 9))", _sql3.remove(0));
+            } else {
+                Assert.assertEquals("SELECT ? FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ROUND(?, ?))", _sql3.remove(0));
+            }
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            if(em.isOpen()) {
+                em.close();
+            }
+        }
+    }
+
+    @Test
+    public void testRound3_Default() {
+        if (emf == null)
+            return;
+
+        EntityManager em = emf.createEntityManager();
+        DatabasePlatform platform = getPlatform(emf);
+
+        try {
+            Query query = em.createQuery("SELECT ?1 FROM QuerySyntaxEntity s HAVING ?2 < ROUND(?3, ?4)");
+            query.setParameter(1, 1);
+            query.setParameter(2, 0);
+            query.setParameter(3, 9.9);
+            query.setParameter(4, 2);
+            query.getResultList();
+            Assert.assertEquals(1, _sql.size());
+            if (platform.isDerby()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY HAVING (0 < FLOOR((9.9)*1e2+0.5)/1e2)", _sql.remove(0));
+            } else if (platform.isPostgreSQL()) {
+                Assert.assertEquals("SELECT ? FROM QUERYSYNTAXENTITY HAVING (? < FLOOR((?)*10^(?)+0.5)/10^(?))", _sql.remove(0));
+            } else if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY HAVING (0 < ROUND(9.9, 2))", _sql.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY HAVING (? < ROUND(?, 2))", _sql.remove(0));
+            } else {
+                Assert.assertEquals("SELECT ? FROM QUERYSYNTAXENTITY HAVING (? < ROUND(?, ?))", _sql.remove(0));
+            }
+
+            query = em.createQuery("SELECT 1 FROM QuerySyntaxEntity s HAVING 0 < ROUND(9.9, 2)");
+            query.getResultList();
+            Assert.assertEquals(1, _sql.size());
+            if (platform.isDerby()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY HAVING (0 < FLOOR((9.9)*1e2+0.5)/1e2)", _sql.remove(0));
+            } else if (platform.isPostgreSQL()) {
+                Assert.assertEquals("SELECT ? FROM QUERYSYNTAXENTITY HAVING (? < FLOOR((?)*10^(?)+0.5)/10^(?))", _sql.remove(0));
+            } else if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY HAVING (0 < ROUND(9.9, 2))", _sql.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY HAVING (? < ROUND(?, 2))", _sql.remove(0));
+            } else {
+                Assert.assertEquals("SELECT ? FROM QUERYSYNTAXENTITY HAVING (? < ROUND(?, ?))", _sql.remove(0));
+            }
+
+            query = em.createQuery("SELECT 1 FROM QuerySyntaxEntity s HAVING ?1 < ROUND(?2, 2)");
+            query.setParameter(1, 0);
+            query.setParameter(2, 9.9);
+            query.getResultList();
+            Assert.assertEquals(1, _sql.size());
+            if (platform.isDerby()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY HAVING (0 < FLOOR((9.9)*1e2+0.5)/1e2)", _sql.remove(0));
+            } else if (platform.isPostgreSQL()) {
+                Assert.assertEquals("SELECT ? FROM QUERYSYNTAXENTITY HAVING (? < FLOOR((?)*10^(?)+0.5)/10^(?))", _sql.remove(0));
+            } else if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY HAVING (0 < ROUND(9.9, 2))", _sql.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY HAVING (? < ROUND(?, 2))", _sql.remove(0));
+            } else {
+                Assert.assertEquals("SELECT ? FROM QUERYSYNTAXENTITY HAVING (? < ROUND(?, ?))", _sql.remove(0));
+            }
+
+            // -----------------------
+
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<Object[]> cquery = cb.createQuery(Object[].class);
+            Root<QuerySyntaxEntity> root = cquery.from(QuerySyntaxEntity.class);
+            ParameterExpression<Integer> intParam1 = cb.parameter(Integer.class);
+            ParameterExpression<Double> doubleParam1 = cb.parameter(Double.class);
+            ParameterExpression<Double> doubleParam2 = cb.parameter(Double.class);
+            cquery.multiselect(intParam1);
+            cquery.having(cb.lessThan(doubleParam1, cb.round(doubleParam2, 2)));
+
+            query = em.createQuery(cquery);
+            query.setParameter(intParam1, 1);
+            query.setParameter(doubleParam1, 0d);
+            query.setParameter(doubleParam2, 9.9d);
+            query.getResultList();
+            Assert.assertEquals(1, _sql.size());
+            if (platform.isDerby()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY HAVING (0.0 < FLOOR((9.9)*1e2+0.5)/1e2)", _sql.remove(0));
+            } else if (platform.isPostgreSQL()) {
+                Assert.assertEquals("SELECT ? FROM QUERYSYNTAXENTITY HAVING (? < FLOOR((?)*10^(?)+0.5)/10^(?))", _sql.remove(0));
+            } else if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY HAVING (0.0 < ROUND(9.9, 2))", _sql.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY HAVING (? < ROUND(?, 2))", _sql.remove(0));
+            } else {
+                Assert.assertEquals("SELECT ? FROM QUERYSYNTAXENTITY HAVING (? < ROUND(?, ?))", _sql.remove(0));
+            }
+
+            CriteriaBuilder cb2 = em.getCriteriaBuilder();
+            CriteriaQuery<Object[]> cquery2 = cb2.createQuery(Object[].class);
+            Root<QuerySyntaxEntity> root2 = cquery2.from(QuerySyntaxEntity.class);
+            cquery2.multiselect(cb2.literal(1));
+            cquery2.having(cb2.lessThan(cb2.literal(0d), cb2.round(cb2.literal(9.9d), 2)));
+
+            query = em.createQuery(cquery2);
+            query.getResultList();
+            Assert.assertEquals(1, _sql.size());
+            if (platform.isDerby()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY HAVING (0.0 < FLOOR((9.9)*1e2+0.5)/1e2)", _sql.remove(0));
+            } else if (platform.isPostgreSQL()) {
+                Assert.assertEquals("SELECT ? FROM QUERYSYNTAXENTITY HAVING (? < FLOOR((?)*10^(?)+0.5)/10^(?))", _sql.remove(0));
+            } else if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY HAVING (0.0 < ROUND(9.9, 2))", _sql.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY HAVING (? < ROUND(?, 2))", _sql.remove(0));
+            } else {
+                Assert.assertEquals("SELECT ? FROM QUERYSYNTAXENTITY HAVING (? < ROUND(?, ?))", _sql.remove(0));
+            }
+
+            CriteriaBuilder cb3 = em.getCriteriaBuilder();
+            CriteriaQuery<Object[]> cquery3 = cb3.createQuery(Object[].class);
+            Root<QuerySyntaxEntity> root3 = cquery3.from(QuerySyntaxEntity.class);
+            cquery3.multiselect(cb3.literal(1));
+            ParameterExpression<Double> doubleParam3 = cb3.parameter(Double.class);
+            ParameterExpression<Double> doubleParam4 = cb3.parameter(Double.class);
+            cquery3.having(cb3.lessThan(doubleParam3, cb3.round(doubleParam4, 2)));
+
+            query = em.createQuery(cquery3);
+            query.setParameter(doubleParam3, 0d);
+            query.setParameter(doubleParam4, 9.9d);
+            query.getResultList();
+            Assert.assertEquals(1, _sql.size());
+            if (platform.isDerby()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY HAVING (0.0 < FLOOR((9.9)*1e2+0.5)/1e2)", _sql.remove(0));
+            } else if (platform.isPostgreSQL()) {
+                Assert.assertEquals("SELECT ? FROM QUERYSYNTAXENTITY HAVING (? < FLOOR((?)*10^(?)+0.5)/10^(?))", _sql.remove(0));
+            } else if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY HAVING (0.0 < ROUND(9.9, 2))", _sql.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY HAVING (? < ROUND(?, 2))", _sql.remove(0));
+            } else {
+                Assert.assertEquals("SELECT ? FROM QUERYSYNTAXENTITY HAVING (? < ROUND(?, ?))", _sql.remove(0));
+            }
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            if(em.isOpen()) {
+                em.close();
+            }
+        }
+    }
+
+    @Test
+    public void testRound3_PartialBind() {
+        if (emf2 == null)
+            return;
+
+        EntityManager em = emf2.createEntityManager();
+        DatabasePlatform platform = getPlatform(emf2);
+
+        try {
+            Query query = em.createQuery("SELECT ?1 FROM QuerySyntaxEntity s HAVING ?2 < ROUND(?3, ?4)");
+            query.setParameter(1, 1);
+            query.setParameter(2, 0);
+            query.setParameter(3, 9.9);
+            query.setParameter(4, 2);
+            query.getResultList();
+            Assert.assertEquals(1, _sql2.size());
+            if (platform.isDerby()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY HAVING (? < FLOOR((9.9)*1e2+0.5)/1e2)", _sql2.remove(0));
+            } else if (platform.isPostgreSQL()) {
+                Assert.assertEquals("SELECT ? FROM QUERYSYNTAXENTITY HAVING (? < FLOOR((?)*10^(?)+0.5)/10^(?))", _sql2.remove(0));
+            } else if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY HAVING (? < ROUND(9.9, 2))", _sql2.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY HAVING (? < ROUND(?, 2))", _sql2.remove(0));
+            } else {
+                Assert.assertEquals("SELECT ? FROM QUERYSYNTAXENTITY HAVING (? < ROUND(?, ?))", _sql2.remove(0));
+            }
+
+            query = em.createQuery("SELECT 1 FROM QuerySyntaxEntity s HAVING 0 < ROUND(9.9, 2)");
+            query.getResultList();
+            Assert.assertEquals(1, _sql2.size());
+            if (platform.isDerby()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY HAVING (? < FLOOR((9.9)*1e2+0.5)/1e2)", _sql2.remove(0));
+            } else if (platform.isPostgreSQL()) {
+                Assert.assertEquals("SELECT ? FROM QUERYSYNTAXENTITY HAVING (? < FLOOR((?)*10^(?)+0.5)/10^(?))", _sql2.remove(0));
+            } else if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY HAVING (? < ROUND(9.9, 2))", _sql2.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY HAVING (? < ROUND(?, 2))", _sql2.remove(0));
+            } else {
+                Assert.assertEquals("SELECT ? FROM QUERYSYNTAXENTITY HAVING (? < ROUND(?, ?))", _sql2.remove(0));
+            }
+
+            query = em.createQuery("SELECT 1 FROM QuerySyntaxEntity s HAVING ?1 < ROUND(?2, 2)");
+            query.setParameter(1, 0);
+            query.setParameter(2, 9.9);
+            query.getResultList();
+            Assert.assertEquals(1, _sql2.size());
+            if (platform.isDerby()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY HAVING (? < FLOOR((9.9)*1e2+0.5)/1e2)", _sql2.remove(0));
+            } else if (platform.isPostgreSQL()) {
+                Assert.assertEquals("SELECT ? FROM QUERYSYNTAXENTITY HAVING (? < FLOOR((?)*10^(?)+0.5)/10^(?))", _sql2.remove(0));
+            } else if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY HAVING (? < ROUND(9.9, 2))", _sql2.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY HAVING (? < ROUND(?, 2))", _sql2.remove(0));
+            } else {
+                Assert.assertEquals("SELECT ? FROM QUERYSYNTAXENTITY HAVING (? < ROUND(?, ?))", _sql2.remove(0));
+            }
+
+            // -----------------------
+
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<Object[]> cquery = cb.createQuery(Object[].class);
+            Root<QuerySyntaxEntity> root = cquery.from(QuerySyntaxEntity.class);
+            ParameterExpression<Integer> intParam1 = cb.parameter(Integer.class);
+            ParameterExpression<Double> doubleParam1 = cb.parameter(Double.class);
+            ParameterExpression<Double> doubleParam2 = cb.parameter(Double.class);
+            cquery.multiselect(intParam1);
+            cquery.having(cb.lessThan(doubleParam1, cb.round(doubleParam2, 2)));
+
+            query = em.createQuery(cquery);
+            query.setParameter(intParam1, 1);
+            query.setParameter(doubleParam1, 0d);
+            query.setParameter(doubleParam2, 9.9d);
+            query.getResultList();
+            Assert.assertEquals(1, _sql2.size());
+            if (platform.isDerby()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY HAVING (? < FLOOR((9.9)*1e2+0.5)/1e2)", _sql2.remove(0));
+            } else if (platform.isPostgreSQL()) {
+                Assert.assertEquals("SELECT ? FROM QUERYSYNTAXENTITY HAVING (? < FLOOR((?)*10^(?)+0.5)/10^(?))", _sql2.remove(0));
+            } else if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY HAVING (? < ROUND(9.9, 2))", _sql2.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY HAVING (? < ROUND(?, 2))", _sql2.remove(0));
+            } else {
+                Assert.assertEquals("SELECT ? FROM QUERYSYNTAXENTITY HAVING (? < ROUND(?, ?))", _sql2.remove(0));
+            }
+
+            CriteriaBuilder cb2 = em.getCriteriaBuilder();
+            CriteriaQuery<Object[]> cquery2 = cb2.createQuery(Object[].class);
+            Root<QuerySyntaxEntity> root2 = cquery2.from(QuerySyntaxEntity.class);
+            cquery2.multiselect(cb2.literal(1));
+            cquery2.having(cb2.lessThan(cb2.literal(0d), cb2.round(cb2.literal(9.9d), 2)));
+
+            query = em.createQuery(cquery2);
+            query.getResultList();
+            Assert.assertEquals(1, _sql2.size());
+            if (platform.isDerby()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY HAVING (? < FLOOR((9.9)*1e2+0.5)/1e2)", _sql2.remove(0));
+            } else if (platform.isPostgreSQL()) {
+                Assert.assertEquals("SELECT ? FROM QUERYSYNTAXENTITY HAVING (? < FLOOR((?)*10^(?)+0.5)/10^(?))", _sql2.remove(0));
+            } else if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY HAVING (? < ROUND(9.9, 2))", _sql2.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY HAVING (? < ROUND(?, 2))", _sql2.remove(0));
+            } else {
+                Assert.assertEquals("SELECT ? FROM QUERYSYNTAXENTITY HAVING (? < ROUND(?, ?))", _sql2.remove(0));
+            }
+
+            CriteriaBuilder cb3 = em.getCriteriaBuilder();
+            CriteriaQuery<Object[]> cquery3 = cb3.createQuery(Object[].class);
+            Root<QuerySyntaxEntity> root3 = cquery3.from(QuerySyntaxEntity.class);
+            cquery3.multiselect(cb3.literal(1));
+            ParameterExpression<Double> doubleParam3 = cb3.parameter(Double.class);
+            ParameterExpression<Double> doubleParam4 = cb3.parameter(Double.class);
+            cquery3.having(cb3.lessThan(doubleParam3, cb3.round(doubleParam4, 2)));
+
+            query = em.createQuery(cquery3);
+            query.setParameter(doubleParam3, 0d);
+            query.setParameter(doubleParam4, 9.9d);
+            query.getResultList();
+            Assert.assertEquals(1, _sql2.size());
+            if (platform.isDerby()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY HAVING (? < FLOOR((9.9)*1e2+0.5)/1e2)", _sql2.remove(0));
+            } else if (platform.isPostgreSQL()) {
+                Assert.assertEquals("SELECT ? FROM QUERYSYNTAXENTITY HAVING (? < FLOOR((?)*10^(?)+0.5)/10^(?))", _sql2.remove(0));
+            } else if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY HAVING (? < ROUND(9.9, 2))", _sql2.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY HAVING (? < ROUND(?, 2))", _sql2.remove(0));
+            } else {
+                Assert.assertEquals("SELECT ? FROM QUERYSYNTAXENTITY HAVING (? < ROUND(?, ?))", _sql2.remove(0));
+            }
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            if(em.isOpen()) {
+                em.close();
+            }
+        }
+    }
+
+    @Test
+    public void testRound3_PartialBind_BindLiteral() {
+        if (emf3 == null)
+            return;
+
+        EntityManager em = emf3.createEntityManager();
+        DatabasePlatform platform = getPlatform(emf3);
+
+        try {
+            Query query = em.createQuery("SELECT ?1 FROM QuerySyntaxEntity s HAVING ?2 < ROUND(?3, ?4)");
+            query.setParameter(1, 1);
+            query.setParameter(2, 0);
+            query.setParameter(3, 9.9);
+            query.setParameter(4, 2);
+            query.getResultList();
+            Assert.assertEquals(1, _sql3.size());
+            if (platform.isDerby()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY HAVING (? < FLOOR((9.9)*1e2+0.5)/1e2)", _sql3.remove(0));
+            } else if (platform.isPostgreSQL()) {
+                Assert.assertEquals("SELECT ? FROM QUERYSYNTAXENTITY HAVING (? < FLOOR((?)*10^(?)+0.5)/10^(?))", _sql3.remove(0));
+            } else if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY HAVING (? < ROUND(9.9, 2))", _sql3.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY HAVING (? < ROUND(?, 2))", _sql3.remove(0));
+            } else {
+                Assert.assertEquals("SELECT ? FROM QUERYSYNTAXENTITY HAVING (? < ROUND(?, ?))", _sql3.remove(0));
+            }
+
+            query = em.createQuery("SELECT 1 FROM QuerySyntaxEntity s HAVING 0 < ROUND(9.9, 2)");
+            query.getResultList();
+            Assert.assertEquals(1, _sql3.size());
+            if (platform.isDerby()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY HAVING (? < FLOOR((9.9)*1e2+0.5)/1e2)", _sql3.remove(0));
+            } else if (platform.isPostgreSQL()) {
+                Assert.assertEquals("SELECT ? FROM QUERYSYNTAXENTITY HAVING (? < FLOOR((?)*10^(?)+0.5)/10^(?))", _sql3.remove(0));
+            } else if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY HAVING (? < ROUND(9.9, 2))", _sql3.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY HAVING (? < ROUND(?, 2))", _sql3.remove(0));
+            } else {
+                Assert.assertEquals("SELECT ? FROM QUERYSYNTAXENTITY HAVING (? < ROUND(?, ?))", _sql3.remove(0));
+            }
+
+            query = em.createQuery("SELECT 1 FROM QuerySyntaxEntity s HAVING ?1 < ROUND(?2, 2)");
+            query.setParameter(1, 0);
+            query.setParameter(2, 9.9);
+            query.getResultList();
+            Assert.assertEquals(1, _sql3.size());
+            if (platform.isDerby()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY HAVING (? < FLOOR((9.9)*1e2+0.5)/1e2)", _sql3.remove(0));
+            } else if (platform.isPostgreSQL()) {
+                Assert.assertEquals("SELECT ? FROM QUERYSYNTAXENTITY HAVING (? < FLOOR((?)*10^(?)+0.5)/10^(?))", _sql3.remove(0));
+            } else if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY HAVING (? < ROUND(9.9, 2))", _sql3.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY HAVING (? < ROUND(?, 2))", _sql3.remove(0));
+            } else {
+                Assert.assertEquals("SELECT ? FROM QUERYSYNTAXENTITY HAVING (? < ROUND(?, ?))", _sql3.remove(0));
+            }
+
+            // -----------------------
+
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<Object[]> cquery = cb.createQuery(Object[].class);
+            Root<QuerySyntaxEntity> root = cquery.from(QuerySyntaxEntity.class);
+            ParameterExpression<Integer> intParam1 = cb.parameter(Integer.class);
+            ParameterExpression<Double> doubleParam1 = cb.parameter(Double.class);
+            ParameterExpression<Double> doubleParam2 = cb.parameter(Double.class);
+            cquery.multiselect(intParam1);
+            cquery.having(cb.lessThan(doubleParam1, cb.round(doubleParam2, 2)));
+
+            query = em.createQuery(cquery);
+            query.setParameter(intParam1, 1);
+            query.setParameter(doubleParam1, 0d);
+            query.setParameter(doubleParam2, 9.9d);
+            query.getResultList();
+            Assert.assertEquals(1, _sql3.size());
+            if (platform.isDerby()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY HAVING (? < FLOOR((9.9)*1e2+0.5)/1e2)", _sql3.remove(0));
+            } else if (platform.isPostgreSQL()) {
+                Assert.assertEquals("SELECT ? FROM QUERYSYNTAXENTITY HAVING (? < FLOOR((?)*10^(?)+0.5)/10^(?))", _sql3.remove(0));
+            } else if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY HAVING (? < ROUND(9.9, 2))", _sql3.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY HAVING (? < ROUND(?, 2))", _sql3.remove(0));
+            } else {
+                Assert.assertEquals("SELECT ? FROM QUERYSYNTAXENTITY HAVING (? < ROUND(?, ?))", _sql3.remove(0));
+            }
+
+            CriteriaBuilder cb2 = em.getCriteriaBuilder();
+            CriteriaQuery<Object[]> cquery2 = cb2.createQuery(Object[].class);
+            Root<QuerySyntaxEntity> root2 = cquery2.from(QuerySyntaxEntity.class);
+            cquery2.multiselect(cb2.literal(1));
+            cquery2.having(cb2.lessThan(cb2.literal(0d), cb2.round(cb2.literal(9.9d), 2)));
+
+            query = em.createQuery(cquery2);
+            query.getResultList();
+            Assert.assertEquals(1, _sql3.size());
+            if (platform.isDerby()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY HAVING (? < FLOOR((9.9)*1e2+0.5)/1e2)", _sql3.remove(0));
+            } else if (platform.isPostgreSQL()) {
+                Assert.assertEquals("SELECT ? FROM QUERYSYNTAXENTITY HAVING (? < FLOOR((?)*10^(?)+0.5)/10^(?))", _sql3.remove(0));
+            } else if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY HAVING (? < ROUND(9.9, 2))", _sql3.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY HAVING (? < ROUND(?, 2))", _sql3.remove(0));
+            } else {
+                Assert.assertEquals("SELECT ? FROM QUERYSYNTAXENTITY HAVING (? < ROUND(?, ?))", _sql3.remove(0));
+            }
+
+            CriteriaBuilder cb3 = em.getCriteriaBuilder();
+            CriteriaQuery<Object[]> cquery3 = cb3.createQuery(Object[].class);
+            Root<QuerySyntaxEntity> root3 = cquery3.from(QuerySyntaxEntity.class);
+            cquery3.multiselect(cb3.literal(1));
+            ParameterExpression<Double> doubleParam3 = cb3.parameter(Double.class);
+            ParameterExpression<Double> doubleParam4 = cb3.parameter(Double.class);
+            cquery3.having(cb3.lessThan(doubleParam3, cb3.round(doubleParam4, 2)));
+
+            query = em.createQuery(cquery3);
+            query.setParameter(doubleParam3, 0d);
+            query.setParameter(doubleParam4, 9.9d);
+            query.getResultList();
+            Assert.assertEquals(1, _sql3.size());
+            if (platform.isDerby()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY HAVING (? < FLOOR((9.9)*1e2+0.5)/1e2)", _sql3.remove(0));
+            } else if (platform.isPostgreSQL()) {
+                Assert.assertEquals("SELECT ? FROM QUERYSYNTAXENTITY HAVING (? < FLOOR((?)*10^(?)+0.5)/10^(?))", _sql3.remove(0));
+            } else if (platform.isDB2Z()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY HAVING (? < ROUND(9.9, 2))", _sql3.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT 1 FROM QUERYSYNTAXENTITY HAVING (? < ROUND(?, 2))", _sql3.remove(0));
+            } else {
+                Assert.assertEquals("SELECT ? FROM QUERYSYNTAXENTITY HAVING (? < ROUND(?, ?))", _sql3.remove(0));
             }
         } finally {
             if (em.getTransaction().isActive()) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -241,7 +241,7 @@ public class RelationshipModelJUnitTest extends JUnitTestCase {
             if (returnedCustomers1 == null || (returnedCustomers1.size() < 2)) {
                 fail("Not all customers were returned from findAllCustomers query ");
             }
-            if (returnedCustomers2 == null || (returnedCustomers2.size() != 0)) {
+            if (returnedCustomers2 == null || (!returnedCustomers2.isEmpty())) {
                 fail("Customer from ReadObjectQuery was not returned using getResultCollection");
             }
             if (expectedException1 == null || (expectedException1.getErrorCode() != QueryException.INVALID_CONTAINER_CLASS)) {
@@ -323,7 +323,7 @@ public class RelationshipModelJUnitTest extends JUnitTestCase {
             if (returnedCustomers1 == null || (returnedCustomers1.size() < 2)) {
                 fail("Not all customers were returned from findAllCustomers query ");
             }
-            if (returnedCustomers2 == null || (returnedCustomers2.size() != 0)) {
+            if (returnedCustomers2 == null || (!returnedCustomers2.isEmpty())) {
                 fail("Customer from ReadObjectQuery was not returned using getResultCollection");
             }
             if (expectedException1 == null || (expectedException1.getErrorCode() != QueryException.INVALID_CONTAINER_CLASS)) {

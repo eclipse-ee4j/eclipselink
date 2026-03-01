@@ -1,0 +1,87 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+
+== Preface
+
+EclipseLink JPA provides specific annotations (_EclipseLink extensions_)
+in addition to supporting the standard Java Persistence Architecture
+(JPA) annotations. You can use these EclipseLink extensions to take
+advantage of EclipseLink's extended functionality and features within
+your JPA entities.
+
+[[TLJPA102]][[sthref2]]
+
+=== Audience
+
+This document is intended for application developers who want to develop
+applications using EclipseLink with Java Persistence Architecture (JPA).
+This document does not include details about related common tasks, but
+focuses on EclipseLink functionality.
+
+Developers should be familiar with the concepts and programming
+practices of
+
+* Java SE and Jakarta EE.
+* Java Persistence Architecture 2.0 specification
+(`http://jcp.org/en/jsr/detail?id=317`)
+* Eclipse IDE (`http://www.eclipse.org`)
+
+For information about Oracle's commitment to accessibility, visit the
+Oracle Accessibility Program website at
+`http://www.oracle.com/pls/topic/lookup?ctx=acc&id=docacc`.
+
+[[sthref3]]
+
+*Access to Oracle Support*
+
+Oracle customers have access to electronic support through My Oracle
+Support. For information, visit
+`http://www.oracle.com/pls/topic/lookup?ctx=acc&id=info` or visit
+`http://www.oracle.com/pls/topic/lookup?ctx=acc&id=trs` if you are
+hearing impaired.
+
+[[TLJPA105]][[sthref4]]
+
+=== Related Documents
+
+For more information, see the following documents:
+
+* _Understanding EclipseLink_
+* _Solutions Guide for EclispeLink_
+* _Oracle Fusion Middleware Java API Reference for EclipseLink_
+* EclipseLink Documentation Center at
+`http://www.eclipse.org/eclipselink/documentation/`
+
+[[TLJPA106]][[sthref5]]
+
+=== Conventions
+
+The following text conventions are used in this document:
+
+|=======================================================================
+|*Convention* |*Meaning*
+|*boldface* |Boldface type indicates graphical user interface elements
+associated with an action, or terms defined in text or the glossary.
+
+|_italic_ |Italic type indicates book titles, emphasis, or placeholder
+variables for which you supply particular values.
+
+|`monospace` |Monospace type indicates commands within a paragraph,
+URLs, code in examples, text that appears on the screen, or text that
+you enter.
+|=======================================================================

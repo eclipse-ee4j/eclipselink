@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,9 +14,10 @@
 //     Blaise Doughan - 2.5 - initial implementation
 package org.eclipse.persistence.core.sessions;
 
+import org.eclipse.persistence.core.descriptors.CoreDescriptor;
+
 import java.io.Serializable;
 import java.util.List;
-import org.eclipse.persistence.core.descriptors.CoreDescriptor;
 
 /**
  * INTERNAL

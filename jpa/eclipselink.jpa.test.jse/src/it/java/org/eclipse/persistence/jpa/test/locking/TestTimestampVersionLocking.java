@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2015, 2022 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2015, 2022 IBM Corporation. All rights reserved.
+ * Copyright (c) 2015, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -93,7 +93,7 @@ public class TestTimestampVersionLocking {
             em.getTransaction().commit();
 
             // Make sure the query was not executed
-            Assert.assertTrue("Query (" + listener.getQuery().getSQLString() + ") was executed unexpectedly.", !listener.wasQueryExecuted());
+            Assert.assertFalse("Query (" + listener.getQuery().getSQLString() + ") was executed unexpectedly.", listener.wasQueryExecuted());
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -202,7 +202,7 @@ public class TestTimestampVersionLocking {
             em.getTransaction().commit();
 
             // Make sure the query was not executed
-            Assert.assertTrue("Query (" + listener.getQuery().getSQLString() + ") was executed unexpectedly.", !listener.wasQueryExecuted());
+            Assert.assertFalse("Query (" + listener.getQuery().getSQLString() + ") was executed unexpectedly.", listener.wasQueryExecuted());
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();

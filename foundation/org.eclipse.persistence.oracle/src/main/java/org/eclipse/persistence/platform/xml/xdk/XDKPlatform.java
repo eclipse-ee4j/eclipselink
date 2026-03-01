@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -152,7 +152,7 @@ public class XDKPlatform implements XMLPlatform {
             if (null == value) {
                 return false;
             } else {
-                return value.trim().equals("");
+                return value.trim().isEmpty();
             }
         } catch (NullPointerException e) {
             // The 9.0.4 XDK will throw a NPE on getNoderValue() if the node value is null.
@@ -425,7 +425,7 @@ public class XDKPlatform implements XMLPlatform {
 
     @Override
     public void namespaceQualifyFragment(Element next) {
-        namespaceQualifyFragment(next, new ArrayList<String>());
+        namespaceQualifyFragment(next, new ArrayList<>());
     }
 
     //pass list of prefixes declared and encountered

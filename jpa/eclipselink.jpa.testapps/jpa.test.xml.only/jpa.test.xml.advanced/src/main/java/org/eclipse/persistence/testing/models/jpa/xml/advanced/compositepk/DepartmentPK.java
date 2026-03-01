@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,8 +29,7 @@ public class DepartmentPK {
     }
 
     public boolean equals(Object other) {
-        if (other instanceof DepartmentPK) {
-            final DepartmentPK otherDepartmentPK = (DepartmentPK) other;
+        if (other instanceof DepartmentPK otherDepartmentPK) {
             return (otherDepartmentPK.name.equals(name) && otherDepartmentPK.role.equals(role) && otherDepartmentPK.location.equals(location));
         }
 

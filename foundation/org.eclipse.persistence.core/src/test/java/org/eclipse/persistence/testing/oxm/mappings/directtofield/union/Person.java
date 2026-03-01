@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,7 +14,6 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.oxm.mappings.directtofield.union;
 
-import java.util.Calendar;
 import java.util.Date;
 
 public class Person {
@@ -73,9 +72,7 @@ public class Person {
             }
             if ((this.getAnniversaryDate() == null) && (person.getAnniversaryDate() == null)) {
                 //do nothing
-            } else if (!this.getAnniversaryDate().equals(person.getAnniversaryDate())) {
-                return false;
-            }
+            } else return this.getAnniversaryDate().equals(person.getAnniversaryDate());
             return true;
         } catch (ClassCastException e) {
             return false;

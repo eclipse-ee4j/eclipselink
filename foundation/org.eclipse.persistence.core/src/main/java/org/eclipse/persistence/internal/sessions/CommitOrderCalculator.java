@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,7 +17,10 @@ package org.eclipse.persistence.internal.sessions;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.helper.DescriptorCompare;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
 
 /**
  * This class calculates a commit order for a series of classes
@@ -26,7 +29,7 @@ import java.util.*;
  * sort to them to get an ordering.
  * This is a throwaway class, which exists only for the lifetime of
  * the calculation.
- *
+ * <p>
  * The algorithm is described in the method comment for orderCommits().
  * This class also includes static methods for quicksort, copied from
  * the standard libraries and adapted for these objects, since that
@@ -46,13 +49,13 @@ public class CommitOrderCalculator {
     }
 
     protected void addNode(ClassDescriptor d) {
-        nodes.addElement(new CommitOrderDependencyNode(this, d, session));
+        nodes.add(new CommitOrderDependencyNode(this, d, session));
     }
 
     public void addNodes(Vector descriptors) {
-        Enumeration descriptorsEnum = descriptors.elements();
-        while (descriptorsEnum.hasMoreElements()) {
-            ClassDescriptor descriptor = (ClassDescriptor)descriptorsEnum.nextElement();
+        Iterator iterator = descriptors.iterator();
+        while (iterator.hasNext()) {
+            ClassDescriptor descriptor = (ClassDescriptor) iterator.next();
             addNode(descriptor);
         }
     }
@@ -61,8 +64,8 @@ public class CommitOrderCalculator {
      * Add to each node the dependent nodes
      */
     public void calculateMappingDependencies() {
-        for (Enumeration<CommitOrderDependencyNode> e = nodes.elements(); e.hasMoreElements();) {
-            CommitOrderDependencyNode node = e.nextElement();
+        for (Iterator<CommitOrderDependencyNode> iterator = nodes.iterator(); iterator.hasNext();) {
+            CommitOrderDependencyNode node = iterator.next();
             node.recordMappingDependencies();
         }
     }
@@ -71,8 +74,8 @@ public class CommitOrderCalculator {
      * Add to each node the dependent nodes
      */
     public void calculateSpecifiedDependencies() {
-        for (Enumeration<CommitOrderDependencyNode> e = nodes.elements(); e.hasMoreElements();) {
-            CommitOrderDependencyNode node = e.nextElement();
+        for (Iterator<CommitOrderDependencyNode> iterator = nodes.iterator(); iterator.hasNext();) {
+            CommitOrderDependencyNode node = iterator.next();
             node.recordSpecifiedDependencies();
         }
     }
@@ -88,16 +91,16 @@ public class CommitOrderCalculator {
          */
 
         //Setup
-        for (Enumeration<CommitOrderDependencyNode> e = getNodes().elements(); e.hasMoreElements();) {
-            CommitOrderDependencyNode node = e.nextElement();
+        for (Iterator<CommitOrderDependencyNode> iterator = getNodes().iterator(); iterator.hasNext();) {
+            CommitOrderDependencyNode node = iterator.next();
             node.markNotVisited();
             node.setPredecessor(null);
         }
         currentTime = 0;
 
         //Execution
-        for (Enumeration<CommitOrderDependencyNode> e = getNodes().elements(); e.hasMoreElements();) {
-            CommitOrderDependencyNode node = e.nextElement();
+        for (Iterator<CommitOrderDependencyNode> iterator = getNodes().iterator(); iterator.hasNext();) {
+            CommitOrderDependencyNode node = iterator.next();
             if (node.hasNotBeenVisited()) {
                 node.visit();
             }
@@ -142,11 +145,11 @@ public class CommitOrderCalculator {
     /**
      * Return the constraint ordered classes.
      */
-    public Vector getOrderedClasses() {
-        Vector orderedClasses = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(getOrderedDescriptors().size());
-        for (Enumeration orderedDescriptorsEnum = getOrderedDescriptors().elements();
-                 orderedDescriptorsEnum.hasMoreElements();) {
-            orderedClasses.addElement(((ClassDescriptor)orderedDescriptorsEnum.nextElement()).getJavaClass());
+    public List<Class<?>> getOrderedClasses() {
+        List<Class<?>> orderedClasses = new ArrayList<>(getOrderedDescriptors().size());
+        for (Iterator iterator = getOrderedDescriptors().iterator();
+             iterator.hasNext();) {
+            orderedClasses.add(((ClassDescriptor) iterator.next()).getJavaClass());
         }
 
         return orderedClasses;
@@ -160,8 +163,8 @@ public class CommitOrderCalculator {
     }
 
     public CommitOrderDependencyNode nodeFor(Class<?> c) {
-        for (Enumeration<CommitOrderDependencyNode> e = nodes.elements(); e.hasMoreElements();) {
-            CommitOrderDependencyNode n = e.nextElement();
+        for (Iterator<CommitOrderDependencyNode> iterator = nodes.iterator(); iterator.hasNext();) {
+            CommitOrderDependencyNode n = iterator.next();
             if (n.getDescriptor().getJavaClass() == c) {
                 return n;
             }
@@ -170,8 +173,8 @@ public class CommitOrderCalculator {
     }
 
     public CommitOrderDependencyNode nodeFor(ClassDescriptor d) {
-        for (Enumeration<CommitOrderDependencyNode> e = nodes.elements(); e.hasMoreElements();) {
-            CommitOrderDependencyNode n = e.nextElement();
+        for (Iterator<CommitOrderDependencyNode> iterator = nodes.iterator(); iterator.hasNext();) {
+            CommitOrderDependencyNode n = iterator.next();
             if (n.getDescriptor() == d) {
                 return n;
             }
@@ -196,7 +199,7 @@ public class CommitOrderCalculator {
         Vector result = new Vector(nodes.size());
         for (int i = 0; i < nodes.size(); i++) {
             CommitOrderDependencyNode node = nodeArray[i];
-            result.addElement(node.getDescriptor());
+            result.add(node.getDescriptor());
         }
         this.orderedDescriptors = result;
     }

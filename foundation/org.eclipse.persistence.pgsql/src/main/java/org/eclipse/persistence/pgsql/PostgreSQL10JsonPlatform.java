@@ -16,16 +16,15 @@ package org.eclipse.persistence.pgsql;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Hashtable;
 import java.util.Map;
 
 import jakarta.json.JsonValue;
 import jakarta.persistence.PersistenceException;
 
-import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.json.JsonPlatform;
 import org.eclipse.persistence.platform.database.PostgreSQL10Platform;
+import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
 import org.postgresql.util.PGobject;
 
 /**
@@ -52,10 +51,10 @@ public class PostgreSQL10JsonPlatform extends JsonPlatform implements PostgreSQL
      * @param fieldTypeMapping {@code Map} with mappings to be updated.
      */
     @Override
-    public void updateFieldTypes(Hashtable<Class<?>, FieldTypeDefinition> fieldTypeMapping) {
-        fieldTypeMapping.put(jakarta.json.JsonObject.class, new FieldTypeDefinition(JSON_DEFAULT_TYPE));
-        fieldTypeMapping.put(jakarta.json.JsonArray.class, new FieldTypeDefinition(JSON_DEFAULT_TYPE));
-        fieldTypeMapping.put(jakarta.json.JsonValue.class, new FieldTypeDefinition(JSON_DEFAULT_TYPE));
+    public void updateFieldTypes(Map<Class<?>, FieldDefinition.DatabaseType> fieldTypeMapping) {
+        fieldTypeMapping.put(jakarta.json.JsonObject.class, new FieldDefinition.DatabaseType(JSON_DEFAULT_TYPE));
+        fieldTypeMapping.put(jakarta.json.JsonArray.class, new FieldDefinition.DatabaseType(JSON_DEFAULT_TYPE));
+        fieldTypeMapping.put(jakarta.json.JsonValue.class, new FieldDefinition.DatabaseType(JSON_DEFAULT_TYPE));
     }
 
     /**

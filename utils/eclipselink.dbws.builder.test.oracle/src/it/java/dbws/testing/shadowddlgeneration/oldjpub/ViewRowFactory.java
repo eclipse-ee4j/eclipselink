@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -39,7 +39,7 @@ public class ViewRowFactory extends AbstractViewRow implements ViewRow {
     private transient Map<String, Field> m_fieldCache;
 
     public ViewRowFactory() {
-        m_fieldCache = new HashMap<String, Field>();
+        m_fieldCache = new HashMap<>();
     }
 
     /*
@@ -106,14 +106,14 @@ public class ViewRowFactory extends AbstractViewRow implements ViewRow {
         if (projectList == null) {
             return "*";
         }
-        String project = "";
+        StringBuilder project = new StringBuilder();
         for (int i = 0; i < projectList.length; i++) {
-            project += projectList[i];
+            project.append(projectList[i]);
             if (i < projectList.length - 1) {
-                project += ", ";
+                project.append(", ");
             }
         }
-        return project;
+        return project.toString();
     }
 
     public static boolean hasSequence(String view) {
@@ -132,15 +132,15 @@ public class ViewRowFactory extends AbstractViewRow implements ViewRow {
         try {
             // for serialization
             if (m_fieldCache == null) {
-                m_fieldCache = new HashMap<String, Field>();
+                m_fieldCache = new HashMap<>();
             }
             Field field = m_fieldCache.get(key);
             if (field == null) {
                 Class<?> cls = getClass();
                 Field[] fields = cls.getFields();
-                for (int i = 0; i < fields.length; i++) {
-                    if (fields[i].getName().equalsIgnoreCase(key)) {
-                        field = fields[i];
+                for (Field item : fields) {
+                    if (item.getName().equalsIgnoreCase(key)) {
+                        field = item;
                         m_fieldCache.put(key, field);
                     }
                 }
@@ -168,10 +168,7 @@ public class ViewRowFactory extends AbstractViewRow implements ViewRow {
                 }
             }
         }
-        catch (SecurityException e) {
-            // ignore
-        }
-        catch (IllegalAccessException e) {
+        catch (SecurityException | IllegalAccessException e) {
             // ignore
         }
         return eq;

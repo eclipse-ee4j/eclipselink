@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,14 +14,9 @@
 //     Matt MacIvor - 2.4 - initial implementation
 package org.eclipse.persistence.testing.jaxb.xmlelements;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 
-import javax.xml.transform.Result;
-import javax.xml.transform.stream.StreamResult;
-
-import org.eclipse.persistence.jaxb.json.JsonSchemaOutputResolver;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 public class XmlElementsInheritanceTestCases extends JAXBWithJSONTestCases {

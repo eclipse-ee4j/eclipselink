@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,10 +20,10 @@ import org.eclipse.persistence.expressions.Expression;
  * INTERNAL:
  * This expression represents a date represented in JDBC escape syntax, for instance, the String:
  * {d '1901-01-01'} can be used to represent a Date and use used only by the JPQL parser.
- *
+ * <p>
  * This is different from a ConstantExpression because this value is never converted with the conversion
  * manager and is printed out as-is
- *
+ * <p>
  * The only validation for this type of expression will be from the JDBC driver.
  *
  * @author tware

@@ -1,0 +1,5 @@
+:nofooter:
+This figure illustrates an XML direct collection mapping to a list
+field. The class *Employee* contains the attribute *tasks* of type
+*List*. The *tasks* attribute maps to the `<tasks>` elements in the XML
+document.

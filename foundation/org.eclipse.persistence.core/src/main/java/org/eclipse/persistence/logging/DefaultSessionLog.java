@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,9 +21,6 @@ import java.io.Serializable;
 import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.eclipse.persistence.exceptions.ValidationException;
-import org.eclipse.persistence.internal.helper.Helper;
 
 /**
  * <b>Purpose</b>: Default log used for the session when message logging is
@@ -142,7 +139,7 @@ public class DefaultSessionLog extends AbstractSessionLog implements Serializabl
 
                 if (entry.hasMessage()) {
                     writeMessage(formatMessage(entry));
-                    getWriter().write(Helper.cr());
+                    getWriter().write(System.lineSeparator());
                     getWriter().flush();
                 }
 
@@ -152,11 +149,11 @@ public class DefaultSessionLog extends AbstractSessionLog implements Serializabl
                     } else {
                         writeMessage(entry.getException().toString());
                     }
-                    getWriter().write(Helper.cr());
+                    getWriter().write(System.lineSeparator());
                     getWriter().flush();
                 }
             } catch (IOException exception) {
-                throw ValidationException.logIOError(exception);
+                throw new RuntimeException(exception);
             }
         }
     }

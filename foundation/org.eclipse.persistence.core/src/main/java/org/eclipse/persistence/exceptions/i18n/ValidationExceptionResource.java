@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2022 IBM Corporation and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -45,12 +45,10 @@ package org.eclipse.persistence.exceptions.i18n;
 
 import java.util.ListResourceBundle;
 
-import org.eclipse.persistence.config.PersistenceUnitProperties;
-
 /**
  * INTERNAL:
  * English ResourceBundle for ValidationException messages.
- *
+ * <p>
  * Creation date: (12/6/00 9:47:38 AM)
  * @author Xi Chen
  */
@@ -143,7 +141,6 @@ public final class ValidationExceptionResource extends ListResourceBundle {
                                            { "7109", "The login in the project used to create the session is null, it must be a valid login." },
                                            { "7110", "At present HistoricalSession only works with Oracle 9R2 or later databases, as it uses Oracle''s Flashback feature." },
                                            { "7111", "You may not acquire a HistoricalSession from a UnitOfWork, another HistoricalSession, a ServerSession, or a ServerSessionBroker.  You may acquire one from a regular session, a ClientSession, or a ClientSessionBroker." },
-                                           { "7112", "You have specified that EclipseLink uses the feature : {0}, but this feature is not available in the currently running JDK version :{1}." },
                                            { "7113", "{0} does not support call with returning." },
                                            { "7114", "Isolated data is not currently supported within a client session broker. Session named {0} contains descriptors representing isolated data." },
                                            { "7115", "A Exclusive Connection cannot be used for ClientSession reads without isolated data.  Update the ConnectionPolicy used to remove ExclusiveConnection configuration or the project to set certain data to be exclusive." },
@@ -182,6 +179,9 @@ public final class ValidationExceptionResource extends ListResourceBundle {
                                            { "7149", "The composite primary key attribute [{2}] of type [{4}] on entity class [{0}] should be of the same type as defined on its primary key class [{1}]. That is, it should be of type [{3}]." },
                                            { "7150", "Invalid composite primary key specification. The names of the primary key fields or properties in the primary key class [{1}] and those of the entity bean class [{0}] must correspond and their types must be the same. Also, ensure that you have specified ID elements for the corresponding attributes in XML and/or an @Id on the corresponding fields or properties of the entity class." },
                                            { "7151", "The type [{1}] for the attribute [{0}] on the entity class [{2}] is not a valid type for an enumerated mapping. The attribute must be defined as a Java enum."},
+                                           { "7361", "Only one field in the enumeration can be marked by @EnumeratedValue annotation. Check the [{0}] enum class."},
+                                           { "7362", "For an ORDINAL enumerated type, only byte, short, int, log or wrapper types can be used as an attribute type marked by @EnumeratedValue. Check attribute [{0}] in the [{1}] enum class."},
+                                           { "7363", "For a STRING enumerated type, only the java.lang.String type can be used as an attribute type marked by @EnumeratedValue. Check attribute [{0}] in the [{1}] enum class."},
                                            { "7153", "Mapping annotations cannot be applied to fields or properties that have a @Transient specified. [{0}] is in violation of this restriction." },
                                            { "7154", "The attribute [{3}] in entity class [{2}] has a mappedBy value of [{1}] which does not exist in its owning entity class [{0}]. If the owning entity class is a @MappedSuperclass, this is invalid, and your attribute should reference the correct subclass." },
                                            { "7155", "The type [{1}] for the attribute [{0}] on the entity class [{2}] is not a valid type for a serialized mapping. The attribute type must implement the Serializable interface."},
@@ -360,7 +360,7 @@ public final class ValidationExceptionResource extends ListResourceBundle {
                                            { "7343", "Multiple VPD identifiers (tenant discriminator context property) have been specified. Entity [{1}] uses [{0}] and Entity [{3}] uses [{2}]. The Multitenant VPD strategy allows only one tenant discriminator column for each entity and its context property must be consistent across all the Multitenant VPD entities."},
                                            { "7344", "VPD (connections and DDL generation) is not supported for the platform: [{0}]."},
                                            { "7345", "{0} file specified for XMLMetadataSource is not found"},
-                                           { "7346", "The multitenant context property [{0}] has not been provided. When the persistence unit property (" + PersistenceUnitProperties.MULTITENANT_SHARED_EMF + ") is set to false, all multitenant context properties must be provided up front. This can be done through the persistence unit definition directly or by passing a properties map containing all the multitenant context properties on the create EntityManagerFactory call."},
+                                           { "7346", "The multitenant context property [{0}] has not been provided. When the persistence unit property ({1}) is set to false, all multitenant context properties must be provided up front. This can be done through the persistence unit definition directly or by passing a properties map containing all the multitenant context properties on the create EntityManagerFactory call."},
                                            { "7347", "The class [{0}] specifies type level convert metadata without specifying an attribute name for each. An attribute name must be provided for all type level convert metadata to ensure the correct application to a super class attribute."},
                                            { "7348", "The embedded mapping [{1}] from [{0}] does not specify an attribute name to which the convert is to be applied. You must specify an attribute name on the Embeddable."},
                                            { "7350", "The convert attribute name [{3}] from the mapping [{1}] from the class [{0}] was not found on the embeddable class [{2}]. Please ensure the attribute exists and is correctly named." },
@@ -370,7 +370,11 @@ public final class ValidationExceptionResource extends ListResourceBundle {
                                            { "7354", "The mapping attribute [{1}] from the class [{0}] is not a valid mapping type for a map key convert specification." },
                                            { "7355", "The mapping attribute [{1}] from the class [{0}] is not a valid mapping type for a convert using an attribute name specification. An attribute name should only be specified to traverse an Embedded mapping type." },
                                            { "7356", "Procedure: [{1}] cannot be executed because {0} does not currently support multiple out parameters"},
-                                           { "7357", "The \"[{0}]\" URL for \"[{1}]\" resource does not belong to a valid persistence root (as per Jakarta Persistence Specification)"},
+                                           { "7357", "The \"[{0}]\" URL for the \"[{1}]\" resource does not belong to a valid persistence root, as defined by the Jakarta Persistence specification." },
+                                           { "7358", "Incorrect ASM service name provided."},
+                                           { "7359", "No any ASM service available."},
+                                           { "7360", "Database password was encrypted by deprecated algorithm. Reencrypt it by `passwordUpdate.sh` from eclipselink.zip bundle."},
+                                           { "7364", "In the entity [{0}] in NamedNativeQuery [{1}], an implicit SqlResultSetMapping (\"entities\", \"classes\", or \"columns\" attribute) is used together with an external SqlResultSetMapping that is referred to by the \"resultSetMapping\" attribute. This combination is not allowed."},
  };
 
     /**

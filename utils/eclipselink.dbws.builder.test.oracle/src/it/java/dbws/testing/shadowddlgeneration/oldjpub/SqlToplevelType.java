@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,13 +21,7 @@ import java.util.Iterator;
 import java.util.List;
 
 //EclipseLink imports
-import dbws.testing.shadowddlgeneration.oldjpub.MethodFilter;
-import dbws.testing.shadowddlgeneration.oldjpub.Util;
-import dbws.testing.shadowddlgeneration.oldjpub.FieldInfo;
-import dbws.testing.shadowddlgeneration.oldjpub.MethodInfo;
-import dbws.testing.shadowddlgeneration.oldjpub.ParamInfo;
-import dbws.testing.shadowddlgeneration.oldjpub.ResultInfo;
-import dbws.testing.shadowddlgeneration.oldjpub.ViewRow;
+
 import static dbws.testing.shadowddlgeneration.oldjpub.Util.ALL_ARGUMENTS;
 import static dbws.testing.shadowddlgeneration.oldjpub.Util.ARGUMENT_NAME;
 import static dbws.testing.shadowddlgeneration.oldjpub.Util.DATA_LEVEL;
@@ -80,8 +74,8 @@ public class SqlToplevelType extends SqlTypeWithMethods {
          * "OBJECT_TYPE"}, new String[]{schema, "PROCEDURE", "FUNCTION"});
          */
         Iterator<ViewRow> iter;
-        List<String> names = new ArrayList<String>();
-        List<Object> values = new ArrayList<Object>();
+        List<String> names = new ArrayList<>();
+        List<Object> values = new ArrayList<>();
         names.add(Util.OWNER);
         values.add(schema);
 
@@ -92,9 +86,9 @@ public class SqlToplevelType extends SqlTypeWithMethods {
         if (m_methodFilter != null) {
             List<String> methodNames = m_methodFilter.getMethodNames();
             if (methodNames != null) {
-                for (int i = 0, len = methodNames.size(); i < len; i++) {
+                for (String methodName : methodNames) {
                     names.add(Util.OBJECT_NAME);
-                    values.add(SqlName.dbifyName(methodNames.get(i), m_reflector));
+                    values.add(SqlName.dbifyName(methodName, m_reflector));
                 }
             }
         }

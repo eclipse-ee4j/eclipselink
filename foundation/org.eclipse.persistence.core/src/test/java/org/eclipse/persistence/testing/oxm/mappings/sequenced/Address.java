@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -53,10 +53,7 @@ public class Address {
             if(!Comparer.equals(street, testAddress.getStreet())) {
                 return false;
             }
-            if(!Comparer.equals(city, testAddress.getCity())) {
-                return false;
-            }
-            return true;
+            return Comparer.equals(city, testAddress.getCity());
         } catch(ClassCastException e) {
             return false;
         }

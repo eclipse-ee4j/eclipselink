@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,7 +16,6 @@ package org.eclipse.persistence.testing.sdo.model.type;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.List;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Source;
@@ -94,7 +93,11 @@ public class ElementWithBuiltInTypeNameTestCases extends SDOTestCase {
             fail("An exception occurred defining types for schema [" + SCHEMA_PATH + "schema2.xsd]");
         }
 
-        String testMsg1 = " <tns:RetUri xmlns:tns=\"http://tempuri.org/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n" + "   <tns:inUri>http://test/wsip</tns:inUri>\n" + "  </tns:RetUri>";
+        String testMsg1 = """
+                 <tns:RetUri xmlns:tns="http://tempuri.org/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                   <tns:inUri>http://test/wsip</tns:inUri>
+                  </tns:RetUri>\
+                """;
         try {
             XMLDocument doc = hc.getXMLHelper().load(testMsg1);
             if (!doc.getRootElementName().equals("RetUri")) {

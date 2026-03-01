@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,13 +14,11 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.mappings.converters;
 
-import java.security.AccessController;
-
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.descriptors.ClassNameConversionRequired;
-import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.mappings.DatabaseMapping;
@@ -30,6 +28,8 @@ import org.eclipse.persistence.sessions.serializers.JSONSerializer;
 import org.eclipse.persistence.sessions.serializers.JavaSerializer;
 import org.eclipse.persistence.sessions.serializers.Serializer;
 import org.eclipse.persistence.sessions.serializers.XMLSerializer;
+
+import java.security.AccessController;
 
 /**
  * <p><b>Purpose</b>: The serialized object converter can be used to store an arbitrary object or set of objects into a database binary or character field.
@@ -119,10 +119,10 @@ public class SerializedObjectConverter implements Converter, ClassNameConversion
             return null;
         }
         Object data = fieldValue;
-        if (this.serializer.getType() == ClassConstants.APBYTE) {
+        if (this.serializer.getType() == CoreClassConstants.APBYTE) {
             byte[] bytes;
             try {
-                bytes = (byte[]) session.getDatasourcePlatform().convertObject(fieldValue, ClassConstants.APBYTE);
+                bytes = (byte[]) session.getDatasourcePlatform().convertObject(fieldValue, CoreClassConstants.APBYTE);
             } catch (ConversionException exception) {
                 throw ConversionException.couldNotBeConverted(this.mapping, this.mapping.getDescriptor(), exception);
             }
@@ -130,14 +130,14 @@ public class SerializedObjectConverter implements Converter, ClassNameConversion
                 return null;
             }
             data = bytes;
-        } else if (this.serializer.getType() == ClassConstants.STRING) {
+        } else if (this.serializer.getType() == CoreClassConstants.STRING) {
             String text;
             try {
-                text = session.getDatasourcePlatform().convertObject(fieldValue, ClassConstants.STRING);
+                text = session.getDatasourcePlatform().convertObject(fieldValue, CoreClassConstants.STRING);
             } catch (ConversionException exception) {
                 throw ConversionException.couldNotBeConverted(this.mapping, this.mapping.getDescriptor(), exception);
             }
-            if ((text == null) || (text.length() == 0)) {
+            if ((text == null) || (text.isEmpty())) {
                 return null;
             }
             data = text;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,8 +18,6 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 import junit.textui.TestRunner;
-import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 
 public class MarshallerEncodingTestCases extends TestCase {
     private final static String XML_USASCII_HEADER = "<?xml version=\"1.0\" encoding=\"US-ASCII\"?>";

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,15 +14,7 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.sessions.coordination.rmi;
 
-import java.io.IOException;
-import java.net.InetAddress;
-import java.rmi.Naming;
-import java.rmi.NoSuchObjectException;
-import java.rmi.server.UnicastRemoteObject;
-
-import javax.naming.Context;
-
-import org.eclipse.persistence.exceptions.RemoteCommandManagerException;
+import org.eclipse.persistence.sessions.coordination.RemoteCommandManagerException;
 import org.eclipse.persistence.internal.sessions.coordination.RemoteConnection;
 import org.eclipse.persistence.internal.sessions.coordination.rmi.RMIRemoteCommandConnection;
 import org.eclipse.persistence.internal.sessions.coordination.rmi.RMIRemoteCommandConnectionImpl;
@@ -30,6 +22,13 @@ import org.eclipse.persistence.internal.sessions.coordination.rmi.RMIRemoteConne
 import org.eclipse.persistence.sessions.coordination.RemoteCommandManager;
 import org.eclipse.persistence.sessions.coordination.ServiceId;
 import org.eclipse.persistence.sessions.coordination.TransportManager;
+
+import javax.naming.Context;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.rmi.Naming;
+import java.rmi.NoSuchObjectException;
+import java.rmi.server.UnicastRemoteObject;
 
 /**
  * <p>

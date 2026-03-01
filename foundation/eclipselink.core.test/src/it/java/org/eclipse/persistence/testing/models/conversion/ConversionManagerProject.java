@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,7 +14,8 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.conversion;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * TopLink generated Project class.
@@ -61,8 +62,8 @@ public class ConversionManagerProject extends org.eclipse.persistence.sessions.P
 
         // SECTION: DESCRIPTOR
         descriptor.setJavaClass(org.eclipse.persistence.testing.models.conversion.ConversionDataObject.class);
-        Vector vector = new Vector();
-        vector.addElement("CM_OBJ");
+        List<String> vector = new ArrayList<>();
+        vector.add("CM_OBJ");
         descriptor.setTableNames(vector);
         descriptor.addPrimaryKeyFieldName("CM_OBJ.ID");
 

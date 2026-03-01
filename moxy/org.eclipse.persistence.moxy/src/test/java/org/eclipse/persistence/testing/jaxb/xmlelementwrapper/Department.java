@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,10 +36,9 @@ public class Department
      *
      */
     public boolean equals(Object obj) {
-        if (obj == null || !(obj instanceof Department)) {
+        if (obj == null || !(obj instanceof Department dept)) {
             return false;
         }
-        Department dept = (Department) obj;
 
         if (dept.employees == null && employees == null) {
             return true;

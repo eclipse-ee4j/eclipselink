@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,6 +14,11 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.oxm;
 
+import org.eclipse.persistence.platform.xml.XMLNamespaceResolver;
+import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -22,13 +27,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Vector;
 
-import org.eclipse.persistence.platform.xml.XMLNamespaceResolver;
-import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-
 /**
- * <p >It is common for an XML document to include one or more namespaces.
+ * <p>It is common for an XML document to include one or more namespaces.
  * TopLink supports this using its NamespaceResolver. The namespace resolver maintains
  * pairs of namespace prefixes and URIs. TopLink uses these prefixes in conjunction with the
  * XPath statements you specify on EIS mappings to XML records and XML mappings.
@@ -125,7 +125,7 @@ public class NamespaceResolver implements XMLNamespaceResolver {
      */
     @Override
     public String resolveNamespacePrefix(String prefix) {
-        if (null == prefix || prefix.length() == 0) {
+        if (null == prefix || prefix.isEmpty()) {
             return defaultNamespaceURI;
         }
         String uri = null;
@@ -208,7 +208,7 @@ public class NamespaceResolver implements XMLNamespaceResolver {
      * @param namespaceURI The namespace URI associated with the specified prefix
      */
     public void put(String prefix, String namespaceURI) {
-        if (null == prefix || 0 == prefix.length()) {
+        if (null == prefix || prefix.isEmpty()) {
             defaultNamespaceURI = namespaceURI;
         } else {
             //Replace same namespace with given prefix and put them to the end of list.

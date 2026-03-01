@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,10 +14,11 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.tools.schemaframework;
 
-import java.io.*;
-import org.eclipse.persistence.internal.databaseaccess.*;
+import java.io.IOException;
+import java.io.Writer;
+
+import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.exceptions.*;
 
 /**
  * <p>
@@ -37,17 +38,18 @@ public class ObjectVarrayDefinition extends VarrayDefinition {
      * Append the type.
      */
     @Override
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public void appendTypeString(Writer writer, AbstractSession session) throws ValidationException {
         try {
-            FieldTypeDefinition fieldType;
+            FieldDefinition.DatabaseType fieldType;
             if (getType() == null) {
                 throw ValidationException.oracleObjectTypeIsNotDefined(getTypeName());
             } else if (getTypeName() == "") {
                 throw ValidationException.oracleObjectTypeNameIsNotDefined(getType());
             } else {
-                fieldType = new FieldTypeDefinition(getTypeName());
+                fieldType = new FieldDefinition.DatabaseType(getTypeName());
             }
-            writer.write(fieldType.getName());
+            writer.write(fieldType.name());
             if (!isNullAllowed) {
                 writer.write(" NOT NULL");
             }
@@ -57,7 +59,6 @@ public class ObjectVarrayDefinition extends VarrayDefinition {
     }
 
     /**
-     * PUBLIC:
      * Return if the varray collection is allowed NULL or not
      */
     public boolean isNullAllowed() {
@@ -65,7 +66,6 @@ public class ObjectVarrayDefinition extends VarrayDefinition {
     }
 
     /**
-     * PUBLIC:
      * Set if the varray collection is allowed NULL or not
      */
     public void setIsNullAllowed(boolean isNullAllowed) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,12 +14,6 @@
 //     Denise Smith - 2.5 - initial implementation
 package org.eclipse.persistence.internal.oxm.mappings;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
-
-import javax.xml.namespace.QName;
-
 import org.eclipse.persistence.core.descriptors.CoreInheritancePolicy;
 import org.eclipse.persistence.core.mappings.CoreAttributeAccessor;
 import org.eclipse.persistence.core.mappings.CoreMapping;
@@ -32,6 +26,10 @@ import org.eclipse.persistence.internal.oxm.NamespaceResolver;
 import org.eclipse.persistence.internal.oxm.Unmarshaller;
 import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
+
+import javax.xml.namespace.QName;
+import java.util.List;
+import java.util.Map;
 
 public interface Descriptor <
     ATTRIBUTE_ACCESSOR extends CoreAttributeAccessor,
@@ -128,7 +126,7 @@ public interface Descriptor <
      /**
      * Returns mappings
      */
-    Vector<CORE_MAPPING> getMappings();
+    List<CORE_MAPPING> getMappings();
 
 
      /**
@@ -149,7 +147,7 @@ public interface Descriptor <
      /**
      * Return the names of all the primary keys.
      */
-    Vector<String> getPrimaryKeyFieldNames();
+    List<String> getPrimaryKeyFieldNames();
 
      /**
      * INTERNAL:
@@ -167,13 +165,13 @@ public interface Descriptor <
      /**
       * Return the table names.
       */
-     Vector getTableNames();
+     List<String> getTableNames();
 
      /**
       * INTERNAL:
       * Return all the tables.
       */
-     Vector<TABLE> getTables();
+     List<TABLE> getTables();
 
      /**
       * INTERNAL:

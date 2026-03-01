@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -13,8 +13,6 @@
 // Contributors:
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.unitofwork;
-
-import java.util.Iterator;
 
 import org.eclipse.persistence.annotations.IdValidation;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -34,8 +32,7 @@ public class UnitOfWorkIsolatedAlwaysTestModel extends UnitOfWorkClientSessionTe
 
     @Override
     public void setup() {
-        for (Iterator<ClassDescriptor> descriptors = getSession().getDescriptors().values().iterator(); descriptors.hasNext(); ) {
-            ClassDescriptor descriptor = descriptors.next();
+        for (ClassDescriptor descriptor : getSession().getDescriptors().values()) {
             descriptor.setUnitOfWorkCacheIsolationLevel(ClassDescriptor.ISOLATE_CACHE_ALWAYS);
         }
         super.setup();
@@ -43,8 +40,7 @@ public class UnitOfWorkIsolatedAlwaysTestModel extends UnitOfWorkClientSessionTe
 
     @Override
     public void reset() {
-        for (Iterator<ClassDescriptor> descriptors = getSession().getDescriptors().values().iterator(); descriptors.hasNext(); ) {
-            ClassDescriptor descriptor = descriptors.next();
+        for (ClassDescriptor descriptor : getSession().getDescriptors().values()) {
             descriptor.setUnitOfWorkCacheIsolationLevel(ClassDescriptor.ISOLATE_NEW_DATA_AFTER_TRANSACTION);
         }
         super.reset();

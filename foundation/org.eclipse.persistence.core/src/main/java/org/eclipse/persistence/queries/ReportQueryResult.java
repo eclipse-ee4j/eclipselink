@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2019, 2020 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,20 +18,6 @@
 //     10/01/2018: Will Dazey
 //       - #253: Add support for embedded constructor results with CriteriaBuilder
 package org.eclipse.persistence.queries;
-
-import java.io.Serializable;
-import java.lang.reflect.Constructor;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
-import java.util.AbstractSet;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Set;
-import java.util.Vector;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.QueryException;
@@ -54,12 +40,27 @@ import org.eclipse.persistence.mappings.foundation.AbstractColumnMapping;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.sessions.Session;
 
+import java.io.Serializable;
+import java.lang.reflect.Constructor;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
+import java.util.AbstractSet;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.Set;
+import java.util.Vector;
+
 /**
  * <b>Purpose</b>: A single row (type) result for a ReportQuery<p>
  *
  * <b>Description</b>: Represents a single row of attribute values (converted using mapping) for
  * a ReportQuery. The attributes can be from various objects.
- *
+ * <p>
  * <b>Responsibilities</b>:<ul>
  * <li> Converted field values into object attribute values.
  * <li> Provide access to values by index or item name
@@ -154,11 +155,11 @@ public class ReportQueryResult implements Serializable, Map {
             constructorArgs[argumentIndex] = ConversionManager.getDefaultManager().convertObject(result, constructorArgTypes[argumentIndex]);
         }
         try {
-            Constructor constructor = constructorItem.getConstructor();
+            Constructor<?> constructor = constructorItem.getConstructor();
             Object returnValue = null;
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
-                    returnValue = AccessController.doPrivileged(new PrivilegedInvokeConstructor(constructor, constructorArgs));
+                    returnValue = AccessController.doPrivileged(new PrivilegedInvokeConstructor<>(constructor, constructorArgs));
                 } catch (PrivilegedActionException exception) {
                     throw QueryException.exceptionWhileUsingConstructorExpression(exception.getException(), query);
                 }
@@ -213,7 +214,7 @@ public class ReportQueryResult implements Serializable, Map {
             if (joinManager.isToManyJoin()) {
                 // PERF: Only reset data-result if unset, must only occur once per item, not per row (n vs n^2).
                 if (joinManager.getDataResults_() == null) {
-                    joinManager.setDataResults(new ArrayList(toManyData), query.getSession());
+                    joinManager.setDataResults(new ArrayList<>(toManyData), query.getSession());
                 }
             }
         }
@@ -251,9 +252,26 @@ public class ReportQueryResult implements Serializable, Map {
                 AbstractRecord subRow = row;
                 // Check if at the start of the row, then avoid building a subRow.
                 if (itemIndex > 0) {
-                    Vector<DatabaseField> trimedFields = new NonSynchronizedSubVector<>(row.getFields(), itemIndex, rowSize);
-                    Vector trimedValues = new NonSynchronizedSubVector(row.getValues(), itemIndex, rowSize);
-                    subRow = new DatabaseRecord(trimedFields, trimedValues);
+                    BatchFetchPolicy batchFetchPolicy = query.getBatchFetchPolicy();
+                    if (batchFetchPolicy != null && batchFetchPolicy.isIN()) {
+
+                        List<AbstractRecord> subRows = new ArrayList<>(toManyData.size());
+                        for (AbstractRecord parentRow : (Vector<AbstractRecord>) toManyData) {
+                            Vector<DatabaseField> trimedParentFields = new NonSynchronizedSubVector<>(parentRow.getFields(), itemIndex, rowSize);
+                            Vector trimedParentValues = new NonSynchronizedSubVector<>(parentRow.getValues(), itemIndex, rowSize);
+                            subRows.add(new DatabaseRecord(trimedParentFields, trimedParentValues));
+                        }
+
+                        for (DatabaseMapping subMapping : descriptor.getMappings()) {
+                            batchFetchPolicy.setDataResults(subMapping, subRows);
+                        }
+
+                        subRow = subRows.get(toManyData.indexOf(row));
+                    } else {
+                        Vector<DatabaseField> trimedFields = new NonSynchronizedSubVector<>(row.getFields(), itemIndex, rowSize);
+                        Vector trimedValues = new NonSynchronizedSubVector(row.getValues(), itemIndex, rowSize);
+                        subRow = new DatabaseRecord(trimedFields, trimedValues);
+                    }
                 }
                 if (mapping != null && mapping.isAggregateObjectMapping()){
                     value = ((AggregateObjectMapping)mapping).buildAggregateFromRow(subRow, null, null, joinManager, query, false, query.getSession(), true);
@@ -408,10 +426,9 @@ public class ReportQueryResult implements Serializable, Map {
 
         @Override
         public boolean equals(Object object) {
-            if (!(object instanceof Map.Entry)) {
+            if (!(object instanceof Map.Entry entry)) {
                 return false;
             }
-            Map.Entry entry = (Map.Entry)object;
             return compare(key, entry.getKey()) && compare(value, entry.getValue());
         }
 
@@ -426,7 +443,7 @@ public class ReportQueryResult implements Serializable, Map {
         }
 
         private boolean compare(Object object1, Object object2) {
-            return (object1 == null ? object2 == null : object1.equals(object2));
+            return (Objects.equals(object1, object2));
         }
     }
 
@@ -507,7 +524,7 @@ public class ReportQueryResult implements Serializable, Map {
             if (result.getId() == null) {
                 return false;
             }
-            return getId().equals(getId());
+            return getId().equals(result.getId());
         }
 
         return true;

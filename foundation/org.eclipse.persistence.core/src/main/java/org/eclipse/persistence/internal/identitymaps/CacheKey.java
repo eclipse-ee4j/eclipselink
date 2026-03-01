@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,11 +15,13 @@
 package org.eclipse.persistence.internal.identitymaps;
 
 import org.eclipse.persistence.exceptions.ConcurrencyException;
-import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.internal.helper.ConcurrencyManager;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.eclipse.persistence.sessions.DataRecord;
 import org.eclipse.persistence.sessions.DatabaseRecord;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p><b>Purpose</b>: Container class for storing objects in an IdentityMap.
@@ -426,7 +428,7 @@ public class CacheKey extends ConcurrencyManager implements Cloneable {
      * Returns true if the protectedForeignKeys record is non-null and non-empty, false otherwise.
      */
     public boolean hasProtectedForeignKeys() {
-        return (this.protectedForeignKeys != null) && (this.protectedForeignKeys.size() > 0);
+        return (this.protectedForeignKeys != null) && (!this.protectedForeignKeys.isEmpty());
     }
 
     /**
@@ -604,18 +606,28 @@ public class CacheKey extends ConcurrencyManager implements Cloneable {
         this.transactionId = transactionId;
     }
 
-    public synchronized Object waitForObject(){
+    public Object waitForObject(){
+        getInstanceLock().lock();
         try {
-            int count = 0;
-            while (this.object == null && isAcquired()) {
-                if (count > MAX_WAIT_TRIES)
-                    throw ConcurrencyException.maxTriesLockOnBuildObjectExceded(getActiveThread(), Thread.currentThread());
-                wait(10);
-                ++count;
+            try {
+                int count = 0;
+                while (this.object == null && isAcquired()) {
+                    if (count > MAX_WAIT_TRIES)
+                        throw ConcurrencyException.maxTriesLockOnBuildObjectExceded(getActiveThread(), Thread.currentThread());
+                    getInstanceLockCondition().await(10, TimeUnit.MILLISECONDS);
+                    ++count;
+                }
+            } catch(InterruptedException ex) {
+                //ignore as the loop is broken
             }
-        } catch(InterruptedException ex) {
-            //ignore as the loop is broken
+            return this.object;
+        } finally {
+            getInstanceLock().unlock();
         }
-        return this.object;
+    }
+
+    @Override
+    public boolean isCacheKey() {
+        return true;
     }
 }

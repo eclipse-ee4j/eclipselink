@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,9 +14,6 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.unitofwork;
 
-import java.util.Iterator;
-import java.util.Vector;
-
 import org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet;
 import org.eclipse.persistence.sessions.SessionEvent;
 import org.eclipse.persistence.sessions.SessionEventAdapter;
@@ -27,6 +24,8 @@ import org.eclipse.persistence.testing.framework.TestProblemException;
 import org.eclipse.persistence.testing.models.employee.domain.Address;
 import org.eclipse.persistence.testing.models.employee.domain.Employee;
 import org.eclipse.persistence.testing.models.employee.domain.PhoneNumber;
+
+import java.util.Vector;
 
 
 // bug 4364283. Make sure that only change sets with changes are included in uowChangeSet.getAllChangeSets()
@@ -74,7 +73,7 @@ public class AllChangeSetsTest extends AutoVerifyTestCase {
         }
 
         // Existing object has changed - should be counted
-        Employee emp = (Employee)employees.firstElement();
+        Employee emp = (Employee) employees.get(0);
         emp.setFirstName("Changed");
         changedObjectsCount++;
 
@@ -91,9 +90,8 @@ public class AllChangeSetsTest extends AutoVerifyTestCase {
         newEmpClone.setFirstName("New");
         changedObjectsCount++;
 
-        Iterator it = emp.getPhoneNumbers().iterator();
-        while (it.hasNext()) {
-            PhoneNumber phone = (PhoneNumber)it.next();
+        for (Object o : emp.getPhoneNumbers()) {
+            PhoneNumber phone = (PhoneNumber) o;
 
             // to force reading the phone in and therefore registering in uow
             // Registered but not changed - should NOT be counted
@@ -101,11 +99,11 @@ public class AllChangeSetsTest extends AutoVerifyTestCase {
         }
 
         // forcedUpdate with false - should NOT be counted (doesn't affect cache)
-        Employee emp1 = (Employee)employees.elementAt(1);
+        Employee emp1 = (Employee) employees.get(1);
         uow.forceUpdateToVersionField(emp1, false);
 
         // forcedUpdate with true - should be counted
-        Employee emp2 = (Employee)employees.elementAt(2);
+        Employee emp2 = (Employee) employees.get(2);
         uow.forceUpdateToVersionField(emp2, true);
         changedObjectsCount++;
 

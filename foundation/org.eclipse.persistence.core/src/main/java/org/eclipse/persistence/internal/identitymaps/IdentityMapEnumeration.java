@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,7 +23,7 @@ import java.util.NoSuchElementException;
  * Allows to iterate over {@code Object} instances stored in {@link CacheKey} instances
  * in the {@link IdentityMap}.
  */
-public class IdentityMapEnumeration extends AbstractIdentityMapEnumeration<Object>{
+public class IdentityMapEnumeration extends AbstractIdentityMapEnumeration<Object> {
 
     /**
      * Creates an instance of {@link CacheKey} instances enumeration.
@@ -43,7 +43,7 @@ public class IdentityMapEnumeration extends AbstractIdentityMapEnumeration<Objec
      * @exception  NoSuchElementException  if no more elements exist
      */
     @Override
-    public Object nextElement() {
+    public Object next() {
         return getNextElement().getObject();
     }
 }

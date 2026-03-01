@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,8 +16,8 @@ package org.eclipse.persistence.internal.eis.cobol;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.Stack;
 import java.util.StringTokenizer;
 import java.util.Vector;
@@ -71,7 +71,7 @@ public class CopyBookParser {
 
             //calculate the field offsets from the records
             for (int i = 0; i < records.size(); i++) {
-                setOffsetsForComposite(records.elementAt(i), 0);
+                setOffsetsForComposite(records.get(i), 0);
             }
         } catch (IOException exception) {
             throw CopyBookParseException.ioException(exception);
@@ -86,7 +86,7 @@ public class CopyBookParser {
     */
     private Vector<RecordMetaData> buildStructure(String fileString) throws Exception {
         Vector<RecordMetaData> records = new Vector<>();
-        StringTokenizer lineTokenizer = new StringTokenizer(fileString, System.getProperty("line.separator"), false);
+        StringTokenizer lineTokenizer = new StringTokenizer(fileString, System.lineSeparator(), false);
         RecordMetaData record = new RecordMetaData();
         Vector<String> recordLines = new Vector<>();
         Vector<Integer> lineNums = new Vector<>();
@@ -95,7 +95,7 @@ public class CopyBookParser {
         while (lineTokenizer.hasMoreTokens() && !"procedure division.".equalsIgnoreCase(currentLine)) {
             currentLine = lineTokenizer.nextToken();
             currentLineNumber++;
-            if (!currentLine.trim().startsWith("*") && (currentLine.trim().length() > 0)) {
+            if (!currentLine.trim().startsWith("*") && (!currentLine.trim().isEmpty())) {
                 StringTokenizer lineTokens = new StringTokenizer(currentLine);
                 String firstToken = lineTokens.nextToken();
                 if (firstToken.endsWith(".")) {
@@ -109,8 +109,8 @@ public class CopyBookParser {
                         currentLineNumber++;
                     }
                     currentLine = currentLine.substring(0, currentLine.lastIndexOf('.'));
-                    recordLines.addElement(currentLine);
-                    lineNums.addElement(currentLineNumber);
+                    recordLines.add(currentLine);
+                    lineNums.add(currentLineNumber);
                 }
             }
         }
@@ -119,11 +119,11 @@ public class CopyBookParser {
         int nestingLevel = maximumNestingLevels;
         Stack<CompositeObject> parents = new Stack<>();
         Hashtable<Object, Integer> parentsToLevels = new Hashtable<>();
-        Enumeration<String> recordsEnum = recordLines.elements();
-        Enumeration<Integer> recordLineNums = lineNums.elements();
-        while (recordsEnum.hasMoreElements()) {
-            currentLine = recordsEnum.nextElement();
-            currentLineNumber = recordLineNums.nextElement();
+        Iterator<String> iterator1 = recordLines.iterator();
+        Iterator<Integer> iterator = lineNums.iterator();
+        while (iterator1.hasNext()) {
+            currentLine = iterator1.next();
+            currentLineNumber = iterator.next();
             StringTokenizer lineTokens = new StringTokenizer(currentLine);
             if (lineTokens.hasMoreTokens()) {
                 String firstToken = lineTokens.nextToken();
@@ -137,7 +137,7 @@ public class CopyBookParser {
                     parentsToLevels = new Hashtable<>();
                     component = buildRecord(lineTokens);
                     record = (RecordMetaData)component;
-                    records.addElement(record);
+                    records.add(record);
                 }
                 //process subordinate field
                 else if (levelNumber >= nestingLevel) {
@@ -174,12 +174,12 @@ public class CopyBookParser {
         int currentOffset = offset;
         int previousFieldSize = 0;
         Vector<FieldMetaData> fields = object.getFields();
-        Enumeration<FieldMetaData> fieldEnum = fields.elements();
+        Iterator<FieldMetaData> iterator = fields.iterator();
         FieldMetaData previousField = null;
 
         //loop through fields setting their offsets and redefines if it applies
-        while (fieldEnum.hasMoreElements()) {
-            FieldMetaData field = fieldEnum.nextElement();
+        while (iterator.hasNext()) {
+            FieldMetaData field = iterator.next();
 
             //if its a redefine, must first see if it larger and reset offset accordingly
             if (field.isFieldRedefine()) {

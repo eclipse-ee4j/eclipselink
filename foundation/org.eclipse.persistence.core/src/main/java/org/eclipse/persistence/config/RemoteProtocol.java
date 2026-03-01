@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,8 +18,9 @@ package org.eclipse.persistence.config;
  * Remote JPA protocol persistence property values.
  *
  * <p>JPA persistence property usage:
- *
- * <p><code>properties.add(PersistenceUnitProperties.REMOTE_PROTOCOL, RemoteProtocol.RMI);</code>
+ * {@snippet :
+ *  properties.add(PersistenceUnitProperties.REMOTE_PROTOCOL, RemoteProtocol.RMI);
+ * }
  * <p>Property values are case-insensitive.
  *
  * @see PersistenceUnitProperties#REMOTE_PROTOCOL

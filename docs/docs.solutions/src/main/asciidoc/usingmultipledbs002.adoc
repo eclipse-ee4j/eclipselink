@@ -1,0 +1,105 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[USINGMULTIDBS002]]
+=== Implementing the Solution
+
+This section includes the following tasks:
+
+* link:#CIHJIFHA[Task 1: Configure the Composite Persistence Unit]
+* link:#CIHEIBDH[Task 2: Use Composite Persistence Units]
+* link:#CIHFIAJH[Task 3: Deploy Composite Persistence Units]
+
+[[CIHJIFHA]]
+
+==== Task 1: Configure the Composite Persistence Unit
+
+Because the composite persistence unit is a regular persistence element,
+it requires a `persistence.xml` file. link:#CIHHAGCG[Example 9-2]
+illustrates a sample `persistence.xml` file. Notice that there are no
+`datasource` or `jdbc` properties.
+
+[[CIHHAGCG]]
+
+*_Example 9-2 The persistence.xml File for a Composite Persistence
+Unit_*
+
+[source,oac_no_warn]
+----
+<persistence xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence persistence_1_0.xsd" version="1.0">
+    <persistence-unit name="compositePu" transaction-type="JTA">
+        <provider>
+            org.eclipse.persistence.jpa.PersistenceProvider
+        </provider>
+ 
+        <jar-file>member1.jar</jar-file>
+        <jar-file>member2.jar</jar-file> 
+        <properties>
+            <property name="eclipselink.composite-unit" value="true"/>
+            <property name="eclipselink.target-server" value="WebLogic_10"/>
+        </properties>
+    </persistence-unit>
+</persistence>
+----
+
+You can optionally use the
+`<property name="eclipselink.composite-unit" value="true"/>` property to
+identify a persistence unit as a composite persistence unit.
+
+Use the `<jar-file>` element to specify the JAR files containing the
+composite member persistence units. The composite persistence unit will
+contain all the composite member persistence units found in the JAR
+files specified.
+
+[[CIHEIBDH]]
+
+==== Task 2: Use Composite Persistence Units
+
+You can use a composite persistence unit as you would any other
+persistence unit; the `EntityManager` could be injected, as follows:
+
+[source,oac_no_warn]
+----
+@PersistenceContext(unitName="compositePu")
+EntityManagerFactory entityManagerFactory;
+
+@PersistenceContext(unitName="compositePu")
+EntityManager entityManager;
+----
+
+Or create it manually:
+
+[source,oac_no_warn]
+----
+EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("compositePu", properties);
+----
+
+[[CIHFIAJH]]
+
+==== Task 3: Deploy Composite Persistence Units
+
+To deploy multiple persistence units, deploy all of the JAR files (the
+composite persistence unit and its members) on the same class loader.
+
+* When deploying to Oracle WebLogic Server, package the JAR files in an
+EAR file or the `WEB-INF/lib` folder of a WAR file.
+* When running as a standalone application, add the JAR files to the
+class path.
+
+For important requirements, see
+xref:{relativedir}/usingmultipledbs001.adoc#CIHJCHAF[Composite Persistence Unit
+Requirements.]

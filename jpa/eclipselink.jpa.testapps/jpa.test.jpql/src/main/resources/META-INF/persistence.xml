@@ -1,6 +1,7 @@
 <!--
 
-    Copyright (c) 2018, 2022 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2018, 2025 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2024 Contributors to the Eclipse Foundation. All rights reserved
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,6 +41,8 @@
         <class>org.eclipse.persistence.testing.models.jpa.advanced.Room</class>
         <class>org.eclipse.persistence.testing.models.jpa.advanced.SmallProject</class>
         <class>org.eclipse.persistence.testing.models.jpa.advanced.SimpleRoom</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.Vegetable</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.VegetableRecord</class>
         <class>org.eclipse.persistence.testing.models.jpa.advanced.Woman</class>
         <class>org.eclipse.persistence.testing.models.jpa.advanced.WorldRank</class>
         <class>org.eclipse.persistence.testing.models.jpa.advanced.entities.EntyA</class>
@@ -47,6 +50,7 @@
         <class>org.eclipse.persistence.testing.models.jpa.advanced.entities.EntyC</class>
         <class>org.eclipse.persistence.testing.models.jpa.advanced.entities.EntyD</class>
         <class>org.eclipse.persistence.testing.models.jpa.advanced.entities.EntyE</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.entities.EntityFloat</class>
         <class>org.eclipse.persistence.testing.models.jpa.advanced.order.select.where.Order</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <properties>
@@ -95,6 +99,7 @@
         <class>org.eclipse.persistence.testing.models.jpa.advanced.entities.EntyC</class>
         <class>org.eclipse.persistence.testing.models.jpa.advanced.entities.EntyD</class>
         <class>org.eclipse.persistence.testing.models.jpa.advanced.entities.EntyE</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.entities.EntityFloat</class>
         <class>org.eclipse.persistence.testing.models.jpa.advanced.order.select.where.Order</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <properties>
@@ -157,6 +162,8 @@
         <class>org.eclipse.persistence.testing.models.jpa.relationships.OrderLabel</class>
         <class>org.eclipse.persistence.testing.models.jpa.relationships.SalesPerson</class>
         <class>org.eclipse.persistence.testing.models.jpa.relationships.ServiceCall</class>
+        <class>org.eclipse.persistence.testing.models.jpa.relationships.StreetAddress</class>
+        <class>org.eclipse.persistence.testing.models.jpa.relationships.ShippingAddress</class>
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
         <properties>
             <property name="jakarta.persistence.schema-generation.database.action" value="drop-and-create"/>
@@ -321,6 +328,30 @@
             <property name="eclipselink.logging.level" value="${eclipselink.logging.level}"/>
             <property name="eclipselink.logging.level.sql" value="${eclipselink.logging.sql.level}"/>
             <property name="eclipselink.logging.parameters" value="${eclipselink.logging.parameters}"/>
+        </properties>
+    </persistence-unit>
+    <persistence-unit name="advanced-jakartadata" transaction-type="RESOURCE_LOCAL">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <class>org.eclipse.persistence.testing.models.jpa.datatypes.WrapperTypes</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.Room</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.Door</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <properties>
+            <property name="eclipselink.logging.level" value="${eclipselink.logging.level}"/>
+            <property name="eclipselink.logging.level.sql" value="${eclipselink.logging.sql.level}"/>
+            <property name="eclipselink.logging.parameters" value="${eclipselink.logging.parameters}"/>
+        </properties>
+    </persistence-unit>
+    <persistence-unit name="pu-jpql" transaction-type="RESOURCE_LOCAL">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.CarProductionCompany</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.Company</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.Continent</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.Country</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.ProductionCompany</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <properties>
+            <property name="jakarta.persistence.schema-generation.database.action" value="drop-and-create"/>
         </properties>
     </persistence-unit>
 </persistence>

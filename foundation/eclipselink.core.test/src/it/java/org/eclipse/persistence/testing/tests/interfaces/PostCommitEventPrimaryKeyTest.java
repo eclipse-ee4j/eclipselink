@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,12 +14,17 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.interfaces;
 
-import java.util.*;
-
-import org.eclipse.persistence.sessions.*;
-import org.eclipse.persistence.sessions.changesets.*;
-import org.eclipse.persistence.testing.framework.*;
-import org.eclipse.persistence.testing.models.interfaces.*;
+import org.eclipse.persistence.sessions.SessionEvent;
+import org.eclipse.persistence.sessions.SessionEventAdapter;
+import org.eclipse.persistence.sessions.UnitOfWork;
+import org.eclipse.persistence.sessions.changesets.ObjectChangeSet;
+import org.eclipse.persistence.sessions.changesets.UnitOfWorkChangeSet;
+import org.eclipse.persistence.testing.framework.AutoVerifyTestCase;
+import org.eclipse.persistence.testing.framework.TestErrorException;
+import org.eclipse.persistence.testing.models.interfaces.Asset;
+import org.eclipse.persistence.testing.models.interfaces.Computer;
+import org.eclipse.persistence.testing.models.interfaces.Email;
+import org.eclipse.persistence.testing.models.interfaces.Employee;
 
 /**
  * Bug 2612571 - The primary key was not returned as part of the cache key in the
@@ -51,8 +56,8 @@ public class PostCommitEventPrimaryKeyTest extends AutoVerifyTestCase {
     public void commitOccurred(SessionEvent event) {
         org.eclipse.persistence.sessions.UnitOfWork uow = (org.eclipse.persistence.sessions.UnitOfWork)event.getSession();
         UnitOfWorkChangeSet uowChangeSet = uow.getUnitOfWorkChangeSet();
-        for (Iterator changes = uowChangeSet.getAllChangeSets().keySet().iterator(); changes.hasNext(); ) {
-            ObjectChangeSet objChangeSet = (ObjectChangeSet)changes.next();
+        for (Object o : uowChangeSet.getAllChangeSets().keySet()) {
+            ObjectChangeSet objChangeSet = (ObjectChangeSet) o;
             Object objKey = objChangeSet.getId();
 
             if (objKey == null) {

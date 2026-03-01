@@ -1,0 +1,211 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[RUNTIME004]]
+=== Using MetadataSource
+
+The `MetadataSource`, introduced in EclipseLink 2.3, is responsible for
+serving up EclipseLink metadata. This allows you to store mapping
+information outside of your application and have it retrieved when the
+application's `JAXBContext` is being created or refreshed.
+
+==== Implementing a MetadataSource
+
+To implement your own `MetadataSource`, you can:
+
+* Create a new class that implements the
+`org.eclipse.persistence.jaxb.metadata.MetadataSource interface`.
+* Create a new class that extends the
+`org.eclipse.persistence.jaxb.metadata.MetadataSourceAdapter` class.
+Using this method is preferred, as it will insulate you from future
+additions to the interface.
+
+In either case, you will be responsible for implementing the following
+method:
+
+[[sthref35]]
+
+*_Example 2-20 Implementing the XMlBindings Method_*
+
+[source,oac_no_warn]
+----
+/**
+ * Retrieve XmlBindings according to the JAXBContext bootstrapping information.
+ *
+ * @param properties - The properties passed in to create the JAXBContext
+ * @param classLoader - The ClassLoader passed in to create the JAXBContext
+ * @return the XmlBindings object representing the metadata
+ */
+XmlBindings getXmlBindings(Map<String, ?> properties, ClassLoader classLoader);
+----
+
+==== Using an XmlBindings Object
+
+Internally, EclipseLink metadata is stored in an `XmlBindings` object,
+which itself is mapped with JAXB. This means that you can actually use a
+JAXB unmarshaller to read external metadata and create an `XmlBindings`
+from it:
+
+[[sthref37]]
+
+*_Example 2-21 Sample XmlBindings Object_*
+
+[source,oac_no_warn]
+----
+package example;
+ 
+import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings;
+...
+JAXBContext xmlBindingsContext = JAXBContext.newInstance("org.eclipse.persistence.jaxb.xmlmodel");
+FileReader bindingsFile = new FileReader("xml-bindings.xml");
+XmlBindings bindings = (XmlBindings) xmlBindingsContext.createUnmarshaller().unmarshal(bindingsFile);
+----
+
+==== Specifying the MetadataSource
+
+To use a `MetadataSource` in creating a `JAXBContext`, add it to the
+properties map with the key `JAXBContextProperties.OXM_METADATA_SOURCE`:
+
+[[sthref39]]
+
+*_Example 2-22 Adding MetadataSource to the Properties Map_*
+
+[source,oac_no_warn]
+----
+MetadataSource metadataSource = new MyMetadataSource();
+ 
+Map<String, Object> properties = new HashMap<String, Object>(1);
+properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSource);
+ 
+JAXBContext jc = JAXBContext.newInstance(new Class[] { Customer.class }, properties);
+----
+
+==== MetadataSource Example
+
+The following example creates an `XmlBindings` object by unmarshalling
+from a URL:
+
+[[sthref41]]
+
+*_Example 2-23 Sample XmlBindings Object_*
+
+[source,oac_no_warn]
+----
+package example;
+ 
+import java.net.URL;
+import java.util.Map;
+ 
+import jakarta.xml.bind.JAXBContext;
+ 
+import org.eclipse.persistence.jaxb.metadata.MetadataSourceAdapter;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings;
+ 
+public class MyMetadataSource extends MetadataSourceAdapter {
+ 
+   private JAXBContext bindingsContext;
+   private URL bindingsUrl;
+ 
+   private final String XML_BINDINGS_PACKAGE = "org.eclipse.persistence.jaxb.xmlmodel";
+   private final String METADATA_URL = "http://www.example.com/private/metadata/xml-bindings.xml"; 
+   public MyMetadataSource() {
+      try {
+         bindingsContext = JAXBContext.newInstance(XML_BINDINGS_PACKAGE);
+         bindingsUrl = new URL(METADATA_URL);
+      } catch (Exception e) {
+         throw new RuntimeException(e);
+      }
+   }
+ 
+   @Override
+   public XmlBindings getXmlBindings(Map<String, ?> properties, ClassLoader classLoader) {
+      try {
+         Unmarshaller u = bindingsContext.createUnmarshaller();
+         XmlBindings bindings = (XmlBindings) u.unmarshal(bindingsUrl);
+         return bindings;
+      } catch (Exception e) {
+         throw new RuntimeException(e);
+      }
+   }
+ 
+}
+----
+
+==== Building XmlBindings Programatically
+
+You also have the option of building your own `XmlBindings` object from
+scratch in code. The example below modifies the `pCode` field of the
+*Address* class to use a locale-specific name:
+
+[[sthref43]]
+
+*_Example 2-24 Sample XmlBindings Object_*
+
+[source,oac_no_warn]
+----
+package example;
+ 
+import java.util.Locale;
+import java.util.Map;
+ 
+import org.eclipse.persistence.jaxb.metadata.MetadataSourceAdapter;
+import org.eclipse.persistence.jaxb.xmlmodel.JavaType;
+import org.eclipse.persistence.jaxb.xmlmodel.JavaType.JavaAttributes;
+import org.eclipse.persistence.jaxb.xmlmodel.ObjectFactory;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings.JavaTypes;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlElement;
+ 
+public class AddressMetadataSource extends MetadataSourceAdapter {
+ 
+    private ObjectFactory factory;
+    private XmlBindings xmlBindings;
+ 
+    public AddressMetadataSource() {
+        factory = new ObjectFactory();
+ 
+        xmlBindings = new XmlBindings();
+        xmlBindings.setPackageName("example");
+        xmlBindings.setJavaTypes(new JavaTypes());
+    }
+ 
+    @Override
+    public XmlBindings getXmlBindings(Map<String, ?> properties, ClassLoader classLoader) {
+        JavaType javaType = new JavaType();
+        javaType.setName("Address");
+        javaType.setJavaAttributes(new JavaAttributes());
+ 
+        XmlElement pCodeElement = new XmlElement();
+        pCodeElement.setJavaAttribute("pCode");
+ 
+        String country = Locale.getDefault().getCountry(); 
+        if (country.equals(Locale.US.getCountry())) {
+            pCodeElement.setName("zip-code");
+        } else if (country.equals(Locale.UK.getCountry())) {
+            pCodeElement.setName("post-code");
+        } else if (country.equals(Locale.CANADA.getCountry())) {
+            pCodeElement.setName("postal-code");
+        }
+ 
+        javaType.getJavaAttributes().getJavaAttribute().add(factory.createXmlElement(pCodeElement));
+ 
+        xmlBindings.getJavaTypes().getJavaType().add(javaType);
+        return xmlBindings;
+    }
+ 
+}
+----

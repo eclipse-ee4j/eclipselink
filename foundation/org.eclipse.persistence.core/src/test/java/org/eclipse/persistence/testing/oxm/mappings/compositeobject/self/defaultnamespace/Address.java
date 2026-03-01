@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,16 +31,13 @@ public class Address {
             return false;
         }
 
-        if ((!attentionOfName.equals(objAdd.attentionOfName)) ||
-                (!careOfName.equals(objAdd.careOfName)) ||
-                (!city.equals(objAdd.city)) ||
-                (!state.equals(objAdd.state)) ||
-                (!postalCode.equals(objAdd.postalCode)) ||
-                (!countryCode.equals(objAdd.countryCode)) ||
-                (!addressLines.equals(objAdd.addressLines))) {
-            return false;
-        }
-        return true;
+        return (attentionOfName.equals(objAdd.attentionOfName)) &&
+                (careOfName.equals(objAdd.careOfName)) &&
+                (city.equals(objAdd.city)) &&
+                (state.equals(objAdd.state)) &&
+                (postalCode.equals(objAdd.postalCode)) &&
+                (countryCode.equals(objAdd.countryCode)) &&
+                (addressLines.equals(objAdd.addressLines));
     }
 
     public String toString() {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,9 +25,8 @@ import java.util.WeakHashMap;
 
 import jakarta.persistence.RollbackException;
 
-import org.eclipse.persistence.exceptions.TransactionException;
+import org.eclipse.persistence.transaction.TransactionException;
 import org.eclipse.persistence.internal.jpa.QueryImpl;
-import org.eclipse.persistence.internal.jpa.transaction.EntityTransactionWrapper;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 
 /**
@@ -60,7 +59,7 @@ public class EntityTransactionImpl implements jakarta.persistence.EntityTransact
         }
     }
 
-    /**
+    /*
      * Within a transaction track any open queries that will need to be closed
      * on commit or rollback.
      */
@@ -72,7 +71,7 @@ public class EntityTransactionImpl implements jakarta.persistence.EntityTransact
      */
     public void addOpenQuery(QueryImpl query) {
         if (openQueriesMap == null) {
-            openQueriesMap = new WeakHashMap<QueryImpl, QueryImpl>();
+            openQueriesMap = new WeakHashMap<>();
         }
 
         openQueriesMap.put(query, query);
@@ -220,7 +219,7 @@ public class EntityTransactionImpl implements jakarta.persistence.EntityTransact
      */
     protected Map<QueryImpl, QueryImpl> getOpenQueriesMap() {
         if (openQueriesMap == null) {
-            openQueriesMap = new WeakHashMap<QueryImpl, QueryImpl>();
+            openQueriesMap = new WeakHashMap<>();
         }
 
         return openQueriesMap;
@@ -246,6 +245,17 @@ public class EntityTransactionImpl implements jakarta.persistence.EntityTransact
     @Override
     public boolean isActive() {
         return this.active;
+    }
+
+    @Override
+    public void setTimeout(Integer integer) {
+        //TODO NEW IN JPA 3.2.0-M2 - IMPLEMENT BODY
+    }
+
+    @Override
+    public Integer getTimeout() {
+        //TODO NEW IN JPA 3.2.0-M2 - IMPLEMENT BODY
+        return null;
     }
 
     class TransactionFinalizer {

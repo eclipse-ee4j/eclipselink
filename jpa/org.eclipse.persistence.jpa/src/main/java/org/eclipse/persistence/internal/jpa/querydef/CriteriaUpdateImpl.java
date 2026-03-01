@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -28,6 +28,8 @@ import jakarta.persistence.metamodel.SingularAttribute;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.UpdateAllQuery;
 
+import java.io.Serial;
+
 /**
  * <p>
  * <b>Purpose</b>: Contains the implementation of the CriteriaUpdate interface of
@@ -43,6 +45,7 @@ import org.eclipse.persistence.queries.UpdateAllQuery;
  */
 public class CriteriaUpdateImpl<T> extends CommonAbstractCriteriaImpl<T> implements CriteriaUpdate<T> {
 
+    @Serial
     private static final long serialVersionUID = 5069513243268181150L;
 
     protected Root<T> root;

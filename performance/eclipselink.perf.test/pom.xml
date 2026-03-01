@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2019, 2021 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
+    Copyright (c) 2019, 2025 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -13,20 +14,19 @@
 
 -->
 
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd"
          xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <modelVersion>4.0.0</modelVersion>
 
     <name>EclipseLink Performance Tests</name>
-    <groupId>org.eclipse.persistence</groupId>
     <artifactId>org.eclipse.persistence.performance.test</artifactId>
     <packaging>jar</packaging>
 
     <parent>
-        <artifactId>org.eclipse.persistence.parent</artifactId>
+        <artifactId>org.eclipse.persistence.project</artifactId>
         <groupId>org.eclipse.persistence</groupId>
-        <version>4.0.0-SNAPSHOT</version>
+        <version>5.0.0-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
@@ -83,8 +83,8 @@
         </dependency>
         <!--Other dependencies-->
         <dependency>
-            <groupId>org.glassfish</groupId>
-            <artifactId>jakarta.el</artifactId>
+            <groupId>org.glassfish.expressly</groupId>
+            <artifactId>expressly</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -189,15 +189,15 @@
                 </configuration>
                 <executions>
                     <execution>
-                        <id>test-performance-benchmark</id>
+                        <id>test-core-performance-benchmark</id>
                         <configuration>
                             <arguments>
                                 <argument>${warmup.iterations}</argument>
                                 <argument>${run.iterations}</argument>
-                                <argument>${project.build.directory}/${jmh.resultFile}</argument>
+                                <argument>${project.build.directory}/jmh-core-result.txt</argument>
                                 <argument>${jmh.resultFormat}</argument>
                             </arguments>
-                            <mainClass>org.eclipse.persistence.testing.perf.Benchmarks</mainClass>
+                            <mainClass>org.eclipse.persistence.testing.perf.CoreBenchmarks</mainClass>
                         </configuration>
                         <phase>test</phase>
                         <goals>
@@ -205,12 +205,44 @@
                         </goals>
                     </execution>
                     <execution>
-                        <id>test-performance-jpa-benchmark</id>
+                        <id>test-moxy-performance-benchmark</id>
                         <configuration>
                             <arguments>
                                 <argument>${warmup.iterations}</argument>
                                 <argument>${run.iterations}</argument>
-                                <argument>${project.build.directory}/jpa-${jmh.resultFile}</argument>
+                                <argument>${project.build.directory}/jmh-moxy-result.txt</argument>
+                                <argument>${jmh.resultFormat}</argument>
+                            </arguments>
+                            <mainClass>org.eclipse.persistence.testing.perf.MOXyBenchmarks</mainClass>
+                        </configuration>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>test-jpa-metadata-performance-benchmark</id>
+                        <configuration>
+                            <arguments>
+                                <argument>${warmup.iterations}</argument>
+                                <argument>${run.iterations}</argument>
+                                <argument>${project.build.directory}/jmh-jpa-metadata-result.txt</argument>
+                                <argument>${jmh.resultFormat}</argument>
+                            </arguments>
+                            <mainClass>org.eclipse.persistence.testing.perf.JPAMetadataBenchmarks</mainClass>
+                        </configuration>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>test-jpa-performance-benchmark</id>
+                        <configuration>
+                            <arguments>
+                                <argument>${warmup.iterations}</argument>
+                                <argument>${run.iterations}</argument>
+                                <argument>${project.build.directory}/jmh-jpa-result.txt</argument>
                                 <argument>${jmh.resultFormat}</argument>
                             </arguments>
                             <mainClass>org.eclipse.persistence.testing.perf.JPABenchmarks</mainClass>

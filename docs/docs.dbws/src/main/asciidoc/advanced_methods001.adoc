@@ -1,0 +1,121 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[DBWSADVANCEDMETHODS001]]
+=== Using DBWSBuilder with Ant
+
+With EclipseLink DBWS, you can invoke the `DBWSBuilder` from Apache Ant
+(`http://ant.apache.org/`) to generate the necessary files, compile, and
+package the application with additional Ant targets.
+
+==== Example
+
+This example illustrates how to use Ant to generate a deployable web
+archive. For this example, consider the following file layout:
+
+*`<example-root>`*
+
+`dbws-builder.xml` (see link:#BEIEIHFG[Example 3-1]) +
+`build.xml` (see link:#BEIFBFFC[Example 3-2]) +
+`build.properties` (see link:#BEIGCDJG[Example 3-3])
+
+  *`jlib`* +
+    `eclipselink.jar` +
+    `eclipselink-dbwsutils.jar` +
+    `javax.servlet.jar` +
+    `javax.wsdl.jar` +
+    `ojdbc6.jar` +
+    `org.eclipse.persistence.oracleddlparser.jar`
+
+  *`stage`* +
+    All generated artifacts will saved here, most importantly
+`simpletable.war`.
+
+To run the DBWS builder in this example, simply type `ant` in the
+_`<example-root>`_ directory. The builder packages the generated
+artifacts into the web archive (`simpletable.war`) in the `stage`
+directory. This `.war` file can then be deployed to WebLogic.
+
+[[BEIEIHFG]]
+
+*_Example 3-1 Sample DBWS Builder File (dbws-builder.xml)_*
+
+[source,oac_no_warn]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<dbws-builder xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <properties>
+    <property name="projectName">simpletable</property>
+    ... database properties
+  </properties>
+ 
+  <table
+    schemaPattern="SCOTT"
+    tableNamePattern="SIMPLETABLE"
+  />
+</dbws-builder>
+----
+
+[[BEIFBFFC]]
+
+*_Example 3-2 Sample Build XML File (build.xml)_*
+
+[source,oac_no_warn]
+----
+<?xml version="1.0"?>
+<project name="simpletable" default="build">
+  <property file="${basedir}/build.properties"/>
+ 
+  <path id="build.path">
+    <fileset
+      dir="${jlib.dir}"
+      includes="eclipselink.jar 
+                eclipselink-dbwsutils.jar 
+                org.eclipse.persistence.oracleddlparser.jar 
+                javax.wsdl.jar 
+                javax.servlet.jar 
+                ojdbc6.jar"
+      >
+    </fileset>
+  </path>
+ 
+  <target name="build">
+    <java
+      classname="org.eclipse.persistence.tools.dbws.DBWSBuilder"
+      fork="true"
+      classpathRef="build.path"
+      >
+      <arg line="-builderFile ${dbws.builder.file} -stageDir ${stage.dir} -packageAs ${server.platform} ${ant.project.name}.war"/>
+    </java>
+  </target>
+</project>
+----
+
+[[BEIGCDJG]]
+
+*_Example 3-3 Sample Build Properties File (build.properties)_*
+
+[source,oac_no_warn]
+----
+custom = true
+build.sysclasspath=ignore
+ 
+stage.dir=${basedir}/stage
+jlib.dir=${basedir}/jlib
+server.platform=wls
+dbws.builder.file=dbws-builder.xml
+----

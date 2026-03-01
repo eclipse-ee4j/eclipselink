@@ -1,0 +1,822 @@
+image:Elug_draft_icon.png[Image:Elug draft
+icon.png,title="Image:Elug draft icon.png"] *For the latest EclipseLink
+documentation, please see
+http://www.eclipse.org/eclipselink/documentation/*
+
+'''''
+
+*TOC* Special:Whatlinkshere_Using_Basic_Unit_of_Work_API_(ELUG)[Related
+Topics]
+
+This section explains the essential unit of work API calls that you are
+most likely to use throughout the development cycle. For more
+information, see
+link:Using%20Advanced%20Unit%20of%20Work%20API%20(ELUG)[Using Advanced
+Unit of Work API].
+
+== Acquiring a Unit of Work
+
+This example shows how to acquire a unit of work from a client session
+object.
+
+`+Server server = (Server) SessionManager.getManager().getSession(+`
+`+                sessionName, MyServerSession.class.getClassLoader());+`
+`+Session session = (Session) server.acquireClientSession();+`
+`+UnitOfWork uow = session.acquireUnitOfWork();+`
+
+You can acquire a unit of work from any session type. For more
+information about acquiring sessions at run time, see
+link:Introduction%20to%20EclipseLink%20Sessions%20(ELUG)[Acquiring a
+Session at Run Time with the Session Manager].
+
+Note that you do not need to create a new session and log in before
+every transaction. The recommended pattern is to acquire a client
+session per client access (or thread), and then acquire the necessary
+unit of work from this client session.
+
+The unit of work is valid until the `+commit+` or `+release+` method is
+called. After a commit or release transaction, a unit of work is not
+valid even if the transaction fails and is rolled back.
+
+A unit of work remains valid after the `+commitAndResume+` method is
+called, as described in
+link:Using%20Advanced%20Unit%20of%20Work%20API%20(ELUG)[Resuming a Unit
+of Work After Commit].
+
+When using a unit of work with JTA, you should also use the advanced API
+`+getActiveUnitOfWork+` method, as described in
+link:Using%20Advanced%20Unit%20of%20Work%20API%20(ELUG)[Integrating the
+Unit of Work with an External Transaction Service].
+
+== Creating an Object
+
+When you create new objects in the unit of work, use the
+`+registerObject+` method to ensure that the unit of work writes the
+objects to the database at commit time.
+
+The unit of work calculates commit order using foreign key information
+from one-to-one and one-to-many mappings. If you encounter constraint
+problems during a commit transaction, verify your mapping definitions.
+The order in which you register objects with the `+registerObject+`
+method does not affect the commit order.
+
+link:#Example_110-1[Creating an Object: Preferred Method] and
+link:#Example_110-2[Creating an Object: Alternative Method] examples
+show how to create and persist a simple object (without relationships)
+using the clone returned by the unit of work `+registerObject+` method.
+
+[#Example 110-1]## *_Creating an Object: Preferred Method_*
+
+`+UnitOfWork uow = session.acquireUnitOfWork();+`
+`+Pet pet = new Pet();+`
+`+Pet petClone = (Pet)uow.registerObject(pet);+`
+`+petClone.setId(100);+` `+petClone.setName("Fluffy");+`
+`+petClone.setType("Cat");+` `+uow.commit();+`
+
+This example shows a common alternative.
+
+[#Example 110-2]## *_Creating an Object: Alternative Method_*
+
+`+UnitOfWork uow = session.acquireUnitOfWork();+`
+`+Pet pet = new Pet();+` `+pet.setId(100);+` `+pet.setName("Fluffy");+`
+`+pet.setType("Cat");+` `+uow.registerObject(pet); +` `+uow.commit();+`
+
+Both approaches produce the following SQL:
+
+`+INSERT INTO PET (ID, NAME, TYPE, PET_OWN_ID) VALUES (100, 'Fluffy', 'Cat', NULL)+`
+
+You should follow the link:#Example_110-1[Creating an Object: Preferred
+Method] example: it gets you into the pattern of working with clones and
+provides the most flexibility for future code changes. Working with
+combinations of new objects and clones can lead to confusion and
+unwanted results.
+
+== Modifying an Object
+
+In the link:#Example_110-3[Modifying an Object] example, a `+Pet+` is
+read prior to a unit of work: the variable `+pet+` is the cache copy
+clone for that `+Pet+`. Inside the unit of work, register the cache copy
+to get a working copy clone, then modify the working copy clone and
+commit the unit of work.
+
+[#Example 110-3]## *_Modifying an Object_*
+
+*`+//\'\' \'\'Read\'\' \'\'in\'\' \'\'any\'\' \'\'pet+`*
+`+Pet pet = (Pet)session.readObject(Pet.class);+`
+`+UnitOfWork uow = session.acquireUnitOfWork();+`
+`+Pet petClone = (Pet) uow.registerObject(pet);+`
+`+petClone.setName("Furry");+` `+uow.commit();+`
+
+link:#Example_110-4[Modifying an Object: Skipping the Registration Step]
+example shows how to take advantage of the fact that you can query
+through a unit of work and get back clones, saving the registration
+step. However, the drawback is that you do not have a handle to the
+cache copy clone.
+
+If you wanted to do something with the updated `+Pet+` after the commit
+transaction, you would have to query the session to get it (remember
+that after a unit of work is committed, its clones are invalid and
+should not be used).
+
+[#Example 110-4]## *_Modifying an Object: Skipping the Registration
+Step_*
+
+`+UnitOfWork uow = session.acquireUnitOfWork();+`
+`+Pet petClone = (Pet) uow.readObject(Pet.class);+`
+`+petClone.setName("Furry");+` `+uow.commit();+`
+
+Both approaches produce the following SQL:
+
+`+UPDATE PET SET NAME = 'Furry' WHERE (ID = 100)+`
+
+Take care when querying through a unit of work. All objects read in the
+query are registered in the unit of work and therefore will be checked
+for changes at commit time. Rather than do a `+ReadAllQuery+` through a
+unit of work, it is better for performance to design your application to
+do the `+ReadAllQuery+` through a session, and then register in a unit
+of work only the objects that need to be changed.
+
+== Associating a New Target to an Existing Source Object
+
+Consider the following options:
+
+* #How_to_Associate_a_New_Target_to_an_Existing_Source_Object_in_a_Unidirectional_Relationship:_Reference_to_the_New_Cache_Object_After_Commit_not_Required[How
+to Associate a New Target to an Existing Source Object in a
+Unidirectional Relationship: Reference to the New Cache Object After
+Commit not Required]
+* #How_to_Associate_a_New_Target_to_an_Existing_Source_Object_in_a_Unidirectional_Relationship:_Reference_to_the_New_Cache_Object_After_Commit_Required[How
+to Associate a New Target to an Existing Source Object in a
+Unidirectional Relationship: Reference to the New Cache Object After
+Commit Required]
+* #How_to_Associate_a_New_Target_to_an_Existing_Source_Object_in_a_Bidirectional_Relationship:_Query_for_Target_Before_Commit_not_Required[How
+to Associate a New Target to an Existing Source Object in a
+Bidirectional Relationship: Query for Target Before Commit not Required]
+* #How_to_Associate_a_New_Target_to_an_Existing_Source_Object_in_a_Bidirectional_Relationship:_Query_for_Target_Object_Before_Commit_Required[How
+to Associate a New Target to an Existing Source Object in a
+Bidirectional Relationship: Query for Target Object Before Commit
+Required]
+
+Deciding which approach to use depends on whether or not your code
+requires a reference to the cache copy clone of the new object after the
+unit of work is committed, and on how adaptable to change you want your
+code to be.
+
+[width="100%",cols="<100%",]
+|===
+|*Note:* You cannot use `+UnitOfWork+` methods `+registerObject+`,
+`+registerNewObject+`, or `+registerExistingObject+` with an aggregate
+object (see
+link:Creating%20a%20Relational%20Descriptor%20(ELUG)[Creating Relational
+Aggregate Descriptors]). Doing so will raise a `+ValidationException+`
+or other errors at commit time. For more information, see
+link:Using%20Advanced%20Unit%20of%20Work%20API%20(ELUG)[How to Work with
+Aggregates].
+|===
+
+=== How to Associate a New Target to an Existing Source Object in a Unidirectional Relationship: Reference to the New Cache Object After Commit not Required
+
+link:#Example_110-5[Associating Without Reference to the Cache Object]
+example shows how to associate a new target with an existing source in a
+unidirectional relationship without retaining a reference to the cache
+object.
+
+When the `+Pet+` object is read using the unit of work, EclipseLink
+automatically registers it. Because there is a unidirectional
+relationship between the `+Pet+` object and the new `+PetOwner+` and
+`+VetVisit+` objects, you do not need to register the new `+PetOwner+`
+or `+VetVisit+` objects. EclipseLink can reach these new objects through
+the registered `+Pet+` object and automatically detect that they are new
+objects.
+
+[#Example 110-5]## *_Associating Without Reference to the Cache Object_*
+
+`+UnitOfWork uow = session.acquireUnitOfWork();+`
+`+Pet petClone = (Pet)uow.readObject(Pet.class);+`
+
+`+PetOwner petOwner = new PetOwner();+` `+petOwner.setId(400);+`
+`+petOwner.setName("Donald Smith");+`
+`+petOwner.setPhoneNumber("555-1212");+`
+
+`+VetVisit vetVisit = new VetVisit();+` `+vetVisit.setId(500);+`
+`+vetVisit.setNotes("Pet was shedding a lot.");+`
+`+vetVisit.setSymptoms("Pet in good health.");+`
+`+vetVisit.setPet(petClone);+`
+
+`+petClone.setPetOwner(petOwner);+`
+`+petClone.getVetVisits().add(vetVisit); +` `+uow.commit();+`
+
+This executes the following proper SQL:
+
+`+INSERT INTO PETOWNER (ID, NAME, PHN_NBR) VALUES (400, 'Donald Smith', '555-1212')+`
+`+UPDATE PET SET PET_OWN_ID = 400 WHERE (ID = 100)+`
+`+INSERT INTO VETVISIT (ID, NOTES, SYMPTOMS, PET_ID) VALUES (500, 'Pet was shedding a lot.', 'Pet in good health.', 100)+`
+
+When associating new objects to existing objects, the unit of work
+treats the new object as if it were a clone. That is, after the commit
+transaction:
+
+`+petOwner != session.readObject(petOwner)+`
+
+Therefore, after the unit of work commit transaction, the variables
+`+vetVisit+` and `+petOwner+` no longer point to their respective cache
+objects; they point at working copy clones.
+
+If you need the cache object after the unit of work commit transaction,
+you must query for it or create the association with a reference to the
+cache object (as described in
+#How_to_Associate_a_New_Target_to_an_Existing_Source_Object_in_a_Unidirectional_Relationship:_Reference_to_the_New_Cache_Object_After_Commit_Required[How
+to Associate a New Target to an Existing Source Object in a
+Unidirectional Relationship: Reference to the New Cache Object After
+Commit Required]).
+
+If there was a bidirectional relationship between the source and target
+objects, you must take more care when registering them (see
+#How_to_Associate_a_New_Target_to_an_Existing_Source_Object_in_a_Bidirectional_Relationship:_Query_for_Target_Before_Commit_not_Required[How
+to Associate a New Target to an Existing Source Object in a
+Bidirectional Relationship: Query for Target Before Commit not
+Required]).
+
+For more information, see
+link:Using%20Advanced%20Unit%20of%20Work%20API%20(ELUG)[Registering and
+Unregistering Objects]).
+
+[width="100%",cols="<100%",]
+|===
+|*Note:* You cannot use `+UnitOfWork+` methods `+registerObject+`,
+`+registerNewObject+`, or `+registerExistingObject+` with an aggregate
+object (see
+link:Creating%20a%20Relational%20Descriptor%20(ELUG)[Creating Relational
+Aggregate Descriptors]). Doing so will raise a `+ValidationException+`
+or other errors at commit time. For more information, see
+link:Using%20Advanced%20Unit%20of%20Work%20API%20(ELUG)[How to Work with
+Aggregates].
+|===
+
+=== How to Associate a New Target to an Existing Source Object in a Unidirectional Relationship: Reference to the New Cache Object After Commit Required
+
+link:#Example_110-6[Associating With Reference to the Cache Object]
+example shows how to associate a new target with an existing source in a
+unidirectional relationship and retain a reference to the cache object.
+
+When the `+Pet+` object is read using the unit of work, EclipseLink
+automatically registers it. Because there is a unidirectional
+relationship between the `+Pet+` object and the new `+PetOwner+` and
+`+VetVisit+` objects, you do not need to register the new `+PetOwner+`
+or `+VetVisit+` objects. EclipseLink can reach these new objects through
+the registered `+Pet+` object and automatically detect that they are new
+objects.
+
+However, by using `+UnitOfWork+` method `+registerObject+`, you can
+retain a handle to the post-commit cache objects in case your code needs
+to continue using them after commit: for example, to display their new
+contents in a GUI.
+
+If there was a bidirectional relationship between the source and target
+objects, you must take more care when registering them (see
+#How_to_Associate_a_New_Target_to_an_Existing_Source_Object_in_a_Bidirectional_Relationship:_Query_for_Target_Object_Before_Commit_Required[How
+to Associate a New Target to an Existing Source Object in a
+Bidirectional Relationship: Query for Target Object Before Commit
+Required]).
+
+[#Example 110-6]## *_Associating With Reference to the Cache Object_*
+
+`+UnitOfWork uow = session.acquireUnitOfWork();+`
+`+Pet petClone = (Pet)uow.readObject(Pet.class);+`
+
+`+PetOwner petOwner = new PetOwner();+`
+`+PetOwner petOwnerClone = (PetOwner)uow.registerObject(petOwner);+`
+`+petOwnerClone.setId(400);+` `+petOwnerClone.setName("Donald Smith");+`
+`+petOwnerClone.setPhoneNumber("555-1212");+`
+
+`+VetVisit vetVisit = new VetVisit();+`
+`+VetVisit vetVisitClone = (VetVisit)uow.registerObject(vetVisit);+`
+`+vetVisitClone.setId(500);+`
+`+vetVisitClone.setNotes("Pet was shedding a lot.");+`
+`+vetVisitClone.setSymptoms("Pet in good health.");+`
+`+vetVisitClone.setPet(petClone);+`
+
+`+petClone.setPetOwner(petOwnerClone);+`
+`+petClone.getVetVisits().addElement(vetVisitClone); +`
+`+uow.commit();+`
+
+Now, after the unit of work commit transaction:
+
+`+petOwner == session.readObject(petOwner)+`
+
+This means that we have a handle to the cache copy after the commit
+transaction, rather than a clone.
+
+For more information, see
+link:Using%20Advanced%20Unit%20of%20Work%20API%20(ELUG)[Registering and
+Unregistering Objects]).
+
+[width="100%",cols="<100%",]
+|===
+|*Note:* You cannot use `+UnitOfWork+` methods `+registerObject+`,
+`+registerNewObject+`, or `+registerExistingObject+` with an aggregate
+object (see
+link:Creating%20a%20Relational%20Descriptor%20(ELUG)[Creating Relational
+Aggregate Descriptors]). Doing so will raise a ValidationException or
+other errors at commit time. For more information, see
+link:Using%20Advanced%20Unit%20of%20Work%20API%20(ELUG)[How to Work with
+Aggregates].
+|===
+
+=== How to Associate a New Target to an Existing Source Object in a Bidirectional Relationship: Query for Target Before Commit not Required
+
+Consider an `+Employee+` class implemented, as
+link:#Example_110-7[Employee Class] example shows. Note that the
+`+setManager+` method modifies the `+Employee+` instance you pass into
+it.
+
+[#Example 110-7]## *_Employee Class_*
+
+`+public class Employee {+`
+
+`+    private Collection managedEmployees = new ArrayList();+`
+`+    private Emplyoee myManager;+`
+
+`+    ...+`
+
+`+    public setManager(Employee manager) {+`
+`+        myManager = manager;+`
+`+        manager.addManagedEmployee(this);+` `+    }+`
+
+`+    public addManagedEmployee(Employee employee) {+`
+`+        managedEmployees.add(employee);+` `+    }+`
+
+`+    ...+`
+
+`+}+`
+
+link:#Example_110-8[Resolving Issues When Adding New Objects] example
+shows how to register a new object when a bidirectional relationship
+exists such as that between manager and employee.
+
+Because `+Employee+` method `+setManager+` modifies the `+Employee+` you
+pass in (as link:#Example_110-7[Employee Class] example shows), you must
+pass in `+managerClone+` that `+registerObject+` returns.
+
+After you call `+setManager+`, you establish the bidirectional
+relationship between `+newEmployee+` and `+managerClone+`. Because
+`+newEmployee+` is reachable from the `+manager+` object already
+registered with the unit of work, EclipseLink can automatically detect
+that it is a new object. Consequently, you do not need to register
+`+newEmployee+` at all and it is, in fact, an error to call
+`+registerObject+` on `+newEmployee+` in this case.
+
+If your code must be able to query for the new child object prior to
+commit, see
+#How_to_Associate_a_New_Target_to_an_Existing_Source_Object_in_a_Bidirectional_Relationship:_Query_for_Target_Object_Before_Commit_Required[How
+to Associate a New Target to an Existing Source Object in a
+Bidirectional Relationship: Query for Target Object Before Commit
+Required].
+
+If you need the cache object after the unit of work commit transaction,
+in this case, you must query for it.
+
+[#Example 110-8]## *_Resolving Issues When Adding New Objects_*
+
+*`+//\'\' \'\'Get\'\' \'\'an\'\' \'\'employee\'\' \'\'read\'\' \'\'from\'\' \'\'the\'\' \'\'parent\'\' \'\'session\'\' \'\'of\'\' \'\'the\'\' \'\'unit\'\' \'\'of\'\' \'\'work+`*
+`+Employee manager = (Employee)session.readObject(Employee.class);+`
+
+*`+//\'\' \'\'Acquire\'\' \'\'a\'\' \'\'unit\'\' \'\'of\'\' \'\'work+`*
+`+UnitOfWork uow = session.acquireUnitOfWork();+`
+
+*`+//\'\' \'\'Register\'\' \'\'the\'\' \'\'manager\'\' \'\'to\'\' \'\'get\'\' \'\'its\'\' \'\'clone+`*
+
+`+Employee managerClone = (Employee)uow.registerObject(manager);+`
+
+*`+//\'\' \'\'Create\'\' \'\'a\'\' \'\'new\'\' \'\'employee+`*
+`+Employee newEmployee = new Employee();+`
+`+newEmployee.setFirstName("Spike");+`
+`+newEmployee.setLastName("Robertson");+`
+
+*`+//\'\' \'\'INCORRECT:\'\' \'\'Do\'\' \'\'not\'\' \'\'associate\'\' \'\'the\'\' \'\'new\'\' \'\'employee\'\' \'\'with\'\' \'\'the\'\' \'\'original\'\' \'\'manager.+`*`+ +`
+*`+//\'\' \'\'This\'\' \'\'will\'\' \'\'cause\'\' \'\'a\'\' \'\'QueryException\'\' \'\'when\'\' \'\'EclipseLink\'\' \'\'detects\'\' \'\'this\'\' \'\'error\'\' \'\'during\'\' \'\'commit+`*
+*`+//newEmployee.setManager(manager);+`*
+
+*`+//\'\' \'\'CORRECT:\'\' \'\'Associate\'\' \'\'the\'\' \'\'new\'\' \'\'object\'\' \'\'with\'\' \'\'the\'\' \'\'clone.\'\' \'\'Note\'\' \'\'that\'\' \'\'in\'\' \'\'this\'\' \'\'example,+`*
+*`+//\'\' \'\'the\'\' \'\'setManager\'\' \'\'method\'\' \'\'is\'\' \'\'maintaining\'\' \'\'the\'\' \'\'bidirectional\'\' \'\'managedEmployees+`*`+ +`
+*`+//\'\' \'\'relationship\'\' \'\'and\'\' \'\'adding\'\' \'\'the\'\' \'\'new\'\' \'\'employee\'\' \'\'to\'\' \'\'its\'\' \'\'managedEmployees.+`*`+ +`
+`+'''// At commit time, the unit of work will detect that this is a new object +`
+*`+//\'\' \'\'and\'\' \'\'will\'\' \'\'take\'\' \'\'the\'\' \'\'appropriate\'\' \'\'action+`*
+`+newEmployee.setManager(managerClone);+`
+
+*`+//\'\' \'\'INCORRECT:\'\' \'\'Do\'\' \'\'not\'\' \'\'register\'\' \'\'the\'\' \'\'newEmployee:\'\' \'\'this\'\' \'\'will\'\' \'\'create+`*`+ +`
+`+'''// two copies and cause a QueryException when EclipseLink detects +`
+*`+//\'\' \'\'this\'\' \'\'error\'\' \'\'during\'\' \'\'commit+`*
+*`+//uow.registerObject(newEmployee);+`*
+
+*`+//\'\' \'\'Commit\'\' \'\'the\'\' \'\'unit\'\' \'\'of\'\' \'\'work+`*
+`+uow.commit();+`
+
+For more information, see
+link:Using%20Advanced%20Unit%20of%20Work%20API%20(ELUG)[Registering and
+Unregistering Objects]).
+
+[width="100%",cols="<100%",]
+|===
+|*Note:* You cannot use `+UnitOfWork+` methods `+registerObject+`,
+`+registerNewObject+`, or `+registerExistingObject+` with an aggregate
+object (see
+link:Creating%20a%20Relational%20Descriptor%20(ELUG)[Creating Relational
+Aggregate Descriptors]). Doing so will raise a ValidationException or
+other errors at commit time. For more information, see
+link:Using%20Advanced%20Unit%20of%20Work%20API%20(ELUG)[How to Work with
+Aggregates].
+|===
+
+=== How to Associate a New Target to an Existing Source Object in a Bidirectional Relationship: Query for Target Object Before Commit Required
+
+Consider an `+Employee+` class implemented, as
+link:#Example_110-9[Employee Class] example shows. Note that the
+`+setManager+` method modifies the `+Employee+` instance you pass into
+it.
+
+[#Example 110-9]## *_Employee Class_*
+
+`+public class Employee+` `+{+`
+`+    private Collection managedEmployees = new ArrayList();+`
+`+    private Emplyoee myManager;+`
+
+`+    ...+`
+
+`+    public setManager(Employee manager)+` `+    {+`
+`+        myManager = manager;+`
+`+        manager.addManagedEmployee(this);+` `+    }+`
+
+`+    public addManagedEmployee(Employee employee)+` `+    {+`
+`+        managedEmployees.add(employee);+` `+    }+`
+
+`+    ...+`
+
+`+}+`
+
+link:#Example_110-10[Resolving Issues When Adding New Objects] example
+shows how to register a new object when a bidirectional relationship
+exists such as that between manager and employee.
+
+[#Example 110-10]## *_Resolving Issues When Adding New Objects_*
+
+*`+//\'\' \'\'Get\'\' \'\'an\'\' \'\'employee\'\' \'\'read\'\' \'\'from\'\' \'\'the\'\' \'\'parent\'\' \'\'session\'\' \'\'of\'\' \'\'the\'\' \'\'unit\'\' \'\'of\'\' \'\'work+`*
+
+`+Employee manager = (Employee)session.readObject(Employee.class);+`
+
+*`+//\'\' \'\'Acquire\'\' \'\'a\'\' \'\'unit\'\' \'\'of\'\' \'\'work+`*
+`+UnitOfWork uow = session.acquireUnitOfWork();+`
+
+*`+//\'\' \'\'Register\'\' \'\'the\'\' \'\'manager\'\' \'\'to\'\' \'\'get\'\' \'\'its\'\' \'\'clone+`*
+`+Employee managerClone = (Employee)uow.registerObject(manager);+`
+
+*`+//\'\' \'\'Create\'\' \'\'a\'\' \'\'new\'\' \'\'employee+`*
+`+Employee newEmployee = new Employee();+`
+`+newEmployee.setFirstName("Spike");+`
+`+newEmployee.setLastName("Robertson");+`
+
+*`+//\'\' \'\'INCORRECT:\'\' \'\'Do\'\' \'\'not\'\' \'\'associate\'\' \'\'the\'\' \'\'new\'\' \'\'employee\'\' \'\'with\'\' \'\'the\'\' \'\'original\'\' \'\'manager.+`*`+ +`
+*`+//\'\' \'\'This\'\' \'\'will\'\' \'\'cause\'\' \'\'a\'\' \'\'QueryException\'\' \'\'when\'\' \'\'EclipseLink\'\' \'\'detects\'\' \'\'this\'\' \'\'error\'\' \'\'during\'\' \'\'commit+`*
+*`+//newEmployee.setManager(manager);+`*
+
+*`+//\'\' \'\'CORRECT:\'\' \'\'Associate\'\' \'\'the\'\' \'\'new\'\' \'\'object\'\' \'\'with\'\' \'\'the\'\' \'\'clone.\'\' \'\'Note\'\' \'\'that\'\' \'\'in\'\' \'\'this\'\' \'\'example,+`*
+*`+//\'\' \'\'the\'\' \'\'setManager\'\' \'\'method\'\' \'\'is\'\' \'\'maintaining\'\' \'\'the\'\' \'\'bidirectional\'\' \'\'managedEmployees+`*`+ +`
+*`+//\'\' \'\'relationship\'\' \'\'and\'\' \'\'adding\'\' \'\'the\'\' \'\'new\'\' \'\'employee\'\' \'\'to\'\' \'\'its\'\' \'\'managedEmployees.+`*`+ +`
+`+'''// At commit time, the unit of work will detect that this is a new object +`
+*`+//\'\' \'\'and\'\' \'\'will\'\' \'\'take\'\' \'\'the\'\' \'\'appropriate\'\' \'\'action+`*
+`+newEmployee.setManager(managerClone);+`
+
+`+'''// INCORRECT: Do not register the newEmployee: this will create two copies and+`
+*`+//\'\' \'\'cause\'\' \'\'a\'\' \'\'QueryException\'\' \'\'when\'\' \'\'EclipseLink\'\' \'\'detects\'\' \'\'this\'\' \'\'error\'\' \'\'during\'\' \'\'commit+`*
+*`+//uow.registerObject(newEmployee);+`*
+
+*`+//\'\' \'\'CORRECT:\'\' \'\'In\'\' \'\'the\'\' \'\'above\'\' \'\'setManager\'\' \'\'call,\'\' \'\'if\'\' \'\'the\'\' \'\'managerClone's+`*
+`+'''// managedEmployees was not maintained by the setManager method, then you +`
+`+'''// should call registerObject before the new employee is related to the manager. +`
+`+'''// If in doubt, you could use the  registerNewObject method to ensure that +`
+`+'''// the newEmployee is registered in the unit of work. The registerNewObject +`
+*`+//\'\' \'\'method\'\' \'\'registers\'\' \'\'the\'\' \'\'object,\'\' \'\'but\'\' \'\'does\'\' \'\'not\'\' \'\'make\'\' \'\'a\'\' \'\'clone+`*
+`+uow.registerNewObject(newEmployee);+`
+
+*`+//\'\' \'\'Commit\'\' \'\'the\'\' \'\'unit\'\' \'\'of\'\' \'\'work+`*
+`+uow.commit();+`
+
+Because `+Employee+` method `+setManager+` modifies the `+Employee+` you
+pass in (as link:#Example_110-10[Resolving Issues When Adding New
+Objects] example), you must pass in `+managerClone+` that
+`+registerObject+` returns.
+
+After you call `+setManager+`, you establish the bidirectional
+relationship between `+newEmployee+` and `+managerClone+`. Because
+`+newEmployee+` is reachable from the `+manager+` object already
+registered with the unit of work, EclipseLink can automatically detect
+that it is a new object. Consequently, you do not need to register
+`+newEmployee+` at all and it is, in fact, an error to call
+`+registerObject+` on `+newEmployee+` in this case.
+
+If your code must be able to query for the new child object prior to
+commit, register the new object using `+UnitOfWork+` method
+`+registerNewObject+`. Unlike `+registerObject+`, this method does not
+create a clone.
+
+Another difference between `+registerNewObject+` and `+registerObject+`
+is that `+registerNewObject+` does not cascade registration to child
+objects. If you call `+registerNewObject+` on a parent object, you must
+also call `+registerNewObject+` on new child instances if your code must
+be able to query for the new child object prior to commit and you prefer
+not to use conforming queries.
+
+If you need the cache object after the unit of work commit transaction,
+you must query for it.
+
+For more information, see
+link:Using%20Advanced%20Unit%20of%20Work%20API%20(ELUG)[Registering and
+Unregistering Objects]).
+
+[width="100%",cols="<100%",]
+|===
+|*Note:* You cannot use `+UnitOfWork+` methods `+registerObject+`,
+`+registerNewObject+`, or `+registerExistingObject+` with an aggregate
+object (see
+link:Creating%20a%20Relational%20Descriptor%20(ELUG)[Creating Relational
+Aggregate Descriptors]). Doing so will raise a ValidationException or
+other errors at commit time. For more information, see
+link:Using%20Advanced%20Unit%20of%20Work%20API%20(ELUG)[How to Work with
+Aggregates].
+|===
+
+== Associating a New Source to an Existing Target Object
+
+This section describes how to associate a new source object with an
+existing target object with one-to-many and one-to-one relationships.
+
+EclipseLink follows all relationships of all registered objects (deeply)
+in a unit of work to calculate what is new and what has changed. This is
+known as _persistence by reachablity_. In
+link:#Associating_a_New_Target_to_an_Existing_Source_Object[Associating
+a New Target to an Existing Source Object] example, you saw that when
+you associate a new target with an existing source, you can choose to
+register the object or not. If you do not register the new object, it is
+still reachable from the source object (which is a clone, hence it is
+registered). However, when you need to associate a new source object
+with an existing target, you must register the new object. If you do not
+register the new object, then it is not reachable in the unit of work,
+and EclipseLink will not write it to the database.
+
+link:#Example_110-11[Associating a New Source to an Existing Target
+Object] example shows how to create a new `+Pet+` and associate it with
+an existing `+PetOwner+`.
+
+[#Example 110-11]## *_Associating a New Source to an Existing Target
+Object_*
+
+`+UnitOfWork uow = session.acquireUnitOfWork();+`
+`+PetOwner existingPetOwnerClone =+`
+`+        (PetOwner)uow.readObject(PetOwner.class);+`
+
+`+Pet newPet = new Pet();+`
+`+Pet newPetClone = (Pet)uow.registerObject(newPet);+`
+`+newPetClone.setId(900);+` `+newPetClone.setType("Lizzard");+`
+`+newPetClone.setName("Larry");+`
+`+newPetClone.setPetOwner(existingPetOwnerClone);+` `+uow.commit();+`
+
+This generates the following proper SQL:
+
+`+INSERT INTO PET (ID, NAME, TYPE, PET_OWN_ID) VALUES (900, 'Larry', 'Lizzard', 400)+`
+
+In this situation, you should register the new object and work with the
+working copy of the new object. If you associate the new object with the
+`+PetOwner+` clone without registering, it will not be written to the
+database.
+
+[width="100%",cols="<100%",]
+|===
+|*Note:* You cannot use `+UnitOfWork+` methods `+registerObject+`,
+`+registerNewObject+`, or `+registerExistingObject+` with an aggregate
+object (see
+link:Creating%20a%20Relational%20Descriptor%20(ELUG)[Creating Relational
+Aggregate Descriptors]). Doing so will raise a ValidationException or
+other errors at commit time. For more information, see
+link:Using%20Advanced%20Unit%20of%20Work%20API%20(ELUG)[How to Work with
+Aggregates].
+|===
+
+If you fail to register the clone and accidentally associate the cache
+version of the existing object with the new object, then EclipseLink
+will generate an error which states that you have associated the cache
+version of an object ("`from a parent session`") with a clone from this
+unit of work. You must work with working copies in units of work.
+
+For more information, see the following:
+
+* link:#Associating_a_New_Target_to_an_Existing_Source_Object[Associating
+a New Target to an Existing Source Object]
+* link:#Associating_an_Existing_Source_to_an_Existing_Target_Object[Associating
+an Existing Source to an Existing Target Object]
+
+== Associating an Existing Source to an Existing Target Object
+
+This section explains how to associate an existing source object with an
+existing target object with one-to-many and one-to-one relationships.
+
+As shown in link:#Example_110-12[Associating an Existing Source to
+Existing Target Object] example, associating existing objects with each
+other in a unit of work is as simple as associating objects in Java.
+Just remember to only work with working copies of the objects.
+
+[#Example 110-12]## *_Associating an Existing Source to Existing Target
+Object_*
+
+*`+//\'\' \'\'Associate\'\' \'\'all\'\' \'\'VetVisits\'\' \'\'in\'\' \'\'the\'\' \'\'database\'\' \'\'to\'\' \'\'a\'\' \'\'Pet\'\' \'\'from\'\' \'\'the\'\' \'\'database+`*
+`+UnitOfWork uow = session.acquireUnitOfWork();+`
+`+Pet existingPetClone = (Pet)uow.readObject(Pet.class);+`
+`+List allVetVisitClones;+`
+`+allVetVisitClones = uow.readAllObjects(VetVisit.class);+`
+`+Iterator iter = allVetVisitClones.elements();+`
+`+while(iter.hasNext()) {+`
+`+    VetVisit vetVisitClone =(VetVisit)iter.next();+`
+`+    existingPetClone.getVetVisits().add(vetVisitClone);+`
+`+    vetVisitClone.setPet(existingPetClone);+` `+};+` `+uow.commit();+`
+
+The most common error when associating existing objects is failing to
+work with the working copies. If you accidentally associate a cache
+version of an object with a working copy you will get an error at commit
+time indicating that you associated an object from a parent session (the
+cache version) with a clone from this unit of work.
+
+link:#Example_110-13[Associating Existing Objects] example shows another
+example of associating an existing source to an existing target object.
+
+[#Example 110-13]## *_Associating Existing Objects_*
+
+*`+//\'\' \'\'Get\'\' \'\'an\'\' \'\'employee\'\' \'\'read\'\' \'\'from\'\' \'\'the\'\' \'\'parent\'\' \'\'session\'\' \'\'of\'\' \'\'the\'\' \'\'unit\'\' \'\'of\'\' \'\'work+`*
+
+`+Employee employee = (Employee)session.readObject(Employee.class)+`
+
+*`+//\'\' \'\'Acquire\'\' \'\'a\'\' \'\'unit\'\' \'\'of\'\' \'\'work+`*
+`+UnitOfWork uow = session.acquireUnitOfWork();+`
+`+Project project = (Project) uow.readObject(Project.class);+`
+
+*`+//\'\' \'\'When\'\' \'\'associating\'\' \'\'an\'\' \'\'existing\'\' \'\'object\'\' \'\'(read\'\' \'\'from\'\' \'\'the\'\' \'\'session)\'\' \'\'with\'\' \'\'a\'\' \'\'clone,+`*`+ +`
+*`+//\'\' \'\'make\'\' \'\'sure\'\' \'\'you\'\' \'\'register\'\' \'\'the\'\' \'\'existing\'\' \'\'object\'\' \'\'and\'\' \'\'assign\'\' \'\'its\'\' \'\'clone\'\' \'\'into\'\' \'\'a\'\' \'\'unit\'\' \'\'of\'\' \'\'work+`*
+
+*`+//\'\' \'\'INCORRECT:\'\' \'\'Cannot\'\' \'\'associate\'\' \'\'an\'\' \'\'existing\'\' \'\'object\'\' \'\'with\'\' \'\'a\'\' \'\'unit\'\' \'\'of\'\' \'\'work\'\' \'\'clone.+`*
+*`+//\'\' \'\'A\'\' \'\'QueryException\'\' \'\'will\'\' \'\'be\'\' \'\'thrown+`*
+*`+//project.setTeamLeader(employee);+`*
+
+*`+//\'\' \'\'CORRECT:\'\' \'\'Instead\'\' \'\'register\'\' \'\'the\'\' \'\'existing\'\' \'\'object\'\' \'\'then\'\' \'\'associate\'\' \'\'the\'\' \'\'clone+`*
+`+Employee employeeClone = (Employee)uow.registerObject(employee);+`
+`+project.setTeamLeader(employeeClone);+` `+uow.commit();+`
+
+For more information, see the following:
+
+* link:#Associating_a_New_Target_to_an_Existing_Source_Object[Associating
+a New Target to an Existing Source Object]
+* link:#Associating_a_New_Source_to_an_Existing_Target_Object[Associating
+a New Target to an Existing Source Object]
+
+== Deleting Objects
+
+To delete objects in a unit of work, use the `+deleteObject+` or
+`+deleteAllObjects+` method. When you delete an object that is not
+already registered in the unit of work, the unit of work registers the
+object automatically.
+
+When you delete an object, EclipseLink deletes the object’s privately
+owned child parts, because those parts cannot exist without the owning
+(parent) object. At commit time, the unit of work generates SQL to
+delete the objects, taking database constraints into account.
+
+When you delete an object, you must take your object model into account.
+You may need to set references to the deleted object to null (for an
+example, see link:#How_to_Use_the_privateOwnedRelationship_Attribute[How
+to Use the privateOwnedRelationship Attribute]).
+
+This section explains how to delete objects within a unit of work,
+including the following:
+
+* link:#How_to_Use_the_privateOwnedRelationship_Attribute[How to Use the
+privateOwnedRelationship Attribute]
+* link:#How_to_Explicitly_Delete_from_the_Database[How to Explicitly
+Delete from the Database]
+* link:#What_You_May_Need_to_Know_About_the_Order_in_which_Objects_Are_Deleted[What
+You May Need to Know About the Order in which Objects Are Deleted]
+
+=== How to Use the privateOwnedRelationship Attribute
+
+Relational databases do not have garbage collection like a Java Virtual
+Machine (JVM) does. To delete an object in Java you just remove the
+reference to the object. To delete a row in a relational database, you
+must explicitly delete it. Rather than tediously manage when to delete
+data in the relational database, use the mapping attribute
+`+privateOwnedRelationship+` to have EclipseLink manage the garbage
+collection in the relational database for you.
+
+As shown in the link:#Example_110-14[Specifying a Mapping as Privately
+Owned] example, when you create a mapping using Java, use its
+`+privateOwnedRelationship+` method to tell EclipseLink that the
+referenced object is privately owned: that is, the referenced child
+object cannot exist without the parent object.
+
+[#Example 110-14]## *_Specifying a Mapping as Privately Owned_*
+
+`+OneToOneMapping petOwnerMapping = new OneToOneMapping();+`
+`+petOwnerMapping.setAttributeName("petOwner");+`
+`+petOwnerMapping.setReferenceClass(com.top.uowprimer.model.PetOwner.class);+`
+`+petOwnerMapping.privateOwnedRelationship();+`
+`+petOwnerMapping.addForeignKeyFieldName("PET.PET_OWN_ID", "PETOWNER.ID");+`
+`+descriptor.addMapping(petOwnerMapping);+`
+
+When you create a mapping using Workbench, you can select the *Private
+Owned* check box under the *General* tab.
+
+When you tell EclipseLink that a relationship is privately owned, you
+are specifying the following:
+
+* If the source of a privately owned relationship is deleted, then
+delete the target.
+* If you remove the reference to a target from a source, then delete the
+target.
+
+Do not configure privately owned relationships to objects that might be
+shared. An object should not be the target in more than one relationship
+if it is the target in a privately owned relationship.
+
+The exception to this rule is the case when you have a many-to-many
+relationship in which a relation object is mapped to a relation table
+and is referenced through a one-to-many relationship by both the source
+and the target. In this case, if the one-to-many mapping is configured
+as privately owned, then when you delete the source, all the association
+objects will be deleted.
+
+Consider the link:#Example_110-15[Privately Owned Relationships]
+example.
+
+[#Example 110-15]## *_Privately Owned Relationships_*
+
+*`+//\'\' \'\'If\'\' \'\'the\'\' \'\'Pet-PetOwner\'\' \'\'relationship\'\' \'\'is\'\' \'\'privateOwned+`*
+*`+//\'\' \'\'then\'\' \'\'the\'\' \'\'PetOwner\'\' \'\'will\'\' \'\'be\'\' \'\'deleted\'\' \'\'at\'\' \'\'uow.commit()+`*
+*`+//\'\' \'\'otherwise,\'\' \'\'just\'\' \'\'the\'\' \'\'foreign\'\' \'\'key\'\' \'\'from\'\' \'\'PET\'\' \'\'to\'\' \'\'PETOWNER\'\' \'\'will+`*
+*`+//\'\' \'\'be\'\' \'\'set\'\' \'\'to\'\' \'\'null.\'\' \'\'The\'\' \'\'same\'\' \'\'is\'\' \'\'true\'\' \'\'for\'\' \'\'VetVisit+`*
+`+UnitOfWork uow = session.acquireUnitOfWork();+`
+`+Pet petClone = (Pet)uow.readObject(Pet.class);+`
+`+petClone.setPetOwner(null);+`
+`+VetVisit vvClone = (VetVisit)petClone.getVetVisits().get(0);+`
+`+vvClone.setPet(null);+` `+petClone.getVetVisits().remove(vvClone);+`
+`+uow.commit();+`
+
+If the relationships from `+Pet+` to `+PetOwner+` and from `+Pet+` to
+`+VetVisit+` are not privately owned, this code produces the following
+SQL:
+
+`+UPDATE PET SET PET_OWN_ID = NULL WHERE (ID = 150)+`
+`+UPDATE VETVISIT SET PET_ID = NULL WHERE (ID = 350)+`
+
+If the relationships are privately owned, this code produces the
+following SQL:
+
+`+UPDATE PET SET PET_OWN_ID = NULL WHERE (ID = 150)+`
+`+UPDATE VETVISIT SET PET_ID = NULL WHERE (ID = 350)+`
+`+DELETE FROM VETVISIT WHERE (ID = 350)+`
+`+DELETE FROM PETOWNER WHERE (ID = 250)+`
+
+=== How to Explicitly Delete from the Database
+
+If there are cases where you have objects that will not be garbage
+collected through privately owned relationships (especially root objects
+in your object model), then you can explicitly tell EclipseLink to
+delete the row representing the object using the `+deleteObject+` API,
+as shown in the link:#Example_110-16[Explicitly Deleting] example.
+
+[#Example 110-16]## *_Explicitly Deleting_*
+
+`+UnitOfWork uow = session.acquireUnitOfWork();+`
+`+pet petClone = (Pet)uow.readObject(Pet.class);+`
+`+uow.deleteObject(petClone);+` `+uow.commit();+`
+
+The preceding code generates the following SQL:
+
+`+DELETE FROM PET WHERE (ID = 100)+`
+
+=== What You May Need to Know About the Order in which Objects Are Deleted
+
+The unit of work does not track changes or the order of operations. It
+is intended to insulate you from having to modify your objects in the
+order the database requires.
+
+By default, at commit time, the unit of work correctly puts in order all
+insert and update operations using the constraints defined by your
+schema. After all insert and update operations are done, the unit of
+work will issue the necessary delete operations.
+
+Constraints are inferred from one-to-one and one-to-many mappings. If
+you have no such mappings, you can add additional constraint knowledge
+to EclipseLink as described in
+link:Using%20Advanced%20Unit%20of%20Work%20API%20(ELUG)[Controlling the
+Order of Delete Operations].
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Release_1[Category: Release 1] Category:_Task[Category: Task]

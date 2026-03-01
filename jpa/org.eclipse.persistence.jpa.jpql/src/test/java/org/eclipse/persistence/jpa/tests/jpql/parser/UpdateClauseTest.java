@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -73,7 +73,7 @@ public final class UpdateClauseTest extends JPQLParserTest {
 
         RangeVariableDeclarationTester rangeVariableDeclaration = rangeVariableDeclaration(
             abstractSchemaName("Employee"),
-            virtualVariable("employee")
+            virtualVariable("this")
         );
         rangeVariableDeclaration.hasSpaceAfterAbstractSchemaName = false;
         rangeVariableDeclaration.hasSpaceAfterAs                 = false;
@@ -94,7 +94,7 @@ public final class UpdateClauseTest extends JPQLParserTest {
 
         RangeVariableDeclarationTester rangeVariableDeclaration = rangeVariableDeclaration(
             abstractSchemaName("Employee"),
-            virtualVariable("employee")
+            virtualVariable("this")
         );
         rangeVariableDeclaration.hasSpaceAfterAbstractSchemaName = true;
         rangeVariableDeclaration.hasSpaceAfterAs                 = false;
@@ -115,7 +115,7 @@ public final class UpdateClauseTest extends JPQLParserTest {
 
         RangeVariableDeclarationTester rangeVariableDeclaration = rangeVariableDeclarationAs(
             abstractSchemaName("Employee"),
-            virtualVariable("employee")
+            virtualVariable("this")
         );
         rangeVariableDeclaration.hasSpaceAfterAs = false;
 
@@ -147,7 +147,7 @@ public final class UpdateClauseTest extends JPQLParserTest {
 
         String query = "UPDATE Employee AS SET";
 
-        UpdateClauseTester updateClause = updateAs("Employee", "{employee}");
+        UpdateClauseTester updateClause = updateAs("Employee", "{this}");
         updateClause.hasSet              = true;
         updateClause.hasSpaceAfterSet    = false;
         updateClause.hasSpaceAfterRangeVariableDeclaration = false;
@@ -175,7 +175,7 @@ public final class UpdateClauseTest extends JPQLParserTest {
 
         String query = "UPDATE Employee AS SET ";
 
-        UpdateClauseTester updateClause = updateAs("Employee", "{employee}");
+        UpdateClauseTester updateClause = updateAs("Employee", "{this}");
         updateClause.hasSet           = true;
         updateClause.hasSpaceAfterSet = true;
         updateClause.hasSpaceAfterRangeVariableDeclaration = false;

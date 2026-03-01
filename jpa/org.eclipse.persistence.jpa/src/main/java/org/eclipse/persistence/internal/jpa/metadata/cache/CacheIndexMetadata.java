@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,7 +29,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
 /**
  * INTERNAL:
  * Object to hold onto cache index metadata.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -74,8 +74,7 @@ public class CacheIndexMetadata extends ORMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (objectToCompare instanceof CacheIndexMetadata) {
-            CacheIndexMetadata index = (CacheIndexMetadata) objectToCompare;
+        if (objectToCompare instanceof CacheIndexMetadata index) {
             if (this.updateable != index.getUpdateable()) {
                 return false;
             }
@@ -88,7 +87,8 @@ public class CacheIndexMetadata extends ORMetadata {
 
     @Override
     public int hashCode() {
-        int result = m_columnNames != null ? m_columnNames.hashCode() : 0;
+        int result = super.hashCode();
+        result = 31 * result + (m_columnNames != null ? m_columnNames.hashCode() : 0);
         result = 31 * result + (updateable != null ? updateable.hashCode() : 0);
         return result;
     }

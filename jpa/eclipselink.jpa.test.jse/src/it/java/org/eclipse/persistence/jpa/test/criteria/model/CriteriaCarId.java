@@ -37,11 +37,10 @@ public class CriteriaCarId implements Serializable {
       if (this == other) {
         return true;
       }
-      if (!(other instanceof CriteriaCarId)) {
+      if (!(other instanceof CriteriaCarId carDtoId)) {
         return false;
       }
-      final CriteriaCarId carDtoId = (CriteriaCarId) other;
-      return this.version == carDtoId.version &&
+        return this.version == carDtoId.version &&
           this.id.equals(carDtoId.id);
     }
 

@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2015, 2021 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2015, 2019 IBM Corporation. All rights reserved.
+ * Copyright (c) 2015, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,7 +30,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
-import org.eclipse.persistence.config.SessionCustomizer;
+import org.eclipse.persistence.sessions.SessionCustomizer;
 import org.eclipse.persistence.jpa.test.framework.DDLGen;
 import org.eclipse.persistence.jpa.test.framework.Emf;
 import org.eclipse.persistence.jpa.test.framework.EmfRunner;
@@ -149,7 +149,7 @@ public class TestQueryProperties implements PUPropertiesProvider {
 
     @Override
     public Map<String, Object> getAdditionalPersistenceProperties(String puName) {
-        Map<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> map = new HashMap<>();
         map.put(PersistenceUnitProperties.SESSION_CUSTOMIZER, Customizer.class.getName());
         return map;
     }

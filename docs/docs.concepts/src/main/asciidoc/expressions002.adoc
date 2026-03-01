@@ -1,0 +1,232 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[EXPRESSION002]]
+=== About Expression Components
+
+A simple expression usually consists of the following three parts:
+
+* The _attribute_, which represents a mapped attribute or query key of
+the persistent class
+* The _operator_, which is an expression method that implements boolean
+logic, such as `GreaterThan`, `Equal`, or `Like`
+* The _constant_ or _comparison_, which refers to the value used to
+select the object
+
+In the following code fragment, the attribute is `lastName`, the
+operator is `equal` and the constant is the string "`Smith`". The
+`expressionBuilder` substitutes for the object or objects to be read
+from the database. In this example, `expressionBuilder` represents
+employees.
+
+[source,oac_no_warn]
+----
+expressionBuilder.get("lastName").equal("Smith"); 
+----
+
+You can use the following components when constructing an `Expression`:
+
+* link:#CJABDJIC[Boolean Logic]
+* link:#CJAEGFGE[Database Functions and Operators]
+* link:#CJADHIHG[Oracle XMLType Functions]
+* link:#CJAGJAGI[Platform and User-Defined Functions]
+* link:#CJAGEJBC[Expressions for One-to-One and Aggregate Object
+Relationships]
+* link:#CJAIJIIF[Expressions for Joining and Complex Relationships]
+
+[[CJABDJIC]][[OTLCG94245]]
+
+==== Boolean Logic
+
+Expressions use standard boolean operators, such as `AND`, `OR`, and
+`NOT`, and you can combine multiple expressions to form more complex
+expressions.
+
+[[CJAEGFGE]][[OTLCG94247]]
+
+==== Database Functions and Operators
+
+EclipseLink supports many database functions using standard operator
+names that are translated to different databases. EclipseLink operators
+are supported on any database that has an equivalent function (or set of
+functions). For more information and a list of all supported functions
+and operators see "OPERATOR" and "FUNCTION" in _Jakarta Persistence API
+(JPA) Extensions Reference for EclipseLink_
+
+EclipseLink expressions support a variety of database functions, which
+are described in the `Expression` class. Database functions let you
+define more flexible queries. You can use these functions in either a
+report query using a `SELECT` clause, or with comparisons in a query's
+selection criteria using a `WHERE` clause.
+
+NOTE: Some functions may be database platform-specific.
+
+Operators are relational operations that compare two values. EclipseLink
+expression operators are described in the `ExpressionOperator` class.
+
+Mathematical functions are available through the `ExpressionMath` class.
+Mathematical function support in expressions is similar to the support
+provided by the Java class `java.lang.Math`.
+
+[[CJADHIHG]][[OTLCG94254]]
+
+===== Oracle XMLType Functions
+
+You can use the following operators when constructing queries against
+data mapped to Oracle Database `XMLType` column:
+
+* `extract`—Takes an XPath string and returns an XMLType which
+corresponds to the part of the original document that matches the XPath.
+* `extractValue`—Takes an XPath string and returns either a numerical or
+string value based on the contents of the node pointed to by the XPath.
+* `existsNode`—Takes an XPath expression and returns the number of nodes
+that match the XPath.
+* `getStringVal`—Gets the string representation of an `XMLType` object.
+* `getNumberVal`—Gets the numerical representation of an `XMLType`
+object.
+* `isFragment`—Evaluates to 0 if the XML is a well formed document.
+Evaluates to 1 if the document is a fragment.
+
+[[CJAGJAGI]][[OTLCG94256]]
+
+==== Platform and User-Defined Functions
+
+You can use the `Expression` method `getFunction` to access database
+functions that EclipseLink does not support directly. The `Expression`
+API includes additional forms of the `getFunction` method that allow you
+to specify arguments. You can also create your own custom functions. For
+more information, see _Java API Reference for EclipseLink_.
+
+[[CJAGEJBC]][[OTLCG94258]]
+
+==== Expressions for One-to-One and Aggregate Object Relationships
+
+Expressions can include an attribute that has a one-to-one relationship
+with another persistent class. A one-to-one relationship translates
+naturally into an SQL join that returns a single row.
+
+[[CJAIJIIF]][[OTLCG94260]]
+
+==== Expressions for Joining and Complex Relationships
+
+You can query against complex relationships, such as one-to-many,
+many-to-many, direct collection, and aggregate collection relationships.
+Expressions for these types of relationships are more complex to build,
+because the relationships do not map directly to joins that yield a
+single row per object.
+
+This section describes the following:
+
+* link:#CJABCJII[About Joins]
+* link:#CJAJIHBJ[Using EclipseLink Expression API for Joins]
+
+[[CJABCJII]][[OTLCG94261]]
+
+===== About Joins
+
+A *join* is a relational database query that combines rows from two or
+more tables. Relational databases perform a join whenever multiple
+tables appear in the query's `FROM` clause. The query's select list can
+select any columns from any of these tables.
+
+An inner join (sometimes called a "simple join") is a join of two or
+more tables that returns only those rows that satisfy the join
+condition.
+
+An outer join extends the result of an inner join. An outer join returns
+all rows that satisfy the join condition and also returns some or all of
+those rows from one table for which no rows from the other satisfy the
+join condition. Outer joins can be categorized as left or right:
+
+* A query that performs a left outer join of tables A and B returns all
+rows from A. For all rows in A that have no matching rows in B, the
+database returns null for any select list expressions containing columns
+of B.
+* A query that performs a right outer join of tables A and B returns all
+rows from B. For all rows in B that have no matching rows in A, the
+database returns null for any select list expressions containing columns
+of A.
+
+When you query with a join expression, EclipseLink can use joins to
+check values from other objects or other tables that represent parts of
+the same object. Although this works well under most circumstances, it
+can cause problems when you query against a one-to-one relationship, in
+which one side of the relationship is not present.
+
+For example, `Employee` objects may have an `Address` object, but if the
+`Address` is unknown, it is `null` at the object level and has a null
+foreign key at the database level. When you attempt a read that
+traverses the relationship, missing objects cause the query to return
+unexpected results. Consider the following expression:
+
+[source,oac_no_warn]
+----
+(emp.get("firstName").equal("Steve")).or(emp.get("address"). get("city").equal("Ottawa"))
+----
+
+In this case, employees with no address do not appear in the result set,
+regardless of their first name. Although not obvious at the object
+level, this behavior is fundamental to the nature of relational
+databases.
+
+Outer joins rectify this problem in the databases that support them. In
+this example, the use of an outer join provides the expected result: all
+employees named Steve appear in the result set, even if their address is
+unknown.
+
+To implement an outer join, use `Expression` method `getAllowingNull`,
+rather than `get`, and `Expression` method `anyOfAllowingNone`, rather
+than `anyOf`.
+
+For example:
+
+[source,oac_no_warn]
+----
+(emp.get("firstName").equal("Steve")).or(
+emp.getAllowingNull("address").get("city").equal("Ottawa"))
+----
+
+Support and syntax for outer joins vary widely between databases and
+database drivers. EclipseLink supports outer joins for most databases.
+
+[[CJAJIHBJ]][[OTLCG94262]]
+
+===== Using EclipseLink Expression API for Joins
+
+You can use joins anywhere expressions are used, including:
+selection-criteria, ordering, report queries, partial objects,
+one-to-one relational mappings, and join reading.
+
+Use the Expression API shown in link:#CACHEEHJ[Table 10-1] to configure
+inner and outer join expressions.
+
+[[OTLCG94263]][[sthref66]][[CACHEEHJ]]
+
+*_Table 10-1 Expression API for Joins_*
+
+|=====================================================
+|*Expression API* |*Type of Join* |*Type of Mapping*
+|`get` |inner |one-to-one
+|`getAllowingNull` |outer |one-to-one
+|`anyOf` |inner |one-to-many, many-to-many
+|`anyOfAllowingNone` |outer |one-to-many, many-to-many
+|=====================================================
+
+To query across a one-to-many or many-to-many relationship, use the
+`anyOf` operation. As its name suggests, this operation supports queries
+that return all items on the "many" side of the relationship that
+satisfy the query criteria.

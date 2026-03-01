@@ -1,0 +1,90 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+
+:description: EclipseLink
+:keywords: eclipselink, java, jpa, persistence, cache
+[[CACHE]]
+== Understanding Caching
+
+This chapter introduces and describes caching. The EclipseLink cache is
+an in-memory repository that stores recently read or written objects
+based on class and primary key values. The cache improves performance by
+holding recently read or written objects and accessing them in-memory to
+minimize database access, manage locking and isolation level, and manage
+object identity.
+
+The entity caching annotations defined by EclipseLink are listed in
+"Caching Annotations" in _Jakarta Persistence API (JPA) Extensions
+Reference for EclipseLink_.
+
+EclipseLink also provides a number of persistence unit properties that
+you can specify to configure the EclipseLink cache. These properties may
+compliment or provide an alternative to annotations. For a list of these
+properties, see "Caching" in _Jakarta Persistence API (JPA) Extensions
+Reference for EclipseLink_.
+
+This chapter includes the following sections:
+
+* link:#CACHE001[About Cache Architecture]
+* link:#CACHE002[About Cache Type and Size]
+* link:#CACHE003[About Queries and the Cache]
+* link:#CACHE004[About Handling Stale Data]
+* link:#CACHE005[About Explicit Query Refreshes]
+* link:#CACHE006[About Cache Indexes]
+* link:#CACHE007[Database Event Notification and Oracle CQN]
+* link:#CACHE008[About Query Results Cache]
+* link:#CACHE009[About Cache Coordination]
+* link:#CACHE010[Clustering and Cache Coordination]
+* link:#CACHE011[Clustering and Cache Consistency]
+* link:#CACHE012[Cache Interceptors]
+
+//About Cache Architecture
+include::{rootdir}/cache001.adoc[]
+
+//About Cache Type and Size
+include::{rootdir}/cache002.adoc[]
+
+//About Queries and the Cache
+include::{rootdir}/cache003.adoc[]
+
+//About Handling Stale Data
+include::{rootdir}/cache004.adoc[]
+
+//About Explicit Query Refreshes
+include::{rootdir}/cache005.adoc[]
+
+//About Cache Indexes
+include::{rootdir}/cache006.adoc[]
+
+//Database Event Notification and Oracle CQN
+include::{rootdir}/cache007.adoc[]
+
+//About Query Results Cache
+include::{rootdir}/cache008.adoc[]
+
+//About Cache Coordination
+include::{rootdir}/cache009.adoc[]
+
+//Clustering and Cache Coordination
+include::{rootdir}/cache010.adoc[]
+
+//Clustering and Cache Consistency
+include::{rootdir}/cache011.adoc[]
+
+//Cache Interceptors
+include::{rootdir}/cache012.adoc[]

@@ -1,0 +1,298 @@
+image:Elug_draft_icon.png[Image:Elug draft
+icon.png,title="Image:Elug draft icon.png"] *For the latest EclipseLink
+documentation, please see
+http://www.eclipse.org/eclipselink/documentation/*
+
+'''''
+
+*TOC* Special:Whatlinkshere_Configuring_an_EIS_Mapping_(ELUG)[Related
+Topics]
+
+For information on how to create EclipseLink mappings, see
+link:Creating%20a%20Mapping%20(ELUG)#CBBHHHJC[Creating a Mapping].
+
+This table lists the types of EIS mappings that you can configure and
+provides a cross-reference to the type-specific chapter that lists the
+configurable options supported by that type.
+
+[#Table 74-1]##
+
+If you are creating…
+
+See…
+
+EIS direct mapping
+
+Configuring an EIS Direct Mapping
+
+EIS composite direct collection mapping
+
+Configuring an EIS Composite Direct Collection Mapping
+
+EIS composite object mapping
+
+Configuring an EIS Composite Object Mapping
+
+EIS composite collection mapping
+
+Configuring an EIS Composite Collection Mapping
+
+EIS one-to-one mapping
+
+Configuring an EIS One-to-One Mapping
+
+EIS one-to-many mapping
+
+Configuring an EIS One-to-Many Mapping
+
+EIS transformation mapping
+
+Configuring an EIS Transformation Mapping
+
+Fore more information, see the following:
+
+* link:Introduction%20to%20Mappings%20(ELUG)[Introduction to Mappings]
+* link:Introduction%20to%20EIS%20Mappings%20(ELUG)#EIS_Mapping_Types[EIS
+Mapping Types]
+* link:Configuring%20a%20Mapping%20(ELUG)#CEGFEFJG[Configuring a
+Mapping]
+
+== Configuring Common EIS Mapping Options
+
+This table lists the configurable options shared by two or more EIS
+mapping types. In addition to the configurable options described here,
+you must also configure the options described for the specific EIS
+mapping types (see
+link:Introduction%20to%20EIS%20Mappings%20(ELUG)#EIS_Mapping_Types[EIS
+Mapping Types]), as shown in the following table.
+
+[#Table 74-2]##
+
+Option to Configure
+
+Workbench
+
+Java
+
+Read-only
+
+Indirection (lazy loading)
+
+XPath
+
+Default null value
+
+Reference descriptors
+
+Configuring Method or Direct Field Accessing at the Mapping Level
+
+Private or independent relationships
+
+Comments
+
+Serialized object converter
+
+Type conversion converter
+
+Object type converter
+
+Simple type translator
+
+Container policy
+
+Selection interaction
+
+Use of a single node
+
+JAXB typesafe enumeration converter
+
+== Configuring Reference Descriptors
+
+In EIS mappings that extend
+`+org.eclipse.persistence.mappings.ForeignReferenceMapping+` or
+`+org.eclipse.persistence.mappings.AggregateMapping+` class, attributes
+reference other EclipseLink descriptors–not the data source. You can
+select a descriptor in the current project, or a descriptor from some
+other project.
+
+This table summarizes which EIS mappings support this option.
+
+[#Table 74-3]## *_Mapping Support for Reference Descriptor_*
+
+Mapping
+
+Using the Workbench
+
+Using Java
+
+Direct mapping
+
+Composite direct collection mapping
+
+Composite object mapping
+
+Composite collection mapping
+
+One-to-one mapping
+
+One-to-many mapping
+
+Transformation mapping
+
+=== How to Configure Reference Descriptors Using Workbench
+
+To specify a reference descriptor for an EIS mapping, use this
+procedure.
+
+[arabic]
+. Select the mapped attribute in the *Navigator*. Its properties appear
+in the Editor.
+. Click the *General* tab. The General tab appears.
+[#Figure 74-1]##*_General Tab, Reference Descriptor Field_*
+image:mpgenref.gif[General Tab, Reference Descriptor
+Field,title="General Tab, Reference Descriptor Field"]
+. Use the *Reference Descriptor* field to select the descriptor
+referenced by this relationship mapping.
+
+[width="100%",cols="<100%",]
+|===
+|*Note:* For one-to-one and one-to-many EIS mappings, the reference
+descriptor must be a root descriptor. See
+link:Configuring%20an%20EIS%20Descriptor%20(ELUG)#Configuring_an_EIS_Descriptor_as_a_Root_or_Composite_Type[Configuring
+an EIS Descriptor as a Root or Composite Type].
+|===
+
+You can specify a reference descriptor that is not in the current
+Workbench project. For example, to create a mapping to an `+Employee+`
+class that does not exist in the current project, do the following:
+
+[arabic]
+. Add the `+Employee+` class to your current project. See
+link:Creating%20a%20Project%20(ELUG)#Working_with_Projects[Working with
+Projects].
+. Create the relationship mapping to the `+Employee+` descriptor.
+. Deactivate the `+Employee+` descriptor. See
+link:Using%20Workbench%20(ELUG)#Active_and_Inactive_Descriptors[Active
+and Inactive Descriptors].
+
+When you generate the deployment XML for your project, the mapping to
+the `+Employee+` class will be included, but not the `+Employee+` class
+itself.
+
+== Configuring Selection Interaction
+
+In EIS mappings that extend
+`+org.eclipse.persistence.mappings.ForeignReferenceMapping+` class,
+EclipseLink uses a selection interaction to acquire the instance of the
+target object to which the mapping refers.
+
+By default, EclipseLink uses the read interaction you define for the
+mapping’s reference descriptor (see
+link:#Configuring_Reference_Descriptors[Configuring Reference
+Descriptors]). In most cases, this interaction is sufficient. If the
+reference descriptor’s read interaction is not sufficient, you can
+define a separate interaction.
+
+This table summarizes which EIS mappings support this option.
+
+[#Table 74-4]## *_Mapping Support for Selection Interaction_*
+
+Mapping
+
+Using the Workbench
+
+Using Java
+
+Direct mapping
+
+Composite direct collection mapping
+
+One-to-one mapping
+
+One-to-many mapping
+
+Composite object mapping
+
+Composite collection mapping
+
+Transformation mapping
+
+For more information about how EclipseLink uses the selection criteria,
+see
+link:Introduction%20to%20EIS%20Mappings%20(ELUG)#Reference_EIS_Mappings[Reference
+EIS Mappings].
+
+=== How to Configure Selection Interaction Using Workbench
+
+To specify the selection interaction (such as Read Object) for the EIS
+mapping, use this procedure:
+
+[arabic]
+. Select the one-to-many EIS mapping in the *Navigator*. Its properties
+appear in the Editor.
+. Click the *Selection Interaction* tab. The Selection Interaction tab
+appears. [#Figure 74-2 ]##*_Selection Interaction Tab_*
+image:selinter.gif[Selection Interaction
+Tab,title="Selection Interaction Tab"]
+. Complete each field on the tab.
+
+Use the following information to enter data in each field on the tab:
+
+Field
+
+Description
+
+Function Name
+
+The name of the EIS function that this call type (Read Object or Read
+All) invokes on the EIS.
+
+Input Record Name
+
+The name passed to the JCA adapter when creating the input record.
+
+Input Root Element Name
+
+The root element name to use for the input DOM.
+
+Input Arguments
+
+The query argument name to map to the interaction field or XPath nodes
+in the argument record. For example, if you are using XML records, use
+this option to map input argument name to the XPath name/first-name.
+
+Output Arguments
+
+The result record field or XPath nodes to map to the correct nodes in
+the record used by the descriptor’s mappings. For example, if you are
+using XML records, use this option to map the output fname to
+name/first-name.
+
+Output arguments are not required if the interaction returns an XML
+result that matches the descriptor’s mappings.
+
+Input Result Path
+
+Use this option if the EIS interaction expects the interaction arguments
+to be nested in the XML record. For example, specify arguments, if the
+arguments were to be nested under the root element exec-find-order, then
+under an arguments element.
+
+Output Result Path
+
+The name of the EIS function that this call type (Read Object or Read
+All) invokes on the EIS.
+
+Properties
+
+Any properties required by your EIS platform. For example, property name
+operation (from AQPlatform.QUEUE_OPERATION) and property value enqueue
+(from AQPlatform.ENQUEUE).
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Release_1[Category: Release 1] Category:_Task[Category: Task]
+Category:_EIS[Category: EIS]

@@ -1,0 +1,812 @@
+*TOC*
+Special:Whatlinkshere_Introduction_to_Relational_Mappings_(ELUG)[Related
+Topics]
+
+A relational mapping transforms any object data member type to a
+corresponding relational database (SQL) data source representation in
+any supported relational database. Relational mappings let you map an
+object model into a relational data model.
+
+Relational mappings transform object data members to relational database
+fields. Use them to map simple data types including primitives (such as
+`+int+`), JDK classes (such as `+String+`), and large object (LOB)
+values. You can also use them to transform object data members that
+reference other domain objects by way of association where data source
+representations require object identity maintenance (such as sequencing
+and back references) and possess various types of multiplicity and
+navigability. The appropriate mapping class is chosen primarily by the
+cardinality of the relationship.
+
+Do not confuse relational mappings with object-relational data type
+mappings (see
+link:Introduction%20to%20Object-Relational%20Data%20Type%20Mappings%20(ELUG)[Introduction
+to Object-Relational Data Type Mappings]). An object-relational data
+type mapping transforms certain object data member types to structured
+data source representations optimized for storage in specialized
+object-relational data type databases such as Oracle9__i__ Database
+Server. Object-relational data type mappings let you map an object model
+into an object-relational data type data model. In general, you can use
+relational mappings with any supported relational database. You can only
+use object-relational data type mappings with specialized
+object-relational data type databases optimized to support
+object-relational data type data source representations.
+
+For information on mapping concepts and features common to more than one
+type of EclipseLink mappings, see
+link:Introduction%20to%20Mappings%20(ELUG)[Introduction to Mappings].
+
+== Relational Mapping Types
+
+EclipseLink supports the relational mappings listed in the following
+table.
+
+[#Table 32-1]##
+
+[width="100%",cols="<24%,<42%,<17%,<17%",options="header",]
+|===
+|*Type of Mapping* |*Description* |*EclipseLink Workbench* |*Java*
+|link:#Direct-to-Field_Mapping[Direct-to-field] |Map a Java attribute
+directly to a database field.
+|image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:#Direct-to-XMLType_Mapping[Direct-to-XMLType] |Map Java attributes
+to an `+XMLType+` column in an Oracle Database (introduced in version
+9.2.0.1). |image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:#One-to-One_Mapping[One-to-one] |Map a reference to another
+persistent Java object to the database.
+|image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:#One-to-One_Mapping[Variable one-to-one] |Map a reference to an
+interface to the database.
+|image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:#One-to-Many_Mapping[One-to-many] |Map Java collections of
+persistent objects to the database.
+|image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:#Many-to-Many_Mapping[Many-to-many] |Use an association table to
+map Java collections of persistent objects to the database.
+|image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:#Collection_Mapping[Aggregate collection] |Map Java collections of
+persistent objects to the database.
+|image:unsupport.gif[Unsupported,title="Unsupported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:#Direct_Collection_Mapping[Direct collection] |Map Java
+collections of objects that do not have descriptors.
+|image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:#Direct_Map_Mapping[Direct map] |Direct map mappings store
+instances that implement `+java.util.Map+`.
+|image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:#Aggregate_Object_Mapping[Aggregate object] |Create strict
+one-to-one mappings that require both objects to exist in the same
+database row. |image:support.gif[Supported,title="Supported"]
+|image:unsupport.gif[Unsupported,title="Unsupported"]
+
+|link:#Transformation_Mapping[Transformation] |Create custom mappings
+where one or more fields can be used to create the object to be stored
+in the attribute. |image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+|===
+
+== Relational Mapping Concepts
+
+This section introduces direct mapping concepts unique to EclipseLink,
+including the following:
+
+* link:#Directionality[Directionality]
+* link:#Converters_and_Transformers[Converters and Transformers]
+
+=== Directionality
+
+The direction of a relationship may be either unidirectional or
+bidirectional. In a unidirectional relationship, only one entity bean
+has a relationship field that refers to the other. All EclipseLink
+relational mappings are unidirectional, from the class being described
+(the _source_ class) to the class with which it is associated (the
+_target_ class). The target class does not have a reference to the
+source class in a unidirectional relationship.
+
+In a bidirectional relationship, each entity bean has a relationship
+field that refers to the other bean. Through the relationship field, an
+entity bean’s code can access its related object. To implement a
+bidirectional relationship (classes that reference each other), use two
+unidirectional mappings with the sources and targets reversed.
+
+Note: Maintenance of bidirectional relationships presents a number of
+technical challenges.
+
+For more information, see the following:
+
+Configuring Bidirectional Relationship
+
+Indirection (Lazy Loading)
+
+=== Converters and Transformers
+
+You can store object attributes directly in a database table as follows:
+
+* link:#Using_a_Direct_Mapping[Direct mapping]
+* link:#Using_a_Converter_Mapping[Converter Mapping]
+* link:#Using_a_Transformation_Mapping[Transformation mapping]
+
+==== Using a Direct Mapping
+
+If the attribute type is comparable to a database type, the information
+can be stored directly simply by using a
+link:#Direct-to-Field_Mapping[Direct-to-Field Mapping].
+
+==== Using a Converter Mapping
+
+If the attribute type is comparable to a database type but requires
+conversion, the information can be stored directly by using a
+link:#Direct-to-Field_Mapping[Direct-to-Field Mapping] and an
+appropriate `+Converter+` instance.
+
+If the application’s objects contain attributes that cannot be
+represented as direct-to-field with an existing converter, use a
+direct-to-field mapping with a custom converter.
+
+==== Using a Transformation Mapping
+
+If there is no database primitive type that is logically comparable to
+the attribute’s type, or, if an attribute requires data from multiple
+fields, it must be transformed on its way to and from the database.
+
+In this case, use a link:#Transformation_Mapping[transformation
+mapping].
+
+== Direct-to-Field Mapping
+
+Use direct-to-field mappings to map primitive object attributes, or non
+persistent regular objects, such as the JDK classes. For example, use a
+direct-to-field mapping to store a `+String+` attribute in a `+VARCHAR+`
+field.
+
+[#Example 32-1]## *_Direct-to-Field Mapping Example_*
+
+The link:#Figure_32-1[Direct-to-Field Mapping] figure illustrates a
+direct-to-field mapping between the Java attribute `+city+` and the
+relational database column `+CITY+`. Similarly, direct-to-field mappings
+could be defined from `+country+` to `+COUNTRY+`, `+id+` to
+`+ADDRESS_ID+`, `+established+` to `+EST_DATE+`, and `+province+` to
+`+PROVINCE+`.
+
+[#Figure 32-1]## *_Direct-to-Field Mapping_*
+
+.Direct-to-Field Mapping
+image::dtfmpfig.gif[Direct-to-Field
+Mapping,title="Direct-to-Field Mapping"]
+
+You can use a direct-to-field mapping with any of the following
+`+Converter+` instances:
+
+* link:Introduction%20to%20Mappings%20(ELUG)#Object_Type_Converter[Object
+Type Converter]
+* link:Introduction%20to%20Mappings%20(ELUG)#Serialized_Object_Converter[Serialized
+Object Converter]
+* link:Introduction%20to%20Mappings%20(ELUG)#[Type Conversion Converter]
+
+You can use a direct-to-field mapping with a
+link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Change_Policy[change
+policy].
+
+See
+link:Configuring%20a%20Relational%20Direct-to-Field%20Mapping_(ELUG)[Configuring
+a Relational Direct-to-Field Mapping] for more information.
+
+== Direct-to-XMLType Mapping
+
+Using a direct-to-`+XMLType+` mapping, you can map XML data in the form
+of a `+String+` or an org`+.w3c.dom.Document+` object to an *XMLType*
+column in an Oracle Database (introduced in version 9.2.0.1).
+
+If you plan to use direct-to-`+XMLType+` mappings in Workbench and the
+EclipseLink runtime, you must include the Oracle Database `+xdb.jar+`
+file in the Workbench classpath (see
+link:Using%20Workbench%20(ELUG)#Configuring_the_Workbench_Environment[Configuring
+the Workbench Environment]).
+
+The EclipseLink query framework provides a number of expression
+operators you can use to create queries based on the content of that XML
+data (see
+link:Introduction%20to%20EclipseLink%20Expressions%20(ELUG)#XMLType_Functions[XMLType
+Functions]).
+
+See
+link:Configuring%20a%20Relational%20Direct-to-XMLType%20Mapping_(ELUG)[Configuring
+a Relational Direct-to-XMLType Mapping] for more information.
+
+== One-to-One Mapping
+
+One-to-one mappings represent simple pointer references between two Java
+objects. In Java, a single pointer stored in an attribute represents the
+mapping between the source and target objects. Relational database
+tables implement these mappings using foreign keys.
+
+The link:#Figure_32-2[One-to-One Mappings] figure illustrates a
+one-to-one relationship from the `+address+` attribute of an
+`+Employee+` object to an `+Address+` object. To store this relationship
+in the database, create a one-to-one mapping between the `+address+`
+attribute and the `+Address+` class. This mapping stores the `+id+` of
+the `+Address+` instance in the `+EMPLOYEE+` table when the `+Employee+`
+instance is written. It also links the `+Employee+` instance to the
+`+Address+` instance when the `+Employee+` is read from the database.
+Because an `+Address+` does not have any references to the `+Employee+`,
+it does not have to provide a mapping to `+Employee+`.
+
+For one-to-one mappings, the source table normally contains a foreign
+key reference to a record in the target table. In the
+link:#Figure_32-2[One-to-One Mappings] figure, the `+ADDR_ID+` field of
+the `+EMPLOYEE+` table is a foreign key.
+
+[#Figure 32-2]## *_One-to-One Mappings_*
+
+.One-to-One Mappings
+image::onetoone_map_fig.gif[One-to-One
+Mappings,title="One-to-One Mappings"]
+
+You can also implement a one-to-one mapping where the target table
+contains a foreign key reference to the source table. In the
+link:#Figure_32-2[One-to-One Mappings] figure, the database design would
+change such that the `+ADDRESS+` row would contain the `+EMP_ID+` to
+identify the `+Employee+` to which it belonged. In this case, the target
+must also have a relationship mapping to the source.
+
+The update, insert and delete operations, which are normally done for
+the target before the source for privately owned one-to-one
+relationships, are performed in the opposite order when the target owns
+the foreign key. Target foreign keys normally occur in bidirectional
+one-to-one mappings (see link:#Directionality[Directionality]), because
+one side has a foreign key and the other shares the same foreign key in
+the other’s table.
+
+Target foreign keys can also occur when large cascaded composite primary
+keys exist (that is, one object’s primary key is composed of the primary
+key of many other objects). In this case it is possible to have a
+one-to-one mapping that contains both foreign keys and target foreign
+keys.
+
+In a foreign key, EclipseLink automatically updates the foreign key
+value in the object’s row. In a target foreign key, it does not. In
+EclipseLink, use the *Target Foreign Key* option when a target foreign
+key relationship is defined.
+
+When mapping a relationship, you must understand these differences
+between a foreign key and a target foreign key, to ensure that the
+relationship is defined correctly.
+
+In a bidirectional relationship where the two classes in the
+relationship reference each other, only one of the mappings should have
+a foreign key. The other mapping should have a target foreign key. If
+one of the mappings in a bidirectional relationship is a one-to-many
+mapping, see
+link:Configuring%20a%20Relational%20Variable%20One-to-One%20Mapping%20(ELUG)[Configuring
+a Relational Variable One-to-One Mapping] for details.
+
+You can use a one-to-one mapping with a
+link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Change_Policy[change
+policy].
+
+See
+link:Configuring%20a%20Relational%20One-to-One%20Mapping%20(ELUG)[Configuring
+a Relational One-to-One Mapping] for more information.
+
+== Variable One-to-One Mapping
+
+Variable class relationships are similar to polymorphic relationships,
+except that in this case the target classes are not related through
+inheritance (and thus not good candidates for an abstract table), but
+through an interface.
+
+To define variable class relationships in Workbench, use the variable
+one-to-one mapping selection, but choose the interface as the reference
+class. This makes the mapping a variable one-to-one. When defining
+mappings in Java code, use the `+VariableOneToOneMapping+` class.
+
+EclipseLink supports variable relationships only in one-to-one mappings.
+It handles this relationship in two ways:
+
+* Through the class indicator field (see
+link:Configuring%20a%20Relational%20Variable%20One-to-One%20Mapping%20(ELUG)#Configuring_Class_Indicator[Configuring
+Class Indicator]).
+* Through unique primary key values among target classes implementing
+the interface (see
+link:Configuring%20a%20Relational%20Variable%20One-to-One%20Mapping%20(ELUG)#Configuring_Unique_Primary_Key[Configuring
+Unique Primary Key]).
+
+[#Figure 32-3]## *_Variable One-to-One Mappings with Class Indicator_*
+
+.Variable One-to-One Mappings with Class Indicator
+image::v11mapfig.gif[Variable One-to-One Mappings with Class
+Indicator,title="Variable One-to-One Mappings with Class Indicator"]
+
+See
+link:Configuring%20a%20Relational%20Variable%20One-to-One%20Mapping%20(ELUG)[Configuring
+a Relational Variable One-to-One Mapping] for more information.
+
+== One-to-Many Mapping
+
+One-to-many mappings are used to represent the relationship between a
+single source object and a collection of target objects. They are a good
+example of something that is simple to implement in Java using a
+`+Collection+` (or other collection types) of target objects, but
+difficult to implement using relational databases.
+
+In a Java `+Collection+`, the owner references its parts. In a
+relational database, the parts reference their owner. Relational
+databases use this implementation to make querying more efficient.
+
+The purpose of creating this one-to-one mapping in the target is so that
+the foreign key information can be written when the target object is
+saved. Alternatives to the one-to-one mapping back reference include the
+following:
+
+* Use a direct-to-field mapping to map the foreign key and maintain its
+value in the application. Here the object model does not require a back
+reference, but the data model still requires a foreign key in the target
+table.
+* Use a many-to-many mapping to implement a logical one-to-many. This
+has the advantage of not requiring a back reference in the object model
+and not requiring a foreign key in the data model. In this model the
+many-to-many relation table stores the collection. It is possible to put
+a constraint on the join table to enforce that the relation is a logical
+one-to-many relationship.
+
+[#Figure 32-4]## *_One-to-Many Relationships_*
+
+.One-to-Many Relationships
+image::onetomany_map_fig.gif[One-to-Many
+Relationships,title="One-to-Many Relationships"]
+
+[width="100%",cols="<100%",]
+|===
+|*_Note_*: The `+phone+` attribute shown in the
+link:#Figure_32-4[One-to-Many Relationships] is of type `+Vector+`. You
+can use a `+Collection+` interface (or any class that implements the
+`+Collection+` interface) for declaring the collection attribute. See
+link:Configuring%20a%20Mapping%20(ELUG)#Configuring_Container_Policy[Configuring
+Container Policy] for details.
+|===
+
+You can use a many-to-many mapping with a
+link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Change_Policy[change
+policy].
+
+See
+link:Configuring%20a%20Relational%20One-to-Many%20Mapping_(ELUG)[Configuring
+a Relational One-to-Many Mapping] for more information.
+
+== Many-to-Many Mapping
+
+Many-to-many mappings represent the relationships between a collection
+of source objects and a collection of target objects. They require the
+creation of an intermediate table for managing the associations between
+the source and target records.
+
+This figure illustrates a many-to-many mapping in Java and in relational
+database tables.
+
+[#Figure 32-5]## *_Many-to-many Relationships_*
+
+.Many-to-many Relationships
+image::mmmapfig.gif[Many-to-many
+Relationships,title="Many-to-many Relationships"]
+
+[width="100%",cols="<100%",]
+|===
+|*_Note_*: The `+projects+` attribute shown in the
+link:#Figure_32-5[Many-to-many Relationships] figure is of type
+`+Vector+`. You can use a `+Collection+` interface (or any class that
+implements the `+Collection+` interface) for declaring the collection
+attribute. See
+link:Configuring%20a%20Mapping%20(ELUG)#Configuring_Container_Policy[Configuring
+Container Policy] for details.
+|===
+
+Many-to-many mappings are implemented using a relation table. This table
+contains columns for the primary keys of the source and target tables.
+Composite primary keys require a column for each field of the composite
+key. The intermediate table must be created in the database before using
+the many-to-many mapping.
+
+The target class does not have to implement any behavior for the
+many-to-many mappings. If the target class also creates a many-to-many
+mapping back to its source, then it can use the same relation table, but
+one of the mappings must be set to read-only. If both mappings write to
+the table, they can cause collisions.
+
+Indirection (lazy loading) is enabled by default in a many-to-many
+mapping, which requires that the attribute have the
+`+ValueHolderInterface+` type or transparent collections. For more
+information on indirection, see
+link:Introduction%20to%20Mappings%20(ELUG)#Indirection_(Lazy_Loading)[Indirection
+(Lazy Loading)].
+
+You can use a many-to-many mapping with a
+link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Change_Policy[change
+policy]).
+
+See
+link:Configuring%20a%20Relational%20Many-to-Many%20Mapping_(ELUG)#Configuring_Change_Policy[Configuring
+a Relational Many-to-Many Mapping] for more information.
+
+== Aggregate Collection Mapping
+
+Aggregate collection mappings are used to represent the aggregate
+relationship between a single-source object and a collection of target
+objects. Unlike the EclipseLink one-to-many mappings, in which there
+should be a one-to-one back reference mapping from the target objects to
+the source object, there is no back reference required for the aggregate
+collection mappings, because the foreign key relationship is resolved by
+the aggregation.
+
+[width="100%",cols="<100%",]
+|===
+|*Note*: To use aggregate collections with Workbench, you must use an
+amendment method (see
+link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Amendment_Methods[Configuring
+Amendment Methods]), or manually edit the project source to add the
+mapping.
+|===
+
+Although aggregate collection mappings are similar to one-to-many
+mappings, they are not replacements for one-to-many mappings. Use
+aggregate collections only in situations where the target collections
+are of a reasonable size and if having a many-to-one back mapping is
+difficult.
+
+Because one-to-many relationships offer better performance and are more
+robust and scalable, consider using a one-to-many relationship rather
+than an aggregate collection. In addition, aggregate collections are
+privately owned by the source of the relationship and must not be shared
+or referenced by other objects.
+
+This section describes the following:
+
+* link:#Aggregate_Collection_Mappings_and_Inheritance[Aggregate
+Collection Mappings and Inheritance]
+* link:#Aggregate_Collection_Mappings_and_EJB[Aggregate Collection
+Mappings and EJB]
+* link:#How_to_Implement_Aggregate_Collection_Mapping[How to Implement
+Aggregate Collection Mappings]
+
+See
+link:Configuring%20a%20Relational%20Aggregate%20Collection%20Mapping%20(ELUG)[Configuring
+a Relational Aggregate Collection Mapping] for more information.
+
+=== Aggregate Collection Mappings and Inheritance
+
+Aggregate collection descriptors can use inheritance. You must also
+declare subclasses as aggregate collection. The subclasses can have
+their own mapped tables, or share the table with their parent class. See
+link:Introduction%20to%20Descriptors%20(ELUG)[Descriptors and
+Inheritance] for more information on inheritance.
+
+=== Aggregate Collection Mappings and EJB
+
+You can use aggregate collection mappings with entity beans if the
+source of the relationship is an entity bean or Java object, and the
+mapping targets are regular Java objects. Entity beans cannot be the
+target of an aggregate object mapping.
+
+=== How to Implement Aggregate Collection Mappings
+
+In a Java `+Collection+`, the owner references its parts. In a
+relational database, the parts reference their owners. Relational
+databases use this implementation to make querying more efficient.
+
+Aggregate collection mappings require a target table for the target
+objects.
+
+To implement an aggregate collection mapping, the following must take
+place:
+
+* The descriptor of the target class must declare itself to be an
+aggregate collection object. Unlike the aggregate object mapping, in
+which the target descriptor does not have a specific table to associate
+with, there must be a target table for the target object.
+* The descriptor of the source class must add an aggregate collection
+mapping that specifies the target class.
+
+== Direct Collection Mapping
+
+Direct collection mappings store collections of Java objects that are
+not EclipseLink-enabled. The object type stored in the direct collection
+is typically a Java type, such as `+String+`.
+
+It is also possible to use direct collection mappings to map a
+collection of non-`+String+` objects. For example, it is possible to
+have an attribute that contains a collection of `+Integer+` or `+Date+`
+instances. The instances stored in the collection can be any type
+supported by the database and has a corresponding wrapper class in Java.
+
+Support for primitive data types such as `+int+` is not provided,
+because Java `+Collection+` holds only objects.
+
+The link:#Figure_32-6[Direct Collection Mappings] figure illustrates how
+a direct collection is stored in a separate table with two fields. The
+first field is the reference key field, which contains a reference to
+the primary key of the instance owning the collection. The second field
+contains an object in the collection and is called the direct field.
+There is one record in the table for each object in the collection.
+
+[#Figure 32-6]## *_Direct Collection Mappings_*
+
+.Direct Collection Mappings
+image::dcmapfig.gif[Direct Collection
+Mappings,title="Direct Collection Mappings"]
+
+[width="100%",cols="<100%",]
+|===
+|*_Note_*: The `+responsibilities+` attribute shown in the
+link:#Figure_32-6[Direct Collection Mappings] figure is of type
+`+Vector+`. You can use a `+Collection+` interface (or any class that
+implements the `+Collection+` interface) for declaring the collection
+attribute. See
+link:Configuring%20a%20Mapping%20(ELUG)#Configuring_Container_Policy[Configuring
+Container Policy] for details.
+|===
+
+Maps are not supported for direct collection because there is no key
+value.
+
+You can use a direct collection mapping with any of the following
+`+Converter+` instances:
+
+* link:Introduction%20to%20Mappings%20(ELUG)#Object_Type_Converter[Object
+Type Converter]
+* link:Introduction%20to%20Mappings%20(ELUG)#Serialized_Object_Converter[Serialized
+Object Converter]
+* link:Introduction%20to%20Mappings%20(ELUG)#Type_Conversion_Converter[Type
+Conversion Converter]
+
+You can use a direct collection mapping with a
+link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Change_Policy[change
+policy]).
+
+See
+link:Configuring%20a%20Relational%20Direct%20Collection%20Mapping_(ELUG)[Configuring
+a Relational Direct Collection Mapping] for more information.
+
+== Direct Map Mapping
+
+Direct map mappings store instances that implement `+java.util.Map+`.
+Unlike one-to-many or many-to-many mappings, the keys and values of the
+map in this type of mapping are Java objects that do not have
+descriptors. The object type stored in the key and the value of direct
+map are Java primitive wrapper types such as `+String+` objects.
+
+The link:#Figure_32-7[Direct Map Mappings] figure illustrates how a
+direct map is stored in a separate table with three fields. The first
+field (`+EMPID+`) is the reference key field, which contains a reference
+to the primary key of the instance owning the collection. The second
+field (`+ADDRESS+`) contains an object in the collection and is called
+the direct value field. The third field (`+TYPE+`) contains the direct
+key field. In this example, the direct map uses a object type converter
+for the direct key field, converting the single character *W* in the
+database to the full string *Work* in the object (and *H* to *Home*).
+
+[#Figure 32-7]## *_Direct Map Mappings_*
+
+.Direct Map Mappings
+image::dmmapfig.gif[Direct Map Mappings,title="Direct Map Mappings"]
+
+You can use a direct collection mapping with any of the following
+`+Converter+` instances:
+
+* link:Introduction%20to%20Mappings%20(ELUG)#Object_Type_Converter[Object
+Type Converter]
+* link:Introduction%20to%20Mappings%20(ELUG)#Serialized_Object_Converter[Serialized
+Object Converter]
+* link:Introduction%20to%20Mappings%20(ELUG)#[Type Conversion Converter]
+
+You can use a direct map mapping with a
+link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Change_Policy[change
+policy]).
+
+See
+link:Configuring%20a%20Relational%20Direct%20Map%20Mapping%20(ELUG)[Configuring
+a Relational Direct Map Mapping] for more information.
+
+== Aggregate Object Mapping
+
+Two objects–a source (parent or owning) object and a target (child or
+owned) object–are related by aggregation if there is a strict one-to-one
+relationship between them and all the attributes of the target object
+can be retrieved from the same table(s) as the source object. This means
+that if the source object exists, then the target object must also exist
+and if the source object is destroyed, then the target object is also
+destroyed.
+
+An aggregate mapping allows you to associate data members in the target
+object with fields in the source object’s underlying database tables.
+
+You configure the aggregate mapping in the source object’s descriptor.
+However, before doing so, you must designate the target object’s
+descriptor as an aggregate (see
+link:Configuring%20a%20Relational%20Descriptor%20(ELUG)#Configuring_a_Relational_Descriptor_as_a_Class_or_Aggregate_Type[Configuring
+a Relational Descriptor as a Class or Aggregate Type]).
+
+Aggregate objects are privately owned and should not be shared or
+referenced by other objects.
+
+You cannot configure one-to-one, one-to-many, or many-to-many mappings
+from a nonaggregate object to an aggregate target object.
+
+You can configure such mappings from an aggregate target object to
+another nonaggregate object. If you configure a one-to-many mapping from
+an aggregate target object to another nonaggregate object, you must
+configure a one-to-one mapping from the other object back to the source
+object that owns the aggregate (instead of to the aggregate target
+object itself). This is because the source object contains the table and
+primary key information of the aggregate target.
+
+You can configure inheritance for a descriptor designated as an
+aggregate (see
+link:Introduction%20to%20Descriptors%20(ELUG)#Descriptors_and_Inheritance[Descriptors
+and Inheritance]), however, in this case, _all_ the descriptors in the
+inheritance tree must be aggregates. Aggregate and class descriptors
+cannot exist in the same inheritance tree.
+
+This section describes the following:
+
+* link:#Aggregate_Object_Mappings_with_a_Single_Source_Object[Aggregate
+Object Mappings with a Single Source Object]
+* link:#Aggregate_Object_Mappings_with_Multiple_Source_Objects[Aggregate
+Object Mappings with Multiple Source Objects]
+* link:#How_to_Implement_an_Aggregate_Object_Relationship_Mapping[How to
+Implement an Aggregate Object Relationship Mapping]
+
+You can use an aggregate object mapping with a
+link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Change_Policy[change
+policy].
+
+For more information on configuring an aggregate object relationship
+mapping, see
+link:Configuring%20a%20Relational%20Aggregate%20Object%20Mapping_(ELUG)[Configuring
+a Relational Aggregate Object Mapping].
+
+=== Aggregate Object Mappings with a Single Source Object
+
+The link:#Figure_32-8[Aggregate Object Mapping with a Single Source
+Object] figure shows an example aggregate object mapping between source
+object `+Employee+` and target object `+Period+`. In this example, the
+target object is not shared by other types of source object.
+
+[#Figure 32-8]## *_Aggregate Object Mapping with a Single Source
+Object_*
+
+.Aggregate Object Mapping with a Single Source Object
+image::agmapfig.gif[Aggregate Object Mapping with a Single Source
+Object,title="Aggregate Object Mapping with a Single Source Object"]
+
+Aggregate target classes not shared among multiple source classes can
+have any type of mapping, including other aggregate object mappings.
+
+=== Aggregate Object Mappings with Multiple Source Objects
+
+The link:#Figure_32-9[Aggregate Object Mapping with Multiple Source
+Objects] figure shows an example aggregate object mapping in which
+different source objects–`+Employee+` and `+Project+`–map instances of
+the same type of target object, `+Period+`.
+
+[#Figure 32-9]## *_Aggregate Object Mapping with Multiple Source
+Objects_*
+
+.Aggregate Object Mapping with Multiple Source Objects
+image::agmultiple.gif[Aggregate Object Mapping with Multiple Source
+Objects,title="Aggregate Object Mapping with Multiple Source Objects"]
+
+When you configure the aggregate object mapping in the source object,
+you choose the source object table for that particular mapping. This
+allows different source types to store the same target information
+within their tables. Each source object’s table may use different field
+names. EclipseLink automatically manages the case where multiple source
+object tables use different field names.
+
+For example, in the link:#Figure_32-9[Aggregate Object Mapping with
+Multiple Source Objects] figure, The `+Employee+` attribute
+`+employPeriod+` is mapped by an aggregate object mapping to target
+object `+Period+`. This mapping associates `+Period+` attribute
+`+startDate+` with `+EMPLOYEE+` table field `+START_DATE+`. The
+`+Project+` attribute `+projectPeriod+` is also mapped by an aggregate
+object mapping to target object `+Period+`. This mapping associates
+`+Period+` attribute `+startDate+` with `+PROJECT+` table field
+`+S_DATE+`.
+
+Aggregate target classes shared with multiple source classes cannot have
+one-to-many or many-to-many mappings.
+
+=== How to Implement an Aggregate Object Relationship Mapping
+
+You must ensure that the following takes place:
+
+* The descriptor of the target class declares itself to be an aggregate
+object. Because all its information comes from its parent’s table(s),
+the target descriptor does not have a specific table associated with it.
+You must, however, choose one or more candidate table(s) from which you
+can use fields in mapping the target.In the example above, you could
+choose the `+EMPLOYEE+` table so that the `+START_DATE+` and
+`+END_DATE+` fields are available during mapping.
+* The descriptor of the source class adds an aggregate object mapping
+that specifies the target class. In the example above, the `+Employee+`
+class has an attribute called `+employPeriod+` that would be mapped as
+an aggregate object mapping with `+Period+` as the reference class. The
+source class must ensure that its table has fields that correspond to
+the field names registered with the target class.
+* If a source object has a `+null+` target reference, EclipseLink writes
+`+null+` values to the aggregate database fields (see
+link:Configuring%20a%20Relational%20Aggregate%20Object%20Mapping_(ELUG)#Configuring_Allowing_Null_Values[Configuring
+Allowing Null Values]). When the source is read from the database, it
+can handle this `+null+` target in one of two ways:
+** Create an instance of the object with all its attributes equal to
+`+null+`.
+** Put a `+null+` reference in the source object without instantiating a
+target. (This is the default method of handling `+null+` targets.)
+
+== Transformation Mapping
+
+Use transformation mappings for specialized translations for how a value
+is represented in Java and how it is represented in the database.
+
+[width="100%",cols="<100%",]
+|===
+|*Tip*: Use transformation mappings only when mapping multiple fields
+into a single attribute. Because of the complexity of transformation
+mappings, it is often easier to perform the transformation with a
+converter or getter and setter methods of a direct-to-field mapping. See
+link:Configuring%20a%20Relational%20Direct-to-Field%20Mapping_(ELUG)[Configuring
+a Relational Direct-to-Field Mapping] for more information.
+|===
+
+The link:#Figure_32-10[Transformation Mappings] figure illustrates a
+transformation mapping. The values from the `+B_DATE+` and `+B_TIME+`
+fields are used to create a `+java.util.Date+` to be stored in the
+`+birthDate+` attribute.
+
+[#'Figure 32-10]## *_Transformation Mappings_*
+
+.Transformation Mappings
+image::trmapfig.gif[Transformation
+Mappings,title="Transformation Mappings"]
+
+Often, a transformation mapping is appropriate when values from multiple
+fields are used to create an object. This type of mapping requires that
+you provide an _attribute transformation_ that is invoked when reading
+the object from the database. This must have at least one parameter that
+is an instance of `+Record+`. In your attribute transformation, you can
+use `+Record+` method `+get+` to retrieve the value in a specific
+column. Your attribute transformation can specify a second parameter,
+when it is an instance of `+Session+`. The `+Session+` performs queries
+on the database to get additional values needed in the transformation.
+The transformation should _return_ the value to be stored in the
+attribute.
+
+Transformation mappings also require a _field transformation_ for each
+field, to be written to the database when the object is saved. The
+transformation returns the value to be stored in that field.
+
+See
+link:Configuring%20a%20Relational%20Transformation%20Mapping%20(ELUG)[Configuring
+a Relational Transformation Mapping] for more information.
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Release_1[Category: Release 1] Category:_Concept[Category:
+Concept] Category:_ORM[Category: ORM]

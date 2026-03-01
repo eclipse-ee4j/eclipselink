@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,10 +14,7 @@
 //     rbarkhouse - 2009-09-28 11:27:00 - initial implementation
 package org.eclipse.persistence.testing.oxm.descriptor.primarykey;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.List;
-
+import junit.framework.TestCase;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.IntegrityException;
 import org.eclipse.persistence.internal.helper.DatabaseField;
@@ -25,7 +22,9 @@ import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.factories.XMLProjectReader;
 
-import junit.framework.TestCase;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.List;
 
 public class DeploymentXMLTestCases extends TestCase {
 
@@ -46,7 +45,7 @@ public class DeploymentXMLTestCases extends TestCase {
             ClassDescriptor customerDescriptor = project.getDescriptorForAlias("Customer");
             List<DatabaseField> pkFields = customerDescriptor.getPrimaryKeyFields();
 
-            assertTrue("PK fields not set as expected.", pkFields.size() == 1);
+            assertEquals("PK fields not set as expected.", 1, pkFields.size());
         } catch (IntegrityException e) {
             fail("Error initializing project from Deployment XML.");
         }

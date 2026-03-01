@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,19 +14,25 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.sessions;
 
-import java.util.*;
-
-import org.eclipse.persistence.internal.identitymaps.*;
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.descriptors.CacheIndex;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.sessions.DataRecord;
-import org.eclipse.persistence.logging.SessionLog;
+import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.descriptors.PersistenceEntity;
 import org.eclipse.persistence.internal.helper.WriteLockManager;
+import org.eclipse.persistence.internal.identitymaps.CacheId;
+import org.eclipse.persistence.internal.identitymaps.CacheKey;
+import org.eclipse.persistence.internal.identitymaps.IdentityMap;
+import org.eclipse.persistence.internal.identitymaps.IdentityMapManager;
+import org.eclipse.persistence.logging.SessionLog;
+import org.eclipse.persistence.queries.ReadQuery;
+import org.eclipse.persistence.sessions.DataRecord;
+
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 
 /**
  * INTERNAL:
@@ -171,8 +177,8 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
      * This method is used to get a list of those classes with IdentityMaps in the Session.
      */
     @Override
-    public Vector getClassesRegistered() {
-        Vector results = getIdentityMapManager().getClassesRegistered();
+    public List<String> getClassesRegistered() {
+        List<String> results = getIdentityMapManager().getClassesRegistered();
         results.addAll(((IsolatedClientSession)session).getParent().getIdentityMapAccessorInstance().getClassesRegistered());
         return results;
     }
@@ -263,7 +269,8 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
         // in which GC could remove the object and we would end up with a null pointer
         // as well we must inspect the cacheKey without locking on it.
         if ((cacheKey != null) && (shouldReturnInvalidatedObjects || !descriptor.getCacheInvalidationPolicy().isInvalidated(cacheKey))) {
-            synchronized (cacheKey) {
+            cacheKey.getInstanceLock().lock();
+            try {
                 //if the object in the cachekey is null but the key is acquired then
                 //someone must be rebuilding it or creating a new one.  Sleep until
                 // it's finished. A plain wait here would be more efficient but we may not
@@ -279,6 +286,8 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
                 if (objectFromCache == null) {
                     return null;
                 }
+            } finally {
+                cacheKey.getInstanceLock().unlock();
             }
         } else {
             return null;

@@ -1,7 +1,7 @@
 /*
- * Copyright (c) 2012, 2022 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2019, 2022 IBM Corporation. All rights reserved.
- * Copyright (c) 2012, 2022 SAP. All rights reserved.
+ * Copyright (c) 2012, 2026 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019, 2024 IBM Corporation. All rights reserved.
+ * Copyright (c) 2012, 2024 SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,7 +21,22 @@
 // lists or the bug database.
 package org.eclipse.persistence.platform.database;
 
+import org.eclipse.persistence.expressions.ExpressionOperator;
+import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
+import org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter;
+import org.eclipse.persistence.internal.expressions.FunctionExpression;
+import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
+import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.queries.ReadQuery;
+import org.eclipse.persistence.queries.ValueReadQuery;
+import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
+import org.eclipse.persistence.tools.schemaframework.TableDefinition;
+
 import java.io.IOException;
+import java.io.Serial;
 import java.io.Writer;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -34,23 +49,9 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.List;
-
-import org.eclipse.persistence.expressions.ExpressionOperator;
-import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
-import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
-import org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter;
-import org.eclipse.persistence.internal.expressions.FunctionExpression;
-import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
-import org.eclipse.persistence.internal.helper.ClassConstants;
-import org.eclipse.persistence.internal.helper.DatabaseTable;
-import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.queries.ReadQuery;
-import org.eclipse.persistence.queries.ValueReadQuery;
-import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
-import org.eclipse.persistence.tools.schemaframework.TableDefinition;
+import java.util.Map;
 
 /**
  * <b>Database Platform for SAP HANA</b> <br>
@@ -99,6 +100,7 @@ import org.eclipse.persistence.tools.schemaframework.TableDefinition;
  */
 public final class HANAPlatform extends DatabasePlatform {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     private static final int MAX_VARTYPE_LENGTH = 2000;
@@ -134,61 +136,61 @@ public final class HANAPlatform extends DatabasePlatform {
     }
 
     @Override
-    protected Hashtable<Class<?>, FieldTypeDefinition> buildFieldTypes() {
-        final Hashtable<Class<?>, FieldTypeDefinition> fieldTypeMapping = new Hashtable<>();
-        fieldTypeMapping.put(Boolean.class, new FieldTypeDefinition("SMALLINT", false)); // TODO
+    protected Map<Class<?>, FieldDefinition.DatabaseType> buildDatabaseTypes() {
+        final Map<Class<?>, FieldDefinition.DatabaseType> fieldTypeMapping = new HashMap<>();
+        fieldTypeMapping.put(Boolean.class, new FieldDefinition.DatabaseType("SMALLINT", false)); // TODO
                                                                                          // boolean
-        fieldTypeMapping.put(Number.class, new FieldTypeDefinition("DOUBLE", false));
-        fieldTypeMapping.put(Short.class, new FieldTypeDefinition("SMALLINT", false));
-        fieldTypeMapping.put(Integer.class, new FieldTypeDefinition("INTEGER", false));
-        fieldTypeMapping.put(Long.class, new FieldTypeDefinition("BIGINT", false));
-        fieldTypeMapping.put(Float.class, new FieldTypeDefinition("FLOAT", false));
-        fieldTypeMapping.put(Double.class, new FieldTypeDefinition("DOUBLE", false));
+        fieldTypeMapping.put(Number.class, new FieldDefinition.DatabaseType("DOUBLE", false));
+        fieldTypeMapping.put(Short.class, new FieldDefinition.DatabaseType("SMALLINT", false));
+        fieldTypeMapping.put(Integer.class, new FieldDefinition.DatabaseType("INTEGER", false));
+        fieldTypeMapping.put(Long.class, new FieldDefinition.DatabaseType("BIGINT", false));
+        fieldTypeMapping.put(Float.class, new FieldDefinition.DatabaseType("FLOAT", false));
+        fieldTypeMapping.put(Double.class, new FieldDefinition.DatabaseType("DOUBLE", false));
 
-        fieldTypeMapping.put(BigInteger.class, new FieldTypeDefinition("DECIMAL", 34));
+        fieldTypeMapping.put(BigInteger.class, new FieldDefinition.DatabaseType("DECIMAL", 34));
         fieldTypeMapping.put(BigDecimal.class,
-                new FieldTypeDefinition("DECIMAL", 34).setLimits(34, -34, 34));
+                new FieldDefinition.DatabaseType("DECIMAL", 34, 0, 34, -34, 34));
 
-        fieldTypeMapping.put(Character.class, new FieldTypeDefinition("NCHAR", 1));
-        fieldTypeMapping.put(Character[].class, new FieldTypeDefinition("NVARCHAR", 255));
-        fieldTypeMapping.put(char[].class, new FieldTypeDefinition("NVARCHAR", 255));
-        fieldTypeMapping.put(String.class, new FieldTypeDefinition("NVARCHAR", 255));
+        fieldTypeMapping.put(Character.class, new FieldDefinition.DatabaseType("NCHAR", 1));
+        fieldTypeMapping.put(Character[].class, new FieldDefinition.DatabaseType("NVARCHAR", 255));
+        fieldTypeMapping.put(char[].class, new FieldDefinition.DatabaseType("NVARCHAR", 255));
+        fieldTypeMapping.put(String.class, new FieldDefinition.DatabaseType("NVARCHAR", 255));
 
-        fieldTypeMapping.put(Byte.class, new FieldTypeDefinition("SMALLINT", false));
-        fieldTypeMapping.put(Byte[].class, new FieldTypeDefinition("VARBINARY", 255));
-        fieldTypeMapping.put(byte[].class, new FieldTypeDefinition("VARBINARY", 255));
+        fieldTypeMapping.put(Byte.class, new FieldDefinition.DatabaseType("SMALLINT", false));
+        fieldTypeMapping.put(Byte[].class, new FieldDefinition.DatabaseType("VARBINARY", 255));
+        fieldTypeMapping.put(byte[].class, new FieldDefinition.DatabaseType("VARBINARY", 255));
 
-        fieldTypeMapping.put(Blob.class, new FieldTypeDefinition("BLOB", false));
-        fieldTypeMapping.put(Clob.class, new FieldTypeDefinition("NCLOB", false));
+        fieldTypeMapping.put(Blob.class, new FieldDefinition.DatabaseType("BLOB", false));
+        fieldTypeMapping.put(Clob.class, new FieldDefinition.DatabaseType("NCLOB", false));
 
-        fieldTypeMapping.put(Date.class, new FieldTypeDefinition("DATE", false));
-        fieldTypeMapping.put(Time.class, new FieldTypeDefinition("TIME", false));
-        fieldTypeMapping.put(Timestamp.class, new FieldTypeDefinition("TIMESTAMP", false));
+        fieldTypeMapping.put(Date.class, new FieldDefinition.DatabaseType("DATE", false));
+        fieldTypeMapping.put(Time.class, new FieldDefinition.DatabaseType("TIME", false));
+        fieldTypeMapping.put(Timestamp.class, new FieldDefinition.DatabaseType("TIMESTAMP", false));
         return fieldTypeMapping;
     }
 
-    @Override
     /**
      * EclipseLink does not support length dependent type mapping.
      * Map varchar types with length > MAX_VARCHAR_UNICODE_LENGTH to CLOB (i.e clob); shorter types to NVARCHAR (n)
-     * See also bugs 317597, 317448
+     * See also bugs 317597, 202348
      */
-    protected void printFieldTypeSize(Writer writer, FieldDefinition field,
-            FieldTypeDefinition fieldType) throws IOException {
-        String typeName = fieldType.getName();
+    @Override
+    public void printFieldTypeSize(Writer writer, FieldDefinition field,
+            FieldDefinition.DatabaseType fieldType) throws IOException {
+        String typeName = fieldType.name();
         if ("NVARCHAR".equals(typeName)) {
             if (field.getSize() > MAX_VARTYPE_LENGTH) {
-                fieldType = new FieldTypeDefinition("NCLOB", false);
+                fieldType = new FieldDefinition.DatabaseType("NCLOB", false);
             }
         } else if ("VARBINARY".equals(typeName)) {
             if (field.getSize() > MAX_VARTYPE_LENGTH || field.getSize() == 0) {
-                fieldType = new FieldTypeDefinition("BLOB", false);
+                fieldType = new FieldDefinition.DatabaseType("BLOB", false);
             }
         }
 
         super.printFieldTypeSize(writer, field, fieldType);
-        if (fieldType.getTypesuffix() != null) {
-            writer.append(" " + fieldType.getTypesuffix());
+        if (fieldType.suffix() != null) {
+            writer.append(" " + fieldType.suffix());
         }
     }
 
@@ -441,6 +443,7 @@ public final class HANAPlatform extends DatabasePlatform {
     @Override
     public int executeBatch(Statement statement, boolean isStatementPrepared) throws SQLException {
         int[] updateResult = statement.executeBatch();
+        setExecuteBatchRowCounts(updateResult);
         if (isStatementPrepared) {
             int updateCount = 0;
             for (int count : updateResult) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -65,7 +65,7 @@ public class OXMMetadata extends Metadata {
     }
 
     private JavaClass[] createClassModelFromOXM(DynamicClassLoader dynamicClassLoader) throws JAXBException {
-        List<JavaClass> oxmJavaClasses = new ArrayList<JavaClass>();
+        List<JavaClass> oxmJavaClasses = new ArrayList<>();
 
         Iterator<String> keys = bindings.keySet().iterator();
 
@@ -102,7 +102,7 @@ public class OXMMetadata extends Metadata {
                     XmlEnum xmlEnum = iterator.next();
 
                     List<XmlEnumValue> enumValues = xmlEnum.getXmlEnumValue();
-                    List<String> enumValueStrings = new ArrayList<String>();
+                    List<String> enumValueStrings = new ArrayList<>();
                     for (Iterator<XmlEnumValue> iterator2 = enumValues.iterator(); iterator2.hasNext();) {
                         XmlEnumValue xmlEnumValue = iterator2.next();
                         enumValueStrings.add(xmlEnumValue.getJavaEnumValue());

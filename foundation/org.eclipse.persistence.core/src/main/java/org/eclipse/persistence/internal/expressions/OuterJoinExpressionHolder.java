@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,6 +15,13 @@
 //       - 374771 : TREAT support
 package org.eclipse.persistence.internal.expressions;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.internal.history.DecoratedDatabaseTable;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.platform.database.DB2MainframePlatform;
+
 import java.io.IOException;
 import java.io.Serializable;
 import java.io.Writer;
@@ -23,18 +30,11 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.expressions.Expression;
-import org.eclipse.persistence.internal.helper.DatabaseTable;
-import org.eclipse.persistence.internal.history.DecoratedDatabaseTable;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.platform.database.DB2MainframePlatform;
-
 /**
  * Holder class storing a QueryKeyExpression representing an outer join
  * plus some data calculated by method appendFromClauseForOuterJoin.
  */
-public class OuterJoinExpressionHolder implements Comparable, Serializable
+public class OuterJoinExpressionHolder implements Comparable<OuterJoinExpressionHolder>, Serializable
 {
     final ObjectExpression joinExpression;
     DatabaseTable targetTable;
@@ -91,30 +91,32 @@ public class OuterJoinExpressionHolder implements Comparable, Serializable
 
     protected void process(boolean usesHistory, boolean isMapKeyHolder) {
         this.isMapKeyHolder = isMapKeyHolder;
-        if (this.joinExpression instanceof QueryKeyExpression) {
-            QueryKeyExpression expression = (QueryKeyExpression)this.joinExpression;
-            if (isMapKeyHolder) {
-                descriptor = expression.getMapKeyDescriptor();
-                this.targetTable = descriptor.getTables().get(0);
-                this.targetAlias = outerJoinedMappingCriteria.aliasForTable(this.targetTable);
-            } else {
-                // this is a map - create a holder for the key
-                if(expression.isMapKeyObjectRelationship()) {
-                    this.mapKeyHolder = new OuterJoinExpressionHolder(this);
-                    this.mapKeyHolder.process(usesHistory, true);
+        if (this.joinExpression != null) {
+            if (this.joinExpression.isQueryKeyExpression()) {
+                QueryKeyExpression expression = (QueryKeyExpression)this.joinExpression;
+                if (isMapKeyHolder) {
+                    descriptor = expression.getMapKeyDescriptor();
+                    this.targetTable = descriptor.getTables().get(0);
+                    this.targetAlias = outerJoinedMappingCriteria.aliasForTable(this.targetTable);
+                } else {
+                    // this is a map - create a holder for the key
+                    if(expression.isMapKeyObjectRelationship()) {
+                        this.mapKeyHolder = new OuterJoinExpressionHolder(this);
+                        this.mapKeyHolder.process(usesHistory, true);
+                    }
+                    // in DirectCollection case descriptor is null
+                    descriptor = expression.getDescriptor();
+                    this.targetTable = expression.getReferenceTable();
+                    this.targetAlias = expression.aliasForTable(this.targetTable);
                 }
-                // in DirectCollection case descriptor is null
-                descriptor = expression.getDescriptor();
-                this.targetTable = expression.getReferenceTable();
-                this.targetAlias = expression.aliasForTable(this.targetTable);
+                this.sourceTable = expression.getSourceTable();
+                this.sourceAlias = expression.getBaseExpression().aliasForTable(this.sourceTable);
+            } else {
+                this.sourceTable = ((ObjectExpression) this.joinExpression.getJoinSource()).getDescriptor().getTables().get(0);
+                this.sourceAlias = this.joinExpression.getJoinSource().aliasForTable(this.sourceTable);
+                this.targetTable = this.joinExpression.getDescriptor().getTables().get(0);
+                this.targetAlias = this.joinExpression.aliasForTable(this.targetTable);
             }
-            this.sourceTable = expression.getSourceTable();
-            this.sourceAlias = expression.getBaseExpression().aliasForTable(this.sourceTable);
-        } else if (this.joinExpression != null) {
-            this.sourceTable = ((ObjectExpression)this.joinExpression.getJoinSource()).getDescriptor().getTables().get(0);
-            this.sourceAlias = this.joinExpression.getJoinSource().aliasForTable(this.sourceTable);
-            this.targetTable = this.joinExpression.getDescriptor().getTables().get(0);
-            this.targetAlias = this.joinExpression.aliasForTable(this.targetTable);
         } else {
             // absence of join expression means that this holder used for multitable inheritance:
             //   ReadAllQuery query = new ReadAllQuery(Project.class);
@@ -153,10 +155,10 @@ public class OuterJoinExpressionHolder implements Comparable, Serializable
                         table = getTableAliases().get(alias);
                     }
                     if (this.additionalTargetAliases == null) {
-                        this.additionalTargetAliases = new ArrayList();
-                        this.additionalTargetTables = new ArrayList();
-                        this.additionalJoinOnExpression = new ArrayList();
-                        this.additionalTargetIsDescriptorTable = new ArrayList();
+                        this.additionalTargetAliases = new ArrayList<>();
+                        this.additionalTargetTables = new ArrayList<>();
+                        this.additionalJoinOnExpression = new ArrayList<>();
+                        this.additionalTargetIsDescriptorTable = new ArrayList<>();
                     }
                     this.additionalTargetAliases.add(alias);
                     this.additionalTargetTables.add(table);
@@ -182,7 +184,7 @@ public class OuterJoinExpressionHolder implements Comparable, Serializable
             return;
         }
 
-        this.indexList = new ArrayList();
+        this.indexList = new ArrayList<>();
         OuterJoinExpressionHolder baseHolder = targetAliasToHolders.get(this.sourceAlias);
         if(baseHolder != null) {
             baseHolder.createIndexList(targetAliasToHolders, aliasToIndexes);
@@ -203,11 +205,11 @@ public class OuterJoinExpressionHolder implements Comparable, Serializable
      * {2, 1} < {2, 2}; {2, 1} < {3}; {2, 1} > {2}
      */
     @Override
-    public int compareTo(Object other) {
+    public int compareTo(OuterJoinExpressionHolder other) {
         if(other == this) {
             return 0;
         }
-        List<Integer> otherIndexList = ((OuterJoinExpressionHolder)other).indexList;
+        List<Integer> otherIndexList = other.indexList;
         int nMinSize = this.indexList.size();
         int nCompare = -1;
         int nOtherSize = otherIndexList.size();
@@ -229,7 +231,7 @@ public class OuterJoinExpressionHolder implements Comparable, Serializable
         return nCompare;
     }
 
-    void printAdditionalJoins(ExpressionSQLPrinter printer, List<DatabaseTable> outerJoinedAliases, Collection aliasesOfTablesToBeLocked, boolean shouldPrintUpdateClauseForAllTables)  throws IOException {
+    void printAdditionalJoins(ExpressionSQLPrinter printer, List<DatabaseTable> outerJoinedAliases, Collection<DatabaseTable> aliasesOfTablesToBeLocked, boolean shouldPrintUpdateClauseForAllTables)  throws IOException {
         Writer writer = printer.getWriter();
         AbstractSession session = printer.getSession();
 

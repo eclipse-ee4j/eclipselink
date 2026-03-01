@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,13 +14,14 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.oxm.mappings.directtofield.typeattribute;
 
-import org.eclipse.persistence.oxm.XMLField;
-import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
-import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.oxm.XMLDescriptor;
+import org.eclipse.persistence.oxm.XMLField;
+import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 import org.eclipse.persistence.sessions.Project;
+
 import javax.xml.namespace.QName;
 
 public class TypeAttributeUserTypeProject extends Project {
@@ -42,7 +43,7 @@ public class TypeAttributeUserTypeProject extends Project {
         XMLField field = new XMLField("identifier/text()");
         field.setIsTypedTextField(true);
         QName myIntQName = new QName("sample/user/namespace", "myint");
-        field.addConversion(myIntQName, ClassConstants.INTEGER);
+        field.addConversion(myIntQName, CoreClassConstants.INTEGER);
         identifierMapping.setField(field);
 
         descriptor.addMapping(identifierMapping);

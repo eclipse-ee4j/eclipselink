@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,29 +15,28 @@
 
 package org.eclipse.persistence.annotations;
 
-import static java.lang.annotation.ElementType.TYPE;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
 /**
- * A CopyPolicy is used to set an
- * org.eclipse.persistence.descriptors.copying.CopyPolicy on an Entity.
- * It is required that a class that
- * implements org.eclipse.persistence.descriptors.copying.CopyPolicy
- * be specified as the argument.
- *
- * A CopyPolicy should be specified on an Entity, MappedSuperclass or
- * Embeddable.
- *
+ * A CopyPolicy is used to set an {@linkplain org.eclipse.persistence.descriptors.copying.CopyPolicy} on an Entity.
+ * It is required that a class that implements {@linkplain org.eclipse.persistence.descriptors.copying.CopyPolicy}
+ * must be specified as the argument.
+ * <p>
+ * A CopyPolicy should be specified on an Entity, MappedSuperclass or Embeddable.
+ * <p>
  * For instance:
- * {@literal @}Entity
- * {@literal @}CopyPolicy("example.MyCopyPolicy")
+ * {@snippet :
+ *  @Entity
+ *  @CopyPolicy("example.MyCopyPolicy")
+ * }
  *
  * @see org.eclipse.persistence.descriptors.copying.CopyPolicy
- * @see org.eclipse.persistence.annotations.CloneCopyPolicy
- * @see org.eclipse.persistence.annotations.InstantiationCopyPolicy
+ * @see CloneCopyPolicy
+ * @see InstantiationCopyPolicy
  *
  * @author tware
  */
@@ -46,9 +45,8 @@ import java.lang.annotation.Target;
 public @interface CopyPolicy {
 
     /**
-     * (Required)
-     * This defines the class of the copy policy.  It must specify a class that
-     * implements org.eclipse.persistence.descriptors.copying.CopyPolicy
+     * This defines the class of the copy policy. It must specify a class that
+     * implements {@linkplain org.eclipse.persistence.descriptors.copying.CopyPolicy}
      */
     Class<?> value();
 }

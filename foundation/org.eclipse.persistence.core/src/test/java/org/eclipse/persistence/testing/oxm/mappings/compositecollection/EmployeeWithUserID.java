@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -43,21 +43,20 @@ public class EmployeeWithUserID {
     }
 
     public String toString() {
-        String output = "Employee: " + this.getUserID() + " " + this.getName();
+        StringBuilder output = new StringBuilder("Employee: " + this.getUserID() + " " + this.getName());
 
         if (getEmailAddresses() != null) {
             for (int i = 0; i < getEmailAddresses().size(); i++) {
-                output += getEmailAddresses().get(i);
+                output.append(getEmailAddresses().get(i));
             }
         }
-        return output;
+        return output.toString();
     }
 
     public boolean equals(Object object) {
-        if (!(object instanceof EmployeeWithUserID)) {
+        if (!(object instanceof EmployeeWithUserID employeeObject)) {
             return false;
         }
-        EmployeeWithUserID employeeObject = (EmployeeWithUserID)object;
 
         if (!this.getUserID().equals(employeeObject.getUserID()))
         {
@@ -72,11 +71,7 @@ public class EmployeeWithUserID {
         {
           return false;
         }
-        if (!this.getEmailAddresses().containsAll(employeeObject.getEmailAddresses())) {
-            return false;
-        }
-
-        return true;
+        return this.getEmailAddresses().containsAll(employeeObject.getEmailAddresses());
     }
 
 

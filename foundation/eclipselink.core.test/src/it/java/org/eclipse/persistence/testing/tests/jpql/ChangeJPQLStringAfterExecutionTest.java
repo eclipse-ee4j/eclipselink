@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,10 +16,10 @@ package org.eclipse.persistence.testing.tests.jpql;
 
 
 // Java imports
-import java.util.*;
 
-// Domain imports
-import org.eclipse.persistence.testing.models.employee.domain.*;
+import org.eclipse.persistence.testing.models.employee.domain.Employee;
+
+import java.util.Vector;
 
 //Bug 3175011: Verify that if we change the EJBQLString after execution, it will be
 //re-parsed. Verify this by matching the expected results with the second execution
@@ -31,7 +31,7 @@ public class ChangeJPQLStringAfterExecutionTest extends JPQLTestCase {
     public void setup() {
         Vector employees = getSomeEmployees();
 
-        Employee emp = (Employee)employees.firstElement();
+        Employee emp = (Employee)employees.get(0);
         setOriginalOject(emp);
 
         //Define the firstEJBQLString, which will NOT match the results expected, and the

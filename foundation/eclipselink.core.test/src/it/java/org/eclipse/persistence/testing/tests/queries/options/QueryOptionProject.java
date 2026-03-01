@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,8 +14,10 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.queries.options;
 
-import java.util.*;
-import org.eclipse.persistence.queries.*;
+import org.eclipse.persistence.queries.ReadObjectQuery;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * TopLink generated Project class.
@@ -62,8 +64,8 @@ public class QueryOptionProject extends org.eclipse.persistence.sessions.Project
 
         // SECTION: DESCRIPTOR
         descriptor.setJavaClass(QueryOptionHistory.class);
-        Vector vector = new Vector();
-        vector.addElement("QUERY_OPTION_HISTORY");
+        List<String> vector = new ArrayList<>();
+        vector.add("QUERY_OPTION_HISTORY");
         descriptor.setTableNames(vector);
         descriptor.addPrimaryKeyFieldName("QUERY_OPTION_HISTORY.ID");
 
@@ -108,8 +110,8 @@ public class QueryOptionProject extends org.eclipse.persistence.sessions.Project
 
         // SECTION: DESCRIPTOR
         descriptor.setJavaClass(QueryOptionEmployee.class);
-        Vector vector = new Vector();
-        vector.addElement("QUERY_OPTION_EMPLOYEE");
+        List<String> vector = new ArrayList<>();
+        vector.add("QUERY_OPTION_EMPLOYEE");
         descriptor.setTableNames(vector);
         descriptor.addPrimaryKeyFieldName("QUERY_OPTION_EMPLOYEE.ID");
 

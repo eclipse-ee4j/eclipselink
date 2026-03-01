@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2020 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -17,6 +17,7 @@ package org.eclipse.persistence.testing.tests.junit.localization;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.eclipse.persistence.internal.localization.EclipseLinkLocalization;
 import org.eclipse.persistence.internal.localization.LoggingLocalization;
 
 public class LocalizationTest {
@@ -27,5 +28,7 @@ public class LocalizationTest {
                 "EclipseLink, version: EXAMPLE", LoggingLocalization.buildMessage("topLink_version", new Object[] { "EXAMPLE" }));
         Assert.assertEquals("LoggingLocalization.buildMessage could not find the correct translation.",
                 "message_not_exist (There is no English translation for this message.)", LoggingLocalization.buildMessage("message_not_exist"));
+        Assert.assertEquals("EclipseLinkLocalization.buildMessage could not find the correct translation.",
+                "somekey1 (There is no English translation for this message.)", EclipseLinkLocalization.buildMessage("AAAAUnknownClass", "somekey1", null, true));
     }
 }

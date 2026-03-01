@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,7 +14,6 @@
 //     Denise Smith  January 12, 2009 - 2.0.1
 package org.eclipse.persistence.testing.jaxb.typemappinginfo;
 
-import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.util.HashMap;
@@ -23,13 +22,9 @@ import java.util.Map;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import javax.xml.namespace.QName;
-import javax.xml.transform.Source;
-import javax.xml.transform.dom.DOMSource;
 
-import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
 import org.eclipse.persistence.jaxb.TypeMappingInfo.ElementScope;
-import org.w3c.dom.Document;
 
 public class EmployeeAdapterTestCases extends TypeMappingInfoWithJSONTestCases{
 

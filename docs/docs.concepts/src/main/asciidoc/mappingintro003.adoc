@@ -1,0 +1,147 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[MAPPINGINTRO003]]
+=== MOXy Mapping Concepts
+
+XML mappings transform object data members to the XML elements of an XML
+document whose structure is defined by an XML Schema Document (XSD). You
+can map the attributes of a Java object to a combination of XML simple
+and complex types using a wide variety of XML mapping types.
+
+Classes are mapped to complex types, object relationships map to XML
+elements, and simple attributes map to text nodes and XML attributes.
+The real power in using MOXy is that when mapping an object attribute to
+an XML document, XPath statements are used to specify the location of
+the XML data.
+
+EclipseLink stores XML mappings for each class in the class descriptor.
+EclipseLink uses the descriptor to instantiate objects mapped from an
+XML document and to store new or modified objects as XML documents.
+
+EclipseLink provides XML mappings that are not defined in the JAXB
+specification. Some of the MOXy extensions are available through
+EclipseLink annotations; others require programmatic changes to the
+underlying metadata.
+
+Mapping concepts for MOXy are described in _Developing JAXB Applications
+EclipseLink MOXy_. See the following chapters:
+
+"EclipseLink MOXy Runtime" describes:
+
+* the EclipseLink XML Bindings document, which is an alternative to the
+JAXB annotations. Not only can XML Bindings separate your mapping
+information from your actual Java class, it can also be used for more
+advanced metadata
+* the several different bootstrapping options that you can use when
+creating your `JAXBContext`.
+* the `MetadataSource` interface, which is responsible for serving up
+EclipseLink metadata. Providing an implementation of this interface
+allows you to store mapping information outside of your application and
+have it retrieved when the application's `JAXBContext` is being created
+or refreshed.
+* schema generation and validation.
+* the several mechanisms by which you can get event callbacks during the
+marshalling and unmarshalling processes. You can specify callback
+methods directly on your mapped objects, or define separate `Listener`
+classes and register them with the JAXB runtime
+* querying objects by XPath. This is an alternative to using
+conventional Java access methods to get and set your object's values.
+EclipseLink MOXy allows you to access values using an XPath statement.
+There are special APIs on EclipseLink's `JAXBContext` to allow you to
+get and set values by XPath.
+* the use of the JAXB `Binder` interface, which allows you to preserve
+an entire XML document, even if only some of the items are mapped.
+
+"Mapping Type Levels" describes the initial tasks of setting up a
+mapping in MOXy:
+
+* the default root element, which tells EclipseLink what the top-level
+root of your XML document will be.
+* namespace information for the Java class, and that all of the elements
+must be qualified for the namespace. You can namespace-qualify the
+elements on the package, type, or field/property level.
+* the ways in which you can specify inheritance hierarchy in XML by
+using `xsi:type` attribute, substitution groups, or the MOXY-specific
+`@XmlDiscriminatorNode` and `@XmlDiscriminatorValue` annotations
+
+"Mapping Simple Values" and "Mapping Special Schema Types" describes how
+Java values can be mapped to XML in several different ways:
+
+* Java values can be mapped to XML attributes, text nodes, schema types,
+or simple type translators
+* collections of simple Java values can be mapped to text nodes, text
+nodes within a grouping element, list elements, or a collection of
+`XmlAttributes` or `XmlValues`
+* multiple Java mappings can be created for a single property using OXM
+metadata, with the caveat that at most one mapping will be readable (the
+rest will be "write-only")
+* Java `enums` can be mapped to XML using the `@XmlEnum` and
+`@XmlEnumValue` annotations
+* dates and time: EclipseLink MOXy supports the following types which
+are not covered in the JAXB specification: `java.sql.Date`
+`java.sql.Time` , and `java.sql.Timestamp`.
+* union files: When EclipseLink unmarshalls the XML document, such as an
+XML Schema Union, it tries each of the union types until it can make a
+successful conversion. Currently, EclipseLink does not support the
+mapping of Unions using Annotations or OXM Metadata. However, an
+EclipseLink XML Customizer can be used to create the mapping.
+* binary types: EclipseLink supports marshalling and unmarshalling
+binary data in two different representation formats: `base64Binary`
+(default) and `hexBinary`. You can specify the desired binary format
+using the `@XmlSchemaType` annotation, or `<xml-schema-type>` element in
+EclipseLink OXM.
+
+[[sthref52]]
+
+==== Understanding an XML Data Representation
+
+Annotations are not always the most effective way to map JPA to XML. For
+example, you would not use JAXB if:
+
+* You want to specify metadata for a third-party class but do not have
+access to the source.
+* You want to map an object model to multiple XML schemas, because JAXB
+rules preclude applying more than one mapping by using annotations.
+* Your object model already contains too many annotations—for example,
+from such services as JPA, Spring, JSR-303, and so on—and you want to
+specify the metadata elsewhere.
+
+Under these and similar circumstances, you can use an XML data
+representation by exposing the `eclipselink_oxm.xml` file.
+
+XML metadata works in two modes:
+
+* It adds to the metadata supplied by annotations. This is useful when:
+** Annotations define version one of the XML representation, and you use
+XML metadata to tweak the metadata for future versions.
+** You use the standard JAXB annotations, and use the XML metadata for
+the MOXy extensions. In this way you don't introduce new compile time
+dependencies in the object model.
+* It completely replaces the annotation metadata, which is useful when
+you want to map to different XML representations.
+
+[[sthref53]]
+
+==== Mapping Values
+
+There are several ways to map simple Java values and collections of
+simple values directly to XML text nodes. You can map to attributes,
+text nodes, or schema types. You can also use simple type translators to
+map types of nodes that are not defined in your XML schema. These
+techniques are described in "Mapping Simple Values" in _Developing JAXB
+Applications EclipseLink MOXy_.

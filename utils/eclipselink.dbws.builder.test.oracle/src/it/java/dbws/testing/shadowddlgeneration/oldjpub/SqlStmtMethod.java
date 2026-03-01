@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,8 +22,7 @@ import java.util.Map;
 import java.util.StringTokenizer;
 
 //EclipseLink imports
-import dbws.testing.shadowddlgeneration.oldjpub.PublisherException;
-import dbws.testing.shadowddlgeneration.oldjpub.Util;
+
 import static dbws.testing.shadowddlgeneration.oldjpub.Util.IS_TYPE_OR_PACKAGE;
 
 /**
@@ -70,13 +69,13 @@ public abstract class SqlStmtMethod extends ProcedureMethod {
         // select * from emp where eno=?,
         // derived by replacing bind variables. :{Y Z} => ?
         m_sqlStmtTmp = m_sqlStmt;
-        ArrayList<String> sqlStmtParamNamesV = new ArrayList<String>();
-        ArrayList<TypeClass> sqlStmtParamTypesV = new ArrayList<TypeClass>();
-        ArrayList<Integer> sqlStmtParamModesV = new ArrayList<Integer>();
-        ArrayList<String> uniqueParamNamesV = new ArrayList<String>();
-        ArrayList<TypeClass> uniqueParamTypesV = new ArrayList<TypeClass>();
-        ArrayList<Integer> uniqueParamModesV = new ArrayList<Integer>();
-        Map<String, String> uniqueHash = new HashMap<String, String>();
+        ArrayList<String> sqlStmtParamNamesV = new ArrayList<>();
+        ArrayList<TypeClass> sqlStmtParamTypesV = new ArrayList<>();
+        ArrayList<Integer> sqlStmtParamModesV = new ArrayList<>();
+        ArrayList<String> uniqueParamNamesV = new ArrayList<>();
+        ArrayList<TypeClass> uniqueParamTypesV = new ArrayList<>();
+        ArrayList<Integer> uniqueParamModesV = new ArrayList<>();
+        Map<String, String> uniqueHash = new HashMap<>();
         int idx0 = m_sqlStmtTmp.lastIndexOf(":{");
         int idx1 = -1;
         int jdbcParamIdx = 0;
@@ -100,19 +99,19 @@ public abstract class SqlStmtMethod extends ProcedureMethod {
                 }
                 try {
                     // String schema=null;
-                    String typeName = stnz.nextToken();
+                    StringBuilder typeName = new StringBuilder(stnz.nextToken());
                     // for types like "double precision"
                     while (stnz.hasMoreTokens()) {
-                        typeName += " " + stnz.nextToken();
+                        typeName.append(" ").append(stnz.nextToken());
                     }
                     String schema = null;
-                    typeName = typeName.toUpperCase();
-                    if (typeName.indexOf('.') > -1
-                        && typeName.indexOf('.') < (typeName.length() - 1)) {
-                        schema = typeName.substring(0, typeName.indexOf('.'));
-                        typeName = typeName.substring(typeName.indexOf('.') + 1);
+                    typeName = new StringBuilder(typeName.toString().toUpperCase());
+                    if (typeName.toString().indexOf('.') > -1
+                        && typeName.toString().indexOf('.') < (typeName.length() - 1)) {
+                        schema = typeName.substring(0, typeName.toString().indexOf('.'));
+                        typeName = new StringBuilder(typeName.substring(typeName.toString().indexOf('.') + 1));
                     }
-                    TypeClass tmpType = m_reflector.addSqlUserType(schema, typeName,
+                    TypeClass tmpType = m_reflector.addSqlUserType(schema, typeName.toString(),
                         IS_TYPE_OR_PACKAGE, false, 0, 0, null);
                     sqlStmtParamTypesV.add(tmpType);
                     if (unique) {

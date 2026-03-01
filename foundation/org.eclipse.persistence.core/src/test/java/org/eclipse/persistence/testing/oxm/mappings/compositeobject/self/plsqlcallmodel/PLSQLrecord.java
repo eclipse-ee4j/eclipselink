@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,7 +16,6 @@
 package org.eclipse.persistence.testing.oxm.mappings.compositeobject.self.plsqlcallmodel;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import static org.eclipse.persistence.testing.oxm.mappings.compositeobject.self.plsqlcallmodel.PLSQLargument.IN;
@@ -26,7 +25,7 @@ public class PLSQLrecord implements ComplexDatabaseType, OraclePLSQLType {
     protected String recordName;
     protected String typeName;
     protected String compatibleType;
-    protected List<PLSQLargument> fields = new ArrayList<PLSQLargument>();
+    protected List<PLSQLargument> fields = new ArrayList<>();
 
     public PLSQLrecord() {
         super();
@@ -96,9 +95,7 @@ public class PLSQLrecord implements ComplexDatabaseType, OraclePLSQLType {
         if (fields.size() != complexObj.fields.size()) {
             return false;
         }
-        Iterator<PLSQLargument> fieldIt = fields.iterator();
-        while (fieldIt.hasNext()) {
-            PLSQLargument arg = fieldIt.next();
+        for (PLSQLargument arg : fields) {
             if (!complexObj.fields.contains(arg)) {
                 return false;
             }

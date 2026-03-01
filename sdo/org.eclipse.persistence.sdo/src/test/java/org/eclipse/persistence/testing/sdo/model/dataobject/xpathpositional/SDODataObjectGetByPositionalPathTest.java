@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,18 +14,15 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.sdo.model.dataobject.xpathpositional;
 
-import commonj.sdo.DataObject;
 import commonj.sdo.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-import junit.framework.TestCase;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDODataObject;
 import org.eclipse.persistence.sdo.SDOProperty;
 import org.eclipse.persistence.sdo.SDOType;
-import org.eclipse.persistence.exceptions.SDOException;
 
 public class SDODataObjectGetByPositionalPathTest extends SDODataObjectGetByPositionalPathTestCases {
     public SDODataObjectGetByPositionalPathTest(String name) {
@@ -141,7 +138,7 @@ public class SDODataObjectGetByPositionalPathTest extends SDODataObjectGetByPosi
 
         Object value = doTest.get("P.Name-b");
         assertTrue(value instanceof List);
-        assertTrue(((List)value).size() == 0);
+        assertTrue(((List) value).isEmpty());
 
         List values = new ArrayList();
         values.add("test");

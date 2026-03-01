@@ -1,0 +1,120 @@
+*TOC*
+Special:Whatlinkshere_Creating_an_Object-Relational_Data_Type_Descriptor_(ELUG)[Related
+Topics]
+
+After you create a descriptor, you must configure its various options
+(see link:Configuring%20a%20Descriptor%20(ELUG)[Configuring a
+Descriptor]) and use it to define mappings.
+
+For complete information on the various types of mapping that
+EclipseLink supports, see
+link:Introduction%20to%20Mappings%20(ELUG)[Introduction to Mappings] and
+link:Creating%20a%20Mapping%20(ELUG)[Creating a Mapping].
+
+For complete information on the various types of descriptor that
+EclipseLink supports, see
+link:Introduction%20to%20Descriptors%20(ELUG)#Descriptor_Types[Descriptor
+Types].
+
+For more information, see
+link:Introduction%20to%20Object-Relational%20Data%20Type%20Descriptors%20(ELUG)[Introduction
+to Object-Relational Data Type Descriptors].
+
+== Creating an Object-Relational Data Type Descriptor
+
+You cannot create an object-relational data type descriptor using the
+Workbench: you must use Java code. For more information on creating
+descriptors in Java code, see the _EclipseLink API Reference_.
+
+For more information, see
+link:Introduction%20to%20Object-Relational%20Data%20Type%20Descriptors%20(ELUG)#Object-Relational_Data_Type_Descriptors[Object-Relational
+Data Type Descriptors].
+
+=== How to Create an Object-Relational Data Type Descriptor Using Java
+
+Use the `+ObjectRelationalDescriptor+` class to define an
+object-relational data type descriptor. This class extends
+`+RelationalDescriptor+` to add the following methods:
+
+* `+setStructureName+`: call this method to set the name of the
+object-relational data type structure that represents the object class
+in the data source.
+* `+addFieldOrdering+`: call this method repeatedly to define the order
+in which object attributes are persisted to the data source. This
+defines a field index that EclipseLink uses if your object-relational
+data type data source driver uses JDBC indexed arrays.
+
+This example shows an `+Employee+` object that is mapped to an Oracle
+Database using its object-relational data type features.
+
+[#Example 30-1]## *_Employee Class_*
+
+[source,java]
+----
+ public class Employee {
+     Long id;
+     String firstName;
+     String lastName;
+
+     ...
+ }
+----
+
+This example shows the object-relational data type database type
+(`+Employee_t+`) created to model the `+Employee+` object within the
+database. Such an object-relational data type database type is also
+known as a structure. This example also shows how to create and populate
+a database table (called `+department+`) that stores instances of the
+`+Employee_t+` audio tape.
+
+[#Example 30-2]## *_Employee Object-Relational Data Type Data Model_*
+
+[source,sql]
+----
+ CREATE TYPE EMPLOYEE_T AS OBJECT(ID NUMBER(10),
+                                  F_NAME VARCHAR2(100),
+                                  L_NAME VARCHAR2(100),) NOT FINAL;
+ CREATE TABLE EMPLOYEES OF EMPLOYEE_T;
+----
+
+This example shows how to code an object-relational data type descriptor
+in Java to describe the object-relational data type database type
+`+Employee_t+`.
+
+[#Example 30-3]## *_Creating an Object-Relational Data Type Descriptor
+in Java_*
+
+[source,java]
+----
+ import org.eclipse.persistence.mappings.structures.*;
+ ...
+ ObjectRelationalDescriptor descriptor = new ObjectRelationalDescriptor();
+ descriptor.setJavaClass(Employee.class);
+ descriptor.setTableName("EMPLOYEES");
+ descriptor.setStructureName("EMPLOYEE_T");
+ descriptor.setPrimaryKeyFieldName("ID");
+ descriptor.addFieldOrdering("ID");
+ descriptor.addFieldOrdering("F_NAME");
+ descriptor.addFieldOrdering("L_NAME");
+ descriptor.addDirectMapping("id", "OBJECT_ID");
+ descriptor.addDirectMapping("firstName", "F_NAME");
+ descriptor.addDirectMapping("lastName", "L_NAME");
+----
+
+For more information on configuring object-relational data type
+descriptors, see
+link:Configuring%20an%20Object-Relational%20Data%20Type%20Descriptor%20(ELUG)[Configuring
+an Object-Relational Data Type Descriptor].
+
+For more information on the object-relational data type mappings that
+EclipseLink supports, see
+link:Introduction%20to%20Object-Relational%20Data%20Type%20Mappings%20(ELUG)[Introduction
+to Object-Relational Data Type Mappings].
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Release_1[Category: Release 1] Category:_Task[Category: Task]
+Category:_ORM[Category: ORM]

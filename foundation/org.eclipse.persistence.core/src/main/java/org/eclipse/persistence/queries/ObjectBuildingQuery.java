@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -13,11 +13,6 @@
 // Contributors:
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.queries;
-
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
-import java.util.List;
-import java.util.Map;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.ValidationException;
@@ -33,6 +28,11 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.MergeManager;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.mappings.DatabaseMapping;
+
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p><b>Purpose</b>:
@@ -151,21 +151,23 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
     @Override
     public void convertClassNamesToClasses(ClassLoader classLoader){
         super.convertClassNamesToClasses(classLoader);
-        Class<?> referenceClass = null;
-        try{
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                try {
-                    referenceClass = AccessController.doPrivileged(new PrivilegedClassForName<>(getReferenceClassName(), true, classLoader));
-                } catch (PrivilegedActionException exception) {
-                    throw ValidationException.classNotFoundWhileConvertingClassNames(getReferenceClassName(), exception.getException());
+        if (getReferenceClass() == null && getReferenceClassName() != null) {
+            Class<?> referenceClass = null;
+            try {
+                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+                    try {
+                        referenceClass = AccessController.doPrivileged(new PrivilegedClassForName<>(getReferenceClassName(), true, classLoader));
+                    } catch (PrivilegedActionException exception) {
+                        throw ValidationException.classNotFoundWhileConvertingClassNames(getReferenceClassName(), exception.getException());
+                    }
+                } else {
+                    referenceClass = PrivilegedAccessHelper.getClassForName(getReferenceClassName(), true, classLoader);
                 }
-            } else {
-                referenceClass = PrivilegedAccessHelper.getClassForName(getReferenceClassName(), true, classLoader);
+            } catch (ClassNotFoundException exc) {
+                throw ValidationException.classNotFoundWhileConvertingClassNames(getReferenceClassName(), exc);
             }
-        } catch (ClassNotFoundException exc){
-            throw ValidationException.classNotFoundWhileConvertingClassNames(getReferenceClassName(), exc);
+            setReferenceClass(referenceClass);
         }
-        setReferenceClass(referenceClass);
     }
 
     /**
@@ -369,7 +371,7 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
     /**
      * PUBLIC:
      * Answers if the query lock mode is known to be LOCK or LOCK_NOWAIT.
-     *
+     * <p>
      * In the case of DEFAULT_LOCK_MODE and the query reference class being a CMP entity bean,
      * at execution time LOCK, LOCK_NOWAIT, or NO_LOCK will be decided.
      * <p>

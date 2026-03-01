@@ -1,0 +1,39 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+
+== List of Figures
+
+* xref:{relativedir}/overview001.adoc#sthref6[1-1 Sample JAXB Architecture]
+* xref:{relativedir}/type_level001.adoc#CIHDBEDH[3-1 Sample Mapped Classes]
+* xref:{relativedir}/simple_values001.adoc#CHDDEAAC[4-1 XML Direct Mapping to an Attribute]
+* xref:{relativedir}/simple_values001.adoc#CHDIHEFA[4-2 XML Direct Mapping to Individual Text Nodes]
+* xref:{relativedir}/simple_values001.adoc#CHDJGBDD[4-3 XML Direct Mapping to a Text Element in a Subnode]
+* xref:{relativedir}/simple_values001.adoc#CHDCDJAA[4-4 XML Direct Mapping to a Text Node]
+* xref:{relativedir}/simple_values001.adoc#CHDBJFCA[4-5 XML Direct Mapping to a Simple Text Node]
+* xref:{relativedir}/simple_values001.adoc#CHDIFDIB[4-6 XML Direct Mapping to a Specific Schema Type]
+* xref:{relativedir}/simple_values001.adoc#CHDJHJDG[4-7 XML Direct Mappings to Different Text Nodes of Different Binary Types]
+* xref:{relativedir}/simple_values001.adoc#CHDGACBA[4-8 Sample Java Class]
+* xref:{relativedir}/simple_values001.adoc#CHDFJIEB[4-9 XML Direct Mapping with Simple Type Translator]
+* xref:{relativedir}/simple_values002.adoc#CHDBIDCE[4-10 XML Direct Collection Mapping to Text Nodes]
+* xref:{relativedir}/simple_values002.adoc#CHDDEJFD[4-11 XML Direct Collection Mapping to Text Nodes with a Grouping Element]
+* xref:{relativedir}/simple_values002.adoc#CHDGBHHE[4-12 XML Direct Mapping to a List Field]
+* xref:{relativedir}/special_schema_types002.adoc#sthref95[5-1 Mapping to a Union Field]
+* xref:{relativedir}/special_schema_types002.adoc#BABDEIDD[5-2 Mapping to a Union Field in an XML Document]
+* xref:{relativedir}/special_schema_types002.adoc#BABFGEDJ[5-3 Mapping to a Union Field]
+* xref:{relativedir}/privately_owned_relations001.adoc#BABCHCJD[6-1 One-to-one Relationship]
+* xref:{relativedir}/privately_owned_relations002.adoc#BABGDJID[6-2 One-to-many Relationship]

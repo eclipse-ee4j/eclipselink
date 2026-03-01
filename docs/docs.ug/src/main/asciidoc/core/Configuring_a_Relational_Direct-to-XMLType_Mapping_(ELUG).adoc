@@ -1,0 +1,101 @@
+*TOC*
+Special:Whatlinkshere_Introduction_to_Relational_Mappings_(ELUG)[Related
+Topics]
+
+For information on how to create EclipseLink mappings, see
+link:Creating%20a%20Mapping%20(ELUG)[Creating a Mapping].
+
+This table lists the configurable options for a relational
+direct-to-`+XMLType+` mapping.
+
+[#Table 35-1]##
+
+[width="100%",cols="<61%,<19%,<20%",options="header",]
+|===
+|*Option to Configure* |*Workbench* |*Java*
+|link:Configuring%20a%20Relational%20Mapping%20(ELUG)#Configuring_a_Database_Field[Database
+field] |image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Mapping%20(ELUG)#Cofiguring_Method_or_direct_field_access[Method
+or direct field access] |image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Mapping%20(ELUG)#Configuring_Read-Only_Mappings[Read-only]
+|image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:#Configuring_Read_Whole_Document[Configuring Read Whole Document]
+|image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Mapping%20(ELUG)#Configuring_Mapping_Comments[Mapping
+comments] |image:support.gif[Supported,title="Supported"]
+|image:unsupport.gif[Supported,title="Supported"]
+|===
+
+This example shows how to create a direct-to-XMLType mapping and add it
+to a descriptor using Java code.
+
+[#Example 37-1]## *_Direct-to-XMLType Mapping_*
+
+`+public void customize(ClassDescriptor descriptor) { +`
+`+   DirectToXMLTypeMapping mapping = new DirectToXMLTypeMapping();  +`
+
+`+   // configure mapping+` `+   mapping.setAttributeName("document");+`
+
+`+   // add mapping to descriptor+`
+`+   descriptor.addMapping(mapping);+` `+}+`
+
+For more information, see the following:
+
+* link:Introduction%20to%20Relational%20Mappings%20(ELUG)#Direct-to-XMLType_Mapping[Direct-to-XMLType
+Mapping]
+* link:Configuring%20a%20Relational%20Mapping%20(ELUG)[Configuring a
+Relational Mapping]
+* link:Configuring%20a%20Mapping%20(ELUG)[Configuring a Mapping].
+
+== Configuring Read Whole Document
+
+When mapping an XML Type to a Document Object Model (DOM), by default
+EclipseLink uses the database representation of the DOM. This allows for
+lazy loading of the XML data from the database.
+
+However, if you require the entire DOM, (or if you require the DOM to be
+available in a disconnected fashion from the database connection) use
+the *Read Whole* option to retrieve the entire DOM from the database.
+
+=== How to Configure Read Whole Document Using Workbench
+
+To specify that this mapping reads the whole XML document, use this
+procedure:
+
+[arabic]
+. Select the mapping in the *Navigator*. Its properties appear in the
+Editor.
+. Click *General*. The General tab appears. [#Figure 35-1]##*_Direct to
+XML Mapping Property Sheet, Read Whole Document Option_*
+image:readwhl.gif[Direct to XML Mapping Property Sheet, Read Whole
+Document
+Option,title="Direct to XML Mapping Property Sheet, Read Whole Document Option"]
+. Choose the *Read Whole Document* option to read the whole XML
+document. If you do not select this option, the connection must remain
+open for EclipseLink to read the database values.
+
+=== How to Configure Read Whole Document Using Java
+
+Use the following `+DirectToXMLTypeMapping+` methods:
+
+* `+setShouldReadWholeDocument+`
+* `+shouldReadWholeDocument+`
+
+For more information about the available methods for
+`+DirectToXMLTypeMapping+`, see the _EclipseLink API Reference_.
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Release_1[Category: Release 1] Category:_Task[Category: Task]
+Category:_ORM[Category: ORM]

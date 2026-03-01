@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,16 +16,16 @@ package org.eclipse.persistence.testing.tests.jpql;
 
 
 // Java imports
-import java.util.*;
-// TopLink imports
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.expressions.*;
 
-// Testing imports
-import org.eclipse.persistence.testing.framework.*;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.expressions.ExpressionMath;
+import org.eclipse.persistence.queries.ReadAllQuery;
+import org.eclipse.persistence.testing.framework.TestSuite;
+import org.eclipse.persistence.testing.models.employee.domain.Employee;
 
-// Domain imports
-import org.eclipse.persistence.testing.models.employee.domain.*;
+import java.util.Enumeration;
+import java.util.Vector;
 
 public class BinaryOperatorWithParameterTest extends JPQLParameterTestCase {
     private Vector expressionParameters;
@@ -142,7 +142,7 @@ public class BinaryOperatorWithParameterTest extends JPQLParameterTestCase {
         theTest.setArgumentNames(myArgumentNames);
 
         theTest.setArguments(new Vector());
-        theTest.getArguments().addElement(1000);
+        theTest.getArguments().add(1000);
 
         return theTest;
     }
@@ -167,7 +167,7 @@ public class BinaryOperatorWithParameterTest extends JPQLParameterTestCase {
         theTest.setArgumentNames(myArgumentNames);
 
         theTest.setArguments(new Vector());
-        theTest.getArguments().addElement(1000);
+        theTest.getArguments().add(1000);
 
         return theTest;
     }
@@ -192,7 +192,7 @@ public class BinaryOperatorWithParameterTest extends JPQLParameterTestCase {
         theTest.setArgumentNames(myArgumentNames);
 
         theTest.setArguments(new Vector());
-        theTest.getArguments().addElement(1000);
+        theTest.getArguments().add(1000);
 
         return theTest;
     }
@@ -217,7 +217,7 @@ public class BinaryOperatorWithParameterTest extends JPQLParameterTestCase {
         theTest.setArgumentNames(myArgumentNames);
 
         theTest.setArguments(new Vector());
-        theTest.getArguments().addElement(1000);
+        theTest.getArguments().add(1000);
 
         return theTest;
     }
@@ -242,7 +242,7 @@ public class BinaryOperatorWithParameterTest extends JPQLParameterTestCase {
         theTest.setArgumentNames(myArgumentNames);
 
         theTest.setArguments(new Vector());
-        theTest.getArguments().addElement(1000);
+        theTest.getArguments().add(1000);
 
         return theTest;
     }
@@ -267,7 +267,7 @@ public class BinaryOperatorWithParameterTest extends JPQLParameterTestCase {
         theTest.setArgumentNames(myArgumentNames);
 
         theTest.setArguments(new Vector());
-        theTest.getArguments().addElement(1000);
+        theTest.getArguments().add(1000);
 
         return theTest;
     }
@@ -292,7 +292,7 @@ public class BinaryOperatorWithParameterTest extends JPQLParameterTestCase {
         theTest.setArgumentNames(myArgumentNames);
 
         theTest.setArguments(new Vector());
-        theTest.getArguments().addElement(2);
+        theTest.getArguments().add(2);
 
         return theTest;
     }
@@ -317,7 +317,7 @@ public class BinaryOperatorWithParameterTest extends JPQLParameterTestCase {
         theTest.setArgumentNames(myArgumentNames);
 
         theTest.setArguments(new Vector());
-        theTest.getArguments().addElement(2);
+        theTest.getArguments().add(2);
 
         return theTest;
     }
@@ -342,7 +342,7 @@ public class BinaryOperatorWithParameterTest extends JPQLParameterTestCase {
         theTest.setArgumentNames(myArgumentNames);
 
         theTest.setArguments(new Vector());
-        theTest.getArguments().addElement(2);
+        theTest.getArguments().add(2);
 
         return theTest;
     }
@@ -367,7 +367,7 @@ public class BinaryOperatorWithParameterTest extends JPQLParameterTestCase {
         theTest.setArgumentNames(myArgumentNames);
 
         theTest.setArguments(new Vector());
-        theTest.getArguments().addElement(2);
+        theTest.getArguments().add(2);
 
         return theTest;
     }
@@ -392,7 +392,7 @@ public class BinaryOperatorWithParameterTest extends JPQLParameterTestCase {
         theTest.setArgumentNames(myArgumentNames);
 
         theTest.setArguments(new Vector());
-        theTest.getArguments().addElement(2);
+        theTest.getArguments().add(2);
 
         return theTest;
     }
@@ -417,7 +417,7 @@ public class BinaryOperatorWithParameterTest extends JPQLParameterTestCase {
         theTest.setArgumentNames(myArgumentNames);
 
         theTest.setArguments(new Vector());
-        theTest.getArguments().addElement(2);
+        theTest.getArguments().add(2);
 
         return theTest;
     }
@@ -445,8 +445,8 @@ public class BinaryOperatorWithParameterTest extends JPQLParameterTestCase {
         theTest.setArgumentNames(myArgumentNames);
 
         theTest.setArguments(new Vector());
-        theTest.getArguments().addElement(2);
-        theTest.getArguments().addElement(3);
+        theTest.getArguments().add(2);
+        theTest.getArguments().add(3);
 
         return theTest;
     }
@@ -474,8 +474,8 @@ public class BinaryOperatorWithParameterTest extends JPQLParameterTestCase {
         theTest.setArgumentNames(myArgumentNames);
 
         theTest.setArguments(new Vector());
-        theTest.getArguments().addElement(2);
-        theTest.getArguments().addElement(3);
+        theTest.getArguments().add(2);
+        theTest.getArguments().add(3);
 
         return theTest;
     }
@@ -503,8 +503,8 @@ public class BinaryOperatorWithParameterTest extends JPQLParameterTestCase {
         theTest.setArgumentNames(myArgumentNames);
 
         theTest.setArguments(new Vector());
-        theTest.getArguments().addElement(2);
-        theTest.getArguments().addElement(5);
+        theTest.getArguments().add(2);
+        theTest.getArguments().add(5);
 
         return theTest;
     }

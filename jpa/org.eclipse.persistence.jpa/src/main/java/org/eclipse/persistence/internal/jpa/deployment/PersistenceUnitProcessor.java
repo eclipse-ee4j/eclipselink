@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,6 +38,7 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.util.ArrayList;
@@ -51,15 +52,17 @@ import java.util.Set;
 import java.util.StringTokenizer;
 
 import jakarta.persistence.spi.PersistenceUnitInfo;
+
+import javax.xml.XMLConstants;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.SystemProperties;
-import org.eclipse.persistence.exceptions.PersistenceUnitLoadingException;
+import org.eclipse.persistence.jpa.exceptions.PersistenceUnitLoadingException;
 import org.eclipse.persistence.exceptions.ValidationException;
-import org.eclipse.persistence.exceptions.XMLParseException;
+import org.eclipse.persistence.jpa.exceptions.XMLParseException;
 import org.eclipse.persistence.internal.helper.XMLHelper;
 import org.eclipse.persistence.internal.jpa.deployment.xml.parser.PersistenceContentHandler;
 import org.eclipse.persistence.internal.jpa.deployment.xml.parser.XMLException;
@@ -74,6 +77,8 @@ import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 import org.eclipse.persistence.jpa.Archive;
 import org.eclipse.persistence.jpa.ArchiveFactory;
 import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.logging.SessionLog;
+import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
@@ -134,8 +139,7 @@ public class PersistenceUnitProcessor {
      * @return a Set of class name strings
      */
     public static Set<String> buildClassSet(PersistenceUnitInfo persistenceUnitInfo, Map properties){
-        Set<String> set = new HashSet<String>();
-        set.addAll(persistenceUnitInfo.getManagedClassNames());
+        Set<String> set = new HashSet<>(persistenceUnitInfo.getManagedClassNames());
         ClassLoader loader = persistenceUnitInfo.getClassLoader();
         Iterator<URL> i = persistenceUnitInfo.getJarFileUrls().iterator();
         while (i.hasNext()) {
@@ -158,7 +162,7 @@ public class PersistenceUnitProcessor {
      * to weave.
      */
     public static Collection<MetadataClass> buildEntityList(MetadataProcessor processor, ClassLoader loader) {
-        ArrayList<MetadataClass> entityList = new ArrayList<MetadataClass>();
+        ArrayList<MetadataClass> entityList = new ArrayList<>();
         for (String className : processor.getProject().getWeavableClassNames()) {
             entityList.add(processor.getMetadataFactory().getMetadataClass(className));
         }
@@ -180,18 +184,22 @@ public class PersistenceUnitProcessor {
         URL result;
         String protocol = pxmlURL.getProtocol();
         if("file".equals(protocol)) { // NOI18N
-            StringBuffer path = new StringBuffer();
-            boolean firstElement = true;
-            for (int i=0;i<descriptorDepth;i++){
-                if (!firstElement){
-                    path.append("/"); // 315097 URL use standard separators
+            if (pxmlURL.getPath().endsWith(descriptorLocation)) {
+                StringBuilder path = new StringBuilder();
+                boolean firstElement = true;
+                for (int i=0;i<descriptorDepth;i++){
+                    if (!firstElement){
+                        path.append("/"); // 315097 URL use standard separators
+                    }
+                    path.append("..");
+                    firstElement = false;
                 }
-                path.append("..");
-                firstElement = false;
+                // e.g. file:/tmp/META-INF/persistence.xml
+                // 210280: any file url will be assumed to always reference a file (not a directory)
+                result = new URL(pxmlURL, path.toString()); // NOI18N
+            } else {
+                result = new URL(pxmlURL.toString());
             }
-            // e.g. file:/tmp/META-INF/persistence.xml
-            // 210280: any file url will be assumed to always reference a file (not a directory)
-            result = new URL(pxmlURL, path.toString()); // NOI18N
         } else if("zip".equals(protocol) ||
                   "jar".equals(protocol) ||
                   "wsjar".equals(protocol)) {
@@ -238,12 +246,15 @@ public class PersistenceUnitProcessor {
         } else if ("bundleresource".equals(protocol)) {
             result = new URL("bundleresource://" + pxmlURL.getAuthority());
         } else {
-            StringBuffer path = new StringBuffer();
-            for (int i=0;i<descriptorDepth;i++){
-                path.append("../"); // 315097 URL use standard separators
+            if (pxmlURL.getPath().endsWith(descriptorLocation)) {
+                StringBuilder path = new StringBuilder();
+                path.append("../".repeat(Math.max(0, descriptorDepth))); // 315097 URL use standard separators
+                // some other protocol
+                result = new URL(pxmlURL, path.toString()); // NOI18N
+            } else {
+                // some other protocol
+                result = new URL(pxmlURL.toString());
             }
-            // some other protocol
-            result = new URL(pxmlURL, path.toString()); // NOI18N
         }
         result = fixUNC(result);
         return result;
@@ -280,7 +291,7 @@ public class PersistenceUnitProcessor {
             // the former is true, if the classpath is set as a directory with UNC,
             // the latter is true.
             String prefix = "";
-            if (authority.length() > 0) {
+            if (!authority.isEmpty()) {
                 prefix = "////";
             } else if (file.startsWith("//")) {
                 prefix = "//";
@@ -331,7 +342,7 @@ public class PersistenceUnitProcessor {
     public static Set<Archive> findPersistenceArchives(ClassLoader loader, String descriptorPath){
         Archive archive = null;
 
-        Set<Archive> archives = new HashSet<Archive>();
+        Set<Archive> archives = new HashSet<>();
 
         // See if we are talking about an embedded descriptor
         int splitPosition = descriptorPath.indexOf("!/");
@@ -384,7 +395,7 @@ public class PersistenceUnitProcessor {
     public static Set<Archive> findPersistenceArchives(ClassLoader loader, String descriptorPath, List<URL> jarFileUrls, Map properties) {
         Archive archive = null;
 
-        Set<Archive> archives = new HashSet<Archive>();
+        Set<Archive> archives = new HashSet<>();
 
         // See if we are talking about an embedded descriptor
         // If not embedded descriptor then just use the regular descriptor path
@@ -471,12 +482,8 @@ public class PersistenceUnitProcessor {
                         factory = (ArchiveFactory)PrivilegedAccessHelper.newInstanceFromClass(archiveClass);
                     }
                 }
-            } catch (ClassNotFoundException cnfe) {
+            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException cnfe) {
                 throw PersistenceUnitLoadingException.exceptionCreatingArchiveFactory(factoryClassName, cnfe);
-            } catch (IllegalAccessException iae) {
-                throw PersistenceUnitLoadingException.exceptionCreatingArchiveFactory(factoryClassName, iae);
-            } catch (InstantiationException ie) {
-                throw PersistenceUnitLoadingException.exceptionCreatingArchiveFactory(factoryClassName, ie);
             }
         }
 
@@ -484,7 +491,7 @@ public class PersistenceUnitProcessor {
     }
 
     public static Set<String> getClassNamesFromURL(URL url, ClassLoader loader, Map properties) {
-        Set<String> classNames = new HashSet<String>();
+        Set<String> classNames = new HashSet<>();
         Archive archive = null;
         try {
             archive = PersistenceUnitProcessor.getArchiveFactory(loader, properties).createArchive(url, properties);
@@ -497,9 +504,7 @@ public class PersistenceUnitProcessor {
                     }
                 }
             }
-        } catch (URISyntaxException e) {
-            throw new RuntimeException("url = [" + url + "]", e);  // NOI18N
-        } catch (IOException e) {
+        } catch (URISyntaxException | IOException e) {
             throw new RuntimeException("url = [" + url + "]", e);  // NOI18N
         } finally {
             if (archive != null) {
@@ -663,15 +668,24 @@ public class PersistenceUnitProcessor {
      */
     private static List<SEPersistenceUnitInfo> processPersistenceXML(URL baseURL, InputStream input, ClassLoader loader){
         SAXParserFactory spf = XMLHelper.createParserFactory(false);
+        spf.setValidating(true);
 
         XMLReader xmlReader = null;
         SAXParser sp = null;
         XMLExceptionHandler xmlErrorHandler = new XMLExceptionHandler();
-        // 247735 - remove the validation of XML.
 
         // create a SAX parser
         try {
             sp = spf.newSAXParser();
+
+            try {
+                sp.setProperty("http://java.sun.com/xml/jaxp/properties/schemaLanguage", XMLConstants.W3C_XML_SCHEMA_NS_URI);
+            } catch (SAXException x) {
+                AbstractSessionLog.getLog().log(SessionLog.FINE, SessionLog.JPA, "jaxp_sec_prop_not_supported", new Object[] {"http://java.sun.com/xml/jaxp/properties/schemaLanguage"});
+                spf.setValidating(false);
+                sp = spf.newSAXParser();
+            }
+
         } catch (ParserConfigurationException | SAXException exc){
             throw XMLParseException.exceptionCreatingSAXParser(baseURL, exc);
         }
@@ -687,6 +701,17 @@ public class PersistenceUnitProcessor {
         PersistenceContentHandler myContentHandler = new PersistenceContentHandler();
         xmlReader.setContentHandler(myContentHandler);
 
+        EntityResolver resolver = new EntityResolver() {
+            @Override
+            public InputSource resolveEntity(String publicId, String systemId) {
+                int idx = systemId.lastIndexOf('/');
+                String name = idx < 0 ? systemId : systemId.substring(idx + 1);
+                InputStream resource = PersistenceUnitProcessor.class.getResourceAsStream("/org/eclipse/persistence/jpa/" + name);
+                return resource == null ? null : new InputSource(resource);
+            }
+        };
+
+        xmlReader.setEntityResolver(resolver);
         InputSource inputSource = new InputSource(input);
         try{
             xmlReader.parse(inputSource);
@@ -716,20 +741,34 @@ public class PersistenceUnitProcessor {
         ARCHIVE_FACTORY = factory;
     }
 
+    private static final String PU_NAME_SEPARATOR = "_";
+    private static final String PU_HASH_SEPARATOR = "?";
+
     /**
      * Build the unique persistence name by concatenating the decoded URL with the persistence unit name.
      * A decoded URL is required while persisting on a multi-bytes OS.
-     * @return String
+     *
+     * @param rootURL root {@link URL} of the persistence unit
+     * @param puName name of the persistence unit
+     * @param hash programmatically defined persistence unit hash
+     *             or {@code null} when {@code persistence.xml} is source of the persistence unit
+     * @return unique persistence unit name
      */
-   public static String buildPersistenceUnitName(URL url, String puName){
-       String fullPuName = null;
-       try {
-           // append the persistence unit name to the decoded URL
-           fullPuName = URLDecoder.decode(url.toString(), "UTF8")+"_"+puName;
-       } catch (UnsupportedEncodingException e) {
-           throw PersistenceUnitLoadingException.couldNotBuildPersistenceUntiName(e,url.toString(),puName);
+   public static String buildPersistenceUnitName(URL rootURL, String puName, String hash) {
+       String urlPrefix = URLDecoder.decode(rootURL.toString(), StandardCharsets.UTF_8);
+       StringBuilder fullPuName = new StringBuilder(
+               urlPrefix.length()
+                       + PU_NAME_SEPARATOR.length()
+                       + puName.length()
+                       + (hash != null ? (PU_HASH_SEPARATOR.length() + hash.length()) : 0))
+               .append(urlPrefix)
+               .append(PU_NAME_SEPARATOR)
+               .append(puName);
+       if (hash != null) {
+           fullPuName.append(PU_HASH_SEPARATOR)
+                   .append(hash);
        }
-       return fullPuName;
+       return fullPuName.toString();
    }
 
     /**

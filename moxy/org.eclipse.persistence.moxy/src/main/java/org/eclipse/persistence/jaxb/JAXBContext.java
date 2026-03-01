@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,7 +16,6 @@
 //     Dmitry Kornilov - 2.6.1 - BeanValidationHelper refactoring
 package org.eclipse.persistence.jaxb;
 
-import java.awt.Image;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -36,7 +35,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.StringTokenizer;
-import java.util.Vector;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.xml.namespace.QName;
@@ -57,7 +55,6 @@ import org.eclipse.persistence.core.queries.CoreAttributeGroup;
 import org.eclipse.persistence.core.sessions.CoreProject;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.ConversionException;
-import org.eclipse.persistence.exceptions.JAXBException;
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.helper.DatabaseField;
@@ -376,7 +373,7 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
             Marshaller m = getJsonSchemaMarshaller();
             m.marshal(schema, outputResolver.createOutput(null, rootClass.getName() + ".json"));
         } catch (Exception ex) {
-            throw org.eclipse.persistence.exceptions.JAXBException.exceptionDuringSchemaGeneration(ex);
+            throw JAXBException.exceptionDuringSchemaGeneration(ex);
         }
     }
 
@@ -731,8 +728,7 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
     protected JAXBElement createJAXBElementFromXMLRoot(Root xmlRoot, Class<?> declaredType) {
         Object value = xmlRoot.getObject();
 
-        if (value instanceof List) {
-            List theList = (List) value;
+        if (value instanceof List theList) {
             for (int i = 0; i < theList.size(); i++) {
                 Object next = theList.get(i);
                 if (next instanceof Root) {
@@ -751,7 +747,7 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
         QName qname = new QName(xmlRoot.getNamespaceURI(), xmlRoot.getLocalName());
 
         Map<QName, Class<?>> qNamesToDeclaredClasses = getQNamesToDeclaredClasses();
-        if (qNamesToDeclaredClasses != null && qNamesToDeclaredClasses.size() > 0) {
+        if (qNamesToDeclaredClasses != null && !qNamesToDeclaredClasses.isEmpty()) {
             Class<?> declaredClass = qNamesToDeclaredClasses.get(qname);
             if (declaredClass != null) {
                 return createJAXBElement(qname, declaredClass, value);
@@ -980,7 +976,7 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
                     metadataComplete.put(packageName, true);
                 }
             }
-            if (metadataComplete.size() > 0) {
+            if (!metadataComplete.isEmpty()) {
                 jModel.setMetadataCompletePackageMap(metadataComplete);
             }
 
@@ -1051,7 +1047,7 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
                             additionalClasses.add(jClass);
                         }
                     } catch (ClassNotFoundException e) {
-                        throw org.eclipse.persistence.exceptions.JAXBException.couldNotLoadClassFromMetadata(javaType.getName());
+                        throw JAXBException.couldNotLoadClassFromMetadata(javaType.getName());
                     }
                 }
             }
@@ -1080,12 +1076,12 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
             super(properties, classLoader);
             this.typeMappingInfo = Arrays.copyOf(typeMappingInfo, typeMappingInfo.length);
 
-            Arrays.sort(this.typeMappingInfo, new Comparator<TypeMappingInfo>() {
+            Arrays.sort(this.typeMappingInfo, new Comparator<>() {
                 @Override
                 public int compare(TypeMappingInfo javaClass1, TypeMappingInfo javaClass2) {
                     String sourceName = getNameForType(javaClass1.getType());
                     String targetName = getNameForType(javaClass2.getType());
-                    if(sourceName == null ||  targetName == null){
+                    if (sourceName == null || targetName == null) {
                         return -1;
                     }
 
@@ -1094,14 +1090,14 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
 
                 private String getNameForType(Type type) {
                     if (type instanceof Class) {
-                        return ((Class)type).getCanonicalName();
+                        return ((Class) type).getCanonicalName();
                     } else if (type instanceof GenericArrayType) {
                         Class<?> genericTypeClass = (Class) ((GenericArrayType) type).getGenericComponentType();
                         return genericTypeClass.getCanonicalName();
                     } else {
                         // assume parameterized type
                         ParameterizedType pType = (ParameterizedType) type;
-                        return ((Class)pType.getRawType()).getCanonicalName();
+                        return ((Class) pType.getRawType()).getCanonicalName();
                     }
                 }
             });
@@ -1157,7 +1153,7 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
                     }
                 }
 
-                if (metadataComplete.size() > 0) {
+                if (!metadataComplete.isEmpty()) {
                     jModel.setMetadataCompletePackageMap(metadataComplete);
                 }
             }
@@ -1202,7 +1198,7 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
 
             for (TypeMappingInfo typeMappingInfo : typesToBeBound) {
                 Type classToLookup = typeMappingInfo.getType();
-                if (contextState.getTypeMappingInfoToGeneratedType() != null && contextState.getTypeMappingInfoToGeneratedType().size() > 0) {
+                if (contextState.getTypeMappingInfoToGeneratedType() != null && !contextState.getTypeMappingInfoToGeneratedType().isEmpty()) {
                     Class<?> generatedClass = contextState.getTypeMappingInfoToGeneratedType().get(typeMappingInfo);
                     if (generatedClass != null) {
                         classToLookup = generatedClass;
@@ -1228,7 +1224,7 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
                 for (TypeMappingInfo typeMappingInfo : existingTypes) {
                     Type type = typeMappingInfo.getType();
                     if (type == null) {
-                        throw org.eclipse.persistence.exceptions.JAXBException.nullTypeOnTypeMappingInfo(typeMappingInfo.getXmlTagName());
+                        throw org.eclipse.persistence.jaxb.JAXBException.nullTypeOnTypeMappingInfo(typeMappingInfo.getXmlTagName());
                     }
                     // ignore ParameterizedTypes
                     if (type instanceof Class) {
@@ -1249,7 +1245,7 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
                             existingClasses.add(nextClass);
                         }
                     } catch (ClassNotFoundException e) {
-                        throw org.eclipse.persistence.exceptions.JAXBException.couldNotLoadClassFromMetadata(javaType.getName());
+                        throw JAXBException.couldNotLoadClassFromMetadata(javaType.getName());
                     }
                 }
 
@@ -1376,11 +1372,11 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
             }
             processed.add(desc);
 
-            Vector mappings = desc.getMappings();
+            List mappings = desc.getMappings();
 
             for (Object mapping : mappings) {
                 DatabaseMapping nextMapping = (DatabaseMapping) mapping;
-                Vector<DatabaseField> fields = nextMapping.getFields();
+                List<DatabaseField> fields = nextMapping.getFields();
                 updateResolverForFields(fields, nr);
                 Descriptor refDesc = (Descriptor) nextMapping.getReferenceDescriptor();
                 if (refDesc != null && !processed.contains(refDesc)) {
@@ -1453,7 +1449,7 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
         }
 
         private Map<TypeMappingInfo, QName> getTypeMappingInfoToSchemaType() {
-            if (typeToTypeMappingInfo != null && typeToTypeMappingInfo.size() > 0) {
+            if (typeToTypeMappingInfo != null && !typeToTypeMappingInfo.isEmpty()) {
                 return new HashMap<>();
             }
             return generator.getAnnotationsProcessor().getTypeMappingInfosToSchemaTypes();
@@ -1478,7 +1474,7 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
                 if (name == null) {
                     Class<?> theClass = (Class) type;
                     //Change default for byte[] to Base64 (JAXB 2.0 default)
-                    if (type == CoreClassConstants.ABYTE || type == CoreClassConstants.APBYTE || type == Image.class || type == Source.class || theClass.getCanonicalName().equals("jakarta.activation.DataHandler")) {
+                    if (type == CoreClassConstants.ABYTE || type == CoreClassConstants.APBYTE || theClass.getCanonicalName().equals("java.awt.Image") || type == Source.class || theClass.getCanonicalName().equals("jakarta.activation.DataHandler")) {
                         name = Constants.BASE_64_BINARY_QNAME;
                     } else if (type == CoreClassConstants.OBJECT) {
                         name = Constants.ANY_TYPE_QNAME;
@@ -1499,7 +1495,7 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
         private void initTypeToSchemaType() {
             this.typeToSchemaType = new HashMap<>();
 
-            if (typeToTypeMappingInfo == null || typeToTypeMappingInfo.size() == 0) {
+            if (typeToTypeMappingInfo == null || typeToTypeMappingInfo.isEmpty()) {
                 return;
             }
 
@@ -1729,6 +1725,17 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
         }
     }
 
-    private static final boolean NEEDS_OPEN = JAXBContext.class.getModule() != Version.class.getModule();
+    private static final boolean NEEDS_OPEN;
+
+    static {
+        boolean b = false;
+        try {
+            b = JAXBContext.class.getModule() != Version.class.getModule();
+        } catch (NoSuchMethodError nsme) {
+            //android
+            b = false;
+        }
+        NEEDS_OPEN = b;
+    }
 
 }

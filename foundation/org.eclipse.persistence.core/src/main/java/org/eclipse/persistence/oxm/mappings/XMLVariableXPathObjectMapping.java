@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -13,10 +13,6 @@
 // Contributors:
 //     Matt MacIvor - 2.5.1 - Initial Implementation
 package org.eclipse.persistence.oxm.mappings;
-
-import java.util.Vector;
-
-import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DescriptorException;
@@ -37,6 +33,9 @@ import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.eclipse.persistence.sessions.Session;
+
+import javax.xml.namespace.QName;
+import java.util.List;
 
 public class XMLVariableXPathObjectMapping extends XMLCompositeObjectMapping  implements VariableXPathObjectMapping<AbstractSession, AttributeAccessor, ContainerPolicy, Converter, ClassDescriptor, DatabaseField, XMLMarshaller, Session,  XMLUnmarshaller, XMLRecord>, XMLMapping {
 
@@ -95,7 +94,7 @@ public class XMLVariableXPathObjectMapping extends XMLCompositeObjectMapping  im
     }
 
       @Override
-        protected Vector collectFields() {
+      protected List<DatabaseField> collectFields() {
             if(field != null){
                 return super.collectFields();
             }
@@ -106,7 +105,7 @@ public class XMLVariableXPathObjectMapping extends XMLCompositeObjectMapping  im
         }
 
     @Override
-    public Vector getFields() {
+    public List<DatabaseField> getFields() {
         return collectFields();
     }
 
@@ -199,7 +198,7 @@ public class XMLVariableXPathObjectMapping extends XMLCompositeObjectMapping  im
                 returnString = (String)value;
             }
             XPathFragment frag = new XPathFragment();
-            if(isNamespaceAware && uri != null && uri.length() >0){
+            if(isNamespaceAware && uri != null && !uri.isEmpty()){
 
                 String prefix = nr.resolveNamespaceURI(uri);
                 if(prefix == null){
@@ -207,7 +206,7 @@ public class XMLVariableXPathObjectMapping extends XMLCompositeObjectMapping  im
                     //marshalRecord.namespaceDeclaration(prefix, uri);
                        frag.setGeneratedPrefix(true);
                 }
-                if(prefix != null && prefix.length() >0){
+                if(prefix != null && !prefix.isEmpty()){
                     frag.setPrefix(prefix);
                     returnString = prefix + namespaceSep + returnString;
                 }

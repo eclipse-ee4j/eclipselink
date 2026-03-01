@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,7 +14,7 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.queries.inmemory;
 
-import org.eclipse.persistence.queries.*;
+import org.eclipse.persistence.queries.ReadAllQuery;
 
 /**
  * Test in-memory querying.
@@ -48,7 +48,7 @@ public class InMemoryReadAllCacheHitTest extends CacheHitTest {
             throw new org.eclipse.persistence.testing.framework.TestErrorException("Expecting: " + this.size + " retrieved: " + ((java.util.Vector)objectRead).size());
         }
 
-        if (tempStream.toString().length() > 0) {
+        if (!tempStream.toString().isEmpty()) {
             throw new org.eclipse.persistence.testing.framework.TestErrorException("The read went to the database, but should not have, '" + tempStream.toString() + "'");
         }
     }

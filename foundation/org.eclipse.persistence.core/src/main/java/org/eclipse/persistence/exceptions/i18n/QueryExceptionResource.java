@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2022 IBM Corporation and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,9 +30,6 @@
 package org.eclipse.persistence.exceptions.i18n;
 
 import java.util.ListResourceBundle;
-
-import org.eclipse.persistence.config.PersistenceUnitProperties;
-import org.eclipse.persistence.config.QueryHints;
 
 /**
  * INTERNAL: English ResourceBundle for QueryException messages.
@@ -209,7 +206,7 @@ public final class QueryExceptionResource extends ListResourceBundle {
        { "6172", "Missing connection pool for partitioning [{0}]."},
        { "6173", "Connection pool [{0}] failed to fail-over, all servers are dead."},
        { "6174", "No value was provided for the session property [{0}]. This exception is possible when using additional criteria or tenant discriminator columns without specifying the associated contextual property. These properties must be set through EntityManager, EntityManagerFactory or persistence unit properties. If using native EclipseLink, these properties should be set directly on the session."},
-       { "6175", "Native SQL queries have been disabled. This is done either by setting the persistence unit property \"" + PersistenceUnitProperties.ALLOW_NATIVE_SQL_QUERIES + "\" to false or having at least one multitenant entity defined in your persistence unit. Check your persistence unit specification. To allow native sql queries, set this property to true. Alternatively, individual queries may bypass this setting by setting the \"" + QueryHints.ALLOW_NATIVE_SQL_QUERY + "\" query hint to true."},
+       { "6175", "Native SQL queries have been disabled. This is done either by setting the persistence unit property \"{0}\" to false or having at least one multitenant entity defined in your persistence unit. Check your persistence unit specification. To allow native sql queries, set this property to true. Alternatively, individual queries may bypass this setting by setting the \"{1}\" query hint to true."},
        { "6176", "An exception was thrown while initializing the constructor from the class [{0}]:  [{1}]"},
        { "6177", "The column result [{0}] was not found in the results of the query."},
        { "6178", "isResultSetAccessOptimizedQuery set to true conflicts with other query settings."},
@@ -217,7 +214,8 @@ public final class QueryExceptionResource extends ListResourceBundle {
        { "6180", "serialized sopObject is not found in [{0}] in [{1}]"},
        { "6181", "sopObject has a wrong version [{0}] in [{1}] in [{2}]"},
        { "6182", "sopObject has a wrong primary key [{0}] in [{1}] in [{2}]"},
-       { "6183",  "The mapping type {1} for attribute {2} from {0} is not supported with Query By Example functionality.  If the attribute can safely be ignored then add it to the ignore list or set example validation to false in the policy."}
+       { "6183",  "The mapping type {1} for attribute {2} from {0} is not supported with Query By Example functionality.  If the attribute can safely be ignored then add it to the ignore list or set example validation to false in the policy."},
+       { "6184", "Incorrect value type {0} is passed to the constructor expression. Complex types (for example, arrays, collections, or objects) are not supported." },
 
     };
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,10 +15,10 @@
 //       - JPA 2.0 - OrderedList support.
 package org.eclipse.persistence.internal.helper;
 
+import org.eclipse.persistence.internal.queries.OrderedListContainerPolicy;
+
 import java.util.Collections;
 import java.util.Comparator;
-
-import org.eclipse.persistence.internal.queries.OrderedListContainerPolicy;
 
 /**
  * <p><b>Purpose</b>: A helper class for sorting index/object pairs.

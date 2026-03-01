@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,11 +14,14 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.queries;
 
-import java.util.*;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.expressions.*;
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
+
+import java.util.HashMap;
+import java.util.Iterator;
 
 /**
  * PUBLIC:
@@ -240,8 +243,7 @@ public class UpdateAllQuery extends ModifyAllQuery {
             while(it.hasNext() ) {
                 Object value = it.next();
                 if(value != null) {
-                    if(value instanceof Expression) {
-                        Expression valueExpression = (Expression)value;
+                    if(value instanceof Expression valueExpression) {
                         this.defaultBuilder = valueExpression.getBuilder();
                         if(this.defaultBuilder != null) {
                             return;
@@ -252,8 +254,7 @@ public class UpdateAllQuery extends ModifyAllQuery {
             it = m_updateClauses.keySet().iterator();
             while(it.hasNext() ) {
                 Object field = it.next();
-                if(field instanceof Expression) {
-                    Expression fieldExpression = (Expression)field;
+                if(field instanceof Expression fieldExpression) {
                     this.defaultBuilder = fieldExpression.getBuilder();
                     if(this.defaultBuilder != null) {
                         return;

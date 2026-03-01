@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,10 +16,8 @@ package org.eclipse.persistence.jpa.rs.util;
 
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
-import java.util.Vector;
-
-import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.InheritancePolicy;
@@ -132,7 +130,8 @@ public class PreLoginMappingAdapter extends SessionEventListener {
 
             ClassDescriptor jpaDescriptor = jpaSession.getDescriptorForAlias(descriptor.getAlias());
 
-            Vector<DatabaseMapping> descriptorMappings = (Vector<DatabaseMapping>) descriptor.getMappings().clone();
+            @SuppressWarnings({"unchecked"})
+            List<DatabaseMapping> descriptorMappings = (List<DatabaseMapping>) ((ArrayList<DatabaseMapping>) descriptor.getMappings()).clone();
             for (DatabaseMapping mapping : descriptorMappings) {
                 if (mapping.isXMLMapping()) {
                     if (mapping.isAbstractCompositeObjectMapping() || mapping.isAbstractCompositeCollectionMapping()) {
@@ -150,8 +149,7 @@ public class PreLoginMappingAdapter extends SessionEventListener {
 
                         if (jpaDescriptor != null) {
                             DatabaseMapping dbMapping = jpaDescriptor.getMappingForAttributeName(mapping.getAttributeName());
-                            if ((dbMapping != null) && (dbMapping instanceof ForeignReferenceMapping)) {
-                                ForeignReferenceMapping jpaMapping = (ForeignReferenceMapping) dbMapping;
+                            if ((dbMapping != null) && (dbMapping instanceof ForeignReferenceMapping jpaMapping)) {
                                 if (jpaMapping.getMappedBy() != null) {
                                     ClassDescriptor inverseDescriptor = project.getDescriptorForAlias(jpaMapping.getReferenceDescriptor().getAlias());
                                     if (inverseDescriptor != null) {
@@ -194,24 +192,23 @@ public class PreLoginMappingAdapter extends SessionEventListener {
         for (Object descriptorAlias : project.getAliasDescriptors().keySet()) {
             ClassDescriptor descriptor = project.getAliasDescriptors().get(descriptorAlias);
             ClassDescriptor jpaDescriptor = jpaSession.getDescriptorForAlias(descriptor.getAlias());
-            Vector<DatabaseMapping> descriptorMappings = (Vector<DatabaseMapping>) descriptor.getMappings().clone();
+            @SuppressWarnings({"unchecked"})
+            List<DatabaseMapping> descriptorMappings = (List<DatabaseMapping>) ((ArrayList<DatabaseMapping>) descriptor.getMappings()).clone();
 
             for (DatabaseMapping mapping : descriptorMappings) {
                 if (mapping.isXMLMapping()) {
                     if (mapping.isAbstractCompositeObjectMapping() || mapping.isAbstractCompositeCollectionMapping()) {
                         if (jpaDescriptor != null) {
                             DatabaseMapping dbMapping = jpaDescriptor.getMappingForAttributeName(mapping.getAttributeName());
-                            if ((dbMapping instanceof ForeignReferenceMapping)) {
-                                ForeignReferenceMapping jpaMapping = (ForeignReferenceMapping) dbMapping;
+                            if ((dbMapping instanceof ForeignReferenceMapping jpaMapping)) {
                                 ClassDescriptor jaxbDescriptor = project.getDescriptorForAlias(jpaMapping.getDescriptor().getAlias());
                                 convertMappingToXMLChoiceMapping(jaxbDescriptor, jpaMapping, cl, jpaSession);
                             }
-                        } else if (mapping instanceof XMLCompositeObjectMapping) {
+                        } else if (mapping instanceof XMLCompositeObjectMapping jpaMapping) {
                             // Fix for Bug 403113 - JPA-RS Isn't Serializing an Embeddable defined in an ElementCollection to JSON Correctly
                             // add choice mapping for one-to-one relationships within embeddables
                             // Based on (http://wiki.eclipse.org/EclipseLink/Examples/JPA/NoSQL#Step_2_:_Map_the_data),
                             // the mappedBy option on relationships is not supported for NoSQL data, so no need to add inverse mapping
-                            XMLCompositeObjectMapping jpaMapping = (XMLCompositeObjectMapping) mapping;
                             ClassDescriptor jaxbDescriptor = project.getDescriptorForAlias(jpaMapping.getDescriptor().getAlias());
                             if (jaxbDescriptor != null) {
                                 Class clazz = jpaMapping.getReferenceClass();
@@ -330,7 +327,7 @@ public class PreLoginMappingAdapter extends SessionEventListener {
                         xmlChoiceMapping.addChoiceElement(compositeMapping.getXPath(), refDesc.getJavaClass());
 
                         xmlChoiceMapping.setConverter(new XMLJavaTypeConverter(
-                                (Class<? extends XmlAdapter<?,?>>) Class.forName(adapterClassName, true, cl)));
+                                Class.forName(adapterClassName, true, cl)));
                         jaxbDescriptor.removeMappingForAttributeName(jaxbMapping.getAttributeName());
                         jaxbDescriptor.addMapping(xmlChoiceMapping);
 
@@ -346,7 +343,7 @@ public class PreLoginMappingAdapter extends SessionEventListener {
 
                         xmlChoiceMapping.setContainerPolicy(jaxbMapping.getContainerPolicy());
                         xmlChoiceMapping.setConverter(new XMLJavaTypeConverter(
-                                (Class<? extends XmlAdapter<?,?>>) Class.forName(adapterClassName, true, cl)));
+                                Class.forName(adapterClassName, true, cl)));
                         jaxbDescriptor.removeMappingForAttributeName(jaxbMapping.getAttributeName());
                         jaxbDescriptor.addMapping(xmlChoiceMapping);
                     }

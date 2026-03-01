@@ -1,0 +1,571 @@
+image:Elug_draft_icon.png[Image:Elug draft
+icon.png,title="Image:Elug draft icon.png"] *For the latest EclipseLink
+documentation, please see
+http://www.eclipse.org/eclipselink/documentation/*
+
+'''''
+
+*TOC*
+Special:Whatlinkshere_Introduction_to_Relational_Projects_(ELUG)[Related
+Topics]
+
+This section provides an overview of relational projects and focuses on
+building these projects for relational and object-relational data type
+databases.
+
+For information on project concepts and features common to more than one
+type of EclipseLink projects, see
+link:Introduction%20to%20Projects_(ELUG)[Introduction to Projects].
+
+== Building Relational Projects
+
+Use a relational project for transactional persistence of Java objects
+to a conventional _relational_ database or to an _object-relational data
+type_ database that supports data types specialized for object storage,
+both accessed using JDBC.
+
+[width="100%",cols="<100%",]
+|===
+|*Note:* If you are using Workbench, you must add your JDBC driver to
+the Workbench classpath. For more information, see
+link:Using%20Workbench%20(ELUG)#Configuring_the_Workbench_Environment[Configuring
+the Workbench Environment].
+|===
+
+In a relational project, you can make full use of EclipseLink queries
+and expressions (see
+link:EclipseLink_UserGuide_Queries_%28ELUG%29[Queries]).
+
+=== How to Build Relational Projects for a Relational Database
+
+The Workbench provides complete support for creating relational projects
+that map Java objects to a conventional relational database accessed
+using JDBC.
+
+[[Table 23-1]]
+
+*_Components of a Relational Project for a Relational Database_*
+
+[width="100%",cols="<10%,<90%",options="header",]
+|===
+|*Component* |*Supported Types*
+|Data Source
+|link:Introduction%20to%20Data%20Access%20(ELUG)[DatabaseLogin] or
+link:Introduction%20to%20Data%20Access%20(ELUG)[Database Platforms]
+
+|Descriptors
+|link:Introduction%20to%20Relational%20Descriptors%20(ELUG)[Relational
+Descriptors]
+
+|Mappings |link:Relational_Mappings_(ELUG)[Relational Mappings]
+|===
+
+For more information, see
+link:Creating%20a%20Relational%20Project%20(ELUG)#Creating_a_Relational_Project[Creating
+a Relational Project].
+
+=== How to Build Relational Projects for an Object-Relational Data Type Database
+
+The Workbench does not currently support relational projects for an
+object-relational data type database. You must create such a relational
+project in Java.
+
+Using Java, you can create a relational project for transactional
+persistence of Java objects to an object-relational data type database
+that supports data types specialized for object storage (such as Oracle
+Database) accessed using JDBC.
+
+When using EclipseLink to build a relational project for an
+object-relational data type database, consider the following:
+
+* You must create a Java class and an EclipseLink
+`+ObjectRelationalDescriptor+` for each structured type
+(`+Struct/object-type+`).
+* EclipseLink supports only arrays (`+Varrays+`) of basic types or
+arrays on structured types (`+Struct/object-type+`). EclipseLink does
+not support arrays of `+Refs+` or arrays of nested tables.
+* EclipseLink supports only nested tables of `+Refs+`. EclipseLink does
+not support nested tables of basic types, structured types, or array
+types.
+
+The general development process for building a relational project for an
+object-relational data type database is as follows:
+
+[arabic]
+. Define structured object-types in the database.
+. Define tables of the structured object-types in the database.
+. Define the Java classes that will map to the structured object-types.
+. link:Creating%20a%20Project%20(ELUG)[Create a relational project].
+. link:Creating%20an%20Object-Relational%20Data%20Type%20Descriptor%20(ELUG)[Create
+an object-relational data type descriptor for each Java class].
+. Create object-relational data type mappings from each persistent field
+of each Java class to the corresponding object-types and object-type
+tables. For more information, see the following:
+* link:Creating%20a%20Mapping%20(ELUG)[Creating a Mapping]
+* link:Configuring%20an%20Object-Relational%20Data%20Type%20Mapping_(ELUG)[Configuring
+an Object-Relational Data Type Mapping]
+
+[[Table 23-2]]
+
+*_Components of a Relational Project for an Object-Relational Data Type
+Database_*
+
+[width="100%",cols="<8%,<92%",options="header",]
+|===
+|*Component* |*Supported Types*
+|Data Source
+|link:Introduction%20to%20Data%20Access%20(ELUG)#DatabaseLogin[DatabaseLogin]
+or
+link:Introduction%20to%20Data%20Access%20(ELUG)#Database_Platforms[Database
+Platforms]
+
+|Descriptors
+|link:Introduction%20to%20Object-Relational%20Data%20Type%20Descriptors%20(ELUG)[Object-Relational
+Data Type Descriptors]
+
+|Mappings
+|link:Object-Relational_Data_Type_Mappings_(ELUG)[Object-Relational Data
+Type Mappings]
+|===
+
+For more information, see
+link:Creating%20a%20Relational%20Project%20(ELUG)#Creating_a_Relational_Project[Creating
+a Relational Project].
+
+== Sequencing in Relational Projects
+
+In an relational project, you store persistent objects for your
+application in database tables that represent the class of instantiated
+object. As the link:#Figure_23-1[Sequencing Elements in a Class Database
+Table] figure shows, each row of the VEHICLE_POOL table represents an
+instantiated object from that class, and the VEH_ID column holds the
+primary key for each object.
+
+[#Figure 23-1]## *_Sequencing Elements in a Class Database Table_*
+
+.Sequencing Elements in a Class Database Table
+image::seqtable.gif[Sequencing Elements in a Class Database
+Table,title="Sequencing Elements in a Class Database Table"]
+
+You configure EclipseLink sequencing at the
+link:Configuring%20a%20Relational%20Project%20(ELUG)#Configuring_Sequencing_at_the_Project_Level[Project
+Level] or
+link:Configuring%20a%20Database%20Login%20(ELUG)#Configuring_Sequencing_at_the_Session_Level[Session
+Level] to tell EclipseLink how to obtain values for the primary key
+column: that is, whatlink:#Sequencing_Types[type of sequencing to use].
+
+You configure EclipseLink
+link:Configuring%20a%20Relational%20Descriptor%20(ELUG)#Configuring_Sequencing_at_the_Descriptor_Level[configure
+Sequencing at the Descriptor Level] to tell EclipseLink into which table
+and column to write the sequence value when an instance of a
+descriptor’s reference class is created.
+
+[width="100%",cols="<100%",]
+|===
+|*Note:* When choosing a column type for a primary key value, ensure
+that the type provides a suitable precision. For example, if you use a
+`+TIMESTAMP+` type but your database platform’s `+TIMESTAMP+` is defined
+only to the second, then identical values may be returned for objects
+created within the same second.
+|===
+
+This section describes the following:
+
+* link:#Sequencing_Configuration_Options[Sequencing Configuration
+Options]
+* link:#Sequencing_Types[Sequencing Types]
+* link:#Sequencing_and_Preallocation_Size[Sequencing and Preallocation
+Size]
+
+=== Sequencing Configuration Options
+
+You can configure sequencing using either the Workbench or Java (but not
+both).
+
+Using the Workbench, create one sequence with a single preallocation
+size that applies to all descriptors that require sequencing. You can
+configure link:#Table_Sequencing[Table Sequencing] or native sequencing
+(see link:#Native_Sequencing_with_an_Oracle_Database_Platform[Native
+Sequencing with an Oracle Database Platform]). If you choose table
+sequencing, you can either use default table and column names or specify
+your own (see link:#Default_Versus_Custom_Sequence_Table[Default Versus
+Custom Sequence Table]).
+
+Using Java, you can configure any sequence type that EclipseLink
+supports (see link:#Sequencing_Types[Sequencing Types]). You can create
+any number and combination of sequences per project. You can create a
+sequence object explicitly or use the platform
+link:#Default_Sequencing[Default Sequencing]. You can associate the same
+sequence with more than one descriptor or associate different sequences
+(and different sequence types) to various descriptors. You can configure
+a separate preallocation size for each descriptor’s sequence. For more
+information, see
+link:Configuring%20a%20Database%20Login%20(ELUG)#How_to_Configure_Sequencing_at_the_Session_Level_Using_Java[How
+to Configure Sequencing at the Session Level Using Java].
+
+=== Sequencing Types
+
+EclipseLink supports the following sequence types:
+
+* link:#Table_Sequencing[Table Sequencing]
+* link:#Unary_Table_Sequencing[Unary Table Sequencing]
+* link:#Query_Sequencing[Query Sequencing]
+* link:#Default_Sequencing[Default Sequencing]
+* link:#Native_Sequencing_with_an_Oracle_Database_Platform[Native
+Sequencing with an Oracle Database Platform]
+* link:#Native_Sequencing_with_a_Non-Oracle_Database_Platform[Native
+Sequencing with a Non-Oracle Database Platform]
+
+==== Table Sequencing
+
+With table sequencing, you create a single database table that includes
+sequencing information for one or more sequenced objects in the project.
+EclipseLink maintains this table to track sequence numbers for these
+object types.
+
+As the link:#Figure_23-2[EclipseLink Table Sequence Table] figure shows,
+the table may contain sequencing information for more than one class
+that uses sequencing. The default table is called `+SEQUENCE+` and
+contains two columns:
+
+* `+SEQ_NAME+`, which specifies the class type to which the selected row
+refers
+* `+SEQ_COUNT+`, which specifies the highest sequence number currently
+allocated for the object represented in the selected row
+
+[#Figure 23-2]## *_EclipseLink Table Sequence Table_*
+
+.EclipseLink Table Sequence Table
+image::seqtblmn.gif[EclipseLink Table Sequence
+Table,title="EclipseLink Table Sequence Table"]
+
+The rows of the `+SEQUENCE+` table represent each sequence object: one
+for each class that participates in sequencing or a single sequence
+object across several classes so that they can benefit from the same
+preallocation pool. When you configure
+link:Configuring%20a%20Relational%20Descriptor%20(ELUG)#Configuring_Sequencing_at_the_Descriptor_Level[Sequencing
+at the Descriptor Level], you specify the `+SEQ_NAME+` for the class.
+Add a row with that name to the `+SEQUENCE+` table and initialize the
+`+SEQ_COUNT+` column to the value .
+
+Each time a new instance of a class is created, EclipseLink obtains the
+required sequence value. For efficiency, EclipseLink uses preallocation
+to reduce the number of table accesses required to obtain sequence
+values (see link:#Sequencing_and_Preallocation_Size[Sequencing and
+Preallocation Size]).
+
+You can create the `+SEQUENCE+` table on the database in one of two
+ways:
+
+* Use the Workbench to create the table. See
+link:Using%20Workbench%20(ELUG)#Generating_Tables_on_the_Database[Generating
+Tables on the Database] for more information.
+* Use the EclipseLink table creator to create and update the table
+manually. See
+link:Using%20Workbench%20(ELUG)#Generating_SQL_Creation_Scripts[Generating
+SQL Creation Scripts] for more information.
+
+You can configure table sequencing using the Workbench or Java. For more
+information about configuring table sequencing, see
+link:Configuring%20a%20Relational%20Project%20(ELUG)#Configuring_Sequencing_at_the_Project_Level[Configuring
+Sequencing at the Project Level] or
+link:Configuring%20a%20Database%20Login%20(ELUG)#Configuring_Sequencing_at_the_Session_Level[Configuring
+Sequencing at the Session Level].
+
+===== Default Versus Custom Sequence Table
+
+In most cases, you implement table sequencing using the default table
+and column names. However, you may want to specify your own table and
+column names if the following holds true:
+
+* You want to use an existing sequence table for sequencing.
+* You do not want to use the default naming convention for the table and
+its columns.
+
+==== Unary Table Sequencing
+
+Although similar to link:#Table_Sequencing[Table Sequencing], with unary
+table sequencing, you create a separate sequence table for each
+sequenced object in the project.
+
+As this figure shows, sequencing information appears in the table for a
+single class that uses sequencing. You can name the table anything you
+want but it must contain only one column named (by default)
+`+SEQUENCE+`.
+
+[#Figure 23-3]## *_EclipseLink Unary Table Sequence Table_*
+
+.EclipseLink Unary Table Sequence Table
+image::seqtblun.gif[EclipseLink Unary Table Sequence
+Table,title="EclipseLink Unary Table Sequence Table"]
+
+When you configure sequencing at the descriptor level, you specify the
+sequence name for the class: this is the name of the unary table
+sequence table. The link:#Figure_23-3[EclipseLink Unary Table Sequence
+Table] figure shows a unary table sequence for the `+Employee+` class.
+The `+Employee+` class descriptor is configured (see
+link:Configuring%20a%20Relational%20Descriptor%20(ELUG)#Configuring_Sequencing_at_the_Descriptor_Level[Configuring
+Sequencing at the Descriptor Level]) with a sequence name of `+EMP_SEQ+`
+to match the unary table sequence table name. EclipseLink adds a row to
+this table and initializes the `+SEQUENCE+` column to the value `+1+`.
+
+Each time a new class is created, EclipseLink obtains the required
+sequence value from the single row of the unary sequence table
+corresponding to the class. For efficiency, EclipseLink uses
+preallocation to reduce the number of table accesses required to obtain
+sequence values (see link:#Sequencing_and_Preallocation_Size[Sequencing
+and Preallocation Size]).
+
+You can create the unary table sequence table on the database in one of
+two ways:
+
+* Use the Workbench to create the table. See
+link:Using%20Workbench%20(ELUG)#Generating_Tables_on_the_Database[Generating
+Tables on the Database] for more information.
+* Use the EclipseLink table creator to create and update the table
+manually. See
+link:Using%20Workbench%20(ELUG)#Generating_SQL_Creation_Scripts[Generating
+SQL Creation Scripts] for more information.
+
+Currently, you can only configure unary table sequencing in Java using
+the `+UnaryTableSequence+` class (for more information, see
+link:Configuring%20a%20Database%20Login%20(ELUG)#How_to_Configure_Sequencing_at_the_Session_Level_Using_Java[How
+to Configure Sequencing at the Session Level Using Java] "`wikilink`")).
+
+==== Query Sequencing
+
+With query sequencing, you can access a sequence resource using custom
+read (`+ValueReadQuery+`) and update (`+DataModifyQuery+`) queries and a
+preallocation size that you specify. This allows you to perform
+sequencing using stored procedures and allows you to access sequence
+resources that are not supported by the other sequencing types that
+EclipseLink provides.
+
+Currently, you can only configure query sequencing in Java using the
+`+QuerySequence+` class (for more information, see
+link:Configuring%20a%20Database%20Login%20(ELUG)#Configuring_Query_Sequencing[Configuring
+Query Sequencing]).
+
+==== Default Sequencing
+
+The platform owned by a login is responsible for providing a default
+sequence instance appropriate for the platform type. For example, by
+default, a `+DatabasePlatform+` provides a table sequence using the
+default table and column names (see link:#Table_Sequencing[Table
+Sequencing]).
+
+You can access this default sequence directly using `+DatasourceLogin+`
+method `+getDefaultSequence+`, or indirectly by using the
+`+DefaultSequence+` class, a wrapper for the platform default sequence.
+
+If you associate a descriptor with a nonexistent sequence, the
+EclipseLink runtime will create an instance of `+DefaultSequence+` to
+provide sequencing for that descriptor. For more information, see
+link:Configuring%20a%20Relational%20Descriptor%20(ELUG)#Configuring_the_Platform_Default_Sequence[Configuring
+the Platform Default Sequence].
+
+The main purpose of the `+DefaultSequence+` is to allow a sequence to
+use a different pre-allocation size than the project default.
+
+Currently, you can only make use of default sequencing in Java (for more
+information, see
+link:Configuring%20a%20Database%20Login%20(ELUG)#Using_the_Platform_Default_Sequence[Using
+the Platform Default Sequence]).
+
+==== Native Sequencing with an Oracle Database Platform
+
+EclipseLink support for native sequencing with Oracle Databases is
+similar to table sequencing (see link:#Table_Sequencing[Table
+Sequencing]), except that EclipseLink does not maintain a table in the
+database. Instead, the database contains a sequence object that stores
+the current maximum number and preallocation size for sequenced objects.
+The sequence name configured at the descriptor level identifies the
+sequence object responsible for providing sequencing values for the
+descriptor’s reference class.
+
+You can configure native sequencing using Workbench or Java. For more
+information about configuring table sequencing, see
+link:Configuring%20a%20Relational%20Project%20(ELUG)#Configuring_Sequencing_at_the_Project_Level[Configuring
+Sequencing at the Project Level] or
+link:Configuring%20a%20Database%20Login%20(ELUG)#Configuring_Sequencing_at_the_Session_Level[Configuring
+Sequencing at the Session Level].
+
+===== Understanding the Oracle SEQUENCE Object
+
+The Oracle `+SEQUENCE+` object implements a strategy that closely
+resembles EclipseLink sequencing: it implements an `+INCREMENT+`
+construct that parallels the EclipseLink preallocation size, and a
+`+sequence.nextval+` construct that parallels the `+SEQ_COUNT+` field in
+the EclipseLink `+SEQUENCE+` table in table sequencing. This
+implementation enables EclipseLink to use the Oracle `+SEQUENCE+` object
+as if it were an EclipseLink `+SEQUENCE+` table, but eliminates the need
+for EclipseLink to create and maintain the table.
+
+As with table sequencing, EclipseLink creates a pool of available
+numbers by requesting that the Oracle `+SEQUENCE+` object increment the
+`+sequence.nextval+` and return the result. Oracle adds the value,
+`+INCREMENT+`, to the `+sequence.nextval+`, and EclipseLink uses the
+result to build the sequencing pool.
+
+The key difference between this process and the process involved in
+table sequencing is that EclipseLink is unaware of the `+INCREMENT+`
+construct on the `+SEQUENCE+` object. EclipseLink sequencing and the
+Oracle `+SEQUENCE+` object operate in isolation. To avoid sequencing
+errors in the application, set the EclipseLink preallocation size and
+the Oracle `+SEQUENCE+` object `+INCREMENT+` to the same value. Note
+that the Oracle sequence object must have a starting value equal to the
+preallocation size because when EclipseLink gets the next sequence
+value, it assume it has the previous preallocation size of values.
+
+===== Using SEQUENCE Objects
+
+Your database administrator (DBA) must create a `+SEQUENCE+` object on
+the database for every sequencing series your application requires. If
+every class in your application requires its own sequence, the DBA
+creates a `+SEQUENCE+` object for every class; if you design several
+classes to share a sequence, the DBA need create only one `+SEQUENCE+`
+object for those classes.
+
+For example, in the link:#Figure_23-4[Example of Database Tables–Racquet
+Information] figure, consider the case of a sporting goods manufacturer
+that manufactures three styles of tennis racquet. The data for these
+styles of racquet are stored in the database as follows:
+
+* Each style of racquet has its own class table.
+* Each manufactured racquet is an object represented by a line in the
+class table.
+* The system assigns serial numbers to the racquets that use sequencing.
+
+[#Figure 23-4]## *_Example of Database Tables–Racquet Information_*
+
+.Example of Database Tables–Racquet Information
+image::orseqa.gif[Example of Database Tables–Racquet
+Information,title="Example of Database Tables–Racquet Information"]
+
+The manufacturer can do either of the following:
+
+* _Use separate sequencing for each racquet style._ The DBA builds three
+separate `+SEQUENCE+` objects, perhaps called `+ATTACK_SEQ+`,
+`+VOLLEY_SEQ+`, and `+PROX_SEQ+`. Each different racquet line has its
+own serial number series, and there may be duplication of serial numbers
+between the lines (for example: all three styles may include a racquet
+with serial number 1234).
+* _Use a single sequencing series for all racquets._ The DBA builds a
+single `+SEQUENCE+` object (perhaps called `+RACQUET_SEQ+`). The
+manufacturer assigns serial numbers to racquets as they are produced,
+without regard for the style of racquet.
+
+==== Native Sequencing with a Non-Oracle Database Platform
+
+Several databases support a type of native sequencing in which the
+database management system generates the sequence numbers.
+
+When you create a database table for a class that uses native
+sequencing, include a primary key column, and set the column type as
+follows:
+
+* For Sybase and Microsoft SQL Server databases, set the primary key
+field to the type `+IDENTITY+`.
+* For IBM Informix databases, set the primary key field to the type
+`+SERIAL+`.
+* For IBM DB2 databases, set the primary key field to the type
+`+IDENTITY+`.
+
+When you insert a new object into the table, EclipseLink populates the
+object before insertion into the table, but does not include the
+sequence number. As the database inserts the object into its table, the
+database automatically populates the primary key field with a value
+equal to the primary key of the previous object plus `+1+`.
+
+At this point, and before the transaction closes, EclipseLink reads back
+the primary key for the new object so that the object has an identity in
+the EclipseLink cache.
+
+[width="100%",cols="<100%",]
+|===
+|*Note:* This type of sequencing does not support preallocation, so the
+preallocation size must be set to 1. To take advantage of sequence
+preallocation, we recommend that you use table sequencing on these
+databases instead of native sequencing.
+|===
+
+If your database provides native sequencing, but EclipseLink does not
+directly support it, you may be able to access the native sequence
+object using a query sequence and stored procedures. For more
+information, see link:#Query_Sequencing[Query Sequencing].
+
+You can configure native sequencing using Workbench or Java. We
+recommend that you use the Workbench. For more information about
+configuring table sequencing, see
+link:Configuring%20a%20Relational%20Project%20(ELUG)#Configuring_Sequencing_at_the_Project_Level[Configuring
+Sequencing at the Project Level] or
+link:Configuring%20a%20Database%20Login%20(ELUG)#Configuring_Sequencing_at_the_Session_Level[Configuring
+Sequencing at the Session Level].
+
+=== Sequencing and Preallocation Size
+
+To improve sequencing efficiency, EclipseLink lets you preallocate
+sequence numbers. Preallocation enables EclipseLink to build a pool of
+available sequence numbers that are assigned to new objects as they are
+created and inserted into the database. EclipseLink assigns numbers from
+the sequence pool until the pool is empty.
+
+The preallocation size specifies the size of the pool of available
+numbers. Preallocation improves sequencing efficiency by substantially
+reducing the number of database accesses required by sequencing. By
+default, EclipseLink sets preallocation size to `+50+`. You can specify
+preallocation size either in the Workbench or as part of the session
+login.
+
+Preallocation size configuration applies to table sequencing and Oracle
+native sequencing. In Oracle native sequencing, the sequence
+preallocation size must match the Oracle sequence object increment size.
+Preallocation is not available for native sequencing in other databases
+as they use an auto-assigned sequence column. We recommend that you use
+table sequencing in non-Oracle databases to allow preallocation.
+
+For table sequencing, EclipseLink maintains a pool of preallocated
+values for each sequenced class. When EclipseLink exhausts this pool of
+values, it acquires a new pool of values, as follows:
+
+[arabic]
+. EclipseLink accesses the database, requesting that the `+SEQ_COUNT+`
+for the given class (identified by the `+SEQ_NAME+`) be incremented by
+the preallocation size and the result returned. For example, consider
+the `+SEQUENCE+` table in the link:#Figure_23-2[EclipseLink Table
+Sequence Table] figure. If you create a new purchase order and
+EclipseLink has exhausted its pool of sequence numbers, then EclipseLink
+executes a SQL statement to increment `+SEQ_COUNT+` for
+`+SEQ_PURCH_ORDER+` by the preallocation size (in this case, the
+EclipseLink default of `+50+`). The database increments `+SEQ_COUNT+`
+for `+SEQ_PURCH_ORDER+` to `+1600+` and returns this number to
+EclipseLink.
+. EclipseLink calculates a maximum and a minimum value for the new
+sequence number pool, and creates the pool of values.
+. EclipseLink populates the object sequence attribute with the first
+number in the pool and writes the object to the class table.
+
+As you add new objects to the class table, EclipseLink continues to
+assign values from the pool until it exhausts the pool. When the pool is
+exhausted, EclipseLink again requests new values from the table.
+
+Using the Workbench, you specify a preallocation size when you choose a
+sequencing type at the project or session level. That preallocation size
+applies to all descriptors.
+
+Using Java, you can specify a different preallocation size for each
+sequence that you create.
+
+For more information about configuring preallocation size, see
+link:Configuring%20a%20Relational%20Project%20(ELUG)#Configuring_Sequencing_at_the_Project_Level[Configuring
+Sequencing at the Project Level] or
+link:Configuring%20a%20Database%20Login%20(ELUG)#Configuring_Sequencing_at_the_Session_Level[Configuring
+Sequencing at the Session Level].
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Release_1[Category: Release 1] Category:_Concept[Category:
+Concept] Category:_ORM[Category: ORM]

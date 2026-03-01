@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2018, 2025 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -44,7 +44,7 @@
    <myGMonthDayTest>--12-17</myGMonthDayTest>
    <myGYearTest>2001</myGYearTest>
    <myGYearMonthTest>2001-12</myGYearMonthTest>
-   <myHexBinaryTest>A9FD64E12C</myHexBinaryTest>
+   <myHexBinaryTest>a9fd64e12c</myHexBinaryTest>
    <myIDTest>ID000000</myIDTest>
    <myIDREFTest>ID000000</myIDREFTest>
    <myIDREFSTest>ID000000 ID000000</myIDREFSTest>

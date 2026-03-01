@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -106,7 +106,7 @@ public class EISDirectMapping extends AbstractDirectMapping implements EISMappin
      * INTERNAL:
      * We override this method in order to set the session on the record if the data
      * format is XML.
-     *
+     * <p>
      * Get a value from the object and set that in the respective field of the row.
      */
     @Override

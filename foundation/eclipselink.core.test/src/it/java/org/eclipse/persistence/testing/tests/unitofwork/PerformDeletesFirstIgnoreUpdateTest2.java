@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -47,7 +47,7 @@ public class PerformDeletesFirstIgnoreUpdateTest2 extends PerformDeletesFirstIgn
         UnitOfWork uow2 = getSession().acquireUnitOfWork();
         uow2.setShouldPerformDeletesFirst(true);
         Employee employeeClone = (Employee)uow2.registerObject(employee);
-        PhoneNumber phone = (PhoneNumber)employeeClone.getPhoneNumbers().firstElement();
+        PhoneNumber phone = (PhoneNumber)employeeClone.getPhoneNumbers().get(0);
         // The new phone number is too long (it should be no more than 7 characters)
         // therefore is update goes through and not preceded with DELETE DatabaseException will result
         phone.setNumber("1234567890");

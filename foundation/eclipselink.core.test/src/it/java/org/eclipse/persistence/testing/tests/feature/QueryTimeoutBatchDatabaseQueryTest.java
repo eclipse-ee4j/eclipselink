@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,13 +14,13 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.feature;
 
-import java.util.List;
-
 import org.eclipse.persistence.descriptors.DescriptorQueryManager;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.queries.DataModifyQuery;
 import org.eclipse.persistence.sessions.UnitOfWork;
+
+import java.util.List;
 
 /**
  * Bug 214910:  Add query timeout support to batched update queries (Oracle DB 9.0.1+)<br>
@@ -56,17 +56,15 @@ public abstract class QueryTimeoutBatchDatabaseQueryTest extends QueryTimeoutBat
                 queryCount++;
                 // The following insert will take around 5.2 seconds per row (the last (address c) is significant)
                 // insert into employee (emp_id, version) SELECT 40003, SUM(e.address_id) as version from address e, address b, address b, address c, address c;
-                StringBuffer sBuffer = new StringBuffer(getQuerySQLPrefix());
-                sBuffer.append(getCurrentIDSequence() + i);
-                //sBuffer.append(i);
-                sBuffer.append(getQuerySQLPostfix());
+                String sBuffer = getQuerySQLPrefix() + (getCurrentIDSequence() + i) +
+                        //sBuffer.append(i);
+                        getQuerySQLPostfix();
 
-                query.setSQLString(sBuffer.toString());
+                query.setSQLString(sBuffer);
                 // set different query timeouts - the largest will be used
                 query.setQueryTimeout(getChildQueryTimeout());
                 //session.executeQuery(query);
-                StringBuilder queryName = new StringBuilder("query");
-                queryName.append(i);
+                String queryName = "query" + i;
 
                 // Force the last query to execute
                 if(queryCount == getNumberOfInserts()) {
@@ -74,7 +72,7 @@ public abstract class QueryTimeoutBatchDatabaseQueryTest extends QueryTimeoutBat
                     // clear last queryTimeout - so we pick up one from a previous appendCall
                     //query.setQueryTimeout(0);
                 }
-                uow.addQuery(queryName.toString(), query);
+                uow.addQuery(queryName, query);
                 uow.executeQuery(query);
             }
 

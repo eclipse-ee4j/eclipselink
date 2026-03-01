@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -208,11 +208,11 @@ public class DynamicEmployeeSystem {
         addProjects(dynamicHelper, employees, projects, 6, new int[]{});
 
         em.getTransaction().begin();
-        for (int index = 0; index < this.employees.length; index++) {
-            em.persist(this.employees[index]);
+        for (DynamicEntity employee : this.employees) {
+            em.persist(employee);
         }
-        for (int index = 0; index < this.projects.length; index++) {
-            em.persist(this.projects[index]);
+        for (DynamicEntity project : this.projects) {
+            em.persist(project);
         }
         em.getTransaction().commit();
         em.close();
@@ -533,8 +533,8 @@ public class DynamicEmployeeSystem {
         int managerIndex, int[] employeeIndeces) {
         DynamicEntity manager = employees[managerIndex];
         if (manager.<Collection<DynamicEntity>> get("managedEmployees").isEmpty()) {
-            for (int index = 0; index < employeeIndeces.length; index++) {
-                manager.<Collection<DynamicEntity>> get("managedEmployees").add(employees[employeeIndeces[index]]);
+            for (int employeeIndece : employeeIndeces) {
+                manager.<Collection<DynamicEntity>>get("managedEmployees").add(employees[employeeIndece]);
             }
         }
     }
@@ -543,8 +543,8 @@ public class DynamicEmployeeSystem {
     protected void addProjects(JPADynamicHelper dynamicHelper, DynamicEntity[] employees,
         DynamicEntity[] projects, int empIndex, int[] projIndeces) {
         DynamicEntity employee = employees[empIndex];
-        for (int index = 0; index < projIndeces.length; index++) {
-            employee.<Collection<DynamicEntity>> get("projects").add(projects[projIndeces[index]]);
+        for (int projIndece : projIndeces) {
+            employee.<Collection<DynamicEntity>>get("projects").add(projects[projIndece]);
         }
     }
 

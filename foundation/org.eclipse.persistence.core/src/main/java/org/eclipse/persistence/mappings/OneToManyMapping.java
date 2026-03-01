@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,18 +15,6 @@
 //     07/19/2011-2.2.1 Guy Pelletier
 //       - 338812: ManyToMany mapping in aggregate object violate integrity constraint on deletion
 package org.eclipse.persistence.mappings;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Vector;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.ConversionException;
@@ -62,6 +50,17 @@ import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.WriteObjectQuery;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Vector;
+import java.util.concurrent.CopyOnWriteArrayList;
+
 /**
  * <p><b>Purpose</b>: This mapping is used to represent the
  * typical RDBMS relationship between a single
@@ -80,10 +79,10 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
     protected static final String ObjectAdded = "objectAdded";
 
     /** The target foreign key fields that reference the sourceKeyFields. */
-    protected Vector<DatabaseField> targetForeignKeyFields;
+    protected List<DatabaseField> targetForeignKeyFields;
 
     /** The (typically primary) source key fields that are referenced by the targetForeignKeyFields. */
-    protected Vector<DatabaseField> sourceKeyFields;
+    protected List<DatabaseField> sourceKeyFields;
 
     /** This maps the target foreign key fields to the corresponding (primary) source key fields. */
     protected transient Map<DatabaseField, DatabaseField> targetForeignKeysToSourceKeys;
@@ -157,11 +156,11 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
     public OneToManyMapping() {
         super();
 
-        this.targetForeignKeysToSourceKeys = new HashMap(2);
-        this.sourceKeysToTargetForeignKeys = new HashMap(2);
+        this.targetForeignKeysToSourceKeys = new HashMap<>(2);
+        this.sourceKeysToTargetForeignKeys = new HashMap<>(2);
 
-        this.sourceKeyFields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(1);
-        this.targetForeignKeyFields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(1);
+        this.sourceKeyFields = new ArrayList<>(1);
+        this.targetForeignKeyFields = new ArrayList<>(1);
         this.sourceExpressionsToPostInitialize = new CopyOnWriteArrayList<>();
         this.targetExpressionsToPostInitialize = new CopyOnWriteArrayList<>();
 
@@ -186,8 +185,8 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
      */
     @Override
     public void addTargetForeignKeyField(DatabaseField targetForeignKeyField, DatabaseField sourceKeyField) {
-        getTargetForeignKeyFields().addElement(targetForeignKeyField);
-        getSourceKeyFields().addElement(sourceKeyField);
+        getTargetForeignKeyFields().add(targetForeignKeyField);
+        getSourceKeyFields().add(sourceKeyField);
     }
 
     /**
@@ -237,7 +236,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
      * The selection criteria are created with target foreign keys and source "primary" keys.
      * These criteria are then used to read the target records from the table.
      * These criteria are also used as the default "delete all" criteria.
-     *
+     * <p>
      * CR#3922 - This method is almost the same as buildSelectionCriteria() the difference
      * is that TargetForeignKeysToSourceKeys contains more information after login then SourceKeyFields
      * contains before login.
@@ -263,7 +262,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
      * This method would allow customers to get the potential selection criteria for a mapping
      * prior to initialization.  This would allow them to more easily create an amendment method
      * that would amend the SQL for the join.
-     *
+     * <p>
      * CR#3922 - This method is almost the same as buildDefaultSelectionCriteria() the difference
      * is that TargetForeignKeysToSourceKeys contains more information after login then SourceKeyFields
      * contains before login.
@@ -273,11 +272,11 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
         Expression selectionCriteria = null;
         Expression builder = new ExpressionBuilder();
 
-        Enumeration<DatabaseField> sourceKeys = getSourceKeyFields().elements();
-        for (Enumeration<DatabaseField> targetForeignKeys = getTargetForeignKeyFields().elements();
-             targetForeignKeys.hasMoreElements();) {
-            DatabaseField targetForeignKey = targetForeignKeys.nextElement();
-            DatabaseField sourceKey = sourceKeys.nextElement();
+        Iterator<DatabaseField> iterator1 = getSourceKeyFields().iterator();
+        for (Iterator<DatabaseField> iterator = getTargetForeignKeyFields().iterator();
+             iterator.hasNext();) {
+            DatabaseField targetForeignKey = iterator.next();
+            DatabaseField sourceKey = iterator1.next();
             Expression targetExpression = builder.getField(targetForeignKey);
             Expression sourceExpression = builder.getParameter(sourceKey);
             // store the expressions in order to initialize their fields later
@@ -297,9 +296,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
      */
     @Override
     public void collectQueryParameters(Set<DatabaseField> cacheFields){
-        for (DatabaseField field : getSourceKeyFields()) {
-            cacheFields.add(field);
-        }
+        cacheFields.addAll(getSourceKeyFields());
     }
 
     /**
@@ -311,8 +308,8 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
         OneToManyMapping clone = (OneToManyMapping)super.clone();
 
         Map<DatabaseField, DatabaseField> old2cloned = new HashMap<>();
-        clone.sourceKeyFields = cloneDatabaseFieldVector(sourceKeyFields, old2cloned);
-        clone.targetForeignKeyFields = cloneDatabaseFieldVector(targetForeignKeyFields, old2cloned);
+        clone.sourceKeyFields = cloneDatabaseFieldList(sourceKeyFields, old2cloned);
+        clone.targetForeignKeyFields = cloneDatabaseFieldList(targetForeignKeyFields, old2cloned);
         clone.setTargetForeignKeysToSourceKeys(cloneKeysMap(getTargetForeignKeysToSourceKeys(), old2cloned));
         clone.sourceKeysToTargetForeignKeys = cloneKeysMap(getSourceKeysToTargetForeignKeys(), old2cloned);
 
@@ -337,12 +334,11 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
         return cloneTarget2Src;
     }
 
-    private Vector<DatabaseField> cloneDatabaseFieldVector(Vector<DatabaseField> oldFlds,
-                                                           Map<DatabaseField, DatabaseField> old2cloned) {
-        Vector<DatabaseField> clonedSourceKeyFields = null;
+    private List<DatabaseField> cloneDatabaseFieldList(List<DatabaseField> oldFlds,
+                                                       Map<DatabaseField, DatabaseField> old2cloned) {
+        List<DatabaseField> clonedSourceKeyFields = null;
         if (oldFlds != null) {
-            clonedSourceKeyFields =
-                    org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(oldFlds.size());
+            clonedSourceKeyFields = new ArrayList<>(oldFlds.size());
             for (DatabaseField old : oldFlds) {
                 DatabaseField cf = old.clone();
                 clonedSourceKeyFields.add(cf);
@@ -446,7 +442,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
     }
 
     /**
-     * Overrides CollectionMappig because this mapping requires a DeleteAllQuery instead of a ModifyQuery.
+     * Overrides CollectionMapping because this mapping requires a DeleteAllQuery instead of a ModifyQuery.
      */
     @Override
     protected ModifyQuery getDeleteAllQuery() {
@@ -461,7 +457,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
      * Return source key fields for translation by an AggregateObjectMapping
      */
     @Override
-    public Collection getFieldsForTranslationInAggregate() {
+    public Collection<DatabaseField> getFieldsForTranslationInAggregate() {
         return getSourceKeyFields();
     }
 
@@ -470,11 +466,11 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
      * Return the source key field names associated with the mapping.
      * These are in-order with the targetForeignKeyFieldNames.
      */
-    public Vector getSourceKeyFieldNames() {
-        Vector fieldNames = new Vector(getSourceKeyFields().size());
-        for (Enumeration<DatabaseField> fieldsEnum = getSourceKeyFields().elements();
-             fieldsEnum.hasMoreElements();) {
-            fieldNames.addElement(fieldsEnum.nextElement().getQualifiedName());
+    public List<String> getSourceKeyFieldNames() {
+        List<String> fieldNames = new ArrayList<>(getSourceKeyFields().size());
+        for (Iterator<DatabaseField> iterator = getSourceKeyFields().iterator();
+             iterator.hasNext();) {
+            fieldNames.add(iterator.next().getQualifiedName());
         }
 
         return fieldNames;
@@ -484,7 +480,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
      * INTERNAL:
      * Return the source key fields.
      */
-    public Vector<DatabaseField> getSourceKeyFields() {
+    public List<DatabaseField> getSourceKeyFields() {
         return sourceKeyFields;
     }
 
@@ -494,7 +490,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
      */
     public Map<DatabaseField, DatabaseField> getSourceKeysToTargetForeignKeys() {
         if (sourceKeysToTargetForeignKeys == null) {
-            sourceKeysToTargetForeignKeys = new HashMap(2);
+            sourceKeysToTargetForeignKeys = new HashMap<>(2);
         }
         return sourceKeysToTargetForeignKeys;
     }
@@ -513,11 +509,11 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
      * Return the target foreign key field names associated with the mapping.
      * These are in-order with the targetForeignKeyFieldNames.
      */
-    public Vector getTargetForeignKeyFieldNames() {
-        Vector fieldNames = new Vector(getTargetForeignKeyFields().size());
-        for (Enumeration<DatabaseField> fieldsEnum = getTargetForeignKeyFields().elements();
-             fieldsEnum.hasMoreElements();) {
-            fieldNames.addElement(fieldsEnum.nextElement().getQualifiedName());
+    public List<String> getTargetForeignKeyFieldNames() {
+        List<String> fieldNames = new ArrayList<>(getTargetForeignKeyFields().size());
+        for (Iterator<DatabaseField> iterator = getTargetForeignKeyFields().iterator();
+             iterator.hasNext();) {
+            fieldNames.add(iterator.next().getQualifiedName());
         }
 
         return fieldNames;
@@ -527,7 +523,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
      * INTERNAL:
      * Return the target foreign key fields.
      */
-    public Vector<DatabaseField> getTargetForeignKeyFields() {
+    public List<DatabaseField> getTargetForeignKeyFields() {
         return targetForeignKeyFields;
     }
 
@@ -723,7 +719,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
     protected void initializeTargetPrimaryKeyFields() {
         // all target foreign key fields must have the same table.
         int size = getTargetForeignKeyFields().size();
-        HashSet<DatabaseTable> tables = new HashSet();
+        HashSet<DatabaseTable> tables = new HashSet<>();
         for(int i=0; i < size; i++) {
             tables.add(getTargetForeignKeyFields().get(i).getTable());
         }
@@ -739,7 +735,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
             this.targetPrimaryKeyFields = defaultTablePrimaryKeyFields;
         } else {
             int sizePk = defaultTablePrimaryKeyFields.size();
-            this.targetPrimaryKeyFields = new ArrayList();
+            this.targetPrimaryKeyFields = new ArrayList<>();
             for(int i=0; i < sizePk; i++) {
                 this.targetPrimaryKeyFields.add(null);
             }
@@ -822,7 +818,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
         super.initializeReferenceDescriptor(session);
         if (!isSourceKeySpecified()) {
             // sourceKeyFields will be empty when #setTargetForeignKeyFieldName() is used
-            setSourceKeyFields(org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(getDescriptor().getPrimaryKeyFields()));
+            setSourceKeyFields(new ArrayList<>(getDescriptor().getPrimaryKeyFields()));
         }
         initializeTargetForeignKeysToSourceKeys();
         if (usesIndirection()) {
@@ -1127,7 +1123,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
     public void postInitializeSourceAndTargetExpressions() {
         // EL Bug 426500
         // postInitialize and set source expression fields using my descriptor
-        if (this.sourceExpressionsToPostInitialize != null && this.sourceExpressionsToPostInitialize.size() > 0) {
+        if (this.sourceExpressionsToPostInitialize != null && !this.sourceExpressionsToPostInitialize.isEmpty()) {
             ClassDescriptor descriptor = getDescriptor();
             ObjectBuilder objectBuilder = descriptor.getObjectBuilder();
             for (Iterator<Expression> expressions = this.sourceExpressionsToPostInitialize.iterator(); expressions.hasNext();) {
@@ -1145,7 +1141,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
         }
 
         // postInitialize and set target expression fields using my reference descriptor
-        if (this.targetExpressionsToPostInitialize != null && this.targetExpressionsToPostInitialize.size() > 0) {
+        if (this.targetExpressionsToPostInitialize != null && !this.targetExpressionsToPostInitialize.isEmpty()) {
             ClassDescriptor descriptor = getReferenceDescriptor();
             ObjectBuilder objectBuilder = descriptor.getObjectBuilder();
             for (Iterator<Expression> expressions = this.targetExpressionsToPostInitialize.iterator(); expressions.hasNext();) {
@@ -1368,10 +1364,10 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
      * Set the source key field names associated with the mapping.
      * These must be in-order with the targetForeignKeyFieldNames.
      */
-    public void setSourceKeyFieldNames(Vector fieldNames) {
-        Vector fields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(fieldNames.size());
-        for (Enumeration fieldNamesEnum = fieldNames.elements(); fieldNamesEnum.hasMoreElements();) {
-            fields.addElement(new DatabaseField((String)fieldNamesEnum.nextElement()));
+    public void setSourceKeyFieldNames(List<String> fieldNames) {
+        List<DatabaseField> fields = new ArrayList<>(fieldNames.size());
+        for (Iterator<String> iterator = fieldNames.iterator(); iterator.hasNext();) {
+            fields.add(new DatabaseField(iterator.next()));
         }
 
         setSourceKeyFields(fields);
@@ -1381,7 +1377,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
      * INTERNAL:
      * Set the source key fields.
      */
-    public void setSourceKeyFields(Vector<DatabaseField> sourceKeyFields) {
+    public void setSourceKeyFields(List<DatabaseField> sourceKeyFields) {
         this.sourceKeyFields = sourceKeyFields;
     }
 
@@ -1409,7 +1405,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
      * @see AggregateCollectionMapping
      */
     public void setTargetForeignKeyFieldName(String targetForeignKeyFieldName) {
-        getTargetForeignKeyFields().addElement(new DatabaseField(targetForeignKeyFieldName));
+        getTargetForeignKeyFields().add(new DatabaseField(targetForeignKeyFieldName));
     }
 
     /**
@@ -1435,10 +1431,10 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
      * Set the target key field names associated with the mapping.
      * These must be in-order with the sourceKeyFieldNames.
      */
-    public void setTargetForeignKeyFieldNames(Vector fieldNames) {
-        Vector fields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(fieldNames.size());
-        for (Enumeration fieldNamesEnum = fieldNames.elements(); fieldNamesEnum.hasMoreElements();) {
-            fields.addElement(new DatabaseField((String)fieldNamesEnum.nextElement()));
+    public void setTargetForeignKeyFieldNames(List<String> fieldNames) {
+        List<DatabaseField> fields = new ArrayList<>(fieldNames.size());
+        for (Iterator<String> iterator = fieldNames.iterator(); iterator.hasNext();) {
+            fields.add(new DatabaseField(iterator.next()));
         }
 
         setTargetForeignKeyFields(fields);
@@ -1448,7 +1444,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
      * INTERNAL:
      * Set the target fields.
      */
-    public void setTargetForeignKeyFields(Vector<DatabaseField> targetForeignKeyFields) {
+    public void setTargetForeignKeyFields(List<DatabaseField> targetForeignKeyFields) {
         this.targetForeignKeyFields = targetForeignKeyFields;
     }
 

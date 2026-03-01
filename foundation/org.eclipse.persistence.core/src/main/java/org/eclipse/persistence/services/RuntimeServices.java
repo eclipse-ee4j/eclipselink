@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,28 +16,8 @@
 //     @since   EclipseLink 1.0 enh# 235168
 package org.eclipse.persistence.services;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.StringTokenizer;
-import java.util.Vector;
-import java.util.regex.PatternSyntaxException;
-
-import javax.management.openmbean.CompositeData;
-import javax.management.openmbean.CompositeDataSupport;
-import javax.management.openmbean.CompositeType;
-import javax.management.openmbean.OpenDataException;
-import javax.management.openmbean.OpenType;
-import javax.management.openmbean.SimpleType;
-import javax.management.openmbean.TabularData;
-import javax.management.openmbean.TabularDataSupport;
-import javax.management.openmbean.TabularType;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
@@ -56,7 +36,6 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.DefaultSessionLog;
-import org.eclipse.persistence.logging.JavaLog;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.platform.server.JMXEnabledPlatform;
 import org.eclipse.persistence.sessions.DatabaseLogin;
@@ -65,6 +44,25 @@ import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.server.ConnectionPool;
 import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.tools.profiler.PerformanceProfiler;
+
+import javax.management.openmbean.CompositeData;
+import javax.management.openmbean.CompositeDataSupport;
+import javax.management.openmbean.CompositeType;
+import javax.management.openmbean.OpenDataException;
+import javax.management.openmbean.OpenType;
+import javax.management.openmbean.SimpleType;
+import javax.management.openmbean.TabularData;
+import javax.management.openmbean.TabularDataSupport;
+import javax.management.openmbean.TabularType;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.StringTokenizer;
+import java.util.regex.PatternSyntaxException;
 
 
 /**
@@ -233,20 +231,17 @@ public abstract class RuntimeServices {
     }
 
     /**
-     *     This method will return the available Connection pools within this Server Session
+     * This method will return the available Connection pools within this Server Session
      * @return java.util.List the available pools.
      */
-    public List getAvailableConnectionPools() {
-        Vector list = null;
+    public List<String> getAvailableConnectionPools() {
+        List<String> list = null;
         if (ClassConstants.ServerSession_Class.isAssignableFrom(getSession().getClass())) {
             Map<String, ConnectionPool> pools = ((ServerSession)getSession()).getConnectionPools();
-            list = new Vector(pools.size());
-            Iterator<String> poolNames = pools.keySet().iterator();
-            while (poolNames.hasNext()) {
-                list.add(poolNames.next());
-            }
+            list = new ArrayList<>(pools.size());
+            list.addAll(pools.keySet());
         } else {
-            list = new Vector();
+            list = new ArrayList<>();
         }
         return list;
     }
@@ -257,8 +252,8 @@ public abstract class RuntimeServices {
      * @return java.util.List a list containing two values. The first value is the Maximun size of the pool.
      * The second value is the Minimum size of the pool.
      */
-    public List getSizeForPool(String poolName) {
-        Vector results = new Vector(2);
+    public List<Integer> getSizeForPool(String poolName) {
+        List<Integer> results = new ArrayList<>(2);
         if (ClassConstants.ServerSession_Class.isAssignableFrom(getSession().getClass())) {
             ConnectionPool connectionPool = ((ServerSession)getSession()).getConnectionPool(poolName);
             if (connectionPool != null) {
@@ -312,26 +307,28 @@ public abstract class RuntimeServices {
     }
 
     /**
-     *        This method is used to return those Class Names that have identity Maps in the Session.
+     * This method is used to return those Class Names that have identity Maps in the Session.
      * Please note that SubClasses and aggregates will be missing form this list as they do not have
      * separate identity maps.
+     *
      * @return java.util.List contains all of the classes which have identity maps in the current session.
      */
-    public List getClassesInSession() {
+    public List<String> getClassesInSession() {
         return getSession().getIdentityMapAccessorInstance().getIdentityMapManager().getClassesRegistered();
     }
 
     /**
      * This method will return a collection of the objects in the Identity Map.
      * There is no particular order to these objects.
+     *
      * @param className the fully qualified classname of the class to the instances of
-     * @exception ClassNotFoundException thrown then the IdentityMap for that class name could not be found
+     * @throws ClassNotFoundException thrown then the IdentityMap for that class name could not be found
      */
-    public List getObjectsInIdentityMap(String className) throws ClassNotFoundException {
-        Class<?> classToChange = getSession().getDatasourcePlatform().getConversionManager().convertObject(className, ClassConstants.CLASS);
+    public List<Object> getObjectsInIdentityMap(String className) throws ClassNotFoundException {
+        Class<?> classToChange = getSession().getDatasourcePlatform().getConversionManager().convertObject(className, CoreClassConstants.CLASS);
         IdentityMap map = getSession().getIdentityMapAccessorInstance().getIdentityMap(classToChange);
 
-        Vector results = new Vector(map.getSize());
+        List<Object> results = new ArrayList<>(map.getSize());
         Enumeration<CacheKey> objects = map.keys();
         while (objects.hasMoreElements()) {
             results.add(objects.nextElement().getObject());
@@ -345,7 +342,7 @@ public abstract class RuntimeServices {
      * @exception ClassNotFoundException thrown then the IdentityMap for that class name could not be found
      */
     public Integer getNumberOfObjectsInIdentityMap(String className) throws ClassNotFoundException {
-        Class<?> classToChange = getSession().getDatasourcePlatform().getConversionManager().convertObject(className, ClassConstants.CLASS);
+        Class<?> classToChange = getSession().getDatasourcePlatform().getConversionManager().convertObject(className, CoreClassConstants.CLASS);
         return getSession().getIdentityMapAccessorInstance().getIdentityMap(classToChange).getSize();
     }
 
@@ -358,7 +355,7 @@ public abstract class RuntimeServices {
      * @exception ClassNotFoundException thrown then the IdentityMap for that class name could not be found
      */
     public List getObjectsInIdentityMapSubCacheAsMap(String className) throws ClassNotFoundException {
-        Class<?> classToChange = getSession().getDatasourcePlatform().getConversionManager().convertObject(className, ClassConstants.CLASS);
+        Class<?> classToChange = getSession().getDatasourcePlatform().getConversionManager().convertObject(className, CoreClassConstants.CLASS);
         IdentityMap map = getSession().getIdentityMapAccessorInstance().getIdentityMap(classToChange);
 
         //CR3855
@@ -378,10 +375,10 @@ public abstract class RuntimeServices {
     public Integer getNumberOfObjectsInIdentityMapSubCache(String className) throws ClassNotFoundException {
         //This needs to use the Session's active class loader (not implemented yet)
         Integer result = 0;
-        Class<?> classToChange = getSession().getDatasourcePlatform().getConversionManager().convertObject(className, ClassConstants.CLASS);
+        Class<?> classToChange = getSession().getDatasourcePlatform().getConversionManager().convertObject(className, CoreClassConstants.CLASS);
         IdentityMap map = getSession().getIdentityMapAccessorInstance().getIdentityMap(classToChange);
         if (map.getClass().isAssignableFrom(ClassConstants.HardCacheWeakIdentityMap_Class)) {
-            List subCache = ((HardCacheWeakIdentityMap)map).getReferenceCache();
+            List<?> subCache = ((HardCacheWeakIdentityMap)map).getReferenceCache();
             result = subCache.size();
         }
         return result;
@@ -451,7 +448,7 @@ public abstract class RuntimeServices {
 
          //get identity map, and initialize
          registeredClass = getSession().getDatasourcePlatform().getConversionManager()
-             .convertObject(className, ClassConstants.CLASS);
+             .convertObject(className, CoreClassConstants.CLASS);
          getSession().getIdentityMapAccessor().initializeIdentityMap(registeredClass);
          ((AbstractSession)session).log(SessionLog.INFO, SessionLog.SERVER, "jmx_mbean_runtime_services_identity_map_initialized", className);
      }
@@ -468,7 +465,7 @@ public abstract class RuntimeServices {
       */
       public void printIdentityMapLocks(String registeredClassName) {
           Class<?> registeredClass = getSession().getDatasourcePlatform().getConversionManager()
-              .convertObject(registeredClassName, ClassConstants.CLASS);
+              .convertObject(registeredClassName, CoreClassConstants.CLASS);
           getSession().getIdentityMapAccessorInstance().getIdentityMapManager().printLocks(registeredClass);
       }
 
@@ -492,7 +489,7 @@ public abstract class RuntimeServices {
            String trimmedString;
 
            if (originalProfileString.length() > 1) {
-               trimmedString = originalProfileString.substring(0, originalProfileString.length());
+               trimmedString = originalProfileString;
                if ((trimmedString.charAt(0) == '{') && (trimmedString.charAt(trimmedString.length() - 1) == '}')) {
                    trimmedString = trimmedString.substring(1, trimmedString.length() - 1);
                }
@@ -597,7 +594,7 @@ public abstract class RuntimeServices {
 
         /**
          * PUBLIC: Set the EclipseLink log level to be used at runtime.
-         *
+         * <p>
          * This does not affect the log level in the project (i.e. The next
          * time the application is deployed, changes are forgotten)
          *
@@ -613,28 +610,18 @@ public abstract class RuntimeServices {
          * @return String (one of OFF, SEVERE, WARNING, INFO, CONFIG, FINE, FINER, FINEST, ALL)
          */
         private String getNameForLogLevel(int logLevel) {
-            switch (logLevel) {
-            case SessionLog.ALL:
-                return SessionLog.ALL_LABEL;
-            case SessionLog.SEVERE:
-                return SessionLog.SEVERE_LABEL;
-            case SessionLog.WARNING:
-                return SessionLog.WARNING_LABEL;
-            case SessionLog.INFO:
-                return SessionLog.INFO_LABEL;
-            case SessionLog.CONFIG:
-                return SessionLog.CONFIG_LABEL;
-            case SessionLog.FINE:
-                return SessionLog.FINE_LABEL;
-            case SessionLog.FINER:
-                return SessionLog.FINER_LABEL;
-            case SessionLog.FINEST:
-                return SessionLog.FINEST_LABEL;
-            case SessionLog.OFF:
-                return SessionLog.OFF_LABEL;
-            default:
-                return "N/A";
-            }
+            return switch (logLevel) {
+                case SessionLog.ALL -> SessionLog.ALL_LABEL;
+                case SessionLog.SEVERE -> SessionLog.SEVERE_LABEL;
+                case SessionLog.WARNING -> SessionLog.WARNING_LABEL;
+                case SessionLog.INFO -> SessionLog.INFO_LABEL;
+                case SessionLog.CONFIG -> SessionLog.CONFIG_LABEL;
+                case SessionLog.FINE -> SessionLog.FINE_LABEL;
+                case SessionLog.FINER -> SessionLog.FINER_LABEL;
+                case SessionLog.FINEST -> SessionLog.FINEST_LABEL;
+                case SessionLog.OFF -> SessionLog.OFF_LABEL;
+                default -> "N/A";
+            };
         }
 
         /**
@@ -709,13 +696,13 @@ public abstract class RuntimeServices {
       * Types include: "ServerSession", "DatabaseSession", "SessionBroker"
       */
      public String getSessionType() {
-         return Helper.getShortClassName(getSession().getClass());
+         return getSession().getClass().getSimpleName();
      }
 
      /**
       * Provide an instance of 2 Dimensional Array simulating tabular format information about all
       * classes in the session whose class names match the provided filter.
-      *
+      * <p>
       * The 2 Dimensional array contains each item with values being row object array. Each row object array
       * represents EclipseLink class details info with respect to below attributes:
       * ["Class Name", "Parent Class Name",  "Cache Type", "Configured Size", "Current Size"]
@@ -734,7 +721,7 @@ public abstract class RuntimeServices {
      /**
       * PUBLIC: Provide an instance of 2 Dimensional Array simulating tabular format information about all
       * classes in the session.
-      *
+      * <p>
       * The 2 Dimensional array contains each item with values being row object array. Each row object array
       * represents EclipseLink class details info with respect to below attributes:
       * ["Class Name", "Parent Class Name",  "Cache Type", "Configured Size", "Current Size"]
@@ -757,9 +744,9 @@ public abstract class RuntimeServices {
       *
       * @return java.util.Vector
       */
-     private Vector<String> getMappedClassNames() {
+     private List<String> getMappedClassNames() {
          Map<String, Boolean> alreadyAdded = new HashMap<>();
-         Vector<String> mappedClassNames = new Vector<>();
+         List<String> mappedClassNames = new ArrayList<>();
          String mappedClassName = null;
 
          Iterator<ClassDescriptor> descriptorsIterator = getSession().getProject().getDescriptors()
@@ -779,7 +766,7 @@ public abstract class RuntimeServices {
              }
              if (alreadyAdded.get(mappedClassName) == null) {
                  alreadyAdded.put(mappedClassName, Boolean.TRUE);
-                 mappedClassNames.addElement(mappedClassName);
+                 mappedClassNames.add(mappedClassName);
              }
              mappedClassName = null;
          }
@@ -788,19 +775,19 @@ public abstract class RuntimeServices {
 
      /**
      *  INTERNAL:
-     *  This method traverses the EclipseLink descriptors and returns a Vector of the descriptor's
+     *  This method traverses the EclipseLink descriptors and returns a List of the descriptor's
      *   reference class names that match the provided filter. The filter is a comma separated
      *   list of strings to match against.
      *
      *   @param filter A comma separated list of strings to match against.
      *   @return A Vector of class names that match the filter.
      */
-     public Vector<String> getMappedClassNamesUsingFilter(String filter) {
+     public List<String> getMappedClassNamesUsingFilter(String filter) {
          //Output Vector
-         Vector<String> outputVector = new Vector<>();
+         List<String> outputVector = new ArrayList<>();
 
          //Input mapped class names
-         Vector<String> mappedClassNames = getMappedClassNames();
+         List<String> mappedClassNames = getMappedClassNames();
 
          //Input filter values
          List<String> filters = new ArrayList<>();
@@ -999,7 +986,7 @@ public abstract class RuntimeServices {
              Map<String, ConnectionPool> pools = ((ServerSession)getSession()).getConnectionPools();
              Iterator<String> poolNames = pools.keySet().iterator();
              while (poolNames.hasNext()) {
-                 String poolName = poolNames.next().toString();
+                 String poolName = poolNames.next();
                  ((AbstractSession)session).log(SessionLog.INFO, SessionLog.SERVER, "jmx_mbean_runtime_services_pool_name", poolName);
              }
          } else {
@@ -1044,7 +1031,7 @@ public abstract class RuntimeServices {
      * separate identity maps.
      */
      public void printClassesInSession() {
-         Vector classes = getSession().getIdentityMapAccessorInstance().getIdentityMapManager().getClassesRegistered();
+         List<String> classes = getSession().getIdentityMapAccessorInstance().getIdentityMapManager().getClassesRegistered();
          int index;
          if (classes.isEmpty()) {
              ((AbstractSession)session).log(SessionLog.INFO, SessionLog.SERVER, "jmx_mbean_runtime_services_no_classes_in_session");
@@ -1052,7 +1039,7 @@ public abstract class RuntimeServices {
          }
 
          for (index = 0; index < classes.size(); index++) {
-             getSession().getSessionLog().log(SessionLog.FINEST, (String)classes.elementAt(index));
+             getSession().getSessionLog().log(SessionLog.FINEST, classes.get(index));
          }
      }
 
@@ -1063,7 +1050,7 @@ public abstract class RuntimeServices {
      * @exception ClassNotFoundException thrown then the IdentityMap for that class name could not be found
      */
      public void printObjectsInIdentityMap(String className) throws ClassNotFoundException {
-         Class<?> classWithMap = getSession().getDatasourcePlatform().getConversionManager().convertObject(className, ClassConstants.CLASS);
+         Class<?> classWithMap = getSession().getDatasourcePlatform().getConversionManager().convertObject(className, CoreClassConstants.CLASS);
          IdentityMap map = getSession().getIdentityMapAccessorInstance().getIdentityMap(classWithMap);
 
          //check if the identity map exists
@@ -1092,20 +1079,20 @@ public abstract class RuntimeServices {
      *        This method will log the types of Identity Maps in the session.
      */
      public void printAllIdentityMapTypes() {
-         Vector classesRegistered = getSession().getIdentityMapAccessorInstance().getIdentityMapManager().getClassesRegistered();
+         List<String> classesRegistered = getSession().getIdentityMapAccessorInstance().getIdentityMapManager().getClassesRegistered();
          String registeredClassName;
          Class<?> registeredClass;
 
          //Check if there aren't any classes registered
-         if (classesRegistered.size() == 0) {
+         if (classesRegistered.isEmpty()) {
              ((AbstractSession)session).log(SessionLog.INFO, SessionLog.SERVER, "jmx_mbean_runtime_services_no_identity_maps_in_session");
              return;
          }
 
          //get each identity map, and log the type
          for (int index = 0; index < classesRegistered.size(); index++) {
-             registeredClassName = (String)classesRegistered.elementAt(index);
-             registeredClass = getSession().getDatasourcePlatform().getConversionManager().convertObject(registeredClassName, ClassConstants.CLASS);
+             registeredClassName = classesRegistered.get(index);
+             registeredClass = getSession().getDatasourcePlatform().getConversionManager().convertObject(registeredClassName, CoreClassConstants.CLASS);
              IdentityMap map = getSession().getIdentityMapAccessorInstance().getIdentityMap(registeredClass);
              ((AbstractSession)session).log(SessionLog.INFO, SessionLog.SERVER, "jmx_mbean_runtime_services_identity_map_class",
                      registeredClassName, map.getClass());
@@ -1116,18 +1103,18 @@ public abstract class RuntimeServices {
      *        This method will log all objects in all Identity Maps in the session.
      */
      public void printObjectsInIdentityMaps() {
-         Vector classesRegistered = getSession().getIdentityMapAccessorInstance().getIdentityMapManager().getClassesRegistered();
+         List<String> classesRegistered = getSession().getIdentityMapAccessorInstance().getIdentityMapManager().getClassesRegistered();
          String registeredClassName;
 
          //Check if there aren't any classes registered
-         if (classesRegistered.size() == 0) {
+         if (classesRegistered.isEmpty()) {
              ((AbstractSession)session).log(SessionLog.INFO, SessionLog.SERVER, "jmx_mbean_runtime_services_no_identity_maps_in_session");
              return;
          }
 
          //get each identity map, and log the type
          for (int index = 0; index < classesRegistered.size(); index++) {
-             registeredClassName = (String)classesRegistered.elementAt(index);
+             registeredClassName = classesRegistered.get(index);
              try {
                  this.printObjectsInIdentityMap(registeredClassName);
              } catch (ClassNotFoundException classNotFound) {
@@ -1142,19 +1129,19 @@ public abstract class RuntimeServices {
      *        This method will SUM and return the number of objects in all Identity Maps in the session.
      */
      public Integer getNumberOfObjectsInAllIdentityMaps() {
-         Vector classesRegistered = getSession().getIdentityMapAccessorInstance().getIdentityMapManager().getClassesRegistered();
+         List<String> classesRegistered = getSession().getIdentityMapAccessorInstance().getIdentityMapManager().getClassesRegistered();
          String registeredClassName;
          int sum = 0;
 
          //Check if there aren't any classes registered
-         if (classesRegistered.size() == 0) {
+         if (classesRegistered.isEmpty()) {
              ((AbstractSession)session).log(SessionLog.INFO, SessionLog.SERVER, "jmx_mbean_runtime_services_no_identity_maps_in_session");
              return 0;
          }
 
          //get each identity map, and log the size
          for (int index = 0; index < classesRegistered.size(); index++) {
-             registeredClassName = (String)classesRegistered.elementAt(index);
+             registeredClassName = classesRegistered.get(index);
              try {
                  sum += this.getNumberOfObjectsInIdentityMap(registeredClassName);
              } catch (ClassNotFoundException classNotFound) {
@@ -1172,7 +1159,7 @@ public abstract class RuntimeServices {
       * This does not include aggregates.
       */
      public Integer getNumberOfPersistentClasses() {
-         Map classesTable = new HashMap();
+         Map<String, Boolean> classesTable = new HashMap<>();
          ClassDescriptor currentDescriptor;
 
          //use a table to eliminate duplicate classes. Ignore Aggregates
@@ -1193,9 +1180,7 @@ public abstract class RuntimeServices {
      * @return the log type
      */
      public String getLogType() {
-         if (this.getSession().getSessionLog().getClass() == JavaLog.class) {
-             return "Java";
-         } else if (this.getSession().getSessionLog().getClass() == DefaultSessionLog.class) {
+         if (this.getSession().getSessionLog().getClass() == DefaultSessionLog.class) {
              return EclipseLink_Product_Name;
          } else {
              return this.getSession().getSessionLog().getClass().getSimpleName();
@@ -1276,7 +1261,7 @@ public abstract class RuntimeServices {
      *    This method is used to invalidate the identity maps in the session.
      */
      public synchronized void invalidateAllIdentityMaps() {
-         Vector classesRegistered = getSession().getIdentityMapAccessorInstance().getIdentityMapManager().getClassesRegistered();
+         List<String> classesRegistered = getSession().getIdentityMapAccessorInstance().getIdentityMapManager().getClassesRegistered();
          String registeredClassName;
          Class<?> registeredClass;
 
@@ -1286,9 +1271,9 @@ public abstract class RuntimeServices {
 
          //get each identity map, and invalidate
          for (int index = 0; index < classesRegistered.size(); index++) {
-             registeredClassName = (String)classesRegistered.elementAt(index);
+             registeredClassName = classesRegistered.get(index);
              registeredClass = getSession().getDatasourcePlatform().getConversionManager()
-                 .convertObject(registeredClassName, ClassConstants.CLASS);
+                 .convertObject(registeredClassName, CoreClassConstants.CLASS);
              getSession().getIdentityMapAccessor().invalidateClass(registeredClass);
              ((AbstractSession)session).log(SessionLog.INFO, SessionLog.SERVER, "jmx_mbean_runtime_services_identity_map_invalidated", registeredClassName);
          }
@@ -1328,7 +1313,7 @@ public abstract class RuntimeServices {
 
          //get identity map, and invalidate
          registeredClass = getSession().getDatasourcePlatform().getConversionManager()
-             .convertObject(className, ClassConstants.CLASS);
+             .convertObject(className, CoreClassConstants.CLASS);
          getSession().getIdentityMapAccessor().invalidateClass(registeredClass);
          ((AbstractSession)session).log(SessionLog.INFO, SessionLog.SERVER, "jmx_mbean_runtime_services_identity_map_invalidated", className);
      }
@@ -1376,7 +1361,7 @@ public abstract class RuntimeServices {
       * INTERNAL:
       * Answer the CompositeType describing the CompositeData that we return for
       * each IdentityMap (or subclass).
-      *
+      * <p>
       * This is mostly for the client side to see what kind of information is returned.
       * @return javax.management.openmbean.CompositeType
       */
@@ -1391,7 +1376,7 @@ public abstract class RuntimeServices {
      /**
       * Provide a list of instance of ClassSummaryDetail containing information about the
       * classes in the session whose class names match the provided filter.
-      *
+      * <p>
       * ClassSummaryDetail is a model specific class that can be used internally by the Portable JMX Framework to
       * convert class attribute to JMX required open type, it has:-
       *    1. model specific type that needs to be converted : ["Class Name", "Parent Class Name",  "Cache Type", "Configured Size", "Current Size"]
@@ -1403,17 +1388,17 @@ public abstract class RuntimeServices {
      public List<ClassSummaryDetailBase>  getClassSummaryDetailsUsingFilterArray(String filter) {
          try {
              // if the filter is null, return all the details
-             Vector<String> mappedClassNames = getMappedClassNamesUsingFilter(filter);
+             List<String> mappedClassNames = getMappedClassNamesUsingFilter(filter);
              String mappedClassName;
              List<ClassSummaryDetailBase> classSummaryDetails = new ArrayList<>();
              // Check if there aren't any classes mapped
-             if (mappedClassNames.size() == 0) {
+             if (mappedClassNames.isEmpty()) {
                  return null;
              }
              CompositeType type = buildCompositeTypeForClassSummaryDetails();
              // get details for each class, and add the details to the summary
              for (int index = 0; index < mappedClassNames.size(); index++) {
-                 mappedClassName = mappedClassNames.elementAt(index);
+                 mappedClassName = mappedClassNames.get(index);
                  Map<String, String> data = buildLowlevelDetailsFor(mappedClassName);
                  final CompositeDataSupport support = new CompositeDataSupport(type, buildLowlevelDetailsFor(mappedClassName));
                  classSummaryDetails.add(ClassSummaryDetailBase.from(support));
@@ -1431,7 +1416,7 @@ public abstract class RuntimeServices {
      /**
       * Provide a list of instance of ClassSummaryDetail containing information about all
       * classes in the session.
-      *
+      * <p>
       * ClassSummaryDetail is a model specific class that can be used internally by the Portable JMX Framework to
       * convert class attribute to JMX required open type, it has:-
       *    1. model specific type that needs to be converted : ["Class Name", "Parent Class Name",  "Cache Type", "Configured Size", "Current Size"]
@@ -1448,7 +1433,7 @@ public abstract class RuntimeServices {
       * INTERNAL:
       * Answer the TabularType describing the TabularData that we return from
       * getCacheSummaryDetails() and getCacheSummaryDetails(String filter)
-      *
+      * <p>
       * This is mostly for the client side to see what kind of information is returned.
       *
       * @return javax.management.openmbean.TabularType
@@ -1482,7 +1467,7 @@ public abstract class RuntimeServices {
       * @return HashMap
       */
      private Map<String, String> buildLowlevelDetailsFor(String mappedClassName) {
-         Class<?> mappedClass = getSession().getDatasourcePlatform().getConversionManager().convertObject(mappedClassName, ClassConstants.CLASS);
+         Class<?> mappedClass = getSession().getDatasourcePlatform().getConversionManager().convertObject(mappedClassName, CoreClassConstants.CLASS);
          ClassDescriptor descriptor = getSession().getProject().getDescriptor(mappedClass);
 
          String cacheType = "";
@@ -1523,12 +1508,12 @@ public abstract class RuntimeServices {
       * INTERNAL:
       * Provide an instance of TabularData containing information about the
       * classes in the session whose class names match the provided filter.
-      *
+      * <p>
       * The TabularData contains rowData with values being CompositeData(s)
-      *
+      * <p>
       * CompositeData has:
       *    CompositeType: column names are ["Class Name", "Parent Class Name",  "Cache Type", "Configured Size", "Current Size"]
-      *
+      * <p>
       *  Each CompositeData can have get(myColumnName) sent to it.
       *
       *
@@ -1542,17 +1527,17 @@ public abstract class RuntimeServices {
          }
 
          try {
-             Vector<String> mappedClassNames = getMappedClassNamesUsingFilter(filter);
+             List<String> mappedClassNames = getMappedClassNamesUsingFilter(filter);
              String mappedClassName;
              TabularDataSupport rowData = new TabularDataSupport(buildTabularTypeForClassSummaryDetails());
              // Check if there aren't any classes mapped
-             if (mappedClassNames.size() == 0) {
+             if (mappedClassNames.isEmpty()) {
                  return null;
              }
 
              // get details for each class, and add the details to the summary
              for (int index = 0; index < mappedClassNames.size(); index++) {
-                 mappedClassName = mappedClassNames.elementAt(index);
+                 mappedClassName = mappedClassNames.get(index);
                  String[] key = new String[] { mappedClassName };
                  rowData.put(key, buildDetailsFor(mappedClassName, rowData.getTabularType().getRowType()));
              }
@@ -1569,28 +1554,28 @@ public abstract class RuntimeServices {
       * INTERNAL:
       * Provide an instance of TabularData containing information about all
       * classes in the session.
-      *
+      * <p>
       * The TabularData contains rowData with values being CompositeData(s)
-      *
+      * <p>
       * CompositeData has:
       *    CompositeType: column names are ["Class Name", "Parent Class Name",  "Cache Type", "Configured Size", "Current Size"]
-      *
+      * <p>
       *  Each CompositeData can have get(myColumnName) sent to it.
       *
       */
      private TabularData buildClassSummaryDetails() {
          try {
-             Vector<String> mappedClassNames = getMappedClassNames();
+             List<String> mappedClassNames = getMappedClassNames();
              String mappedClassName;
              TabularDataSupport rowData = new TabularDataSupport(buildTabularTypeForClassSummaryDetails());
              // Check if there aren't any classes mapped
-             if (mappedClassNames.size() == 0) {
+             if (mappedClassNames.isEmpty()) {
                  return null;
              }
 
              // get details for each class, and add the details to the summary
              for (int index = 0; index < mappedClassNames.size(); index++) {
-                 mappedClassName = mappedClassNames.elementAt(index);
+                 mappedClassName = mappedClassNames.get(index);
                  String[] key = new String[] { mappedClassName };
                  rowData.put(key, buildDetailsFor(mappedClassName, rowData.getTabularType().getRowType()));
              }

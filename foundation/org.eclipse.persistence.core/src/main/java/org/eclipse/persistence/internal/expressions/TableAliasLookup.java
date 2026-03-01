@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,10 +14,10 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.expressions;
 
-import java.io.*;
-import java.util.Map;
+import org.eclipse.persistence.internal.helper.DatabaseTable;
 
-import org.eclipse.persistence.internal.helper.*;
+import java.io.Serializable;
+import java.util.Map;
 
 /**
  * INTERNAL:
@@ -173,7 +173,7 @@ public class TableAliasLookup implements Serializable {// CR#3718, implements Se
         for (int i = 0; i <= max; i++) {
             String s1 = keys[i].toString();
             String s2 = values[i].toString();
-            buf.append(s1 + "=" + s2);
+            buf.append(s1).append("=").append(s2);
             if (i < max) {
                 buf.append(", ");
             }

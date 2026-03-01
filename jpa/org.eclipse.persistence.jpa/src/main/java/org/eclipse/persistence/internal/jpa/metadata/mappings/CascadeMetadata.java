@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -39,7 +39,7 @@ import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JP
  * INTERNAL:
  * Object to represent the cascade types specified for a relationship
  * mapping element.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -96,8 +96,7 @@ public class CascadeMetadata extends ORMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (objectToCompare instanceof CascadeMetadata) {
-            CascadeMetadata cascade = (CascadeMetadata) objectToCompare;
+        if (objectToCompare instanceof CascadeMetadata cascade) {
 
             if (! valuesMatch(m_cascadeAll, cascade.getCascadeAll())) {
                 return false;
@@ -127,7 +126,8 @@ public class CascadeMetadata extends ORMetadata {
 
     @Override
     public int hashCode() {
-        int result = m_cascadeAll != null ? m_cascadeAll.hashCode() : 0;
+        int result = super.hashCode();
+        result = 31 * result + (m_cascadeAll != null ? m_cascadeAll.hashCode() : 0);
         result = 31 * result + (m_cascadePersist != null ? m_cascadePersist.hashCode() : 0);
         result = 31 * result + (m_cascadeMerge != null ? m_cascadeMerge.hashCode() : 0);
         result = 31 * result + (m_cascadeRemove != null ? m_cascadeRemove.hashCode() : 0);

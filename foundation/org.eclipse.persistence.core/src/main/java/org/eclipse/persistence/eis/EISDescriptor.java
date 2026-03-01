@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,9 +15,6 @@
 //     14/05/2012-2.4 Guy Pelletier
 //       - 376603: Provide for table per tenant support for multitenant applications
 package org.eclipse.persistence.eis;
-
-import java.util.List;
-import java.util.Vector;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.DescriptorQueryManager;
@@ -44,9 +41,13 @@ import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ObjectReferenceMapping;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
+import org.eclipse.persistence.oxm.XMLNamespaceAware;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.queries.DatabaseQuery;
+
+import java.util.List;
+import java.util.Vector;
 
 /**
  *
@@ -68,7 +69,7 @@ import org.eclipse.persistence.queries.DatabaseQuery;
  * @author James
  * @since OracleAS TopLink 10<i>g</i> (10.0.3)
  */
-public class EISDescriptor extends ClassDescriptor {
+public class EISDescriptor extends ClassDescriptor implements XMLNamespaceAware {
 
     /** Define the type of data the descriptor maps to. */
     protected String dataFormat;
@@ -111,6 +112,7 @@ public class EISDescriptor extends ClassDescriptor {
      * Return the XML namespace resolver.
      * XML type EIS descriptor can use a namespace resolver to support XML schema namespaces.
      */
+    @Override
     public NamespaceResolver getNamespaceResolver() {
         return namespaceResolver;
     }
@@ -256,15 +258,14 @@ public class EISDescriptor extends ClassDescriptor {
      */
     @Override
     public AbstractRecord buildNestedRowFromFieldValue(Object fieldValue) {
-        if (fieldValue instanceof AbstractRecord) {
-            return (AbstractRecord)fieldValue;
+        if (fieldValue instanceof AbstractRecord rec) {
+            return rec;
         }
 
         // BUG#2667762 if the tag was empty this could be a string of whitespace.
-        if (!(fieldValue instanceof List)) {
+        if (!(fieldValue instanceof List<?> nestedRows)) {
             return getObjectBuilder().createRecord(0, null);
         }
-        List<?> nestedRows = (List<?>)fieldValue;
         if (nestedRows.isEmpty()) {
             return getObjectBuilder().createRecord(0, null);
         } else {
@@ -281,35 +282,35 @@ public class EISDescriptor extends ClassDescriptor {
      * Build the nested rows.
      */
     @Override
-    public Vector buildNestedRowsFromFieldValue(Object fieldValue, AbstractSession session) {
+    public List<AbstractRecord> buildNestedRowsFromFieldValue(Object fieldValue, AbstractSession session) {
         if (!isXMLFormat()) {
             if (!(fieldValue instanceof List)) {
                 return new Vector<>();
             }
-            return new Vector<>((List<?>)fieldValue);
+            return new Vector<>((List<AbstractRecord>) fieldValue);
         }
 
         // BUG#2667762 if the tag was empty this could be a string of whitespace.
         if (!(fieldValue instanceof Vector)) {
             return new Vector<>(0);
         }
-        return (Vector)fieldValue;
+        return (Vector<AbstractRecord>) fieldValue;
     }
 
     /**
      * INTERNAL:
      * Extract the direct values from the specified field value.
-     * Return them in a vector.
+     * Return them in a list.
      * The field value could be a vector or could be a text value if only a single value.
      */
     @Override
-    public Vector buildDirectValuesFromFieldValue(Object fieldValue) {
+    public List<Object> buildDirectValuesFromFieldValue(Object fieldValue) {
         if (!(fieldValue instanceof Vector)) {
-            Vector<Object> fieldValues = new Vector<>(1);
+            List<Object> fieldValues = new Vector<>(1);
             fieldValues.add(fieldValue);
             return fieldValues;
         }
-        return (Vector)fieldValue;
+        return (List<Object>) fieldValue;
     }
 
     /**
@@ -370,11 +371,13 @@ public class EISDescriptor extends ClassDescriptor {
         if (isXMLFormat()) {
             if(!(field instanceof XMLField)) {
                 String xPath = field.getName();
+                String columnDefinition = field.getColumnDefinition();
                 // Moxy requires /text on elements.
-                if ((xPath.indexOf('@') == -1) && (xPath.indexOf("/text()") == -1)) {
+                if ((xPath.indexOf('@') == -1) && (!xPath.contains("/text()"))) {
                     xPath = xPath + "/text()";
                 }
                 field = new XMLField(xPath);
+                field.setColumnDefinition(columnDefinition);
             }
             ((XMLField)field).setNamespaceResolver(getNamespaceResolver());
             ((XMLField)field).initialize();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,7 +23,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
 /**
  * INTERNAL:
  * Define JPA meta-data for partitioning policy.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -67,8 +67,7 @@ public class RangePartitionMetadata extends ORMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (objectToCompare instanceof RangePartitionMetadata) {
-            RangePartitionMetadata partition = (RangePartitionMetadata) objectToCompare;
+        if (objectToCompare instanceof RangePartitionMetadata partition) {
 
             return valuesMatch(this.connectionPool, partition.getConnectionPool())
                     && valuesMatch(this.startValue, partition.getStartValue())
@@ -80,7 +79,8 @@ public class RangePartitionMetadata extends ORMetadata {
 
     @Override
     public int hashCode() {
-        int result = connectionPool != null ? connectionPool.hashCode() : 0;
+        int result = super.hashCode();
+        result = 31 * result + connectionPool != null ? connectionPool.hashCode() : 0;
         result = 31 * result + (startValue != null ? startValue.hashCode() : 0);
         result = 31 * result + (endValue != null ? endValue.hashCode() : 0);
         return result;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,11 +37,10 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
-import org.eclipse.persistence.internal.jpa.metadata.columns.ColumnMetadata;
 
 /**
  * Object to hold onto primary key metadata.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -57,7 +56,7 @@ import org.eclipse.persistence.internal.jpa.metadata.columns.ColumnMetadata;
 public class PrimaryKeyMetadata extends ORMetadata {
     private String m_validation;
     private String m_cacheKeyType;
-    private List<ColumnMetadata> m_columns = new ArrayList<ColumnMetadata>();
+    private List<ColumnMetadata> m_columns = new ArrayList<>();
 
     /**
      * INTERNAL:
@@ -88,8 +87,7 @@ public class PrimaryKeyMetadata extends ORMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (objectToCompare instanceof PrimaryKeyMetadata) {
-            PrimaryKeyMetadata primaryKey = (PrimaryKeyMetadata) objectToCompare;
+        if (objectToCompare instanceof PrimaryKeyMetadata primaryKey) {
 
             if (! valuesMatch(m_validation, primaryKey.getValidation())) {
                 return false;
@@ -107,7 +105,8 @@ public class PrimaryKeyMetadata extends ORMetadata {
 
     @Override
     public int hashCode() {
-        int result = m_validation != null ? m_validation.hashCode() : 0;
+        int result = super.hashCode();
+        result = 31 * result + (m_validation != null ? m_validation.hashCode() : 0);
         result = 31 * result + (m_cacheKeyType != null ? m_cacheKeyType.hashCode() : 0);
         result = 31 * result + (m_columns != null ? m_columns.hashCode() : 0);
         return result;
@@ -160,7 +159,7 @@ public class PrimaryKeyMetadata extends ORMetadata {
 
         if (hasColumns()) {
             for (ColumnMetadata column : m_columns) {
-                if (column.getName().equals("")) {
+                if (column.getName().isEmpty()) {
                     throw ValidationException.primaryKeyColumnNameNotSpecified(descriptor.getJavaClass());
                 } else {
                     descriptor.addPrimaryKeyField(column.getDatabaseField());

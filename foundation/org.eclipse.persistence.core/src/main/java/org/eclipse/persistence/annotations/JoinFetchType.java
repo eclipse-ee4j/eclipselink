@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,21 +15,23 @@
 package org.eclipse.persistence.annotations;
 
 /**
- * An enum type that is used within the JoinFetch annotation.
+ * An enum type that is used within the {@linkplain JoinFetch} annotation.
  *
- * @see org.eclipse.persistence.annotations.JoinFetch
+ * @see JoinFetch
  * @author James Sutherland
  * @since Oracle TopLink 11.1.1.0.0
  */
 public enum JoinFetchType {
     /**
      * An inner join is used to fetch the related object.
+     * <p>
      * This does not allow for null/empty values.
      */
     INNER,
 
     /**
      * An inner join is used to fetch the related object.
+     * <p>
      * This allows for null/empty values.
      */
     OUTER,

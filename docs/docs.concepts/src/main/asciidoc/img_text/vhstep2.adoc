@@ -1,0 +1,3 @@
+:nofooter:
+This illustration describes how, when the first time the Address is
+accessed, the ValueHolder reads and returns the Address object.

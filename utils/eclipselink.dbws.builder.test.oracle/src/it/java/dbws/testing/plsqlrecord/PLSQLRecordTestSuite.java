@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -53,11 +53,12 @@ public class PLSQLRecordTestSuite extends DBWSTestSuite {
     static final String EMPREC_TYPE = "TYPE EMP_RECORD_PACKAGE_EMPREC";
 
     static final String CREATE_EMPTYPE_TABLE =
-        "CREATE TABLE EMPTYPEX (" +
-            "\nEMPNO NUMERIC(4) NOT NULL," +
-            "\nENAME VARCHAR(25)," +
-            "\nPRIMARY KEY (EMPNO)" +
-        "\n)";
+            """
+                    CREATE TABLE EMPTYPEX (
+                    EMPNO NUMERIC(4) NOT NULL,
+                    ENAME VARCHAR(25),
+                    PRIMARY KEY (EMPNO)
+                    )""";
     static final String[] POPULATE_EMPTYPE_TABLE = new String[] {
         "INSERT INTO EMPTYPEX (EMPNO, ENAME) VALUES (69, 'Holly')",
         "INSERT INTO EMPTYPEX (EMPNO, ENAME) VALUES (70, 'Brooke')",
@@ -67,81 +68,84 @@ public class PLSQLRecordTestSuite extends DBWSTestSuite {
         "DROP TABLE EMPTYPEX";
 
     static final String CREATE_EMP_RECORD_PACKAGE =
-        "create or replace PACKAGE EMP_RECORD_PACKAGE AS\n" +
-            "type EmpRec is record (" +
-                "emp_id   EMPTYPEX.EMPNO%TYPE,\n" +
-                "emp_name EMPTYPEX.ENAME%TYPE\n" +
-            ");\n" +
-            "function get_emp_record (pId in number) return EmpRec;\n" +
-        "END EMP_RECORD_PACKAGE;";
+            """
+                    create or replace PACKAGE EMP_RECORD_PACKAGE AS
+                    type EmpRec is record (emp_id   EMPTYPEX.EMPNO%TYPE,
+                    emp_name EMPTYPEX.ENAME%TYPE
+                    );
+                    function get_emp_record (pId in number) return EmpRec;
+                    END EMP_RECORD_PACKAGE;""";
     static final String DROP_EMP_RECORD_PACKAGE =
         "DROP PACKAGE EMP_RECORD_PACKAGE";
 
     static final String CREATE_EMP_RECORD_PACKAGE_BODY =
-        "create or replace PACKAGE BODY EMP_RECORD_PACKAGE AS\n" +
-            "function get_emp_record (pId in number) return EmpRec AS\n" +
-            "myEmp EmpRec;\n" +
-            "l_empno EMPTYPEX.EMPNO%TYPE;\n" +
-            "l_ename EMPTYPEX.ENAME%TYPE;\n" +
-            "cursor c_emp is select empno, ename from EMPTYPEX where empno = pId;\n" +
-            "BEGIN\n" +
-                "open c_emp;\n" +
-                "fetch c_emp into l_empno, l_ename;\n" +
-                "close c_emp;\n" +
-                "myEmp.emp_id := l_empno;\n" +
-                "myEmp.emp_name := l_ename;\n" +
-                "return myEmp;\n" +
-             "END get_emp_record;\n" +
-         "END EMP_RECORD_PACKAGE;";
+            """
+                    create or replace PACKAGE BODY EMP_RECORD_PACKAGE AS
+                    function get_emp_record (pId in number) return EmpRec AS
+                    myEmp EmpRec;
+                    l_empno EMPTYPEX.EMPNO%TYPE;
+                    l_ename EMPTYPEX.ENAME%TYPE;
+                    cursor c_emp is select empno, ename from EMPTYPEX where empno = pId;
+                    BEGIN
+                    open c_emp;
+                    fetch c_emp into l_empno, l_ename;
+                    close c_emp;
+                    myEmp.emp_id := l_empno;
+                    myEmp.emp_name := l_ename;
+                    return myEmp;
+                    END get_emp_record;
+                    END EMP_RECORD_PACKAGE;""";
     static final String DROP_EMP_RECORD_PACKAGE_BODY =
         "DROP PACKAGE BODY EMP_RECORD_PACKAGE";
 
     static final String CREATE_PACKAGE1_PACKAGE =
-        "CREATE OR REPLACE PACKAGE PACKAGE1 AS" +
-            "\nTYPE MTAB1 IS TABLE OF NUMBER INDEX BY BINARY_INTEGER;" +
-            "\nTYPE NRECORD IS RECORD (" +
-                "\nN1 VARCHAR2(10)," +
-                "\nN2 DECIMAL(7,2)" +
-            "\n);" +
-            "\nTYPE MRECORD IS RECORD (" +
-                "\nM1 MTAB1" +
-            "\n);" +
-            "\nPROCEDURE GETNEWREC(NEWREC OUT NRECORD);" +
-            "\nPROCEDURE COPYREC(ORIGINALREC IN NRECORD, NEWREC OUT NRECORD, SUFFIX IN VARCHAR2);" +
-            "\nPROCEDURE GETRECWITHTABLE(ORIGINALTAB IN MTAB1, NEWREC OUT MRECORD);" +
-            "\nFUNCTION COPYREC2(ORIGINALREC IN NRECORD, SUFFIX IN VARCHAR2) RETURN NRECORD;" +
-            "\nFUNCTION GETRECWITHTABLE2(ORIGINALTAB IN MTAB1) RETURN MRECORD;" +
-        "\nEND PACKAGE1;";
+            """
+                    CREATE OR REPLACE PACKAGE PACKAGE1 AS
+                    TYPE MTAB1 IS TABLE OF NUMBER INDEX BY BINARY_INTEGER;
+                    TYPE NRECORD IS RECORD (
+                    N1 VARCHAR2(10),
+                    N2 DECIMAL(7,2)
+                    );
+                    TYPE MRECORD IS RECORD (
+                    M1 MTAB1
+                    );
+                    PROCEDURE GETNEWREC(NEWREC OUT NRECORD);
+                    PROCEDURE COPYREC(ORIGINALREC IN NRECORD, NEWREC OUT NRECORD, SUFFIX IN VARCHAR2);
+                    PROCEDURE GETRECWITHTABLE(ORIGINALTAB IN MTAB1, NEWREC OUT MRECORD);
+                    FUNCTION COPYREC2(ORIGINALREC IN NRECORD, SUFFIX IN VARCHAR2) RETURN NRECORD;
+                    FUNCTION GETRECWITHTABLE2(ORIGINALTAB IN MTAB1) RETURN MRECORD;
+                    END PACKAGE1;""";
     static final String CREATE_PACKAGE1_BODY =
-        "CREATE OR REPLACE PACKAGE BODY PACKAGE1 AS" +
-            "\nPROCEDURE GETNEWREC(NEWREC OUT NRECORD) AS" +
-            "\nBEGIN" +
-                "\nNEWREC.N1 := 'new record';" +
-                "\nNEWREC.N2 := 100.11;" +
-            "\nEND GETNEWREC;" +
-            "\nPROCEDURE COPYREC(ORIGINALREC IN NRECORD, NEWREC OUT NRECORD, SUFFIX IN VARCHAR2) AS" +
-            "\nBEGIN" +
-                "\nNEWREC.N1 := CONCAT(ORIGINALREC.N1, SUFFIX);" +
-                "\nNEWREC.N2 := ORIGINALREC.N2 + 0.1;" +
-            "\nEND COPYREC;" +
-            "\nPROCEDURE GETRECWITHTABLE(ORIGINALTAB IN MTAB1, NEWREC OUT MRECORD) AS" +
-            "\nBEGIN" +
-                "\nNEWREC.M1 := ORIGINALTAB;" +
-            "\nEND GETRECWITHTABLE;" +
-            "\nFUNCTION COPYREC2(ORIGINALREC IN NRECORD, SUFFIX IN VARCHAR2) RETURN NRECORD IS" +
-            "\nnewrec NRECORD;" +
-            "\nBEGIN" +
-                "\nnewrec.N1 := CONCAT(ORIGINALREC.N1, SUFFIX);" +
-                "\nnewrec.N2 := ORIGINALREC.N2 + 0.1;" +
-                "\nRETURN newrec;" +
-            "\nEND COPYREC2;" +
-            "\nFUNCTION GETRECWITHTABLE2(ORIGINALTAB IN MTAB1) RETURN MRECORD IS" +
-            "\nNEWREC MRECORD;" +
-            "\nBEGIN" +
-                "\nNEWREC.M1 := ORIGINALTAB;" +
-                "\nRETURN NEWREC;" +
-            "\nEND GETRECWITHTABLE2;" +
-        "\nEND PACKAGE1;";
+            """
+                    CREATE OR REPLACE PACKAGE BODY PACKAGE1 AS
+                    PROCEDURE GETNEWREC(NEWREC OUT NRECORD) AS
+                    BEGIN
+                    NEWREC.N1 := 'new record';
+                    NEWREC.N2 := 100.11;
+                    END GETNEWREC;
+                    PROCEDURE COPYREC(ORIGINALREC IN NRECORD, NEWREC OUT NRECORD, SUFFIX IN VARCHAR2) AS
+                    BEGIN
+                    NEWREC.N1 := CONCAT(ORIGINALREC.N1, SUFFIX);
+                    NEWREC.N2 := ORIGINALREC.N2 + 0.1;
+                    END COPYREC;
+                    PROCEDURE GETRECWITHTABLE(ORIGINALTAB IN MTAB1, NEWREC OUT MRECORD) AS
+                    BEGIN
+                    NEWREC.M1 := ORIGINALTAB;
+                    END GETRECWITHTABLE;
+                    FUNCTION COPYREC2(ORIGINALREC IN NRECORD, SUFFIX IN VARCHAR2) RETURN NRECORD IS
+                    newrec NRECORD;
+                    BEGIN
+                    newrec.N1 := CONCAT(ORIGINALREC.N1, SUFFIX);
+                    newrec.N2 := ORIGINALREC.N2 + 0.1;
+                    RETURN newrec;
+                    END COPYREC2;
+                    FUNCTION GETRECWITHTABLE2(ORIGINALTAB IN MTAB1) RETURN MRECORD IS
+                    NEWREC MRECORD;
+                    BEGIN
+                    NEWREC.M1 := ORIGINALTAB;
+                    RETURN NEWREC;
+                    END GETRECWITHTABLE2;
+                    END PACKAGE1;""";
 
     static final String DROP_PACKAGE1_PACKAGE =
         "DROP PACKAGE PACKAGE1";
@@ -180,8 +184,8 @@ public class PLSQLRecordTestSuite extends DBWSTestSuite {
             runDdl(conn, CREATE_EMPTYPE_TABLE, ddlDebug);
             try {
                 Statement stmt = conn.createStatement();
-                for (int i = 0; i < POPULATE_EMPTYPE_TABLE.length; i++) {
-                    stmt.addBatch(POPULATE_EMPTYPE_TABLE[i]);
+                for (String s : POPULATE_EMPTYPE_TABLE) {
+                    stmt.addBatch(s);
                 }
                 stmt.executeBatch();
             } catch (SQLException e) {
@@ -245,7 +249,7 @@ public class PLSQLRecordTestSuite extends DBWSTestSuite {
           DBWSTestSuite.setUp(".");
 
           // execute shadow type ddl to generate JDBC equivalents of PL/SQL types
-          ArrayList<String> ddls = new ArrayList<String>();
+          ArrayList<String> ddls = new ArrayList<>();
           for (String ddl : builder.getTypeDDL()) {
               ddls.add(ddl);
           }
@@ -273,8 +277,7 @@ public class PLSQLRecordTestSuite extends DBWSTestSuite {
      *
      */
     protected static void executeDDLForString(List<String> ddls, String ddlString) {
-        for (int i = 0; i < ddls.size(); i++) {
-            String ddl = ddls.get(i);
+        for (String ddl : ddls) {
             if (ddl.contains(ddlString)) {
                 runDdl(conn, ddl, ddlDebug);
                 break;

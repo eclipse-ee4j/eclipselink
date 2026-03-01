@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,6 +29,7 @@
 //       collection javaType C in <X,C,V) of <X, Map<K,V>, V> instead off the elementType V
 package org.eclipse.persistence.internal.jpa.metamodel;
 
+import java.io.Serial;
 import java.util.Map;
 
 import jakarta.persistence.metamodel.MapAttribute;
@@ -62,6 +63,7 @@ import org.eclipse.persistence.mappings.foundation.MapKeyMapping;
 public class MapAttributeImpl<X, K, V> extends PluralAttributeImpl<X, Map<K, V>, V> implements MapAttribute<X, K, V> {
 
     /** Item 54: DI 89: explicit UID will avoid performance hit runtime generation of one */
+    @Serial
     private static final long serialVersionUID = 5702748112869113135L;
 
     /** The key type that this Map type is based on **/
@@ -94,7 +96,7 @@ public class MapAttributeImpl<X, K, V> extends PluralAttributeImpl<X, Map<K, V>,
         MapKeyMapping keyMapping = null;
         Object policyKeyType = null;
 
-        /**
+        /*
          * Note: the (at) sign for annotations has been replaced by the & sign for javadoc processing.
          *
          * We have the following policy structure and behavior
@@ -155,7 +157,7 @@ public class MapAttributeImpl<X, K, V> extends PluralAttributeImpl<X, Map<K, V>,
                 keyMapping = ((MappedKeyMapContainerPolicy)policy).getKeyMapping();
                 policyKeyType = keyMapping.getMapKeyTargetType();
             } else {
-                /**
+                /*
                  * Assume we have a MapContainerPolicy general superclass with a lazy-loaded keyType
                  *   or a DirectMapContainerPolicy using a &BasicMap
                  * See UC2, UC4, UC8, UC13 (unidirectional ManyToOne becomes ManyToMany)
@@ -167,7 +169,7 @@ public class MapAttributeImpl<X, K, V> extends PluralAttributeImpl<X, Map<K, V>,
             }
         }
 
-        /**
+        /*
          * Step 2: We determine the java class from the policyKeyType (class or ClassDecriptor)
          * We also perform alternate keyType lookup for the case where
          * the name attribute is not specified in a MapKey annotation where
@@ -208,7 +210,7 @@ public class MapAttributeImpl<X, K, V> extends PluralAttributeImpl<X, Map<K, V>,
      * Prerequisites: policy on the mapping is of type MappedKeyMapPolicy
      */
     private Class<?> getOwningPKTypeWhenMapKeyAnnotationMissingOrDefaulted(MappedKeyMapContainerPolicy policy) {
-        Class<?> javaClass = null;;
+        Class<?> javaClass = null;
         MapKeyMapping mapKeyMapping = policy.getKeyMapping();
         ClassDescriptor descriptor = ((DatabaseMapping)mapKeyMapping).getDescriptor();
         // If the reference descriptor is null then we are on a direct mapping

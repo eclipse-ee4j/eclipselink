@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -43,7 +43,7 @@ public class Sequence extends TypeDefParticle implements NestedParticle{
 
     @Override
     public void setSequences(List<Sequence> sequences) {
-        if ((sequences != null) && (sequences.size() > 0)) {
+        if ((sequences != null) && (!sequences.isEmpty())) {
             for (int i = 0; i < sequences.size(); i++) {
                 sequences.get(i).setOwner(this);
             }
@@ -54,7 +54,7 @@ public class Sequence extends TypeDefParticle implements NestedParticle{
 
     @Override
     public void setChoices(List<Choice> choices) {
-        if ((choices != null) && (choices.size() > 0)) {
+        if ((choices != null) && (!choices.isEmpty())) {
             for (int i = 0; i < choices.size(); i++) {
                 choices.get(i).setOwner(this);
             }
@@ -123,7 +123,7 @@ public class Sequence extends TypeDefParticle implements NestedParticle{
 
     @Override
     public boolean isEmpty() {
-        return !(orderedElements.size() > 0);
+        return !(!orderedElements.isEmpty());
     }
 
     @Override

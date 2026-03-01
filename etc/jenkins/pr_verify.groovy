@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021, 2022 Oracle and/or its affiliates. All rights reserved.
+//  Copyright (c) 2021, 2025 Oracle and/or its affiliates. All rights reserved.
 //
 //  This program and the accompanying materials are made available under the
 //  terms of the Eclipse Public License v. 2.0 which is available at
@@ -64,7 +64,7 @@ spec:
       requests:
         memory: "12Gi"
         cpu: "5.5"
-    image: tkraus/el-build:2.0.2
+    image: rfelcman/el-build:2.0.3
     volumeMounts:
     - name: tools
       mountPath: /opt/tools
@@ -90,9 +90,12 @@ spec:
 """
         }
     }
+    environment {
+        LANG = 'en_US.UTF-8'
+    }
     tools {
         maven 'apache-maven-latest'
-        jdk 'openjdk-jdk17-latest'
+        jdk 'openjdk-jdk21-latest'
     }
     stages {
         // Initialize build environment
@@ -120,7 +123,7 @@ spec:
                 container('el-build') {
                     sh """
                         echo '-[ EclipseLink Build ]-----------------------------------------------------------'
-                        mvn -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -B -V clean install -pl '!:eclipselink,!:org.eclipse.persistence.bundles.other,!:org.eclipse.persistence.distribution.tests,!:p2site' -DskipTests -Pstaging
+                        mvn -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -B -V clean install -pl '!:eclipselink,!:org.eclipse.persistence.distribution.tests' -DskipTests -Pstaging
                     """
                 }
             }
@@ -186,12 +189,12 @@ spec:
                 }
             }
         }
-        stage('JPA Modelgen, JPA JSE, WDF, JPARS, DBWS, DBWS Builder, Distribution') {
+        stage('JPA Modelgen, JPA JSE, JPA Spring, WDF, JPARS, DBWS, DBWS Builder, Distribution') {
             steps {
                 container('el-build') {
                     sh """
                                 mvn -B -V clean install -pl :eclipselink -P staging
-                                mvn -B -V verify -pl :org.eclipse.persistence.jpa.modelgen.processor,:org.eclipse.persistence.jpa.jse.test,:org.eclipse.persistence.extension,:org.eclipse.persistence.jpa.jpql,:org.eclipse.persistence.jpa.wdf.test,:org.eclipse.persistence.jpars,:org.eclipse.persistence.dbws,:org.eclipse.persistence.dbws.builder,:eclipselink,:org.eclipse.persistence.distribution.tests -P staging,mysql;
+                                mvn -B -V verify -pl :org.eclipse.persistence.jpa.modelgen.processor,:org.eclipse.persistence.jpa.jse.test,:org.eclipse.persistence.jpa.spring.test,:org.eclipse.persistence.extension,:org.eclipse.persistence.jpa.jpql,:org.eclipse.persistence.jpa.wdf.test,:org.eclipse.persistence.jpars,:org.eclipse.persistence.dbws,:org.eclipse.persistence.dbws.builder,:eclipselink,:org.eclipse.persistence.distribution.tests -P staging,mysql;
                             """
                 }
             }

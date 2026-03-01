@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,10 +16,9 @@
 //     @since   EclipseLink 1.0 enh# 235168
 package org.eclipse.persistence.services.mbean;
 
-import java.util.List;
-import java.util.Vector;
-
 import org.eclipse.persistence.services.ClassSummaryDetailBase;
+
+import java.util.List;
 
 /**
  * <p>
@@ -95,12 +94,12 @@ public interface MBeanRuntimeServicesMBean {
     /**
      *     This method will return the available Connection pools within this Server Session
      */
-    List getAvailableConnectionPools();
+    List<String> getAvailableConnectionPools();
 
     /**
      *     This method will retrieve the size of a particular connection pool
      */
-    List getSizeForPool(String poolName);
+    List<Integer> getSizeForPool(String poolName);
 
 
     /**
@@ -120,13 +119,13 @@ public interface MBeanRuntimeServicesMBean {
      * Please note that SubClasses and aggregates will be missing from this list as they do not have
      * separate identity maps.
      */
-    List getClassesInSession();
+    List<String> getClassesInSession();
 
     /**
-     *        This method will return a collection of the objects in the Identity Map.
+     * This method will return a collection of the objects in the Identity Map.
      * There is no particular order to these objects.
      */
-    List getObjectsInIdentityMap(String className) throws ClassNotFoundException;
+    List<Object> getObjectsInIdentityMap(String className) throws ClassNotFoundException;
 
     /**
      *        This method is used to return the number of objects in a particular Identity Map
@@ -175,7 +174,7 @@ public interface MBeanRuntimeServicesMBean {
 
     /**
      *  Set the EclipseLink log level to be used at runtime.
-     *
+     * <p>
      * This does not affect the log level in the project (i.e. The next
      * time the application is deployed, changes are forgotten)
      *
@@ -206,7 +205,7 @@ public interface MBeanRuntimeServicesMBean {
     /**
      *  Provide an instance of 2 Dimensional Array simulating tabular format information about all
      * classes in the session whose class names match the provided filter.
-     *
+     * <p>
      * The 2 Dimensional array contains each item with values being row object array. Each row object array
      * represents EclipseLink class details info with respect to below attributes:
      * ["Class Name", "Parent Class Name",  "Cache Type", "Configured Size", "Current Size"]
@@ -217,7 +216,7 @@ public interface MBeanRuntimeServicesMBean {
     /**
      *  Provide an instance of 2 Dimensional Array simulating tabular format information about all
      * classes in the session.
-     *
+     * <p>
      * The 2 Dimensional array contains each item with values being row object array. Each row object array
      * represents EclipseLink class details info with respect to below attributes:
      * ["Class Name", "Parent Class Name",  "Cache Type", "Configured Size", "Current Size"]
@@ -228,7 +227,7 @@ public interface MBeanRuntimeServicesMBean {
     /**
      *  Provide a list of instance of ClassSummaryDetail containing information about the
      * classes in the session whose class names match the provided filter.
-     *
+     * <p>
      * ClassSummaryDetail is a model specific class that can be used internally by the Portable JMX Framework to
      * convert class attribute to JMX required open type, it has:-
      *    1. model specific type that needs to be converted : ["Class Name", "Parent Class Name",  "Cache Type", "Configured Size", "Current Size"]
@@ -242,7 +241,7 @@ public interface MBeanRuntimeServicesMBean {
     /**
      *  Provide a list of instance of ClassSummaryDetail containing information about all
      * classes in the session.
-     *
+     * <p>
      * ClassSummaryDetail is a model specific class that can be used internally by the Portable JMX Framework to
      * convert class attribute to JMX required open type, it has:-
      *    1. model specific type that needs to be converted : ["Class Name", "Parent Class Name",  "Cache Type", "Configured Size", "Current Size"]
@@ -261,7 +260,7 @@ public interface MBeanRuntimeServicesMBean {
     *   @param filter A comma separated list of strings to match against.
     *   @return A Vector of class names that match the filter.
     */
-    Vector getMappedClassNamesUsingFilter(String filter);
+    List<String> getMappedClassNamesUsingFilter(String filter);
 
     /**
      * getModuleName(): Answer the name of the context-root of the application that this session is associated with.

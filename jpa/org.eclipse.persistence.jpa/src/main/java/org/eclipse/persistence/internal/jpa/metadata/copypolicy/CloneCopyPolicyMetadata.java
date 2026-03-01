@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,7 +31,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
  * INTERNAL:
  * Used to store information about CloneCopyPolicy as it is read from XML or
  * annotations.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -71,8 +71,7 @@ public class CloneCopyPolicyMetadata extends CopyPolicyMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (super.equals(objectToCompare) && objectToCompare instanceof CloneCopyPolicyMetadata) {
-            CloneCopyPolicyMetadata cloneCopyPolicy = (CloneCopyPolicyMetadata) objectToCompare;
+        if (super.equals(objectToCompare) && objectToCompare instanceof CloneCopyPolicyMetadata cloneCopyPolicy) {
 
             if (! valuesMatch(methodName, cloneCopyPolicy.getMethodName())) {
                 return false;
@@ -86,7 +85,8 @@ public class CloneCopyPolicyMetadata extends CopyPolicyMetadata {
 
     @Override
     public int hashCode() {
-        int result = methodName != null ? methodName.hashCode() : 0;
+        int result = super.hashCode();
+        result = 31 * result + (methodName != null ? methodName.hashCode() : 0);
         result = 31 * result + (workingCopyMethodName != null ? workingCopyMethodName.hashCode() : 0);
         return result;
     }

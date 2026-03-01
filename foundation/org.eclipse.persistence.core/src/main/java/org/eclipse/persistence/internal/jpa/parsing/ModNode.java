@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,22 +14,23 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.jpa.parsing;
 
+import org.eclipse.persistence.exceptions.JPQLException;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionMath;
+
 /**
  * INTERNAL
  * <p><b>Purpose</b>: Represent a MOD
  * <p><b>Responsibilities</b>:<ul>
  * <li> Answer the correct expression for a MOD
  * <li> Maintain the parts of a MOD statement
- *
+ * <p>
  * e.g.
  * SELECT ... FROM ... WHERE MOD(emp.salary, 2) > 1000
  * </ul>
  *    @author Jon Driscoll and Joel Lucuik
  *    @since TopLink 4.0
  */
-import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.exceptions.JPQLException;
-
 public class ModNode extends ArithmeticFunctionNode {
 
     private Node denominator = null;

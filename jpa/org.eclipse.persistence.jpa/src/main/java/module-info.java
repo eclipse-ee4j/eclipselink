@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2021, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,7 +15,6 @@ module org.eclipse.persistence.jpa {
     requires transitive java.instrument;
     requires jdk.unsupported;
 
-    requires transitive org.eclipse.persistence.asm;
     requires transitive org.eclipse.persistence.core;
     requires org.eclipse.persistence.jpa.jpql;
 
@@ -30,8 +29,11 @@ module org.eclipse.persistence.jpa {
     exports org.eclipse.persistence.jpa;
     exports org.eclipse.persistence.jpa.config;
     exports org.eclipse.persistence.jpa.dynamic;
+    exports org.eclipse.persistence.jpa.exceptions;
+    exports org.eclipse.persistence.jpa.exceptions.i18n;
     exports org.eclipse.persistence.jpa.metadata;
     exports org.eclipse.persistence.tools.weaving.jpa;
+    exports org.eclipse.persistence.tools.weaving.jpa.i18n;
 
     //exported through JPA PUBLIC API
     exports org.eclipse.persistence.internal.jpa;
@@ -67,4 +69,6 @@ module org.eclipse.persistence.jpa {
 
     opens org.eclipse.persistence.internal.jpa.deployment to org.eclipse.persistence.core;
     provides jakarta.persistence.spi.PersistenceProvider with org.eclipse.persistence.jpa.PersistenceProvider;
+
+    uses org.eclipse.persistence.mappings.converters.spi.ConverterProvider;
 }

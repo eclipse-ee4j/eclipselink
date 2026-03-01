@@ -1,6 +1,7 @@
 /*
- * Copyright (c) 2005, 2022 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2005, 2022 IBM Corporation. All rights reserved.
+ * Copyright (c) 2025, 2026 Contributors to the Eclipse Foundation.
+ * Copyright (c) 2005, 2026 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,30 +23,16 @@
 //       - Issue 1442: Implement New Jakarta Persistence 3.1 Features
 package org.eclipse.persistence.platform.database;
 
-import java.io.IOException;
-import java.io.Writer;
-import java.sql.CallableStatement;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Vector;
-
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionOperator;
-import org.eclipse.persistence.internal.expressions.ExtractOperator;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
-import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 import org.eclipse.persistence.internal.expressions.CollectionExpression;
 import org.eclipse.persistence.internal.expressions.ConstantExpression;
 import org.eclipse.persistence.internal.expressions.ExpressionJavaPrinter;
 import org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter;
+import org.eclipse.persistence.internal.expressions.ExtractOperator;
 import org.eclipse.persistence.internal.expressions.ParameterExpression;
 import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
 import org.eclipse.persistence.internal.helper.ClassConstants;
@@ -55,6 +42,21 @@ import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.queries.Call;
 import org.eclipse.persistence.queries.ValueReadQuery;
+import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
+
+import java.io.IOException;
+import java.io.Writer;
+import java.sql.CallableStatement;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 
 /**
  * <p><b>Purpose</b>: Provides Derby DBMS specific behavior.
@@ -93,7 +95,7 @@ public class DerbyPlatform extends DB2Platform {
      */
     @Override
     public Object convertToDatabaseType(Object value) {
-        if (value != null && value.getClass() == ClassConstants.UTILDATE) {
+        if (value != null && value.getClass() == CoreClassConstants.UTILDATE) {
             return Helper.sqlDateFromUtilDate((java.util.Date)value);
         }
         return super.convertToDatabaseType(value);
@@ -125,41 +127,6 @@ public class DerbyPlatform extends DB2Platform {
     }
 
     /**
-     * Used for stored procedure defs.
-     */
-    @Override
-    public String getProcedureEndString() {
-        return getBatchEndString();
-    }
-
-    /**
-     * Used for stored procedure defs.
-     */
-    @Override
-    public String getProcedureBeginString() {
-        return getBatchBeginString();
-    }
-
-    /**
-     * This method is used to print the output parameter token when stored
-     * procedures are called
-     */
-    @Override
-    public String getInOutputProcedureToken() {
-        return "INOUT";
-    }
-
-    /**
-     * This is required in the construction of the stored procedures with
-     * output parameters
-     */
-    @Override
-    public boolean shouldPrintOutputTokenAtStart() {
-        //TODO: Check with the reviewer where this is used
-        return false;
-    }
-
-    /**
      * INTERNAL:
      * Answers whether platform is Derby
      */
@@ -173,6 +140,18 @@ public class DerbyPlatform extends DB2Platform {
         //This class inherits from DB2. But it is not DB2
         return false;
     }
+    
+    /**
+     * Used to determine if the platform should perform partial parameter binding or not
+     * Enabled for DB2 and DB2 for zOS to add support for partial binding
+     */
+    @Override
+    public boolean shouldBindPartialParameters() {
+        // This class inherits from DB2. But it is not DB2
+        return this.shouldBindPartialParameters;
+    }
+    
+    
 
     @Override
     public String getSelectForUpdateString() {
@@ -280,58 +259,6 @@ public class DerbyPlatform extends DB2Platform {
         writer.write(")");
     }
 
-    /**
-     * INTERNAL:
-     * Append the receiver's field 'identity' constraint clause to a writer.
-     */
-    @Override
-    public void printFieldIdentityClause(Writer writer) throws ValidationException {
-        try {
-            writer.write(" GENERATED BY DEFAULT AS IDENTITY");
-        } catch (IOException ioException) {
-            throw ValidationException.fileError(ioException);
-        }
-    }
-
-    @Override
-    protected Hashtable<Class<?>, FieldTypeDefinition> buildFieldTypes() {
-        Hashtable<Class<?>, FieldTypeDefinition> fieldTypeMapping = new Hashtable<>();
-
-        fieldTypeMapping.put(Boolean.class, new FieldTypeDefinition("SMALLINT DEFAULT 0", false));
-
-        fieldTypeMapping.put(Integer.class, new FieldTypeDefinition("INTEGER", false));
-        fieldTypeMapping.put(Long.class, new FieldTypeDefinition("BIGINT", false));
-        fieldTypeMapping.put(Float.class, new FieldTypeDefinition("FLOAT", false));
-        fieldTypeMapping.put(Double.class, new FieldTypeDefinition("FLOAT", false));
-        fieldTypeMapping.put(Short.class, new FieldTypeDefinition("SMALLINT", false));
-        fieldTypeMapping.put(Byte.class, new FieldTypeDefinition("SMALLINT", false));
-        fieldTypeMapping.put(java.math.BigInteger.class, new FieldTypeDefinition("BIGINT", false));
-        fieldTypeMapping.put(java.math.BigDecimal.class, new FieldTypeDefinition("DECIMAL", 15));
-        fieldTypeMapping.put(Number.class, new FieldTypeDefinition("DECIMAL", 15));
-
-        fieldTypeMapping.put(String.class, new FieldTypeDefinition("VARCHAR", DEFAULT_VARCHAR_SIZE));
-        fieldTypeMapping.put(Character.class, new FieldTypeDefinition("CHAR", 1));
-        fieldTypeMapping.put(Byte[].class, new FieldTypeDefinition("BLOB", MAX_BLOB));
-        fieldTypeMapping.put(Character[].class, new FieldTypeDefinition("CLOB", MAX_CLOB));
-        fieldTypeMapping.put(byte[].class, new FieldTypeDefinition("BLOB", MAX_BLOB));
-        fieldTypeMapping.put(char[].class, new FieldTypeDefinition("CLOB", MAX_CLOB));
-        fieldTypeMapping.put(java.sql.Blob.class, new FieldTypeDefinition("BLOB", MAX_BLOB));
-        fieldTypeMapping.put(java.sql.Clob.class, new FieldTypeDefinition("CLOB", MAX_CLOB));
-
-        fieldTypeMapping.put(java.sql.Date.class, new FieldTypeDefinition("DATE", false));
-        fieldTypeMapping.put(java.sql.Time.class, new FieldTypeDefinition("TIME", false));
-        fieldTypeMapping.put(java.sql.Timestamp.class, new FieldTypeDefinition("TIMESTAMP", false));
-
-        fieldTypeMapping.put(java.time.LocalDate.class, new FieldTypeDefinition("DATE"));
-        fieldTypeMapping.put(java.time.LocalDateTime.class, new FieldTypeDefinition("TIMESTAMP"));
-        fieldTypeMapping.put(java.time.LocalTime.class, new FieldTypeDefinition("TIME"));
-        fieldTypeMapping.put(java.time.OffsetDateTime.class, new FieldTypeDefinition("TIMESTAMP"));
-        fieldTypeMapping.put(java.time.OffsetTime.class, new FieldTypeDefinition("TIMESTAMP"));
-
-        return fieldTypeMapping;
-    }
-
-
     @Override
     protected void setNullFromDatabaseField(DatabaseField databaseField, PreparedStatement statement, int index) throws SQLException {
         int jdbcType = databaseField.getSqlType();
@@ -352,7 +279,8 @@ public class DerbyPlatform extends DB2Platform {
         addOperator(ExpressionOperator.simpleFunction(ExpressionOperator.ToNumber, "DOUBLE"));
         addOperator(derbyExtractOperator());
         addOperator(derbyPowerOperator());
-        addOperator(derbyRoundOperator());
+        addOperator(derbyLeftOperator());
+        addOperator(derbyRightOperator());
 
         addOperator(avgOperator());
         addOperator(sumOperator());
@@ -487,24 +415,46 @@ public class DerbyPlatform extends DB2Platform {
         return operator;
     }
 
-    // Emulate ROUND as FLOOR((:x)*1e:n+0.5)/1e:n
-    private static ExpressionOperator derbyRoundOperator() {
-        ExpressionOperator operator = disableAllBindingExpression();
-        ExpressionOperator.round().copyTo(operator);
+    /**
+     * INTERNAL:
+     * Derby equivalent to LEFT e.g. LEFT(dname, 5) is SUBSTR e.g. SUBSTR(dname, 1, 5).
+     */
+    protected static ExpressionOperator derbyLeftOperator() {
+        ExpressionOperator exOperator = new ExpressionOperator();
+        exOperator.setType(ExpressionOperator.FunctionOperator);
+        exOperator.setSelector(ExpressionOperator.Left);
+        List<String> v = new ArrayList<>(3);
+        v.add("SUBSTR(");
+        v.add(", 1, ");
+        v.add(")");
+        exOperator.printsAs(v);
+        exOperator.bePrefix();
+        int[] indices = { 0, 1 };
+        exOperator.setArgumentIndices(indices);
+        exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
+        return exOperator;
+    }
 
-        List<String> v = new ArrayList<>(4);
-        v.add("FLOOR((");
-        v.add(")*1e");
-        v.add("+0.5)/1e");
-        v.add("");
-        operator.printsAs(v);
-        int[] argumentIndices = new int[3];
-        argumentIndices[0] = 0;
-        argumentIndices[1] = 1;
-        argumentIndices[2] = 1;
-        operator.setArgumentIndices(argumentIndices);
-        operator.setIsBindingSupported(false);
-        return operator;
+    /**
+     * INTERNAL:
+     * Derby equivalent to RIGHT e.g. RIGHT(dname, 5) is SUBSTR e.g. SUBSTR(dname, LENGTH(dname) +1 - 5, 5).
+     */
+    protected static ExpressionOperator derbyRightOperator() {
+        ExpressionOperator exOperator = new ExpressionOperator();
+        exOperator.setType(ExpressionOperator.FunctionOperator);
+        exOperator.setSelector(ExpressionOperator.Right);
+        List<String> v = new ArrayList<>(3);
+        v.add("SUBSTR(");
+        v.add(", LENGTH(");
+        v.add(") + 1 - ");
+        v.add(", ");
+        v.add(")");
+        exOperator.printsAs(v);
+        exOperator.bePrefix();
+        int[] indices = { 0, 0, 1, 1 };
+        exOperator.setArgumentIndices(indices);
+        exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
+        return exOperator;
     }
 
     // Derby does not suport native EXTRACT at all. There are specific functions for most of the date/time parts.
@@ -514,8 +464,18 @@ public class DerbyPlatform extends DB2Platform {
 
         // QUARTER emulation: ((MONTH(:first)+2)/3)
         private static final String[] QUARTER_STRINGS = new String[] {"((MONTH(", ")+2)/3)"};
+        // WEEK emulation: based on https://www.sqlservercentral.com/articles/a-simple-formula-to-calculate-the-iso-week-number
+        private static final String[] WEEK_STRINGS = new String[] {
+                "(({FN TIMESTAMPDIFF(sql_tsi_day,DATE(CHAR(YEAR(",
+                "),4)||'-01-01'),{FN TIMESTAMPADD(sql_tsi_day,{FN TIMESTAMPDIFF(sql_tsi_day,{d '1753-01-01'},",
+                ")}/7*7,{d '1753-01-04'})})}+7)/7)"
+        };
         // SECOND emulation: CAST(SECOND(:first) AS FLOAT)
         private static final String[] SECOND_STRINGS = new String[] {"CAST(SECOND(", ") AS FLOAT)"};
+        // DATE emulation: DATE(:first)
+        private static final String[] DATE_STRINGS = new String[] {"DATE(", ")"};
+        // TIME emulation: TIME(:first)
+        private static final String[] TIME_STRINGS = new String[] {"TIME(", ")"};
 
         // Derby native database Strings to be printed for EXTRACT expression
         // Printing of prefix database String is set to be skipped for Derby
@@ -561,6 +521,51 @@ public class DerbyPlatform extends DB2Platform {
             printer.printString(SECOND_STRINGS[1]);
         }
 
+        @Override
+        protected void printWeekSQL(final Expression first, Expression second, final ExpressionSQLPrinter printer) {
+            printer.printString(WEEK_STRINGS[0]);
+            first.printSQL(printer);
+            printer.printString(WEEK_STRINGS[1]);
+            first.printSQL(printer);
+            printer.printString(WEEK_STRINGS[2]);
+        }
+
+        @Override
+        protected void printWeekJava(final Expression first, Expression second, final ExpressionJavaPrinter printer) {
+            printer.printString(WEEK_STRINGS[0]);
+            first.printJava(printer);
+            printer.printString(WEEK_STRINGS[1]);
+            first.printJava(printer);
+            printer.printString(WEEK_STRINGS[2]);
+        }
+
+        @Override
+        protected void printDateSQL(final Expression first, Expression second, final ExpressionSQLPrinter printer) {
+            printer.printString(DATE_STRINGS[0]);
+            first.printSQL(printer);
+            printer.printString(DATE_STRINGS[1]);
+        }
+
+        @Override
+        protected void printDateJava(final Expression first, Expression second, final ExpressionJavaPrinter printer) {
+            printer.printString(DATE_STRINGS[0]);
+            first.printJava(printer);
+            printer.printString(DATE_STRINGS[1]);
+        }
+
+        @Override
+        protected void printTimeSQL(final Expression first, Expression second, final ExpressionSQLPrinter printer) {
+            printer.printString(TIME_STRINGS[0]);
+            first.printSQL(printer);
+            printer.printString(TIME_STRINGS[1]);
+        }
+
+        @Override
+        protected void printTimeJava(final Expression first, Expression second, final ExpressionJavaPrinter printer) {
+            printer.printString(TIME_STRINGS[0]);
+            first.printJava(printer);
+            printer.printString(TIME_STRINGS[1]);
+        }
     }
 
     // Create EXTRACT operator form Derby platform
@@ -622,6 +627,7 @@ public class DerbyPlatform extends DB2Platform {
      * With binding enabled, Derby will throw an error:
      * <pre>ERROR 42X35: It is not allowed for both operands of '||' to be ? parameters.</pre>
      */
+    @Override
     protected ExpressionOperator concatOperator() {
         ExpressionOperator operatorS = super.concatOperator();
         ExpressionOperator operator = disableAtLeast1BindingExpression();
@@ -729,9 +735,8 @@ public class DerbyPlatform extends DB2Platform {
                 boolean firstBound = true;
                 if(second instanceof CollectionExpression) {
                     Object val = ((CollectionExpression) second).getValue();
-                    if (val instanceof Collection) {
+                    if (val instanceof Collection values) {
                         firstBound = false;
-                        Collection values = (Collection)val;
                         for(Object value : values) {
                             // If the value isn't a Constant/Parameter, this will suffice and the first should bind
                             if(value instanceof Expression && !((Expression)value).isValueExpression()) {
@@ -774,9 +779,8 @@ public class DerbyPlatform extends DB2Platform {
                 boolean firstBound = true;
                 if(second instanceof CollectionExpression) {
                     Object val = ((CollectionExpression) second).getValue();
-                    if (val instanceof Collection) {
+                    if (val instanceof Collection values) {
                         firstBound = false;
-                        Collection values = (Collection)val;
                         for(Object value : values) {
                             // If the value isn't a Constant/Parameter, this will suffice and the first should bind
                             if(value instanceof Expression && !((Expression)value).isValueExpression()) {
@@ -807,27 +811,36 @@ public class DerbyPlatform extends DB2Platform {
     }
 
     /**
-     * INTERNAL
-     * Derby has some issues with using parameters on certain functions and relations.
-     * This allows statements to disable binding, for queries, only in these cases.
-     * If users set casting on, then casting is used instead of dynamic SQL.
+     * Emulate ROUND as FLOOR((:x)*1e:n+0.5)/1e:n
      */
     @Override
-    public boolean isDynamicSQLRequiredForFunctions() {
-        if(shouldForceBindAllParameters()) {
-            return false;
-        }
-        return !isCastRequired();
+    protected ExpressionOperator roundOperator() {
+        ExpressionOperator operator = disableAllBindingExpression();
+        ExpressionOperator.round().copyTo(operator);
+
+        List<String> v = new ArrayList<>(4);
+        v.add("FLOOR((");
+        v.add(")*1e");
+        v.add("+0.5)/1e");
+        v.add("");
+        operator.printsAs(v);
+        int[] argumentIndices = new int[3];
+        argumentIndices[0] = 0;
+        argumentIndices[1] = 1;
+        argumentIndices[2] = 1;
+        operator.setArgumentIndices(argumentIndices);
+        operator.setIsBindingSupported(false);
+        return operator;
     }
 
     /**
      * INTERNAL:
      * Use the JDBC maxResults and firstResultIndex setting to compute a value to use when
      * limiting the results of a query in SQL.  These limits tend to be used in two ways.
-     *
+     * <p>
      * 1. MaxRows is the index of the last row to be returned (like JDBC maxResults)
      * 2. MaxRows is the number of rows to be returned
-     *
+     * <p>
      * Derby uses case #2 and therefore the maxResults has to be altered based on the firstResultIndex.
      */
     @Override
@@ -842,7 +855,7 @@ public class DerbyPlatform extends DB2Platform {
      * INTERNAL:
      * Print the SQL representation of the statement on a stream, storing the fields
      * in the DatabaseCall.
-     *
+     * <p>
      * Derby supports pagination through its "OFFSET n ROWS FETCH NEXT m ROWS" syntax.
      */
     @Override
@@ -908,22 +921,6 @@ public class DerbyPlatform extends DB2Platform {
         return this.isSequenceSupported;
     }
 
-    @Override
-    public boolean isAlterSequenceObjectSupported() {
-        return false;
-    }
-
-    /**
-     * INTERNAL: Derby supports sequence objects as of 10.6.1.
-     */
-    @Override
-    public Writer buildSequenceObjectDeletionWriter(Writer writer, String fullSeqName) throws IOException {
-        writer.write("DROP SEQUENCE ");
-        writer.write(fullSeqName);
-        writer.write(" RESTRICT");
-        return writer;
-    }
-
     /**
      * INTERNAL:
      */
@@ -948,6 +945,7 @@ public class DerbyPlatform extends DB2Platform {
      * This support a wide range of different parameter types,
      * and is heavily optimized for common types.
      */
+    @Override
     public void setParameterValueInDatabaseCall(Object parameter,
                                                 PreparedStatement statement, int index, AbstractSession session)
             throws SQLException {
@@ -965,6 +963,7 @@ public class DerbyPlatform extends DB2Platform {
      * This support a wide range of different parameter types,
      * and is heavily optimized for common types.
      */
+    @Override
     public void setParameterValueInDatabaseCall(Object parameter,
                                                 CallableStatement statement, String name, AbstractSession session)
             throws SQLException {
@@ -980,6 +979,7 @@ public class DerbyPlatform extends DB2Platform {
      * Returns the number of parameters that used binding.
      * Should only be called in case binding is not used.
      */
+    @Override
     public int appendParameterInternal(Call call, Writer writer, Object parameter) {
         try {
             int nBoundParameters = 0;
@@ -993,4 +993,89 @@ public class DerbyPlatform extends DB2Platform {
         return super.appendParameterInternal(call, writer, parameter);
     }
 
+    /*
+                                 ____  ____  __
+                                |    \|    \|  |
+                                |  |  |  |  |  |__
+                                |____/|____/|_____|
+     */
+
+    private static final FieldDefinition.DatabaseType DERBY_TYPE_FLOAT = new FieldDefinition.DatabaseType("FLOAT", false);
+    private static final FieldDefinition.DatabaseType DERBY_TYPE_VARCHAR = TYPE_VARCHAR.ofSize(DEFAULT_VARCHAR_SIZE);;
+    private static final FieldDefinition.DatabaseType DERBY_TYPE_BLOB = TYPE_BLOB.ofSize(MAX_BLOB);
+    private static final FieldDefinition.DatabaseType DERBY_TYPE_CLOB = TYPE_CLOB.ofSize(MAX_CLOB);
+
+    @Override
+    protected Map<Class<?>, FieldDefinition.DatabaseType> buildDatabaseTypes() {
+        Map<Class<?>, FieldDefinition.DatabaseType> fieldTypeMapping = super.buildDatabaseTypes();
+        fieldTypeMapping.replace(Float.class, DERBY_TYPE_FLOAT);
+
+        fieldTypeMapping.replace(String.class, DERBY_TYPE_VARCHAR);
+
+        fieldTypeMapping.replace(Byte[].class, DERBY_TYPE_BLOB);
+        fieldTypeMapping.replace(Character[].class, DERBY_TYPE_CLOB);
+        fieldTypeMapping.replace(byte[].class, DERBY_TYPE_BLOB);
+        fieldTypeMapping.replace(char[].class, DERBY_TYPE_CLOB);
+        fieldTypeMapping.replace(java.sql.Blob.class, DERBY_TYPE_BLOB);
+        fieldTypeMapping.replace(java.sql.Clob.class, DERBY_TYPE_CLOB);
+
+        fieldTypeMapping.replace(java.time.LocalTime.class, TYPE_TIME);
+
+        return fieldTypeMapping;
+    }
+
+    /**
+     * INTERNAL: Derby supports sequence objects as of 10.6.1.
+     */
+    @Override
+    public Writer buildSequenceObjectDeletionWriter(Writer writer, String fullSeqName) throws IOException {
+        writer.write("DROP SEQUENCE ");
+        writer.write(fullSeqName);
+        writer.write(" RESTRICT");
+        return writer;
+    }
+
+    @Override
+    public String getProcedureEndString() {
+        return getBatchEndString();
+    }
+
+    @Override
+    public String getProcedureBeginString() {
+        return getBatchBeginString();
+    }
+
+    @Override
+    public String getInOutputProcedureToken() {
+        return "INOUT";
+    }
+
+    @Override
+    public boolean isAlterSequenceObjectSupported() {
+        return false;
+    }
+
+    /**
+     * INTERNAL:
+     * Append the receiver's field 'identity' constraint clause to a writer.
+     */
+    @Override
+    public void printFieldIdentityClause(Writer writer) throws ValidationException {
+        try {
+            writer.write(" GENERATED BY DEFAULT AS IDENTITY");
+        } catch (IOException ioException) {
+            throw ValidationException.fileError(ioException);
+        }
+    }
+
+    @Override
+    public boolean shouldPrintOutputTokenAtStart() {
+        //TODO: Check with the reviewer where this is used
+        return false;
+    }
+
+    @Override
+    public boolean supportsFractionalTime() {
+        return false;
+    }
 }

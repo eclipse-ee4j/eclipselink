@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,11 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 //EclipseLink imports
-import dbws.testing.shadowddlgeneration.oldjpub.PublisherException;
-import dbws.testing.shadowddlgeneration.oldjpub.AllTypes;
-import dbws.testing.shadowddlgeneration.oldjpub.FieldInfo;
-import dbws.testing.shadowddlgeneration.oldjpub.ViewCache;
-import dbws.testing.shadowddlgeneration.oldjpub.ViewRow;
+
 import static dbws.testing.shadowddlgeneration.oldjpub.Util.ALL_TYPES;
 import static dbws.testing.shadowddlgeneration.oldjpub.Util.TYPE_NAME;
 
@@ -35,7 +31,7 @@ public abstract class SqlTypeWithFields extends SqlType {
 
     protected static Map<String, Boolean> m_builtin;
     static {
-        m_builtin = new HashMap<String, Boolean>();
+        m_builtin = new HashMap<>();
         m_builtin.put("VARCHAR2", Boolean.TRUE);
         m_builtin.put("NUMBER", Boolean.TRUE);
         m_builtin.put("DATE", Boolean.TRUE);
@@ -87,7 +83,7 @@ public abstract class SqlTypeWithFields extends SqlType {
     public static List<AttributeField> reflectFields(boolean publishedOnly, List<FieldInfo> sfi,
         SqlReflector reflector, SqlType parent, boolean isGrandparent) throws SQLException,
         PublisherException {
-        ArrayList<AttributeField> fieldsCS = new ArrayList<AttributeField>();
+        ArrayList<AttributeField> fieldsCS = new ArrayList<>();
         ViewCache viewCache = reflector.getViewCache();
         // JavaMap map = new JavaMap(parent, reflector);
         Typemap map = new Typemap(parent, reflector);
@@ -125,7 +121,7 @@ public abstract class SqlTypeWithFields extends SqlType {
             }
             catch (SQLException e) {
                 e.printStackTrace();
-            };
+            }
         }
         return fieldsCS;
     }

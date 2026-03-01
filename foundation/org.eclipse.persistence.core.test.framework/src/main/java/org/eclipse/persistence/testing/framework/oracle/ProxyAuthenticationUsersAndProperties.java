@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -87,7 +87,7 @@ public final class ProxyAuthenticationUsersAndProperties {
     public static String getProperty(String property, String defaultValue) {
         String propertyValue = System.getProperty(property);
 
-        if (propertyValue == null || propertyValue.equals("")) {
+        if (propertyValue == null || propertyValue.isEmpty()) {
             return defaultValue;
         } else {
             return propertyValue;
@@ -149,7 +149,7 @@ public final class ProxyAuthenticationUsersAndProperties {
         // errorMsg.length() > 0 case:
         // if couldn't connect to connectionUser directly then there is
         // no point in trying to connect proxyUsers through connectionUser.
-        if(errorMsg.length() == 0) {
+        if(errorMsg.isEmpty()) {
             // try to open proxy session using proxyUser
             try {
                 Properties props = new Properties();

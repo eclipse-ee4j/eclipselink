@@ -37,18 +37,14 @@ import jakarta.persistence.metamodel.Metamodel;
 public class FunctionExpressionImpl<X> extends ExpressionImpl<X>{
 
     protected String operator;
-    protected List expressions;
+    protected List<Expression<?>> expressions;
 
-    protected <T> FunctionExpressionImpl (Metamodel metamodel, Class<X> resultClass, org.eclipse.persistence.expressions.Expression expressionNode, List<Expression<?>> compoundExpressions){
+    protected FunctionExpressionImpl (Metamodel metamodel, Class<? extends X> resultClass, org.eclipse.persistence.expressions.Expression expressionNode, List<Expression<?>> compoundExpressions){
         super(metamodel, resultClass, expressionNode);
-        if (compoundExpressions != null){
-            this.expressions = compoundExpressions;
-        }else{
-            this.expressions = new ArrayList<>();
-        }
+        this.expressions = compoundExpressions != null ? compoundExpressions : new ArrayList<>();
     }
 
-    public <T> FunctionExpressionImpl (Metamodel metamodel, Class<X> resultClass, org.eclipse.persistence.expressions.Expression expressionNode, List<Expression<?>> compoundExpressions, String operator){
+    public FunctionExpressionImpl (Metamodel metamodel, Class<? extends X> resultClass, org.eclipse.persistence.expressions.Expression expressionNode, List<Expression<?>> compoundExpressions, String operator){
         this(metamodel, resultClass, expressionNode, compoundExpressions);
         this.operator = operator;
     }
@@ -79,7 +75,7 @@ public class FunctionExpressionImpl<X> extends ExpressionImpl<X>{
     }
 
     @Override
-    public void findRootAndParameters(CommonAbstractCriteriaImpl query){
+    public void findRootAndParameters(CommonAbstractCriteriaImpl<?> query){
         if (this.expressions != null){
             for (Object exp : this.expressions){
                 ((InternalSelection)exp).findRootAndParameters(query);

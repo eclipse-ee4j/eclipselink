@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -49,7 +49,7 @@ public abstract class LangName extends Name {
      * Convert any unicode character in a string into ASCII code
      */
     protected static String unicode2Ascii(String uni) {
-        if (uni == null || uni.length() == 0) {
+        if (uni == null || uni.isEmpty()) {
             return uni;
         }
         uni = uni.trim();
@@ -62,16 +62,16 @@ public abstract class LangName extends Name {
         if (!anyUnicode) {
             return uni;
         }
-        String asc = "";
+        StringBuilder asc = new StringBuilder();
         for (int i = 0; i < uni.length(); i++) {
             if (isFilePathPart(uni.charAt(i))) {
-                asc += uni.charAt(i);
+                asc.append(uni.charAt(i));
             }
             else {
-                asc += "_" + Integer.toHexString(uni.charAt(i));
+                asc.append("_").append(Integer.toHexString(uni.charAt(i)));
             }
         }
-        return asc;
+        return asc.toString();
     }
 
     private static boolean isFilePathPart(char c) {
@@ -79,10 +79,10 @@ public abstract class LangName extends Name {
     }
 
     protected static String packageConcat(String package1, String package2) {
-        if (package1 == null || package1.length() == 0) {
+        if (package1 == null || package1.isEmpty()) {
             return package2;
         }
-        if (package2 == null || package2.length() == 0) {
+        if (package2 == null || package2.isEmpty()) {
             return package1;
         }
         return package1 + "." + package2;

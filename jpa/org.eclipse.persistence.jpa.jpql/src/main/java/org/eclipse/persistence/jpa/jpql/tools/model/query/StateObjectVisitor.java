@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -12,7 +12,8 @@
 
 // Contributors:
 //     Oracle - initial API and implementation
-//
+//     06/02/2023: Radek Felcman
+//       - Issue 1885: Implement new JPQLGrammar for upcoming Jakarta Persistence 3.2
 package org.eclipse.persistence.jpa.jpql.tools.model.query;
 
 /**
@@ -140,6 +141,13 @@ public interface StateObjectVisitor {
      * @param stateObject The {@link ConcatExpressionStateObject} to visit
      */
     void visit(ConcatExpressionStateObject stateObject);
+
+    /**
+     * Visits the given {@link ConcatPipesExpressionStateObject}.
+     *
+     * @param stateObject The {@link ConcatPipesExpressionStateObject} to visit
+     */
+    void visit(ConcatPipesExpressionStateObject stateObject);
 
     /**
      * Visits the given {@link ConstructorExpressionStateObject}.
@@ -275,6 +283,13 @@ public interface StateObjectVisitor {
     void visit(IdentificationVariableStateObject stateObject);
 
     /**
+     * Visits the given {@link IdExpressionStateObject}.
+     *
+     * @param stateObject The {@link IdExpressionStateObject} to visit
+     */
+    void visit(IdExpressionStateObject stateObject);
+
+    /**
      * Visits the given {@link IndexExpressionStateObject}.
      *
      * @param stateObject The {@link IndexExpressionStateObject} to visit
@@ -322,6 +337,13 @@ public interface StateObjectVisitor {
      * @param stateObject The {@link KeywordExpressionStateObject} to visit
      */
     void visit(KeywordExpressionStateObject stateObject);
+
+    /**
+     * Visits the given {@link LeftExpressionStateObject}.
+     *
+     * @param stateObject The {@link LeftExpressionStateObject} to visit
+     */
+    void visit(LeftExpressionStateObject stateObject);
 
     /**
      * Visits the given {@link LengthExpressionStateObject}.
@@ -443,11 +465,25 @@ public interface StateObjectVisitor {
     void visit(RangeVariableDeclarationStateObject stateObject);
 
     /**
+     * Visits the given {@link ReplaceExpressionStateObject}.
+     *
+     * @param stateObject The {@link ReplaceExpressionStateObject} to visit
+     */
+    void visit(ReplaceExpressionStateObject stateObject);
+
+    /**
      * Visits the given {@link ResultVariableStateObject}.
      *
      * @param stateObject The {@link ResultVariableStateObject} to visit
      */
     void visit(ResultVariableStateObject stateObject);
+
+    /**
+     * Visits the given {@link RightExpressionStateObject}.
+     *
+     * @param stateObject The {@link RightExpressionStateObject} to visit
+     */
+    void visit(RightExpressionStateObject stateObject);
 
     /**
      * Visits the given {@link SelectClauseStateObject}.
@@ -602,6 +638,13 @@ public interface StateObjectVisitor {
      * @param stateObject The {@link ValueExpressionStateObject} to visit
      */
     void visit(ValueExpressionStateObject stateObject);
+
+    /**
+     * Visits the given {@link VersionExpressionStateObject}.
+     *
+     * @param stateObject The {@link VersionExpressionStateObject} to visit
+     */
+    void visit(VersionExpressionStateObject stateObject);
 
     /**
      * Visits the given {@link WhenClauseStateObject}.

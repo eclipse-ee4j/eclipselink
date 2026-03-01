@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,9 +16,7 @@
 package org.eclipse.persistence.jpa.jpql.tools;
 
 import org.eclipse.persistence.jpa.jpql.parser.AsOfClause;
-import org.eclipse.persistence.jpa.jpql.parser.CastExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ConnectByClause;
-import org.eclipse.persistence.jpa.jpql.parser.DatabaseType;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkExpressionVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.ExtractExpression;
 import org.eclipse.persistence.jpa.jpql.parser.HierarchicalQueryClause;
@@ -27,7 +25,6 @@ import org.eclipse.persistence.jpa.jpql.parser.RegexpExpression;
 import org.eclipse.persistence.jpa.jpql.parser.StartWithClause;
 import org.eclipse.persistence.jpa.jpql.parser.TableExpression;
 import org.eclipse.persistence.jpa.jpql.parser.TableVariableDeclaration;
-import org.eclipse.persistence.jpa.jpql.parser.UnionClause;
 import org.eclipse.persistence.jpa.jpql.tools.resolver.ResolverBuilder;
 
 /**
@@ -60,17 +57,7 @@ public class EclipseLinkResolverBuilder extends ResolverBuilder
     }
 
     @Override
-    public void visit(CastExpression expression) {
-        resolver = buildClassResolver(Object.class);
-    }
-
-    @Override
     public void visit(ConnectByClause expression) {
-        resolver = buildClassResolver(Object.class);
-    }
-
-    @Override
-    public void visit(DatabaseType expression) {
         resolver = buildClassResolver(Object.class);
     }
 
@@ -106,11 +93,6 @@ public class EclipseLinkResolverBuilder extends ResolverBuilder
 
     @Override
     public void visit(TableVariableDeclaration expression) {
-        resolver = buildClassResolver(Object.class);
-    }
-
-    @Override
-    public void visit(UnionClause expression) {
         resolver = buildClassResolver(Object.class);
     }
 }

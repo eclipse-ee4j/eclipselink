@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,18 +14,20 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.customsqlstoredprocedures;
 
-import java.sql.Types;
-import java.util.Vector;
-
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
-import org.eclipse.persistence.sessions.DatabaseRecord;
-import org.eclipse.persistence.testing.models.insurance.Address;
 import org.eclipse.persistence.queries.DataModifyQuery;
 import org.eclipse.persistence.queries.DataReadQuery;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.SQLCall;
 import org.eclipse.persistence.queries.StoredProcedureCall;
-import org.eclipse.persistence.testing.framework.*;
+import org.eclipse.persistence.sessions.DatabaseRecord;
+import org.eclipse.persistence.testing.framework.TestCase;
+import org.eclipse.persistence.testing.framework.TestErrorException;
+import org.eclipse.persistence.testing.framework.TestWarningException;
+import org.eclipse.persistence.testing.models.insurance.Address;
+
+import java.sql.Types;
+import java.util.Vector;
 
 /*
  * StoredProcedureObjectRelationalParameters tests Toplinks ability to convert Java objects to/from DB Relational Objects
@@ -73,23 +75,23 @@ public class StoredProcedureObjectRelationalParameters extends TestCase{
     @Override
     public void test() {
         Vector args = new Vector();
-        args.addElement(policyHolderIdToUse);//ssn
-        args.addElement(null);//occupation
-        args.addElement('M');//sex
-        args.addElement("Chris");//firstName
-        args.addElement(null);//birthDate
-        args.addElement("Random");//lastName
+        args.add(policyHolderIdToUse);//ssn
+        args.add(null);//occupation
+        args.add('M');//sex
+        args.add("Chris");//firstName
+        args.add(null);//birthDate
+        args.add("Random");//lastName
 
-        args.addElement(originalAddress);//address
-        args.addElement(null);//childrenNames
-        args.addElement(null);//phones
+        args.add(originalAddress);//address
+        args.add(null);//childrenNames
+        args.add(null);//phones
 
         //testing that an exception is not thrown, using IN parameters exclusively
         result = getSession().executeQuery(getInsertQuery(), args);
 
         //using OUT parameters exclusively, verifying policyHolder was created
         Vector args2 = new Vector();
-        args2.addElement(policyHolderIdToUse);//ssn
+        args2.add(policyHolderIdToUse);//ssn
         results2 = (Vector)getSession().executeQuery(getReadQuery(), args2);
 
         //using IN OUT parameters exclusively, deleting a policyholder

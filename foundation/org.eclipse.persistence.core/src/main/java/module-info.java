@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2021, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -13,6 +13,7 @@
 module org.eclipse.persistence.core {
 
     requires transitive java.desktop;
+    requires java.logging;
     requires transitive java.management; //server platforms
     requires transitive java.naming;
     requires transitive java.rmi;
@@ -26,7 +27,7 @@ module org.eclipse.persistence.core {
     requires static jakarta.persistence;
     requires static jakarta.xml.bind;
 
-    requires static org.eclipse.persistence.asm;
+    requires org.eclipse.persistence.asm;
     requires static org.eclipse.persistence.jpa.jpql;
 
     requires static jakarta.cdi;
@@ -34,12 +35,16 @@ module org.eclipse.persistence.core {
     requires static jakarta.inject;
     requires static jakarta.transaction;
 
+    requires static org.objectweb.asm; //AM
+    requires static org.objectweb.asm.commons; //AM
+
     requires static jakarta.interceptor;
     requires static jakarta.messaging;
     requires static jakarta.resource;
 
     exports org.eclipse.persistence;
     exports org.eclipse.persistence.annotations;
+    exports org.eclipse.persistence.asm;
     exports org.eclipse.persistence.config;
     exports org.eclipse.persistence.core.descriptors;
     exports org.eclipse.persistence.core.mappings;
@@ -54,6 +59,7 @@ module org.eclipse.persistence.core {
     exports org.eclipse.persistence.descriptors.partitioning;
     exports org.eclipse.persistence.dynamic;
     exports org.eclipse.persistence.eis;
+    exports org.eclipse.persistence.eis.i18n;
     exports org.eclipse.persistence.eis.interactions;
     exports org.eclipse.persistence.eis.mappings;
     exports org.eclipse.persistence.exceptions;
@@ -62,6 +68,7 @@ module org.eclipse.persistence.core {
     exports org.eclipse.persistence.history;
     exports org.eclipse.persistence.indirection;
     exports org.eclipse.persistence.logging;
+    exports org.eclipse.persistence.logging.jul;
     exports org.eclipse.persistence.mappings;
     exports org.eclipse.persistence.mappings.converters;
     exports org.eclipse.persistence.mappings.foundation;
@@ -73,6 +80,8 @@ module org.eclipse.persistence.core {
     exports org.eclipse.persistence.oxm.annotations;
     exports org.eclipse.persistence.oxm.attachment;
     exports org.eclipse.persistence.oxm.documentpreservation;
+    exports org.eclipse.persistence.oxm.exceptions;
+    exports org.eclipse.persistence.oxm.exceptions.i18n;
     exports org.eclipse.persistence.oxm.json;
     exports org.eclipse.persistence.oxm.mappings;
     exports org.eclipse.persistence.oxm.mappings.converters;
@@ -92,10 +101,13 @@ module org.eclipse.persistence.core {
     exports org.eclipse.persistence.platform.database.partitioning;
     exports org.eclipse.persistence.platform.server;
     exports org.eclipse.persistence.platform.server.glassfish;
+    exports org.eclipse.persistence.platform.server.i18n;
     exports org.eclipse.persistence.platform.server.was;
     exports org.eclipse.persistence.platform.server.wls;
     exports org.eclipse.persistence.platform.xml;
+    exports org.eclipse.persistence.platform.xml.i18n;
     exports org.eclipse.persistence.queries;
+    exports org.eclipse.persistence.security;
     exports org.eclipse.persistence.sequencing;
     exports org.eclipse.persistence.services;
     exports org.eclipse.persistence.services.glassfish;
@@ -108,9 +120,11 @@ module org.eclipse.persistence.core {
     exports org.eclipse.persistence.sessions.changesets;
     exports org.eclipse.persistence.sessions.coordination;
     exports org.eclipse.persistence.sessions.coordination.broadcast;
+    exports org.eclipse.persistence.sessions.coordination.i18n;
     exports org.eclipse.persistence.sessions.coordination.jms;
     exports org.eclipse.persistence.sessions.coordination.rmi;
     exports org.eclipse.persistence.sessions.factories;
+    exports org.eclipse.persistence.sessions.factories.i18n;
     exports org.eclipse.persistence.sessions.interceptors;
     exports org.eclipse.persistence.sessions.remote;
     exports org.eclipse.persistence.sessions.remote.rmi;
@@ -122,6 +136,7 @@ module org.eclipse.persistence.core {
     exports org.eclipse.persistence.tools.tuning;
     exports org.eclipse.persistence.transaction;
     exports org.eclipse.persistence.transaction.glassfish;
+    exports org.eclipse.persistence.transaction.i18n;
     exports org.eclipse.persistence.transaction.jboss;
     exports org.eclipse.persistence.transaction.sap;
     exports org.eclipse.persistence.transaction.was;
@@ -182,15 +197,13 @@ module org.eclipse.persistence.core {
     exports org.eclipse.persistence.internal.localization to
             org.eclipse.persistence.dbws,
             org.eclipse.persistence.jpa,
-            org.eclipse.persistence.jpa.modelgen,
             org.eclipse.persistence.jpars.server,
             org.eclipse.persistence.moxy,
             org.eclipse.persistence.oracle,
             org.eclipse.persistence.sdo,
             org.eclipse.persistence.pgsql;
     exports org.eclipse.persistence.internal.mappings.converters to org.eclipse.persistence.jpa;
-    exports org.eclipse.persistence.internal.weaving to org.eclipse.persistence.jpa;
-    exports org.eclipse.persistence.internal.cache to org.eclipse.persistence.moxy;
+    exports org.eclipse.persistence.internal.weaving;
     exports org.eclipse.persistence.internal.oxm.schema to
             org.eclipse.persistence.dbws,
             org.eclipse.persistence.dbws.builder,

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,11 +14,6 @@
 // dmccann - January 28/2010 - 2.1 - Initial implementation
 package org.eclipse.persistence.testing.jaxb.annotations.xmlnullpolicy;
 
-import java.util.List;
-
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlAttribute;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlTransient;
 import jakarta.xml.bind.annotation.XmlType;
@@ -27,7 +22,6 @@ import org.eclipse.persistence.oxm.annotations.XmlIsSetNullPolicy;
 import org.eclipse.persistence.oxm.annotations.XmlMarshalNullRepresentation;
 import org.eclipse.persistence.oxm.annotations.XmlNullPolicy;
 import org.eclipse.persistence.oxm.annotations.XmlParameter;
-import org.eclipse.persistence.oxm.annotations.XmlPath;
 
 //@XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(propOrder={"empId", "mgrId", "projectId", "firstName", "lastName", "projectName", "data1", "data2", "salary", "privateData", "characterData", "someString", "AString"})

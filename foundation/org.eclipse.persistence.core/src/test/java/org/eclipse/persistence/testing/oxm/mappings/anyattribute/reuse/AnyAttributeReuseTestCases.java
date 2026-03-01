@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,12 +14,11 @@
 //     rbarkhouse - 2009-10-06 10:01:09 - initial implementation
 package org.eclipse.persistence.testing.oxm.mappings.anyattribute.reuse;
 
-import java.net.URL;
-import java.util.Properties;
+import org.eclipse.persistence.testing.oxm.mappings.XMLWithJSONMappingTestCases;
 
 import javax.xml.namespace.QName;
-
-import org.eclipse.persistence.testing.oxm.mappings.XMLWithJSONMappingTestCases;
+import java.net.URL;
+import java.util.Properties;
 
 public class AnyAttributeReuseTestCases extends XMLWithJSONMappingTestCases {
 

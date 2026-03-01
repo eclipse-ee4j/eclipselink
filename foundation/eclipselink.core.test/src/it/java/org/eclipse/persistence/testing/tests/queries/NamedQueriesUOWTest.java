@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,10 +14,10 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.queries;
 
-import java.util.*;
+import org.eclipse.persistence.sessions.UnitOfWork;
+import org.eclipse.persistence.sessions.server.Server;
 
-import org.eclipse.persistence.sessions.server.*;
-import org.eclipse.persistence.sessions.*;
+import java.util.Vector;
 
 /**
  * We have added support so that there can be multiple queries
@@ -68,12 +68,12 @@ public class NamedQueriesUOWTest extends MultiNameQueriesTestCase {
 
     // end of setup()
     public void useNamedQueryFirstName() {
-        Vector empsByFirstName = (Vector)uow.executeQuery("namedQuerySameName", new String("Jill"));
+        Vector empsByFirstName = (Vector)uow.executeQuery("namedQuerySameName", "Jill");
     }
 
     // end of useNamedQueryFirstName
     public void useNamedQueryFirstAndLastName() {
-        Vector empsByFirstAndLastName = (Vector)uow.executeQuery("namedQuerySameName", new String("Jill"), new String("May"));
+        Vector empsByFirstAndLastName = (Vector)uow.executeQuery("namedQuerySameName", "Jill", "May");
     }
 
     // end of useNamedQueryFirstAndLastName
@@ -104,7 +104,12 @@ public class NamedQueriesUOWTest extends MultiNameQueriesTestCase {
     @Override
     public void verify() {
         if (caughtException != null) {
-            throw new org.eclipse.persistence.testing.framework.TestErrorException("Multiple queries with the same named cached on the UnitOfWork.\n" + "Each with different argument sets.\n" + "This exception thrown while testing test case.\n" + "----- NamedQueriesUOWTest() -----\n");
+            throw new org.eclipse.persistence.testing.framework.TestErrorException("""
+                    Multiple queries with the same named cached on the UnitOfWork.
+                    Each with different argument sets.
+                    This exception thrown while testing test case.
+                    ----- NamedQueriesUOWTest() -----
+                    """);
         }
     }
     // end of verify()

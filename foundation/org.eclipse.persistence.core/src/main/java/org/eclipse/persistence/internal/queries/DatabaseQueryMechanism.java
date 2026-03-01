@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -20,14 +20,6 @@
 //     09/12/2018 - Will Dazey
 //       - 391279: Add support for Unidirectional OneToMany mappings with non-nullable values
 package org.eclipse.persistence.internal.queries;
-
-import java.io.Serializable;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Vector;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.DescriptorEvent;
@@ -59,6 +51,14 @@ import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.queries.WriteObjectQuery;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.tools.profiler.QueryMonitor;
+
+import java.io.Serializable;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
 
 /**
  * <p><b>Purpose</b>:
@@ -115,7 +115,7 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
      * Perform a cache lookup for the query. If the translation row contains
      * all the parameters (which are part of the primary key) from the prepared
      * call, then a cache check will be performed.
-     *
+     * <p>
      * If the object is found in the cache, return it; otherwise return null.
      */
     public Object checkCacheForObject(AbstractRecord translationRow, AbstractSession session) {
@@ -822,15 +822,15 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
         // Nothing by default.
     }
 
-    protected void updateObjectAndRowWithReturnRow(Collection returnFields, boolean isFirstCallForInsert) {
+    protected void updateObjectAndRowWithReturnRow(Collection<DatabaseField> returnFields, boolean isFirstCallForInsert) {
         WriteObjectQuery writeQuery = getWriteObjectQuery();
         AbstractRecord outputRow = (AbstractRecord)writeQuery.getProperties().get("output");
         if ((outputRow == null) || outputRow.isEmpty()) {
             return;
         }
         AbstractRecord row = new DatabaseRecord();
-        for (Iterator iterator = returnFields.iterator(); iterator.hasNext();) {
-            DatabaseField field = (DatabaseField)iterator.next();
+        for (Iterator<DatabaseField> iterator = returnFields.iterator(); iterator.hasNext();) {
+            DatabaseField field = iterator.next();
             if (outputRow.containsKey(field)) {
                 row.put(field, outputRow.get(field));
             }
@@ -913,10 +913,10 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
             throw DatabaseException.sqlException(exception, call, dbAccessor, session, false);
         } catch (RuntimeException exception) {
             exceptionOccured = true;
-            if (exception instanceof DatabaseException) {
-                ((DatabaseException)exception).setCall(call);
-                if(((DatabaseException)exception).getAccessor() == null) {
-                    ((DatabaseException)exception).setAccessor(dbAccessor);
+            if (exception instanceof DatabaseException dbx) {
+                dbx.setCall(call);
+                if(dbx.getAccessor() == null) {
+                    dbx.setAccessor(dbAccessor);
                 }
             }
             throw exception;
@@ -924,6 +924,13 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
             try {
                 if (resultSet != null) {
                     resultSet.close();
+                }
+                if (call.getStatement() != null) {
+                    if (dbAccessor != null) {
+                        dbAccessor.releaseStatement(call.getStatement(), call.getSQLString(), call, session);
+                    } else {
+                        ((DatabaseAccessor)session.getAccessor()).releaseStatement(call.getStatement(), call.getSQLString(), call, session);
+                    }
                 }
             } catch (SQLException cleanupSQLException) {
                 if (!exceptionOccured) {
@@ -1005,9 +1012,9 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
                 if (!getModifyRow().isEmpty() || shouldModifyVersionField) {
                     // Update the row with newer lock value.
                     policy.updateRowAndObjectForUpdate(writeQuery, object);
-                } else if (!shouldModifyVersionField && (policy instanceof VersionLockingPolicy)) {
+                } else if (!shouldModifyVersionField && (policy instanceof VersionLockingPolicy versionLockingPolicy)) {
                     // Add the existing write lock value to the for a "read" lock (requires something to update).
-                    ((VersionLockingPolicy)policy).writeLockValueIntoRow(writeQuery, object);
+                    versionLockingPolicy.writeLockValueIntoRow(writeQuery, object);
                 }
             }
             if (descriptor.hasSerializedObjectPolicy()) {
@@ -1081,6 +1088,7 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
             // PERF: Avoid events if no listeners.
             if (eventManager.hasAnyEventListeners()) {
                 DescriptorEvent event = new DescriptorEvent(DescriptorEventManager.PreUpdateWithChangesEvent, writeQuery);
+                event.setChangeSet(changeSet);
                 eventManager.executeEvent(event);
 
                 // PreUpdateWithChangesEvent listeners may have altered the object - should recalculate the change set.
@@ -1125,8 +1133,7 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
                 lockingPolicy.addLockValuesToTranslationRow(writeQuery);
                 // Do not lock an object that has previously been optimistically locked within the RWUoW
                 boolean existingOptimisticLock = false;
-                if (session instanceof RepeatableWriteUnitOfWork) {
-                    RepeatableWriteUnitOfWork uow = (RepeatableWriteUnitOfWork)session;
+                if (session instanceof RepeatableWriteUnitOfWork uow) {
                     if (uow.getOptimisticReadLockObjects().get(object) != null && uow.getCumulativeUOWChangeSet() != null
                             && uow.getCumulativeUOWChangeSet().getObjectChangeSetForClone(object) != null) {
                         existingOptimisticLock = true;
@@ -1138,9 +1145,9 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
                     if ((shouldModifyVersionField != null && shouldModifyVersionField) || !getModifyRow().isEmpty()) {
                         // Update the row with newer lock value.
                         lockingPolicy.updateRowAndObjectForUpdate(writeQuery, object);
-                    } else if (!shouldModifyVersionField && (lockingPolicy instanceof VersionLockingPolicy)) {
+                    } else if (!shouldModifyVersionField && (lockingPolicy instanceof VersionLockingPolicy policy)) {
                         // Add the existing write lock value to the for a "read" lock (requires something to update).
-                        ((VersionLockingPolicy)lockingPolicy).writeLockValueIntoRow(writeQuery, object);
+                        policy.writeLockValueIntoRow(writeQuery, object);
                     }
                 }
             }

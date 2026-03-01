@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,22 +15,12 @@
 //     Marcel Valovy - major speed up, major refurbishing.
 package org.eclipse.persistence.internal.oxm;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
-import java.util.concurrent.Callable;
-
 import org.eclipse.persistence.core.descriptors.CoreDescriptor;
 import org.eclipse.persistence.core.descriptors.CoreInheritancePolicy;
 import org.eclipse.persistence.core.mappings.CoreAttributeAccessor;
 import org.eclipse.persistence.core.mappings.CoreMapping;
 import org.eclipse.persistence.exceptions.ConversionException;
-import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.oxm.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
@@ -44,6 +34,16 @@ import org.eclipse.persistence.internal.oxm.mappings.ObjectReferenceMapping;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
+import java.util.concurrent.Callable;
 
 /**
  * This class is leveraged by reference mappings. It plays 3 roles:
@@ -140,12 +140,12 @@ public final class ReferenceResolver {
      * Value = p * 3   | 0, 3, 6, 9, 12, 15, 18,  21, 24 |
      * --------------------------------------------------
      * e.g. eighth entry is Entry#7{ key = 14, value = 21 }
-     *
+     * <p>
      * ####################################
      * # Insert element - O(1) guaranteed #
      * ####################################
      * Processing the 9th key:
-     *
+     * <p>
      * 1. Attempt to insert Entry#7 with key '14' into map of references.
      * &gt; h(14) = 5;
      * HashMap buckets:
@@ -153,28 +153,28 @@ public final class ReferenceResolver {
      * entry(key)   | 0 1   3   5   7 8
      *                          ^
      * &gt; Bucket 5 is taken.
-     *
+     * <p>
      * 2. Store the entry in a separate list.
      * List for unlucky references:
      * position     | 0 1 2
      * entry(key)   | 5 5
      *                    ^
-     *
+     * <p>
      * position     | 0 1 2
      * entry(key)   | 5 5 14
      *                    ^
      * 3. Store the position # p of this element, i.e. what spot it would have
      * taken if all entries were stored in a position list, counting from zero.
-     *
+     * <p>
      * List storing position # of unlucky references:
      * position     | 0 1 2
      * entry # (p)  | 4 5
      *                    ^
-     *
+     * <p>
      * position     | 0 1 2
      * entry # (p)  | 4 5 7
      *                    ^
-     *
+     * <p>
      * #####################################################
      * # Retrieve element - O(1) expected, O(n) worst case #
      * #####################################################
@@ -187,42 +187,42 @@ public final class ReferenceResolver {
      *                          ^
      * Hash function points to bucket # 5. Stored key is 5.
      * &gt; key 5 != 14.
-     *
+     * <p>
      * 2. Iterate through list of unluckyReferences, comparing
      * key to all keys in the list.
-     *
+     * <p>
      * position     | 0 1 2
      * entry(key)   | 5 5 14
      *                ^
      * &gt; key 5 != 14
-     *
+     * <p>
      * position     | 0 1 2
      * entry(key)   | 5 5 14
      *                  ^
-     *
+     * <p>
      * &gt; key 5 != 14
-     *
+     * <p>
      * position     | 0 1 2
      * entry(key)   | 5 5 14
      *                    ^
-     *
+     * <p>
      * &gt; key 14 = 14, retrieve entry.
-     *
+     * <p>
      * ##################################################
      * # Iterate through all elements - O(n) guaranteed #
      * ##################################################
-     *
+     * <p>
      * 1. Create boolean array of size n that keeps track
      *  of unlucky positions:
      * &gt; boolean[] a = new boolean[lastPosition + 1];
-     *
+     * <p>
      * 2. Set a[p] = true for elements that did not fit into
      *  hash map, p = position # of element.
-     *
+     * <p>
      * &gt; for (Integer p : unluckyRefPositions) {
      *   &gt; a[p] = true;
      * &gt; }
-     *
+     * <p>
      * 3. Iterate through LinkedMap and List as if they were one joined collection
      * of size s = map.size() + list.size(), ordered by p = position # of element:
      *  &gt; for (p = 0; p &lt; s; p ++) {
@@ -326,12 +326,12 @@ public final class ReferenceResolver {
         final Iterator<Reference> mapIterator = luckyReferences.iterator();
         final Iterator<Reference> listIterator = unluckyReferences.iterator();
 
-        /**
+        /*
          * Speed up array which lowers time complexity by a factor of n.
          */
         boolean[] a = null;
 
-        /**
+        /*
          * Represents position of last Reference that did not fit into hash map.
          */
         Integer lastPosition;
@@ -366,8 +366,7 @@ public final class ReferenceResolver {
     private void perform(final CoreAbstractSession session, final IDResolver userSpecifiedResolver,
                          final ErrorHandler handler, final Reference reference) {
         final Object referenceSourceObject = reference.getSourceObject();
-        if (reference.getMapping() instanceof CollectionReferenceMapping) {
-            final CollectionReferenceMapping mapping = (CollectionReferenceMapping) reference.getMapping();
+        if (reference.getMapping() instanceof CollectionReferenceMapping mapping) {
             final CoreContainerPolicy cPolicy = mapping.getContainerPolicy();
             //container should never be null
             final Object container = reference.getContainer();
@@ -435,7 +434,7 @@ public final class ReferenceResolver {
                     backpointerContainerPolicy.addInto(referenceSourceObject, backpointerContainer, session);
                 }
             }
-        } else if (reference.getMapping() instanceof ObjectReferenceMapping) {
+        } else if (reference.getMapping() instanceof ObjectReferenceMapping mapping) {
             final CacheId primaryKey = (CacheId) reference.getPrimaryKey();
             Object value = null;
             if (userSpecifiedResolver != null) {
@@ -464,7 +463,6 @@ public final class ReferenceResolver {
                 value = getValue(session, reference, primaryKey, handler);
             }
 
-            ObjectReferenceMapping mapping = (ObjectReferenceMapping) reference.getMapping();
             if (value != null) {
                 mapping.setAttributeValueInObject(reference.getSourceObject(), value);
             }
@@ -677,9 +675,7 @@ public final class ReferenceResolver {
         @Override
         public boolean equals(final Object o) {
             if (this == o) return true;
-            if (!(o instanceof ReferenceKey)) return false;
-
-            ReferenceKey that = (ReferenceKey) o;
+            if (!(o instanceof ReferenceKey that)) return false;
 
             return sourceObject == that.sourceObject && mapping == that.mapping;
         }

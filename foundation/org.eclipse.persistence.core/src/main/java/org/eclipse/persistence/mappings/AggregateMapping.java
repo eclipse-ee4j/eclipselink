@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,30 +23,48 @@
 //       - 413120: Nested Embeddable Null pointer
 package org.eclipse.persistence.mappings;
 
-import java.util.*;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
-
-import org.eclipse.persistence.internal.descriptors.changetracking.AggregateAttributeChangeListener;
-import org.eclipse.persistence.internal.descriptors.changetracking.AttributeChangeListener;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.DescriptorEventManager;
 import org.eclipse.persistence.descriptors.DescriptorQueryManager;
 import org.eclipse.persistence.descriptors.changetracking.ChangeTracker;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.internal.descriptors.*;
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.exceptions.DescriptorException;
+import org.eclipse.persistence.exceptions.OptimisticLockException;
+import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
+import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
+import org.eclipse.persistence.internal.descriptors.changetracking.AggregateAttributeChangeListener;
+import org.eclipse.persistence.internal.descriptors.changetracking.AttributeChangeListener;
 import org.eclipse.persistence.internal.helper.IdentityHashSet;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
-import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedClassForName;
-import org.eclipse.persistence.internal.sessions.*;
-import org.eclipse.persistence.internal.sessions.remote.ObjectDescriptor;
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.sessions.remote.*;
-import org.eclipse.persistence.sessions.CopyGroup;
 import org.eclipse.persistence.internal.queries.AttributeItem;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.internal.security.PrivilegedClassForName;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sessions.AggregateChangeRecord;
+import org.eclipse.persistence.internal.sessions.ChangeRecord;
+import org.eclipse.persistence.internal.sessions.MergeManager;
+import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
+import org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet;
+import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
+import org.eclipse.persistence.internal.sessions.remote.ObjectDescriptor;
+import org.eclipse.persistence.queries.DeleteObjectQuery;
+import org.eclipse.persistence.queries.FetchGroup;
+import org.eclipse.persistence.queries.FetchGroupTracker;
+import org.eclipse.persistence.queries.ObjectBuildingQuery;
+import org.eclipse.persistence.queries.ObjectLevelModifyQuery;
+import org.eclipse.persistence.queries.ObjectLevelReadQuery;
+import org.eclipse.persistence.queries.QueryByExamplePolicy;
+import org.eclipse.persistence.queries.WriteObjectQuery;
+import org.eclipse.persistence.sessions.CopyGroup;
+import org.eclipse.persistence.sessions.remote.DistributedSession;
+
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
+import java.util.Map;
 
 /**
  * <b>Purpose</b>: Two objects can be considered to be related by aggregation if there is a strict
@@ -139,6 +157,8 @@ public abstract class AggregateMapping extends DatabaseMapping {
     protected Object buildBackupClonePart(Object attributeValue, UnitOfWorkImpl unitOfWork) {
         if (attributeValue == null) {
             return null;
+        } else  if (attributeValue instanceof Record) {
+            return referenceDescriptor.getCopyPolicy().buildClone(attributeValue, unitOfWork);
         }
         return getObjectBuilder(attributeValue, unitOfWork).buildBackupClone(attributeValue, unitOfWork);
     }
@@ -205,7 +225,9 @@ public abstract class AggregateMapping extends DatabaseMapping {
 
         // bug 2612602 as we are building the working copy make sure that we call to correct clone method.
         Object clonedAttributeValue = aggregateObjectBuilder.instantiateWorkingCopyClone(attributeValue, cloningSession);
-        aggregateObjectBuilder.populateAttributesForClone(attributeValue, parentCacheKey, clonedAttributeValue, refreshCascade, cloningSession);
+        if (!(clonedAttributeValue instanceof Record)) {
+            aggregateObjectBuilder.populateAttributesForClone(attributeValue, parentCacheKey, clonedAttributeValue, refreshCascade, cloningSession);
+        }
         //also clone the fetch group reference if applied
         if (aggregateObjectBuilder.getDescriptor().hasFetchGroupManager()) {
             aggregateObjectBuilder.getDescriptor().getFetchGroupManager().copyAggregateFetchGroupInto(attributeValue, clonedAttributeValue, clone, cloningSession);
@@ -271,7 +293,7 @@ public abstract class AggregateMapping extends DatabaseMapping {
         return getObjectBuilder(sourceAttributeValue, session).buildNewInstance();
     }
 
-    /**
+    /*
      * INTERNAL:
      * Cascade perform delete through mappings that require the cascade
      */
@@ -280,12 +302,12 @@ public abstract class AggregateMapping extends DatabaseMapping {
         // no identity, this is a no-op.
 //    }
 
-    /**
+    /*
      * INTERNAL:
      * Cascade registerNew for Create through mappings that require the cascade
      */
 //    public void cascadeRegisterNewIfRequired(Object object, UnitOfWork uow, Map visitedObjects){
-        //aggregate objects are not registeres as they have no identity, this is a no-op.
+        //aggregate objects are not registered as they have no identity, this is a no-op.
 //    }
 
     /**
@@ -682,23 +704,29 @@ public abstract class AggregateMapping extends DatabaseMapping {
             return;
         }
 
-        Object targetAttributeValue = getAttributeValueFromObject(target);
-        boolean originalWasNull = targetAttributeValue == null;
-        if (targetAttributeValue == null || targetAttributeValue == sourceAttributeValue || !targetAttributeValue.getClass().equals(sourceAttributeValue.getClass())) {
-            // avoid null-pointer/nothing to merge to - create a new instance
-            // (a new clone cannot be used as all changes must be merged)
-            targetAttributeValue = buildNewMergeInstanceOf(sourceAttributeValue, mergeManager.getSession());
-            mergeAttributeValue(targetAttributeValue, true, sourceAttributeValue, mergeManager, targetSession);
-            // setting new instance so fire event as if set was called by user.
-            // this call will eventually get passed to updateChangeRecord which will
-            //ensure this new aggregates is fully initialized with listeners.
-            // If merge into the unit of work, must only merge and raise the event is the value changed.
-            if ((mergeManager.shouldMergeCloneIntoWorkingCopy() || mergeManager.shouldMergeCloneWithReferencesIntoWorkingCopy())  && !mergeManager.isForRefresh()) {
-                this.descriptor.getObjectChangePolicy().raiseInternalPropertyChangeEvent(target, getAttributeName(), getAttributeValueFromObject(target), targetAttributeValue);
-            }
-
+        Object targetAttributeValue = null;
+        boolean originalWasNull = false;
+        if (sourceAttributeValue instanceof Record) {
+            targetAttributeValue = referenceDescriptor.getCopyPolicy().buildClone(sourceAttributeValue, targetSession);
         } else {
-            mergeAttributeValue(targetAttributeValue, isTargetUnInitialized, sourceAttributeValue, mergeManager, targetSession);
+            targetAttributeValue = getAttributeValueFromObject(target);
+            originalWasNull = targetAttributeValue == null;
+            if (targetAttributeValue == null || targetAttributeValue == sourceAttributeValue || !targetAttributeValue.getClass().equals(sourceAttributeValue.getClass())) {
+                // avoid null-pointer/nothing to merge to - create a new instance
+                // (a new clone cannot be used as all changes must be merged)
+                targetAttributeValue = buildNewMergeInstanceOf(sourceAttributeValue, mergeManager.getSession());
+                mergeAttributeValue(targetAttributeValue, true, sourceAttributeValue, mergeManager, targetSession);
+                // setting new instance so fire event as if set was called by user.
+                // this call will eventually get passed to updateChangeRecord which will
+                //ensure this new aggregates is fully initialized with listeners.
+                // If merge into the unit of work, must only merge and raise the event is the value changed.
+                if ((mergeManager.shouldMergeCloneIntoWorkingCopy() || mergeManager.shouldMergeCloneWithReferencesIntoWorkingCopy()) && !mergeManager.isForRefresh()) {
+                    this.descriptor.getObjectChangePolicy().raiseInternalPropertyChangeEvent(target, getAttributeName(), getAttributeValueFromObject(target), targetAttributeValue);
+                }
+
+            } else {
+                mergeAttributeValue(targetAttributeValue, isTargetUnInitialized, sourceAttributeValue, mergeManager, targetSession);
+            }
         }
         if(this.descriptor.hasFetchGroupManager()) {
             FetchGroup sourceFetchGroup = this.descriptor.getFetchGroupManager().getObjectFetchGroup(source);
@@ -1085,9 +1113,7 @@ public abstract class AggregateMapping extends DatabaseMapping {
         if (attributeValue == null) {
             return true;
         }
-        for (Enumeration<DatabaseMapping> mappings = getReferenceDescriptor(attributeValue, session).getMappings().elements();
-             mappings.hasMoreElements();) {
-            DatabaseMapping mapping = mappings.nextElement();
+        for (DatabaseMapping mapping: getReferenceDescriptor(attributeValue, session).getMappings()) {
             if (!mapping.verifyDelete(attributeValue, session)) {
                 return false;
             }

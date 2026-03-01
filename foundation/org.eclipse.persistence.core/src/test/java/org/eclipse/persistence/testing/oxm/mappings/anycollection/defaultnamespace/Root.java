@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,13 +14,12 @@
 //     bdoughan - Feb 27/2009 - 1.1 - Initial implementation
 package org.eclipse.persistence.testing.oxm.mappings.anycollection.defaultnamespace;
 
-import java.util.Iterator;
-import java.util.Vector;
-
-import org.w3c.dom.Element;
-
 import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
+import org.w3c.dom.Element;
+
+import java.util.Iterator;
+import java.util.Vector;
 
 public class Root {
     private Vector any = new Vector();
@@ -54,13 +53,13 @@ public class Root {
             Vector collection2 = ((Root)object).getAny();
             if ((collection1 == null) && (collection2 == null)) {
                 return true;
-            } else if ((collection1 == null) && (collection2.size() == 0)) {
+            } else if ((collection1 == null) && (collection2.isEmpty())) {
                 return true;
-            } else if ((collection2 == null) && (collection1.size() == 0)) {
+            } else if ((collection2 == null) && (collection1.isEmpty())) {
                 return true;
-            } else if ((collection1 == null) && (collection2.size() > 0)) {
+            } else if ((collection1 == null) && (!collection2.isEmpty())) {
                 return false;
-            } else if ((collection2 == null) && (collection1.size() > 0)) {
+            } else if ((collection2 == null) && (!collection1.isEmpty())) {
                 return false;
             } else if (any.size() != ((Root)object).getAny().size()) {
                 return false;
@@ -77,9 +76,7 @@ public class Root {
                         return false;
                     } else if (!(value1 instanceof org.w3c.dom.Element) && (value2 instanceof org.w3c.dom.Element)) {
                         return false;
-                    } else if ((value1 instanceof org.w3c.dom.Element) && (value2 instanceof org.w3c.dom.Element)) {
-                        Element elem1 = (Element)value1;
-                        Element elem2 = (Element)value2;
+                    } else if ((value1 instanceof Element elem1) && (value2 instanceof Element elem2)) {
                         if(!(elem1.getLocalName().equals(elem2.getLocalName()))) {
                             return false;
                         }
@@ -94,14 +91,14 @@ public class Root {
     }
 
     public String toString() {
-        String value = "Root:\n ";
+        StringBuilder value = new StringBuilder("Root:\n ");
         if (any == null) {
-            return value;
+            return value.toString();
         }
         for (int i = 0; i < any.size(); i++) {
-            value += ("==> " + any.elementAt(i) + "\n");
+            value.append("==> ").append(any.elementAt(i)).append("\n");
         }
-        return value;
+        return value.toString();
     }
 
     public void setDirectMapping(String directMapping) {

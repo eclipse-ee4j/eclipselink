@@ -1,0 +1,54 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[ENTITIES006]]
+=== Entities and Sequence Generation
+
+Many databases support an internal mechanism for id generation called
+sequences. You can use a database sequence to generate identifiers when
+the underlying database supports them.
+
+* `@SequenceGenerator`—If you use the `@GeneratedValue` annotation to
+specify a primary key generator of type `SEQUENCE`, then you can use the
+`@SequenceGenerator` annotation to fine-tune this primary key generator
+to do the following:
+** change the allocation size to match your application requirements or
+database performance parameters
+** change the initial value to match an existing data model (for
+example, if you are building on an existing data set for which a range
+of primary key values has already been assigned or reserved)
+** use a predefined sequence in an existing data model
+* `@TableGenerator`—If you use the `@GeneratedValue` annotation to
+specify a primary key generator of type `TABLE`, then you can use the
+`@TableGenerator` annotation to fine-tune this primary key generator to
+do the following:
+** change the name of the primary key generator's table, because the
+name is awkward, a reserved word, incompatible with a preexisting data
+model, or invalid as a table name in your database
+** change the allocation size to match your application requirements or
+database performance parameters
+** change the initial value to match an existing data model (for
+example, if you are building on an existing data set, for which a range
+of primary key values has already been assigned or reserved)
+** configure the primary key generator's table with a specific catalog
+or schema
+** configure a unique constraint on one or more columns of the primary
+key generator's table
+
+For more information and examples of these annotations, see
+http://jcp.org/en/jsr/detail?id=338["Metadata for Object/Relational
+Mapping" in the JPA Specification].

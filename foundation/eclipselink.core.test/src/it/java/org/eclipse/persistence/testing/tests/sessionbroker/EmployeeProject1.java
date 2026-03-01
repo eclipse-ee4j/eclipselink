@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,7 +14,8 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.sessionbroker;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * TopLink generated Project class.
@@ -69,9 +70,9 @@ public class EmployeeProject1 extends org.eclipse.persistence.sessions.Project {
 
         // SECTION: DESCRIPTOR
         descriptor.setJavaClass(org.eclipse.persistence.testing.models.employee.domain.Employee.class);
-        Vector vector = new Vector();
-        vector.addElement("EMPLOYEE");
-        vector.addElement("SALARY");
+        List<String> vector = new ArrayList<>();
+        vector.add("EMPLOYEE");
+        vector.add("SALARY");
         descriptor.setTableNames(vector);
         descriptor.addPrimaryKeyFieldName("EMPLOYEE.EMP_ID");
 
@@ -228,8 +229,8 @@ public class EmployeeProject1 extends org.eclipse.persistence.sessions.Project {
 
         // SECTION: DESCRIPTOR
         descriptor.setJavaClass(org.eclipse.persistence.testing.models.employee.domain.EmploymentPeriod.class);
-        Vector vector = new Vector();
-        vector.addElement("EMPLOYEE");
+        List<String> vector = new ArrayList<>();
+        vector.add("EMPLOYEE");
         descriptor.setTableNames(vector);
 
         // SECTION: PROPERTIES

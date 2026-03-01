@@ -13,7 +13,12 @@
 package org.eclipse.persistence.testing.oxm;
 
 import org.eclipse.persistence.platform.xml.XMLComparer;
-import org.w3c.dom.*;
+import org.w3c.dom.Attr;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 public class OXMXMLComparer extends XMLComparer{
 
@@ -73,10 +78,7 @@ public class OXMXMLComparer extends XMLComparer{
                 NamedNodeMap testChildAttributes = next.getAttributes();
                 numberOfControlAttributes = controlChildAttributes.getLength();
                 numberOfTestAttributes = testChildAttributes.getLength();
-                boolean equalAttributes = true;
-                if(numberOfControlAttributes != numberOfTestAttributes) {
-                    equalAttributes = false;
-                }
+                boolean equalAttributes = numberOfControlAttributes == numberOfTestAttributes;
                 for (int x = 0; x < numberOfControlAttributes; x++) {
                     controlAttribute = (Attr)controlChildAttributes.item(x);
                     if (null == controlAttribute.getNamespaceURI()) {

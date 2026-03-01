@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -10,7 +10,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
  */
 
-// Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
 
 package org.eclipse.persistence.testing.tests.plsqlrecord;
 
@@ -19,6 +19,8 @@ import java.io.FileInputStream;
 import java.io.StringReader;
 import java.math.BigDecimal;
 import java.sql.Date;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 import org.w3c.dom.Document;
 
@@ -29,7 +31,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 // EclipseLink imports
-import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.sessions.factories.ObjectPersistenceWorkbenchXMLProject;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLMarshaller;
@@ -39,7 +40,6 @@ import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLrecord;
 import org.eclipse.persistence.queries.DataModifyQuery;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.Project;
-import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.factories.XMLProjectReader;
 
 // other imports
@@ -276,7 +276,7 @@ public class PLSQLrecordInTestSet  {
         DatabaseSession s = project.createDatabaseSession();
         s.dontLogMessages();
         s.login();
-        NonSynchronizedVector queryArgs = new NonSynchronizedVector();
+        List<Object> queryArgs = new ArrayList<>();
         queryArgs.add(new BigDecimal(10));
         queryArgs.add("MikeNorman");
         queryArgs.add("Developer");

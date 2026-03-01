@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,9 +15,9 @@
 package org.eclipse.persistence.annotations;
 
 /**
- * An enum that is used within the OptimisticLocking annotation.
+ * An enum that is used within the {@linkplain OptimisticLocking} annotation.
  *
- * @see org.eclipse.persistence.annotations.OptimisticLocking
+ * @see OptimisticLocking
  * @author Guy Pelletier
  * @since Oracle TopLink 11.1.1.0.0
  */

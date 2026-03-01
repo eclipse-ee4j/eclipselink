@@ -13,16 +13,13 @@
 
 open module org.eclipse.persistence.core.test {
 
-    requires java.compiler;
-    requires java.logging;
     requires java.sql;
 
     requires jakarta.mail;
-    requires jakarta.json;
     requires jakarta.xml.bind;
-    requires org.eclipse.persistence.asm;
     requires org.eclipse.persistence.core;
     requires junit;
+    requires com.tngtech.archunit;
 
     exports org.eclipse.persistence.testing.oxm;
     exports org.eclipse.persistence.testing.oxm.classloader;

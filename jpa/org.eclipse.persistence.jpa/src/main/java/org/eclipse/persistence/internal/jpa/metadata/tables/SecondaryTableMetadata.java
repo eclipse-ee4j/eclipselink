@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,7 +40,7 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 /**
  * INTERNAL:
  * Object to hold onto a secondary table metadata in a TopLink database table.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -54,7 +54,7 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
  */
 public class SecondaryTableMetadata extends TableMetadata {
     private PrimaryKeyForeignKeyMetadata m_primaryKeyForeignKey;
-    private List<PrimaryKeyJoinColumnMetadata> m_primaryKeyJoinColumns = new ArrayList<PrimaryKeyJoinColumnMetadata>();
+    private List<PrimaryKeyJoinColumnMetadata> m_primaryKeyJoinColumns = new ArrayList<>();
 
     /**
      * INTERNAL:
@@ -89,8 +89,7 @@ public class SecondaryTableMetadata extends TableMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (super.equals(objectToCompare) && objectToCompare instanceof SecondaryTableMetadata) {
-            SecondaryTableMetadata secondaryTable = (SecondaryTableMetadata) objectToCompare;
+        if (super.equals(objectToCompare) && objectToCompare instanceof SecondaryTableMetadata secondaryTable) {
 
             if (! valuesMatch(m_primaryKeyForeignKey, secondaryTable.getPrimaryKeyForeignKey())) {
                 return false;
@@ -104,7 +103,8 @@ public class SecondaryTableMetadata extends TableMetadata {
 
     @Override
     public int hashCode() {
-        int result = m_primaryKeyForeignKey != null ? m_primaryKeyForeignKey.hashCode() : 0;
+        int result = super.hashCode();
+        result = 31 * result + (m_primaryKeyForeignKey != null ? m_primaryKeyForeignKey.hashCode() : 0);
         result = 31 * result + (m_primaryKeyJoinColumns != null ? m_primaryKeyJoinColumns.hashCode() : 0);
         return result;
     }

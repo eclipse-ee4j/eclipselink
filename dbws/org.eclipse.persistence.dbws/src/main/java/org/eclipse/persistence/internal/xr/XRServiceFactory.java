@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,7 +15,7 @@
 
 package org.eclipse.persistence.internal.xr;
 
-import static org.eclipse.persistence.internal.helper.ClassConstants.APBYTE;
+import static org.eclipse.persistence.internal.core.helper.CoreClassConstants.APBYTE;
 import static org.eclipse.persistence.internal.oxm.Constants.ANY;
 import static org.eclipse.persistence.internal.oxm.Constants.ANY_QNAME;
 import static org.eclipse.persistence.internal.xr.Util.ALL_QUERYNAME;
@@ -42,7 +42,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Vector;
 
 import jakarta.persistence.SharedCacheMode;
 import jakarta.persistence.ValidationMode;
@@ -66,8 +65,8 @@ import javax.xml.transform.stream.StreamSource;
 
 //EclipseLink imports
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.exceptions.DBWSException;
-import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.dbws.DBWSException;
+import org.eclipse.persistence.oxm.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.jpa.deployment.PersistenceUnitProcessor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProcessor;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
@@ -463,7 +462,7 @@ public class XRServiceFactory  {
             // at this point we may have a legacy deployment XML project, or none set
             oxProject = xrService.oxSession.getProject();
             // check to see if it's a default Project
-            if (oxProject.getName().length() == 0) {
+            if (oxProject.getName().isEmpty()) {
                 // default to SimpleXMLFormat
                 oxProject = new SimpleXMLFormatProject();
             }
@@ -609,12 +608,11 @@ public class XRServiceFactory  {
      * would be:  'findAll_employeeType' and 'findByPrimaryKey_employeeType'.
      *
      */
-    @SuppressWarnings("rawtypes")
     protected static void updateFindQueryNames(Project orProject) {
         for (ClassDescriptor orDesc : orProject.getDescriptors().values()) {
-            Vector queries = orDesc.getQueryManager().getAllQueries();
+            List<DatabaseQuery> queries = orDesc.getQueryManager().getAllQueries();
             for (int i=0; i<queries.size(); i++) {
-                DatabaseQuery query = (DatabaseQuery) queries.get(i);
+                DatabaseQuery query = queries.get(i);
                 String qName = query.getName();
                 String END_PART = UNDERSCORE_STR + query.getDescriptor().getAlias() + TYPE_STR;
                 if ((PK_QUERYNAME.equals(qName) || ALL_QUERYNAME.equals(qName)) && !qName.endsWith(END_PART)) {
@@ -697,6 +695,10 @@ public class XRServiceFactory  {
         public String getPersistenceUnitName() { return null; }
         @Override
         public String getPersistenceProviderClassName() { return null; }
+        @Override
+        public String getScopeAnnotationName() { return null; }
+        @Override
+        public List<String> getQualifierAnnotationNames() { return null; }
         @Override
         public DataSource getNonJtaDataSource() { return null; }
         @Override

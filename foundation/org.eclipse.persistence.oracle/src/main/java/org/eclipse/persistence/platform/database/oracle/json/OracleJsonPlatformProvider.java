@@ -14,8 +14,6 @@
 //     13/01/2022-4.0.0 Tomas Kraus - 1391: JSON support in JPA
 package org.eclipse.persistence.platform.database.oracle.json;
 
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
@@ -34,9 +32,7 @@ public class OracleJsonPlatformProvider implements JsonPlatformProvider {
 
     // Initialize Oracle platforms JSON extension mapping.
     private static Map<Class<? extends DatabasePlatform>, Supplier<DatabaseJsonPlatform>> initPlatforms() {
-        final Map<Class<? extends DatabasePlatform>, Supplier<DatabaseJsonPlatform>> platforms = new HashMap<>(2);
-        platforms.put(Oracle21Platform.class, Oracle21JsonPlatform::new);
-        return Collections.unmodifiableMap(platforms);
+        return Map.of(Oracle21Platform.class, Oracle21JsonPlatform::new);
     }
 
     /**

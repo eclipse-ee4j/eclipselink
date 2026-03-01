@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -116,7 +116,7 @@ public abstract class BasicRefactoringTool extends AbstractRefactoringTool {
     }
 
     /**
-     * Creates the visitor that will traverse the {@link } representation of the JPQL
+     * Creates the visitor that will traverse the representation of the JPQL
      * query and will rename a type's attribute name.
      *
      * @param typeName The fully qualified name of the type that got one of its attributes renamed
@@ -132,7 +132,7 @@ public abstract class BasicRefactoringTool extends AbstractRefactoringTool {
     }
 
     /**
-     * Creates the visitor that will traverse the {@link } representation of the JPQL
+     * Creates the visitor that will traverse the representation of the JPQL
      * query and will rename the fully qualified class name.
      *
      * @param oldClassName The current name of the class to rename
@@ -144,7 +144,7 @@ public abstract class BasicRefactoringTool extends AbstractRefactoringTool {
     }
 
     /**
-     * Creates the visitor that will traverse the {@link } representation of the JPQL
+     * Creates the visitor that will traverse the representation of the JPQL
      * query and will rename the entity name.
      *
      * @param oldEntityName The current name of the entity to rename
@@ -156,7 +156,7 @@ public abstract class BasicRefactoringTool extends AbstractRefactoringTool {
     }
 
     /**
-     * Creates the visitor that will traverse the {@link } representation of the JPQL
+     * Creates the visitor that will traverse the representation of the JPQL
      * query and will rename the enum constant.
      *
      * @param oldClassName The new name of the enum constant
@@ -176,7 +176,7 @@ public abstract class BasicRefactoringTool extends AbstractRefactoringTool {
     protected abstract JPQLQueryContext buildJPQLQueryContext();
 
     /**
-     * Creates the visitor that will traverse the {@link } representation of the JPQL
+     * Creates the visitor that will traverse the representation of the JPQL
      * query and will rename a result variable.
      *
      * @param oldVariableName The current result variable name
@@ -190,7 +190,7 @@ public abstract class BasicRefactoringTool extends AbstractRefactoringTool {
     }
 
     /**
-     * Creates the visitor that will traverse the {@link } representation of the JPQL
+     * Creates the visitor that will traverse the representation of the JPQL
      * query and will rename an identification variable.
      *
      * @param oldVariableName The current identification variable name
@@ -589,12 +589,12 @@ public abstract class BasicRefactoringTool extends AbstractRefactoringTool {
         }
 
         /**
-         * Visits the given {@link } and if its value is the same as the old class name or
+         * Visits the given and if its value is the same as the old class name or
          * if the value represents an inner class of that old class name, then the given {@link
          * org.eclipse.persistence.jpa.jpql.tools.RefactoringTool.StateObjectUpdater StateObjectUpdater}
          * will be notified to replace the value.
          *
-         * @param expression The {@link } that is being visited
+         * @param expression The that is being visited
          * @param extraOffset Additional offset that will be added to the given {@link Expression}'s
          * offset, which is the length of the string representation of what is before it
          * @param value The value to check if it's the old class name

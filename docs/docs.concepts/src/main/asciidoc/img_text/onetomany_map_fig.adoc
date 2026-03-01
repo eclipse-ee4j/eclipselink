@@ -1,0 +1,6 @@
+:nofooter:
+This figure illustrates the one-to-many relationship. In the top half of
+the illustration, the phones method of the Employee class is mapped to
+several Phone classes. In the bottom half of the illustration, the
+EMP_ID column of the EMPLOYEE table is mapped to the EMP_ID column of
+the PHONE table.

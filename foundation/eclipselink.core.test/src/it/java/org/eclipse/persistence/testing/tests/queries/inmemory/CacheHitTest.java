@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,9 +14,12 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.queries.inmemory;
 
-import java.io.*;
-import org.eclipse.persistence.testing.framework.*;
-import org.eclipse.persistence.logging.*;
+import org.eclipse.persistence.logging.DefaultSessionLog;
+import org.eclipse.persistence.logging.SessionLog;
+import org.eclipse.persistence.testing.framework.TestCase;
+import org.eclipse.persistence.testing.framework.TestErrorException;
+
+import java.io.StringWriter;
 
 /**
  * Test selecting using an object's primary key to ensure that it does not go to the databaase.
@@ -84,7 +87,7 @@ public class CacheHitTest extends TestCase {
             throw new TestErrorException("Expecting: " + objectToRead + " retrieved: " + objectRead);
         }
 
-        if (tempStream.toString().length() > 0) {
+        if (!tempStream.toString().isEmpty()) {
             throw new TestErrorException("The read went to the database, but should not have, '" + tempStream.toString() + "'");
         }
     }

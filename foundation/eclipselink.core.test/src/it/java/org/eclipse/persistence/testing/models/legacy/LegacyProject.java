@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,10 +14,13 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.legacy;
 
-import java.util.*;
-import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.mappings.*;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.mappings.OneToManyMapping;
+import org.eclipse.persistence.queries.ReadAllQuery;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * TopLink generated Project class.
@@ -84,8 +87,8 @@ public class LegacyProject extends org.eclipse.persistence.sessions.Project {
 
         // SECTION: DESCRIPTOR
         descriptor.setJavaClass(org.eclipse.persistence.testing.models.legacy.Computer.class);
-        Vector vector = new Vector();
-        vector.addElement("LEG_COM");
+        List<String> vector = new ArrayList<>();
+        vector.add("LEG_COM");
         descriptor.setTableNames(vector);
         descriptor.addPrimaryKeyFieldName("LEG_COM.CREATE_TS");
         descriptor.addPrimaryKeyFieldName("LEG_COM.CREATE_TSM");
@@ -148,9 +151,9 @@ public class LegacyProject extends org.eclipse.persistence.sessions.Project {
 
         // SECTION: DESCRIPTOR
         descriptor.setJavaClass(org.eclipse.persistence.testing.models.legacy.Employee.class);
-        Vector vector = new Vector();
-        vector.addElement("LEG_EMP");
-        vector.addElement("LEG_ADD");
+        List<String> vector = new ArrayList<>();
+        vector.add("LEG_EMP");
+        vector.add("LEG_ADD");
         descriptor.setTableNames(vector);
         descriptor.addPrimaryKeyFieldName("LEG_EMP.FNAME");
         descriptor.addPrimaryKeyFieldName("LEG_EMP.LNAME");
@@ -219,8 +222,8 @@ public class LegacyProject extends org.eclipse.persistence.sessions.Project {
         // SECTION: DESCRIPTOR
         descriptor.setJavaClass(org.eclipse.persistence.testing.models.legacy.GaurenteedShipment.class);
         descriptor.getDescriptorInheritancePolicy().setParentClass(org.eclipse.persistence.testing.models.legacy.InsuredShipment.class);
-        Vector vector = new Vector();
-        vector.addElement("LEG_ISHP");
+        List<String> vector = new ArrayList<>();
+        vector.add("LEG_ISHP");
         descriptor.setTableNames(vector);
         descriptor.addPrimaryKeyFieldName("LEG_ISHP.F_NAME");
         descriptor.addPrimaryKeyFieldName("LEG_ISHP.L_NAME");
@@ -243,8 +246,8 @@ public class LegacyProject extends org.eclipse.persistence.sessions.Project {
         // SECTION: DESCRIPTOR
         descriptor.setJavaClass(org.eclipse.persistence.testing.models.legacy.InsuredShipment.class);
         descriptor.getDescriptorInheritancePolicy().setParentClass(org.eclipse.persistence.testing.models.legacy.Shipment.class);
-        Vector vector = new Vector();
-        vector.addElement("LEG_ISHP");
+        List<String> vector = new ArrayList<>();
+        vector.add("LEG_ISHP");
         descriptor.setTableNames(vector);
         descriptor.addPrimaryKeyFieldName("LEG_ISHP.F_NAME");
         descriptor.addPrimaryKeyFieldName("LEG_ISHP.L_NAME");
@@ -295,8 +298,8 @@ public class LegacyProject extends org.eclipse.persistence.sessions.Project {
 
         // SECTION: DESCRIPTOR
         descriptor.setJavaClass(org.eclipse.persistence.testing.models.legacy.Order.class);
-        Vector vector = new Vector();
-        vector.addElement("LEG_ORD");
+        List<String> vector = new ArrayList<>();
+        vector.add("LEG_ORD");
         descriptor.setTableNames(vector);
         descriptor.addPrimaryKeyFieldName("LEG_ORD.FNAME");
         descriptor.addPrimaryKeyFieldName("LEG_ORD.LNAME");
@@ -373,8 +376,8 @@ public class LegacyProject extends org.eclipse.persistence.sessions.Project {
 
         // SECTION: DESCRIPTOR
         descriptor.setJavaClass(org.eclipse.persistence.testing.models.legacy.Shipment.class);
-        Vector vector = new Vector();
-        vector.addElement("LEG_SHP");
+        List<String> vector = new ArrayList<>();
+        vector.add("LEG_SHP");
         descriptor.setTableNames(vector);
         descriptor.addPrimaryKeyFieldName("LEG_SHP.FNAME");
         descriptor.addPrimaryKeyFieldName("LEG_SHP.LNAME");

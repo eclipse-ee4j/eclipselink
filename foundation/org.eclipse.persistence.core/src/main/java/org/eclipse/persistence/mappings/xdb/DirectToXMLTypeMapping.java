@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,6 +18,7 @@ package org.eclipse.persistence.mappings.xdb;
 
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.DescriptorException;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.platform.database.XMLTypePlaceholder;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -67,7 +68,7 @@ public class DirectToXMLTypeMapping extends DirectToFieldMapping {
         if (this.attributeClassification == null) {
             this.attributeClassification = getAttributeAccessor().getAttributeClass();
         }
-        if ((this.isMutable == null) && (this.attributeClassification != ClassConstants.STRING)) {
+        if ((this.isMutable == null) && (this.attributeClassification != CoreClassConstants.STRING)) {
             setIsMutable(true);
         }
         super.preInitialize(session);
@@ -120,7 +121,7 @@ public class DirectToXMLTypeMapping extends DirectToFieldMapping {
         Object attributeValue = fieldValue;
         try {
             if (attributeValue != null) {
-                if (this.attributeClassification != ClassConstants.STRING) {
+                if (this.attributeClassification != CoreClassConstants.STRING) {
                     String xml = (String)attributeValue;
                     java.io.StringReader reader = new java.io.StringReader(xml);
                     return this.xmlParser.parse(reader);
@@ -176,7 +177,7 @@ public class DirectToXMLTypeMapping extends DirectToFieldMapping {
         if ((firstValue == null) || (secondValue == null)) {
             return false;
         }
-        if (getAttributeClassification() == ClassConstants.STRING) {
+        if (getAttributeClassification() == CoreClassConstants.STRING) {
             return firstValue.equals(secondValue);
         } else {
             Object one = getFieldValue(firstValue, session);

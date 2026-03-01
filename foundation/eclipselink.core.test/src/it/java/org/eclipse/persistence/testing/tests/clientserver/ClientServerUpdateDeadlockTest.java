@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,9 +14,6 @@
 //     James Sutherland - initial implementation
 package org.eclipse.persistence.testing.tests.clientserver;
 
-import java.util.List;
-import java.util.Random;
-
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.UnitOfWork;
@@ -24,6 +21,9 @@ import org.eclipse.persistence.sessions.UnitOfWork.CommitOrderType;
 import org.eclipse.persistence.testing.framework.TestCase;
 import org.eclipse.persistence.testing.framework.TestErrorException;
 import org.eclipse.persistence.testing.models.employee.domain.Address;
+
+import java.util.List;
+import java.util.Random;
 
 /**
  * This test attempts to cause a database deadlock by updates the same

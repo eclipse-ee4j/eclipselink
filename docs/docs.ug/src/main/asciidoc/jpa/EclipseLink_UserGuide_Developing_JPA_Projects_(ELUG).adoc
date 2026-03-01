@@ -1,0 +1,76 @@
+image:Elug_draft_icon.png[Image:Elug draft
+icon.png,title="Image:Elug draft icon.png"] *For the latest EclipseLink
+documentation, please see
+http://www.eclipse.org/eclipselink/documentation/*
+
+'''''
+
+*NOTOC*
+
+== Step 1
+
+Define your persistence units in `+persistence.xml+`.
+
+* link:Introduction_to_Java_Persistence_API_(ELUG)#persistence.xml_File[About
+the persistence.xml file]
+* link:Packaging_and_Deploying_EclipseLink_JPA_Applications_(ELUG)#How_to_Specify_the_Persistence_Unit_Name[Specifying
+the persistence unit]
+
+== Step 2
+
+Annotate classes with @Entity, @Embeddable, and @MappedSuperClass and/or
+define classes in your mapping file (orm.xml).
+
+* link:Introduction_to_EclipseLink_JPA_%28ELUG%29#Configuring_an_Entity[Configuring
+an entity]
+* link:Using_EclipseLink_JPA_Extensions_%28ELUG%29[EclipseLink
+extensions]
+
+== Step 3
+
+Configure your application with:
+
+* javax.persistence.transactionType
+* javax.persistence.jtaDataSource
+* javax.persistence.nonJtaDataSource
+
+* link:Developing_Applications_Using_EclipseLink_JPA_%28ELUG%29[Application
+development]
+* link:Packaging_and_Deploying_EclipseLink_JPA_Applications_%28ELUG%29[Packaging
+and deployment]
+
+== EclipseLink User’s Guide
+
+The following sections describe the Java Persistence API, including the
+EclipseLink implementation:
+
+* link:Introduction_to_Java_Persistence_API_(ELUG)[Introduction to Java
+Persistence API]
+
+* link:Introduction_to_EclipseLink_JPA_(ELUG)[Introduction to
+EclipseLink JPA]
+
+* link:Using_EclipseLink_JPA_Extensions_(ELUG)[Using EclipseLink JPA
+Extensions]
+
+* link:Configuring_a_EclipseLink_JPA_Application_(ELUG)[Configuring a
+EclipseLink JPA Application] – contains information on how to configure
+the EclipseLink persistence project, as well as set up the application
+configuration and packaging.
+
+* link:Developing_Applications_Using_EclipseLink_JPA_(ELUG)[Developing
+Applications Using EclipseLink JPA] – describes the actual steps you
+have to perform to develop your EclipseLink JPA application.
+
+* link:Packaging_and_Deploying_EclipseLink_JPA_Applications_(ELUG)[Packaging
+and Deploying EclipseLink JPA Applications]
+
+*Special:Whatlinkshere_EclipseLink_UserGuide_Developing_JPA_Projects_(ELUG)[Related
+Topics]*
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_JPA[Category: JPA]

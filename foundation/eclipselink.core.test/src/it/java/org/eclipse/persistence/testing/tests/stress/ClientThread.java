@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,10 +14,14 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.stress;
 
-import org.eclipse.persistence.testing.models.employee.domain.*;
-import org.eclipse.persistence.sessions.*;
-import org.eclipse.persistence.sessions.server.*;
-import org.eclipse.persistence.exceptions.*;
+import org.eclipse.persistence.exceptions.OptimisticLockException;
+import org.eclipse.persistence.sessions.Session;
+import org.eclipse.persistence.sessions.UnitOfWork;
+import org.eclipse.persistence.sessions.server.Server;
+import org.eclipse.persistence.testing.models.employee.domain.Employee;
+import org.eclipse.persistence.testing.models.employee.domain.LargeProject;
+import org.eclipse.persistence.testing.models.employee.domain.Project;
+import org.eclipse.persistence.testing.models.employee.domain.SmallProject;
 
 /**
  * Thread used to simulate a client.
@@ -35,7 +39,7 @@ public class ClientThread extends Thread {
         Session client = server.acquireClientSession("default");
         client.readAllObjects(Employee.class);
         client.readAllObjects(org.eclipse.persistence.testing.models.employee.domain.Project.class);
-        org.eclipse.persistence.testing.models.employee.domain.Project edit = (org.eclipse.persistence.testing.models.employee.domain.Project)(client.readAllObjects(LargeProject.class)).firstElement();
+        org.eclipse.persistence.testing.models.employee.domain.Project edit = (Project) (client.readAllObjects(LargeProject.class)).get(0);
         UnitOfWork uow = client.acquireUnitOfWork();
         uow.readAllObjects(SmallProject.class);
         edit = (org.eclipse.persistence.testing.models.employee.domain.Project)uow.registerObject(edit);

@@ -1,0 +1,43 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[GENERAL002]]
+=== Key Features
+
+An extensive set of features are provided. You can use these features to
+rapidly build high-performance enterprise applications that are scalable
+and maintainable.
+
+Some of the primary features are the following:
+
+* Nonintrusive, flexible, metadata-based architecture
+* Advanced mapping support and flexibility: relational,
+object-relational data type, and XML
+* Optimized for highly scalable performance and concurrency with
+extensive performance tuning options
+* Comprehensive object caching support including cluster integration for
+some application servers (such as Oracle Fusion Middleware Server)
+* Extensive query capability including: Java Persistence Query Language
+(JPQL), native SQL, and EclipseLink Expressions framework
+* Just-in-time reading
+* Object-level transaction support and integration with popular
+application servers and databases
+* Optimistic and pessimistic locking options and locking policies
+
+For additional information and downloads, see the EclipseLink home page:
+
+`http://www.eclispe.org/eclipselink/`

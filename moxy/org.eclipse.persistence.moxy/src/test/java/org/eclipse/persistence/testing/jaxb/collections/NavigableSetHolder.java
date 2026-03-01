@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,15 +21,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.NavigableSet;
-import java.util.TreeSet;
 
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlAnyAttribute;
-import jakarta.xml.bind.annotation.XmlAnyElement;
 import jakarta.xml.bind.annotation.XmlAttribute;
 import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlElementRef;
-import jakarta.xml.bind.annotation.XmlElementRefs;
 import jakarta.xml.bind.annotation.XmlElements;
 import jakarta.xml.bind.annotation.XmlIDREF;
 import jakarta.xml.bind.annotation.XmlList;
@@ -166,8 +162,7 @@ public class NavigableSetHolder implements Comparable {
 
     public boolean equals(Object compareObject){
 
-         if(compareObject instanceof NavigableSetHolder){
-             NavigableSetHolder compareCollectionHolder = ((NavigableSetHolder)compareObject);
+         if(compareObject instanceof NavigableSetHolder compareCollectionHolder){
              return compareCollections(collection1, compareCollectionHolder.getCollection1())
                     && compareCollections(collection2, compareCollectionHolder.getCollection2())
                     && compareCollections(collection3, compareCollectionHolder.getCollection3())

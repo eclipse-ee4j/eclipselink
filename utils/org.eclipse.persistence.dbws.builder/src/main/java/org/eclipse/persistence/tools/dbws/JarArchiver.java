@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,6 +32,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.JarOutputStream;
@@ -124,7 +125,7 @@ public class JarArchiver implements DBWSPackager.Archiver {
     protected Manifest buildManifest() {
         Manifest manifest = null;
         try {
-            new Manifest(new ByteArrayInputStream(DEFAULT_MANIFEST.getBytes("ISO-8859-1")));
+            new Manifest(new ByteArrayInputStream(DEFAULT_MANIFEST.getBytes(StandardCharsets.ISO_8859_1)));
         }
         catch (Exception e) {
             // e.printStackTrace();
@@ -135,7 +136,7 @@ public class JarArchiver implements DBWSPackager.Archiver {
     protected JarOutputStream buildJarOutputStream() {
         JarOutputStream jarOutputStream = null;
         try {
-            if (jarFilename == null || jarFilename.length() == 0) {
+            if (jarFilename == null || jarFilename.isEmpty()) {
                 jarFilename = DEFAULT_JAR_FILENAME;
             }
             jarOutputStream = new JarOutputStream(new FileOutputStream(

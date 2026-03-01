@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -43,10 +43,9 @@ public class MailingAddress {
     }
 
     public boolean equals(Object object) {
-        if (!(object instanceof MailingAddress)) {
+        if (!(object instanceof MailingAddress addressObject)) {
             return false;
         }
-        MailingAddress addressObject = (MailingAddress)object;
         if (!(this.getAddressType().equals(addressObject.getAddressType()))) {
             return false;
         }
@@ -57,9 +56,7 @@ public class MailingAddress {
         if (this.getAddressInfo().getCity().equals(addressObject.getAddressInfo().getCity())) {
             if (this.getAddressInfo().getStreet().equals(addressObject.getAddressInfo().getStreet())) {
                 if (this.getAddressInfo().getProvince().equals(addressObject.getAddressInfo().getProvince())) {
-                    if (this.getAddressInfo().getPostalCode().equals(addressObject.getAddressInfo().getPostalCode())) {
-                        return true;
-                    }
+                    return this.getAddressInfo().getPostalCode().equals(addressObject.getAddressInfo().getPostalCode());
                 }
             }
         }

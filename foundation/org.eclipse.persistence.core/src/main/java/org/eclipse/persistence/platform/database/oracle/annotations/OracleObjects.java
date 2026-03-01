@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,8 +21,8 @@ import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * An OracleObjects annotation allows the definition of multiple Oracle OBJECT
- * types.
+ * An OracleObjects annotation allows the definition of multiple
+ * {@linkplain OracleObject}s.
  *
  * @see OracleObject
  * @author David McCann
@@ -32,7 +32,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 public @interface OracleObjects {
     /**
-     * (Required) An array of Oracle OBJECT types.
+     * An array of OracleObject annotations.
      */
     OracleObject[] value();
 }

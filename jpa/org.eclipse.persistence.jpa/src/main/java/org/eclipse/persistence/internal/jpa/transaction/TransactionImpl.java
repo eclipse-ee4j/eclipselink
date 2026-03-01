@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,14 +20,14 @@ import java.util.Vector;
 import java.sql.*;
 import javax.transaction.xa.XAResource;
 import jakarta.transaction.*;
-import org.eclipse.persistence.exceptions.TransactionException;
+import org.eclipse.persistence.transaction.TransactionException;
 import org.eclipse.persistence.internal.jpa.jdbc.ConnectionProxyHandler;
 import org.eclipse.persistence.internal.jpa.jdbc.DataSourceImpl;
 
 /**
  * Implementation of JTA Transaction class. The guts of the tx logic
  * is contained in this class.
- *
+ * <p>
  * Currently support is limited to enlisting only a single tx data source
  */
 @Deprecated
@@ -65,9 +65,9 @@ public class TransactionImpl implements Transaction {
     // Set this to true for debugging of afterCompletion exceptions
     public static boolean DUMP_AFTER_COMPLETION_ERRORS = true;
 
-    /************************/
-    /***** Internal API *****/
-    /************************/
+    /* ********************** */
+    /* **** Internal API **** */
+    /* ********************** */
     private void debug(String s) {
         System.out.println(s);
     }
@@ -127,7 +127,7 @@ public class TransactionImpl implements Transaction {
         int j;
         for (i = 0, j = listeners.size(); i < j; i++) {
             try {
-                ((Synchronization)listeners.elementAt(i)).afterCompletion(status);
+                ((Synchronization)listeners.get(i)).afterCompletion(status);
             } catch (Throwable t) {
                 if (DUMP_AFTER_COMPLETION_ERRORS) {
                     t.printStackTrace(System.out);
@@ -177,9 +177,9 @@ public class TransactionImpl implements Transaction {
         status = STATUS_NO_TRANSACTION;
     }
 
-    /*************************************/
-    /***** Supported Transaction API *****/
-    /*************************************/
+    /* *********************************** */
+    /* **** Supported Transaction API **** */
+    /* *********************************** */
     @Override
     public void commit() throws RollbackException, HeuristicMixedException, HeuristicRollbackException, SecurityException, IllegalStateException, SystemException {
         Exception error = null;
@@ -205,7 +205,7 @@ public class TransactionImpl implements Transaction {
                 int i;
                 int j;
                 for (i = 0, j = listeners.size(); i < j; i++) {
-                    ((Synchronization)listeners.elementAt(i)).beforeCompletion();
+                    ((Synchronization)listeners.get(i)).beforeCompletion();
                 }
             } catch (Exception ex) {
                 error = ex;
@@ -277,9 +277,9 @@ public class TransactionImpl implements Transaction {
         status = STATUS_MARKED_ROLLBACK;
     }
 
-    /*****************************************/
-    /***** NOT supported Transaction API *****/
-    /*****************************************/
+    /* *************************************** */
+    /* **** NOT supported Transaction API **** */
+    /* *************************************** */
     @Override
     public boolean enlistResource(XAResource xaresource) throws RollbackException, IllegalStateException, SystemException {
         return false;

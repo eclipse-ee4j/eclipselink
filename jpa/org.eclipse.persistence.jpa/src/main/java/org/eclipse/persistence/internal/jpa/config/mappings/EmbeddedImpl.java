@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,8 +20,6 @@ import org.eclipse.persistence.internal.jpa.config.columns.AssociationOverrideIm
 import org.eclipse.persistence.internal.jpa.config.columns.FieldImpl;
 import org.eclipse.persistence.internal.jpa.config.converters.ConvertImpl;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.EmbeddedAccessor;
-import org.eclipse.persistence.internal.jpa.metadata.columns.AssociationOverrideMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.converters.ConvertMetadata;
 import org.eclipse.persistence.jpa.config.AssociationOverride;
 import org.eclipse.persistence.jpa.config.Convert;
 import org.eclipse.persistence.jpa.config.Embedded;
@@ -38,8 +36,8 @@ public class EmbeddedImpl extends AbstractEmbeddedMappingImpl<EmbeddedAccessor, 
     public EmbeddedImpl() {
         super(new EmbeddedAccessor());
 
-        getMetadata().setAssociationOverrides(new ArrayList<AssociationOverrideMetadata>());
-        getMetadata().setConverts(new ArrayList<ConvertMetadata>());
+        getMetadata().setAssociationOverrides(new ArrayList<>());
+        getMetadata().setConverts(new ArrayList<>());
     }
 
     @Override

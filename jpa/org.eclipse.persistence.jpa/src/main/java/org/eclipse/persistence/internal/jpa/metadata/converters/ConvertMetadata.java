@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,6 +21,7 @@
 //       - 374688: JPA 2.1 Converter support
 package org.eclipse.persistence.internal.jpa.metadata.converters;
 
+import jakarta.persistence.AttributeConverter;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
@@ -35,7 +36,7 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 
 /**
  * Object to hold onto convert metadata.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -74,7 +75,7 @@ public class ConvertMetadata extends ORMetadata {
     public ConvertMetadata(MetadataAnnotation convert, MetadataAccessor accessor) {
         super(convert, accessor);
 
-        m_converterClass = getMetadataClass(convert.getAttributeClass("converter", Void.class));
+        m_converterClass = getMetadataClass(convert.getAttributeClass("converter", AttributeConverter.class));
         m_attributeName = convert.getAttributeString("attributeName");
         m_disableConversion = convert.getAttributeBooleanDefaultFalse("disableConversion");
     }
@@ -92,8 +93,7 @@ public class ConvertMetadata extends ORMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (objectToCompare instanceof ConvertMetadata) {
-            ConvertMetadata convert = (ConvertMetadata) objectToCompare;
+        if (objectToCompare instanceof ConvertMetadata convert) {
 
             if (! valuesMatch(m_text, convert.getText())) {
                 return false;
@@ -115,7 +115,8 @@ public class ConvertMetadata extends ORMetadata {
 
     @Override
     public int hashCode() {
-        int result = m_text != null ? m_text.hashCode() : 0;
+        int result = super.hashCode();
+        result = 31 * result + (m_text != null ? m_text.hashCode() : 0);
         result = 31 * result + (m_disableConversion != null ? m_disableConversion.hashCode() : 0);
         result = 31 * result + (m_converterClassName != null ? m_converterClassName.hashCode() : 0);
         result = 31 * result + (m_attributeName != null ? m_attributeName.hashCode() : 0);
@@ -168,14 +169,14 @@ public class ConvertMetadata extends ORMetadata {
      * INTERNAL:
      */
     public boolean hasAttributeName() {
-        return m_attributeName != null && ! m_attributeName.equals("");
+        return m_attributeName != null && !m_attributeName.isEmpty();
     }
 
     /**
      * INTERNAL:
      */
     public boolean hasConverterClass() {
-        return m_converterClass != null && ! m_converterClass.isVoid();
+        return m_converterClass != null && ! m_converterClass.isClass(AttributeConverter.class) && ! m_converterClass.isVoid();
     }
 
     /**
@@ -198,7 +199,7 @@ public class ConvertMetadata extends ORMetadata {
      * INTERNAL:
      * Return true if this convert metadata is for a map key. Way to tell is
      * if there is an attribute name that begins with "key".
-     *
+     * <p>
      * Calling this method will also update the attribute name on the first call
      * to it. This call is made when sorting convert annotations. Unlike XML,
      * where the user can sort through &lt;convert&gt; and &lt;map-key-convert&gt; elements,
@@ -243,7 +244,7 @@ public class ConvertMetadata extends ORMetadata {
                 attributeName = getAttributeName();
             // Coming from @ElementCollection mapping with value.<name> attributeName.
             } else if (mapping.isAggregateCollectionMapping() && embeddedAttributeName != null
-                    && embeddedAttributeName.length() > 0) {
+                    && !embeddedAttributeName.isEmpty()) {
                 attributeName = embeddedAttributeName;
             // Unsupported mapping, throw an exception
             } else {

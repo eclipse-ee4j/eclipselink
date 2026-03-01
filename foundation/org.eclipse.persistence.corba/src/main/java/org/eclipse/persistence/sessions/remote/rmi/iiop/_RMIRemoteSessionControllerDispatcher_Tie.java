@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -117,89 +117,106 @@ public class _RMIRemoteSessionControllerDispatcher_Tie extends ObjectImpl implem
                     return out;
                 }
             case 19:
-                if (method.equals("cursorSelectObjects")) {
-                    Transporter arg0 = readTransporter(in);
-                    Transporter result = target.cursorSelectObjects(arg0);
-                    org.omg.CORBA_2_3.portable.OutputStream out = (org.omg.CORBA_2_3.portable.OutputStream)reply.createReply();
-                    writeTransporter(result, out);
-                    return out;
-                } else if (method.equals("cursoredStreamClose")) {
-                    Transporter arg0 = readTransporter(in);
-                    Transporter result = target.cursoredStreamClose(arg0);
-                    org.omg.CORBA_2_3.portable.OutputStream out = (org.omg.CORBA_2_3.portable.OutputStream)reply.createReply();
-                    writeTransporter(result, out);
-                    return out;
-                } else if (method.equals("rollbackTransaction")) {
-                    Transporter result = target.rollbackTransaction();
-                    org.omg.CORBA_2_3.portable.OutputStream out = (org.omg.CORBA_2_3.portable.OutputStream)reply.createReply();
-                    writeTransporter(result, out);
-                    return out;
+                switch (method) {
+                    case "cursorSelectObjects" -> {
+                        Transporter arg0 = readTransporter(in);
+                        Transporter result = target.cursorSelectObjects(arg0);
+                        org.omg.CORBA_2_3.portable.OutputStream out = (org.omg.CORBA_2_3.portable.OutputStream) reply.createReply();
+                        writeTransporter(result, out);
+                        return out;
+                    }
+                    case "cursoredStreamClose" -> {
+                        Transporter arg0 = readTransporter(in);
+                        Transporter result = target.cursoredStreamClose(arg0);
+                        org.omg.CORBA_2_3.portable.OutputStream out = (org.omg.CORBA_2_3.portable.OutputStream) reply.createReply();
+                        writeTransporter(result, out);
+                        return out;
+                    }
+                    case "rollbackTransaction" -> {
+                        Transporter result = target.rollbackTransaction();
+                        org.omg.CORBA_2_3.portable.OutputStream out = (org.omg.CORBA_2_3.portable.OutputStream) reply.createReply();
+                        writeTransporter(result, out);
+                        return out;
+                    }
                 }
             case 20:
-                if (method.equals("commitRootUnitOfWork")) {
-                    Transporter arg0 = readTransporter(in);
-                    Transporter result = target.commitRootUnitOfWork(arg0);
-                    org.omg.CORBA_2_3.portable.OutputStream out = (org.omg.CORBA_2_3.portable.OutputStream)reply.createReply();
-                    writeTransporter(result, out);
-                    return out;
-                } else if (method.equals("scrollableCursorLast")) {
-                    Transporter arg0 = readTransporter(in);
-                    Transporter result = target.scrollableCursorLast(arg0);
-                    org.omg.CORBA_2_3.portable.OutputStream out = (org.omg.CORBA_2_3.portable.OutputStream)reply.createReply();
-                    writeTransporter(result, out);
-                    return out;
-                } else if (method.equals("scrollableCursorSize")) {
-                    Transporter arg0 = readTransporter(in);
-                    Transporter result = target.scrollableCursorSize(arg0);
-                    org.omg.CORBA_2_3.portable.OutputStream out = (org.omg.CORBA_2_3.portable.OutputStream)reply.createReply();
-                    writeTransporter(result, out);
-                    return out;
+                switch (method) {
+                    case "commitRootUnitOfWork" -> {
+                        Transporter arg0 = readTransporter(in);
+                        Transporter result = target.commitRootUnitOfWork(arg0);
+                        org.omg.CORBA_2_3.portable.OutputStream out = (org.omg.CORBA_2_3.portable.OutputStream) reply.createReply();
+                        writeTransporter(result, out);
+                        return out;
+                    }
+                    case "scrollableCursorLast" -> {
+                        Transporter arg0 = readTransporter(in);
+                        Transporter result = target.scrollableCursorLast(arg0);
+                        org.omg.CORBA_2_3.portable.OutputStream out = (org.omg.CORBA_2_3.portable.OutputStream) reply.createReply();
+                        writeTransporter(result, out);
+                        return out;
+                    }
+                    case "scrollableCursorSize" -> {
+                        Transporter arg0 = readTransporter(in);
+                        Transporter result = target.scrollableCursorSize(arg0);
+                        org.omg.CORBA_2_3.portable.OutputStream out = (org.omg.CORBA_2_3.portable.OutputStream) reply.createReply();
+                        writeTransporter(result, out);
+                        return out;
+                    }
                 }
             case 21:
-                if (method.equals("scrollableCursorClose")) {
-                    Transporter arg0 = readTransporter(in);
-                    Transporter result = target.scrollableCursorClose(arg0);
-                    org.omg.CORBA_2_3.portable.OutputStream out = (org.omg.CORBA_2_3.portable.OutputStream)reply.createReply();
-                    writeTransporter(result, out);
-                    return out;
-                } else if (method.equals("scrollableCursorFirst")) {
-                    Transporter arg0 = readTransporter(in);
-                    Transporter result = target.scrollableCursorFirst(arg0);
-                    org.omg.CORBA_2_3.portable.OutputStream out = (org.omg.CORBA_2_3.portable.OutputStream)reply.createReply();
-                    writeTransporter(result, out);
-                    return out;
-                } else if (method.equals("getDescriptorForAlias")) {
-                    Transporter arg0 = readTransporter(in);
-                    Transporter result = target.getDescriptorForAlias(arg0);
-                    org.omg.CORBA_2_3.portable.OutputStream out = (org.omg.CORBA_2_3.portable.OutputStream)reply.createReply();
-                    writeTransporter(result, out);
-                    return out;
-                } else if (method.equals("beginEarlyTransaction")) {
-                    Transporter result = target.beginEarlyTransaction();
-                    org.omg.CORBA_2_3.portable.OutputStream out = (org.omg.CORBA_2_3.portable.OutputStream)reply.createReply();
-                    writeTransporter(result, out);
-                    return out;
+                switch (method) {
+                    case "scrollableCursorClose" -> {
+                        Transporter arg0 = readTransporter(in);
+                        Transporter result = target.scrollableCursorClose(arg0);
+                        org.omg.CORBA_2_3.portable.OutputStream out = (org.omg.CORBA_2_3.portable.OutputStream) reply.createReply();
+                        writeTransporter(result, out);
+                        return out;
+                    }
+                    case "scrollableCursorFirst" -> {
+                        Transporter arg0 = readTransporter(in);
+                        Transporter result = target.scrollableCursorFirst(arg0);
+                        org.omg.CORBA_2_3.portable.OutputStream out = (org.omg.CORBA_2_3.portable.OutputStream) reply.createReply();
+                        writeTransporter(result, out);
+                        return out;
+                    }
+                    case "getDescriptorForAlias" -> {
+                        Transporter arg0 = readTransporter(in);
+                        Transporter result = target.getDescriptorForAlias(arg0);
+                        org.omg.CORBA_2_3.portable.OutputStream out = (org.omg.CORBA_2_3.portable.OutputStream) reply.createReply();
+                        writeTransporter(result, out);
+                        return out;
+                    }
+                    case "beginEarlyTransaction" -> {
+                        Transporter result = target.beginEarlyTransaction();
+                        org.omg.CORBA_2_3.portable.OutputStream out = (org.omg.CORBA_2_3.portable.OutputStream) reply.createReply();
+                        writeTransporter(result, out);
+                        return out;
+                    }
                 }
             case 22:
-                if (method.equals("cursoredStreamNextPage")) {
-                    Transporter arg0 = readTransporter(in);
-                    int arg1 = in.read_long();
-                    Transporter result = target.cursoredStreamNextPage(arg0, arg1);
-                    org.omg.CORBA_2_3.portable.OutputStream out = (org.omg.CORBA_2_3.portable.OutputStream)reply.createReply();
-                    writeTransporter(result, out);
-                    return out;
-                } else if (method.equals("getSequenceNumberNamed")) {
-                    Transporter arg0 = readTransporter(in);
-                    Transporter result = target.getSequenceNumberNamed(arg0);
-                    org.omg.CORBA_2_3.portable.OutputStream out = (org.omg.CORBA_2_3.portable.OutputStream)reply.createReply();
-                    writeTransporter(result, out);
-                    return out;
-                } else if (method.equals("scrollableCursorIsLast")) {
-                    Transporter arg0 = readTransporter(in);
-                    Transporter result = target.scrollableCursorIsLast(arg0);
-                    org.omg.CORBA_2_3.portable.OutputStream out = (org.omg.CORBA_2_3.portable.OutputStream)reply.createReply();
-                    writeTransporter(result, out);
-                    return out;
+                switch (method) {
+                    case "cursoredStreamNextPage" -> {
+                        Transporter arg0 = readTransporter(in);
+                        int arg1 = in.read_long();
+                        Transporter result = target.cursoredStreamNextPage(arg0, arg1);
+                        org.omg.CORBA_2_3.portable.OutputStream out = (org.omg.CORBA_2_3.portable.OutputStream) reply.createReply();
+                        writeTransporter(result, out);
+                        return out;
+                    }
+                    case "getSequenceNumberNamed" -> {
+                        Transporter arg0 = readTransporter(in);
+                        Transporter result = target.getSequenceNumberNamed(arg0);
+                        org.omg.CORBA_2_3.portable.OutputStream out = (org.omg.CORBA_2_3.portable.OutputStream) reply.createReply();
+                        writeTransporter(result, out);
+                        return out;
+                    }
+                    case "scrollableCursorIsLast" -> {
+                        Transporter arg0 = readTransporter(in);
+                        Transporter result = target.scrollableCursorIsLast(arg0);
+                        org.omg.CORBA_2_3.portable.OutputStream out = (org.omg.CORBA_2_3.portable.OutputStream) reply.createReply();
+                        writeTransporter(result, out);
+                        return out;
+                    }
                 }
             case 23:
                 if (method.equals("scrollableCursorIsFirst")) {

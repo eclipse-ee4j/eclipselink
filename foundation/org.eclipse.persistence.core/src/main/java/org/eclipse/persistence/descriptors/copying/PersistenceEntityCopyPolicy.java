@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,15 +14,14 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.descriptors.copying;
 
-import org.eclipse.persistence.exceptions.*;
+import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.internal.descriptors.PersistenceObject;
-import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.sessions.*;
+import org.eclipse.persistence.sessions.Session;
 
 /**
  * <p><b>Purpose</b>: This is the default copy policy when weaving is used.
- *
- * It creates a copy by creating a shallow clone of the object using the weaved _persistence_shallow_clone() method.
+ * <p>
+ * It creates a copy by creating a shallow clone of the object using the weaved {@code _persistence_shallow_clone()} method.
  */
 public class PersistenceEntityCopyPolicy extends AbstractCopyPolicy {
     public PersistenceEntityCopyPolicy() {
@@ -42,10 +41,5 @@ public class PersistenceEntityCopyPolicy extends AbstractCopyPolicy {
     @Override
     public boolean buildsNewInstance() {
         return false;
-    }
-
-    @Override
-    public String toString() {
-        return Helper.getShortClassName(this) + "()";
     }
 }

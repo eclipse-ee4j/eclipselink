@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,8 +14,9 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.identitymaps.cache;
 
-import org.eclipse.persistence.testing.framework.*;
-import org.eclipse.persistence.internal.identitymaps.*;
+import org.eclipse.persistence.internal.identitymaps.CacheIdentityMap;
+import org.eclipse.persistence.testing.framework.AutoVerifyTestCase;
+import org.eclipse.persistence.testing.framework.TestErrorException;
 import org.eclipse.persistence.testing.models.employee.domain.Employee;
 
 public class InsertOverflowTest extends AutoVerifyTestCase {
@@ -35,7 +36,7 @@ public class InsertOverflowTest extends AutoVerifyTestCase {
             java.util.Vector primaryKeys = new java.util.Vector();
             employee.setId(id);
             employee.setFirstName("Mr. " + id);
-            primaryKeys.addElement(id);
+            primaryKeys.add(id);
             cache.put(primaryKeys, employee, null, 0);
         }
     }
@@ -52,7 +53,7 @@ public class InsertOverflowTest extends AutoVerifyTestCase {
                  index < (originalMaxSize * 10); index++) {
             java.math.BigDecimal id = new java.math.BigDecimal((double)index * 101);
             java.util.Vector primaryKeys = new java.util.Vector();
-            primaryKeys.addElement(id);
+            primaryKeys.add(id);
             if (!cache.containsKey(primaryKeys)) {
                 throw new TestErrorException("Cache should contain value with keys " + primaryKeys + " but does not.");
             }

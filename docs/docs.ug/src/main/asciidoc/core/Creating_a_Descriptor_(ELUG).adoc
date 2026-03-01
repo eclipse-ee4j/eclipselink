@@ -1,0 +1,62 @@
+*TOC* Special:Whatlinkshere_Creating_a_Descriptor_(ELUG)[Related Topics]
+
+This section describes how to create EclipseLink descriptors. For
+information on creating different types of descriptors, see:
+
+* link:Creating%20a%20Relational%20Descriptor%20(ELUG)[Creating a
+Relational Descriptor]
+* link:Creating%20an%20EIS%20Descriptor%20(ELUG)[Creating an EIS
+Descriptor]
+* link:Creating%20an%20XML%20Descriptor%20(ELUG)[Creating an XML
+Descriptor]
+
+After you create a descriptor, you must
+link:Configuring%20a%20Descriptor%20(ELUG)[configure its various
+options] and use it to define mappings.
+
+For complete information on the various types of mapping that
+EclipseLink supports, see
+link:Introduction%20to%20Mappings%20(ELUG)[Introduction to Mappings] and
+link:Creating%20a%20Mapping%20(ELUG)[Creating a Mapping].
+
+For complete information on the various types of descriptor that
+EclipseLink supports, see
+link:Introduction%20to%20Descriptors%20(ELUG)#Descriptor_Types[Descriptor
+Types].
+
+== Validating Descriptors
+
+You can validate descriptors in the following ways:
+
+* Run the project in a test environment and watch for and interpret any
+exceptions that occur.
+* link:Introduction%20to%20EclipseLink%20Sessions%20(ELUG)#Integrity_Checker[Run
+the EclipseLink integrity checker].
+* link:Creating%20a%20Project%20(ELUG)#How_to_Generate_the_Project_Status_Report[Review
+the project status report].
+
+== Generating Java Code for Descriptors
+
+Typically, you capture descriptor configuration in the `+project.xml+`
+file and the EclipseLink runtime reads this information, and then
+creates and configures all necessary descriptor objects.
+
+Alternatively, for relational projects only, you can export an
+EclipseLink project as a Java class
+(`+org.eclipse.persistence.sessions.Project+`) that contains all
+descriptor configuration in Java. This lets you use Workbench to quickly
+create and configure descriptors, and then, manually code features that
+Workbench does not support. This gives you the best of both Workbench
+and Java access to your descriptors. After configuring your Java project
+class, compile it and include it in your application’s JAR file.
+
+For more information, see
+link:Creating%20a%20Relational%20Project%20(ELUG)#How_to_Export_Project_Java_Source_Using_Workbench[How
+to Export Project Java Source Using Workbench].
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Release_1[Category: Release 1] Category:_Task[Category: Task]

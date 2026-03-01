@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,8 +14,10 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.clientserver;
 
-import java.util.*;
-import org.eclipse.persistence.sessions.*;
+import org.eclipse.persistence.sessions.Session;
+import org.eclipse.persistence.sessions.UnitOfWork;
+
+import java.util.Vector;
 
 public class AnotherClient extends Thread {
     protected Server server;
@@ -44,7 +46,7 @@ public class AnotherClient extends Thread {
             raq.addAscendingOrdering("id");
             raq.setReferenceClass(org.eclipse.persistence.testing.models.employee.domain.Project.class);
             Vector projects = (Vector)unitOfWork.executeQuery(raq);
-            org.eclipse.persistence.testing.models.employee.domain.Project project = (org.eclipse.persistence.testing.models.employee.domain.Project)projects.elementAt(this.index);
+            org.eclipse.persistence.testing.models.employee.domain.Project project = (org.eclipse.persistence.testing.models.employee.domain.Project)projects.get(this.index);
             project.setName(Integer.valueOf(this.index).toString());
 
             this.unitOfWork.commit();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,10 +14,12 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.queries.oracle;
 
-import java.util.*;
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.testing.models.mapping.*;
-import org.eclipse.persistence.expressions.*;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.queries.ReadAllQuery;
+import org.eclipse.persistence.testing.models.mapping.Employee;
+
+import java.util.Vector;
 
 public class HierarchicalQueryWithWhere extends HierarchicalQueryTest
 {
@@ -34,7 +36,7 @@ public class HierarchicalQueryWithWhere extends HierarchicalQueryTest
       expected = new Vector();
       Employee daveVadis = (Employee)getSession().readObject(Employee.class, new ExpressionBuilder().get("lastName").equal("Vadis"));
       addEmployee(expected, daveVadis);
-      expected.removeElement(daveVadis);
+      expected.remove(daveVadis);
     }
     return expected;
   }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,14 +19,14 @@
 //       see <link>http://wiki.eclipse.org/EclipseLink/DesignDocs/316513</link>
 package org.eclipse.persistence.services;
 
-import javax.management.openmbean.CompositeType;
-import javax.management.openmbean.SimpleType;
-import javax.management.openmbean.OpenType;
+import org.eclipse.persistence.services.websphere.ClassSummaryDetail;
+
 import javax.management.openmbean.CompositeData;
 import javax.management.openmbean.CompositeDataSupport;
+import javax.management.openmbean.CompositeType;
 import javax.management.openmbean.OpenDataException;
-
-import org.eclipse.persistence.services.websphere.ClassSummaryDetail;
+import javax.management.openmbean.OpenType;
+import javax.management.openmbean.SimpleType;
 
 /**
  * The class is used internally by the Portable JMX Framework to convert

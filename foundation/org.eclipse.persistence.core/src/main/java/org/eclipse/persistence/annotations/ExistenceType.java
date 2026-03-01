@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,9 +16,9 @@
 package org.eclipse.persistence.annotations;
 
 /**
- * An enum that is used within the ExistenceChecking annotation.
+ * An enum that is used within the {@linkplain ExistenceChecking} annotation.
  *
- * @see org.eclipse.persistence.annotations.ExistenceChecking
+ * @see ExistenceChecking
  * @see org.eclipse.persistence.queries.DoesExistQuery
  * @author Guy Pelletier
  * @since EclipseLink 1.0
@@ -45,6 +45,7 @@ public enum ExistenceType {
     /**
      * Assume that the object does not exist. This may be used if the
      * application guarantees or does not care about the existence check.
+     * <p>
      * This will always force an insert to be called.
      */
     ASSUME_NON_EXISTENCE

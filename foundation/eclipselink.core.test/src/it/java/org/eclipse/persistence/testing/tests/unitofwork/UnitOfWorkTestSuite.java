@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,10 +14,16 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.unitofwork;
 
-import java.util.*;
-
-import org.eclipse.persistence.testing.framework.*;
-import org.eclipse.persistence.testing.models.employee.domain.*;
+import org.eclipse.persistence.annotations.IdValidation;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.queries.ReadObjectQuery;
+import org.eclipse.persistence.sessions.UnitOfWork;
+import org.eclipse.persistence.testing.framework.QuerySQLTracker;
+import org.eclipse.persistence.testing.framework.TestSuite;
+import org.eclipse.persistence.testing.framework.TransactionalTestCase;
+import org.eclipse.persistence.testing.models.employee.domain.Address;
+import org.eclipse.persistence.testing.models.employee.domain.Employee;
+import org.eclipse.persistence.testing.models.employee.domain.PhoneNumber;
 import org.eclipse.persistence.testing.models.ownership.ObjectA;
 import org.eclipse.persistence.testing.tests.writing.BidirectionalInsertTest;
 import org.eclipse.persistence.testing.tests.writing.ComplexUpdateTest;
@@ -26,11 +32,9 @@ import org.eclipse.persistence.testing.tests.writing.UpdateChangeObjectTest;
 import org.eclipse.persistence.testing.tests.writing.UpdateChangeValueTest;
 import org.eclipse.persistence.testing.tests.writing.UpdateDeepOwnershipTest;
 import org.eclipse.persistence.testing.tests.writing.UpdateToNullTest;
-import org.eclipse.persistence.annotations.IdValidation;
-import org.eclipse.persistence.expressions.ExpressionBuilder;
-import org.eclipse.persistence.queries.ReadObjectQuery;
-import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.tools.schemaframework.PopulationManager;
+
+import java.util.List;
 
 
 /**
@@ -69,6 +73,9 @@ public class UnitOfWorkTestSuite extends TestSuite {
         addTest(buildRefreshDeletedObjectTest());
 
         addTest(new UnregisterUnitOfWorkTest());
+
+        // Issue 1950 - Duplicate objects in UnitOfWorkImpl.primaryKeyToNewObjects
+        addTest(new UOWPrimaryKeyToNewObjectsDuplicateObjectsTest());
 
         // EL Bug 252047 - Mutable attributes are not cloned when isMutable is enabled on a Direct Mapping
         addTest(new CloneAttributeIfMutableTest());
@@ -233,9 +240,9 @@ public class UnitOfWorkTestSuite extends TestSuite {
                 List employees = getSession().readAllObjects(Employee.class);
                 Employee employee = null;
                 // Find an employee with a phone.
-                for (Iterator iterator = employees.iterator(); iterator.hasNext(); ) {
-                    employee = (Employee) iterator.next();
-                    if (employee.getPhoneNumbers().size() > 0) {
+                for (Object o : employees) {
+                    employee = (Employee) o;
+                    if (!employee.getPhoneNumbers().isEmpty()) {
                         break;
                     }
                 }
@@ -318,7 +325,7 @@ public class UnitOfWorkTestSuite extends TestSuite {
                     if (uow.executeQuery(query) != null) {
                         throwError("New employee should not have been found.");
                     }
-                    if (counter.getSqlStatements().size() == 0) {
+                    if (counter.getSqlStatements().isEmpty()) {
                         throwError("Query should have hit database.");
                     }
                     uow.commit();
@@ -326,7 +333,7 @@ public class UnitOfWorkTestSuite extends TestSuite {
                     if (uow.executeQuery(query) != employee) {
                         throwError("New employee should have been found.");
                     }
-                    if (counter.getSqlStatements().size() > 0) {
+                    if (!counter.getSqlStatements().isEmpty()) {
                         throwError("Query should have hit cache.");
                     }
                     uow = getSession().acquireUnitOfWork();
@@ -337,7 +344,7 @@ public class UnitOfWorkTestSuite extends TestSuite {
                     if (uow.executeQuery(query) != null) {
                         throwError("Employee should not have been found.");
                     }
-                    if (counter.getSqlStatements().size() == 0) {
+                    if (counter.getSqlStatements().isEmpty()) {
                         throwError("Query should have hit database.");
                     }
                     query = new ReadObjectQuery(Employee.class);
@@ -347,7 +354,7 @@ public class UnitOfWorkTestSuite extends TestSuite {
                     if (uow.executeQuery(query) != employee) {
                         throwError("Employee should have been found.");
                     }
-                    if (counter.getSqlStatements().size() > 0) {
+                    if (!counter.getSqlStatements().isEmpty()) {
                         throwError("Query should have hit cache.");
                     }
 

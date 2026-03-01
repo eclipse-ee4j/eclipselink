@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,10 +31,11 @@ public class SimpleSPBuilderTestSuite extends DBWSTestSuite {
     static final String WSDL_LOC = "http://" + host + ":" + port + "/simplesp/simplesp?wsdl";
 
     public static final String CREATE_PROCEDURE =
-        "CREATE OR REPLACE PROCEDURE TESTECHO(T IN VARCHAR2, U OUT VARCHAR2) AS \n" +
-        "BEGIN\n" +
-            "U := CONCAT('test-' , T);\n" +
-        "END TESTECHO;";
+            """
+                    CREATE OR REPLACE PROCEDURE TESTECHO(T IN VARCHAR2, U OUT VARCHAR2) AS\s
+                    BEGIN
+                    U := CONCAT('test-' , T);
+                    END TESTECHO;""";
 
     public static final String DROP_PROCEDURE =
         "DROP PROCEDURE TESTECHO";

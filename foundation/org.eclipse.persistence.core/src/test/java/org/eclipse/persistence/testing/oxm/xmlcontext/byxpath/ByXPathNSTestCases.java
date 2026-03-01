@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,12 +14,12 @@
 //     bdoughan - August 25/2009 - 1.2 - Initial implementation
 package org.eclipse.persistence.testing.oxm.xmlcontext.byxpath;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.testing.oxm.OXTestCase;
+
+import java.util.ArrayList;
+import java.util.List;
 
  public class ByXPathNSTestCases extends OXTestCase {
 
@@ -99,7 +99,7 @@ import org.eclipse.persistence.testing.oxm.OXTestCase;
 
      public void testSetCollectionValueByXPath() {
          Customer customer = new Customer();
-         List<PhoneNumber> phoneNumbers = new ArrayList<PhoneNumber>(1);
+         List<PhoneNumber> phoneNumbers = new ArrayList<>(1);
          phoneNumbers.add(new PhoneNumber());
          xmlContext.setValueByXPath(customer, "a:contact-info/a:phone-number/", namespaceResolver, phoneNumbers);
          assertSame(customer.getPhoneNumbers(), phoneNumbers);

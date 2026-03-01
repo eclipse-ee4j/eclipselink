@@ -1,0 +1,523 @@
+image:Elug_draft_icon.png[Image:Elug draft
+icon.png,title="Image:Elug draft icon.png"] *For the latest EclipseLink
+documentation, please see
+http://www.eclipse.org/eclipselink/documentation/*
+
+'''''
+
+*TOC* Special:Whatlinkshere_Introduction_to_XML_Projects_(ELUG)[Related
+Topics]
+
+This section provides an overview of XML projects and their components.
+
+For information on project concepts and features common to more than one
+type of EclipseLink projects, see
+link:Introduction%20to%20Projects_(ELUG)[Introduction to Projects].
+
+== XML Project Concepts
+
+Use an XML project for nontransactional, nonpersistent (in-memory)
+conversions between Java objects and XML documents using JAXB (see
+link:#EclipseLink_Support_for_Java_Architecture_for_XML_Binding_(JAXB)[EclipseLink
+Support for Java Architecture for XML Binding (JAXB)] and
+link:#JAXB_Validation[JAXB Validation]). The Workbench provides complete
+support for creating XML projects.
+
+The EclipseLink runtime performs XML data conversion based on one or
+more XML schemas. In an XML project, Workbench directly references
+schemas in the deployment XML, and exports mappings configured with
+respect to the schemas you specify. For information on how to use
+Workbench with XML schemas, see
+link:Using%20Workbench%20(ELUG)#Using_XML_Schemas[Using XML Schemas].
+For information on how EclipseLink supports XML namespaces, see
+link:Introduction%20to%20Projects_(ELUG)#XML_Namespaces_Overview[XML
+Namespaces Overview].
+
+[#Table 52-1]## *_XML Project Components_*
+
+[width="100%",cols="<11%,<89%",options="header",]
+|===
+|*Component* |*Supported Types*
+|Data Source |None
+
+|Descriptors |For more information, see
+link:Introduction%20to%20XML%20Descriptors%20(ELUG)#Descriptor_Concepts[Descriptor
+Concepts].
+
+|Mappings |For more information, see link:XML_Mappings_(ELUG)[XML
+Mappings].
+|===
+
+In an XML project, you do not use EclipseLink queries and expressions.
+
+=== EclipseLink Support for Java Architecture for XML Binding (JAXB)
+
+JAXB defines annotations to control the mapping of Java objects to XML,
+but it also defines a default set of mappings. Using the defaults,
+EclipseLink can marshall a set of objects into XML, and unmarshall an
+XML documennt into objects. JAXB provides a standard Java object-to-XML
+API. For more information, see
+http://java.sun.com/xml/jaxb/index%7Cl[`+http://java.sun.com/xml/jaxb/index|l+`].
+
+EclipseLink provides an extra layer of functions on top of JAXB. It
+allows for the creation and subsequent manipulation of mappings (in the
+form of a Workbench project) from an existing object model, without
+requiring the recompilation of the JAXB object model.
+
+An essential component of this function is the EclipseLink JAXB
+compiler. Using the EclipseLink JAXB compiler, you can generate both an
+EclipseLink XML project and JAXB-compliant object model classes from
+your XML schema.
+
+The EclipseLink JAXB compiler simplifies JAXB application development
+with EclipseLink by automatically generating (see
+link:Creating%20an%20XML%20Project%20(ELUG)[Creating an XML Project from
+an XML Schema]) the required JAXB files (see
+link:#Working_with_JAXB-Specific_Generated_Files[Working with
+JAXB-Specific Generated Files]) from your XML schema (XSD) document.
+
+For more information on using the JAXB and EclipseLink-specific run-time
+classes, see
+link:#Using_EclipseLink_JAXB_Compiler-Generated_Files_at_Run_Time[Using
+EclipseLink JAXB Compiler-Generated Files at Run Time].
+
+==== Generating EclipseLink Project and XML Schema Using JAXB Annotations
+
+The EclipseLink JAXB compiler generates a EclipseLink project and an XML
+schema using the following JAXB annotations:
+
+* `+XmlRootElement+` - Indicates that a class should be mapped to a
+root-level element in a schema. The element name and namespace are
+specified in this annotation. This is a class-level annotation.
+* `+XmlElement+` - Indicates that a particular attribute on a Java class
+should be mapped to an XML element in the schema. The name and namespace
+can be specified by this annotation. This is a field-level annotation.
+* `+XmlElementRef+` - Indicates that a particular attribute on a Java
+class should be mapped in the schema to an XML element derived from the
+attribute’s type. The name and namespace can be specified by this
+annotation. This is a field-level annotation. For more information, see
+link:Introduction%20to%20XML%20Mappings%20(ELUG)#Substitution_Groups[Substitution
+Groups].
+* `+XmlElementRefs+` - Contains a collection of `+XmlElementRef+`
+annotations. This is a field-level annotation. For more information, see
+link:Introduction%20to%20XML%20Mappings%20(ELUG)#Substitution_Groups[Substitution
+Groups].
+* `+XmlAttribute+` - Indicates that the Java attribute should map to an
+XML attribute in the schema. Name and namespace should be provided. This
+is a field-level annotation.
+* `+XmlElementWrapper+` - Specifies a wrapper element around another
+element or attribute. You can use this annotation to create a grouping
+element around a collection. This is a field-level annotation.
+* `+XmlList+` - Indicates that a collection property should map to a
+space-separated list in XML. This is a field-level annotation.
+* `+XmlType+` - Defines the complex-type for a class. Using this
+annotation’s `+propOrder+` property, you can specify the order in which
+to map elements. The `+propOrder+` property also determines if the
+schema should contain a `+sequence+` or an `+all+`. Depending on the
+structure of the class, it will either map to a `+ComplexType+`, a
+`+SimpleType+`, or a `+ComplexType+` with `+SimpleContent+`. This is a
+class-level annotation.
+* `+XmlTransient+` - Indicates that a mapping should not be generated
+for a particular field. This is a marker annotation. This is a
+field-level annotation.
+* `+XmlSchema+` - Specifies the target namespace for a schema. You can
+also use this annotation to configure namespace prefix mappings with the
+`+XmlNs+` annotation. This is a package-level annotation.
+* `+XmlNs+` - Appears only in an `+XmlSchema+` annotation to specify
+namespace-prefix mappings. This is a package-level annotation.
+* `+XmlValue+` - Maps an attribute to a text node under the parent class
+(for example, an Xpath of "`text( )`"). Also indicates that the owning
+class should map to either a `+SimpleType+` or a `+ComplexType+` with
+`+SimpleContent+`. This is a field-level annotation.
+* `+XmlEnum+` - Indicates that a JDK 1.5 `+Enum+` type should map to a
+simple type with enumeration facets in the schema. The base schema type
+is specified on this annotation. This is a field-level annotation.
+* `+XmlEnumValue+` - Lets you specify the enumeration facets to be used
+in the schema, if they are to be different from the string values of the
+`+Enum+` constants specified in Java. This is a field-level annotation.
+* `+XmlAccessorType+` - Specifies how the classes’ attributes should be
+processed. This is a package- or class-level annotation. The following
+are valid values:
+** `+FIELD+` – Process all the public and/or private fields of the
+class.
+** `+PROPERTY+` – Process all the public or private get and set method
+pairs on the class.
+** `+PUBLIC_MEMBER+` – Process all the public fields and public get and
+set method pairs on the class.
+** `+NONE+` – Only process members that are annotated with JAXB
+annotations.
+* `+XmlAccessorOrder+` - Specifies the order in which properties are to
+be processed. This is a package- or class-level annotation. The
+following are valid values:
+** `+DEFAULT+`
+** `+ALPHABETICAL+`.
+* `+XmlSchemaType+` - If specified at a property level, indicates the
+schema type that should be used in schema generation. If used as part of
+an `+XmlSchemaTypes+` annotation, overrides default schema types at a
+package level. This is a property- or a package-level annotation.
+* `+XmlSchemaTypes+` - Contains a collection of `+XmlSchemaType+`
+annotations. Each one specifies a Java class and a XML schema type pair
+that should be used as a default for this package. This is a
+package-level annotation.
+* `+XmlAnyAttribute+` - Specifies that a Map property should be mapped
+to an `+xs:any+` attribute in the schema. For more information, see
+link:Introduction%20to%20XML%20Mappings%20(ELUG)#XML_Any_Attribute_Mapping[XML
+Any Attribute Mapping]. This is a filed-level annotation.
+
+For more information, see Chapter 8 of JAXB Specification at
+http://jcp.org/aboutJava/communityprocess/pfd/jsr222/index.html
+
+Note: The EclipseLink project is generated from a collection of
+annotated Java classes with support for relationships, collection-style
+mappings, and JDK 1.5 enumerations.
+
+The schema is generated from a set of annotated Java classes with
+support for relationships.
+
+==== Working with JAXB-Specific Generated Files
+
+The EclipseLink JAXB compiler generates the following JAXB-specific
+files from your XSD:
+
+* link:#Implementation_Classes[Implementation Classes]
+
+The JAXB runtime uses these files as specified by the JAXB
+specification.
+
+All JAXB-specific files are generated in the output directory you
+define, and in the subdirectories implied by the target package name you
+define. For more information about EclipseLink JAXB binding compiler
+options, see
+link:Creating%20an%20XML%20Project%20(ELUG)#Creating_an_XML_Project_from_an_XML_SchemaCreating_an_XML_Project_from_an_XML_Schema[Creating
+an XML Project from an XML SchemaCreating an XML Project from an XML
+Schema].
+
+Before you compile your generated classes, be sure to configure your IDE
+classpath to include `+<+`_`+ECLIPSELINK_HOME+`_`+>\lib\xml.jar+`. For
+an example, see
+link:Using%20an%20Integrated%20Development%20Environment%20(ELUG)[Using
+an Integrated Development Environment].
+
+===== Implementation Classes
+
+All implementation classes are named according to the content, element,
+or implementation `+name+` attribute defined in the XSD.
+
+The generated implementation classes are simple domain classes, with
+private attributes for each JAXB property, and public `+get+` and
+`+set+` methods that return or set attribute values.
+
+==== Using EclipseLink JAXB Compiler-Generated Files at Run Time
+
+At run time, you can access the EclipseLink JAXB compiler-generated
+files by doing the following:
+
+* Using EclipseLink `+XMLContext+` (see
+link:#How_to_Use_EclipseLink_XMLContext[How to Use EclipseLink
+XMLContext])
+* Using EclipseLink `+XMLBinder+` (see
+link:#How_to_Use_EclipseLink_XMLBinder[How to Use EclipseLink
+XMLBinder])
+* Using EclipseLink `+JAXBContext+` (see
+link:#How_to_Use_JAXBContext[How to Use JAXBContext])
+
+===== How to Use EclipseLink XMLContext
+
+EclipseLink provides an `+org.eclipse.persistence.ox.XMLContext+` class
+with which you can create instances of EclipseLink `+XMLMarshaller+`,
+`+XMLUnmarshaller+`, `+XMLBinder+` (see
+link:#How_to_Use_EclipseLink_XMLBinder[How to Use EclipseLink
+XMLBinder]), and `+XMLValidator+`.
+
+The `+XMLContext+` is thread-safe. For example, if multiple threads
+accessing the same `+XMLContext+` object request an `+XMLMarshaller+`,
+each will receive their own instance of `+XMLMarshaller+`, so any state
+that the `+XMLMarshaller+` maintains will be unique to that process. By
+using the `+XMLContext+`, you can use EclipseLink XML in multithreaded
+architectures, such as the binding layer for Web services. Create the
+`+XMLContext+` using its constructor method and by passing in the
+session name defined in the `+sessions.xml+` file, as the following
+example shows:
+
+`+XMLContext context = new XMLContext("mysession");+`
+
+You can also create the `+XMLContext+` from multiple sessions using a
+colon separated list of session names, as the following example shows:
+
+`+XMLContext context = new XMLContext("session1:session2:session3");+`
+
+Use the `+XMLContext+` to create an EclipseLink `+XMLMarshaller+`,
+`+XMLUnmarshaller+`, `+XMLBinder+`, and `+XMLValidator+`, as follows:
+
+`+XMLMarshaller marshaller = context.createMarshaller();+`
+`+marshaller.marshal(myObject, outputStream);+`
+`+marshaller.setFormattedOutput(true);+`
+
+`+XMLUnmarshaller unmarshaller = context.createUnmarshaller();+`
+`+Employee emp = (Employee)unmarshaller.unmarshal(new File("employee.xml"));+`
+
+`+XMLBinder binder = context.createBinder();+`
+`+Address add = (Address)binder.unmarshal(myElement);+`
+
+`+XMLValidator validator = context.createValidator();+`
+`+boolean isValid = validator.validate(emp);+`
+
+Using the `+XMLContext+` `+getDocumentPreservationPolicy+` method, you
+can retrieve this context’s document preservation policy in a form of
+the `+DocumentPreservationPolicy+` object. This object’s API lets you
+specify the position of newly added to the node elements, as well as
+disable the addition of new elements.
+
+===== How to Use Marshal and Unmarshal Events
+
+You can provide EclipseLink `+XMLMarshaller+` and `+XMLUnmarshaller+`
+with additional functionality at run time by registering them with a
+listener to handle specific event callbacks. This allows for extra
+processing on a business object either immediately before, or
+immediately after an object is written to or read from XML.
+
+There are two types of event callbacks that you can handle in two
+different ways:
+
+[arabic]
+. To handle listener-based callbacks, set an event handler on an
+instance of `+XMLMarshaller+` or `+XMLUnmarshaller+` that implements a
+required interface, such as `+XMLMarshalListener+` or
+`+XMLUnmarshalListener+`. The events are triggered on the marshaller or
+unmarshaller’s listener for any classes being marshalled or
+unmarshalled.
+. To handle class-specific callbacks, you need to provide the required
+callback methods on your business objects.
+
+[width="100%",cols="<100%",]
+|===
+|*Note:* If you specify both the listener and the business object
+callbacks, the class-specific method will be invoked before the listener
+event.
+|===
+
+This example shows how to create your custom event listeners.
+
+[#Example 52-33]## *_Implementing the EclipseLink XMLMarhsalListener and
+XMLUnmarhsalListener Interfaces_*
+
+`+public class EmployeeMarshalListener implements XMLMarshalListener {+`
+
+`+   public void beforeMarshal(Object target) {+`
+`+       // do something+` `+   }+`
+
+`+   public void afterMarshal(Object target) {+`
+`+       // do something+` `+   }+` `+)+`
+
+`+public class EmployeeUnmarshalListener implements XMLUnmarshalListener {+`
+
+`+   public void beforeUnmarshal(Object target, Object parent) {+`
+`+       // do something+` `+   }+`
+
+`+   public void afterUnmarshal(Object target, Object parent) {+`
+`+       // do something+` `+   }+` `+}+`
+
+The following examples show how to use the listeners in your
+application.
+
+[#Example 52-34]## *_Using the Marshal Listener_*
+
+`+...+` `+XMLMarshaller marshaller = context.createMarshaller();+`
+`+marshaller.setMarshalListener(new EmployeeMarshalListener());+`
+`+marshaller.marshal(myObject, System.out);+` `+...+`
+
+[#Example 52-35]## *_Using the Unmarshal Listener_*
+
+`+...+` `+XMLUnmarshaller unmarshaller = context.createUnmarshaller();+`
+`+unmarshaller.setUnmarshalListener(new EmployeeUnmarshalListener());+`
+`+Object myObject = unmarshaller.unmarshal(myFile); +` `+...+`
+
+===== How to Use EclipseLink XMLBinder
+
+`+XMLBinder+` is a run-time class that allows you to preserve a document
+that you have unmarshalled, as well as to resynchronize that document
+with the unmarshalled objects at any time.
+
+[width="100%",cols="<100%",]
+|===
+|*Note:* This functionality is based on the JAXB binder API
+(`+javax.xml.bind.Binder+`). This is an addition to the design-time
+method of document preservation.
+|===
+
+When the `+XMLBinder+` unmarshalls XML nodes into mapping objects, and
+then performs an update operation, it preserves not only the order of
+elements, but also the comments from an original XML document using the
+cached value. This way, both the returned node and the cached node are
+identical and reflect the preserved document. When adding new elements,
+EclipseLink `+XMLBinder+` places them at the correct location (relative
+to other mapped content) in the node.
+
+When unmarshalling a document that contains only unmapped content,
+setting some values and then marshalling, the `+XMLBinder+` adds new
+elements before existing unmapped data, such as comments and processing
+instructions.
+
+This example demonstrates how you can unmarshall a document using an
+instance of an `+XMLBinder+`.
+
+[#Example 52-2]## *_Unmarshalling a Document Using XMLBinder_*
+
+`+XMLContext conext = new XMLContext(myProject);+`
+`+XMLBinder binder = context.createBinder();+`
+`+Employee emp = (Employee) binder.unmarshal(myDocument);+`
+
+In the preceding example, `+emp+` is the root object that was
+unmarshalled from the provided document. The binder maintains references
+to the original XML document as well as objects generated during the
+unmarshall operation.
+
+The following example demonstrates how you can make changes to the
+object (`+Employee+`) and update the XML document using an instance of
+an `+XMLBinder+`.
+
+[#''Example 52-3]## *Making Changes to an Object and to Updating XML
+Using XMLBinder*’’
+
+`+...+` `+emp.setPhoneNumber("123-4567");+` `+binder.updateXML(emp);+`
+
+In the preceding example, the `+updateXML+` method will update the
+cached node in the binder. Note that the cached node preserves the
+document, including comments, as the following example shows:
+
+`+   +` `+      +``+John Smith +` `+      +``+123-4567+` `+   +`
+
+The following example demonstrates how you can obtain an associated node
+for a subobject (`+Address+`) of the `+Employee+` using an instance of
+an `+XMLBinder+`.
+
+[#Example 52-4]## *_Obtaining an Associated Node Using XMLBinder_*
+
+`+...+` `+Address addr = emp.getAddress();+`
+`+Node addressNode = binder.getXMLNode(addr);+`
+
+In the preceding example, the returned node (`+addressNode+`) is the XML
+node in the original XML document that was used to build this employee’s
+`+Address+` object.
+
+This example demonstrates how you can make changes to an XML node and
+update objects (`+Address+`) of the `+Employee+` using an instance of an
+`+XMLBinder+`.
+
+[#Example 52-5]## *_Making Changes to an XML Node and Updating Objects
+Using XMLBinder_*
+
+`+...+` `+addressNode.setAttribute("apt-no", "1527");+`
+`+Address updatedAddressNode = binder.updateObject(addressNode);+`
+
+In the preceding example, the address returned from the binder operation
+is the original Address object created during the unmarshall operation,
+but now it contains the updated apartment number information from the
+XML document.
+
+===== How to Use JAXBContext
+
+You can create an instance of `+JAXBContext+` from a collection of
+classes that are to be bound to XML. This will generate a EclipseLink
+project from the classes dynamically at run time.
+
+Using the instance of `+JAXBContext+` you can obtain `+Marshaller+` and
+`+Unmarshaller+` instances to operate on those classes, as the
+link:#Example_52-6[Creating and Using JAXBContext] example shows. Note
+that this example assumes that you configure your application classpath
+to include your domain object class files.
+
+[#Example 52-6]## *_Creating and Using JAXBContext_*
+
+`+Class[] classes = {Employee.class, Address.class, Department.class};+`
+`+JAXBContext jaxbContext = JAXBContext.newInstance(classes);+`
+`+Marshaller marshaller = jaxbContext.createMarshaller();+`
+`+marshaller.marshal(myEmployee, myOutput);+`
+
+[cols="<",]
+|===
+|*Note:* The `+JAXBContext+` object is thread-safe.
+|===
+
+===== How to Use JAXBElement
+
+EclipseLink lets you marshal to and unmarshal from `+JAXBElement+`
+types. The `+javax.xml.bind.JAXBElement+` class provides access to the
+following basic properties of an XML element:
+
+* its qualified name, which is composed of `+{target namespace}+` and
+`+{name}+`
+* its value, which is an instance of the Java class binding of its
+`+{type definition}+`
+* whether or not the element’s content is `+{nillable}+`
+
+EclipseLink supports the following JAXB element marshal API defined in
+the `+Marshaller+`:
+
+* `+marshal(java.lang.Object jaxbElement, java.io.Writer writer)+`
+* `+marshal(java.lang.Object jaxbElement, java.io.OutputStream os)+`
+* `+marshal(java.lang.Object jaxbElement, org.xml.sax.ContentHandler)+`
+* `+marshal(java.lang.Object jaxbElement, javax.xml.transform.Result)+`
+* `+marshal(java.lang.Object jaxbElement, org.w3c.dom.Node)+`
+* `+marshal(java.lang.Object jaxbElement, javax.xml.stream.XMLStreamWriter writer)+`
+
+[width="100%",cols="<100%",]
+|===
+|*Note:* If the first parameter is not a `+JAXBElement+` instance, the
+marshal operation will throw an
+`+org.eclipse.persistence.exceptions.XMLMarshalException.MARSHAL_EXCEPTION+`.
+|===
+
+EclipseLink provides implementation of the following JAXB element
+unmarshal API defined in the `+Unarshaller+`:
+
+* `+JAXBElement+``+unmarshal(org.w3c.dom.Node node, Class+``+declaredType)+`
+* `+JAXBElement+``+unmarshal(javax.xml.transform.Source source, Class+``+declaredType)+`
+* `+JAXBElement+``+unmarshal(javax.xml.stream.XMLStreamReader streamReader, Class+``+declaredType)+`
+* `+JAXBElement+``+unmarshal(javax.xml.stream.XMLEventReader eventReader, Class+``+declaredType)+`
+
+=== JAXB Validation
+
+EclipseLink can validate both complete object trees and subtrees against
+the XML schema that was used to generate the implementation classes. In
+addition, EclipseLink will validate both root objects (objects that
+correspond to the root element of the XML document) and nonroot objects
+against the schema used to generate the object’s implementation class.
+
+When validating an object tree, EclipseLink performs the following
+checks (in order):
+
+[arabic]
+. Check that element appears in the document at the specified location.
+. If *maxOccurs* or *minOccurs* is specified, check number of elements.
+. If *type* is specified, check that element value satisfies the type
+constraints.
+. If a *fixed value* is specified, check that the element value matches
+it.
+. If *restrictions* (length, patterns, enumerations, and so on) are
+specified, check that the element value satisfies it.
+. If an *ID* type is specified during a `+validateRoot+` operation,
+check that the ID value is unique in the document.
+. If an *IDREF* type is specified during a `+validateRoot+` operation,
+check that the ID referenced exists in the document.
+
+If validation errors are encountered, EclipseLink stops validating the
+object tree and creates a `+ValidationEvent+` object, according to the
+JAXB specification. If an error occurs in a subobject, EclipseLink will
+not validate further down that object’s subtree.
+
+For more information on using EclipseLink XML to perform validation, see
+link:#Using_EclipseLink_JAXB_Compiler-Generated_Files_at_Run_Time[Using
+EclipseLink JAXB Compiler-Generated Files at Run Time].
+
+For additional information on JAXB and validation, refer to the JAXB
+specification at
+http://java.sun.com/xml/jaxb/[`+http://java.sun.com/xml/jaxb/+`].
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Release_1[Category: Release 1] Category:_Concept[Category:
+Concept] Category:_XML[Category: XML]

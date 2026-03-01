@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,7 +30,7 @@ import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 /**
  * INTERNAL:
  * Define JPA meta-data for partitioning policy.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -85,8 +85,7 @@ public abstract class FieldPartitioningMetadata extends AbstractPartitioningMeta
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (super.equals(objectToCompare) && (objectToCompare instanceof FieldPartitioningMetadata)) {
-            FieldPartitioningMetadata policy = (FieldPartitioningMetadata) objectToCompare;
+        if (super.equals(objectToCompare) && (objectToCompare instanceof FieldPartitioningMetadata policy)) {
 
             return valuesMatch(this.partitionColumn, policy.getPartitionColumn())
                     && valuesMatch(this.unionUnpartitionableQueries, policy.getUnionUnpartitionableQueries())

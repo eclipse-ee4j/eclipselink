@@ -1,0 +1,383 @@
+*TOC* Special:Whatlinkshere_Creating_a_Project_(ELUG)[Related Topics]
+
+This section describes how to create EclipseLink projects. For
+information on the various types of projects available, see
+link:Introduction%20to%20Projects_(ELUG)#EclipseLink_Project_Types[EclipseLink
+Project Types].
+
+You can create a project using the Workbench or Java code. We recommend
+link:#How_to_Create_a_Project_Using_the_Workbench[using the Workbench]
+to create projects and generate deployment XML or Java source versions
+of the project for use at run time.
+
+Alternatively, you can create projects
+link:#How_to_Create_a_Project_Using_Java[in Java code]. For an EIS
+project that uses a record type other than XML, you must use Java code.
+
+=== How to Create a Project Using the Workbench
+
+When you create a project using the Workbench, all project information
+is stored in the project file ( .`+mwp+` file). This file references
+additional XML data files that contain the information about how the
+Java classes map to database tables or XML elements.
+
+Using the Workbench, you can link:#Exporting_Project_Information[export
+this information as an EclipseLink project XML file] (that is, the
+deployment XML file) that is read in by the EclipseLink runtime. You can
+also export this information as a Java class.
+
+The Workbench displays projects and their contents in the Navigator
+window. When you select a project, its attributes are displayed in the
+Editor window. See
+link:Using%20Workbench%20(ELUG)#How_to_Use_the_Navigator[How to Use the
+Navigator] for more information. The Workbench supports the following
+project types:
+
+* image:projdb.gif[Relational Database project
+icon,title="Relational Database project icon"] Relational project
+* image:projxml.gif[XML Project icon,title="XML Project icon"] XML
+project
+* image:projeis.gif[EIS project icon,title="EIS project icon"] EIS
+project
+
+==== Creating New Workbench Projects
+
+This section includes information on creating a new Workbench project.
+To create a new project from an existing persistence application, see
+link:Integrating%20EclipseLink%20with%20an%20Application%20Server%20(ELUG)[Integrating
+EclipseLink with an Application Server]. To create a new project from
+JAXB, see
+link:Introduction%20to%20XML%20Projects%20(ELUG)#EclipseLink_Support_for_Java_Architecture_for_XML_Binding_(JAXB)[EclipseLink
+Support for Java Architecture for XML Binding (JAXB)].
+
+To create a new Workbench project, use this procedure:
+
+[arabic]
+. Click *New* image:creatbtn.gif[New Project
+icon,title="New Project icon"] on the toolbar and select *Project*. The
+Create New Workbench Project dialog box appears. You can also create a
+new project by choosing *File* > *New > Project* from the menu.*_
+[#Figure 112-1]## Create New Workbench Project Dialog Box_*
+image:create.gif[Create New Workbench Project Dialog
+Box,title="Create New Workbench Project Dialog Box"]
+. Enter data in each field on the Create New Workbench Project dialog
+box, and then click *OK*.
+
+Use the following information to enter data in each field of this dialog
+box:
+
+Field
+
+Description
+
+Name
+
+Enter the name of the Workbench project. This project name will also
+become the name of the .mwp file.
+
+Data Source
+
+Use these options to specify the type of project to create, and its data
+source.
+
+Database
+
+Select Database to create a relational project to a relational database.
+Use the Platform list to select the specific database platform.
+
+EIS
+
+Select EIS to create an EIS project to a nonrelational data source using
+XML records. Use the Platform list to specify the JCA adapter to use.
+
+XML
+
+Select XML to create a nontransactional, nonpersistent XML project to an
+XML schema. Alternatively, you can generate both an XML project and
+object model classes (see Creating an XML Project from an XML Schema).
+
+For more project information, continue with the following:
+
+* link:Configuring%20a%20Project%20(ELUG)[Configuring the project].
+* Add mappings and descriptors (see
+link:Introduction%20to%20Descriptors%20(ELUG)[Introduction to
+Descriptors] and link:Introduction%20to%20Mappings%20(ELUG)[Introduction
+to Mappings]).
+* link:#Exporting_Project_Information[Export the project for use with
+the EclipseLink runtime].
+
+=== How to Create a Project Using Java
+
+To create a project using Java code, use this procedure:
+
+[arabic]
+. Implement a project class that extends the
+`+org.eclipse.persistence.sessions.Project+` class (see the
+link:#Example_112-1[Specifying an EclipseLink Project in Code] example).
+. Compile the project class.
+
+[#Example 112-1]## *_Specifying an EclipseLink Project in Code_*
+
+*`+/**+`*
+`+'''* The class EmployeeProject is an example of an EclipseLink project defined in+`
+`+'''* Java code. The individual parts of the project - the Login and the descriptors,+`
+`+'''* are built inside of methods that are called by the constructor. Note that+`
+`+'''* EmployeeProject extends the class org.eclipse.persistence.sessions.Project+`
+`+'''*/+`
+`+public class EmployeeProject extends org.eclipse.persistence.sessions.Project {+`
+
+*`+/**+`*
+`+'''* Supply a zero-argument constructor that initializes all aspects of the project.+`
+
+`+'''* Make sure that the login and all the descriptors are initialized and added to+`
+`+'''* the project. Project-level properties, such as the name of the project, should+`
+`+'''* be specified here+` `+'''*/+` `+public EmployeeProject() {+`
+`+  setName("EmployeeProject");+` `+  applyLogin();+` `+  +`
+`+  addDescriptor(buildAddressDescriptor());+`
+`+  addDescriptor(buildEmployeeDescriptor());+`
+`+  addDescriptor(buildPhoneNumberDescriptor());+` `+}+`
+
+*`+//\'\' \'\'Data\'\' \'\'source\'\' \'\'information+`*
+`+public void applyLogin() {+`
+`+  DatabaseLogin login = new DatabaseLogin();+`
+
+`+  +`*`+//\'\' \'\'use\'\' \'\'platform\'\' \'\'appropriate\'\' \'\'for\'\' \'\'underlying\'\' \'\'database+`*
+`+  login.usePlatform(+`
+`+    new org.eclipse.persistence.platform.database.oracle.Oracle9Platform());+`
+`+  login.setDriverClassName("oracle.jdbc.OracleDriver");+`
+`+  login.setConnectionString("jdbc:oracle:thin:@HOST:PORT:SID");+`
+`+  login.setUserName("USER NAME");+`
+`+  login.setEncryptedPassword("PASSWORD, ENCRYPTED");+`
+
+`+  +`*`+//\'\' \'\'Configuration\'\' \'\'Properties+`*
+
+`+    setDatasourceLogin(login);+` `+}+`
+
+*`+/**+`*
+`+'''* Descriptors are built by defining table info, setting properties+`
+`+'''* (caching, etc.) and by adding mappings to the descriptor+`
+`+'''*/+`
+
+*`+//\'\' \'\'SECTION:\'\' \'\'DESCRIPTOR+`*
+`+public ClassDescriptor buildAddressDescriptor() {+`
+
+`+  RelationalDescriptor descriptor = new RelationalDescriptor();+`
+
+`+  +`*`+//\'\' \'\'specify\'\' \'\'the\'\' \'\'class\'\' \'\'to\'\' \'\'be\'\' \'\'made\'\' \'\'persistent+`*
+`+  descriptor.setJavaClass(examples.servletjsp.model.Address.class);+`
+
+`+  +`*`+//\'\' \'\'specify\'\' \'\'the\'\' \'\'tables\'\' \'\'to\'\' \'\'be\'\' \'\'used\'\' \'\'and\'\' \'\'primary\'\' \'\'key+`*
+
+`+  descriptor.addTableName("ADDRESS");+`
+`+  descriptor.addPrimaryKeyFieldName("ADDRESS.ADDRESS_ID");+`
+
+`+  +`*`+//\'\' \'\'Descriptor\'\' \'\'Properties+`*
+`+  descriptor.useSoftCacheWeakIdentityMap();   +`
+`+  descriptor.setIdentityMapSize(100) +`
+`+  descriptor.useRemoteSoftCacheWeakIdentityMap()+`
+`+  descriptor.setRemoteIdentityMapSize(100)+`
+`+  descriptor.setSequenceNumberFieldName("ADDRESS.ADDRESS_ID")+`
+`+  descriptor.setSequenceNumberName("ADD_SEQ");   +`
+`+  descriptor.setAlias("Address");+`
+
+`+  +`*`+//\'\' \'\'Mappings+`*
+`+  DirectToFieldMapping cityMapping = new DirectToFieldMapping();+`
+`+  cityMapping.setAttributeName("city");+`
+`+  cityMapping.setFieldName("ADDRESS.CITY");+`
+`+  descriptor.addMapping(cityMapping);+`
+
+`+  +`*`+//\'\' \'\'Additional\'\' \'\'mappings\'\' \'\'are\'\' \'\'added\'\' \'\'to\'\' \'\'the\'\' \'\'descriptor\'\' \'\'using\'\' \'\'the\'\' \'\'addMapping\'\' \'\'method+`*
+
+`+  return descriptor;}+`
+
+[width="100%",cols="<100%",]
+|===
+|*Note*: Using Workbench provides a starting point for a custom project
+class. For more information, see
+link:Creating%20a%20Relational%20Project%20(ELUG)#How_to_Export_Project_Java_Source_Using_Workbench[How
+to Export Project Java Source Using Workbench].
+|===
+
+== Working with Projects
+
+Using Workbench, you can perform the following project functions:
+
+* link:#How_to_Open_Existing_Projects[How to Open Existing Projects]
+* link:#How_to_Save_Projects[How to Save Projects]
+* link:#How_to_Generate_the_Project_Status_Report[How to Generate the
+Project Status Report]
+
+See link:Configuring%20a%20Project%20(ELUG)[Configuring a Project] for
+additional information on working with Workbench projects.
+
+=== How to Open Existing Projects
+
+Use this procedure to open an existing project:
+
+[arabic]
+. Click *Open Project* image:openbtn.gif[Open Project
+button,title="Open Project button"] on the toolbar. The Choose a File
+dialog box appears. You can also open a project by choosing *File* >
+*Open* from the menu.
+
+[width="100%",cols="<100%",]
+|===
+|*Note*:The *File* menu option contains a list of recently opened
+projects. You can select one of these projects to open. See
+link:Using%20Workbench%20(ELUG)#How_to_Use_General_Preferences[How to
+Use General Preferences] for information on customizing this list.
+|===
+
+*See Also*
+
+link:#Working_with_Projects[Working with Projects]
+
+link:Introduction%20to%20Projects_(ELUG)[Introduction to Projects]
+
+=== How to Save Projects
+
+Workbench does not automatically save your project. Be sure to save your
+project often to avoid losing data.
+
+To save your project(s), use this procedure:
+
+[arabic]
+. Click *Save* image:savebtn.gif[Save Selected Project
+button.,title="Save Selected Project button."] or *Save All*
+image:saveall.gif[Save All Projects
+button.,title="Save All Projects button."] to save your project(s). You
+can also save a project by choosing *File* > *Save* or *File* > *Save
+All* from the menu.
+. If you close Workbench while there are currently unsaved changes, the
+Save Project dialog box appears. [#Figure 112-3]##*_Save Projects Dialog
+Box_* image:save.gif[Save Projects Dialog
+Box,title="Save Projects Dialog Box"]
+. Select the project(s) to save and click *OK*.Click *Select All* to
+select all the available projects.
+
+To save your project with a new name or location, see
+link:#Saving_Projects_with_a_New_Name_or_Location[Saving Projects with a
+New Name or Location].
+
+==== Saving Projects with a New Name or Location
+
+To save your project with a different name or location, use this
+procedure:
+
+[arabic]
+. Choose *File* > *Save As* image:saveasbt.gif[Save As
+button,title="Save As button"]. The Save As dialog box appears.
+[#Figure 112-4]##*_Save As Dialog Box_* image:saveas.gif[Save As Dialog
+Box,title="Save As Dialog Box"]
+. Select a name and location, then click *Save*.
+
+[width="100%",cols="<100%",]
+|===
+|*Caution*:Do not rename the `+.mwp+` file outside of Workbench. To
+rename a project, use the *Save As* option.
+|===
+
+=== How to Generate the Project Status Report
+
+Use the project status report to display a list of all warnings and
+errors in the Workbench project. This report is similar to the Problems
+window (see link:Using%20Workbench%20(ELUG)[Using Workbench]), but lets
+you easily copy and paste the errors into documents or messages. To
+generate the project status report, use this procedure:
+
+[arabic]
+. image:strptbtn.gif[Project Status Report
+button,title="Project Status Report button"] Right-click the *Problems*
+label above the *Problems* window and select *Problem Report*. The
+Project Status Report dialog box appears, displaying the status of each
+Workbench project. You can also generate the project status report by
+selecting *Tools* > *Problem Report* from the menu.
+[#Figure 112-5]##*_Problem Report Dialog Box_* image:statrpt.gif[Problem
+Report Dialog Box,title="Problem Report Dialog Box"]
+. See link:EclipseLink_Workbench_Error_Reference_(ELUG)[EclipseLink
+Workbench Error Reference (ELUG)] for information on each reported
+error.
+. To copy the report to another application, click *Copy*.
+
+== Exporting Project Information
+
+To use your project with the EclipseLink Foundation Library at run time,
+you must either generate deployment XML or export the project to Java
+source code.
+
+For all project types, Workbench can generate and export the following
+project information:
+
+* Deployment information (see
+link:#How_to_Export_Deployment_XML_Information_Using_Workbench[How to
+Export Deployment XML Information Using Workbench]) (`+project.xml+`
+file)
+* Model Java source (see
+link:#How_to_Export_Model_Java_Source_Using_Workbench[ow to Export Model
+Java Source Using Workbench])
+
+[width="100%",cols="<100%",]
+|===
+|*Note*:When exporting Java source and deployment XML, Workbench writes
+the database password (if applicable) using Java Cryptography Extension
+(JCE) encryption. For information on how to specify password encryption
+options, see
+link:Configuring%20a%20Data%20Source%20Login%20(ELUG)[Configuring
+Password Encryption].
+|===
+
+=== How to Export Deployment XML Information Using Workbench
+
+To export your deployment XML file (`+project.xml+`), use this procedure
+(see
+link:Creating%20EclipseLink%20Files%20for%20Deployment%20(ELUG)[Creating
+EclipseLink Files for Deployment] for detailed information):
+
+[arabic]
+. Select the project and click *Export Deployment XML*
+image:expxml.gif[expxml,title="expxml.gif"]. You can also right-click
+the project in the *Navigator* and choose *Export* > *Project Deployment
+XML* from the context menu or choose *Selected* > *Export* > *Project
+Deployment XML* from the menu.
+. If you have not defined deployment and source code generation defaults
+(see link:Configuring%20a%20Project%20(ELUG)[Configuring a Project])
+Workbench prompts for a file name and directory.
+
+[width="100%",cols="<100%",]
+|===
+|*Note*: If your project contains errors, the `+project.xml+` may not be
+valid. See for information on each reported error.
+|===
+
+=== How to Export Model Java Source Using Workbench
+
+To generate the project model’s Java source code, use this procedure:
+
+[arabic]
+. Right-click the project, package, or specific descriptor in the
+*Navigator* and choose *Export* > *Export Model Java Source* from the
+context menu. Workbench creates a `+.java+` file for each selected
+descriptor. You can also choose *Workbench* > *Export* > *Export Model
+Java Source* or *Selected* > *Export* > *Model Java Source* from the
+menu or click *Generate Source Code* on the *Class* tab. See
+link:Using%20Workbench%20(ELUG)[Configuring Class Information] for more
+information.
+. Click *Generate Source Code* to generate the project’s model Java
+source.
+
+If you have not defined deployment and source code generation defaults
+(see link:Configuring%20a%20Project%20(ELUG)[Configuring a Project])
+Workbench prompts for a root directory.
+
+[width="100%",cols="<100%",]
+|===
+|*Note*: If your Workbench project uses UTF-8 character set, you must
+use a compatible JDK when compiling the exported Java source.
+|===
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Release_1[Category: Release 1] Category:_Task[Category: Task]

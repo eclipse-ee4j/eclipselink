@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,6 +15,8 @@
 //     04/21/2022: Tomas Kraus
 //       - Issue 1474: Update JPQL Grammar for Jakarta Persistence 2.2, 3.0 and 3.1
 //       - Issue 317: Implement LOCAL DATE, LOCAL TIME and LOCAL DATETIME.
+//     06/02/2023: Radek Felcman
+//       - Issue 1885: Implement new JPQLGrammar for upcoming Jakarta Persistence 3.2
 package org.eclipse.persistence.jpa.jpql.parser;
 
 /**
@@ -101,6 +103,13 @@ public interface ExpressionVisitor {
     void visit(CaseExpression expression);
 
     /**
+     * Visits the {@link CastExpression} expression.
+     *
+     * @param expression The {@link Expression} to visit
+     */
+    void visit(CastExpression expression);
+
+    /**
      * Visits the {@link CoalesceExpression} expression.
      *
      * @param expression The {@link Expression} to visit
@@ -150,6 +159,13 @@ public interface ExpressionVisitor {
     void visit(ConcatExpression expression);
 
     /**
+     * Visits the {@link ConcatPipesExpression} expression.
+     *
+     * @param expression The {@link Expression} to visit
+     */
+    void visit(ConcatPipesExpression expression);
+
+    /**
      * Visits the {@link ConstructorExpression} expression.
      *
      * @param expression The {@link Expression} to visit
@@ -162,6 +178,13 @@ public interface ExpressionVisitor {
      * @param expression The {@link Expression} to visit
      */
     void visit(CountFunction expression);
+
+    /**
+     * Visits the {@link DatabaseType} expression.
+     *
+     * @param expression The {@link DatabaseType} to visit
+     */
+    void visit(DatabaseType expression);
 
     /**
      * Visits the {@link DateTime} expression.
@@ -262,6 +285,13 @@ public interface ExpressionVisitor {
     void visit(IdentificationVariableDeclaration expression);
 
     /**
+     * Visits the {@link IdExpression} expression.
+     *
+     * @param expression The {@link Expression} to visit
+     */
+    void visit(IdExpression expression);
+
+    /**
      * Visits the {@link IndexExpression} expression.
      *
      * @param expression The {@link Expression} to visit
@@ -309,6 +339,13 @@ public interface ExpressionVisitor {
      * @param expression The {@link Expression} to visit
      */
     void visit(KeywordExpression expression);
+
+    /**
+     * Visits the {@link LeftExpression} expression.
+     *
+     * @param expression The {@link Expression} to visit
+     */
+    void visit(LeftExpression expression);
 
     /**
      * Visits the {@link LengthExpression} expression.
@@ -507,11 +544,25 @@ public interface ExpressionVisitor {
     void visit(RangeVariableDeclaration expression);
 
     /**
+     * Visits the {@link ReplaceExpression} expression.
+     *
+     * @param expression The {@link Expression} to visit
+     */
+    void visit(ReplaceExpression expression);
+
+    /**
      * Visits the {@link ResultVariable} expression.
      *
      * @param expression The {@link Expression} to visit
      */
     void visit(ResultVariable expression);
+
+    /**
+     * Visits the {@link RightExpression} expression.
+     *
+     * @param expression The {@link Expression} to visit
+     */
+    void visit(RightExpression expression);
 
     /**
      * Visits the {@link SelectClause} expression.
@@ -668,6 +719,13 @@ public interface ExpressionVisitor {
     void visit(ValueExpression expression);
 
     /**
+     * Visits the {@link VersionExpression} expression.
+     *
+     * @param expression The {@link Expression} to visit
+     */
+    void visit(VersionExpression expression);
+
+    /**
      * Visits the {@link WhenClause} expression.
      *
      * @param expression The {@link WhenClause} to visit
@@ -680,4 +738,11 @@ public interface ExpressionVisitor {
      * @param expression The {@link WhereClause} to visit
      */
     void visit(WhereClause expression);
+
+    /**
+     * Visits the {@link UnionClause} expression.
+     *
+     * @param expression The {@link UnionClause} to visit
+     */
+    void visit(UnionClause expression);
 }

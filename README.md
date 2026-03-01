@@ -1,4 +1,4 @@
-[//]: # " Copyright (c) 2020, 2022 Oracle and/or its affiliates. All rights reserved. "
+[//]: # " Copyright (c) 2020, 2025 Oracle and/or its affiliates. All rights reserved. "
 [//]: # "  "
 [//]: # " This program and the accompanying materials are made available under the "
 [//]: # " terms of the Eclipse Public License v. 2.0 which is available at "
@@ -8,13 +8,15 @@
 [//]: # "  "
 [//]: # " SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause "
 
-[![Language grade: Java](https://img.shields.io/lgtm/grade/java/g/eclipse-ee4j/eclipselink.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/eclipse-ee4j/eclipselink/context:java)
-[![Total alerts](https://img.shields.io/lgtm/alerts/g/eclipse-ee4j/eclipselink.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/eclipse-ee4j/eclipselink/alerts/)
-
-EclipseLink master (4.0.x)
-[![Maven Central](https://img.shields.io/maven-central/v/org.eclipse.persistence/eclipselink.svg?versionPrefix=4.0&label=Maven%20Central)](https://mvnrepository.com/artifact/org.eclipse.persistence/eclipselink)
+EclipseLink master 5.0.x
+[![Maven Central](https://img.shields.io/maven-central/v/org.eclipse.persistence/eclipselink.svg?versionPrefix=5.0&label=Maven%20Central)](https://mvnrepository.com/artifact/org.eclipse.persistence/eclipselink)
 [![Jakarta Staging (Snapshots)](https://img.shields.io/nexus/s/https/jakarta.oss.sonatype.org/org.eclipse.persistence/eclipselink.svg)](https://jakarta.oss.sonatype.org/content/repositories/staging/org/eclipse/persistence/eclipselink)
 [![Master Build Status](https://ci.eclipse.org/eclipselink/job/eclipselink-nightly-master/badge/icon)](https://ci.eclipse.org/eclipselink/job/eclipselink-nightly-master)
+
+
+EclipseLink 4.0.x
+[![Maven Central](https://img.shields.io/maven-central/v/org.eclipse.persistence/eclipselink.svg?versionPrefix=4.0&label=Maven%20Central)](https://mvnrepository.com/artifact/org.eclipse.persistence/eclipselink)
+[![4.0 Build Status](https://ci.eclipse.org/eclipselink/job/eclipselink-nightly-4.0/badge/icon)](https://ci.eclipse.org/eclipselink/job/eclipselink-nightly-4.0)
 
 EclipseLink 3.0.x
 [![Maven Central](https://img.shields.io/maven-central/v/org.eclipse.persistence/eclipselink.svg?versionPrefix=3.0&label=Maven%20Central)](https://mvnrepository.com/artifact/org.eclipse.persistence/eclipselink)
@@ -47,7 +49,7 @@ EclipseLink is dual licensed under an [EPL 2.0](LICENSE.md) and [EDL 1.0](LICENS
 ## Contributing
 
 We use [contribution policy](CONTRIBUTING.md), which means we can only accept contributions under
-the terms of [Eclipse Contributor Agreement](http://www.eclipse.org/legal/ECA.php).
+the terms of [Eclipse Contributor Agreement](https://www.eclipse.org/legal/ECA.php).
 
 
 ## Links
@@ -58,7 +60,7 @@ the terms of [Eclipse Contributor Agreement](http://www.eclipse.org/legal/ECA.ph
 * [Mailing list](https://accounts.eclipse.org/mailing-list/eclipselink-users)
 * [Wiki](https://wiki.eclipse.org/EclipseLink)  
 * [Examples](https://wiki.eclipse.org/EclipseLink/Examples)
-* [Nightly builds](https://www.eclipse.org/eclipselink/downloads/nightly.php)
+* [Nightly builds](https://download.eclipse.org/rt/eclipselink/nightly/)
 * [Maven staging repository](https://jakarta.oss.sonatype.org/content/groups/staging/org/eclipse/persistence/)
 * [Maven snapshots repository](https://jakarta.oss.sonatype.org/content/repositories/snapshots/org/eclipse/persistence/), another output from the nightly builds
 * [EclipseLink Persistence Test Applications](https://github.com/eclipse-ee4j/eclipselink/tree/master/jpa/eclipselink.jpa.testapps/README.md)

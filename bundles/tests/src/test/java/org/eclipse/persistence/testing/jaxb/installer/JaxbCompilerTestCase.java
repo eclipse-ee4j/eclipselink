@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,7 +15,6 @@
 package org.eclipse.persistence.testing.jaxb.installer;
 
 import java.io.File;
-import java.util.logging.Logger;
 
 /**
  * Tests eclipselink.zip consistency. It runs jaxb-compiler for simple xsd file
@@ -54,7 +53,7 @@ public class JaxbCompilerTestCase extends junit.framework.TestCase {
         Process process = Runtime.getRuntime().exec(new String[] { compilerFile.getAbsolutePath(), resourceFile.getAbsolutePath() }, null, binDir);
         int result = process.waitFor();
 
-        assertTrue("Process has not completed successfully.", result == 0);
+        assertEquals("Process has not completed successfully.", 0, result);
 
         String packagePrefix = "perf" + File.separator + "testing" + File.separator + "persistence" + File.separator + "eclipse" + File.separator + "org" + File.separator + "workitem";
 

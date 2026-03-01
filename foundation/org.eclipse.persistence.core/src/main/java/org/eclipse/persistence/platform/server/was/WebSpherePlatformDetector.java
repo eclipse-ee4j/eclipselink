@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2016, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2016 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -18,12 +18,12 @@
 //       - 499869: Update WAS server detection
 package org.eclipse.persistence.platform.server.was;
 
-import java.security.AccessController;
-import java.security.PrivilegedAction;
-
 import org.eclipse.persistence.config.TargetServer;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.platform.server.ServerPlatformDetector;
+
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 
 public class WebSpherePlatformDetector implements ServerPlatformDetector {
     private static final String[] LIBERTY_PROPS = new String[] { "server.config.dir", "server.output.dir" };

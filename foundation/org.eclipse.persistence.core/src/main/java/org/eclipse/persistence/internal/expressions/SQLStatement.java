@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,13 +14,15 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.expressions;
 
-import java.io.*;
-import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
-import org.eclipse.persistence.expressions.*;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
+
+import java.io.Serializable;
+import java.io.StringWriter;
 
 /**
  * <p><b>Purpose</b>: Mirror SQL behavior.
@@ -52,9 +54,9 @@ public abstract class SQLStatement implements Serializable, Cloneable {
      * Clone the Statement
      */
     @Override
-    public Object clone() {
+    public SQLStatement clone() {
         try {
-            return super.clone();
+            return (SQLStatement) super.clone();
         } catch (CloneNotSupportedException e) {
             throw new InternalError();
         }
@@ -121,7 +123,7 @@ public abstract class SQLStatement implements Serializable, Cloneable {
     @Override
     public String toString() {
         StringWriter writer = new StringWriter();
-        writer.write(Helper.getShortClassName(getClass()));
+        writer.write(getClass().getSimpleName());
         writer.write("(");
 
         try {

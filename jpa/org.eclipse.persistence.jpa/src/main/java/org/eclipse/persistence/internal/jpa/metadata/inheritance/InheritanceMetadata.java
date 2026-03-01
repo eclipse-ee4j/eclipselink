@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,7 +40,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
 /**
  * Object to represent inheritance metadata. The processing of this metadata
  * to its related class descriptors should be performed by this class.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -123,7 +123,7 @@ public class InheritanceMetadata extends ORMetadata {
      * INTERNAL:
      * Recursive method to traverse table per class inheritance hierarchy and
      * grab all the 'inherited' accessors for subclasses of the hierarchy.
-     *
+     * <p>
      * What we know:
      * - All parent classes will already have been processed. Inheritance
      *   hierarchies are processed top-&gt;down.

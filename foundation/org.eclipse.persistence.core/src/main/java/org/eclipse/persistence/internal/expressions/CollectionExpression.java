@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -16,15 +16,15 @@
 //     IBM - Bug 537795: CASE THEN and ELSE scalar expression Constants should not be casted to CASE operand type
 package org.eclipse.persistence.internal.expressions;
 
-import java.util.Collection;
-
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Vector;
-
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Used for wrapping collection of values or expressions.
@@ -42,7 +42,7 @@ public class CollectionExpression extends ConstantExpression {
         if(this.localBase != null) {
             value = this.localBase.getFieldValue(value, getSession());
         }
-        printer.printList((Collection)value, this.canBind);
+        printer.printList((Collection<?>) value, this.canBind);
     }
 
     /**
@@ -52,13 +52,12 @@ public class CollectionExpression extends ConstantExpression {
      */
     @Override
     public Object valueFromObject(Object object, AbstractSession session, AbstractRecord translationRow, int valueHolderPolicy, boolean isObjectUnregistered) {
-        if (this.value instanceof Collection) {
-            Collection values = (Collection)this.value;
-            Vector fieldValues = new Vector(values.size());
-            for (Iterator iterator = values.iterator(); iterator.hasNext();) {
+        if (this.value instanceof Collection<?> values) {
+            List<Object> fieldValues = new ArrayList<>(values.size());
+            for (Iterator<?> iterator = values.iterator(); iterator.hasNext();) {
                 Object value = iterator.next();
-                if (value instanceof Expression){
-                    value = ((Expression)value).valueFromObject(object, session, translationRow, valueHolderPolicy, isObjectUnregistered);
+                if (value instanceof Expression expression){
+                    value = expression.valueFromObject(object, session, translationRow, valueHolderPolicy, isObjectUnregistered);
                 } else if(this.localBase != null) {
                     value = this.localBase.getFieldValue(value, session);
                 }
@@ -76,12 +75,11 @@ public class CollectionExpression extends ConstantExpression {
     @Override
     public void setLocalBase(Expression e) {
         super.setLocalBase(e);
-        if (this.value instanceof Collection) {
-            Collection values = (Collection)this.value;
-            for (Iterator iterator = values.iterator(); iterator.hasNext();) {
+        if (this.value instanceof Collection<?> values) {
+            for (Iterator<?> iterator = values.iterator(); iterator.hasNext();) {
                 Object val = iterator.next();
-                if (val instanceof Expression){
-                    ((Expression)val).setLocalBase(e);
+                if (val instanceof Expression expression){
+                    expression.setLocalBase(e);
                 }
             }
         }
@@ -92,15 +90,14 @@ public class CollectionExpression extends ConstantExpression {
      * Used for cloning.
      */
     @Override
-    protected void postCopyIn(Map alreadyDone) {
+    protected void postCopyIn(Map<Expression, Expression> alreadyDone) {
         super.postCopyIn(alreadyDone);
-        if (this.value instanceof Collection) {
-            Collection values = (Collection)this.value;
-            Vector newValues = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(values.size());
-            for (Iterator iterator = values.iterator(); iterator.hasNext();) {
+        if (this.value instanceof Collection<?> values) {
+            List<Object> newValues = new ArrayList<>(values.size());
+            for (Iterator<?> iterator = values.iterator(); iterator.hasNext();) {
                 Object val = iterator.next();
-                if (val instanceof Expression){
-                    newValues.add(((Expression)val).copiedVersionFrom(alreadyDone));
+                if (val instanceof Expression expression){
+                    newValues.add(expression.copiedVersionFrom(alreadyDone));
                 } else {
                     newValues.add(val);
                 }

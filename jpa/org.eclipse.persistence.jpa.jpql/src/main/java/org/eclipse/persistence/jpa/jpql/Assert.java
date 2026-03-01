@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,6 +14,8 @@
 //     Oracle - initial API and implementation
 //
 package org.eclipse.persistence.jpa.jpql;
+
+import java.io.Serial;
 
 /**
  * An utility class that provides various checks and when the condition fails, then an {@link
@@ -128,6 +130,7 @@ public final class Assert {
      */
     public static class AssertException extends RuntimeException {
 
+        @Serial
         private static final long serialVersionUID = 0L;
 
         /**

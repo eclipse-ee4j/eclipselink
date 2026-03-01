@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,7 +20,7 @@ import java.sql.Connection;
 
 /**
  * A simple invocation handler for the proxied connection.
- *
+ * <p>
  * Connections are proxied only when they are obtained from a
  * transactional data source and within the context of a JTA
  * transaction.
@@ -28,9 +28,9 @@ import java.sql.Connection;
 public class ConnectionProxyHandler implements InvocationHandler {
     Connection connection;
 
-    /************************/
-    /***** Internal API *****/
-    /************************/
+    /* ********************** */
+    /* **** Internal API **** */
+    /* ********************** */
     private void debug(String s) {
         System.out.println(s);
     }
@@ -42,9 +42,9 @@ public class ConnectionProxyHandler implements InvocationHandler {
         this.connection = connection;
     }
 
-    /*********************************/
-    /***** InvocationHandler API *****/
-    /*********************************/
+    /* ******************************* */
+    /* **** InvocationHandler API **** */
+    /* ******************************* */
 
     /*
      * Gateway for method interception

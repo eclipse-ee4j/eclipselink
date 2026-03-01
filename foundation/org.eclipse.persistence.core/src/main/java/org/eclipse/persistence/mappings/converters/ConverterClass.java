@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
+ * Copyright (c) 2012, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 Payara Services Ltd.
  *
  * This program and the accompanying materials are made available under the
@@ -27,9 +28,8 @@
 //       - 412384: Applying Converter for parameterized basic-type for joda-time's DateTime does not work
 package org.eclipse.persistence.mappings.converters;
 
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
-
+import jakarta.persistence.AttributeConverter;
+import jakarta.persistence.PersistenceException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.descriptors.ClassNameConversionRequired;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
@@ -44,8 +44,8 @@ import org.eclipse.persistence.mappings.DirectMapMapping;
 import org.eclipse.persistence.mappings.DirectToFieldMapping;
 import org.eclipse.persistence.sessions.Session;
 
-import jakarta.persistence.AttributeConverter;
-import jakarta.persistence.PersistenceException;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
 
 /**
  * A JPA attribute converter class wrapped with an EclipseLink converter. This
@@ -131,7 +131,7 @@ public class ConverterClass<T extends AttributeConverter<X,Y>,X,Y> implements Co
                     throw ValidationException.classNotFoundWhileConvertingClassNames(attributeConverterClassName, exception.getException());
                 }
             } else {
-                return PrivilegedAccessHelper.<T>getClassForName(attributeConverterClassName, true, classLoader);
+                return PrivilegedAccessHelper.getClassForName(attributeConverterClassName, true, classLoader);
             }
         } catch (ClassNotFoundException exception) {
             throw ValidationException.classNotFoundWhileConvertingClassNames(attributeConverterClassName, exception);
@@ -193,6 +193,8 @@ public class ConverterClass<T extends AttributeConverter<X,Y>,X,Y> implements Co
 
             if (disableConversion) {
                 m.setConverter(null);
+                m.setFieldClassification(m.getAttributeClassification());
+                m.setFieldClassificationClassName(m.getAttributeClassificationName());
             } else {
                 m.setConverter(this);
                 m.setFieldClassification(fieldClassification);
@@ -203,6 +205,8 @@ public class ConverterClass<T extends AttributeConverter<X,Y>,X,Y> implements Co
 
             if (disableConversion) {
                 m.setKeyConverter(null);
+                m.setDirectKeyFieldClassification(m.getDirectKeyField().getType());
+                m.setDirectKeyFieldClassificationName(m.getDirectKeyField().getTypeName());
             } else {
                 m.setKeyConverter(this);
                 m.setDirectKeyFieldClassification(fieldClassification);
@@ -213,6 +217,8 @@ public class ConverterClass<T extends AttributeConverter<X,Y>,X,Y> implements Co
 
             if (disableConversion) {
                 m.setValueConverter(null);
+                m.setDirectFieldClassification(m.getDirectField().getType());
+                m.setDirectFieldClassificationName(m.getDirectField().getTypeName());
             } else {
                 m.setValueConverter(this);
                 m.setDirectFieldClassification(fieldClassification);

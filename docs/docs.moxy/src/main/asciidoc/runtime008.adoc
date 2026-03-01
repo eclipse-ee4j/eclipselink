@@ -1,0 +1,66 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[RUNTIME008]]
+=== Querying Objects by XPath
+
+In addition to using conventional Java access methods to get and set
+your object's values, EclipseLink MOXy also allows you to access values
+using an XPath statement. There are special APIs on EclipseLink's
+`JAXBContext` to allow you to get and set values by XPath.
+
+For example, consider the following XML document:
+
+[source,oac_no_warn]
+----
+<customer id="1141">
+   <first-name>Jon</first-name>
+   <last-name>Smith</last-name>
+   <phone-number>
+      <area-code>515</area-code>
+      <number>2726652</number>
+   </phone-number>
+</customer>
+ 
+----
+
+Typical application code might look something like this:
+
+[source,oac_no_warn]
+----
+Customer customer = (Customer) jaxbContext.createUnmarshaller().unmarshal(instanceDoc);
+...
+int customerId = customer.getId();
+customer.setFirstName("Bob");
+customer.getPhoneNumber().setAreaCode("555");
+...
+jaxbContext.createMarshaller().marshal(customer, System.out);
+ 
+----
+
+You could instead use XPath to access these values:
+
+[source,oac_no_warn]
+----
+Customer customer = (Customer) jaxbContext.createUnmarshaller().unmarshal(instanceDoc);
+...
+int customerId = jaxbContext.getValueByXPath(customer, "@id", null, Integer.class);
+jaxbContext.setValueByXPath(customer, "first-name/text()", null, "Bob");
+jaxbContext.setValueByXPath(customer, "phone-number/area-code/text()", null, "555");
+...
+jaxbContext.createMarshaller().marshal(customer, System.out);
+----

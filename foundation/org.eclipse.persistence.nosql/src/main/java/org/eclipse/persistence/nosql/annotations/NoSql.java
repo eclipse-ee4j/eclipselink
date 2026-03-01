@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -41,7 +41,7 @@ import java.lang.annotation.Target;
  * <p>
  * EclipseLink support NoSQL data access through the JavaEE Connector Architecture.
  * A JCA adaptor is required to map NoSQL data, this may be provided by EclipseLink,
- * provided by a third party such as Attunity, or custom built.
+ * provided by a third party such as Attunity, or custom-built.
  *
  * @see org.eclipse.persistence.eis.EISDescriptor
  * @author James Sutherland

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,6 +15,8 @@
 //     04/21/2022: Tomas Kraus
 //       - Issue 1474: Update JPQL Grammar for Jakarta Persistence 2.2, 3.0 and 3.1
 //       - Issue 317: Implement LOCAL DATE, LOCAL TIME and LOCAL DATETIME.
+//     06/02/2023: Radek Felcman
+//       - Issue 1885: Implement new JPQLGrammar for upcoming Jakarta Persistence 3.2
 package org.eclipse.persistence.jpa.jpql.tools.resolver;
 
 import java.sql.Date;
@@ -42,6 +44,7 @@ import org.eclipse.persistence.jpa.jpql.parser.AvgFunction;
 import org.eclipse.persistence.jpa.jpql.parser.BadExpression;
 import org.eclipse.persistence.jpa.jpql.parser.BetweenExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CaseExpression;
+import org.eclipse.persistence.jpa.jpql.parser.CastExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CoalesceExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CollectionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CollectionMemberDeclaration;
@@ -49,8 +52,10 @@ import org.eclipse.persistence.jpa.jpql.parser.CollectionMemberExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CollectionValuedPathExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ComparisonExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ConcatExpression;
+import org.eclipse.persistence.jpa.jpql.parser.ConcatPipesExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ConstructorExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CountFunction;
+import org.eclipse.persistence.jpa.jpql.parser.DatabaseType;
 import org.eclipse.persistence.jpa.jpql.parser.DateTime;
 import org.eclipse.persistence.jpa.jpql.parser.DeleteClause;
 import org.eclipse.persistence.jpa.jpql.parser.DeleteStatement;
@@ -65,6 +70,7 @@ import org.eclipse.persistence.jpa.jpql.parser.FromClause;
 import org.eclipse.persistence.jpa.jpql.parser.FunctionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.GroupByClause;
 import org.eclipse.persistence.jpa.jpql.parser.HavingClause;
+import org.eclipse.persistence.jpa.jpql.parser.IdExpression;
 import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariable;
 import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariableDeclaration;
 import org.eclipse.persistence.jpa.jpql.parser.InExpression;
@@ -74,6 +80,7 @@ import org.eclipse.persistence.jpa.jpql.parser.JPQLExpression;
 import org.eclipse.persistence.jpa.jpql.parser.Join;
 import org.eclipse.persistence.jpa.jpql.parser.KeyExpression;
 import org.eclipse.persistence.jpa.jpql.parser.KeywordExpression;
+import org.eclipse.persistence.jpa.jpql.parser.LeftExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LengthExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LikeExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LocalDateTime;
@@ -97,7 +104,9 @@ import org.eclipse.persistence.jpa.jpql.parser.OrExpression;
 import org.eclipse.persistence.jpa.jpql.parser.OrderByClause;
 import org.eclipse.persistence.jpa.jpql.parser.OrderByItem;
 import org.eclipse.persistence.jpa.jpql.parser.RangeVariableDeclaration;
+import org.eclipse.persistence.jpa.jpql.parser.ReplaceExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ResultVariable;
+import org.eclipse.persistence.jpa.jpql.parser.RightExpression;
 import org.eclipse.persistence.jpa.jpql.parser.SelectClause;
 import org.eclipse.persistence.jpa.jpql.parser.SelectStatement;
 import org.eclipse.persistence.jpa.jpql.parser.SimpleFromClause;
@@ -114,12 +123,14 @@ import org.eclipse.persistence.jpa.jpql.parser.SumFunction;
 import org.eclipse.persistence.jpa.jpql.parser.TreatExpression;
 import org.eclipse.persistence.jpa.jpql.parser.TrimExpression;
 import org.eclipse.persistence.jpa.jpql.parser.TypeExpression;
+import org.eclipse.persistence.jpa.jpql.parser.UnionClause;
 import org.eclipse.persistence.jpa.jpql.parser.UnknownExpression;
 import org.eclipse.persistence.jpa.jpql.parser.UpdateClause;
 import org.eclipse.persistence.jpa.jpql.parser.UpdateItem;
 import org.eclipse.persistence.jpa.jpql.parser.UpdateStatement;
 import org.eclipse.persistence.jpa.jpql.parser.UpperExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ValueExpression;
+import org.eclipse.persistence.jpa.jpql.parser.VersionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.WhenClause;
 import org.eclipse.persistence.jpa.jpql.parser.WhereClause;
 import org.eclipse.persistence.jpa.jpql.tools.JPQLQueryContext;
@@ -472,6 +483,11 @@ public abstract class ResolverBuilder implements ExpressionVisitor {
     }
 
     @Override
+    public void visit(CastExpression expression) {
+        resolver = buildClassResolver(Object.class);
+    }
+
+    @Override
     public void visit(CoalesceExpression expression) {
         visitCollectionEquivalentExpression(expression.getExpression(), null);
     }
@@ -535,6 +551,11 @@ public abstract class ResolverBuilder implements ExpressionVisitor {
     }
 
     @Override
+    public void visit(ConcatPipesExpression expression) {
+        resolver = buildClassResolver(String.class);
+    }
+
+    @Override
     public void visit(ConstructorExpression expression) {
 
         String className = expression.getClassName();
@@ -550,6 +571,11 @@ public abstract class ResolverBuilder implements ExpressionVisitor {
     @Override
     public void visit(CountFunction expression) {
         resolver = buildClassResolver(Long.class);
+    }
+
+    @Override
+    public void visit(DatabaseType expression) {
+        resolver = buildClassResolver(Object.class);
     }
 
     @Override
@@ -658,6 +684,11 @@ public abstract class ResolverBuilder implements ExpressionVisitor {
     }
 
     @Override
+    public void visit(IdExpression expression) {
+        expression.getExpression().accept(this);
+    }
+
+    @Override
     public void visit(IndexExpression expression) {
         resolver = buildClassResolver(Integer.class);
     }
@@ -707,6 +738,11 @@ public abstract class ResolverBuilder implements ExpressionVisitor {
         else {
             resolver = buildClassResolver(Object.class);
         }
+    }
+
+    @Override
+    public void visit(LeftExpression expression) {
+        resolver = buildClassResolver(String.class);
     }
 
     @Override
@@ -903,8 +939,18 @@ public abstract class ResolverBuilder implements ExpressionVisitor {
     }
 
     @Override
+    public void visit(ReplaceExpression expression) {
+        resolver = buildClassResolver(String.class);
+    }
+
+    @Override
     public void visit(ResultVariable expression) {
         expression.getSelectExpression().accept(this);
+    }
+
+    @Override
+    public void visit(RightExpression expression) {
+        resolver = buildClassResolver(String.class);
     }
 
     @Override
@@ -1071,6 +1117,11 @@ public abstract class ResolverBuilder implements ExpressionVisitor {
     }
 
     @Override
+    public void visit(UnionClause expression) {
+        resolver = buildClassResolver(Object.class);
+    }
+
+    @Override
     public void visit(ValueExpression expression) {
 
         // Visit the identification variable in order to create the resolver
@@ -1079,6 +1130,11 @@ public abstract class ResolverBuilder implements ExpressionVisitor {
         // Wrap the Resolver used to determine the type of the identification
         // variable so we can return the actual type
         resolver = new ValueResolver(resolver);
+    }
+
+    @Override
+    public void visit(VersionExpression expression) {
+        expression.getExpression().accept(this);
     }
 
     @Override

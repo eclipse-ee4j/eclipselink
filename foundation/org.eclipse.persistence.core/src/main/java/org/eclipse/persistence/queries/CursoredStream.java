@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,16 +14,28 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.queries;
 
-import java.util.*;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.internal.queries.*;
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.expressions.ExpressionOperator;
+import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
+import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
+import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.helper.InvalidObject;
+import org.eclipse.persistence.internal.queries.ExpressionQueryMechanism;
+import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
-import org.eclipse.persistence.internal.expressions.*;
-import org.eclipse.persistence.internal.databaseaccess.*;
-import org.eclipse.persistence.internal.helper.*;
+
+import java.util.ArrayList;
+import java.util.IdentityHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 
 /**
  * <p><b>Purpose</b>:
@@ -101,17 +113,17 @@ public class CursoredStream extends Cursor {
      * This require a manually defined operator.
      * added for CR 2900
      */
-    public Expression buildCountDistinctExpression(List includeFields, ExpressionBuilder builder) {
+    public Expression buildCountDistinctExpression(List<DatabaseField> includeFields, ExpressionBuilder builder) {
         ExpressionOperator countOperator = new ExpressionOperator();
         countOperator.setType(ExpressionOperator.AggregateOperator);
-        Vector databaseStrings = new Vector();
+        List<String> databaseStrings = new ArrayList<>();
         databaseStrings.add("COUNT(DISTINCT ");
         databaseStrings.add(")");
         countOperator.printsAs(databaseStrings);
         countOperator.bePrefix();
         countOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
-        Expression firstFieldExpression = builder.getField(((DatabaseField)includeFields.get(0)).getQualifiedName());
-        return countOperator.expressionForArguments(firstFieldExpression, new ArrayList(0));
+        Expression firstFieldExpression = builder.getField(includeFields.get(0).getQualifiedName());
+        return countOperator.expressionForArguments(firstFieldExpression, new ArrayList<>(0));
 
     }
 
@@ -148,7 +160,7 @@ public class CursoredStream extends Cursor {
             SQLSelectStatement selectStatement = new SQLSelectStatement();
 
             // 2612538 - the default size of Map (32) is appropriate
-            Map clonedExpressions = new IdentityHashMap();
+            Map<Expression, Expression> clonedExpressions = new IdentityHashMap<>();
             selectStatement.setWhereClause(((ExpressionQueryMechanism)this.query.getQueryMechanism()).buildBaseSelectionCriteria(false, clonedExpressions));
 
             ClassDescriptor descriptor = this.query.getDescriptor();
@@ -158,11 +170,11 @@ public class CursoredStream extends Cursor {
                 if ((branchIndicator != null) && (selectStatement.getWhereClause() != null)) {
                     selectStatement.setWhereClause(selectStatement.getWhereClause().and(branchIndicator));
                 } else if (branchIndicator != null) {
-                    selectStatement.setWhereClause((Expression)branchIndicator.clone());
+                    selectStatement.setWhereClause(branchIndicator.clone());
                 }
             }
 
-            selectStatement.setTables((Vector)descriptor.getTables().clone());
+            selectStatement.setTables((List<DatabaseTable>) ((ArrayList<DatabaseTable>)descriptor.getTables()).clone());
 
             // Count * cannot be used with distinct.
             // Count * cannot be used with distinct.
@@ -335,7 +347,7 @@ public class CursoredStream extends Cursor {
      * This method differs slightly from conventional read() operation on a Java stream.  This
      * method return the next object in the collection rather than specifying the number of
      * bytes to be read in.
-     *
+     * <p>
      * Return the next object from the collection, if beyond the read limit read from the cursor
      * @return - next object in stream
      * @throws DatabaseException if read pass end of stream
@@ -357,7 +369,7 @@ public class CursoredStream extends Cursor {
      * PUBLIC:
      * This method differs slightly from conventional read() operation on a Java stream.  This
      * method returns the next number of objects in the collection in a vector.
-     *
+     * <p>
      * Return the next object from the collection, if beyond the read limit read from the cursor
      * @param number - number of objects to be returned
      * @return - vector containing next number of objects

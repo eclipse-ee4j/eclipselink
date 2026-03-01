@@ -1,0 +1,78 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[TESTINGJPA001]]
+=== Understanding JPA Deployment
+
+When deploying outside of a container, use the
+`createEntityManagerFactory` method of the
+`jakarta.persistence.Persistence` class to create an entity manager
+factory. This method accepts a `Map` of properties and the name of the
+persistence unit. The properties that you pass to this method are
+combined with those specified in the `persistence.xml` file. They may be
+additional properties or they may override the value of a property that
+you specified previously in the `persistence.xml` file.
+
+TIP: This is a convenient way to set properties obtained from program input,
+such as the command line.
+
+==== Using EntityManager
+
+The `EntityManager` is the access point for persisting an entity bean,
+loading it from the database. Usually, the Jakarta Persistence API (JPA)
+container manages interaction with the data source. However, if you are
+using a JTA data source for your JPA persistence unit, you can access
+the JDBC connection from the Jakarta EE program container's data source.
+Because the managed data source is unavailable, you can pass properties
+to `createEntityManagerFactory` to change the transaction type from
+`JTA` to `RESOURCE_LOCAL` and to define JDBC connection information, as
+shown here:
+
+[[sthref138]]
+
+*_Example 17-1 Changing transaction type and defining connection
+information_*
+
+[source,oac_no_warn]
+----
+import static org.eclipse.persistence.jpa.config.PersistenceUnitProperties.*;
+ 
+...
+ 
+Map properties = new HashMap();
+ 
+// Ensure RESOURCE_LOCAL transactions is used.
+properties.put(TRANSACTION_TYPE,
+  PersistenceUnitTransactionType.RESOURCE_LOCAL.name());
+ 
+// Configure the internal EclipseLink connection pool
+properties.put(JDBC_DRIVER, "oracle.jdbc.OracleDriver");
+properties.put(JDBC_URL, "jdbc:oracle:thin:@localhost:1521:ORCL");
+properties.put(JDBC_USER, "user-name");
+properties.put(JDBC_PASSWORD, "password");
+properties.put(JDBC_READ_CONNECTIONS_MIN, "1");
+properties.put(JDBC_WRITE_CONNECTIONS_MIN, "1");
+ 
+// Configure logging. FINE ensures all SQL is shown
+properties.put(LOGGING_LEVEL, "FINE");
+ 
+// Ensure that no server-platform is configured
+properties.put(TARGET_SERVER, TargetServer.None);
+----
+
+You also have access to the EclipseLink extensions to the
+`EntityManager`.

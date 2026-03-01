@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,17 +21,17 @@
 package org.eclipse.persistence.dynamic;
 
 //javase imports
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import org.eclipse.persistence.config.SystemProperties;
-import org.eclipse.persistence.exceptions.DynamicException;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.sessions.Session;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * This custom ClassLoader provides support for dynamically generating classes
@@ -48,7 +48,7 @@ public class DynamicClassLoader extends ClassLoader {
     /**
      * Map of {@link DynamicClassWriter} used to dynamically create a class in
      * the {@link #findClass(String)} call. The application must register
-     * classes using addClass or createDynameClass prior to the
+     * classes using addClass or createDynamicClass prior to the
      * {@link #findClass(String)} being invoked.
      * <p>
      * The map of writers is maintained for the life of this DynamicClassLoader
@@ -95,17 +95,20 @@ public class DynamicClassLoader extends ClassLoader {
     }
 
     public void addEnum(String className, Object... literalLabels) {
+        Map<String, String> literalsMap = Arrays.stream(literalLabels)
+                .collect(Collectors.toMap(Object::toString, Object::toString));
+
+        addEnum(className, literalsMap);
+    }
+
+    public void addEnum(String className, Map<String, String> literalLabels) {
         EnumInfo enumInfo = enumInfoRegistry.get(className);
         if (enumInfo == null) {
             enumInfo = new EnumInfo(className);
             enumInfoRegistry.put(className, enumInfo);
         }
         if (literalLabels != null) {
-            for (Object literalLabel : literalLabels) {
-                if (literalLabel != null) {
-                    enumInfo.addLiteralLabel(literalLabel.toString());
-                }
-            }
+            literalLabels.forEach(enumInfo::addLiteralLabel);
         }
         addClass(className);
     }
@@ -163,14 +166,11 @@ public class DynamicClassLoader extends ClassLoader {
      */
     public Class<?> createDynamicClass(String className, DynamicClassWriter writer) {
         addClass(className, writer);
-        Class<?> newDynamicClass = null;
         try {
-            newDynamicClass = loadClass(className);
+            return checkAssignable(loadClass(className));
+        } catch (ClassNotFoundException cnfe) {
+            throw new IllegalArgumentException("DynamicClassLoader: could not create class " + className);
         }
-        catch (ClassNotFoundException cnfe) {
-            throw new IllegalArgumentException("DyanmicClassLoader: could not create class " + className);
-        }
-        return checkAssignable(newDynamicClass);
     }
 
     protected Class<?> checkAssignable(Class<?> clz) {
@@ -241,15 +241,13 @@ public class DynamicClassLoader extends ClassLoader {
                 if (bytes != null) {
                     String outputPath = PrivilegedAccessHelper.getSystemProperty(SystemProperties.WEAVING_OUTPUT_PATH, "");
 
-                    if (!outputPath.equals("")) {
+                    if (!outputPath.isEmpty()) {
                         Helper.outputClassFile(className, bytes, outputPath);
                     }
                 }
                 return defineDynamicClass(className, bytes);
-            } catch (ClassFormatError cfe) {
+            } catch (ClassFormatError | ClassCircularityError cfe) {
                 throw new ClassNotFoundException(className, cfe);
-            } catch (ClassCircularityError cce) {
-                throw new ClassNotFoundException(className, cce);
             }
         }
 
@@ -257,8 +255,8 @@ public class DynamicClassLoader extends ClassLoader {
     }
 
     /**
-     * Converts an array of bytes into an instance of class <code>Class</code>.
-     * Before the <code>Class</code> can be used it must be resolved.
+     * Converts an array of bytes into an instance of class {@code Class}.
+     * Before the {@code Class} can be used it must be resolved.
      *
      */
     protected Class<?> defineDynamicClass(String name, byte[] b)  {
@@ -280,8 +278,8 @@ public class DynamicClassLoader extends ClassLoader {
             cm = session.getPlatform().getConversionManager();
         }
 
-        if (cm.getLoader() instanceof DynamicClassLoader) {
-            return (DynamicClassLoader) cm.getLoader();
+        if (cm.getLoader() instanceof DynamicClassLoader cl) {
+            return cl;
         }
 
         DynamicClassLoader dcl = new DynamicClassLoader(cm.getLoader());
@@ -296,7 +294,7 @@ public class DynamicClassLoader extends ClassLoader {
 
     public static class EnumInfo {
         String className;
-        List<String> literalLabels = new ArrayList<>();
+        Map<String, String> literalLabels = new HashMap<>();
 
         public EnumInfo(String className) {
             this.className = className;
@@ -306,13 +304,17 @@ public class DynamicClassLoader extends ClassLoader {
             return className;
         }
 
-        public String[] getLiteralLabels() {
-            return literalLabels.toArray(new String[literalLabels.size()]);
+        public Map<String, String> getEnumValues() {
+            return literalLabels;
         }
 
-        public void addLiteralLabel(String literalLabel) {
-            if (!literalLabels.contains(literalLabel) && literalLabel != null) {
-                literalLabels.add(literalLabel);
+        public String[] getLiteralLabels() {
+            return literalLabels.keySet().toArray(new String[0]);
+        }
+
+        public void addLiteralLabel(String literalLabel, String value) {
+            if (!literalLabels.containsKey(literalLabel) && literalLabel != null) {
+                literalLabels.put(literalLabel, value);
             }
         }
     }

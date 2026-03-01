@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,7 +27,7 @@ import org.eclipse.persistence.internal.jpa.metadata.tables.TableMetadata;
 
 /**
  * Defines the metadata for the @EIS annotation for mapping an EISDescriptor.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -86,8 +86,7 @@ public class NoSqlMetadata extends ORMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (objectToCompare instanceof NoSqlMetadata) {
-            NoSqlMetadata eis = (NoSqlMetadata) objectToCompare;
+        if (objectToCompare instanceof NoSqlMetadata eis) {
             if (! valuesMatch(this.dataType, eis.getDataType())) {
                 return false;
             }
@@ -99,7 +98,8 @@ public class NoSqlMetadata extends ORMetadata {
 
     @Override
     public int hashCode() {
-        int result = dataType != null ? dataType.hashCode() : 0;
+        int result = super.hashCode();
+        result = 31 * result + dataType != null ? dataType.hashCode() : 0;
         result = 31 * result + (dataFormat != null ? dataFormat.hashCode() : 0);
         return result;
     }
@@ -129,12 +129,10 @@ public class NoSqlMetadata extends ORMetadata {
             }
         }
         if (this.dataFormat != null) {
-            if (this.dataFormat.equals("XML")) {
-                newDescriptor.setDataFormat(EISDescriptor.XML);
-            } else if (this.dataFormat.equals("MAPPED")) {
-                newDescriptor.setDataFormat(EISDescriptor.MAPPED);
-            } else if (this.dataFormat.equals("INDEXED")) {
-                newDescriptor.setDataFormat(EISDescriptor.INDEXED);
+            switch (this.dataFormat) {
+                case "XML" -> newDescriptor.setDataFormat(EISDescriptor.XML);
+                case "MAPPED" -> newDescriptor.setDataFormat(EISDescriptor.MAPPED);
+                case "INDEXED" -> newDescriptor.setDataFormat(EISDescriptor.INDEXED);
             }
         }
         newDescriptor.setAlias("");

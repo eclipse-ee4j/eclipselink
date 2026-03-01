@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2009, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
+ * Copyright (c) 2009, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -43,6 +44,7 @@ import org.eclipse.persistence.descriptors.DescriptorEventAdapter;
 import org.eclipse.persistence.descriptors.FetchGroupManager;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
@@ -57,7 +59,7 @@ public class BeanValidationListener extends DescriptorEventAdapter {
     private final Class<?>[] groupPreUpdate;
     private final Class<?>[] groupPreRemove;
     private static final Class<?>[] groupDefault = new Class<?>[]{Default.class};
-    private final Map<ClassDescriptor, Validator> validatorMap;
+    private final Map<String, Validator> validatorMap;
 
     public BeanValidationListener(ValidatorFactory validatorFactory, Class<?>[] groupPrePersit, Class<?>[] groupPreUpdate, Class<?>[] groupPreRemove) {
         this.validatorFactory = validatorFactory;
@@ -93,7 +95,10 @@ public class BeanValidationListener extends DescriptorEventAdapter {
         // preUpdate is also generated for deleted objects that were modified in this UOW.
         // Do not perform preUpdate validation for such objects as preRemove would have already been called.
         if(!unitOfWork.isObjectDeleted(source)) {
-            validateOnCallbackEvent(event, "preUpdate", groupPreUpdate);
+            ObjectChangeSet changeSet = event.getChangeSet();
+            if (changeSet != null && (changeSet.isNew() || (changeSet.getChanges() != null && changeSet.getChanges().size() > 0))) {
+                validateOnCallbackEvent(event, "preUpdate", groupPreUpdate);
+            }
         }
     }
 
@@ -117,7 +122,7 @@ public class BeanValidationListener extends DescriptorEventAdapter {
         boolean shouldValidate = noOptimization || isBeanConstrained;
         if (shouldValidate) {
             Set<ConstraintViolation<Object>> constraintViolations = validate(source, validationGroup, validator);
-            if (constraintViolations.size() > 0) {
+            if (!constraintViolations.isEmpty()) {
                 // There were errors while call to validate above.
                 // Throw a ConstrainViolationException as required by the spec.
                 // The transaction would be rolled back automatically
@@ -132,12 +137,13 @@ public class BeanValidationListener extends DescriptorEventAdapter {
 
     private Validator getValidator(DescriptorEvent event) {
         ClassDescriptor descriptor = event.getDescriptor();
-        Validator res = validatorMap.get(descriptor);
+        String alias = descriptor.getAlias();
+        Validator res = validatorMap.get(alias);
         if (res == null) {
             TraversableResolver traversableResolver = new AutomaticLifeCycleValidationTraversableResolver(descriptor);
             res = validatorFactory.usingContext().traversableResolver(traversableResolver).getValidator();
 
-            Validator t = validatorMap.put(descriptor, res);
+            Validator t = validatorMap.put(alias, res);
             if (t != null) {
                 // Threading collision, use existing
                 res = t;
@@ -154,7 +160,7 @@ public class BeanValidationListener extends DescriptorEventAdapter {
     private boolean isBeanConstrained(final Object source, final Validator validator) {
         // If Java Security is enabled, surround this call with a doPrivileged block.
         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-            return AccessController.doPrivileged(new PrivilegedAction<Boolean>() {
+            return AccessController.doPrivileged(new PrivilegedAction<>() {
                 @Override
                 public Boolean run() {
                     return validator.getConstraintsForClass(source.getClass()).isBeanConstrained();
@@ -169,7 +175,7 @@ public class BeanValidationListener extends DescriptorEventAdapter {
     private Set<ConstraintViolation<Object>> validate(final Object source, final Class<?>[] validationGroup, final Validator validator) {
         // If Java Security is enabled, surround this call with a doPrivileged block.
         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-            return AccessController.doPrivileged(new PrivilegedAction<Set<ConstraintViolation<Object>>>() {
+            return AccessController.doPrivileged(new PrivilegedAction<>() {
                 @Override
                 public Set<ConstraintViolation<Object>> run() {
                     return validator.validate(source, validationGroup);

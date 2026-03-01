@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,8 +23,7 @@ public class Birthday {
     public Birthday() {}
 
     public boolean equals(Object object) {
-        if (object instanceof Birthday) {
-            Birthday birthday = (Birthday) object;
+        if (object instanceof Birthday birthday) {
 
             if (! getDay().equals(birthday.getDay())) {
                 return false;

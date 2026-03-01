@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,13 +22,12 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
  * The Customizer annotation is used to specify a class that implements the
- * org.eclipse.persistence.config.DescriptorCustomizer
+ * {@linkplain org.eclipse.persistence.descriptors.DescriptorCustomizer}
  * interface and is to run against an entity's class descriptor after all
  * metadata processing has been completed.
- *
- * The Customizer annotation may be defined on an Entity, MappedSuperclass or
- * Embeddable class. In the case of inheritance, a Customizer is not inherited
- * from its parent classes.
+ * <p>
+ * The Customizer annotation may be defined on an Entity, MappedSuperclass or Embeddable class.
+ * In the case of inheritance, a Customizer is not inherited from its parent classes.
  *
  * @author Guy Pelletier
  * @since Oracle TopLink 11.1.1.0.0
@@ -37,7 +36,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 public @interface Customizer {
     /**
-     * (Required) Defines the name of the descriptor customizer that should be
+     * Defines the name of the descriptor customizer that should be
      * applied to this entity's descriptor.
      */
     Class<?> value();

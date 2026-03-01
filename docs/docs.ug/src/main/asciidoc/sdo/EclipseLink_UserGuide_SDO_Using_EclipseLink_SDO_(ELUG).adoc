@@ -1,0 +1,311 @@
+This section explains where and how you use EclipseLink SDO to customize
+your application to meet requirements.
+
+[#sdo-usage]
+== Performing Actions on Data Objects at Run Time
+
+Use the following classes to perform actions on your
+http://help.eclipse.org/help32/index.jsp?topic=/org.eclipse.emf.ecore.sdo.doc/references/javadoc/commonj/sdo/DataObject.html[data
+objects]:
+
+* <<sdo-usage-helperctx>>
+* <<sdo-usage-datafactory>>
+* <<sdo-usage-xmlhelper>>
+* <<sdo-usage-datahelper>>
+* <<sdo-usage-copyhelper>>
+* <<sdo-usage-equalityhelper>>
+
+For more information, see <<sdo-example-basic,EclipseLink SDO examples>>.
+
+[#sdo-usage-helperctx]
+=== Using HelperContext
+
+SDO defines a
+http://www.eclipse.org/eclipselink/api/1.1/commonj/sdo/helper/HelperContext.html[`+HelperContext+`]
+interface. You use it to access related SDO helper classes that let you
+perform common operations such as reading and writing XML documents,
+defining SDO types from XML Schema, and so on.
+
+To obtain a default context, call the
+http://www.eclipse.org/eclipselink/api/1.1/commonj/sdo/impl/HelperProvider.html[`+HelperProvider+`]
+`+getDefaultContext+` method.
+
+You can create the local context provided by EclipseLink as follows:
+
+[source,java]
+----
+HelperContext helperContext = new SDOHelperContext();
+----
+
+For more information, see the following:
+
+* EclipseLink
+http://www.eclipse.org/eclipselink/api/1.1/org/eclipse/persistence/sdo/helper/SDOHelperContext.html[`+SDOHelperContext+`]
+API
+* EclipseLink <<sdo-example-basic-helperctx, HelperContext>> examples
+
+==== What You May Need to Know About Local and Global HelperContext
+
+All the helpers that you can retrieve from the INSTANCE fields are the
+same ones as can be accessed from HelperProvider.
+
+[source,java]
+----
+XSDHelper.INSTANCE == HelperProvider.getDefaultContext().getXSDHelper()
+----
+
+In terms of Java serialization, both global and local HelperContexts can
+be used to serialize DataObjects, but the global HelperContext is always
+used for deserialization.
+
+Using the EclipseLink
+http://www.eclipse.org/eclipselink/api/1.1/org/eclipse/persistence/sdo/helper/SDOHelperContext.html[`+SDOHelperContext+`]
+`+makeDefaultContext+` method, you can promote your local context to
+become the global (default) one.
+
+[#sdo-usage-datafactory]
+=== Using DataFactory
+
+You use the
+http://www.eclipse.org/eclipselink/api/1.1/commonj/sdo/helper/DataFactory.html[`+DataFactory+`]
+to create disconnected instances of a
+http://www.eclipse.org/eclipselink/api/1.1/commonj/sdo/DataObject.html[`+DataObject+`].
+That is, the newly created `+DataObject+` instances have no set
+properties and no container.
+
+You can obtain the global `+DataFactory+` from the `+INSTANCE+` field or
+a DataFactory corresponding to a HelperContext using the
+`+getDataFactory+` method on
+http://www.eclipse.org/eclipselink/api/1.1/commonj/sdo/helper/HelperContext.html[`+HelperContext+`].
+
+For more information, see the following:
+
+* EclipseLink
+http://www.eclipse.org/eclipselink/api/1.1/org/eclipse/persistence/sdo/helper/SDODataFactory.html[`+SDODataFactory+`]
+API
+* EclipseLink <<sdo-example-basic-datafactory, DataFactory>> examples
+
+[#sdo-usage-xmlhelper]
+=== Using XMLHelper
+
+You use the
+http://www.eclipse.org/eclipselink/api/1.1/commonj/sdo/helper/XMLHelper.html[`+XMLHelper+`]
+to convert XML documents into data objects, and vice versa. The two main
+operations of the `+XMLHelper+` are `+load+` and `+save+`.
+
+You can obtain the global `+XMLHelper+` from the `+INSTANCE+` field or a
+XMLHelper corresponding to a HelperContext using the `+getXMLHelper+`
+method on
+http://www.eclipse.org/eclipselink/api/1.1/commonj/sdo/helper/HelperContext.html[`+HelperContext+`].
+
+For more information, see the following:
+
+* EclipseLink
+http://www.eclipse.org/eclipselink/api/1.1/org/eclipse/persistence/sdo/helper/SDOXMLHelper.html[`+SDOXMLHelper+`]
+API
+* EclipseLink <<sdo-example-basic-xmlhelper, XMLHelper>> examples
+
+[#sdo-usage-datahelper]
+=== Using DataHelper
+
+The main purpose of the
+http://www.eclipse.org/eclipselink/api/1.1/commonj/sdo/helper/DataHelper.html[`+DataHelper+`]
+is to enable conversion of values used with data objects between data
+types.
+
+You can obtain the global `+DataHelper+` from the `+INSTANCE+` field or
+a DataHelper corresponding to a HelperContext using the
+`+getDataHelper+` method on
+http://www.eclipse.org/eclipselink/api/1.1/commonj/sdo/helper/HelperContext.html[`+HelperContext+`].
+
+For more information, see the following:
+
+* EclipseLink
+http://www.eclipse.org/eclipselink/api/1.1/org/eclipse/persistence/sdo/helper/SDODataHelper.html[`+SDODataHelper+`]
+API
+* EclipseLink <<sdo-example-basic-datahelper, DataHelper>> examples
+
+[#sdo-usage-copyhelper]
+=== Using CopyHelper
+
+You use the
+http://www.eclipse.org/eclipselink/api/1.1/commonj/sdo/helper/CopyHelper.html[`+CopyHelper+`]
+to create the following types of copies of data objects:
+
+* a copy of a `+DataObject+`’s values with `+DataType+` properties;
+* a copy of a tree of `+DataObject+` instances.
+
+You can obtain the global `+CopyHelper+` from the `+INSTANCE+` field or
+a CopyHelper corresponding to a HelperContext using the
+`+getCopyHelper+` method on
+http://www.eclipse.org/eclipselink/api/1.1/commonj/sdo/helper/HelperContext.html[`+HelperContext+`].
+
+For more information, see the following:
+
+* EclipseLink
+http://www.eclipse.org/eclipselink/api/1.1/org/eclipse/persistence/sdo/helper/SDOCopyHelper.html[`+SDOCopyHelper+`]
+API
+* EclipseLink <<sdo-example-basic-copyhelper, CopyHelper>> examples
+
+[#sdo-usage-equalityhelper]
+=== Using EqualityHelper
+
+An
+http://www.eclipse.org/eclipselink/api/1.1/commonj/sdo/helper/EqualityHelper.html[`+EqualityHelper+`]
+provides methods to compare data objects and let you determine the
+following:
+
+* whether or not two `+DataObject+` instances have the same values for
+their `+DataType+` properties;
+* whether or not two trees of data objects are equal.
+
+You can obtain the global `+EqualityHelper+` from the `+INSTANCE+` field
+or an EqualityHelper corresponding to a HelperContext using the
+`+getEqualityHelper+` method on
+http://www.eclipse.org/eclipselink/api/1.1/commonj/sdo/helper/HelperContext.html[`+HelperContext+`].
+
+For more information, see the following:
+
+* EclipseLink
+http://www.eclipse.org/eclipselink/api/1.1/org/eclipse/persistence/sdo/helper/SDOEqualityHelper.html[`+SDOEqualityHelper+`]
+API
+* EclipseLink <<sdo-example-basic-equalityhelper, EqualityHelper>> examples
+
+== Performing Integration
+
+You can integrate your SDO application with the following technologies:
+
+* <<integration-xml>>
+* <<integration-persistence>>
+
+The first step in this integration proccess is to create POJO/SDO
+bridge.
+
+[#integration-xml]
+=== Integrating SDO with Jakarta XML Binding
+
+For information and examples, see <<sdo-example-xmlbinding>>.
+
+[#integration-persistence]
+=== Integrating SDO with Jakarta Persistence
+
+For information and examples, see <<sdo-example-persistence>>.
+
+== Using SDO as a Web Service Binding Layer
+
+You can easily invoke a Web service and obtain results in the form of
+data objects, as the following example shows:
+
+[source,java]
+----
+DataObject resultEnvelope =
+    WebService.invoke(po, "http://werbservices.org/purchaseOrder", soap, "Envelope");
+
+// Get the purchase order from the result envelope
+DataObject resultPo = resultEnvelope.getDataObject("Body/purchaseOrder");
+----
+
+You can also build a Web services client around the `+XMLHelper+`. For
+example, in a simple Web service client, you could post an input
+`+DataObject+` representing an XML document using the `+XMLHelper+`, and
+then have the returning XML document returned to the caller as a
+`+DataObject+`:
+
+[source,java]
+----
+public static DataObject invoke(DataObject input, String serviceUri,
+                                String rootElementURI, String rootElementName)
+                                throws IOException {
+    URL address = new URL(serviceUri);
+    HttpURLConnection connection = (HttpURLConnection) address.openConnection();
+    if (input != null) {
+        connection.setRequestMethod("POST");
+        connection.setDoOutput(true);
+        connection.addRequestProperty("Content-Type", "text/xml; charset=utf-8");
+        OutputStream os = connection.getOutputStream();
+        // Add the XML document to the request
+        XMLHelper.INSTANCE.save(input, rootElementURI, rootElementName, os);
+        os.flush();
+    }
+    // invoke the service
+    connection.connect();
+    int code = connection.getResponseCode();
+    if (code != HttpURLConnection.HTTP_OK) {
+        throw new IOException("HTTP " + code + " " + connection.getResponseMessage());
+    }
+    InputStream is = connection.getInputStream();
+    // Return the root DataObject from the web service response
+    DataObject output = XMLHelper.INSTANCE.load(is).getRootObject();
+    return output;
+}
+----
+
+=== How to Use Web Service Attachments
+
+Information pending
+
+== Executing XPath with XML
+
+Many of the accessor methods for data objects make use of a `+String+`
+parameter that provides the path that identifies the property to which
+the method applies.
+
+The XPath expression is an augmented subset of XPath with the additional
+ability to access data using 0 as a base index. You specify the path
+using the following syntax:
+
+----
+path ::= (scheme ':')? '/'? (step '/')* step
+scheme ::= [^:]+
+step ::= '@'? property
+    | property '[' index_from_1 ']'
+    | property '.' index_from_0
+    | reference '[' attribute '=' value ']'
+    | ".."
+property ::= NCName ;; may be simple or complex type
+attribute ::= NCName ;; must be simple type
+reference :: NCName ;; must be DataObject type
+index_from_0 ::= Digits
+index_from_1 ::= NotZero (Digits)?
+value ::= Literal
+    | Number
+    | Boolean
+Literal ::= '"' [^"]* '"'
+    | "'" [^']* "'"
+Number ::= Digits ('.' Digits?)?
+    | '.' Digits
+Boolean ::= true
+    | false
+NotZero ::= [1-9]
+Digits ::= [0-9]+
+;; leading '/' begins at the root
+;; ".." is the containing DataObject, using containment properties
+;; Only the last step have an attribute as the property
+----
+
+Note that properties are always matched by name independent of their XML
+representation.
+
+The following example shows how to construct an XPath that you can use
+to access a `+DataObject+` contained in another `+DataObject+` is to
+specify the index of the contained `+DataObject+` within the appropriate
+property:
+
+[source,java]
+----
+DataObject department = company.getDataObject("departments.0");
+----
+
+Another way to access a contained `+DataObject+` is to identify that
+object by specifying the value of one of the attributes of that object.
+For example:
+
+[source,java]
+----
+DataObject employee = department.getDataObject("employees[SN='E0002']");
+----
+
+You can also use XPath expressions to set or unset values of properties,
+including multivalued properties. Note that each step of the path before
+the last must return a single `+DataObject+`. When the property is a
+`+Sequence+`, the values returned are those of the `+getValue+` method.

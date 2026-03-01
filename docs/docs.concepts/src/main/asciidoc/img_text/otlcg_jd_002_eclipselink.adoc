@@ -1,0 +1,10 @@
+:nofooter:
+This figure illustrates the relationship between EclipseLink components.
+Information stored in a database or in XML documents is transmitted to
+EclipseLink through a data source or JDBC. EclipseLink includes the open
+source implementation of the Jakarta Persistence API (JPA)
+specification, plus extensions beyond what is defined in JPA.
+EclipseLink also includes the Java API for XML Binding (JAXB)
+specification. These extensions include persistence unit properties,
+query hints, annotations, EclipseLink's XML metadata, and EclipseLink's
+custom API. which contains JPA, JAX/SDO, and DBWS.

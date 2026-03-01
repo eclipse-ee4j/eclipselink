@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,10 +25,9 @@ public class Employee {
     public String lastName;
 
     public boolean equals(Object obj) {
-        if (!(obj instanceof Employee)) {
+        if (!(obj instanceof Employee empObj)) {
             return false;
         }
-        Employee empObj = (Employee) obj;
         return (empObj.firstName.equals(this.firstName) && empObj.lastName.equals(this.lastName));
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -56,7 +56,7 @@ public abstract class AbstractSingleResultQueryResource extends AbstractResource
      */
     @SuppressWarnings("rawtypes")
     protected Response namedQuerySingleResultInternal(String version, String persistenceUnit, String queryName, HttpHeaders headers, UriInfo uriInfo) {
-        JPARSLogger.entering(CLASS_NAME, "namedQuerySingleResultInternal", new Object[] { "GET", version, persistenceUnit, queryName, uriInfo.getRequestUri().toASCIIString() });
+        JPARSLogger.DEFAULT_LOGGER.entering(null, CLASS_NAME, "namedQuerySingleResultInternal", new Object[] { "GET", version, persistenceUnit, queryName, uriInfo.getRequestUri().toASCIIString() });
         try {
             final PersistenceContext context = getPersistenceContext(persistenceUnit, null, uriInfo.getBaseUri(), version, null);
             final Query query = context.buildQuery(getMatrixParameters(uriInfo, persistenceUnit), queryName, getMatrixParameters(uriInfo, queryName), getQueryParameters(uriInfo));
@@ -68,8 +68,7 @@ public abstract class AbstractSingleResultQueryResource extends AbstractResource
                 final Object queryResults = query.getSingleResult();
                 final Object response = responseBuilder.buildSingleResultQueryResponse(context, getQueryParameters(uriInfo), queryResults, reportItems, uriInfo);
 
-                if (response != null && response instanceof SingleResultQuery) {
-                    final SingleResultQuery singleResultQuery = (SingleResultQuery) response;
+                if (response != null && response instanceof SingleResultQuery singleResultQuery) {
                     final List<JAXBElement<?>> item = singleResultQuery.getFields();
                     if ((item != null) && (item.size() == 1)) {
                         // Fix for Bug 393320 - JPA-RS: Respect the Accept Header for a singleResultQuery

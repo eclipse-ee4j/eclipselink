@@ -1,7 +1,8 @@
 /*
- * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2021 IBM Corporation. All rights reserved.
- *
+ * Copyright (c) 2006, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2021, 2024 IBM Corporation. All rights reserved.
+ * Copyright (c) 2024 Contributors to the Eclipse Foundation. All rights reserved.
+ * 
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
  * http://www.eclipse.org/legal/epl-2.0,
@@ -39,6 +40,7 @@ import org.eclipse.persistence.jpa.jpql.parser.AvgFunction;
 import org.eclipse.persistence.jpa.jpql.parser.BadExpression;
 import org.eclipse.persistence.jpa.jpql.parser.BetweenExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CaseExpression;
+import org.eclipse.persistence.jpa.jpql.parser.CastExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CoalesceExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CollectionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CollectionMemberDeclaration;
@@ -49,6 +51,7 @@ import org.eclipse.persistence.jpa.jpql.parser.CompoundExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ConcatExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ConstructorExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CountFunction;
+import org.eclipse.persistence.jpa.jpql.parser.DatabaseType;
 import org.eclipse.persistence.jpa.jpql.parser.DateTime;
 import org.eclipse.persistence.jpa.jpql.parser.DeleteClause;
 import org.eclipse.persistence.jpa.jpql.parser.DeleteStatement;
@@ -65,11 +68,13 @@ import org.eclipse.persistence.jpa.jpql.parser.HavingClause;
 import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariable;
 import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariableDeclaration;
 import org.eclipse.persistence.jpa.jpql.parser.InExpression;
+import org.eclipse.persistence.jpa.jpql.parser.IdExpression;
 import org.eclipse.persistence.jpa.jpql.parser.IndexExpression;
 import org.eclipse.persistence.jpa.jpql.parser.InputParameter;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLExpression;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
 import org.eclipse.persistence.jpa.jpql.parser.Join;
+import org.eclipse.persistence.jpa.jpql.parser.LeftExpression;
 import org.eclipse.persistence.jpa.jpql.parser.KeyExpression;
 import org.eclipse.persistence.jpa.jpql.parser.KeywordExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LengthExpression;
@@ -91,7 +96,9 @@ import org.eclipse.persistence.jpa.jpql.parser.OrExpression;
 import org.eclipse.persistence.jpa.jpql.parser.OrderByClause;
 import org.eclipse.persistence.jpa.jpql.parser.OrderByItem;
 import org.eclipse.persistence.jpa.jpql.parser.RangeVariableDeclaration;
+import org.eclipse.persistence.jpa.jpql.parser.ReplaceExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ResultVariable;
+import org.eclipse.persistence.jpa.jpql.parser.RightExpression;
 import org.eclipse.persistence.jpa.jpql.parser.SelectClause;
 import org.eclipse.persistence.jpa.jpql.parser.SelectStatement;
 import org.eclipse.persistence.jpa.jpql.parser.SimpleFromClause;
@@ -108,12 +115,14 @@ import org.eclipse.persistence.jpa.jpql.parser.SumFunction;
 import org.eclipse.persistence.jpa.jpql.parser.TreatExpression;
 import org.eclipse.persistence.jpa.jpql.parser.TrimExpression;
 import org.eclipse.persistence.jpa.jpql.parser.TypeExpression;
+import org.eclipse.persistence.jpa.jpql.parser.UnionClause;
 import org.eclipse.persistence.jpa.jpql.parser.UnknownExpression;
 import org.eclipse.persistence.jpa.jpql.parser.UpdateClause;
 import org.eclipse.persistence.jpa.jpql.parser.UpdateItem;
 import org.eclipse.persistence.jpa.jpql.parser.UpdateStatement;
 import org.eclipse.persistence.jpa.jpql.parser.UpperExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ValueExpression;
+import org.eclipse.persistence.jpa.jpql.parser.VersionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.WhenClause;
 import org.eclipse.persistence.jpa.jpql.parser.WhereClause;
 import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.*;
@@ -518,6 +527,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
      * identification variable declarations.
      *
      * @param expression The {@link AbstractFromClause} to validate
+     * @param visitor The {@link FirstDeclarationVisitor} to validate
      */
     protected void validateAbstractFromClause(AbstractFromClause expression,
                                               FirstDeclarationVisitor visitor) {
@@ -765,6 +775,8 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
      * </ul>
      *
      * @param expression The {@link BetweenExpression} to validate
+     * @return A number indicating the validation result. {@link #isValid(int, int)} can be used to
+     * determine the validation status of an expression based on its position
      */
     protected int validateBetweenExpression(BetweenExpression expression) {
 
@@ -874,6 +886,8 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
      * @param expression The {@link Expression} to validate
      * @param collectionTypeOnly <code>true</code> to make sure the path expression resolves to a
      * collection mapping only; <code>false</code> if it can simply resolves to a relationship mapping
+     * @return <code>false</code> if the encapsulated expression was validated and is invalid;
+     * <code>true</code> otherwise
      */
     protected boolean validateCollectionValuedPathExpression(Expression expression,
                                                              boolean collectionTypeOnly) {
@@ -931,7 +945,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 
     /**
      * Validates the given {@link Expression} and makes sure it's a valid collection value path expression.
-     * 
+     *
      * join_collection_valued_path_expression::=
      *     identification_variable.{single_valued_embeddable_object_field.}*collection_valued_field
      * join_single_valued_path_expression::=
@@ -940,6 +954,8 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
      * @param expression The {@link Expression} to validate
      * @param collectionTypeOnly <code>true</code> to make sure the path expression resolves to a
      * collection mapping only; <code>false</code> if it can simply resolves to a relationship mapping
+     * @return <code>false</code> if the encapsulated expression was validated and is invalid;
+     * <code>true</code> otherwise
      */
     protected boolean validateJoinCollectionValuedPathExpression(Expression expression,
                                                              boolean collectionTypeOnly) {
@@ -977,8 +993,8 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 
                 valid = false;
             }
-            else if (!helper.isCollectionMapping(mapping) && 
-                    !helper.isRelationshipMapping(mapping) && 
+            else if (!helper.isCollectionMapping(mapping) &&
+                    !helper.isRelationshipMapping(mapping) &&
                     !helper.isEmbeddableMapping(mapping)) {
 
                 int startPosition = position(expression);
@@ -1600,10 +1616,22 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
     }
 
     /**
+     * Validates the given {@link IdExpression}. The default behavior does not require to
+     * semantically validate it.
+     *
+     * @param expression The {@link IdExpression} to validate
+     */
+    protected void validateIdExpression(IdExpression expression) {
+        super.visit(expression);
+    }
+
+    /**
      * Validates the given {@link IndexExpression}. It validates the identification variable and
      * makes sure is it defined in <code><b>IN</b></code> or <code><b>IN</b></code> expression.
      *
      * @param expression The {@link IndexExpression} to validate
+     * @return <code>false</code> if the encapsulated expression was validated and is invalid;
+     * <code>true</code> otherwise
      */
     protected boolean validateIndexExpression(IndexExpression expression) {
 
@@ -1724,6 +1752,46 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
      */
     protected void validateKeyExpression(KeyExpression expression) {
         super.visit(expression);
+    }
+
+    /**
+     * Validates the encapsulated expression of the given <code><b>LEFT</b></code> expression.
+     * The test to perform is:
+     * <ul>
+     * <li>If the encapsulated expression is a path expression, validation makes sure it is a basic
+     * mapping, an association field is not allowed.</li>
+     * <li>If the encapsulated expression is not a path expression, validation will be redirected to
+     * that expression but the returned status will not be changed.</li>
+     * </ul>
+     *
+     * @param expression The {@link LeftExpression} to validate by validating its encapsulated expression
+     * @return A number indicating the validation result. {@link #isValid(int, int)} can be used to
+     * determine the validation status of an expression based on its position
+     */
+    protected int validateLeftExpression(LeftExpression expression) {
+
+        int result = 0;
+
+        // Validate the first expression
+        if (expression.hasFirstExpression()) {
+            Expression firstExpression = expression.getFirstExpression();
+
+            // Special case for state field path expression, association field is not allowed
+            StateFieldPathExpression pathExpression = getStateFieldPathExpression(firstExpression);
+
+            if (pathExpression != null) {
+                boolean valid = validateStateFieldPathExpression(pathExpression, PathType.BASIC_FIELD_ONLY);
+                updateStatus(result, 0, valid);
+            }
+            else {
+                firstExpression.accept(this);
+            }
+        }
+
+        // Validate the second expression
+        expression.getSecondExpression().accept(this);
+
+        return result;
     }
 
     /**
@@ -2060,6 +2128,49 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
     }
 
     /**
+     * Validates the encapsulated expression of the given <code><b>REPLACEMENT</b></code> expression.
+     * The test to perform is:
+     * <ul>
+     * <li>If the encapsulated expression is a path expression, validation makes sure it is a basic
+     * mapping, an association field is not allowed.</li>
+     * <li>If the encapsulated expression is not a path expression, validation will be redirected to
+     * that expression but the returned status will not be changed.</li>
+     * </ul>
+     *
+     * @param expression The {@link ReplaceExpression} to validate by validating its encapsulated expression
+     * @return A number indicating the validation result. {@link #isValid(int, int)} can be used to
+     * determine the validation status of an expression based on its position
+     */
+    protected int validateReplaceExpression(ReplaceExpression expression) {
+
+        int result = 0;
+
+        // Validate the first expression
+        if (expression.hasFirstExpression()) {
+            Expression firstExpression = expression.getFirstExpression();
+
+            // Special case for state field path expression, association field is not allowed
+            StateFieldPathExpression pathExpression = getStateFieldPathExpression(firstExpression);
+
+            if (pathExpression != null) {
+                boolean valid = validateStateFieldPathExpression(pathExpression, PathType.BASIC_FIELD_ONLY);
+                updateStatus(result, 0, valid);
+            }
+            else {
+                firstExpression.accept(this);
+            }
+        }
+
+        // Validate the second expression
+        expression.getSecondExpression().accept(this);
+
+        // Validate the third expression
+        expression.getThirdExpression().accept(this);
+
+        return result;
+    }
+
+    /**
      * Validates the given {@link ResultVariable}. The default behavior does not require to
      * semantically validate it.
      *
@@ -2069,6 +2180,46 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
         // TODO: Validate identification to make sure it does not
         //       collide with one defined in the FROM clause
         super.visit(expression);
+    }
+
+    /**
+     * Validates the encapsulated expression of the given <code><b>RIGHT</b></code> expression.
+     * The test to perform is:
+     * <ul>
+     * <li>If the encapsulated expression is a path expression, validation makes sure it is a basic
+     * mapping, an association field is not allowed.</li>
+     * <li>If the encapsulated expression is not a path expression, validation will be redirected to
+     * that expression but the returned status will not be changed.</li>
+     * </ul>
+     *
+     * @param expression The {@link RightExpression} to validate by validating its encapsulated expression
+     * @return A number indicating the validation result. {@link #isValid(int, int)} can be used to
+     * determine the validation status of an expression based on its position
+     */
+    protected int validateRightExpression(RightExpression expression) {
+
+        int result = 0;
+
+        // Validate the first expression
+        if (expression.hasFirstExpression()) {
+            Expression firstExpression = expression.getFirstExpression();
+
+            // Special case for state field path expression, association field is not allowed
+            StateFieldPathExpression pathExpression = getStateFieldPathExpression(firstExpression);
+
+            if (pathExpression != null) {
+                boolean valid = validateStateFieldPathExpression(pathExpression, PathType.BASIC_FIELD_ONLY);
+                updateStatus(result, 0, valid);
+            }
+            else {
+                firstExpression.accept(this);
+            }
+        }
+
+        // Validate the second expression
+        expression.getSecondExpression().accept(this);
+
+        return result;
     }
 
     /**
@@ -2270,7 +2421,18 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
                         // Third path extension did not validate the path expression, continue validating it
                         else {
                             type = helper.getType(expression);
-
+                            if (type == null && expression.getParentExpression().isGenerateImplicitThisAlias()) {
+                                //Seems path is not available. Try again with new virtual "this" IdentificationVariable.
+                                // Remove the used identification variable since it is not
+                                // Entity identification variable as generated/implicit "this" is expected.
+                                usedIdentificationVariables.remove(expression.getIdentificationVariable());
+                                //Add generated/implicit "this" alias.
+                                expression.setVirtualIdentificationVariable(Expression.THIS);
+                                type = helper.getType(expression);
+                                if (helper.isTypeResolvable(type)) {
+                                    return valid;
+                                }
+                            }
                             // Does not resolve to a valid path
                             if (!helper.isTypeResolvable(type)) {
                                 addProblem(expression, StateFieldPathExpression_NotResolvable, expression.toActualText());
@@ -2486,7 +2648,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
                 if (managedType != null) {
 
                     // Continue to traverse the path expression
-                    for (int index = pathExpression.hasVirtualIdentificationVariable() ? 0 : 1, count = pathExpression.pathSize(); index < count; index++) {
+                    for (int index = pathExpression.hasImplicitIdentificationVariable() ? 0 : 1, count = pathExpression.pathSize(); index < count; index++) {
 
                         // Retrieve the mapping
                         String path = pathExpression.getPath(index);
@@ -2581,6 +2743,16 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
      * @param expression The {@link ValueExpression} to validate
      */
     protected void validateValueExpression(ValueExpression expression) {
+        super.visit(expression);
+    }
+
+    /**
+     * Validates the given {@link VersionExpression}. The default behavior does not require to
+     * semantically validate it.
+     *
+     * @param expression The {@link VersionExpression} to validate
+     */
+    protected void validateVersionExpression(VersionExpression expression) {
         super.visit(expression);
     }
 
@@ -2695,6 +2867,12 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
     }
 
     @Override
+    public void visit(CastExpression expression) {
+        super.visit(expression);
+        // Nothing to validate semantically
+    }
+
+    @Override
     public final void visit(CoalesceExpression expression) {
         validateCoalesceExpression(expression);
     }
@@ -2743,6 +2921,12 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
     @Override
     public final void visit(DateTime expression) {
         validateDateTime(expression);
+    }
+
+    @Override
+    public void visit(DatabaseType expression) {
+        super.visit(expression);
+        // Nothing to validate semantically
     }
 
     @Override
@@ -2808,6 +2992,11 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
     @Override
     public final void visit(IdentificationVariableDeclaration expression) {
         validateIdentificationVariableDeclaration(expression);
+    }
+
+    @Override
+    public final void visit(IdExpression expression) {
+        validateIdExpression(expression);
     }
 
     @Override
@@ -3037,6 +3226,12 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
     }
 
     @Override
+    public void visit(UnionClause expression) {
+        super.visit(expression);
+        // Nothing to validate semantically
+    }
+
+    @Override
     public final void visit(UnknownExpression expression) {
         // Nothing semantically to validate
     }
@@ -3064,6 +3259,11 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
     @Override
     public final void visit(ValueExpression expression) {
         validateValueExpression(expression);
+    }
+
+    @Override
+    public final void visit(VersionExpression expression) {
+        validateVersionExpression(expression);
     }
 
     @Override
@@ -3288,7 +3488,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
      * StateFieldPathExpression, PathType)} to validate the type of the mapping and to make sure it
      * is allowed based on its location.
      */
-    protected static enum PathType {
+    protected enum PathType {
 
         /**
          * This will allow basic, and association fields to be specified.

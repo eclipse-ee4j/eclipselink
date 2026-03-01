@@ -1,0 +1,216 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[APPDEV002]]
+=== Building and Using the Persistence Layer
+
+EclipseLink requires that classes must meet certain minimum requirements
+before they can become persistent. EclipseLink also provides
+alternatives to most requirements. EclipseLink uses a nonintrusive
+approach by employing a metadata architecture that allows for minimal
+object model intrusions.
+
+This section includes the following information:
+
+* link:#BABBGDHH[Implementation Options]
+* link:#BABDHDIA[Persistent Class Requirements]
+* link:#BABCCJCC[Persistence Layer Components]
+
+[[BABBGDHH]][[OTLCG91176]]
+
+==== Implementation Options
+
+When implementing your persistence layer using EclipseLink, consider the
+following options:
+
+* link:#CCHGEJEA[Using EclipseLink JPA Metatdata, Annotations, and XML]
+* link:#CCHHEIFG[Using EclipseLink Metadata Java API]
+* link:#CCHJBHDG[Using Method and Direct Field Access]
+* link:#CCHGGAGE[Using Java Byte-code Weaving]
+
+[[CCHGEJEA]][[OTLCG91177]]
+
+===== Using EclipseLink JPA Metatdata, Annotations, and XML
+
+When using JPA, you can specify persistence layer components using any
+combination of standard JPA annotations and `persistence.xml`,
+EclipseLink JPA annotation extensions, and EclipseLink JPA
+`persistence.xml` extensions.
+
+For more information, see link:blocks002.htm#CHDIEIFJ[About
+Configuration Basics].
+
+[[CCHHEIFG]][[OTLCG91179]]
+
+===== Using EclipseLink Metadata Java API
+
+Persistence layer components can be coded or generated as Java. To use
+Java code, you must manually write code for each element of the project
+including: project, login, platform, descriptors, and mappings. This may
+be more efficient if your application is model-based and relies heavily
+on code generation.
+
+[[CCHJBHDG]][[OTLCG91180]]
+
+===== Using Method and Direct Field Access
+
+You can access the fields (data members) of a class by using a
+getter/setter method (also known as property access) or by accessing the
+field itself directly.
+
+When to use method or direct field access depends on your application
+design. Consider the following guidelines:
+
+* Use method access outside of a class.
++
+This is the natural public API of the class. The getter/setter methods
+handle any necessary side-effects and the client need not know anything
+about those details.
+* Use direct field access within a class to improve performance.
++
+In this case, you are responsible for taking into consideration any
+side-effects not invoked by bypassing the getter/setter methods.
+
+When considering using method or direct field access, consider the
+following limitations.
+
+If you enable change tracking on a getter/setter method (for example,
+you decorate method `setPhone` with `@ChangeTracking`), then EclipseLink
+tracks changes accordingly when a client modifies the field (`phone`)
+using the getter/setter methods.
+
+Similarly, if you enable change tracking on a field (for example, you
+decorate field `phone` with `@ChangeTracking`), then EclipseLink tracks
+changes accordingly when a client modifies the field (`phone`) directly.
+
+However, if you enable change tracking on a getter/setter method (for
+example, you decorate method `setPhone` with `@ChangeTracking`) and a
+client accesses the field (`phone`) directly, EclipseLink does not
+detect the change. If you choose to code in this style of field access
+within a class for performance and method access outside of a class,
+then be aware of this limitation.
+
+For more information, see the description of the `@ChangeTracking`
+annotation in _Jakarta Persistence API (JPA) Extensions Reference for
+EclipseLink_.
+
+[[CCHGGAGE]][[OTLCG91181]]
+
+===== Using Java Byte-code Weaving
+
+Weaving is a technique of manipulating the byte-code of compiled Java
+classes.
+
+Weaving is used to enhance both JPA entities and Plain Old Java Object
+(POJO) classes for such things as lazy loading, change tracking, fetch
+groups, and internal optimizations.
+
+For more information, see xref:{relativedir}/app_dev005.adoc#APPDEV005[About Weaving].
+
+[[BABDHDIA]][[OTLCG91182]]
+
+==== Persistent Class Requirements
+
+When you create persistent Java objects, use direct access on private or
+protected attributes.
+
+If you are using weaving, the `ValueHolderInterface` is not required.
+For more information, see xref:{relativedir}/app_dev005.adoc#APPDEV005[About Weaving.]
+See link:mappingintro002.htm#CHDJAHDC[Indirection (Lazy Loading)] for
+more information on indirection and transparent indirection.
+
+[[BABCCJCC]][[OTLCG91183]]
+
+==== Persistence Layer Components
+
+The purpose of your application's persistence layer is to use a session
+at run time to associate mapping metadata and a data source (see
+link:data_access.htm#CHDJBDEA[Chapter 7, "Understanding Data Access"])
+to create, read, update, and delete persistent objects using the
+EclipseLink cache, queries and expressions, and transactions.
+
+Typically, the EclipseLink persistence layer contains the following
+components:
+
+* link:#BABFEEGF[Mapping Metadata]
+* link:#BABBGFHF[Cache]
+* link:#BABJDGGH[Queries and Expressions]
+
+[[BABFEEGF]][[OTLCG91184]]
+
+===== Mapping Metadata
+
+The EclipseLink application metadata model is based on the project. The
+project includes descriptors, mappings, and various policies that
+customize the run-time capabilities. You associate this mapping and
+configuration information with a particular data source and application
+by referencing the project from a session.
+
+For more information, see the following:
+
+* link:blocks001.htm#BABEECEF[Creating Project Metadata]
+* link:descriptors.htm#CHECEAAE[Chapter 5, "Understanding Descriptors"]
+* xref:{relativedir}/mappingintro.adoc#MAPPINGINTRO[Chapter 6, "Understanding Mappings"]
+
+[[BABBGFHF]][[OTLCG91186]]
+
+===== Cache
+
+By default, EclipseLink sessions provide an object-level cache that
+guarantees object identity and enhances performance by reducing the
+number of times the application needs to access the data source.
+EclipseLink provides a variety of cache options, including locking,
+refresh, invalidation, isolation, and coordination. Using cache
+coordination, you can configure EclipseLink to synchronize changes with
+other instances of the deployed application. You configure most cache
+options at the persistence unit or entity level. You can also configure
+cache options on a per-query basis or on a descriptor to apply to all
+queries on the reference class.
+
+For more information, see xref:{relativedir}/cache.adoc#CACHE[Chapter 8,
+"Understanding Caching."]
+
+[[BABJDGGH]][[OTLCG91187]]
+
+===== Queries and Expressions
+
+For Object-relational architectures, EclipseLink provides several object
+and data query types, and offers flexible options for query selection
+criteria, including the following:
+
+* EclipseLink expressions
+* JPQL (Java Persistence Query Language)
+* SQL
+* Stored procedures
+* Query by example
+
+With these options, you can build any type of query. Oracle recommends
+using named queries to define application queries. Named queries are
+held in the project metadata and referenced by name. This simplifies
+application development and encapsulates the queries to reduce
+maintenance costs.
+
+For Object-relational architectures, you are free to use any of the
+query options regardless of the persistent entity type. Alternatively,
+you can build queries in code, using the EclipseLink API.
+
+NOTE: These query techniques cannot be used with MOXy (OXM, JAXB) mapping.
+However you can perform queries when using legacy EIS XML projects.
+
+For more information, see link:queries.htm#CHDGGCJB[Chapter 9,
+"Understanding Queries"] and link:expressions.htm#CHDCAIGD[Chapter 10,
+"Understanding EclipseLink Expressions."]

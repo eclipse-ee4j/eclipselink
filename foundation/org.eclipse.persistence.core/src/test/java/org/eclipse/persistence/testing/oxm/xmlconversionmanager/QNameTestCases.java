@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,11 +14,12 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.oxm.xmlconversionmanager;
 
-import javax.xml.namespace.QName;
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.testing.oxm.OXTestCase;
+
+import javax.xml.namespace.QName;
 
 public class QNameTestCases extends OXTestCase {
     private static final QName CONTROL_QNAME = new QName("local");
@@ -119,7 +120,7 @@ public class QNameTestCases extends OXTestCase {
             Integer integer = 1;
             xcm.convertObject(integer, QName.class);
         } catch (ConversionException e) {
-            assertTrue("The incorrect exception was thrown", e.getErrorCode() == ConversionException.COULD_NOT_BE_CONVERTED);
+            assertEquals("The incorrect exception was thrown", ConversionException.COULD_NOT_BE_CONVERTED, e.getErrorCode());
         }
     }
 
@@ -128,7 +129,7 @@ public class QNameTestCases extends OXTestCase {
             Integer integer = 1;
             xcm.convertObject(integer, QName.class, XMLConstants.QNAME_QNAME);
         } catch (ConversionException e) {
-            assertTrue("The incorrect exception was thrown", e.getErrorCode() == ConversionException.COULD_NOT_BE_CONVERTED);
+            assertEquals("The incorrect exception was thrown", ConversionException.COULD_NOT_BE_CONVERTED, e.getErrorCode());
         }
     }
 }

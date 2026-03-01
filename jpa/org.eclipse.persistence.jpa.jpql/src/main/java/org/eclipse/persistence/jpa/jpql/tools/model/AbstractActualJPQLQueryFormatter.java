@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -12,7 +12,8 @@
 
 // Contributors:
 //     Oracle - initial API and implementation
-//
+//     06/02/2023: Radek Felcman
+//       - Issue 1885: Implement new JPQLGrammar for upcoming Jakarta Persistence 3.2
 package org.eclipse.persistence.jpa.jpql.tools.model;
 
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.AND;
@@ -21,6 +22,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.BETWEEN;
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.CASE;
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.COALESCE;
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.CONCAT;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.CONCAT_PIPES;
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.DELETE;
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.DISTINCT;
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.DIVISION;
@@ -128,6 +130,7 @@ import org.eclipse.persistence.jpa.jpql.tools.model.query.CollectionValuedPathEx
 import org.eclipse.persistence.jpa.jpql.tools.model.query.ComparisonExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.CompoundExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.ConcatExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.tools.model.query.ConcatPipesExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.ConstructorExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.CountFunctionStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.DateTimeStateObject;
@@ -146,6 +149,7 @@ import org.eclipse.persistence.jpa.jpql.tools.model.query.FromClauseStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.FunctionExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.GroupByClauseStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.HavingClauseStateObject;
+import org.eclipse.persistence.jpa.jpql.tools.model.query.IdExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.IdentificationVariableDeclarationStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.IdentificationVariableStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.InExpressionStateObject;
@@ -155,6 +159,7 @@ import org.eclipse.persistence.jpa.jpql.tools.model.query.JPQLQueryStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.JoinStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.KeyExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.KeywordExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.tools.model.query.LeftExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.LengthExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.LikeExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.ListHolderStateObject;
@@ -173,7 +178,9 @@ import org.eclipse.persistence.jpa.jpql.tools.model.query.OrExpressionStateObjec
 import org.eclipse.persistence.jpa.jpql.tools.model.query.OrderByClauseStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.OrderByItemStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.RangeVariableDeclarationStateObject;
+import org.eclipse.persistence.jpa.jpql.tools.model.query.ReplaceExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.ResultVariableStateObject;
+import org.eclipse.persistence.jpa.jpql.tools.model.query.RightExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.SelectClauseStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.SelectStatementStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.SimpleFromClauseStateObject;
@@ -198,6 +205,7 @@ import org.eclipse.persistence.jpa.jpql.tools.model.query.UpdateItemStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.UpdateStatementStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.UpperExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.ValueExpressionStateObject;
+import org.eclipse.persistence.jpa.jpql.tools.model.query.VersionExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.WhenClauseStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.WhereClauseStateObject;
 
@@ -1042,6 +1050,11 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
     }
 
     @Override
+    public void visit(ConcatPipesExpressionStateObject stateObject) {
+            toStringCompound(stateObject, CONCAT_PIPES);
+    }
+
+    @Override
     public void visit(ConstructorExpressionStateObject stateObject) {
 
         if (stateObject.isDecorated()) {
@@ -1332,6 +1345,11 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
     }
 
     @Override
+    public void visit(IdExpressionStateObject stateObject) {
+        toStringEncapsulatedIdentificationVariable(stateObject);
+    }
+
+    @Override
     public void visit(IndexExpressionStateObject stateObject) {
         toStringEncapsulatedIdentificationVariable(stateObject);
     }
@@ -1454,6 +1472,11 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
             KeywordExpression expression = stateObject.getExpression();
             appendIdentifier((expression != null) ? expression.getActualIdentifier() : stateObject.getText(), stateObject.getText());
         }
+    }
+
+    @Override
+    public void visit(LeftExpressionStateObject stateObject) {
+        toStringDoubleEncapsulated(stateObject);
     }
 
     @Override
@@ -1679,8 +1702,18 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
     }
 
     @Override
+    public void visit(RightExpressionStateObject stateObject) {
+        toStringDoubleEncapsulated(stateObject);
+    }
+
+    @Override
     public void visit(RangeVariableDeclarationStateObject stateObject) {
         toStringRangeVariableDeclaration(stateObject);
+    }
+
+    @Override
+    public void visit(ReplaceExpressionStateObject stateObject) {
+        toStringTripleEncapsulated(stateObject);
     }
 
     @Override
@@ -2074,6 +2107,11 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
 
     @Override
     public void visit(ValueExpressionStateObject stateObject) {
+        toStringEncapsulatedIdentificationVariable(stateObject);
+    }
+
+    @Override
+    public void visit(VersionExpressionStateObject stateObject) {
         toStringEncapsulatedIdentificationVariable(stateObject);
     }
 

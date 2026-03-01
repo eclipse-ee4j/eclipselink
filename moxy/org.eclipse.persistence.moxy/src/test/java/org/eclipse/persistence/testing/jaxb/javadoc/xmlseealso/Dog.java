@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,10 +23,9 @@ public class Dog extends Animal {
     public String barklevel;
 
     public boolean equals(Object obj) {
-        if (obj == null || !(obj instanceof Dog)) {
+        if (obj == null || !(obj instanceof Dog dog)) {
             return false;
         }
-        Dog dog = (Dog) obj;
         return (dog.name.equals(name) && dog.owner.equals(owner) && dog.barklevel
                 .equals(barklevel));
     }

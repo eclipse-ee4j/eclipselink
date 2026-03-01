@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,8 +15,6 @@
 //
 package org.eclipse.persistence.internal.jpa.jpql;
 
-import java.util.Collections;
-import java.util.List;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 import org.eclipse.persistence.jpa.jpql.JPQLQueryDeclaration;
@@ -25,6 +23,9 @@ import org.eclipse.persistence.jpa.jpql.parser.Expression;
 import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariable;
 import org.eclipse.persistence.jpa.jpql.parser.Join;
 import org.eclipse.persistence.mappings.DatabaseMapping;
+
+import java.util.Collections;
+import java.util.List;
 
 /**
  * A <code>Declaration</code> is the corresponding representation of a single declaration defined in

@@ -1,0 +1,5 @@
+:nofooter:
+This illustration shows an example of a direct-to-field mappings that
+uses a serialized converter. The attribute jobDescription contains a
+formatted text document that is stored in the JOB_DESC field of the
+database.

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,15 +14,20 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.isolatedsession;
 
-import java.util.*;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.testing.framework.*;
-import org.eclipse.persistence.queries.SQLCall;
-import org.eclipse.persistence.sessions.*;
-import org.eclipse.persistence.sessions.server.*;
-import org.eclipse.persistence.exceptions.*;
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.exceptions.OptimisticLockException;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.queries.SQLCall;
+import org.eclipse.persistence.sessions.DatabaseLogin;
+import org.eclipse.persistence.sessions.Session;
+import org.eclipse.persistence.sessions.UnitOfWork;
+import org.eclipse.persistence.sessions.server.ConnectionPolicy;
+import org.eclipse.persistence.sessions.server.ServerSession;
+import org.eclipse.persistence.testing.framework.AutoVerifyTestCase;
+import org.eclipse.persistence.testing.framework.TestErrorException;
+
+import java.util.Vector;
 
 public class NoRowsUpdatedTest extends AutoVerifyTestCase {
     protected DatabaseLogin login;
@@ -38,8 +43,8 @@ public class NoRowsUpdatedTest extends AutoVerifyTestCase {
     public void copyDescriptors(Session session) {
         Vector descriptors = new Vector();
 
-        for (Iterator<ClassDescriptor> iterator = session.getDescriptors().values().iterator(); iterator.hasNext(); ) {
-            descriptors.addElement(iterator.next());
+        for (ClassDescriptor classDescriptor : session.getDescriptors().values()) {
+            descriptors.add(classDescriptor);
         }
         this.server.addDescriptors(descriptors);
         // Since the descriptors are already initialized, must also set the session to isolated.
@@ -96,11 +101,10 @@ public class NoRowsUpdatedTest extends AutoVerifyTestCase {
             this.eventAdaptor = new VPDIsolatedSessionEventAdaptor();
             this.server.getEventManager().addListener(this.eventAdaptor);
         } catch (RuntimeException ex) {
-            getSession().logMessage("This test requires that the connected user has privleges to \"Creat any context\", \"Drop any context\" and \"execute Sys.DBMS_RLS package\".");
+            getSession().logMessage("This test requires that the connected user has privileges to \"Creat any context\", \"Drop any context\" and \"execute Sys.DBMS_RLS package\".");
             throw ex;
         } catch (java.sql.SQLException se) {
-            se.printStackTrace();
-            throw new TestErrorException("There is SQLException");
+            throw new TestErrorException("There is SQLException", se);
         }
     }
 

@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2022 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,6 +37,7 @@ import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.logging.SessionLogEntry;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.testing.framework.TogglingFastTableCreator;
+import org.eclipse.persistence.testing.models.jpa.advanced.entities.EntityFloat;
 import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
 import org.eclipse.persistence.tools.schemaframework.ForeignKeyConstraint;
 import org.eclipse.persistence.tools.schemaframework.TableDefinition;
@@ -73,6 +74,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         addTableDefinition(buildRESPONSTable());
         addTableDefinition(buildSALARYTable());
         addTableDefinition(buildVEGETABLETable());
+        addTableDefinition(buildVEGETABLE_RECORDTable());
         addTableDefinition(buildWOMANTable());
         addTableDefinition(buildWORKWEEKTable());
         addTableDefinition(buildWORLDRANKTable());
@@ -134,6 +136,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         addTableDefinition(buildPlanarbeitsgangTable());
         addTableDefinition(buildPlanarbeitsgangHistTable());
         addTableDefinition(buildMaterialReignisTable());
+        addTableDefinition(buildEntityFloatTable());
     }
 
     public TableDefinition buildADDRESSTable() {
@@ -1988,6 +1991,45 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         return table;
     }
 
+    public TableDefinition buildVEGETABLE_RECORDTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("CMP3_VEGETABLE_RECORD");
+
+        FieldDefinition fieldNAME = new FieldDefinition();
+        fieldNAME.setName("VEGETABLE_NAME");
+        fieldNAME.setTypeName("VARCHAR");
+        fieldNAME.setSize(30);
+        fieldNAME.setIsPrimaryKey(true);
+        table.addField(fieldNAME);
+
+        FieldDefinition fieldCOLOR = new FieldDefinition();
+        fieldCOLOR.setName("VEGETABLE_COLOR");
+        fieldCOLOR.setTypeName("VARCHAR");
+        fieldCOLOR.setSize(30);
+        fieldCOLOR.setIsPrimaryKey(true);
+        table.addField(fieldCOLOR);
+
+        FieldDefinition fieldCOST = new FieldDefinition();
+        fieldCOST.setName("COST");
+        fieldCOST.setTypeName("DOUBLE PRECIS");
+        fieldCOST.setSize(18);
+        table.addField(fieldCOST);
+
+        FieldDefinition fieldTAGS = new FieldDefinition();
+        fieldTAGS.setName("TAGS");
+        fieldTAGS.setTypeName("BLOB");
+        table.addField(fieldTAGS);
+
+        FieldDefinition fieldTYPE = new FieldDefinition();
+        fieldTYPE.setName("TYPE");
+        fieldTYPE.setTypeName("CHAR");
+        fieldTYPE.setSize(1);
+        fieldTYPE.setShouldAllowNull(true);
+        table.addField(fieldTYPE);
+
+        return table;
+    }
+
     public TableDefinition buildVIOLATIONTable() {
         TableDefinition table = new TableDefinition();
         table.setName("VIOLATION");
@@ -2659,6 +2701,16 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         fieldHEIGHT.setUnique(false);
         fieldHEIGHT.setShouldAllowNull(true);
         table.addField(fieldHEIGHT);
+
+        FieldDefinition fieldSTATUS = new FieldDefinition();
+        fieldSTATUS.setName("STATUS");
+        fieldSTATUS.setTypeName("VARCHAR");
+        fieldSTATUS.setSize(32);
+        fieldSTATUS.setIsPrimaryKey(false);
+        fieldSTATUS.setIsIdentity(false);
+        fieldSTATUS.setUnique(false);
+        fieldSTATUS.setShouldAllowNull(true);
+        table.addField(fieldSTATUS);
 
         return table;
     }
@@ -3655,7 +3707,19 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
 
         return tabledefinition;
     }
-    
+
+    // Supported data types according to https://docs.oracle.com/cd/E19501-01/819-3659/gcmaz/
+    private static TableDefinition buildEntityFloatTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName(EntityFloat.TABLE_NAME);
+        table.addField(createNumericPk("ID", 10));
+        table.addField(createFloatColumn("HEIGHT", false));
+        table.addField(createFloatColumn("LENGTH", false));
+        table.addField(createFloatColumn("WIDTH", false));
+        table.addField(createStringColumn("DESCRIPTION", 255,false));
+        return table;
+    }
+
     @Override
     public void replaceTables(DatabaseSession session) {
         DatabasePlatform dbPlatform = session.getPlatform();
@@ -3667,9 +3731,8 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         try {
             super.replaceTables(session);
         } catch (DatabaseException de) {
-            SessionLogEntry sle = new SessionLogEntry(null, SessionLog.WARNING, null, de);
-            sle.setMessage("Test setup failed, retrying...");
-            session.getSessionLog().log(sle);
+            session.getSessionLog()
+                    .log(new SessionLogEntry(SessionLog.WARNING, null, null, "Test setup failed, retrying...", de));
             //give it one more try in case of some possibly random failure
             super.replaceTables(session);
         }

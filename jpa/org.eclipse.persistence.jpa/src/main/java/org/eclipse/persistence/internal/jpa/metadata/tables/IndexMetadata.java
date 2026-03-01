@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 import org.eclipse.persistence.internal.helper.DatabaseTable;
-import org.eclipse.persistence.internal.helper.StringHelper;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
@@ -35,7 +34,7 @@ import org.eclipse.persistence.tools.schemaframework.IndexDefinition;
 /**
  * INTERNAL:
  * Object to hold onto database index metadata.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -60,6 +59,7 @@ public class IndexMetadata extends ORMetadata {
     private String m_catalog;
     private String m_table;
     private String m_columnList;
+    private String m_options;
 
     private List<String> m_columnNames = new ArrayList<>();
 
@@ -83,6 +83,7 @@ public class IndexMetadata extends ORMetadata {
         m_table = index.getAttributeString("table");
         m_unique = index.getAttributeBooleanDefaultFalse("unique");
         m_columnList = index.getAttributeString("columnList");
+        m_options = index.getAttributeString("options");
 
         for (Object columnName : index.getAttributeArray("columnNames")) {
             m_columnNames.add((String) columnName);
@@ -94,8 +95,7 @@ public class IndexMetadata extends ORMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (objectToCompare instanceof IndexMetadata) {
-            IndexMetadata index = (IndexMetadata) objectToCompare;
+        if (objectToCompare instanceof IndexMetadata index) {
 
             if (! valuesMatch(m_name, index.getName())) {
                 return false;
@@ -121,6 +121,10 @@ public class IndexMetadata extends ORMetadata {
                 return false;
             }
 
+            if (! valuesMatch(m_options, index.getOptions())) {
+                return false;
+            }
+
             return m_columnNames.equals(index.getColumnNames());
         }
 
@@ -129,13 +133,15 @@ public class IndexMetadata extends ORMetadata {
 
     @Override
     public int hashCode() {
-        int result = m_unique != null ? m_unique.hashCode() : 0;
+        int result = super.hashCode();
+        result = 31 * result + (m_unique != null ? m_unique.hashCode() : 0);
         result = 31 * result + (m_name != null ? m_name.hashCode() : 0);
         result = 31 * result + (m_schema != null ? m_schema.hashCode() : 0);
         result = 31 * result + (m_catalog != null ? m_catalog.hashCode() : 0);
         result = 31 * result + (m_table != null ? m_table.hashCode() : 0);
         result = 31 * result + (m_columnList != null ? m_columnList.hashCode() : 0);
         result = 31 * result + (m_columnNames != null ? m_columnNames.hashCode() : 0);
+        result = 31 * result + (m_options != null ? m_options.hashCode() : 0);
         return result;
     }
 
@@ -191,6 +197,14 @@ public class IndexMetadata extends ORMetadata {
      * INTERNAL:
      * Used for OX mapping.
      */
+    public String getOptions() {
+        return m_options;
+    }
+
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public String getSchema() {
         return m_schema;
     }
@@ -216,7 +230,7 @@ public class IndexMetadata extends ORMetadata {
      * Return true is a name has been specified for this index.
      */
     protected boolean hasName() {
-        return m_name != null && ! m_name.equals("");
+        return m_name != null && !m_name.isEmpty();
     }
 
     /**
@@ -272,16 +286,16 @@ public class IndexMetadata extends ORMetadata {
         indexDefinition.setName(processName(primaryTable, indexDefinition));
 
         // Process the schema value.
-        if (m_schema != null && m_schema.length() != 0) {
+        if (m_schema != null && !m_schema.isEmpty()) {
             indexDefinition.setQualifier(m_schema);
-        } else if (descriptor.getDefaultSchema() != null && descriptor.getDefaultSchema().length() != 0) {
+        } else if (descriptor.getDefaultSchema() != null && !descriptor.getDefaultSchema().isEmpty()) {
             indexDefinition.setQualifier(descriptor.getDefaultSchema());
         }
 
         // Process the catalog value.
-        if (m_catalog != null && m_catalog.length() != 0) {
+        if (m_catalog != null && !m_catalog.isEmpty()) {
             indexDefinition.setQualifier(m_catalog);
-        } else if (descriptor.getDefaultCatalog() != null && descriptor.getDefaultCatalog().length() != 0) {
+        } else if (descriptor.getDefaultCatalog() != null && !descriptor.getDefaultCatalog().isEmpty()) {
             indexDefinition.setQualifier(descriptor.getDefaultCatalog());
         }
 
@@ -289,7 +303,7 @@ public class IndexMetadata extends ORMetadata {
         indexDefinition.setIsUnique(isUnique());
 
         // Process table value.
-        if (m_table == null || m_table.length() == 0) {
+        if (m_table == null || m_table.isEmpty()) {
             indexDefinition.setTargetTable(primaryTable.getQualifiedName());
             primaryTable.addIndex(indexDefinition);
         } else if (m_table.equals(primaryTable.getQualifiedName()) || m_table.equals(primaryTable.getName())) {
@@ -320,12 +334,12 @@ public class IndexMetadata extends ORMetadata {
         if (hasName()) {
             return m_name;
         } else {
-            String tableName = StringHelper.nonNullString(table.getName());
+            String tableName = String.valueOf(table.getName());
             // Calculate name length to avoid StringBuilder resizing
             int length = INDEX.length() + 1 + tableName.length();
             for (String field : indexDefinition.getFields()) {
                 length += 1;
-                length += StringHelper.nonNullString(field).length();
+                length += String.valueOf(field).length();
             }
             // Build name
             StringBuilder name = new StringBuilder(length);
@@ -333,7 +347,7 @@ public class IndexMetadata extends ORMetadata {
             // Append all the field names to it.
             for (String field : indexDefinition.getFields()) {
                 name.append(FIELD_SEP);
-                name.append(StringHelper.nonNullString(field));
+                name.append(field);
             }
 
             return name.toString();
@@ -370,6 +384,14 @@ public class IndexMetadata extends ORMetadata {
      */
     public void setName(String name) {
         m_name = name;
+    }
+
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setOptions(String options) {
+        m_options = options;
     }
 
     /**

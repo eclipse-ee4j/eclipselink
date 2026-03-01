@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,13 +33,11 @@ import javax.xml.namespace.QName;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOProperty;
 import org.eclipse.persistence.sdo.SDOType;
-import org.eclipse.persistence.sdo.helper.SDOTypeHelper;
 import org.eclipse.persistence.sdo.helper.SDOXSDHelper;
 import org.eclipse.persistence.sdo.helper.SchemaLocationResolver;
 import org.eclipse.persistence.testing.sdo.helper.xsdhelper.generate.slr.Example3SLR;
 import org.eclipse.persistence.testing.sdo.helper.xsdhelper.generate.slr.Example5SLR;
 import commonj.sdo.Type;
-import commonj.sdo.impl.HelperProvider;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 

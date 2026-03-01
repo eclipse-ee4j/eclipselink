@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,13 +14,13 @@
 //     tware - initial implementation as part of JPA 2.0 RI
 package org.eclipse.persistence.internal.jpa.parsing;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReportQuery;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * INTERNAL
@@ -45,7 +45,7 @@ public class CoalesceNode extends Node implements AliasableNode {
      */
     @Override
     public void applyToQuery(ObjectLevelReadQuery theQuery, GenerationContext generationContext) {
-        if (theQuery instanceof ReportQuery) {
+        if (theQuery.isReportQuery()) {
             ReportQuery reportQuery = (ReportQuery)theQuery;
             Expression expression = generateExpression(generationContext);
             reportQuery.addItem("Coalesce", expression);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -41,22 +41,17 @@ public class Address {
                 }
             }
             if (null == city) {
-                if (null != address.city) {
-                    return false;
-                }
+                return null == address.city;
             } else {
-                if (!city.equals(address.city)) {
-                    return false;
-                }
+                return city.equals(address.city);
             }
-            return true;
         } catch (ClassCastException e) {
             return false;
         }
     }
 
     public String toString() {
-        StringBuffer stringBuffer = new StringBuffer();
+        StringBuilder stringBuffer = new StringBuilder();
         stringBuffer.append("Address(street=\"");
         stringBuffer.append(street);
         stringBuffer.append("\" city=\"");

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,31 +18,19 @@
 //                       instead of throwing NPE during deploy validation.
 package org.eclipse.persistence.mappings.foundation;
 
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
-
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.indirection.ValueHolderInterface;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
-import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
 import org.eclipse.persistence.internal.descriptors.FieldTransformation;
 import org.eclipse.persistence.internal.descriptors.InstanceVariableAttributeAccessor;
 import org.eclipse.persistence.internal.descriptors.MethodAttributeAccessor;
 import org.eclipse.persistence.internal.descriptors.MethodBasedFieldTransformation;
 import org.eclipse.persistence.internal.descriptors.TransformerBasedFieldTransformation;
-import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
@@ -78,6 +66,17 @@ import org.eclipse.persistence.sessions.CopyGroup;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.remote.DistributedSession;
+import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
+
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p><b>Purpose</b>: A transformation mapping is used for a specialized translation between how
@@ -112,8 +111,8 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
      * Default constructor.
      */
     protected AbstractTransformationMapping() {
-        fieldTransformations = new ArrayList();
-        fieldToTransformers = new ArrayList();
+        fieldTransformations = new ArrayList<>();
+        fieldToTransformers = new ArrayList<>();
         setIsMutable(true);
         dontUseIndirection();
         this.setWeight(WEIGHT_TRANSFORM);
@@ -385,7 +384,7 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
     @Override
     public Object clone() {
         AbstractTransformationMapping clone = (AbstractTransformationMapping)super.clone();
-        clone.setFieldToTransformers(new ArrayList(this.fieldToTransformers.size()));
+        clone.setFieldToTransformers(new ArrayList<>(this.fieldToTransformers.size()));
 
         for (Object[] pair : this.fieldToTransformers) {
             Object[] transformation = new Object[2];
@@ -404,10 +403,10 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
      * Return all the fields with this mapping.
      */
     @Override
-    protected Vector collectFields() {
-        Vector databaseFields = new Vector(this.fieldToTransformers.size());
+    protected List<DatabaseField> collectFields() {
+        List<DatabaseField> databaseFields = new ArrayList<>(this.fieldToTransformers.size());
         for (Object[] pair : this.fieldToTransformers) {
-            databaseFields.add(pair[0]);
+            databaseFields.add((DatabaseField) pair[0]);
         }
         return databaseFields;
     }
@@ -575,8 +574,7 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
         }
 
         for (FieldTransformation transformation : getFieldTransformations()) {
-            if (transformation instanceof TransformerBasedFieldTransformation) {
-                TransformerBasedFieldTransformation transformer = (TransformerBasedFieldTransformation)transformation;
+            if (transformation instanceof TransformerBasedFieldTransformation transformer) {
                 String transformerClassName = transformer.getTransformerClassName();
                 if (transformerClassName == null) {
                     return;
@@ -799,10 +797,11 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
     /**
      * INTERNAL:
      * Required for reverse compatibility and test cases:
+     *
      * @return a hash table containing the fieldName and their respective method names
      */
-    public Hashtable getFieldNameToMethodNames() {
-        Hashtable table = new Hashtable(getFieldTransformations().size());
+    public Map<String, String> getFieldNameToMethodNames() {
+        Map<String, String> table = new HashMap<>(getFieldTransformations().size());
         Iterator<FieldTransformation> transformations = getFieldTransformations().iterator();
         while (transformations.hasNext()) {
             FieldTransformation transformation = transformations.next();
@@ -830,14 +829,14 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
             try {
                 transformer = transformation.buildTransformer();
             } catch (ConversionException ex) {
-                if (transformation instanceof TransformerBasedFieldTransformation) {
-                    transformerClassName = ((TransformerBasedFieldTransformation)transformation).getTransformerClassName();
+                if (transformation instanceof TransformerBasedFieldTransformation tbfe) {
+                    transformerClassName = tbfe.getTransformerClassName();
                 }
 
                 throw DescriptorException.fieldTransformerClassNotFound(transformerClassName, this, ex);
             } catch (Exception ex) {
-                if (transformation instanceof TransformerBasedFieldTransformation) {
-                    transformerClassName = ((TransformerBasedFieldTransformation)transformation).getTransformerClassName();
+                if (transformation instanceof TransformerBasedFieldTransformation tbfe) {
+                    transformerClassName = tbfe.getTransformerClassName();
                 }
 
                 throw DescriptorException.fieldTransformerClassInvalid(transformerClassName, this, ex);
@@ -846,15 +845,15 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
             transformer.initialize(this);
             // Attempt to ensure a type is set on the field.
             if (field.getType() == null) {
-                if (transformer instanceof MethodBasedFieldTransformer) {
-                    field.setType(((MethodBasedFieldTransformer)transformer).getFieldType());
+                if (transformer instanceof MethodBasedFieldTransformer mbft) {
+                    field.setType(mbft.getFieldType());
                 } else if (field.getColumnDefinition() != null) {
                     // Search for the type for this field definition.
                     if (session.getDatasourcePlatform() instanceof DatabasePlatform) {
-                        Iterator<Map.Entry<Class<?>, FieldTypeDefinition>> iterator = session.getPlatform().getFieldTypes().entrySet().iterator();
+                        Iterator<Map.Entry<Class<?>, FieldDefinition.DatabaseType>> iterator = session.getPlatform().getDatabaseTypes().entrySet().iterator();
                         while (iterator.hasNext()) {
-                            Map.Entry<Class<?>, FieldTypeDefinition> entry = iterator.next();
-                            if (entry.getValue().getName().equals(field.getColumnDefinition())) {
+                            Map.Entry<Class<?>, FieldDefinition.DatabaseType> entry = iterator.next();
+                            if (entry.getValue().name().equals(field.getColumnDefinition())) {
                                 field.setType(entry.getKey());
                                 break;
                             }
@@ -1066,7 +1065,7 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
 
         // PERF: Also auto-set mutable to false is the attribute type is a primitive.
         // This means it is not necessary to clone the value (through double transformation).
-        if ((getAttributeClassification() != null) && (getAttributeClassification().isPrimitive() || Helper.isPrimitiveWrapper(getAttributeClassification()) || getAttributeClassification().equals(ClassConstants.STRING) || getAttributeClassification().equals(ClassConstants.BIGDECIMAL) || getAttributeClassification().equals(ClassConstants.NUMBER))) {
+        if ((getAttributeClassification() != null) && (getAttributeClassification().isPrimitive() || Helper.isPrimitiveWrapper(getAttributeClassification()) || getAttributeClassification().equals(CoreClassConstants.STRING) || getAttributeClassification().equals(CoreClassConstants.BIGDECIMAL) || getAttributeClassification().equals(CoreClassConstants.NUMBER))) {
             setIsMutable(false);
         }
     }
@@ -1160,15 +1159,15 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
      * INTERNAL:
      * Needed for backwards compatibility
      */
-    public Vector getFieldNameToMethodNameAssociations() {
-        Vector associations = new Vector();
+    public List<Association> getFieldNameToMethodNameAssociations() {
+        List<Association> associations = new ArrayList<>();
         for (Iterator<FieldTransformation> source = getFieldTransformations().iterator(); source.hasNext();) {
             FieldTransformation tf = source.next();
             if (tf instanceof MethodBasedFieldTransformation) {
                 Association ass = new Association();
                 ass.setKey(tf.getField().getQualifiedName());
                 ass.setValue(((MethodBasedFieldTransformation)tf).getMethodName());
-                associations.addElement(ass);
+                associations.add(ass);
             }
         }
         return associations;
@@ -1178,10 +1177,10 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
      * INTERNAL:
      * needed for backwards compatibility
      */
-    public void setFieldNameToMethodNameAssociations(Vector associations) {
-        setFieldTransformations(org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(associations.size()));
-        for (Iterator source = associations.iterator(); source.hasNext();) {
-            Association ass = (Association)source.next();
+    public void setFieldNameToMethodNameAssociations(List<Association> associations) {
+        setFieldTransformations(new ArrayList<>(associations.size()));
+        for (Iterator<Association> source = associations.iterator(); source.hasNext();) {
+            Association ass = source.next();
             MethodBasedFieldTransformation tf = new MethodBasedFieldTransformation();
             tf.setField(new DatabaseField((String)ass.getKey()));
             tf.setMethodName((String)ass.getValue());
@@ -1197,7 +1196,7 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
      */
     @Override
     public void remoteInitialization(DistributedSession session) {
-        setFieldToTransformers(new Vector());
+        setFieldToTransformers(new ArrayList<>());
 
         // Remote mappings is initialized here again because while serializing only the uninitialized data is passed
         // as the initialized data is not serializable.

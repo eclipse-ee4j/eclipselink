@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,7 +19,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
-import junit.framework.TestCase;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDOProperty;
@@ -58,7 +57,7 @@ public class SDODataObjectGetDateConversionWithPathTest extends SDODataObjectCon
         type_c.addDeclaredProperty(property_c);
         dataObject_c._setType(type_c);
 
-        dataObject_c.set(property_c, new String("aa").getBytes()[0]);
+        dataObject_c.set(property_c, "aa".getBytes()[0]);
         try {
             dataObject_a.getDate(propertyPath_a_b_c);
         } catch (Exception e) {
@@ -222,7 +221,7 @@ public class SDODataObjectGetDateConversionWithPathTest extends SDODataObjectCon
         type_c.addDeclaredProperty(property_c);
         dataObject_c._setType(type_c);
 
-        dataObject_c.set(property_c, new String("eee").getBytes());
+        dataObject_c.set(property_c, "eee".getBytes());
         try {
             dataObject_a.getDate(propertyPath_a_b_c);
         } catch (Exception e) {

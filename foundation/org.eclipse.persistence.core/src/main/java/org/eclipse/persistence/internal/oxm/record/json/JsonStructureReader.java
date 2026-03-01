@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,6 +15,43 @@
 //     Juan Pablo Gardella = 2.7.4 - Fix for the bug #543063
 package org.eclipse.persistence.internal.oxm.record.json;
 
+import jakarta.json.Json;
+import jakarta.json.JsonArray;
+import jakarta.json.JsonBuilderFactory;
+import jakarta.json.JsonException;
+import jakarta.json.JsonNumber;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonObjectBuilder;
+import jakarta.json.JsonReader;
+import jakarta.json.JsonString;
+import jakarta.json.JsonStructure;
+import jakarta.json.JsonValue;
+import jakarta.json.JsonValue.ValueType;
+import org.eclipse.persistence.oxm.exceptions.XMLMarshalException;
+import org.eclipse.persistence.internal.oxm.CollectionGroupingElementNodeValue;
+import org.eclipse.persistence.internal.oxm.Constants;
+import org.eclipse.persistence.internal.oxm.ContainerValue;
+import org.eclipse.persistence.internal.oxm.ConversionManager;
+import org.eclipse.persistence.internal.oxm.MediaType;
+import org.eclipse.persistence.internal.oxm.NamespaceResolver;
+import org.eclipse.persistence.internal.oxm.NodeValue;
+import org.eclipse.persistence.internal.oxm.Root;
+import org.eclipse.persistence.internal.oxm.Unmarshaller;
+import org.eclipse.persistence.internal.oxm.XPathFragment;
+import org.eclipse.persistence.internal.oxm.XPathNode;
+import org.eclipse.persistence.internal.oxm.mappings.Field;
+import org.eclipse.persistence.internal.oxm.record.AbstractUnmarshalRecord;
+import org.eclipse.persistence.internal.oxm.record.SAXUnmarshallerHandler;
+import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
+import org.eclipse.persistence.internal.oxm.record.XMLReaderAdapter;
+import org.eclipse.persistence.internal.oxm.record.deferred.DeferredContentHandler;
+import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
+import org.eclipse.persistence.oxm.record.XMLRootRecord;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.AttributesImpl;
+
+import javax.xml.namespace.QName;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -27,44 +64,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-
-import jakarta.json.Json;
-import jakarta.json.JsonBuilderFactory;
-import jakarta.json.JsonException;
-import jakarta.json.JsonReader;
-import jakarta.json.JsonStructure;
-import jakarta.json.JsonArray;
-import jakarta.json.JsonNumber;
-import jakarta.json.JsonObject;
-import jakarta.json.JsonObjectBuilder;
-import jakarta.json.JsonString;
-import jakarta.json.JsonValue;
-import jakarta.json.JsonValue.ValueType;
-import javax.xml.namespace.QName;
-
-import org.eclipse.persistence.exceptions.XMLMarshalException;
-import org.eclipse.persistence.internal.oxm.CollectionGroupingElementNodeValue;
-import org.eclipse.persistence.internal.oxm.ConversionManager;
-import org.eclipse.persistence.internal.oxm.Constants;
-import org.eclipse.persistence.internal.oxm.ContainerValue;
-import org.eclipse.persistence.internal.oxm.MediaType;
-import org.eclipse.persistence.internal.oxm.NamespaceResolver;
-import org.eclipse.persistence.internal.oxm.NodeValue;
-import org.eclipse.persistence.internal.oxm.Root;
-import org.eclipse.persistence.internal.oxm.Unmarshaller;
-import org.eclipse.persistence.internal.oxm.XPathFragment;
-import org.eclipse.persistence.internal.oxm.mappings.Field;
-import org.eclipse.persistence.internal.oxm.record.AbstractUnmarshalRecord;
-import org.eclipse.persistence.internal.oxm.record.SAXUnmarshallerHandler;
-import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
-import org.eclipse.persistence.internal.oxm.XPathNode;
-import org.eclipse.persistence.internal.oxm.record.XMLReaderAdapter;
-import org.eclipse.persistence.internal.oxm.record.deferred.DeferredContentHandler;
-import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
-import org.eclipse.persistence.oxm.record.XMLRootRecord;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.helpers.AttributesImpl;
 
 public class JsonStructureReader extends XMLReaderAdapter {
 
@@ -173,14 +172,14 @@ public class JsonStructureReader extends XMLReaderAdapter {
             JsonObject jsonObject = (JsonObject) jsonValue;
 
             Set<Entry<String, JsonValue>> children = jsonObject.entrySet();
-            if (children.size() == 0 && unmarshalClass == null) {
+            if (children.isEmpty() && unmarshalClass == null) {
                 return;
             }
 
             Iterator<Entry<String, JsonValue>> iter = children.iterator();
 
             if (includeRoot) {
-                if (children.size() > 0) {
+                if (!children.isEmpty()) {
                     Entry<String, JsonValue> nextEntry = iter.next();
                     parsePair(nextEntry.getKey(), nextEntry.getValue());
                 }
@@ -537,7 +536,7 @@ public class JsonStructureReader extends XMLReaderAdapter {
         }
 
         return ((currentNode.getNonAttributeChildrenMap() == null
-                || currentNode.getNonAttributeChildrenMap().size() == 0
+                || currentNode.getNonAttributeChildrenMap().isEmpty()
                 || (currentNode.getNonAttributeChildrenMap().size() == 1
                 && currentNode.getTextNode() != null)
         ) && textWrapper != null && textWrapper.equals(localName)
@@ -699,7 +698,7 @@ public class JsonStructureReader extends XMLReaderAdapter {
                             JsonValue nextValue = nextEntry.getValue();
                             if (nextValue.getValueType() == ValueType.ARRAY) {
                                 JsonArray jsonArray = (JsonArray) nextValue;
-                                if (jsonArray.size() == 0) {
+                                if (jsonArray.isEmpty()) {
                                     attributesList.add(new Attribute(uri, attributeLocalName, attributeLocalName, ""));
                                 }
                                 for (JsonValue nextChildValue : jsonArray) {
@@ -710,7 +709,7 @@ public class JsonStructureReader extends XMLReaderAdapter {
                             }
                         }
 
-                        attributes = attributesList.toArray(new Attribute[attributesList.size()]);
+                        attributes = attributesList.toArray(new Attribute[0]);
                         break;
                     }
                     default: {

@@ -1,0 +1,55 @@
+*NOTOC*
+Special:Whatlinkshere_Configuring_an_EIS_Direct_Mapping_(ELUG)[Related
+Topics]
+
+For information on how to create EclipseLink mappings, see
+link:Creating%20a%20Mapping%20(ELUG)[Creating a Mapping].
+
+This table lists the configurable options for an EIS direct mapping.
+
+[#Table 75-1]##
+
+Option to Configure
+
+Workbench
+
+Java
+
+XPath
+
+Use of a single node
+
+Simple type translator
+
+Method or direct field access at the mapping level
+
+Default null value at the mapping level
+
+Read-only mappings
+
+Mapping comments
+
+Serialized object converter
+
+Type conversion converter
+
+Object type converter
+
+JAXB typesafe enumerated converter
+
+For more information, see the following:
+
+* link:Introduction%20to%20EIS%20Mappings%20(ELUG)#EIS_Direct_Mapping[EIS
+Direct Mapping]
+* link:Configuring%20an%20EIS%20Mapping%20(ELUG)[Configuring an EIS
+Mapping]
+* link:Configuring%20a%20Mapping%20(ELUG)#CEGFEFJG[Configuring a
+Mapping]
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Release_1[Category: Release 1] Category:_Task[Category: Task]
+Category:_EIS[Category: EIS]

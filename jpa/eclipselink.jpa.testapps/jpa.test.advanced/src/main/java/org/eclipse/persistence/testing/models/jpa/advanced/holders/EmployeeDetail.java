@@ -53,10 +53,9 @@ public class EmployeeDetail {
     }
     @Override
     public boolean equals(Object o) {
-        if ((o == null) || (!(o instanceof EmployeeDetail))) {
+        if ((o == null) || (!(o instanceof EmployeeDetail other))) {
             return false;
         }
-        EmployeeDetail other = (EmployeeDetail) o;
         return Objects.equals(this.firstName, other.firstName) &&
                 Objects.equals(this.lastName, other.lastName) &&
                 Objects.equals(this.manager, other.manager) &&

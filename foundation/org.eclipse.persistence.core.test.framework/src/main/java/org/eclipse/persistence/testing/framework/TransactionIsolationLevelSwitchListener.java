@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2010, 2022 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2010, 2022 Dies Koper (Fujitsu) All rights reserved.
+ * Copyright (c) 2010, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010, 2024 Dies Koper (Fujitsu) All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -66,20 +66,13 @@ public class TransactionIsolationLevelSwitchListener extends SessionEventAdapter
         String isolationLevel = "";
         try {
             int i = conn.getTransactionIsolation();
-            switch (i) {
-            case 1:
-                isolationLevel = "READ UNCOMMITTED";
-                break;
-            case 2:
-                isolationLevel = "READ COMMITTED";
-                break;
-            case 4:
-                isolationLevel = "REPEATABLE READ";
-                break;
-            case 8:
-                isolationLevel = "SERIALIZABLE";
-                break;
-            }
+            isolationLevel = switch (i) {
+                case 1 -> "READ UNCOMMITTED";
+                case 2 -> "READ COMMITTED";
+                case 4 -> "REPEATABLE READ";
+                case 8 -> "SERIALIZABLE";
+                default -> isolationLevel;
+            };
             if (i > 0) {
                 // If conn1 began transaction and updated the row (but hasn't
                 // committed the transaction yet),

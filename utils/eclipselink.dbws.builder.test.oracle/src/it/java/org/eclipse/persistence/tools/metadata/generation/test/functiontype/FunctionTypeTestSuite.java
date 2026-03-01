@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -56,12 +56,13 @@ import org.w3c.dom.Document;
  */
 public class FunctionTypeTestSuite {
     static final String CREATE_FINDMAXSALFORDEPT_FUNC =
-        "CREATE OR REPLACE FUNCTION FINDMAXSALFORDEPT(DEPT IN DECIMAL) RETURN DECIMAL AS" +
-        "\nMAXSAL DECIMAL(7,2);" +
-        "\nBEGIN" +
-            "\nMAXSAL := 123456.66;" +
-            "\nRETURN(MAXSAL);" +
-        "\nEND FINDMAXSALFORDEPT;";
+            """
+                    CREATE OR REPLACE FUNCTION FINDMAXSALFORDEPT(DEPT IN DECIMAL) RETURN DECIMAL AS
+                    MAXSAL DECIMAL(7,2);
+                    BEGIN
+                    MAXSAL := 123456.66;
+                    RETURN(MAXSAL);
+                    END FINDMAXSALFORDEPT;""";
 
     static final String DROP_FINDMAXSALFORDEPT_FUNC =
         "DROP FUNCTION FINDMAXSALFORDEPT";
@@ -136,13 +137,12 @@ public class FunctionTypeTestSuite {
     }
 
     static final String functionMetadata =
-        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-        "<orm:entity-mappings xsi:schemaLocation=\"http://www.eclipse.org/eclipselink/xsds/persistence/orm org/eclipse/persistence/jpa/eclipselink_orm_2_5.xsd\"" +
-        "     xmlns:orm=\"http://www.eclipse.org/eclipselink/xsds/persistence/orm\" " +
-        "     xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n" +
-        "   <orm:named-stored-function-query name=\"FINDMAXSALFORDEPT\" function-name=\"FINDMAXSALFORDEPT\">\n" +
-        "      <orm:parameter mode=\"IN\" name=\"DEPT\" type=\"java.math.BigDecimal\" class=\"java.math.BigDecimal\" jdbc-type=\"3\" jdbc-type-name=\"DECIMAL\"/>\n" +
-        "      <orm:return-parameter type=\"java.math.BigDecimal\" class=\"java.math.BigDecimal\" jdbc-type=\"3\" jdbc-type-name=\"DECIMAL\"/>\n" +
-        "   </orm:named-stored-function-query>\n" +
-        "</orm:entity-mappings>";
+            """
+                    <?xml version="1.0" encoding="UTF-8"?>
+                    <orm:entity-mappings xsi:schemaLocation="http://www.eclipse.org/eclipselink/xsds/persistence/orm org/eclipse/persistence/jpa/eclipselink_orm_2_5.xsd"     xmlns:orm="http://www.eclipse.org/eclipselink/xsds/persistence/orm"      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                       <orm:named-stored-function-query name="FINDMAXSALFORDEPT" function-name="FINDMAXSALFORDEPT">
+                          <orm:parameter mode="IN" name="DEPT" type="java.math.BigDecimal" class="java.math.BigDecimal" jdbc-type="3" jdbc-type-name="DECIMAL"/>
+                          <orm:return-parameter type="java.math.BigDecimal" class="java.math.BigDecimal" jdbc-type="3" jdbc-type-name="DECIMAL"/>
+                       </orm:named-stored-function-query>
+                    </orm:entity-mappings>""";
 }

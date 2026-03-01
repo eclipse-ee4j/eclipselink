@@ -1,0 +1,8 @@
+:nofooter:
+This figure illustrates XML direct mapping to different text nodes of
+different binary types in a corresponding XML document. The *Customer*
+class contains the attributes *picture* and *resume*, both of type
+*byte[]*. `id`. The *picture* attribute maps to the `<picture>` element
+in the XML document; the *resume* attribute maps to the `<resume>`
+element. The XPath for the *picture* attribute is *picture/text()*. The
+XPath for the *resume* attribute is *resume/text()*.

@@ -1,0 +1,90 @@
+image:Elug_draft_icon.png[Image:Elug draft
+icon.png,title="Image:Elug draft icon.png"] *For the latest EclipseLink
+documentation, please see
+http://www.eclipse.org/eclipselink/documentation/*
+
+'''''
+
+*TOC*
+Special:Whatlinkshere_Introduction_to_EclipseLink_Development_Tools_(ELUG)[Related
+Topics]
+
+The EclipseLink runtime provides Java or Java EE applications with
+access to persistent entities stored in a data source. In addition to
+run-time capabilities, the EclipseLink Foundation Library includes the
+EclipseLink Application Programming Interface (API). This API enables
+applications to access EclipseLink run-time features.
+
+EclipseLink includes additional development tools that simplify
+application development. These tools capture mapping and run-time
+configuration information in metadata files that EclipseLink passes to
+the application at run time.
+
+The EclipseLink Workbench development tool is primarily for developing
+when using the native EclipseLink API, MOXy, or EIS. When using JPA,
+other development tools such as Eclipse Dali, or Oracle JDeveloper can
+be used.
+
+EclipseLink metadata is the link between the two (see
+link:Introduction_to_EclipseLink_Application_Development_(ELUG)#Working_with_EclipseLink_Metadata[Working
+with EclipseLink Metadata]).
+
+The following figure illustrates how these elements interact with the
+data source.
+
+[#Figure 3-1]## *_EclipseLink Components in Development Lifecycle_*
+
+.EclipseLink Components in Development Lifecycle
+image::under01.gif[EclipseLink Components in Development
+Lifecycle,title="EclipseLink Components in Development Lifecycle"]
+
+== Development Environment
+
+To create an EclipseLink application, use the Workbench to map objects
+to data sources using relational and nonrelational models. Capture the
+resulting mappings and additional run-time configurations in the
+EclipseLink project file (`+project.xml+`) and build a session
+configuration file (`+sessions.xml+`). These files together represent
+your entire EclipseLink project, as shown in the
+link:#Figure_3-2[following figure].
+
+During development, you can use the EclipseLink API to define query and
+transaction logic. When you use entity beans, there is generally little
+or no direct use of the EclipseLink API and there is no session or
+`+sessions.xml+` file.
+
+[#Figure 3-2 ]## *_Workbench in Development Environment_*
+
+.Workbench in Development Environment
+image::under03.gif[Workbench in Development
+Environment,title="Workbench in Development Environment"]
+
+Workbench can import compiled entity classes (Java objects or EJB entity
+beans), as well as relational or nonrelational schemas through a JDBC
+driver (configured by you). Because EclipseLink imports the object and
+relational models for mapping, you can develop the two models relatively
+independently from the mapping phase of a project development.
+
+== EclipseLink Run-Time Environment
+
+The EclipseLink Foundation Library provides the EclipseLink run-time
+component. Access the run-time component either directly through the
+EclipseLink API or indirectly through a Java EE container when using
+entity beans with container-managed persistence. The run-time
+environment is not a separate or external process–it is embedded within
+the application. Application calls invoke EclipseLink to provide
+persistence behavior. This function allows for transactional and
+thread-safe access to shared database connections and cached objects.
+
+In addition to Java EE environments, EclipseLink fully supports non-Java
+EE environments as well. See
+link:Introduction_to_EclipseLink_Application_Development_(ELUG)#Selecting_an_Architecture_with_EclipseLink[Selecting
+an Architecture with EclipseLink] for more information.
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Release_1[Category: Release 1] Category:_Concept[Category:
+Concept]

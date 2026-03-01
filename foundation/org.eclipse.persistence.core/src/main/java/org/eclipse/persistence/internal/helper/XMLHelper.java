@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2016, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,6 +14,15 @@
 //     Oracle - initial API and implementation
 package org.eclipse.persistence.internal.helper;
 
+import org.eclipse.persistence.internal.oxm.OXMSystemProperties;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.logging.SessionLog;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXNotRecognizedException;
+import org.xml.sax.SAXNotSupportedException;
+import org.xml.sax.XMLReader;
+
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -23,15 +32,6 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.xpath.XPathFactory;
 import javax.xml.xpath.XPathFactoryConfigurationException;
-
-import org.eclipse.persistence.internal.oxm.OXMSystemProperties;
-import org.eclipse.persistence.internal.oxm.record.XMLReader;
-import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.logging.AbstractSessionLog;
-import org.eclipse.persistence.logging.SessionLog;
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXNotRecognizedException;
-import org.xml.sax.SAXNotSupportedException;
 
 public class XMLHelper {
 
@@ -47,7 +47,7 @@ public class XMLHelper {
     /**
      * If true XML security features when parsing XML documents will be disabled.
      * The default value is false.
-     *
+     * <p>
      * Boolean
      * @since 2.6.3
      */
@@ -58,7 +58,7 @@ public class XMLHelper {
     }
 
     /**
-     * Returns properly configured (e.g. security features) schema factory 
+     * Returns properly configured (e.g. security features) schema factory
      * - namespaceAware == true
      * - securityProcessing == is set based on security processing property, default is true
      */
@@ -66,26 +66,20 @@ public class XMLHelper {
         SessionLog logger = AbstractSessionLog.getLog();
         try {
             SchemaFactory factory = SchemaFactory.newInstance(language);
-            
+
             if (logger.shouldLog(SessionLog.FINE, SessionLog.MOXY)) {
                 logger.log(SessionLog.FINE, SessionLog.MOXY, "schema_factory", new Object[] {factory});
             }
             factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, !isXMLSecurityDisabled(disableSecureProcessing));
             return factory;
-        } catch (SAXNotRecognizedException ex) {
+        } catch (SAXNotRecognizedException | AbstractMethodError | SAXNotSupportedException ex) {
             logger.logThrowable(SessionLog.SEVERE, SessionLog.MOXY, ex);
             throw new IllegalStateException(ex);
-        } catch (SAXNotSupportedException ex) {
-            logger.logThrowable(SessionLog.SEVERE, SessionLog.MOXY, ex);
-            throw new IllegalStateException(ex);
-        } catch (AbstractMethodError er) {
-            logger.logThrowable(SessionLog.SEVERE, SessionLog.MOXY, er);
-            throw new IllegalStateException(er);
         }
     }
 
     /**
-     * Returns properly configured (e.g. security features) parser factory 
+     * Returns properly configured (e.g. security features) parser factory
      * - namespaceAware == true
      * - securityProcessing == is set based on security processing property, default is true
      */
@@ -99,23 +93,14 @@ public class XMLHelper {
             factory.setNamespaceAware(true);
             factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, !isXMLSecurityDisabled(disableSecureProcessing));
             return factory;
-        } catch (ParserConfigurationException ex) {
+        } catch (ParserConfigurationException | AbstractMethodError | SAXNotSupportedException | SAXNotRecognizedException ex) {
             logger.logThrowable(SessionLog.SEVERE, SessionLog.MOXY, ex);
             throw new IllegalStateException( ex);
-        } catch (SAXNotRecognizedException ex) {
-            logger.logThrowable(SessionLog.SEVERE, SessionLog.MOXY, ex);
-            throw new IllegalStateException( ex);
-        } catch (SAXNotSupportedException ex) {
-            logger.logThrowable(SessionLog.SEVERE, SessionLog.MOXY, ex);
-            throw new IllegalStateException( ex);
-        } catch (AbstractMethodError er) {
-            logger.logThrowable(SessionLog.SEVERE, SessionLog.MOXY, er);
-            throw new IllegalStateException(er);
         }
     }
 
     /**
-     * Returns properly configured (e.g. security features) factory 
+     * Returns properly configured (e.g. security features) factory
      * - securityProcessing == is set based on security processing property, default is true
      */
     public static XPathFactory createXPathFactory(boolean disableSecureProcessing) throws IllegalStateException {
@@ -127,17 +112,14 @@ public class XMLHelper {
             }
             factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, !isXMLSecurityDisabled(disableSecureProcessing));
             return factory;
-        } catch (XPathFactoryConfigurationException ex) {
+        } catch (XPathFactoryConfigurationException | AbstractMethodError ex) {
             logger.logThrowable(SessionLog.SEVERE, SessionLog.MOXY, ex);
             throw new IllegalStateException( ex);
-        } catch (AbstractMethodError er) {
-            logger.logThrowable(SessionLog.SEVERE, SessionLog.MOXY, er);
-            throw new IllegalStateException(er);
         }
     }
 
     /**
-     * Returns properly configured (e.g. security features) factory 
+     * Returns properly configured (e.g. security features) factory
      * - securityProcessing == is set based on security processing property, default is true
      */
     public static TransformerFactory createTransformerFactory(boolean disableSecureProcessing) throws IllegalStateException {
@@ -149,17 +131,14 @@ public class XMLHelper {
             }
             factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, !isXMLSecurityDisabled(disableSecureProcessing));
             return factory;
-        } catch (TransformerConfigurationException ex) {
+        } catch (TransformerConfigurationException | AbstractMethodError ex) {
             logger.logThrowable(SessionLog.SEVERE, SessionLog.MOXY, ex);
             throw new IllegalStateException( ex);
-        } catch (AbstractMethodError er) {
-            logger.logThrowable(SessionLog.SEVERE, SessionLog.MOXY, er);
-            throw new IllegalStateException(er);
         }
     }
 
     /**
-     * Returns properly configured (e.g. security features) factory 
+     * Returns properly configured (e.g. security features) factory
      * - namespaceAware == true
      * - securityProcessing == is set based on security processing property, default is true
      */
@@ -173,12 +152,9 @@ public class XMLHelper {
             factory.setNamespaceAware(true);
             factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, !isXMLSecurityDisabled(disableSecureProcessing));
             return factory;
-        } catch (ParserConfigurationException ex) {
+        } catch (ParserConfigurationException | AbstractMethodError ex) {
             logger.logThrowable(SessionLog.SEVERE, SessionLog.MOXY, ex);
             throw new IllegalStateException( ex);
-        } catch (AbstractMethodError er) {
-            logger.logThrowable(SessionLog.SEVERE, SessionLog.MOXY, er);
-            throw new IllegalStateException(er);
         }
     }
 

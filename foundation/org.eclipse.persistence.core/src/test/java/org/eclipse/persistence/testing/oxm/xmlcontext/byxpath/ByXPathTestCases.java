@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,11 +14,11 @@
 //     bdoughan - August 25/2009 - 1.2 - Initial implementation
 package org.eclipse.persistence.testing.oxm.xmlcontext.byxpath;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.testing.oxm.OXTestCase;
+
+import java.util.ArrayList;
+import java.util.List;
 
  public class ByXPathTestCases extends OXTestCase {
 
@@ -53,7 +53,7 @@ import org.eclipse.persistence.testing.oxm.OXTestCase;
          Customer customer = new Customer();
          customer.setId(CONTROL_CUSTOMER_ID);
          String testValue = xmlContext.getValueByXPath(customer, "@INVALID", null, String.class);
-         assertEquals(null, testValue);
+         assertNull(testValue);
      }
 
      public void testSetAttributeValueByXPath() {
@@ -72,7 +72,7 @@ import org.eclipse.persistence.testing.oxm.OXTestCase;
      public void testGetTextValueByInvalidXPath() {
          Customer customer = new Customer();
          String testValue = xmlContext.getValueByXPath(customer, "INVALID/INVALID/text()", null, String.class);
-         assertEquals(null, testValue);
+         assertNull(testValue);
     }
 
      public void testSetTextValueByXPath() {
@@ -95,7 +95,7 @@ import org.eclipse.persistence.testing.oxm.OXTestCase;
          Address address = new Address();
          customer.setAddress(address);
          String testValue = xmlContext.getValueByXPath(customer, "contact-info/address/INVALID/text()", null, String.class);
-         assertEquals(null, testValue);
+         assertNull(testValue);
      }
 
      public void testSetNestedTextValueByXPath() {
@@ -124,7 +124,7 @@ import org.eclipse.persistence.testing.oxm.OXTestCase;
 
      public void testSetCollectionValueByXPath() {
          Customer customer = new Customer();
-         List<PhoneNumber> phoneNumbers = new ArrayList<PhoneNumber>(1);
+         List<PhoneNumber> phoneNumbers = new ArrayList<>(1);
          phoneNumbers.add(new PhoneNumber());
          xmlContext.setValueByXPath(customer, "contact-info/phone-number/", null, phoneNumbers);
          assertSame(customer.getPhoneNumbers(), phoneNumbers);
@@ -211,7 +211,7 @@ import org.eclipse.persistence.testing.oxm.OXTestCase;
          address.setStreet2(CONTROL_ADDRESS_STREET2);
          customer.setAddress(address);
          String testValue = xmlContext.getValueByXPath(customer, "contact-info/address/street[10]/text()", null, String.class);
-         assertEquals(null, testValue);
+         assertNull(testValue);
      }
 
      public void testSetByPositionalXPath() {

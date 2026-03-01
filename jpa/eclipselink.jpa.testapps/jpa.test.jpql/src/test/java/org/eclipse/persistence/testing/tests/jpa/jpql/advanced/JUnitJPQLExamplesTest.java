@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -285,7 +285,7 @@ public class JUnitJPQLExamplesTest extends JUnitTestCase {
         List<Employee> employeeList = getPersistenceUnitServerSession().readAllObjects(Employee.class);
         Employee expectedEmployee = employeeList.get(0);
         int i = 1;
-        while (expectedEmployee.getPhoneNumbers().size() == 0) {
+        while (expectedEmployee.getPhoneNumbers().isEmpty()) {
             expectedEmployee = employeeList.get(i);
             i++;
         }

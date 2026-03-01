@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,7 +40,7 @@ public class JarInputStreamURLArchive extends ArchiveBase implements Archive {
      * EclipseLink or GlassFish implementation classes. Please retain this separation.
      */
 
-    private List<String> entries = new ArrayList<String>();
+    private List<String> entries = new ArrayList<>();
 
     @SuppressWarnings("unused")
     private Logger logger;
@@ -59,9 +59,8 @@ public class JarInputStreamURLArchive extends ArchiveBase implements Archive {
     }
 
     private void init() throws IOException {
-        JarInputStream jis = new JarInputStream(
-                new BufferedInputStream(rootURL.openStream()));
-        try {
+        try (JarInputStream jis = new JarInputStream(
+                new BufferedInputStream(rootURL.openStream()))) {
             do {
                 ZipEntry ze = jis.getNextEntry();
                 if (ze == null) {
@@ -71,8 +70,6 @@ public class JarInputStreamURLArchive extends ArchiveBase implements Archive {
                     entries.add(ze.getName());
                 }
             } while (true);
-        } finally {
-            jis.close();
         }
     }
 

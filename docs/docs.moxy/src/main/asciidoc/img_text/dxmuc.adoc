@@ -1,0 +1,5 @@
+:nofooter:
+This figure illustrates a Java class mapped to a union field. The
+*Customer* class contains the attribute *shoeSize* of type *Object*.
+When using a union field, the corresponding attribute must be able to
+store all possible values.

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,8 +40,7 @@ public class Employee {
     public List myEmployees;
 
     public boolean equals(Object o ){
-        if(o instanceof Employee){
-            Employee emp = (Employee)o;
+        if(o instanceof Employee emp){
             if(!firstName.equals(emp.firstName) || !lastName.equals(emp.lastName) || id != emp.id || getMyInt() != emp.getMyInt()){
                 return false;
             }

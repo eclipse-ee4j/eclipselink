@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,13 +21,11 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
-import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.XMLDescriptor;
@@ -96,7 +94,7 @@ public class MultipleMappingPerFieldTestCases extends JAXBWithJSONTestCases {
         assertNotNull("No descriptor was generated for CustomQuoteRequest.", xDesc);
         int currencyPairCodeCount = 0;
         int dateCount = 0;
-        Vector<DatabaseMapping> mappings = xDesc.getMappings();
+        List<DatabaseMapping> mappings = xDesc.getMappings();
         for (int i=0; i < mappings.size(); i++) {
             DatabaseMapping mapping = mappings.get(i);
             if (mapping.getAttributeName().equals("currencyPairCode")) {

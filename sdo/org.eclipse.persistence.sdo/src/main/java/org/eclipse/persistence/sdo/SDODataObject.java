@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,6 +14,7 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.sdo;
 
+import java.io.Serial;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -26,8 +27,7 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
-import org.eclipse.persistence.exceptions.SDOException;
-import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLRoot;
@@ -693,10 +693,10 @@ public class SDODataObject implements DataObject, SequencedObject {
         Type sdotype = null;
         boolean isMany = false;
         boolean isContainment = false;
-        Class<? extends Object> valueClass = value.getClass();
+        Class<?> valueClass = value.getClass();
 
         if (value instanceof Collection) {
-            if (((Collection)value).size() > 0) {
+            if (!((Collection) value).isEmpty()) {
                 Object firstObject = ((Collection)value).iterator().next();
                 if (firstObject != null) {
                     valueClass = firstObject.getClass();
@@ -745,10 +745,10 @@ public class SDODataObject implements DataObject, SequencedObject {
         propertyDO.set("name", name);
         boolean isMany = false;
         boolean isContainment = false;
-        Class<? extends Object> valueClass = value.getClass();
+        Class<?> valueClass = value.getClass();
 
         if (value instanceof Collection) {
-            if (((Collection)value).size() > 0) {
+            if (!((Collection) value).isEmpty()) {
                 Object firstObject = ((Collection)value).iterator().next();
                 if (firstObject != null) {
                     valueClass = firstObject.getClass();
@@ -1069,7 +1069,7 @@ public class SDODataObject implements DataObject, SequencedObject {
     public SDODataObject getDataObject(Property property) throws IllegalArgumentException, ClassCastException {
         if(property != null && property.isMany()) {
             List value = (List)get(property);
-            if(value.size() > 0) {
+            if(!value.isEmpty()) {
                 return (SDODataObject)value.get(0);
             } else {
                 return null;
@@ -2077,8 +2077,7 @@ public class SDODataObject implements DataObject, SequencedObject {
             String propertyUri = null;
             Object value = null;
             Type theType = null;
-            if (next instanceof XMLRoot) {
-                XMLRoot nextXMLRoot = (XMLRoot)next;
+            if (next instanceof XMLRoot nextXMLRoot) {
                 value = nextXMLRoot.getObject();
                 propertyName = nextXMLRoot.getLocalName();
                 propertyUri = nextXMLRoot.getNamespaceURI();
@@ -2093,7 +2092,7 @@ public class SDODataObject implements DataObject, SequencedObject {
                 int colonIndex = qualifiedName.indexOf(':');
                 if (colonIndex > -1) {
                     String prefix = qualifiedName.substring(0, colonIndex);
-                    if ((prefix != null) && !prefix.equals("")) {
+                    if ((prefix != null) && !prefix.isEmpty()) {
                         propertyUri = ((SDOType)((DataObject)next).getType()).getXmlDescriptor().getNonNullNamespaceResolver().resolveNamespacePrefix(prefix);
                     }
                     propertyName = qualifiedName.substring(colonIndex + 1, qualifiedName.length());
@@ -2291,13 +2290,13 @@ public class SDODataObject implements DataObject, SequencedObject {
             throw new IllegalArgumentException(SDOException.cannotPerformOperationOnNullArgument("convertObjectToValue"));
         }
 
-        if ((cls == ClassConstants.List_Class) && !property.isMany()) {
+        if ((cls == CoreClassConstants.List_Class) && !property.isMany()) {
             throw new ClassCastException("can not call getList for a property that has isMany false.");
         }
 
         Object obj;
         if (position == -1) {
-            if (cls == ClassConstants.List_Class) {
+            if (cls == CoreClassConstants.List_Class) {
                 obj = get(property);
             } else {
                 obj = unwrapListValue(property, get(property));
@@ -2575,6 +2574,7 @@ public class SDODataObject implements DataObject, SequencedObject {
      *
      * @see org.eclipse.persistence.sdo.SDOResolvable
      */
+    @Serial
     public Object writeReplace() {
         // JIRA129: pass the helperContext to the constructor to enable non-static contexts
         return new SDOExternalizableDelegator(this, aHelperContext);
@@ -2936,7 +2936,7 @@ public class SDODataObject implements DataObject, SequencedObject {
             return val;
         }
         List l = (ListWrapper) val;
-        if (l.size() == 0) {
+        if (l.isEmpty()) {
             return null;
         }
         return l.get(0);

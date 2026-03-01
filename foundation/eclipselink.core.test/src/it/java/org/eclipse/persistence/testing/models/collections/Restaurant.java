@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,16 +14,21 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.collections;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.util.*;
 import org.eclipse.persistence.descriptors.changetracking.ChangeTracker;
 import org.eclipse.persistence.descriptors.changetracking.CollectionChangeEvent;
 import org.eclipse.persistence.descriptors.changetracking.MapChangeEvent;
-import org.eclipse.persistence.indirection.*;
-import org.eclipse.persistence.testing.models.collections.Diner;
-import org.eclipse.persistence.testing.models.collections.Location;
-import org.eclipse.persistence.testing.models.collections.Menu;
+import org.eclipse.persistence.indirection.ValueHolder;
+import org.eclipse.persistence.indirection.ValueHolderInterface;
+
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Map;
+import java.util.TreeSet;
 
 /**
  * Models a restaurant for testing TopLink support for JDK1.2 Collections and Maps.
@@ -117,33 +122,33 @@ public class Restaurant implements ChangeTracker {
     }
 
     public String allToString() {
-        StringBuffer buf = new StringBuffer();
-        buf.append("Restaurant: " + this.getName());
-        buf.append(org.eclipse.persistence.internal.helper.Helper.cr());
+        StringBuilder buf = new StringBuilder();
+        buf.append("Restaurant: ").append(this.getName());
+        buf.append(System.lineSeparator());
         if (getMenus() != null) {
-            buf.append("Menus: " + org.eclipse.persistence.internal.helper.Helper.getShortClassName(getMenus().getClass()));
+            buf.append("Menus: ").append(getMenus().getClass().getSimpleName());
             buf.append(getMenus().toString());
-            buf.append(org.eclipse.persistence.internal.helper.Helper.cr());
+            buf.append(System.lineSeparator());
         }
         if (getWaiters() != null) {
-            buf.append("Waiters: " + org.eclipse.persistence.internal.helper.Helper.getShortClassName(getWaiters().getClass()));
+            buf.append("Waiters: ").append(getWaiters().getClass().getSimpleName());
             buf.append(getWaiters().toString());
-            buf.append(org.eclipse.persistence.internal.helper.Helper.cr());
+            buf.append(System.lineSeparator());
         }
         if (getPreferredCustomers() != null) {
-            buf.append("PreferredCustomers: " + org.eclipse.persistence.internal.helper.Helper.getShortClassName(getPreferredCustomers().getClass()));
+            buf.append("PreferredCustomers: ").append(getPreferredCustomers().getClass().getSimpleName());
             buf.append(getPreferredCustomers().toString());
-            buf.append(org.eclipse.persistence.internal.helper.Helper.cr());
+            buf.append(System.lineSeparator());
         }
         if (getLocations() != null) {
-            buf.append("Locations: " + org.eclipse.persistence.internal.helper.Helper.getShortClassName(getLocations().getClass()));
+            buf.append("Locations: ").append(getLocations().getClass().getSimpleName());
             buf.append(getLocations().toString());
-            buf.append(org.eclipse.persistence.internal.helper.Helper.cr());
+            buf.append(System.lineSeparator());
         }
         if (getSlogans() != null) {
-            buf.append("Slogan: " + org.eclipse.persistence.internal.helper.Helper.getShortClassName(getSlogans().getClass()));
+            buf.append("Slogan: ").append(getSlogans().getClass().getSimpleName());
             buf.append(getSlogans().toString());
-            buf.append(org.eclipse.persistence.internal.helper.Helper.cr());
+            buf.append(System.lineSeparator());
         }
         return buf.toString();
     }
@@ -389,10 +394,8 @@ public class Restaurant implements ChangeTracker {
     }
 
     public String toString() {
-        StringBuffer buf = new StringBuffer();
-        buf.append("Restaurant: " + this.getName());
 
-        return buf.toString();
+        return "Restaurant: " + this.getName();
     }
 
     static class LocationComparator implements Comparator {

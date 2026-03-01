@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,11 +14,7 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.performance.java;
 
-import java.lang.reflect.*;
-import java.security.AccessController;
-
 import org.eclipse.persistence.Version;
-import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.security.PrivilegedGetClassLoaderForClass;
 import org.eclipse.persistence.internal.security.PrivilegedGetConstructorFor;
@@ -34,7 +30,13 @@ import org.eclipse.persistence.internal.security.PrivilegedInvokeConstructor;
 import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 import org.eclipse.persistence.internal.security.PrivilegedSetValueInField;
-import org.eclipse.persistence.testing.framework.*;
+import org.eclipse.persistence.testing.framework.PerformanceComparisonTestCase;
+import org.eclipse.persistence.testing.framework.TestProblemException;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.security.AccessController;
 
 /**
  * This test compares the performance for
@@ -88,8 +90,6 @@ public class DoPrivilegedTest extends PerformanceComparisonTestCase {
                 field.set(version, fieldValue);
             } catch (Exception e) {
             }
-
-            String lineSeparator = System.getProperty("file.separator");
 
             method = getDeclaredMethod(clazz, methodName, methodParameterTypes, true);
             method.getParameterTypes();
@@ -168,7 +168,7 @@ public class DoPrivilegedTest extends PerformanceComparisonTestCase {
             } catch (Exception e) {
             }
 
-            String lineSeparator = PrivilegedAccessHelper.getLineSeparator();
+            String lineSeparator = System.lineSeparator();
 
             method = AccessController.doPrivileged(new PrivilegedGetMethod(clazz, methodName, methodParameterTypes, true));
             AccessController.doPrivileged(new PrivilegedGetMethodParameterTypes(method));

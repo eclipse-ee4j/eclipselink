@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -60,10 +60,9 @@ public class Phone {
     }
 
     public boolean equals(Object object) {
-        if (!(object instanceof Phone)) {
+        if (!(object instanceof Phone address)) {
             return false;
         }
-        Phone address = (Phone) object;
         if (this.areaCode != null && !this.areaCode.equals(address.areaCode)) {
             return false;
         }

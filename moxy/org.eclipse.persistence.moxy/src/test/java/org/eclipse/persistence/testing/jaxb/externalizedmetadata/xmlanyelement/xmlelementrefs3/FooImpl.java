@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -48,10 +48,9 @@ public class FooImpl implements Foo {
     }
 
     public boolean equals(Object obj){
-        if(!(obj instanceof FooImpl)){
+        if(!(obj instanceof FooImpl fooObj)){
             return false;
         }
-        FooImpl fooObj = (FooImpl)obj;
         if(others.size() != fooObj.others.size()){
             return false;
         }
@@ -67,12 +66,10 @@ public class FooImpl implements Foo {
                 if(!comparer.isNodeEqual((Node)o1, (Node)o2)){
                     return false;
                 }
-            }else if(o1 instanceof JAXBElement){
-                if(!(o2 instanceof JAXBElement)){
+            }else if(o1 instanceof JAXBElement one){
+                if(!(o2 instanceof JAXBElement two)){
                     return false;
                 }
-                JAXBElement one = (JAXBElement)o1;
-                JAXBElement two = (JAXBElement)o2;
                 if(!one.getName().equals(two.getName())){
                     return false;
                 }

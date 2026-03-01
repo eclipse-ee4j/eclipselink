@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -172,8 +172,8 @@ public class RowTypeTestSuite extends DBWSTestSuite {
             runDdl(conn, CREATE_ROWTYPE_TEST_TABLE, ddlDebug);
             try {
                 Statement stmt = conn.createStatement();
-                for (int i = 0; i < POPULATE_ROWTYPE_TEST_TABLE.length; i++) {
-                    stmt.addBatch(POPULATE_ROWTYPE_TEST_TABLE[i]);
+                for (String s : POPULATE_ROWTYPE_TEST_TABLE) {
+                    stmt.addBatch(s);
                 }
                 stmt.executeBatch();
             }
@@ -300,6 +300,6 @@ public class RowTypeTestSuite extends DBWSTestSuite {
     @Test
     public void compareWSDLElementRef() {
         assertNotNull("WSDL stream is null", DBWS_WSDL_STREAM);
-        assertTrue("Expected to find:\n" + WSDL_REF + "\nbut did not.  WSDL:\n" + DBWS_WSDL_STREAM.toString(), DBWS_WSDL_STREAM.toString().contains(WSDL_REF));
+        assertTrue("Expected to find:\n" + WSDL_REF + "\nbut did not.  WSDL:\n" + DBWS_WSDL_STREAM, DBWS_WSDL_STREAM.toString().contains(WSDL_REF));
     }
 }

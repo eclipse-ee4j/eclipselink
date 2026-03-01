@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -10,7 +10,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
  */
 
-// Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
 
 package org.eclipse.persistence.testing.tests.plsqlrecord;
 
@@ -24,6 +24,8 @@ import org.w3c.dom.Document;
 // JUnit imports
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -40,7 +42,6 @@ import org.eclipse.persistence.queries.DataModifyQuery;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.Project;
-import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.factories.XMLProjectReader;
 
 // other imports
@@ -263,19 +264,14 @@ public class PLSQLrecordOutTestSet  {
         assertTrue("invocation rec_test_out failed: " + msg, worked);
         assertNotNull("result is supposed to be not-null", result);
         DatabaseRecord record = (DatabaseRecord)outputRow;
-        assertTrue("incorrect EMPNO" ,
-            record.get("EMPNO").equals(new BigDecimal(1234)));
-        assertTrue("incorrect ENAME" ,
-            record.get("ENAME").equals("GOOFY"));
-        assertTrue("incorrect JOB" ,
-            record.get("JOB").equals("ACTOR"));
+        assertEquals("incorrect EMPNO", record.get("EMPNO"), new BigDecimal(1234));
+        assertEquals("incorrect ENAME", "GOOFY", record.get("ENAME"));
+        assertEquals("incorrect JOB", "ACTOR", record.get("JOB"));
         assertNull("MGR is supposed to be null",  record.get("MGR"));
         assertNull("HIREDATE is supposed to be null",  record.get("HIREDATE"));
-        assertTrue("incorrect SAL" ,
-            record.get("SAL").equals(6000.0));
+        assertEquals("incorrect SAL", 6000.0, record.get("SAL"));
         assertNull("COMM is supposed to be null",  record.get("COMM"));
-        assertTrue("incorrect DEPTNO" ,
-            record.get("DEPTNO").equals(new BigDecimal(20)));
+        assertEquals("incorrect DEPTNO", record.get("DEPTNO"), new BigDecimal(20));
         s.logout();
     }
 }

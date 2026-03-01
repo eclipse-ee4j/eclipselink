@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -51,11 +51,10 @@ public class Employee2 {
 
     // override default equals
     public boolean equals(Object object) {
-        if (!(object instanceof Employee2)) {
+        if (!(object instanceof Employee2 employeeObject)) {
             return false;
         }
-        Employee2 employeeObject = (Employee2)object;
-//        if (getId() != employeeObject.getId()) {
+        //        if (getId() != employeeObject.getId()) {
 //            return false;
 //        }
 //        if ((employeeObject.getLastName() == null) && (getLastName() != null)) {
@@ -70,15 +69,12 @@ public class Employee2 {
         if ((employeeObject.getFirstName() != null) && (getFirstName() == null)) {
             return false;
         }
-        if ((getFirstName() != null) && (employeeObject.getFirstName() != null) &&//
-                !getFirstName().equals(employeeObject.getFirstName())) {
-            return false;
-        }
+        return (getFirstName() == null) || (employeeObject.getFirstName() == null) ||//
+                getFirstName().equals(employeeObject.getFirstName());
 //        if ((getLastName() != null) && (employeeObject.getLastName() != null) &&//
 //                !getLastName().equals(employeeObject.getLastName())) {
 //            return false;
 //        }
-        return true;
     }
 
     public String getFirstName() {

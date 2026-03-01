@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,13 +14,10 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.jaxb.xmlanyelement;
 
-import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.*;
-import java.util.Collection;
-import java.util.Iterator;
+
 import org.w3c.dom.Element;
 import org.eclipse.persistence.platform.xml.XMLComparer;
-import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
 
 @XmlRootElement(name="employee")
 public class EmployeeSingle {
@@ -34,11 +31,10 @@ public class EmployeeSingle {
     public Object element;
 
     public boolean equals(Object obj) {
-        if(!(obj instanceof EmployeeSingle)) {
+        if(!(obj instanceof EmployeeSingle emp)) {
             return false;
         }
 
-        EmployeeSingle emp = (EmployeeSingle)obj;
         if(!(name.equals(emp.name))) {
             return false;
         }
@@ -51,9 +47,7 @@ public class EmployeeSingle {
         Object next1 = element;
         Object next2 =  emp.element;
 
-        if((next1 instanceof org.w3c.dom.Element) && (next2 instanceof Element)) {
-            Element nextElem1 = (Element)next1;
-            Element nextElem2 = (Element)next2;
+        if((next1 instanceof Element nextElem1) && (next2 instanceof Element nextElem2)) {
             if(!(comparer.isNodeEqual(nextElem1, nextElem2))) {
                 return false;
             }

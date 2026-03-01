@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,11 +14,14 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.exceptions;
 
-import java.util.*;
-import java.io.*;
-import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  *    <p><b>Purpose</b>: IntegrityChecker is used for catching all the descriptor exceptions,
@@ -28,10 +31,10 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 public class IntegrityChecker implements Serializable {
 
     /** To add all the Descriptor exceptions */
-    protected Vector<Exception> caughtExceptions = null;
+    protected List<Exception> caughtExceptions = null;
 
     /** To load the tables from database    */
-    protected Vector tables = null;
+    protected List<String> tables = null;
 
     /** To know that should we catch all the descriptors exceptions or not */
     protected boolean shouldCatchExceptions;
@@ -84,7 +87,7 @@ public class IntegrityChecker implements Serializable {
      * This method checks that tables are present in the database.
      */
     public boolean checkTable(DatabaseTable table, AbstractSession session) {
-        if (getTables().size() == 0) {
+        if (getTables().isEmpty()) {
             // load the tables from the session
             initializeTables(session);
         }
@@ -124,9 +127,9 @@ public class IntegrityChecker implements Serializable {
      * PUBLIC:
      * This method returns the vector which adds all the Descriptors Exceptions.
      */
-    public Vector<Exception> getCaughtExceptions() {
+    public List<Exception> getCaughtExceptions() {
         if (caughtExceptions == null) {
-            caughtExceptions = new Vector<>();
+            caughtExceptions = new ArrayList<>();
         }
         return caughtExceptions;
     }
@@ -135,9 +138,9 @@ public class IntegrityChecker implements Serializable {
      * INTERNAL:
      * This method returns a vector which holds all the tables of database
      */
-    public Vector getTables() {
+    public List<String> getTables() {
         if (tables == null) {
-            tables = new Vector();
+            tables = new ArrayList<>();
         }
         return tables;
     }
@@ -151,7 +154,7 @@ public class IntegrityChecker implements Serializable {
         if (!shouldCatchExceptions()) {
             throw runtimeException;
         }
-        getCaughtExceptions().addElement(runtimeException);
+        getCaughtExceptions().add(runtimeException);
     }
 
     /**
@@ -159,7 +162,7 @@ public class IntegrityChecker implements Serializable {
      * Return if any errors occurred.
      */
     public boolean hasErrors() {
-        if ((caughtExceptions != null) && (caughtExceptions.size() > 0)) {
+        if ((caughtExceptions != null) && (!caughtExceptions.isEmpty())) {
             return true;
         }
         return false;
@@ -171,9 +174,9 @@ public class IntegrityChecker implements Serializable {
      */
     public boolean hasRuntimeExceptions() {
         if (hasErrors()) {
-            for (Enumeration<Exception> exceptionsEnum = getCaughtExceptions().elements();
-                     exceptionsEnum.hasMoreElements();) {
-                if (exceptionsEnum.nextElement() instanceof RuntimeException) {
+            for (Iterator<Exception> iterator = getCaughtExceptions().iterator();
+                 iterator.hasNext();) {
+                if (iterator.next() instanceof RuntimeException) {
                     return true;
                 }
             }
@@ -192,7 +195,7 @@ public class IntegrityChecker implements Serializable {
             if (session.getPlatform().shouldForceFieldNamesToUpperCase()) {
                 this.tables.add(((String)row.get("TABLE_NAME")).toUpperCase());
             } else {
-                this.tables.add(row.get("TABLE_NAME"));
+                this.tables.add((String) row.get("TABLE_NAME"));
             }
         }
     }
@@ -200,7 +203,7 @@ public class IntegrityChecker implements Serializable {
     /**
      * INTERNAL:
      */
-    public void setCaughtExceptions(Vector<Exception> exceptions) {
+    public void setCaughtExceptions(List<Exception> exceptions) {
         this.caughtExceptions = exceptions;
     }
 

@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,27 +32,26 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.sql.Types;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.expressions.ExpressionOperator;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.databaseaccess.BindCallCustomParameter;
 import org.eclipse.persistence.internal.databaseaccess.ConnectionCustomizer;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
-import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 import org.eclipse.persistence.internal.databaseaccess.Platform;
 import org.eclipse.persistence.internal.expressions.SpatialExpressionOperators;
-import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.platform.database.XMLTypePlaceholder;
@@ -75,6 +75,7 @@ import oracle.jdbc.OracleTypes;
 import oracle.sql.TIMESTAMP;
 import oracle.sql.TIMESTAMPLTZ;
 import oracle.sql.TIMESTAMPTZ;
+import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
 
 /**
  * <p><b>Purpose:</b>
@@ -187,10 +188,9 @@ public class Oracle9Platform extends Oracle8Platform {
     @Override
     public void copyInto(Platform platform) {
         super.copyInto(platform);
-        if (!(platform instanceof Oracle9Platform)) {
+        if (!(platform instanceof Oracle9Platform oracle9Platform)) {
             return;
         }
-        Oracle9Platform oracle9Platform = (Oracle9Platform)platform;
         oracle9Platform.setShouldTruncateDate(shouldTruncateDate());
     }
 
@@ -306,7 +306,7 @@ public class Oracle9Platform extends Oracle8Platform {
         addOperator(SpatialExpressionOperators.relate());
         addOperator(SpatialExpressionOperators.filter());
         addOperator(SpatialExpressionOperators.nearestNeighbor());
-        addOperator(ExpressionOperator.simpleFunctionNoParentheses(ExpressionOperator.LocalTime, "CURRENT_TIMESTAMP"));
+        addOperator(ExpressionOperator.simpleFunctionNoParentheses(ExpressionOperator.LocalTime, "TIMESTAMP '1970-01-01 00:00:00' + (CURRENT_TIMESTAMP - TRUNC(CURRENT_TIMESTAMP))"));
         addOperator(ExpressionOperator.simpleFunctionNoParentheses(ExpressionOperator.LocalDateTime, "CURRENT_TIMESTAMP"));
     }
 
@@ -316,15 +316,15 @@ public class Oracle9Platform extends Oracle8Platform {
      * Add TIMESTAMP, TIMESTAMP WITH TIME ZONE and TIMESTAMP WITH LOCAL TIME ZONE
      */
     @Override
-    protected Hashtable<Class<?>, FieldTypeDefinition> buildFieldTypes() {
-        Hashtable<Class<?>, FieldTypeDefinition> fieldTypes = super.buildFieldTypes();
-        fieldTypes.put(org.w3c.dom.Document.class, new FieldTypeDefinition("sys.XMLType"));
+    protected Map<Class<?>, FieldDefinition.DatabaseType> buildDatabaseTypes() {
+        Map<Class<?>, FieldDefinition.DatabaseType> fieldTypes = super.buildDatabaseTypes();
+        fieldTypes.put(org.w3c.dom.Document.class, new FieldDefinition.DatabaseType("sys.XMLType"));
         //Bug#3381652 10g database does not accept Time for DATE field
-        fieldTypes.put(java.sql.Time.class, new FieldTypeDefinition("TIMESTAMP", false));
-        fieldTypes.put(java.sql.Timestamp.class, new FieldTypeDefinition("TIMESTAMP", false));
-        fieldTypes.put(ORACLE_SQL_TIMESTAMP, new FieldTypeDefinition("TIMESTAMP", false));
-        fieldTypes.put(ORACLE_SQL_TIMESTAMPTZ, new FieldTypeDefinition("TIMESTAMP WITH TIME ZONE", false));
-        fieldTypes.put(ORACLE_SQL_TIMESTAMPLTZ, new FieldTypeDefinition("TIMESTAMP WITH LOCAL TIME ZONE", false));
+        fieldTypes.put(java.sql.Time.class, new FieldDefinition.DatabaseType("TIMESTAMP", false));
+        fieldTypes.put(java.sql.Timestamp.class, new FieldDefinition.DatabaseType("TIMESTAMP", false));
+        fieldTypes.put(ORACLE_SQL_TIMESTAMP, new FieldDefinition.DatabaseType("TIMESTAMP", false));
+        fieldTypes.put(ORACLE_SQL_TIMESTAMPTZ, new FieldDefinition.DatabaseType("TIMESTAMP WITH TIME ZONE", false));
+        fieldTypes.put(ORACLE_SQL_TIMESTAMPLTZ, new FieldDefinition.DatabaseType("TIMESTAMP WITH LOCAL TIME ZONE", false));
         return fieldTypes;
     }
 
@@ -343,8 +343,8 @@ public class Oracle9Platform extends Oracle8Platform {
      * Add TIMESTAMP, TIMESTAMP WITH TIME ZONE and TIMESTAMP WITH LOCAL TIME ZONE
      */
     @Override
-    protected Map<String, Class<?>> buildClassTypes() {
-        Map<String, Class<?>> classTypeMapping = super.buildClassTypes();
+    protected Map<String, Class<?>> buildJavaTypes() {
+        Map<String, Class<?>> classTypeMapping = super.buildJavaTypes();
         classTypeMapping.put("TIMESTAMP", ORACLE_SQL_TIMESTAMP);
         classTypeMapping.put("TIMESTAMP WITH TIME ZONE", ORACLE_SQL_TIMESTAMPTZ);
         classTypeMapping.put("TIMESTAMP WITH LOCAL TIME ZONE", ORACLE_SQL_TIMESTAMPLTZ);
@@ -438,7 +438,7 @@ public class Oracle9Platform extends Oracle8Platform {
         } else if (sourceObject instanceof TIMESTAMPTZWrapper) {
             //Bug#4364359 Used when database type is TIMESTAMPTZ.  Timestamp and session timezone are wrapped
             //in TIMESTAMPTZWrapper.  Separate Calendar from any other types.
-            if (((javaClass == ClassConstants.CALENDAR) || (javaClass == ClassConstants.GREGORIAN_CALENDAR))) {
+            if (((javaClass == CoreClassConstants.CALENDAR) || (javaClass == CoreClassConstants.GREGORIAN_CALENDAR))) {
                 return (T) TIMESTAMPHelper.buildCalendar((TIMESTAMPTZWrapper) sourceObject);
             } else {
                 try {
@@ -451,7 +451,7 @@ public class Oracle9Platform extends Oracle8Platform {
         } else if (sourceObject instanceof TIMESTAMPLTZWrapper) {
             //Bug#4364359 Used when database type is TIMESTAMPLTZ.  Timestamp and session timezone id are wrapped
             //in TIMESTAMPLTZWrapper.  Separate Calendar from any other types.
-            if (((javaClass == ClassConstants.CALENDAR) || (javaClass == ClassConstants.GREGORIAN_CALENDAR))) {
+            if (((javaClass == CoreClassConstants.CALENDAR) || (javaClass == CoreClassConstants.GREGORIAN_CALENDAR))) {
                 return (T) TIMESTAMPHelper.buildCalendar((TIMESTAMPLTZWrapper) sourceObject);
             } else {
                 try {
@@ -518,8 +518,7 @@ public class Oracle9Platform extends Oracle8Platform {
         // printCalendar for versions greater or equal 9 and less than 10.2.0.4
         this.shouldPrintCalendar = Helper.compareVersions("9", this.driverVersion) <= 0 && Helper.compareVersions(this.driverVersion, "10.2.0.4") < 0;
         if (Helper.compareVersions(this.driverVersion, "11.1.0.7") >= 0) {
-            if( connection instanceof OracleConnection ) {
-                final OracleConnection oraConn = (OracleConnection)connection;
+            if(connection instanceof OracleConnection oraConn) {
                 String timestampTzInGmtPropStr = oraConn.getProperties().getProperty("oracle.jdbc.timestampTzInGmt", "true");
                 this.connectionUserName = oraConn.getUserName();
                 this.isTimestampInGmt = timestampTzInGmtPropStr.equalsIgnoreCase("true");
@@ -545,8 +544,7 @@ public class Oracle9Platform extends Oracle8Platform {
      */
     @Override
     public void clearOracleConnectionCache(Connection conn) {
-        if(conn instanceof OracleConnection){
-            OracleConnection oracleConnection = (OracleConnection)conn;
+        if(conn instanceof OracleConnection oracleConnection){
             try {
                 if(oracleConnection.getImplicitCachingEnabled()) {
                     oracleConnection.purgeImplicitCache();
@@ -653,7 +651,7 @@ public class Oracle9Platform extends Oracle8Platform {
     }
 
     protected List<Class<?>> buildToTIMESTAMPVec() {
-        List<Class<?>> vec = new Vector<>();
+        List<Class<?>> vec = new ArrayList<>();
         vec.add(java.util.Date.class);
         vec.add(Timestamp.class);
         vec.add(Calendar.class);
@@ -665,14 +663,14 @@ public class Oracle9Platform extends Oracle8Platform {
     }
 
     protected List<Class<?>> buildToNStringCharVec() {
-        List<Class<?>> vec = new Vector<>();
+        List<Class<?>> vec = new ArrayList<>();
         vec.add(String.class);
         vec.add(Character.class);
         return vec;
     }
 
     protected List<Class<?>> buildToNClobVec() {
-        List<Class<?>> vec = new Vector<>();
+        List<Class<?>> vec = new ArrayList<>();
         vec.add(String.class);
         vec.add(Character[].class);
         vec.add(char[].class);
@@ -766,12 +764,12 @@ public class Oracle9Platform extends Oracle8Platform {
      * Return the list of Classes that can be converted to from the passed in javaClass.
      * oracle.sql.TIMESTAMP and NCHAR types are added in some lists.
      * @param javaClass - the class that is converted from
-     * @return - a vector of classes
+     * @return - a list of classes
      */
     @Override
     public List<Class<?>> getDataTypesConvertedFrom(Class<?> javaClass) {
         if (dataTypesConvertedFromAClass == null) {
-            dataTypesConvertedFromAClass = new Hashtable<>(5);
+            dataTypesConvertedFromAClass = new HashMap<>(5);
         }
         List<Class<?>> dataTypes = dataTypesConvertedFromAClass.get(javaClass);
         if (dataTypes != null) {
@@ -797,12 +795,12 @@ public class Oracle9Platform extends Oracle8Platform {
      * Return the list of Classes that can be converted from to the passed in javaClass.
      * A list is added for oracle.sql.TIMESTAMP and NCHAR types.
      * @param javaClass - the class that is converted to
-     * @return - a vector of classes
+     * @return - a list of classes
      */
     @Override
     public List<Class<?>> getDataTypesConvertedTo(Class<?> javaClass) {
         if (dataTypesConvertedToAClass == null) {
-            dataTypesConvertedToAClass = new Hashtable<>(5);
+            dataTypesConvertedToAClass = new HashMap<>(5);
         }
         List<Class<?>> dataTypes = dataTypesConvertedToAClass.get(javaClass);
         if (dataTypes != null) {
@@ -863,6 +861,7 @@ public class Oracle9Platform extends Oracle8Platform {
             int rowCount = 0;
             try {
                 rowCount = ((OraclePreparedStatement)statement).sendBatch();
+                setExecuteBatchRowCounts(new int[]{rowCount});
             } finally {
                 ((OraclePreparedStatement) statement).setExecuteBatch(1);
             }
@@ -978,7 +977,7 @@ public class Oracle9Platform extends Oracle8Platform {
     @Override
     public ConnectionCustomizer createConnectionCustomizer(Accessor accessor, AbstractSession session) {
         Object proxyTypeValue = session.getProperty(PersistenceUnitProperties.ORACLE_PROXY_TYPE);
-        if (proxyTypeValue == null || ((proxyTypeValue instanceof String) && ((String)proxyTypeValue).length() == 0)) {
+        if (proxyTypeValue == null || ((proxyTypeValue instanceof String) && ((String) proxyTypeValue).isEmpty())) {
             return null;
         } else {
             return new OracleJDBC_10_1_0_2ProxyConnectionCustomizer(accessor, session);

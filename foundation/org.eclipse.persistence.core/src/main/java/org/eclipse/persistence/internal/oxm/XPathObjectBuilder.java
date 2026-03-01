@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,21 +14,11 @@
 //     Blaise Doughan - 2.5 - initial implementation
 package org.eclipse.persistence.internal.oxm;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map.Entry;
-
-import javax.xml.namespace.QName;
-
 import org.eclipse.persistence.core.descriptors.CoreDescriptor;
 import org.eclipse.persistence.core.mappings.CoreMapping;
 import org.eclipse.persistence.core.mappings.transformers.CoreFieldTransformer;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.oxm.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.core.descriptors.CoreObjectBuilder;
 import org.eclipse.persistence.internal.core.helper.CoreField;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractRecord;
@@ -69,13 +59,21 @@ import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.AttributeAccessor;
 import org.eclipse.persistence.mappings.converters.Converter;
-import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.oxm.mappings.UnmarshalKeepAsElementPolicy;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
 import org.eclipse.persistence.oxm.sequenced.SequencedObject;
 import org.eclipse.persistence.sessions.Session;
+
+import javax.xml.namespace.QName;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map.Entry;
 
 public class XPathObjectBuilder extends CoreObjectBuilder<CoreAbstractRecord, CoreAbstractSession, CoreField, CoreMapping> implements ObjectBuilder {
 
@@ -427,8 +425,7 @@ public class XPathObjectBuilder extends CoreObjectBuilder<CoreAbstractRecord, Co
                         mappingNodeValue = new XMLFragmentMappingNodeValue((FragmentMapping)xmlMapping);
                     } else if (xmlMapping instanceof FragmentCollectionMapping) {
                         mappingNodeValue = new XMLFragmentCollectionMappingNodeValue((FragmentCollectionMapping)xmlMapping);
-                    } else if (xmlMapping instanceof CollectionReferenceMapping) {
-                        CollectionReferenceMapping xmlColMapping = (CollectionReferenceMapping)xmlMapping;
+                    } else if (xmlMapping instanceof CollectionReferenceMapping xmlColMapping) {
 
                         List fields = xmlColMapping.getFields();
                         Field xmlColMappingField = (Field) xmlColMapping.getField();
@@ -455,8 +452,7 @@ public class XPathObjectBuilder extends CoreObjectBuilder<CoreAbstractRecord, Co
                             branchNode.addChild(xmlFld.getXPathFragment(), mappingNodeValue, xmlDescriptor.getNamespaceResolver());
                         }
                         continue;
-                    } else if (xmlMapping instanceof ObjectReferenceMapping) {
-                        ObjectReferenceMapping xmlORMapping = (ObjectReferenceMapping)xmlMapping;
+                    } else if (xmlMapping instanceof ObjectReferenceMapping xmlORMapping) {
                         Iterator fieldIt = xmlORMapping.getFields().iterator();
                         while (fieldIt.hasNext()) {
                             Field xmlFld = (Field)fieldIt.next();
@@ -464,22 +460,16 @@ public class XPathObjectBuilder extends CoreObjectBuilder<CoreAbstractRecord, Co
                             addChild(xmlFld.getXPathFragment(), mappingNodeValue, xmlDescriptor.getNamespaceResolver());
                         }
                         continue;
-                    } else if (xmlMapping instanceof ChoiceObjectMapping) {
-                        ChoiceObjectMapping xmlChoiceMapping = (ChoiceObjectMapping)xmlMapping;
+                    } else if (xmlMapping instanceof ChoiceObjectMapping xmlChoiceMapping) {
                         Iterator fields = xmlChoiceMapping.getChoiceElementMappings().keySet().iterator();
-                        Field firstField = (Field)fields.next();
-                        XMLChoiceObjectMappingNodeValue firstNodeValue = new XMLChoiceObjectMappingNodeValue(xmlChoiceMapping, firstField);
-                        firstNodeValue.setNullCapableNodeValue(firstNodeValue);
-                        addChild(firstField.getXPathFragment(), firstNodeValue, xmlDescriptor.getNamespaceResolver());
-                        while(fields.hasNext()) {
-                            Field next = (Field)fields.next();
+                        do {
+                            Field next = (Field) fields.next();
                             XMLChoiceObjectMappingNodeValue nodeValue = new XMLChoiceObjectMappingNodeValue(xmlChoiceMapping, next);
-                            nodeValue.setNullCapableNodeValue(firstNodeValue);
+                            nodeValue.setNullCapableNodeValue(nodeValue);
                             addChild(next.getXPathFragment(), nodeValue, xmlDescriptor.getNamespaceResolver());
-                        }
+                        } while (fields.hasNext());
                         continue;
-                    } else if(xmlMapping instanceof ChoiceCollectionMapping) {
-                        ChoiceCollectionMapping xmlChoiceMapping = (ChoiceCollectionMapping)xmlMapping;
+                    } else if(xmlMapping instanceof ChoiceCollectionMapping xmlChoiceMapping) {
 
                         Iterator<Entry<Field, Mapping>> fields = xmlChoiceMapping.getChoiceElementMappings().entrySet().iterator();
                         Entry<Field, Mapping> firstEntry = fields.next();
@@ -606,11 +596,6 @@ public class XPathObjectBuilder extends CoreObjectBuilder<CoreAbstractRecord, Co
         }
 
         return hasValue;
-    }
-
-    @Override
-    public CoreAbstractRecord createRecordFromXMLContext(XMLContext context) {
-        return createRecord((AbstractSession)context.getSession());
     }
 
 }

@@ -1,0 +1,264 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[PRIVATELYOWNEDRELATIONS001]]
+=== Mapping Privately Owned One-to-One Relationships
+
+This section demonstrates several ways to map a one-to-one relationship
+between objects. By default, one-to-one relationships are
+privately-owned in JAXB – their XML content will appear nested inside
+the owning element. For example, a *Customer* with a one-to-one mapping
+to a *PhoneNumber* would be marshalled as:
+
+[[sthref117]]
+
+*_Example 6-1 Sample XML Mapping_*
+
+[source,oac_no_warn]
+----
+<customer>
+   <name>Bob Smith</name>
+   <id>1982812</id>
+   <phone-number>
+      <area-code>613</area-code>
+      <number>5550210</number>
+      <extension>20016</extension>
+   </phone-number>
+</customer>
+ 
+----
+
+==== Mapping to an Element
+
+Given the XML schema in link:#BABEIBFB[Example 6-2],
+link:#BABCHCJD[Figure 6-1] illustrates a one-to-one (1:1) relationship
+between two complex types.
+
+[[BABEIBFB]]
+
+*_Example 6-2 Sample XML Schema_*
+
+[source,oac_no_warn]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+ 
+   <xsd:element name="customer" type="customer-type"/>
+ 
+   <xsd:complexType name="customer-type">
+      <xsd:element name="phone-number" type="phone-type"/>
+   </xsd:complexType>
+ 
+   <xsd:complexType name="phone-type">
+      <xsd:element name="area-code" type="xsd:int"/>
+      <xsd:element name="number" type="xsd:int"/>
+      <xsd:element name="extension" type="xsd:int"/>
+   </xsd:complexType>
+ 
+</xsd:schema>
+ 
+----
+
+[[BABCHCJD]]
+
+*_Figure 6-1 One-to-one Relationship_*
+
+image:{imagesrelativedir}/onetoone.png[Description of Figure 6-1 follows,title="Description of Figure 6-1 follows"] +
+xref:{imagestextrelativedir}/onetoone.adoc[Description of "Figure 6-1 One-to-one Relationship"] +
+
+link:#BABJIIGJ[Example 6-3] shows how to annotate your Java class to
+obtain this mapping with EclipseLink. The standard JAXB `@XmlElement`
+annotation can be used to indicate that the associated Java field should
+be mapped to an XML element.
+
+NOTE: By default, JAXB will assume all fields on your Java object are
+`@XmlElements`, so in many cases the annotation itself is not required.
+If, however, you want to customize the Java field's XML name, you can
+specify an `@XmlElement` annotation with a name argument.
+
+[[BABJIIGJ]]
+
+*_Example 6-3 Using the @XmlElement Annotation_*
+
+[source,oac_no_warn]
+----
+package example;
+ 
+import jakarta.xml.bind.annotation.*;
+ 
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
+public class Customer {
+   @XmlElement(name="phone-number")
+   private PhoneNumber phoneNumber;
+ 
+   ...
+}
+ 
+package example;
+ 
+import jakarta.xml.bind.annotation.*;
+ 
+@XmlAccessorType(XmlAccessType.FIELD)
+public class PhoneNumber {
+   @XmlElement(name="area-code")
+   private Integer areaCode;
+ 
+   private Integer number;
+ 
+   private Integer extension;
+ 
+   ...
+}
+ 
+----
+
+link:#BABBEIFJ[Example 6-4] shows how to define your mapping information
+in an EclipseLink's XML Bindings document.
+
+[[BABBEIFJ]]
+
+*_Example 6-4 Sample XML Mapping_*
+
+[source,oac_no_warn]
+----
+...
+<java-type name="Customer">
+   <xml-root-element name="customer"/>
+   <java-attributes>
+      <xml-element java-attribute="phoneNumber" name="phone-number" type="PhoneNumber"/>
+   </java-attributes>
+</java-type>
+ 
+<java-type name="PhoneNumber">
+   <java-attributes>
+      <xml-value java-attribute="areaCode" name="area-code" type="java.lang.Integer"/>
+      <xml-value java-attribute="number" type="java.lang.Integer"/>
+      <xml-value java-attribute="extension" type="java.lang.Integer"/>
+   </java-attributes>
+</java-type>
+...
+ 
+----
+
+==== Using EclipseLink's @XmlPath Annotation
+
+By default, your Java attributes will be mapped to XML based on their
+attributes Java name, or by a name specified in an `@XmlElement`
+annotation. This mapping is based on XPath, and EclipseLink's `@XmlPath`
+annotation allows you to customize this mapping. For example, you can
+use it to control the nesting of your elements in XML:
+
+[[sthref121]]
+
+*_Example 6-5 Using the @XmlPath Annotation_*
+
+[source,oac_no_warn]
+----
+package example;
+ 
+import jakarta.xml.bind.annotation.*;
+import org.eclipse.persistence.oxm.annotations.*;
+ 
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
+public class Customer {
+   @XmlPath("contact-info/phone-number")
+   private PhoneNumber phoneNumber;
+ 
+   ...
+}
+ 
+----
+
+[[sthref122]]
+
+*_Example 6-6 Using EclipseLink XML Bindings_*
+
+[source,oac_no_warn]
+----
+...
+<java-type name="Customer">
+   <xml-root-element name="customer"/>
+   <java-attributes>
+      <xml-element java-attribute="phoneNumber" name="phone-number"
+         type="PhoneNumber" xml-path="contact-info/phone-number"/>
+   </java-attributes>
+</java-type>
+...
+ 
+----
+
+This will produce the following XML:
+
+[source,oac_no_warn]
+----
+<customer>
+   <contact-info>
+      <phone-number>
+         <number>555-631-2124</number>
+      </phone-number>
+   </contact-info>
+</customer>
+ 
+----
+
+You can also use `@XmlPath` to map to different occurrences of the same
+element in XML, by index. For example:
+
+[[sthref123]]
+
+*_Example 6-7 Using the @XmlPath Annotation_*
+
+[source,oac_no_warn]
+----
+package example;
+ 
+import jakarta.xml.bind.annotation.*;
+import org.eclipse.persistence.oxm.annotations.*;
+ 
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
+public class Customer {
+   @XmlPath("contact-info/phone[1]")
+   private PhoneNumber homePhone;
+   @XmlPath("contact-info/phone[2]")
+   private PhoneNumber workPhone;
+   ...
+}
+ 
+----
+
+will produce the following XML:
+
+[source,oac_no_warn]
+----
+<customer>
+   <contact-info>
+      <phone>
+         <number>555-631-2124</number>
+      </phone>
+      <phone>
+         <number>555-631-8298</number>
+      </phone>
+   </contact-info>
+</customer>
+ 
+----
+
+For information on using XPath in your mappings, see
+xref:{relativedir}/advanced_concepts005.adoc#ADVANCEDCONCEPTS005["Mapping Using XPath Predicates"].

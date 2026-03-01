@@ -1,0 +1,101 @@
+image:Elug_draft_icon.png[Image:Elug draft
+icon.png,title="Image:Elug draft icon.png"] *For the latest EclipseLink
+documentation, please see
+http://www.eclipse.org/eclipselink/documentation/*
+
+'''''
+
+*TOC* Special:Whatlinkshere_Creating_an_EIS_Project_(ELUG)[Related
+Topics]
+
+This section describes the various components that you must configure in
+order to create an EIS project.
+
+For information on how to configure EIS projects, see
+link:Configuring%20an%20EIS%20Project%20(ELUG)[Configuring an EIS
+Project].
+
+You can create a project using the Workbench or Java code.
+
+We recommend using the Workbench to create projects and generate
+deployment XML or Java source versions of the project for use at run
+time. For more information on how to create a project using Workbench,
+see
+link:Creating%20a%20Project%20(ELUG)#How_to_Create_a_Project_Using_the_Workbench[How
+to Create a Project Using the Workbench]. For information on how to
+create a project using Java, see
+link:Creating%20a%20Project%20(ELUG)#How_to_Create_a_Project_Using_Java[How
+to Create a Project Using Java].
+
+For more information, see
+link:Introduction%20to%20EIS%20Projects%20(ELUG)[Introduction to EIS
+Projects].
+
+For an EIS project that uses a record type other than XML, you must use
+Java code. For more information, see the following:
+
+* link:#Creating_an_EIS_Project_with_Indexed_or_Mapped_Records[Creating
+an EIS Project with Indexed or Mapped Records]
+* link:Creating%20a%20Project%20(ELUG)#How_to_Create_a_Project_Using_Java[How
+to Create a Project Using Java]
+* _EclipseLink API Reference_.
+
+== Creating an EIS Project with XML Records
+
+Workbench provides complete support for creating EIS projects that map
+Java objects to EIS XML records.
+
+Using Workbench, you can create an EIS project for transactional
+persistence of Java objects to a non-relational data source accessed
+using a JCA adapter and EIS XML records.
+
+The EclipseLink runtime performs XML data conversions based on one or
+more XML schemas. In an EIS project, Workbench does not directly
+reference schemas in the deployment XML, but instead exports mappings
+configured in accordance to specific schemas.
+
+EIS queries use `+XMLInteraction+`. For more information, see
+link:Using%20Basic%20Query%20API%20(ELUG)#Using_EIS_Interactions[Using
+EIS Interactions].
+
+=== How to Create an EIS Project with XML Records Using Workbench
+
+Refer to
+link:Creating%20a%20Project%20(ELUG)#How_to_Create_a_Project_Using_the_Workbench[How
+to Create a Project Using the Workbench] for this information.
+
+== Creating an EIS Project with Indexed or Mapped Records
+
+Workbench does not currently support non-XML EIS projects. You must
+create such an EIS project in Java.
+
+Using Java, you can create an EIS project for transactional persistence
+of Java objects to a nonrelational data source accessed using a JCA
+adapter and any supported EIS record type including indexed, mapped, or
+XML records.
+
+If you use XML records, the EclipseLink runtime performs XML data
+conversion based on one or more XML schemas. When you create an EIS
+project in Java, you configure mappings with respect to these schemas,
+but the EclipseLink runtime does not directly reference them.
+
+You can base queries on any supported EIS interaction:
+`+IndexedInteraction+`, `+MappedInteraction+` (including
+`+QueryStringInteraction+`), or `+XMLInteraction+` (including
+`+XQueryInteraction+`). For more information, see
+link:Using%20Basic%20Query%20API%20(ELUG)#Using_EIS_Interactions[Using
+EIS Interactions].
+
+=== How to Create an EIS Project with Indexed or Mapped Records Using Java
+
+Refer to
+link:Creating%20a%20Project%20(ELUG)#How_to_Create_a_Project_Using_Java[How
+to Create a Project Using Java] for this information.
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Release_1[Category: Release 1] Category:_Task[Category: Task]
+Category:_EIS[Category: EIS]

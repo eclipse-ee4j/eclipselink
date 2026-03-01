@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -51,14 +51,14 @@ public class PlsqlElemHelper extends SequencedInfo {
     }
 
     public static PlsqlElemHelper[] getPlsqlElemHelper(Iterator<ViewRow> iter) throws SQLException {
-        ArrayList<PlsqlElemHelper> a = new ArrayList<PlsqlElemHelper>();
+        ArrayList<PlsqlElemHelper> a = new ArrayList<>();
         while (iter.hasNext()) {
             a.add(new PlsqlElemHelper((UserArguments)iter.next()));
         }
-        if (a.size() == 0) {
+        if (a.isEmpty()) {
             return null;
         }
-        PlsqlElemHelper[] r = a.toArray(new PlsqlElemHelper[a.size()]);
+        PlsqlElemHelper[] r = a.toArray(new PlsqlElemHelper[0]);
         return (PlsqlElemHelper[])reorder(r);
     }
 

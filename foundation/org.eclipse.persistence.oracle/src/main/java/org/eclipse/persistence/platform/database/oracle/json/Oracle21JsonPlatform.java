@@ -21,7 +21,6 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Hashtable;
 import java.util.Map;
 
 import jakarta.json.Json;
@@ -32,9 +31,9 @@ import jakarta.persistence.PersistenceException;
 
 import oracle.sql.json.OracleJsonFactory;
 import oracle.sql.json.OracleJsonValue;
-import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.json.JsonPlatform;
+import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
 
 /**
  * Oracle 21c JSON database platform.
@@ -68,10 +67,10 @@ public class Oracle21JsonPlatform extends JsonPlatform {
      * @param fieldTypeMapping {@code Map} with mappings to be updated.
      */
     @Override
-    public void updateFieldTypes(Hashtable<Class<?>, FieldTypeDefinition> fieldTypeMapping) {
-        fieldTypeMapping.put(jakarta.json.JsonObject.class, new FieldTypeDefinition(JSON_DEFAULT_TYPE));
-        fieldTypeMapping.put(jakarta.json.JsonArray.class, new FieldTypeDefinition(JSON_DEFAULT_TYPE));
-        fieldTypeMapping.put(jakarta.json.JsonValue.class, new FieldTypeDefinition(JSON_DEFAULT_TYPE));
+    public void updateFieldTypes(Map<Class<?>, FieldDefinition.DatabaseType> fieldTypeMapping) {
+        fieldTypeMapping.put(jakarta.json.JsonObject.class, new FieldDefinition.DatabaseType(JSON_DEFAULT_TYPE));
+        fieldTypeMapping.put(jakarta.json.JsonArray.class, new FieldDefinition.DatabaseType(JSON_DEFAULT_TYPE));
+        fieldTypeMapping.put(jakarta.json.JsonValue.class, new FieldDefinition.DatabaseType(JSON_DEFAULT_TYPE));
     }
 
     /**

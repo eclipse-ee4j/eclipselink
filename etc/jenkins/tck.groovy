@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020, 2022 Oracle and/or its affiliates. All rights reserved.
+//  Copyright (c) 2020, 2023 Oracle and/or its affiliates. All rights reserved.
 //
 //  This program and the accompanying materials are made available under the
 //  terms of the Eclipse Public License v. 2.0 which is available at
@@ -47,7 +47,7 @@ spec:
         memory: "1Gi"
         cpu: "500m"
   - name: eclipselink-tck-run
-    image:  tkraus/el-build:2.0.2
+    image:  rfelcman/el-build:2.0.3
     resources:
       limits:
         memory: "3Gi"
@@ -70,6 +70,9 @@ spec:
     - cat
 """
         }
+    }
+    environment {
+        LANG = 'en_US.UTF-8'
     }
 
     stages {

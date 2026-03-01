@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,23 +15,18 @@
 package org.eclipse.persistence.testing.sdo.helper.typehelper;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
-import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import junit.textui.TestRunner;
 
-import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDODataObject;
 import org.eclipse.persistence.sdo.SDOProperty;
 import org.eclipse.persistence.sdo.SDOType;
-import org.eclipse.persistence.sdo.helper.DefaultSchemaLocationResolver;
 import org.eclipse.persistence.sdo.helper.SDOHelperContext;
-import org.eclipse.persistence.sdo.helper.SDOXSDHelper;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -176,7 +171,7 @@ public class SDOTypeHelperAppInfoTestCases extends junit.framework.TestCase  {
         assertTrue("Type does not have AppInfoElements set as expected", newType.getAppInfoElements() != null);
         assertTrue("Expected AppInfoElements list of size [1] on Type, but was [" + newType.getAppInfoElements().size() + "]", newType.getAppInfoElements().size() == 1);
         String val = ((Element)newType.getAppInfoElements().get(0)).getAttribute(SDOConstants.APPINFO_SOURCE_ATTRIBUTE);
-        assertNotNull("AppInfoElement source on Type is empty/null", val != null && val.length() > 0);
+        assertNotNull("AppInfoElement source on Type is empty/null", val != null && !val.isEmpty());
         assertTrue("Expected AppInfoElement source ["+TYPE_APP_INFO+"] on Type but was [" + val + "]", val.equals(TYPE_APP_INFO));
         String appInfoString = xsdHelper.getAppinfo(newType, TYPE_APP_INFO);
         assertEquals("Expected getAppInfo() to return ["+TYPE_APP_INFO_STRING+"] but was ["+appInfoString+"]", TYPE_APP_INFO_STRING, appInfoString);
@@ -186,7 +181,7 @@ public class SDOTypeHelperAppInfoTestCases extends junit.framework.TestCase  {
         assertTrue("Property does not have AppInfoElements set as expected", myProp.getAppInfoElements() != null);
         assertTrue("Expected AppInfoElements list of size [1] on Property, but was [" + myProp.getAppInfoElements().size() + "]", myProp.getAppInfoElements().size() == 1);
         val = ((Element)myProp.getAppInfoElements().get(0)).getAttribute(SDOConstants.APPINFO_SOURCE_ATTRIBUTE);
-        assertNotNull("AppInfoElement source on Property is empty/null", val != null && val.length() > 0);
+        assertNotNull("AppInfoElement source on Property is empty/null", val != null && !val.isEmpty());
         assertTrue("Expected AppInfoElement source ["+PROPERTY_APP_INFO+"] on Property but was [" + val + "]", val.equals(PROPERTY_APP_INFO));
         appInfoString = xsdHelper.getAppinfo(myProp, PROPERTY_APP_INFO);
         assertEquals("Expected getAppInfo() to return ["+PROPERTY_APP_INFO_STRING+"] but was ["+appInfoString+"]", PROPERTY_APP_INFO_STRING, appInfoString);

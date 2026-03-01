@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,40 +16,38 @@
 //       - 518155: [jpa22] add support for repeatable annotations
 package org.eclipse.persistence.annotations;
 
+import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
-
-import jakarta.persistence.GeneratedValue;
 
 import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-import java.lang.annotation.Repeatable;
-
 /**
  * Defines a primary key generator that may be
  * referenced by name when a generator element is specified for
- * the {@link GeneratedValue} annotation. A UUID generator
- * may be specified on the entity class or on the primary key
- * field or property. The scope of the generator name is global
+ * the {@linkplain jakarta.persistence.GeneratedValue} annotation.
+ * <p>
+ * A UUID generator may be specified on the entity class or on the primary key
+ * field or property.
+ * <p>
+ * The scope of the generator name is global
  * to the persistence unit (across all generator types).
+ * <p><b>Example:</b>
+ * {@snippet :
+ *  @Entity
+ *  public class Employee {
+ *      ...
+ *      @UuidGenerator(name="uuid")
+ *      @Id
+ *      @GeneratedValue(generator="uuid")
+ *      int id;
+ *      ...
+ *  }
+ * }
  *
- * <pre>
- *    Example 1:
- *
- *    &#064;Entity public class Employee {
- *        ...
- *        &#064;UuidGenerator(name="uuid")
- *        &#064;Id
- *        &#064;GeneratedValue(generator="uuid")
- *        int id;
- *        ...
- *    }
- * </pre>
- *
- * @see jakarta.persistence.GeneratedValue
  * @author James Sutherland
  * @since EclipseLink 2.4
  */

@@ -1,0 +1,18 @@
+This part describes the EclipseLink artifact used to describe persistent
+objects. It contains the following sections.
+
+* link:Creating_a_Descriptor_(ELUG)[Creating a Descriptor (ELUG)] –
+Contains procedures for creating EclipseLink descriptors.
+
+* link:Configuring_a_Descriptor_(ELUG)[Configuring a Descriptor (ELUG)]
+– Explains how to configure EclipseLink descriptor options common to two
+or more descriptor types.
+
+*Special:Whatlinkshere_Creating_and_Configuring_Descriptors_(ELUG)[Related
+Topics]*
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]

@@ -1,0 +1,654 @@
+image:Elug_draft_icon.png[Image:Elug draft
+icon.png,title="Image:Elug draft icon.png"] *For the latest EclipseLink
+documentation, please see
+http://www.eclipse.org/eclipselink/documentation/*
+
+'''''
+
+*TOC*
+Special:Whatlinkshere_Configuring_a_Relational_Project_(ELUG)[Related
+Topics]
+
+This section describes the various components that you must configure in
+order to use a relational project.
+
+This section also describes logging into a database during development
+when using Workbench. For more information, see
+link:#Logging_In_to_the_Database[Logging In to the Database].
+
+For information on how to create relational projects, see
+link:Creating%20a%20Relational%20Project%20(ELUG)[Creating a Relational
+Project].
+
+This table lists the configurable options for relational projects. In
+addition to the configurable options described here, you must also
+configure the base class options described in
+link:Configuring%20a%20Project%20(ELUG)[Configuring a Project].
+
+[#Table 25-1]##
+
+[width="100%",cols="<66%,<16%,<18%",options="header",]
+|===
+|*Option to Configure* |*EclipseLink Workbench* |*Java*
+|link:Configuring%20a%20Project%20(ELUG)#Configuring_Project_Save_Location[Project
+save location] |image:support.gif[Supported,title="Supported"]
+|image:unsupport.gif[Unsupported,title="Unsupported"]
+
+|link:Configuring%20a%20Project%20(ELUG)#Configuring_Project_Classpath[Project
+classpath] |image:support.gif[Supported,title="Supported"]
+|image:unsupport.gif[Unsupported,title="Unsupported"]
+
+|link:Configuring%20a%20Project%20(ELUG)#Configuring_Project_Comments[Project
+comments] |image:support.gif[Supported,title="Supported"]
+|image:unsupport.gif[Unsupported,title="Unsupported"]
+
+|link:Configuring%20a%20Project%20(ELUG)#Configuring_Method_or_Direct_Field_Access_at_the_Project_Level[Method
+or direct field access]) |image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Project%20(ELUG)#Configuring_Default_Descriptor_Advanced_Properties[Default
+descriptor advanced properties]
+|image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Project%20(ELUG)#Configuring_Existence_Checking_at_the_Project_Level[Existence
+checking] |image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Project%20(ELUG)#Configuring_Project_Deployment_XML_Options[Project
+deployment XML options] |image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Project%20(ELUG)#Configuring_Model_Java_Source_Code_Options[Model
+Java source code options]
+|image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:#Configuring_Relational_Database_Platform_at_the_Project_Level[Relational
+database] |image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:#Configuring_Sequencing_at_the_Project_Level[Sequencing]
+|image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:#Configuring_Login_Information_at_the_Project_Level[Login
+information] |image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:#Configuring_Development_and_Deployment_Logins[Development and
+deployment logins] |image:support.gif[Supported,title="Supported"]
+|image:unsupport.gif[Unsupported,title="Unsupported"]
+
+|link:Configuring%20a%20Project%20(ELUG)#Configuring_Cache_Type_and_Size_at_the_Project_Level[Cache
+type and size] |image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Project%20(ELUG)#Configuring_Cache_Isolation_at_the_Project_Level[Cache
+isolation] |image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Project%20(ELUG)#Configuring_Cache_Coordination_Change_Propagation_at_the_Project_Level[Cache
+coordination change propagation]
+|image:support.gif[Supported,title="Supported"]
+|image:support.gif[Supported,title="Supported"]
+
+|link:Configuring%20a%20Project%20(ELUG)#Configuring_Cache_Expiration_at_the_Project_Level[Cache
+expiration] |image:support.gif[Supported,title="Supported"]
+|image:unsupport.gif[Unsupported,title="Unsupported"]
+
+|link:#Configuring_Named_Query_Parameterized_SQL_and_Statement_Caching_at_the_Project_Level[Named
+query parameterized SQL and statement caching]
+|image:support.gif[Supported,title="Supported"]
+|image:unsupport.gif[Unsupported,title="Unsupported"]
+
+|link:#Configuring_Table_Generation_Options[Table generation options]
+|image:support.gif[Supported,title="Supported"]
+|image:unsupport.gif[Unsupported,title="Unsupported"]
+
+|link:#Configuring_Table_Creator_Java_Source_Options[Table creator Java
+source options] |image:support.gif[Supported,title="Supported"]
+|image:unsupport.gif[Unsupported,title="Unsupported"]
+
+|link:#Configuring_Project_Java_Source_Code_Options[Project Java source
+code options] |image:support.gif[Supported,title="Supported"]
+|image:unsupport.gif[Unsupported,title="Unsupported"]
+|===
+
+For more information, see
+link:Introduction%20to%20Relational%20Projects%20(ELUG)[Introduction to
+Relational Projects].
+
+== Configuring Relational Database Platform at the Project Level
+
+For each relational project, you must specify the database platform
+(such as Oracle Database 10__g__). This platform configuration is
+overridden by the session login, if configured.
+
+For more information, see the following:
+
+* link:Configuring%20a%20Database%20Login%20(ELUG)#Configuring_a_Relational_Database_Platform_at_the_Session_Level[Configuring
+a Relational Database Platform at the Session Level]
+* link:Introduction%20to%20Data%20Access%20(ELUG)#Data_Source_Platform_Types[Data
+Source Platform Types]
+
+=== How to Configure Relational Database Platform at the Project Level Using Workbench
+
+To specify the database platform of a relational project, use this
+procedure:
+
+[arabic]
+. Select the database object in the *Navigator*. The Database property
+sheet appears. *_Database Property Sheet, Database Platform Options_*
+image:dbplat.gif[Database Property Sheet, Database Platform
+Options,title="Database Property Sheet, Database Platform Options"]
+. Complete the Database Platform option on the property sheet.
+. Click *Change* to select a new database platform for the project. For
+more information, see
+link:Introduction%20to%20Data%20Access%20(ELUG)#Data_Source_Platform_Types[Data
+Source Platform Types].
+
+== Configuring Sequencing at the Project Level
+
+Sequencing allows EclipseLink to automatically assign the primary key or
+ID of an object when the object is inserted.
+
+You configure EclipseLink sequencing at the project or session level to
+tell EclipseLink how to obtain sequence values: that is, what type of
+sequences to use.
+
+In a POJO project, you can configure a session directly: in this case,
+you can use a session-level sequence configuration to override
+project-level sequence configuration, on a
+link:Configuring%20a%20Database%20Login%20(ELUG)#Configuring_Sequencing_at_the_Session_Level[session-by-session
+basis]), if required (see .
+
+link:#How_to_Configure_Sequencing_at_the_Project_Level_Using_Workbench[Using
+the Workbench], you can configure
+link:Introduction%20to%20Relational%20Projects%20(ELUG)#Table_Sequencing[Table
+Sequencing] and native sequencing (see
+link:Introduction%20to%20Relational%20Projects%20(ELUG)#Native_Sequencing_with_an_Oracle_Database_Platform[Native
+Sequencing with an Oracle Database Platform] and
+link:Introduction%20to%20Relational%20Projects%20(ELUG)#Native_Sequencing_with_a_Non-Oracle_Database_Platform[Native
+Sequencing with a Non-Oracle Database Platform]), and you can configure
+a preallocation size that applies to all sequences (see
+link:Introduction%20to%20Relational%20Projects%20(ELUG)#Sequencing_and_Preallocation_Size[Sequencing
+and Preallocation Size]).
+
+link:#How_to_Configure_Sequencing_at_the_Project_Level_Using_Java[Using
+Java], you can configure any sequence type that EclipseLink supports
+(see
+link:Introduction%20to%20Relational%20Projects%20(ELUG)#Sequencing_Types[Sequencing
+Types]). You can create any number and combination of sequences. You can
+create a sequence object explicitly or use the default sequence that the
+platform creates. You can associate the same sequence with more than one
+descriptor and you can configure a separate preallocation size for each
+descriptor’s sequence.
+
+After configuring the sequence type at the project (or session) level,
+to enable sequencing, you must
+link:Configuring%20a%20Relational%20Descriptor%20(ELUG)#Configuring_Sequencing_at_the_Descriptor_Level[configure
+a descriptor with a sequence field and a sequence name].
+
+For more information about sequencing, see
+link:Introduction%20to%20Relational%20Projects%20(ELUG)#Sequencing_in_Relational_Projects[Sequencing
+in Relational Projects].
+
+=== How to Configure Sequencing at the Project Level Using Workbench
+
+To specify the sequencing information for the project, use this
+procedure:
+
+[arabic]
+. Select the project object in the *Navigator*.
+. Select the *Sequencing* tab in the *Editor*. The Sequencing tab
+appears. *_Sequencing Tab_* image:sequence.gif[Sequencing
+Tab,title="Sequencing Tab"]
+. Complete each field on Sequencing tab.
+
+Use this table to enter data in the following fields to configure the
+sequencing information:
+
+[width="100%",cols="<6%,<94%",options="header",]
+|===
+|*Field* |*Description*
+|*Preallocation Size* |Specify the default preallocation size (see
+link:Introduction%20to%20Relational%20Projects%20(ELUG)[Sequencing and
+Preallocation Size]). Default is *50*. The preallocation size you
+configure applies to all sequences.
+
+|*Default Sequence Table* |Select this option to use table sequencing
+(see
+link:Introduction%20to%20Relational%20Projects%20(ELUG)#Table_Sequencing[Table
+Sequencing]) with default sequence table name `+SEQUENCE+`, default
+sequence name field `+SEQ_NAME+`, and default sequence counter field
+`+SEQ_COUNT+`.
+
+|*Native Sequencing* |Select this option to use a sequencing object (see
+link:Introduction%20to%20Relational%20Projects%20(ELUG)#Native_Sequencing_with_an_Oracle_Database_Platform[Native
+Sequencing with an Oracle Database Platform] or
+link:Introduction%20to%20Relational%20Projects%20(ELUG)#Native_Sequencing_with_a_Non-Oracle_Database_Platform[Native
+Sequencing with a Non-Oracle Database Platform]) created by the database
+platform. This option applies only to Oracle, Sybase, Microsoft SQL, and
+IBM Informix database platforms.
+
+|*Custom Sequence Table* |Select this option to use table sequencing
+(see
+link:Introduction%20to%20Relational%20Projects%20(ELUG)#Table_Sequencing[Table
+Sequencing]) with a sequence table name, sequence name field, and
+sequence counter field name that you specify.
+
+|*Name* |Specify the name of the sequence table.
+
+|*Name Field* |Specify the name of the column used to store the sequence
+name.
+
+|*Counter Field* |Specify the name of the column used to store the
+sequence count.
+|===
+
+=== How to Configure Sequencing at the Project Level Using Java
+
+Using Java, you can configure a project to use multiple, different
+sequences, as this exmaple shows.
+
+[#Example 25-1]## *_Configuring Sequencing at the Project Level in
+Java_*
+
+[source,java]
+----
+ // Enable native sequencing for the project as the default. Configured the default
+ // preallocation size'''
+ project.getLogin().useNativeSequencing();
+ project.getLogin().setSequencePreallocationSize(50);
+
+ // Configure the EMP_SEQ to not use preallocation
+ DefaultSequence empSequence = new DefaultSequence("EMP_SEQ", 1);
+ project.getLogin().addSequence(empSequence);
+
+ // Configure the PROJ_SEQ to use a seperate sequence table
+ UnarySequence projSequence = new UnarySequence("PROJ_SEQ_TAB", "COUNTER");
+ project.getLogin().addSequence(projSequence);
+----
+
+== Configuring Login Information at the Project Level
+
+This section describes how to define a login to a relational database.
+After you define a login, you must
+link:#Configuring_Development_and_Deployment_Logins[designate its role].
+
+After you
+link:#Configuring_Login_Information_at_the_Project_Level[create a login]
+and specify it as a
+link:#Configuring_Development_and_Deployment_Logins[development login],
+you can link:#Logging_In_to_the_Database[log in to a database instance].
+
+=== How to Configure Login Information at the Project Level UsingWorkbench
+
+To create or edit a database login, use this procedure:
+
+[arabic]
+. Select the database object in the *Navigator*. The Database property
+sheet appears. *_Database Property Sheet, Database Login Fields_*
+image:dbdefine.gif[Database Property Sheet, Database Login
+Fields,title="Database Property Sheet, Database Login Fields"]
+. Click *Add* to create a new Defined Login.
+. Complete the Database Login fields on the property sheet.
+
+Use this table to enter data in the following fields on the Database
+property sheet to configure the database login:
+
+Field
+
+Description
+
+Defined Logins
+
+Login used to access the database. Click Add to add a new login, or
+Remove to delete an existing login.
+
+Driver Class
+
+The JDBC driver to use to connect to the database.
+
+URL
+
+The URL used to connect to the appropriate database.
+
+User Name
+
+The name required to log in to the database.
+
+Password
+
+The password required to log in to the database.
+
+Save Password
+
+Whether or not to save the Password for this Defined Login.
+
+We recommend that you do not save the password with a deployment login.
+
+Note: If you select Save Password, then when you export Java source and
+deployment XML, Workbench writes the database password using JCE
+encryption (when using JDK 1.4 or later). For information on how to
+specify password encryption options, see Configuring Password
+Encryption.
+
+Default: unselected.
+
+See Also:
+
+link:#Configuring_Login_Information_at_the_Project_Level[Configuring
+Login Information at the Project Level]
+
+link:#Configuring_Relational_Database_Platform_at_the_Project_Level[Configuring
+Relational Database Platform at the Project Level]
+
+link:#Configuring_Development_and_Deployment_Logins[Configuring
+Development and Deployment Logins]
+
+== Configuring Development and Deployment Logins
+
+This section describes how to designate a defined login’s role. For
+information on how to define a login, see
+link:#Configuring_Login_Information_at_the_Project_Level[Configuring
+Login Information at the Project Level]. EclipseLink recognizes the
+following login roles:
+
+* link:#Development_Role[Development Role]
+* link:#POJO_Session_Role[POJO Session Role]
+
+*Development Role*
+
+While using Workbench to develop a project (see
+link:Introduction%20to%20Projects_(ELUG)#Development_Role[Development
+Role]), you must define a login (see
+link:#Configuring_Login_Information_at_the_Project_Level[Configuring
+Login Information at the Project Level]) and designate it as the
+development login. The development login is stored in the EclipseLink
+project file. Workbench use the information in the development login
+whenever you perform a data source operation from within Workbench. For
+example, when you read or write schema information from or to a data
+source during application development, the development login information
+is never written to a `+sessions.xml+` or `+project.xml+` file and is
+overridden by the deployment login (or the session login) at run time.
+
+For more information on how to use a development login to connect to a
+database, see link:#Logging_In_to_the_Database[Logging In to the
+Database].
+
+*POJO Session Role*
+
+If you are creating a
+link:Introduction%20to%20Projects_(ELUG)#POJO_Session_Role[POJO
+project], we recommend that you use the `+sessions.xml+` file to store
+the sessions your project uses at run time (see
+link:Introduction%20to%20Data%20Access%20(ELUG)#Data_Source_Login_Types[Data
+Source Login Types]).
+
+=== How to Configure Development and Deployment Logins Using Workbench
+
+To specify different development and deployment database logins, use
+this procedure:
+
+[arabic]
+. Select the database object in the *Navigator*. The Database property
+sheet appears. *_Database Property Sheet, Development and Deployment
+Login Options_* image:dblogins.gif[Database Property Sheet, Development
+and Deployment Login
+Options,title="Database Property Sheet, Development and Deployment Login Options"]
+. Complete the Development and Deployment Login options on the property
+sheet by selecting from the logins you configured previously.
+
+Use this table to enter data in the following fields on the Database
+property sheet to configure the login:
+
+Field
+
+Description
+
+Development Login
+
+The Defined Login to be used by Workbench during development to connect
+with the database, and to read or write table information.
+
+For more information on how to use a development login to connect to a
+database, see Logging In to the Database.
+
+Deployment Login
+
+The Defined Login to be used by your EclipseLink-enabled application
+during deployment.
+
+See Also:
+
+link:#Configuring_Development_and_Deployment_Logins[Configuring
+Development and Deployment Logins]
+
+link:Introduction%20to%20Projects_(ELUG)#Development_Role[Development
+Role]
+
+== Logging In to the Database
+
+Using Workbench, after you
+link:#Configuring_Login_Information_at_the_Project_Level[create a login]
+and specify it as a
+link:#Configuring_Development_and_Deployment_Logins[development login],
+you can log in to a database instance.
+
+You must log in to the database before importing or exporting table
+information.
+
+To log in to the database using Workbench, use one of the following
+procedures:
+
+* Select the database object in the *Navigator* and click *Login*
+image:loginbtn.gif[Database Login button,title="Database Login button"].
+Workbench logs in to the database.
+* Right-click on the database object in the *Navigator* and choose *Log
+In to Database* from the context menu, or choose *Selected > Log In to
+Database* from the menu.
+
+image:logindb.gif[Database Logged In
+icon,title="Database Logged In icon"] The database icon in the Navigator
+window changes to indicate you are now logged in to the database.
+
+== Configuring Named Query Parameterized SQL and Statement Caching at the Project Level
+
+You can configure EclipseLink to use parameterized SQL (parameter
+binding) and prepared statement caching for all named queries and
+finders.
+
+By default, EclipseLink uses parameterized SQL.
+
+The use of parameterized SQL lets you create and store queries that are
+complete except for one or more bound parameters. The EclipseLink
+runtime binds the current parameter values when executing the query.
+This approach avoids the preparation of SQL execution and, thus,
+improves the performance of frequently executed SQL statements.
+
+This section describes configuring parameterized SQL and statement
+caching options at the project level. This configuration applies to
+_all_ named queries or finders (see
+link:Introduction%20to%20EclipseLink%20Queries%20(ELUG)[Named Queries])
+you create on the descriptors in this project–not to all queries in
+general or write operations.
+
+You can also configure parameterized SQL and statement caching options
+at the named query or finder-level to override this project-level
+configuration on a query-by-query basis (see
+link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Named_Query_Options[Configuring
+Named Query Options]) or at the session login-level (see
+link:Configuring%20a%20Database%20Login%20(ELUG)#Configuring_JDBC_Options[Configuring
+JDBC Options]).
+
+For more information, see
+link:Optimizing%20the%20EclipseLink%20Application%20(ELUG)#How_to_Use_Parameterized_SQL_(Parameter_Binding)_and_Prepared_Statement_Caching_for_Optimization[How
+to Use Parameterized SQL (Parameter Binding) and Prepared Statement
+Caching for Optimization].
+
+[width="100%",cols="<100%",]
+|===
+|*Note*: For applications using a Java EE data source or external
+connection pool, you must configure statement caching in the Java EE
+server’s data source–not in EclipseLink.
+|===
+
+This table summarizes which projects support parameterized SQL and
+statement caching configuration.
+
+[#Table 25-2]## *_Project Support for Default Named Query Caching and
+Binding_*
+
+[width="100%",cols="<11%,<69%,<20%",options="header",]
+|===
+|*Descriptor*
+|*link:#How_to_Configure_Named_Query_Parameterized_SQL_and_Statement_Caching_at_the_Project_Level_Using_Workbench[How
+to use the Workbench]* |*How to Use Java*
+|Relational Projects |image:support.gif[Supported.,title="Supported."]
+|image:support.gif[Supported.,title="Supported."]
+
+|EIS Projects |image:unsupport.gif[Unsupported,title="Unsupported"]
+|image:unsupport.gif[Unsupported,title="Unsupported"]
+
+|XML Projects |image:unsupport.gif[Unsupported,title="Unsupported"]
+|image:unsupport.gif[Unsupported,title="Unsupported"]
+|===
+
+=== How to Configure Named Query Parameterized SQL and Statement Caching at the Project Level Using Workbench
+
+To specify the named query options, use this procedure:
+
+[arabic]
+. Select the project object in the *Navigator*.
+. Select the *Defaults* tab in the *Editor*. The Defaults tab appears.
+[#Figure 25-5]##*_Defaults Tab, Named Queries Options_*
+image:nmdqropt.gif[Defaults Tab, Named Queries
+Options,title="Defaults Tab, Named Queries Options"]
+. Complete the *Named Query* options on the tab.
+
+Use this table to enter data in following fields on the Defaults tab to
+specify the named query options for newly created descriptors.:
+
+[width="100%",cols="<21%,<79%",options="header",]
+|===
+|*Field* |*Description*
+|*Cache All Statements* |Caches the query’s prepared statement in the
+EclipseLink statement cache.
+
+|*Bind All Parameters* |By default, EclipseLink binds all of the query’s
+parameters. Deselect this option to disable binding.
+|===
+
+See Also:
+
+link:#Configuring_Named_Query_Parameterized_SQL_and_Statement_Caching_at_the_Project_Level[Configuring
+Named Query Parameterized SQL and Statement Caching at the Project
+Level]
+
+link:Configuring%20a%20Project%20(ELUG)[Configuring a Project]
+
+== Configuring Table Generation Options
+
+Using Workbench, you can configure options that apply when you generate
+database tables from the descriptors you define in your Workbench
+project. The resulting tables and columns will conform to the naming
+restrictions of the project’s target database.
+
+=== How to Configure Table Generation Options Using Workbench
+
+To specify the default table generation options, use this procedure:
+
+[arabic]
+. Select the project object in the *Navigator*.
+. Select the *Options* tab in the *Editor*. The Options tab appears.
+[#Figure 25-6]##*_Options Tab, Table Generation Options_*
+image:prjtbgen.gif[Options Tab, Table Generation
+Options,title="Options Tab, Table Generation Options"]
+. Complete the fields on the Table Generation defaults on the tab.
+
+Use this table to enter data in the following fields to specify the
+default export and generation options.
+
+[width="100%",cols="<32%,<68%",options="header",]
+|===
+|*Field* |*Description*
+|*Default Primary Key* |Enter the default name to use when generating
+primary keys.
+
+|*Primary Key Search Pattern* |Enter the default search pattern to use
+when generating primary keys.
+|===
+
+== Configuring Table Creator Java Source Options
+
+Using Workbench, you can configure options that apply when you export
+Java source code that you can use to create database tables.
+
+=== How to Configure Table Creator Java Source Options Using Workbench
+
+To specify the default Java code generation options, use this procedure:
+
+[arabic]
+. Select the project object in the *Navigator*.
+. Select the *Options* tab in the *Editor*. The Options tab appears.
+[#Figure 25-7]##*_Options Tab, Table Creator Java Source Options_*
+image:prjtblcrt.gif[Options Tab, Table Creator Java Source
+Options,title="Options Tab, Table Creator Java Source Options"]
+. Complete the fields on the Table Creator Java Source defaults on the
+tab.
+
+Use this table to enter data in the following fields to specify the
+default table creator options.
+
+[width="100%",cols="<20%,<80%",options="header",]
+|===
+|*Field* |*Description*
+|*Class Name* |Base class name to use when generating table’s Java
+source code from the project.
+
+|*Root Directory* |Directory for storing the generated source code.
+|===
+
+== Configuring Project Java Source Code Options
+
+Using Workbench, you can export a project as Java source. You can
+configure the class name and root directory that Workbench uses when
+exporting the project to Java source code.
+
+For more information on exporting a project as Java source, see
+link:Creating%20a%20Relational%20Project%20(ELUG)#How_to_Export_Project_Java_Source_Using_Workbench[How
+to Export Project Java Source Using Workbench].
+
+=== How to Configure Project Java Source Code Options Using Workbench
+
+To specify the default Java code generation options, use this procedure:
+
+[arabic]
+. Select the project object in the *Navigator*.
+. Select the *Options* tab in the *Editor*. The Options tab
+appears.[#Figure 25-8]## *_Options Tab, Project Java Source Options_*
+image:prjavasrc.gif[Options Tab, Project Java Source
+Options,title="Options Tab, Project Java Source Options"]
+. Complete the fields on the Project Java Source defaults on the tab.
+
+Use this table to enter data in the following fields to specify the
+default export and generation options:
+
+[width="100%",cols="<22%,<78%",options="header",]
+|===
+|*Field* |*Description*
+|*Class Name* |Base class name to use when generating Java source code
+from the project.
+
+|*Root Directory* |Directory for storing the generated source code.
+|===
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Release_1[Category: Release 1] Category:_Task[Category: Task]
+Category:_ORM[Category: ORM]

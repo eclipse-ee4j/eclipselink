@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,11 +14,11 @@
 //     tware - test for bug 262157
 package org.eclipse.persistence.testing.tests.unitofwork;
 
-import java.math.BigDecimal;
-
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.mappings.DirectToFieldMapping;
 import org.eclipse.persistence.tools.schemaframework.TableDefinition;
+
+import java.math.BigDecimal;
 
 public class ConcurrentProject {
     protected BigDecimal id;

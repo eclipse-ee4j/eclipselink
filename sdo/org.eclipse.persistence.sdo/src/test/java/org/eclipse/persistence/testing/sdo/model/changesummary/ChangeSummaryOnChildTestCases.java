@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,18 +16,13 @@ package org.eclipse.persistence.testing.sdo.model.changesummary;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOChangeSummary;
-import org.eclipse.persistence.sdo.SDOSetting;
-import org.eclipse.persistence.sdo.helper.SDOTypeHelper;
-import org.eclipse.persistence.sdo.helper.delegates.SDOTypeHelperDelegate;
 import org.eclipse.persistence.testing.sdo.helper.xmlhelper.loadandsave.changesummary.ChangeSummaryRootLoadAndSaveTestCases;
 import commonj.sdo.ChangeSummary;
 import commonj.sdo.DataObject;
-import commonj.sdo.Property;
 import commonj.sdo.helper.XMLDocument;
 
 public abstract class ChangeSummaryOnChildTestCases extends ChangeSummaryRootLoadAndSaveTestCases { // we override everything on root - don't need child version of parent

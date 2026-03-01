@@ -1,0 +1,220 @@
+image:Elug_draft_icon.png[Image:Elug draft
+icon.png,title="Image:Elug draft icon.png"] *For the latest EclipseLink
+documentation, please see
+http://www.eclipse.org/eclipselink/documentation/*
+
+'''''
+
+*TOC*
+Special:Whatlinkshere_Packaging_a_EclipseLink_Application_(ELUG)[Related
+Topics]
+
+How you package the components of your application depends on the type
+of application and how you plan to deploy it.
+
+This section describes EclipseLink-specific details applicable to the
+common packaging strategies used for various types of applications.
+
+[width="100%",cols="<100%",]
+|===
+|*Note:* If you are using EJB 3.0, you may be using annotations instead
+of some deployment files. Include deployment descriptors to override
+annotations or specify options not supported by annotations.
+|===
+
+For more information, see the following:
+
+* link:Integrating%20EclipseLink%20with%20an%20Application%20Server%20(ELUG)[Integrating
+EclipseLink with an Application Server]
+* link:Creating%20EclipseLink%20Files%20for%20Deployment%20(ELUG)[Creating
+EclipseLink Files for Deployment]
+* link:Deploying%20a%20EclipseLink%20Application%20(ELUG)[Deploying a
+EclipseLink Application]
+
+== Packaging Java Applications
+
+For non-Java EE Java applications, it is common to package the
+application in a single JAR file, as this example shows.
+
+[#Example 9-1]## *_Packaging a non-Java EE Java Application_*
+
+`+ domain_module.jar+`
+`+     Java classes that represent the objects mapped+`
+`+     project.xml+` `+     session.xml+` `+     META-INF+`
+`+         Manifest.mf+`
+
+This JAR contains the EclipseLink files and domain objects required by
+the application, including the following:
+
+* link:Creating%20EclipseLink%20Files%20for%20Deployment%20(ELUG)#sessions.xml_File[sessions.xml
+File];
+* link:Creating%20EclipseLink%20Files%20for%20Deployment%20(ELUG)#project.xml_File[project.xml
+File] (or the compiled `+Project+` class file if you are not using XML
+files for deployment);
+* The mapped classes required by the application, in a fully-resolved
+directory structure.
+
+When you create the JAR file, the JAR building utility automatically
+creates a directory structure within the JAR. Ensure that the
+`+sessions.xml+` file and the `+project.xml+` file (or project class
+file) appear at the root of the JAR file. Ensure that the class
+directory structure starts at the root of the JAR.
+
+If you do not store the `+project.xml+` or `+sessions.xml+` files at the
+root of the JAR file, see
+link:#Packaging_with_EclipseLink_Metadata_File_Resource_Paths[Packaging
+with EclipseLink Metadata File Resource Paths].
+
+== Packaging JavaServer Pages and Servlet Applications
+
+For simple Java EE applications without EJB, it is common to package the
+application in an Enterprise Archive (EAR) file made up of various Java
+EE application component archives, as this example shows.
+
+[#Example 9-2]## *_Packaging a Java EE JSP or Servlet Application
+Without EJB_*
+
+`+ appname.ear+` `+     META-INF+` `+         application.xml+`
+`+         orion-application.xml+` `+     domain_module.jar+`
+`+         Java classes that represent the object mapped+`
+`+         project.xml+` `+         session.xm+` `+         META-INF+`
+`+             Manifest.mf+` `+     web_module.war+`
+`+         html pages, JSP’s, etc.+` `+         META-INF+`
+`+             web.xml+` `+             orion-web.xml+`
+`+         classes+` `+             servlet classes+` `+         lib+`
+`+     client_module.jar+` `+         Client classes+`
+`+         META-INF+` `+             application-client.xml+`
+`+             orion-application-client.xml+`
+
+The component archives with EclipseLink dependencies include EclipseLink
+domain JAR (see link:#How_to_Create_the_EclipseLink_Domain_JAR[How to
+Create the EclipseLink Domain JAR]).
+
+=== How to Create the EclipseLink Domain JAR
+
+The domain JAR contains the EclipseLink files and domain objects
+required by the application, including the following:
+
+* link:Creating%20EclipseLink%20Files%20for%20Deployment%20(ELUG)#sessions.xml_File[sessions.xml
+File];
+* link:Creating%20EclipseLink%20Files%20for%20Deployment%20(ELUG)#project.xml_File[project.xml
+File] (or the compiled `+Project+` class file, if you are not using XML
+files for deployment);
+* The mapped classes required by the application, in a fully resolved
+directory structure.
+
+When you create the JAR file, the JAR building utility automatically
+creates a directory structure within the JAR. Ensure that the
+`+sessions.xml+` file and the `+project.xml+` file (or `+project.class+`
+file) appear at the root of the JAR file. Also ensure that the class
+directory structure starts at the root of the JAR.
+
+If you do not store the `+project.xml+` or `+sessions.xml+` files at the
+root of the JAR file, see
+link:#Packaging_with_EclipseLink_Metadata_File_Resource_Paths[Packaging
+with EclipseLink Metadata File Resource Paths].
+
+== Packaging Session Bean Applications
+
+This section contains information on
+link:#How_to_Package_an_EJB_3.0_Session_Bean_Application[How to Package
+an EJB 3.0 Session Bean Application].
+
+=== How to Package an EJB 3.0 Session Bean Application
+
+For information on how to package an EJB 3.0 session bean application,
+see
+link:Packaging_and_Deploying_EclipseLink_JPA_Applications_(ELUG)[Packaging
+a EclipseLink JPA Application].
+
+=== How to Create the EclipseLink Domain JAR
+
+The domain JAR contains the EclipseLink files and domain objects
+required by the application, including the following:
+
+* `+sessions.xml+` (see
+link:Creating%20EclipseLink%20Files%20for%20Deployment%20(ELUG)#sessions.xml_File[sessions.xml
+File]);
+* `+project.xml+` (see
+link:Creating%20EclipseLink%20Files%20for%20Deployment%20(ELUG)#project.xml_File[project.xml
+File]) (or the compiled `+Project.class+` file if you are not using XML
+files for deployment);
+* The mapped classes required by the application, in a fully-resolved
+directory structure.
+
+When you create the JAR file, the JAR building utility automatically
+creates a directory structure within the JAR. Ensure that the
+`+sessions.xml+` file and the `+project.xml+` file (or `+project.class+`
+file) appear at the root of the JAR file. Also ensure that the class
+directory structure starts at the root of the JAR.
+
+If you do not store the `+project.xml+` or `+sessions.xml+` files at the
+root of the JAR file, see
+link:#Packaging_with_EclipseLink_Metadata_File_Resource_Paths[Packaging
+with EclipseLink Metadata File Resource Paths].
+
+== Packaging JPA Applications
+
+See
+link:Packaging_and_Deploying_EclipseLink_JPA_Applications_(ELUG)[Packaging
+a EclipseLink JPA Application] for information on how to package your
+JPA application.
+
+== Packaging a POJO Application for Weaving
+
+To package a POJO application for weaving, you create a JAR that
+contains a `+sessions.xml+` file and a `+persistence.xml+` file.
+
+For more information on weaving, see
+link:Introduction_to_EclipseLink%20Application%20Development%20(ELUG)[To
+Package a POJO Application for Weaving].
+
+== Packaging with EclipseLink Metadata File Resource Paths
+
+If you do not store the `+project.xml+` or `+sessions.xml+` files at the
+root of the JAR file, then you must provide the full resource path to
+the files when accessing them. Ensure that you use "``+/+``" in
+resources paths, not "``+\+``". Using "``+\+``" will not work in Java.
+
+For example, in the `+jar+` element, reference the `+project.xml+` and
+`+sessions.xml+` files as follows:
+
+`+/myapp/ordersys/persist/sessions.xml+`
+`+/myapp/ordersys/persist/project.xml+`
+
+In the `+sessions.xml+` file, reference the `+project.xml+` as follows:
+
+`+myapp/ordersys/persist/project.xml+`
+
+To acquire the session, use the following:
+
+[source,java]
+----
+ SessionManager.getManager().getSession(
+     new XMLSessionConfigLoader("myapp/ordersys/persist/sessions.xml"),
+     "OrdersysSession",
+     getClass().getClassLoader()
+ );
+----
+
+For more information about acquiring sessions at run time, see
+link:Acquiring%20and%20Using%20Sessions%20at%20Run%20Time%20(ELUG)[Acquiring
+a Session from the Session Manager].
+
+== Packaging Directories with a Dot (.)
+
+When packaging applications, avoid using a dot (.) in a directory in a
+WAR file as this may cause deployment to fail. For example, if your WAR
+includes:
+
+`+WEB-INF/classes/.foo/jsp_servlet/bar.jspx+`
+
+deployment may fail during persistence unit processing because the
+application could not find a class named .foo.jsp_servlet.bar.jspx.
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Release_1[Category: Release 1] Category:_Task[Category: Task]

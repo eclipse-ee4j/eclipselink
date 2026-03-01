@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2015, 2022 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2015, 2022 IBM Corporation. All rights reserved.
+ * Copyright (c) 2015, 2026 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,22 +16,9 @@
 //       - 462586 : Add national character support for z/OS.
 package org.eclipse.persistence.platform.database;
 
-import java.io.ByteArrayInputStream;
-import java.io.CharArrayReader;
-import java.io.StringWriter;
-import java.lang.reflect.Method;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
-import java.sql.CallableStatement;
-import java.sql.SQLException;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Hashtable;
-
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionOperator;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.databaseaccess.BindCallCustomParameter;
 import org.eclipse.persistence.internal.databaseaccess.DatasourceCall;
 import org.eclipse.persistence.internal.databaseaccess.DatasourceCall.ParameterType;
@@ -40,8 +27,6 @@ import org.eclipse.persistence.internal.expressions.ConstantExpression;
 import org.eclipse.persistence.internal.expressions.ExpressionJavaPrinter;
 import org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter;
 import org.eclipse.persistence.internal.expressions.ParameterExpression;
-import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
-import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
@@ -56,6 +41,23 @@ import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField;
 import org.eclipse.persistence.platform.database.converters.StructConverter;
 import org.eclipse.persistence.queries.StoredProcedureCall;
+import org.eclipse.persistence.queries.ValueReadQuery;
+import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
+
+import java.io.ByteArrayInputStream;
+import java.io.CharArrayReader;
+import java.io.StringWriter;
+import java.lang.reflect.Method;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
+import java.sql.CallableStatement;
+import java.sql.SQLException;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 /**
  * <b>Purpose</b>: Provides DB2 z/OS specific behavior.
@@ -77,10 +79,10 @@ public class DB2ZPlatform extends DB2Platform {
     }
 
     @Override
-    protected Hashtable<Class<?>, FieldTypeDefinition> buildFieldTypes() {
-        Hashtable<Class<?>, FieldTypeDefinition> res = super.buildFieldTypes();
+    protected Map<Class<?>, FieldDefinition.DatabaseType> buildDatabaseTypes() {
+        Map<Class<?>, FieldDefinition.DatabaseType> res = super.buildDatabaseTypes();
         if (getUseNationalCharacterVaryingTypeForString()) {
-            res.put(String.class, new FieldTypeDefinition("VARCHAR", DEFAULT_VARCHAR_SIZE));
+            res.replace(String.class, new FieldDefinition.DatabaseType("VARCHAR", DEFAULT_VARCHAR_SIZE));
         }
         return res;
     }
@@ -110,6 +112,25 @@ public class DB2ZPlatform extends DB2Platform {
     @Override
     public String getProcedureOptionList() {
         return " DISABLE DEBUG MODE ";
+    }
+
+    /**
+     * INTERNAL:
+     * This method returns the query to select the timestamp from the server for
+     * DB2.
+     */
+    @Override
+    public ValueReadQuery getTimestampQuery() {
+        if (timestampQuery == null) {
+            if (getUseNationalCharacterVaryingTypeForString()) {
+                timestampQuery = new ValueReadQuery();
+                timestampQuery.setSQLString("SELECT CAST (CURRENT TIMESTAMP AS TIMESTAMP CCSID UNICODE) FROM SYSIBM.SYSDUMMY1");
+                timestampQuery.setAllowNativeSQLQuery(true);
+            } else {
+                timestampQuery = super.getTimestampQuery();
+            }
+        }
+        return timestampQuery;
     }
 
     /**
@@ -144,6 +165,16 @@ public class DB2ZPlatform extends DB2Platform {
         addOperator(betweenOperator());
         addOperator(notBetweenOperator());
         addOperator(inOperator());
+
+        addOperator(likeEscapeOperator());
+        addOperator(notLikeEscapeOperator());
+
+        addOperator(ceilingOperator());
+        addOperator(floorOperator());
+        addOperator(expOperator());
+        addOperator(lnOperator());
+        addOperator(powerOperator());
+        addOperator(signOperator());
     }
 
     /**
@@ -341,6 +372,142 @@ public class DB2ZPlatform extends DB2Platform {
     }
 
     /**
+     * DB2 z/OS support for binding the LIKE ESCAPE character depends on database configuration (mixed vs DBCS).
+     * Since we cannot know how the database in configured, we will disable parameter binding for the ESCAPE
+     * <p>
+     * With binding enabled, DB2 z/OS will throw an error:
+     * <pre>The statement string specified as the object of a PREPARE contains a 
+     * predicate or expression where parameter markers have been used as operands of 
+     * the same operator for example: ? &gt; ?. DB2 SQL Error: SQLCODE=-417, SQLSTATE=42609</pre>
+     */
+    protected ExpressionOperator likeEscapeOperator() {
+        ExpressionOperator operator = new ExpressionOperator(){
+            @Override
+            public void printCollection(List<Expression> items, ExpressionSQLPrinter printer) {
+                if(!printer.getPlatform().shouldBindPartialParameters()) {
+                    super.printCollection(items, printer);
+                    return;
+                }
+
+                // Initialize argumentIndices
+                if (this.argumentIndices == null) {
+                    this.argumentIndices = new int[items.size()];
+                    for (int i = 0; i < this.argumentIndices.length; i++){
+                        this.argumentIndices[i] = i;
+                    }
+                }
+
+                for (int i = 0; i < items.size(); i++) {
+                    // Disable the first item, which should be <operand2> for this operator
+                    if(i == (items.size() - 1)) {
+                        final int index = this.argumentIndices[i];
+                        Expression item = items.get(index);
+
+                        if(item.isParameterExpression()) {
+                            ((ParameterExpression) item).setCanBind(false);
+                        } else if(item.isConstantExpression()) {
+                            ((ConstantExpression) item).setCanBind(false);
+                        }
+                    }
+                }
+                super.printCollection(items, printer);
+            }
+
+            @Override
+            public void printJavaCollection(List<Expression> items, ExpressionJavaPrinter printer) {
+                if(!printer.getPlatform().shouldBindPartialParameters()) {
+                    super.printJavaCollection(items, printer);
+                    return;
+                }
+
+                for (int i = 0; i < items.size(); i++) {
+                    // Disable the last item, which should be <escape> for this operator
+                    if(i == (items.size() - 1)) {
+                        Expression item = items.get(i);
+                        if(item.isParameterExpression()) {
+                            ((ParameterExpression) item).setCanBind(false);
+                        } else if(item.isConstantExpression()) {
+                            ((ConstantExpression) item).setCanBind(false);
+                        }
+                    }
+                }
+                super.printJavaCollection(items, printer);
+            }
+        };
+
+        ExpressionOperator.likeEscape().copyTo(operator);
+        return operator;
+    }
+
+    /**
+     * DB2 z/OS support for binding the LIKE ESCAPE character depends on database configuration (mixed vs DBCS).
+     * Since we cannot know how the database in configured, we will disable parameter binding for the ESCAPE
+     * <p>
+     * With binding enabled, DB2 z/OS will throw an error:
+     * <pre>The statement string specified as the object of a PREPARE contains a 
+     * predicate or expression where parameter markers have been used as operands of 
+     * the same operator for example: ? &gt; ?. DB2 SQL Error: SQLCODE=-417, SQLSTATE=42609</pre>
+     */
+    protected ExpressionOperator notLikeEscapeOperator() {
+        ExpressionOperator operator = new ExpressionOperator(){
+            @Override
+            public void printCollection(List<Expression> items, ExpressionSQLPrinter printer) {
+                if(!printer.getPlatform().shouldBindPartialParameters()) {
+                    super.printCollection(items, printer);
+                    return;
+                }
+
+                // Initialize argumentIndices
+                if (this.argumentIndices == null) {
+                    this.argumentIndices = new int[items.size()];
+                    for (int i = 0; i < this.argumentIndices.length; i++){
+                        this.argumentIndices[i] = i;
+                    }
+                }
+
+                for (int i = 0; i < items.size(); i++) {
+                    // Disable the first item, which should be <operand2> for this operator
+                    if(i == (items.size() - 1)) {
+                        final int index = this.argumentIndices[i];
+                        Expression item = items.get(index);
+
+                        if(item.isParameterExpression()) {
+                            ((ParameterExpression) item).setCanBind(false);
+                        } else if(item.isConstantExpression()) {
+                            ((ConstantExpression) item).setCanBind(false);
+                        }
+                    }
+                }
+                super.printCollection(items, printer);
+            }
+
+            @Override
+            public void printJavaCollection(List<Expression> items, ExpressionJavaPrinter printer) {
+                if(!printer.getPlatform().shouldBindPartialParameters()) {
+                    super.printJavaCollection(items, printer);
+                    return;
+                }
+
+                for (int i = 0; i < items.size(); i++) {
+                    // Disable the last item, which should be <escape> for this operator
+                    if(i == (items.size() - 1)) {
+                        Expression item = items.get(i);
+                        if(item.isParameterExpression()) {
+                            ((ParameterExpression) item).setCanBind(false);
+                        } else if(item.isConstantExpression()) {
+                            ((ConstantExpression) item).setCanBind(false);
+                        }
+                    }
+                }
+                super.printJavaCollection(items, printer);
+            }
+        };
+
+        ExpressionOperator.notLikeEscape().copyTo(operator);
+        return operator;
+    }
+
+    /**
      * Disable binding support.
      * <p>
      * With binding enabled, DB2 z/OS will throw an error:
@@ -514,9 +681,8 @@ public class DB2ZPlatform extends DB2Platform {
                 boolean firstBound = true;
                 if(second instanceof CollectionExpression) {
                     Object val = ((CollectionExpression) second).getValue();
-                    if (val instanceof Collection) {
+                    if (val instanceof Collection values) {
                         firstBound = false;
-                        Collection values = (Collection)val;
                         for(Object value : values) {
                             // If the value isn't a Constant/Parameter, this will suffice and the first should bind
                             if(value instanceof Expression && !((Expression)value).isValueExpression()) {
@@ -559,9 +725,8 @@ public class DB2ZPlatform extends DB2Platform {
                 boolean firstBound = true;
                 if(second instanceof CollectionExpression) {
                     Object val = ((CollectionExpression) second).getValue();
-                    if (val instanceof Collection) {
+                    if (val instanceof Collection values) {
                         firstBound = false;
-                        Collection values = (Collection)val;
                         for(Object value : values) {
                             // If the value isn't a Constant/Parameter, this will suffice and the first should bind
                             if(value instanceof Expression && !((Expression)value).isValueExpression()) {
@@ -588,6 +753,99 @@ public class DB2ZPlatform extends DB2Platform {
             }
         };
         ExpressionOperator.in().copyTo(operator);
+        return operator;
+    }
+
+    /**
+     * Disable binding support.
+     * <p>
+     * With binding enabled, DB2 z/OS will throw an error:
+     * <pre>The statement cannot be executed because a parameter marker has been used 
+     * in an invalid way. DB2 SQL Error: SQLCODE=-418, SQLSTATE=42610</pre>
+     */
+    protected ExpressionOperator ceilingOperator() {
+        ExpressionOperator operator = disableAllBindingExpression();
+        ExpressionOperator.ceil().copyTo(operator);
+        return operator;
+    }
+
+    /**
+     * Disable binding support.
+     * <p>
+     * With binding enabled, DB2 z/OS will throw an error:
+     * <pre>The statement cannot be executed because a parameter marker has been used 
+     * in an invalid way. DB2 SQL Error: SQLCODE=-418, SQLSTATE=42610</pre>
+     */
+    protected ExpressionOperator floorOperator() {
+        ExpressionOperator operator = disableAllBindingExpression();
+        ExpressionOperator.floor().copyTo(operator);
+        return operator;
+    }
+
+    /**
+     * Disable binding support.
+     * <p>
+     * With binding enabled, DB2 z/OS will throw an error:
+     * <pre>The data type, the length, or the value of an argument of a scalar function 
+     * is incorrect. DB2 SQL Error: SQLCODE=-171, SQLSTATE=42815</pre>
+     */
+    @Override
+    protected ExpressionOperator roundOperator() {
+        ExpressionOperator operatorS = super.roundOperator();
+        ExpressionOperator operator = disableAllBindingExpression();
+        operatorS.copyTo(operator);
+        return operator;
+    }
+
+    /**
+     * Disable binding support.
+     * <p>
+     * With binding enabled, DB2 z/OS will throw an error:
+     * <pre>The statement cannot be executed because a parameter marker has been used 
+     * in an invalid way. DB2 SQL Error: SQLCODE=-418, SQLSTATE=42610</pre>
+     */
+    protected ExpressionOperator expOperator() {
+        ExpressionOperator operator = disableAllBindingExpression();
+        ExpressionOperator.exp().copyTo(operator);
+        return operator;
+    }
+
+    /**
+     * Disable binding support.
+     * <p>
+     * With binding enabled, DB2 z/OS will throw an error:
+     * <pre>The statement cannot be executed because a parameter marker has been used 
+     * in an invalid way. DB2 SQL Error: SQLCODE=-418, SQLSTATE=42610</pre>
+     */
+    protected ExpressionOperator lnOperator() {
+        ExpressionOperator operator = disableAllBindingExpression();
+        ExpressionOperator.ln().copyTo(operator);
+        return operator;
+    }
+
+    /**
+     * Disable binding support.
+     * <p>
+     * With binding enabled, DB2 z/OS will throw an error:
+     * <pre>The statement cannot be executed because a parameter marker has been used 
+     * in an invalid way. DB2 SQL Error: SQLCODE=-418, SQLSTATE=42610</pre>
+     */
+    protected ExpressionOperator powerOperator() {
+        ExpressionOperator operator = disableAllBindingExpression();
+        ExpressionOperator.power().copyTo(operator);
+        return operator;
+    }
+
+    /**
+     * Disable binding support.
+     * <p>
+     * With binding enabled, DB2 z/OS will throw an error:
+     * <pre>The statement cannot be executed because a parameter marker has been used 
+     * in an invalid way. DB2 SQL Error: SQLCODE=-418, SQLSTATE=42610</pre>
+     */
+    protected ExpressionOperator signOperator() {
+        ExpressionOperator operator = disableAllBindingExpression();
+        ExpressionOperator.sign().copyTo(operator);
         return operator;
     }
 
@@ -741,8 +999,7 @@ public class DB2ZPlatform extends DB2Platform {
                 methodArgs = new Class<?>[] {String.class, String.class};
                 parameters = new Object[] {name, parameter};
             }
-        } else if (parameter instanceof Number) {
-            Number number = (Number) parameter;
+        } else if (parameter instanceof Number number) {
             if (number instanceof Integer) {
                 methodName = "setJccIntAtName";
                 methodArgs = new Class<?>[] {String.class, int.class};
@@ -808,14 +1065,12 @@ public class DB2ZPlatform extends DB2Platform {
             methodName = "setJccTimeAtName";
             methodArgs = new Class<?>[] {String.class, java.sql.Time.class};
             parameters = new Object[] {name, parameter};
-        } else if (parameter instanceof java.time.LocalTime){
-            java.time.LocalTime lt = (java.time.LocalTime) parameter;
+        } else if (parameter instanceof java.time.LocalTime lt){
             java.sql.Timestamp ts = java.sql.Timestamp.valueOf(java.time.LocalDateTime.of(java.time.LocalDate.ofEpochDay(0), lt));
             methodName = "setJccTimestampAtName";
             methodArgs = new Class<?>[] {String.class, java.sql.Timestamp.class};
             parameters = new Object[] {name, ts};
-        } else if (parameter instanceof java.time.OffsetTime) {
-            java.time.OffsetTime ot = (java.time.OffsetTime) parameter;
+        } else if (parameter instanceof java.time.OffsetTime ot) {
             java.sql.Timestamp ts = java.sql.Timestamp.valueOf(java.time.LocalDateTime.of(java.time.LocalDate.ofEpochDay(0), ot.toLocalTime()));
             methodName = "setJccTimestampAtName";
             methodArgs = new Class<?>[] {String.class, java.sql.Timestamp.class};
@@ -848,7 +1103,7 @@ public class DB2ZPlatform extends DB2Platform {
             methodName = "setJccTimestampAtName";
             methodArgs = new Class<?>[] {String.class, java.sql.Timestamp.class};
             parameters = new Object[] {name, Helper.timestampFromDate(((Calendar)parameter).getTime())};
-        } else if (parameter.getClass() == ClassConstants.UTILDATE) {
+        } else if (parameter.getClass() == CoreClassConstants.UTILDATE) {
             methodName = "setJccTimestampAtName";
             methodArgs = new Class<?>[] {String.class, java.sql.Timestamp.class};
             parameters = new Object[] {name, Helper.timestampFromDate((java.util.Date) parameter)};
@@ -863,11 +1118,11 @@ public class DB2ZPlatform extends DB2Platform {
         } else if (parameter instanceof Character[]) {
             methodName = "setJccStringAtName";
             methodArgs = new Class<?>[] {String.class, String.class};
-            parameters = new Object[] {name, convertObject(parameter, ClassConstants.STRING)};
+            parameters = new Object[] {name, convertObject(parameter, CoreClassConstants.STRING)};
         } else if (parameter instanceof Byte[]) {
             methodName = "setJccBytesAtName";
             methodArgs = new Class<?>[] {String.class, byte[].class};
-            parameters = new Object[] {name, convertObject(parameter, ClassConstants.APBYTE)};
+            parameters = new Object[] {name, convertObject(parameter, CoreClassConstants.APBYTE)};
         } else if (parameter instanceof java.sql.SQLXML) {
             methodName = "setJccSQLXMLAtName";
             methodArgs = new Class<?>[] {String.class, java.sql.SQLXML.class};
@@ -923,8 +1178,7 @@ public class DB2ZPlatform extends DB2Platform {
         String methodName;
         Class<?>[] methodArgs;
         Object[] parameters;
-        if (databaseField instanceof ObjectRelationalDatabaseField) {
-            ObjectRelationalDatabaseField field = (ObjectRelationalDatabaseField)databaseField;
+        if (databaseField instanceof ObjectRelationalDatabaseField field) {
             methodName = "setJccNullAtName";
             methodArgs = new Class<?>[] {String.class, int.class, String.class};
             parameters = new Object[] {name, field.getSqlType(), field.getSqlTypeName()};

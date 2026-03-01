@@ -1,0 +1,149 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[BLOCKS001]]
+=== About Metadata
+
+The EclipseLink metadata is the bridge between the development of an
+application and its deployed run-time environment. Capture the metadata
+using the following:
+
+* Annotations, and elements property extensions in the `persistence.xml`
+file. The persistence provider interprets all these sources of metadata
+to create an in-memory session and project at run time.
+* Java and the EclipseLink API (this approach is the most
+labor-intensive).
+
+The metadata lets you pass configuration information into the run-time
+environment. The run-time environment uses the information in
+conjunction with the persistent classes (Java objects or entities) and
+the code written with the EclipseLink API, to complete the application.
+
+For more information, see "Overriding and Merging" in Jakarta
+Persistence API (JPA) Extensions Reference for EclipseLink.
+
+[[OTLCG91208]][[sthref11]]
+
+*_Figure 2-1 EclipseLink Metadata_*
+
+image:{imagesrelativedir}/meta.png[Description of Figure 2-1 follows,title="Description of Figure 2-1 follows"] +
+xref:{imagestextrelativedir}/meta.adoc[Description of "Figure 2-1 EclipseLink Metadata"]
+
+This section describes the following:
+
+* link:#BABDDBIJ[Advantages of the Metadata Architecture]
+* link:#BABEECEF[Creating Project Metadata]
+* link:#BABHHGDE[Creating Session Metadata]
+
+[[BABDDBIJ]][[OTLCG91209]]
+
+==== Advantages of the Metadata Architecture
+
+The EclipseLink metadata architecture provides many important benefits,
+including the following:
+
+* Stores mapping information in XML—not in the domain model objects
+* By using the metadata, EclipseLink does not intrude in the object
+model or the database schema
+* Allows you to design the object model as needed, without forcing any
+specific design
+* Allows DBAs to design the database as needed, without forcing any
+specific design
+* Does not rely on code-generation (which can cause serious design,
+implementation, and maintenance issues)
+* Is unobtrusive: adapts to the object model and database schema, rather
+than requiring you to design their object model or database schema to
+suit EclipseLink
+
+Using EclipseLink JPA, you have the flexibility of expressing
+persistence metadata using standard JPA annotations, deployment XML, or
+both and you can optionally take advantage of EclipseLink JPA annotation
+and `persistence.xml` property extensions.
+
+[[BABEECEF]][[OTLCG91210]]
+
+==== Creating Project Metadata
+
+A project contains the mapping metadata that the EclipseLink runtime
+uses to map objects to a data source. The project is the primary object
+used by the EclipseLink runtime.
+
+This section describes the principal contents of project metadata,
+including the following:
+
+* link:#BABIECAI[Entity Mappings]
+* link:#BABIEAJE[Data Source Login Information]
+
+For Object-relational mapping, the EclipseLink runtime constructs an
+in-memory project based on any combination of JPA annotations,
+`persistence.xml`, and EclipseLink JPA annotations and `persistence.xml`
+property extensions.
+
+For MOXy mapping, the EclipseLink runtime uses a combination of JAXB
+annotations and `eclipselink-oxm` bindings. See "Overriding and Merging"
+in _Jakarta Persistence API (JPA) Extensions Reference for EclipseLink_.
+
+[[BABIECAI]][[OTLCG91211]]
+
+===== Entity Mappings
+
+EclipseLink maps persistent entities to the database in the application.
+There are several approaches to project development, including the
+following:
+
+* Importing classes and tables for mapping
+* Importing classes and generating tables and mappings
+* Importing tables and generating classes and mappings
+* Creating both class and table definitions
+
+The most common solution is to develop the persistent entities using a
+development tool, such as a modeling tool or an integrated development
+environment (IDE) like JDeveloper, and to develop the relational model
+through appropriate relational design tools. You then use JDeveloper to
+construct mappings that relate these two models.
+
+Although JDeveloper offers the ability to generate persistent entities
+or the relational model components for an application, these utilities
+are intended only to assist in rapid initial development strategies—not
+complete round-trip application development.
+
+For more information, see link:descriptors.htm#CHECEAAE[Chapter 5,
+"Understanding Descriptors"] and xref:{relativedir}/mappingintro.adoc#MAPPINGINTRO[Chapter
+6, "Understanding Mappings"].
+
+[[BABIEAJE]][[OTLCG91213]]
+
+===== Data Source Login Information
+
+For POJO projects, you configure a session login in the session metadata
+that specifies the information required to access the data source.
+
+For more information, see link:#BABHHGDE[Creating Session Metadata.]
+
+[[BABHHGDE]][[OTLCG91214]]
+
+==== Creating Session Metadata
+
+A EclipseLink session contains the information required to access the
+data source. The session is the primary object used by your application
+to access the features of the EclipseLink runtime.
+
+Using EclipseLink JPA, the EclipseLink runtime constructs an in-memory
+session based on any combination of JPA and EclipseLink annotations, JPA
+persistence properties (in the `persistence.xml` file), and EclipseLink
+property extensions. See "Overriding and Merging" in _Jakarta
+Persistence API (JPA) Extensions Reference for EclipseLink_.

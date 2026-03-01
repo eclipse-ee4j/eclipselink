@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,7 +24,7 @@ import java.lang.annotation.Target;
 /**
  * Define a structured data type's field name for an object mapped to NoSql data.
  * This is a generic form of the @Column annotation, which is not specific to relational databases.
- * It can be use to map EIS and NoSQL data.
+ * It can be used to map EIS and NoSQL data.
  *
  * @see NoSql
  * @author James Sutherland

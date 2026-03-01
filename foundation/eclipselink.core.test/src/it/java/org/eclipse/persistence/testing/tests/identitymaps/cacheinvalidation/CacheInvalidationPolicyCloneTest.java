@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,15 +14,14 @@
 //     dminsky - initial API and implementation
 package org.eclipse.persistence.testing.tests.identitymaps.cacheinvalidation;
 
-import java.util.Calendar;
-
 import org.eclipse.persistence.descriptors.invalidation.CacheInvalidationPolicy;
 import org.eclipse.persistence.descriptors.invalidation.DailyCacheInvalidationPolicy;
 import org.eclipse.persistence.descriptors.invalidation.NoExpiryCacheInvalidationPolicy;
 import org.eclipse.persistence.descriptors.invalidation.TimeToLiveCacheInvalidationPolicy;
 import org.eclipse.persistence.internal.helper.Helper;
-
 import org.eclipse.persistence.testing.framework.TestCase;
+
+import java.util.Calendar;
 
 /**
  * Test the clone() method of each CacheInvalidationPolicy type
@@ -51,10 +50,10 @@ public class CacheInvalidationPolicyCloneTest extends TestCase {
             DailyCacheInvalidationPolicy policyClone = (DailyCacheInvalidationPolicy)policy.clone();
 
             assertNotNull("Clone should not be null", policyClone);
-            assertFalse("Clone should not be the same instance", policy == policyClone);
+            assertNotSame("Clone should not be the same instance", policy, policyClone);
             assertEquals("Clone should be of the same type", policy.getClass(), policyClone.getClass());
             assertEquals("Clone's expiry time should be the same", policy.getExpiryTime().getTimeInMillis(), policyClone.getExpiryTime().getTimeInMillis());
-            assertEquals("Clone's expiry time should be 01:02:03.004 - hour", 1, policyClone.getExpiryTime().get(Calendar.HOUR));
+            assertEquals("Clone's expiry time should be 01:02:03.004 - hour", 1, policyClone.getExpiryTime().get(Calendar.HOUR_OF_DAY));
             assertEquals("Clone's expiry time should be 01:02:03.004 - minute", 2, policyClone.getExpiryTime().get(Calendar.MINUTE));
             assertEquals("Clone's expiry time should be 01:02:03.004 - second", 3, policyClone.getExpiryTime().get(Calendar.SECOND));
             assertEquals("Clone's expiry time should be 01:02:03.004 - millisecond", 4, policyClone.getExpiryTime().get(Calendar.MILLISECOND));
@@ -63,14 +62,14 @@ public class CacheInvalidationPolicyCloneTest extends TestCase {
             NoExpiryCacheInvalidationPolicy policyClone = (NoExpiryCacheInvalidationPolicy)policy.clone();
 
             assertNotNull("Clone should not be null", policyClone);
-            assertFalse("Clone should not be the same instance", policy == policyClone);
+            assertNotSame("Clone should not be the same instance", policy, policyClone);
             assertEquals("Clone should be of the same type", policy.getClass(), policyClone.getClass());
         } else if (policyClassToTest.equals(TimeToLiveCacheInvalidationPolicy.class)) {
             TimeToLiveCacheInvalidationPolicy policy = new TimeToLiveCacheInvalidationPolicy();
             TimeToLiveCacheInvalidationPolicy policyClone = (TimeToLiveCacheInvalidationPolicy)policy.clone();
 
             assertNotNull("Clone should not be null", policyClone);
-            assertFalse("Clone should not be the same instance", policy == policyClone);
+            assertNotSame("Clone should not be the same instance", policy, policyClone);
             assertEquals("Clone should be of the same type", policy.getClass(), policyClone.getClass());
             assertEquals("Clone's TTL should be the same", policy.getTimeToLive(), policyClone.getTimeToLive());
         } else {

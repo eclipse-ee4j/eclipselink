@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,10 +14,10 @@
 //     bdoughan - January 5/2010 - 2.0.1 - Initial implementation
 package org.eclipse.persistence.testing.oxm.inheritance;
 
-import javax.xml.namespace.QName;
-
 import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.testing.oxm.mappings.XMLWithJSONMappingTestCases;
+
+import javax.xml.namespace.QName;
 
 /**
  * This test case is to verify the fix for the following bug:

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,15 +33,6 @@
 //       - 440018: Failed to find mbean server warning in the wls admin server log
 package org.eclipse.persistence.platform.server.wls;
 
-import java.lang.reflect.Method;
-import java.security.AccessController;
-
-import javax.management.MBeanServer;
-import javax.management.ObjectName;
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
 import org.eclipse.persistence.logging.SessionLog;
@@ -51,9 +42,17 @@ import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.ExternalTransactionController;
 import org.eclipse.persistence.transaction.wls.WebLogicTransactionController11;
 
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import java.lang.reflect.Method;
+import java.security.AccessController;
+
 /**
  * PUBLIC:
- *
+ * <p>
  * This is the concrete subclass responsible for representing WebLogic 10 specific behavior.
  * This includes WebLogic 10.3 behavior.
  */
@@ -83,7 +82,7 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform implements JMXEnab
     /** This persistence.xml or sessions.xml property is used to override the applicationName */
     protected static final String SERVER_SPECIFIC_APPLICATIONNAME_PROPERTY = "eclipselink.weblogic.applicationName";
 
-    /**
+    /*
      * The following constants and attributes are used during reflective API calls
      */
     /** Cache the WebLogic ThreadPoolRuntime for performance */
@@ -99,11 +98,11 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform implements JMXEnab
     private static final String WLS_CLASSLOADER_APPLICATION_PU_SEARCH_STRING_PREFIX = "annotation: ";
 
     static {
-        /** Override by subclass: Search String in application server ClassLoader for the application:persistence_unit name */
+        /* Override by subclass: Search String in application server ClassLoader for the application:persistence_unit name */
         APP_SERVER_CLASSLOADER_APPLICATION_PU_SEARCH_STRING_PREFIX = "/deploy/";
-        /** Override by subclass: Search String in application server session for ejb modules */
+        /* Override by subclass: Search String in application server session for ejb modules */
         APP_SERVER_CLASSLOADER_MODULE_EJB_SEARCH_STRING_PREFIX = ".jar/";
-        /** Override by subclass: Search String in application server session for war modules */
+        /* Override by subclass: Search String in application server session for war modules */
         APP_SERVER_CLASSLOADER_MODULE_WAR_SEARCH_STRING_PREFIX = ".war/";
         APP_SERVER_CLASSLOADER_APPLICATION_PU_SEARCH_STRING_POSTFIX = "postfix,match~not;required^";
         APP_SERVER_CLASSLOADER_MODULE_EJB_WAR_SEARCH_STRING_POSTFIX = "postfix,match~not;required^";
@@ -131,7 +130,7 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform implements JMXEnab
      * prepareServerSpecificServicesMBean(): Server specific implementation of the
      * creation and deployment of the JMX MBean to provide runtime services for the
      * databaseSession.
-     *
+     * <p>
      * Default is to do nothing.
      * Implementing platform classes must override this function and supply
      * the server specific MBean instance for later registration by calling it in the constructor.
@@ -207,7 +206,7 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform implements JMXEnab
                 }
                 if (mBeanServer != null) {
                     // Verify that this is a weblogic.management.jmx.mbeanserver.WLSMBeanServer
-                    if(mBeanServer.toString().indexOf("WLSMBeanServer") < 0) {
+                    if(!mBeanServer.toString().contains("WLSMBeanServer")) {
                         // MBeanServer is not a WebLogic type - likely a com.sun.jmx.mbeanserver.JmxMBeanServer
                         getAbstractSession().log(SessionLog.FINEST, SessionLog.SERVER, "sequencing_connected", null);
                     }
@@ -299,7 +298,7 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform implements JMXEnab
      * This method will return the application|module name for WebLogic.
      * If the call to executeThread on the MBean fails - return the current classloader
      * Thread.currentThread().getContextClassLoader()
-     *
+     * <p>
      * ER 248746: Use reflection to obtain the application name (EJB, Web or MDB module)
      * Get either a String containing the module/applicationName or a WebLogic classLoader that contains the module/applicationName in the format...
      * weblogic.utils.classloaders.ChangeAwareClassLoader@19bb43f finder: weblogic.utils.classloaders.CodeGenClassFinder@ab7c2e annotation: org.eclipse.persistence.example.jpa.server.weblogic.enterpriseEAR@enterprise
@@ -353,7 +352,7 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform implements JMXEnab
      * MBean tree.  The execute thread contains application information.  This code
      * will use the name of the current thread to lookup the corresponding ExecuteThread.
      * The ExecuteThread will allow us to obtain the application name (and version, etc).
-     *
+     * <p>
      * Note that the MBeanServer and ThreadPoolRuntime instances will be cached for
      * performance.
      *

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -52,24 +52,23 @@ public class Company
   }
 
   public String toString(){
-    String result = "COMPANY: "+ this.getName();
+    StringBuilder result = new StringBuilder("COMPANY: " + this.getName());
 
-    result += " DEPARTMENTS: ";
+    result.append(" DEPARTMENTS: ");
     for(int i=0; i<getDepartments().size();i++)
     {
-      result+= getDepartments().elementAt(i);
+      result.append(getDepartments().elementAt(i));
     }
 
-    return result;
+    return result.toString();
   }
 
    public boolean equals(Object object)
    {
-     if(!(object instanceof Company))
+     if(!(object instanceof Company companyObject))
       return false;
 
-     Company companyObject = (Company)object;
-     if((this.getName().equalsIgnoreCase(companyObject.getName())) &&
+       if((this.getName().equalsIgnoreCase(companyObject.getName())) &&
         (((this.getDepartments() == null) && (companyObject.getDepartments() == null))||
           (this.getDepartments().containsAll(companyObject.getDepartments()))) )
           return true;

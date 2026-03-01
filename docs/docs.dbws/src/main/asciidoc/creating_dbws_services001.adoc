@@ -1,0 +1,248 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[DBWSCREATE001]]
+=== Creating EclipseLink DBWS Service from a Database Table
+
+You can create a web service that exposes a database table's CRUD
+(**C**reate/**R**ead[findByPK and findAll]/**U**pdate/**D**elete)
+operations. EclipseLink supports this for any table or multiple tables
+(use patterns supporting *%* for catalog, schema or table names) on any
+database on which the JDBC driver reliably and accurately delivers the
+table's metadata via the JDBC metadata APIs
+(`java.sql.DatabaseMetaData`).
+
+EclipseLink uses the `DBWSBuilder` utility to generate a DBWS XML
+schema, using the following rules:
+
+* table name ==> translate any characters not supported by
+XMLlink:#CJADCADG[^Foot 1 ^]  ==> translate to_lowercase ==> add suffix
+'Type' ==> top-level complex type in `.xsd` file
+* column name ==> translate any characters not supported by
+XMLlink:#sthref32[^Footref 1^]  ==> translate to_lowercase ==> becomes
+`<element-tag>` name
+** All columns are expressed as elements
+** `BLOB` columns are automatically mapped to `xsd:base64Binary`
+** `xsd:base64Binary` elements can be included in-line to the XML
+document, or handled as binary attachments (`SwaRef` or `MTOM` style).
+
+link:#CJAFCCCA[Example 2-1] uses the *EMP* table (link:#CJABFAHH[Table
+2-1]) from the Oracle *scott* database schema:
+
+[[CJABFAHH]]
+
+*_Table 2-1 Sample EMP Table_*
+
+|===
+|*OWNER* |*TABLE_NAME* |*COLUMN_NAME* |*DATA_TYPE* |*DATA_LENGTH*
+|*DATA_PRECISION* |*DATA_SCALE* |*NULLABLE?*
+|SCOTT |EMP |EMPNO |NUMBER |22 |4 |0 |N
+
+|SCOTT |EMP |ENAME |VARCHAR2 |10 |(null) |(null) |Y
+
+|SCOTT |EMP |JOB |VARCHAR2 |9 |(null) |(null) |Y
+
+|SCOTT |EMP |MGR |NUMBER |22 |4 |0 |Y
+
+|SCOTT |EMP |HIREDATE |DATE |7 |(null) |(null) |Y
+
+|SCOTT |EMP |SAL |NUMBER |22 |7 |2 |Y
+
+|SCOTT |EMP |COMM |NUMBER |22 |7 |2 |Y
+
+|SCOTT |EMP |DEPTNO |NUMBER |22 |2 |0 |Y
+|===
+
+[[CJAFCCCA]]
+
+*_Example 2-1 Example_*
+
+The DBWSBuilder utility requires a DBWS configuration file as input, as
+shown here:
+
+[source,oac_no_warn]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<dbws-builder xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <properties>
+    <property name="projectName">emp</property>
+    ... database properties
+  </properties>
+  <table
+    catalogPattern="%"
+    tableNamePattern="EMP"
+  />
+</dbws-builder>
+----
+
+Use this command to execute the DBWSBuilder:
+
+[source,oac_no_warn]
+----
+prompt > dbwsbuilder.cmd -builderFile dbws-builder.xml -stageDir output_directory -packageAs wls emp.war
+ 
+----
+
+where
+
+* `dbws-builder.xml` is the DBWS configuration file (as shown
+previously)
+* `output_directory` is the output directory for the generated files
+* `-packageAs` is the platform on which the web service will be deployed
+
+The `DBWSBuilder`-generated `eclipselink-dbws-schema.xsd` file derives
+`<element-tag>` names from the Database table metadata in
+link:#CJABFAHH[Table 2-1]:
+
+[source,oac_no_warn]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  >
+  <xsd:complexType name="empType">
+    <xsd:sequence>
+      <xsd:element name="empno" type="xsd:int" xsi:nil="false"/>
+      <xsd:element name="ename" type="xsd:string" xsi:nil="true"/>
+      <xsd:element name="job" type="xsd:string" xsi:nil="true"/>
+      <xsd:element name="mgr" type="xsd:int" minOccurs="0" xsi:nil="true"/>
+      <xsd:element name="hiredate" type="xsd:dateTime" xsi:nil="true"/>
+      <xsd:element name="sal" type="xsd:decimal" xsi:nil="true"/>
+      <xsd:element name="comm" type="xsd:int" minOccurs="0" xsi:nil="true"/>
+      <xsd:element name="deptno" type="xsd:int" xsi:nil="true"/>
+    </xsd:sequence>
+  </xsd:complexType>
+</xsd:schema>
+ 
+----
+
+==== Generated EclipseLink DBWS service descriptor
+
+The CRUD operations are illustrated in the generated EclipseLink DBWS
+service descriptor (`eclipselink-dbws.xml`) file, as shown here:
+
+[[sthref35]]
+
+*_Example 2-2 Sample CRUD Operations_*
+
+[source,oac_no_warn]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<dbws xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns1="urn:emp" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <name>emp</name>
+   <sessions-file>eclipselink-dbws-sessions.xml</sessions-file>
+   <update>
+      <name>update_empType</name>
+      <parameter>
+         <name>theInstance</name>
+         <type>ns1:empType</type>
+      </parameter>
+   </update>
+   <insert>
+      <name>create_empType</name>
+      <parameter>
+         <name>theInstance</name>
+         <type>ns1:empType</type>
+      </parameter>
+   </insert>
+   <query>
+      <name>findByPrimaryKey_empType</name>
+      <parameter>
+         <name>id</name>
+         <type>xsd:decimal</type>
+      </parameter>
+      <result>
+         <type>ns1:empType</type>
+      </result>
+      <named-query>
+         <name>findByPrimaryKey</name>
+         <descriptor>empType</descriptor>
+      </named-query>
+   </query>
+   <delete>
+      <name>delete_empType</name>
+      <parameter>
+         <name>theInstance</name>
+         <type>ns1:empType</type>
+      </parameter>
+   </delete>
+   <query>
+      <name>findAll_empType</name>
+      <result isCollection="true">
+         <type>ns1:empType</type>
+      </result>
+      <named-query>
+         <name>findAll</name>
+         <descriptor>empType</descriptor>
+      </named-query>
+   </query>
+</dbws>
+ 
+----
+
+==== SOAP Messaging
+
+The following SOAP Message invokes the `<findAll_empType`> operation for
+the *emp* DBWS service:
+
+[source,oac_no_warn]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<env:Envelope xmlns:env="http://schemas.xmlsoap.org/soap/envelope/">
+  <env:Body>
+    <findAll_empType xmlns="urn:empService" xmlns:urn="urn:emp"/>
+  </env:Body>
+</env:Envelope>
+ 
+----
+
+returning:
+
+[source,oac_no_warn]
+----
+<?xml version="1.0" encoding="utf-16"?>
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
+  <SOAP-ENV:Header />
+  <SOAP-ENV:Body>
+    <srvc:findAll_empTypeResponse xmlns="urn:emp" xmlns:srvc="urn:empService">
+      <srvc:result>
+        <empType>
+          <empno>7369</empno>
+          <ename>SMITH</ename>
+          <job>CLERK</job>
+          <mgr>7902</mgr>
+          <hiredate>1980-12-17T00:00:00.0-05:00</hiredate>
+          <sal>800</sal>
+          <deptno>20</deptno>
+        </empType>
+        <empType>
+          <empno>7499</empno>
+          <ename>ALLEN</ename>
+          <job>SALESMAN</job>
+          <mgr>7698</mgr>
+          <hiredate>1981-02-20T00:00:00.0-05:00</hiredate>
+          <sal>1600</sal>
+          <comm>300</comm>
+          <deptno>30</deptno>
+        </empType>
+        ....
+      </srvc:result>
+    </srvc:findAll_empTypeResponse>
+  </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>
+----

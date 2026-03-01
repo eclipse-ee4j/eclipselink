@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,13 +15,6 @@
 //                                 checkForCustomQuery(AbstractSession, AbstractRecord).
 package org.eclipse.persistence.testing.tests.queries;
 
-import static org.eclipse.persistence.logging.SessionLog.INFO;
-import static org.eclipse.persistence.logging.SessionLog.WARNING;
-
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.SessionLog;
@@ -33,6 +26,13 @@ import org.eclipse.persistence.queries.SQLCall;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.testing.framework.TestCase;
 import org.eclipse.persistence.testing.models.employee.domain.Employee;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
+import static org.eclipse.persistence.logging.SessionLog.INFO;
+import static org.eclipse.persistence.logging.SessionLog.WARNING;
 
 /**
  * Test read queries using objects.

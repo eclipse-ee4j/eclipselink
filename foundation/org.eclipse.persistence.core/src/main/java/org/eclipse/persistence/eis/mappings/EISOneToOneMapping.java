@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -13,12 +13,6 @@
 // Contributors:
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.eis.mappings;
-
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 
 import org.eclipse.persistence.annotations.CacheKeyType;
 import org.eclipse.persistence.exceptions.DatabaseException;
@@ -39,6 +33,12 @@ import org.eclipse.persistence.queries.ObjectLevelModifyQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.queries.ReadQuery;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>An EIS one-to-one mapping is a reference mapping that represents the relationship between
@@ -91,7 +91,7 @@ public class EISOneToOneMapping extends ObjectReferenceMapping implements EISMap
     public EISOneToOneMapping() {
         this.selectionQuery = new ReadObjectQuery();
 
-        this.foreignKeyFields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(1);
+        this.foreignKeyFields = new ArrayList<>(1);
 
         this.sourceToTargetKeyFields = new HashMap<>(2);
         this.targetToSourceKeyFields = new HashMap<>(2);
@@ -148,17 +148,17 @@ public class EISOneToOneMapping extends ObjectReferenceMapping implements EISMap
     @Override
     public Object clone() {
         EISOneToOneMapping clone = (EISOneToOneMapping)super.clone();
-        clone.setForeignKeyFields(org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(getForeignKeyFields().size()));
+        clone.setForeignKeyFields(new ArrayList<>(getForeignKeyFields().size()));
         clone.setSourceToTargetKeyFields(new HashMap<>(getSourceToTargetKeyFields().size()));
         clone.setTargetToSourceKeyFields(new HashMap<>(getTargetToSourceKeyFields().size()));
         Map<DatabaseField, DatabaseField> setOfFields = new HashMap<>(getTargetToSourceKeyFields().size());
 
-        for (Enumeration<DatabaseField> enumtr = getForeignKeyFields().elements(); enumtr.hasMoreElements();) {
-            DatabaseField field = enumtr.nextElement();
+        for (Iterator<DatabaseField> iterator = getForeignKeyFields().iterator(); iterator.hasNext();) {
+            DatabaseField field = iterator.next();
 
             DatabaseField fieldClone = field.clone();
             setOfFields.put(field, fieldClone);
-            clone.getForeignKeyFields().addElement(fieldClone);
+            clone.getForeignKeyFields().add(fieldClone);
         }
 
         //get clones from set for source hashtable.  If they do not exist, create a new one.
@@ -281,7 +281,7 @@ public class EISOneToOneMapping extends ObjectReferenceMapping implements EISMap
      * INTERNAL:
      * Selection criteria is created with source foreign keys and target keys.
      * This criteria is then used to read target records from the table.
-     *
+     * <p>
      * CR#3922 - This method is almost the same as buildSelectionCriteria() the difference
      * is that getSelectionCriteria() is called
      */
@@ -376,8 +376,7 @@ public class EISOneToOneMapping extends ObjectReferenceMapping implements EISMap
         // If any field in the foreign key is null then it means there are no referenced objects
         // Skip for partial objects as fk may not be present.
         if (!query.hasPartialAttributeExpressions()) {
-            for (Enumeration<DatabaseField> enumeration = getFields().elements(); enumeration.hasMoreElements();) {
-                DatabaseField field = enumeration.nextElement();
+            for (DatabaseField field: getFields()) {
                 if (row.get(field) == null) {
                     return getIndirectionPolicy().nullValueFromRow();
                 }

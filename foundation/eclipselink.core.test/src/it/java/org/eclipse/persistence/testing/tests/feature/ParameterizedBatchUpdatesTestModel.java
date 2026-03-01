@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,7 +14,7 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.feature;
 
-import org.eclipse.persistence.internal.databaseaccess.*;
+import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.testing.models.employee.relational.EmployeeSystem;
 
 public class ParameterizedBatchUpdatesTestModel extends TopLinkBatchUpdatesTestModel {
@@ -34,7 +34,7 @@ public class ParameterizedBatchUpdatesTestModel extends TopLinkBatchUpdatesTestM
         wasStatementCaching = platform.shouldCacheAllStatements();
 
         try {
-            getSession().getLog().write("WARNING, some JDBC drivers may fail BatchUpdates.");
+            getSession().getLog().write("WARNING, some JDBC drivers may fail BatchUpdates.\n");
         } catch (java.io.IOException e) {
         }
 

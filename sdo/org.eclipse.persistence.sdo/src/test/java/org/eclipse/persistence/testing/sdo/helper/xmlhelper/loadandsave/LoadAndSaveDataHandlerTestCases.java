@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,15 +20,10 @@ import javax.xml.transform.stream.StreamSource;
 
 import junit.textui.TestRunner;
 
-import org.eclipse.persistence.oxm.XMLMarshaller;
-import org.eclipse.persistence.oxm.XMLUnmarshaller;
-import org.eclipse.persistence.oxm.attachment.XMLAttachmentMarshaller;
-import org.eclipse.persistence.oxm.attachment.XMLAttachmentUnmarshaller;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDOType;
 import org.eclipse.persistence.sdo.helper.DefaultSchemaResolver;
 import org.eclipse.persistence.sdo.helper.SDOClassGenerator;
-import org.eclipse.persistence.sdo.helper.SDOXMLHelper;
 
 import commonj.sdo.DataObject;
 import commonj.sdo.Type;

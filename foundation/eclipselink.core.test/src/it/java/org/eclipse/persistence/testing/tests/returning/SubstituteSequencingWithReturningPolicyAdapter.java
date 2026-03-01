@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,16 +14,20 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.returning;
 
-import java.util.*;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.sequencing.NativeSequence;
-import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.descriptors.ReturningPolicy;
 import org.eclipse.persistence.queries.DataModifyQuery;
-import org.eclipse.persistence.tools.schemaframework.SequenceObjectDefinition;
-import org.eclipse.persistence.testing.framework.*;
+import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.sessions.Project;
+import org.eclipse.persistence.sessions.Session;
+import org.eclipse.persistence.testing.framework.TestErrorException;
+import org.eclipse.persistence.testing.framework.TestWarningException;
 import org.eclipse.persistence.tools.schemaframework.SchemaManager;
+import org.eclipse.persistence.tools.schemaframework.SequenceObjectDefinition;
+
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Map;
 
 /**
  * This adapter creates INSERT trigger for the original model's tables
@@ -74,9 +78,7 @@ public class SubstituteSequencingWithReturningPolicyAdapter implements ProjectAn
 
     @Override
     public void updateProject(Project project, Session session) {
-        Iterator<ClassDescriptor> it = project.getDescriptors().values().iterator();
-        while (it.hasNext()) {
-            ClassDescriptor desc = it.next();
+        for (ClassDescriptor desc : project.getDescriptors().values()) {
             if (desc.isAggregateDescriptor()) {
                 continue;
             }
@@ -128,7 +130,8 @@ public class SubstituteSequencingWithReturningPolicyAdapter implements ProjectAn
             String tableName = (String)tableNames.nextElement();
             String sequenceName = getSequenceNameFromTableName(tableName);
             if (!sequenceNameToDefinition.containsKey(sequenceName)) {
-                SequenceObjectDefinition definition = new SequenceObjectDefinition(new NativeSequence(sequenceName, 1, false));
+                SequenceObjectDefinition definition = new SequenceObjectDefinition(sequenceName);
+                definition.setPreallocationSize(1);
                 sequenceNameToDefinition.put(sequenceName, definition);
                 schemaManager.createObject(definition);
             }

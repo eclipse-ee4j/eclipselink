@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,12 +14,6 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.expressions;
 
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.util.Collection;
-import java.util.List;
-import java.util.Vector;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.QueryException;
@@ -29,6 +23,12 @@ import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.DatabaseMapping;
+
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Field expressions represent a field of a table.
@@ -159,9 +159,9 @@ public class FieldExpression extends DataExpression {
      * INTERNAL:
      * If there are any fields associated with this expression, return them
      */
-    public Vector getClonedFields() {
-        Vector result = new Vector(1);
-        result.addElement(getField().clone());
+    public List<DatabaseField> getClonedFields() {
+        List<DatabaseField> result = new ArrayList<>(1);
+        result.add(getField().clone());
         return result;
     }
 
@@ -178,9 +178,9 @@ public class FieldExpression extends DataExpression {
      * Return all the fields
      */
     @Override
-    public Vector getFields() {
-        Vector result = new Vector(1);
-        result.addElement(getField());
+    public List<DatabaseField> getFields() {
+        List<DatabaseField> result = new ArrayList<>(1);
+        result.add(getField());
         return result;
     }
 

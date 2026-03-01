@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,7 +17,6 @@ package org.eclipse.persistence.internal.jpa.config.queries;
 import java.util.ArrayList;
 
 import org.eclipse.persistence.internal.jpa.metadata.queries.NamedStoredProcedureQueryMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.queries.StoredProcedureParameterMetadata;
 import org.eclipse.persistence.jpa.config.StoredProcedureParameter;
 
 /**
@@ -32,7 +31,7 @@ public abstract class AbstractStoredQueryImpl<T extends NamedStoredProcedureQuer
     public AbstractStoredQueryImpl(T t) {
         super(t);
 
-        getMetadata().setParameters(new ArrayList<StoredProcedureParameterMetadata>());
+        getMetadata().setParameters(new ArrayList<>());
     }
 
     public StoredProcedureParameter addParameter() {

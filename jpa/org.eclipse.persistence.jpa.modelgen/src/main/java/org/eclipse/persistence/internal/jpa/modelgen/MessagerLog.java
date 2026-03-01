@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,8 +21,6 @@ import javax.annotation.processing.Messager;
 import javax.tools.Diagnostic;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.exceptions.ValidationException;
-import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.internal.localization.LoggingLocalization;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.logging.SessionLogEntry;
@@ -84,26 +82,17 @@ final class MessagerLog extends AbstractSessionLog {
 
     @Override
     public boolean shouldPrintThread() {
-        if (shouldPrintThread == null) {
-            return getLevel() < FINER;
-        }
-        return shouldPrintThread;
+        return false;
     }
 
     @Override
     public boolean shouldPrintDate() {
-        if (shouldPrintDate == null) {
-            return getLevel() < FINER;
-        }
-        return shouldPrintDate;
+        return false;
     }
 
     @Override
     public boolean shouldPrintConnection() {
-        if (shouldPrintConnection == null) {
-            return getLevel() < FINER;
-        }
-        return shouldPrintConnection;
+        return false;
     }
 
     @Override
@@ -123,19 +112,19 @@ final class MessagerLog extends AbstractSessionLog {
 
         if (entry.hasMessage()) {
             sb.append(formatMessage(entry));
-            sb.append(Helper.cr());
+            sb.append(System.lineSeparator());
         }
 
         if (entry.hasException()) {
             if (shouldLogExceptionStackTrace()) {
                 for (StackTraceElement stackTrace : entry.getException().getStackTrace()) {
                     sb.append(stackTrace);
-                    sb.append(Helper.cr());
+                    sb.append(System.lineSeparator());
                 }
             } else {
                 sb.append(entry.getException().toString());
             }
-            sb.append(Helper.cr());
+            sb.append(System.lineSeparator());
         }
 
         if (getWriter() == NULL_WRITER) {
@@ -190,7 +179,7 @@ final class MessagerLog extends AbstractSessionLog {
         // Set logging file.
         String loggingFileString = settings.get(PersistenceUnitProperties.LOGGING_FILE);
         if (loggingFileString != null) {
-            if (!loggingFileString.trim().equals("")) {
+            if (!loggingFileString.trim().isEmpty()) {
                 try {
                     FileOutputStream fos = new FileOutputStream(loggingFileString);
                     setWriter(fos);
@@ -203,73 +192,11 @@ final class MessagerLog extends AbstractSessionLog {
         }
     }
 
-    private CharSequence getPrefixString(int level, String category) {
-        StringBuilder sb = new StringBuilder();
-        switch (level) {
-            case SEVERE:
-                if (SEVERE_PREFIX == null) {
-                    SEVERE_PREFIX = LoggingLocalization.buildMessage("toplink_severe");
-                }
-                sb.append(SEVERE_PREFIX);
-                break;
-            case WARNING:
-                if (WARNING_PREFIX == null) {
-                    WARNING_PREFIX = LoggingLocalization.buildMessage("toplink_warning");
-                }
-                sb.append(WARNING_PREFIX);
-                break;
-            case INFO:
-                if (INFO_PREFIX == null) {
-                    INFO_PREFIX = LoggingLocalization.buildMessage("toplink_info");
-                }
-                sb.append(INFO_PREFIX);
-                break;
-            case CONFIG:
-                if (CONFIG_PREFIX == null) {
-                    CONFIG_PREFIX = LoggingLocalization.buildMessage("toplink_config");
-                }
-                sb.append(CONFIG_PREFIX);
-                break;
-            case FINE:
-                if (FINE_PREFIX == null) {
-                    FINE_PREFIX = LoggingLocalization.buildMessage("toplink_fine");
-                }
-                sb.append(FINE_PREFIX);
-                break;
-            case FINER:
-                if (FINER_PREFIX == null) {
-                    FINER_PREFIX = LoggingLocalization.buildMessage("toplink_finer");
-                }
-                sb.append(FINER_PREFIX);
-                break;
-            case FINEST:
-                if (FINEST_PREFIX == null) {
-                    FINEST_PREFIX = LoggingLocalization.buildMessage("toplink_finest");
-                }
-                sb.append(FINEST_PREFIX);
-                break;
-            default:
-                if (TOPLINK_PREFIX == null) {
-                    TOPLINK_PREFIX = LoggingLocalization.buildMessage("toplink");
-                }
-                sb.append(TOPLINK_PREFIX);
-        }
-        if (category != null) {
-            sb.append(category);
-            sb.append(": ");
-        }
-        return sb;
-    }
-
     private Diagnostic.Kind translateLevelToKind(int level) {
-        switch (level) {
-            case SEVERE:
-            case WARNING:
-                return Diagnostic.Kind.WARNING;
-            case INFO:
-                return Diagnostic.Kind.NOTE;
-            default:
-                return Diagnostic.Kind.OTHER;
-        }
+        return switch (level) {
+            case SEVERE, WARNING -> Diagnostic.Kind.WARNING;
+            case INFO -> Diagnostic.Kind.NOTE;
+            default -> Diagnostic.Kind.OTHER;
+        };
     }
 }

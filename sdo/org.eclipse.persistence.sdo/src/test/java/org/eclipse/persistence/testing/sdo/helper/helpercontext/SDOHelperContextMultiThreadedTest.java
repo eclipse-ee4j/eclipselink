@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,20 +23,14 @@ package org.eclipse.persistence.testing.sdo.helper.helpercontext;
 import java.io.FileInputStream;
 import java.util.List;
 
-import junit.textui.TestRunner;
-
-import org.eclipse.persistence.sdo.SDOType;
 import org.eclipse.persistence.sdo.helper.SDOHelperContext;
 
-import commonj.sdo.ChangeSummary;
 import commonj.sdo.DataObject;
 import commonj.sdo.Type;
 import commonj.sdo.helper.HelperContext;
 import commonj.sdo.helper.XMLDocument;
-import commonj.sdo.impl.HelperProvider;
 
 
-import java.io.FileReader;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -64,13 +58,14 @@ public class SDOHelperContextMultiThreadedTest extends SDOHelperContextTestCases
 
     static int count = 0;
 
-    static String testDoc = "<customerDataSDO xmlns=\"http://www.example.com/\">\n" +
-    "    <FirstName>John</FirstName>\n" +
-    "    <LastName>Smith</LastName>\n" +
-    "    <Email>jsmith@yahoo.com</Email>\n" +
-    "    <MobilePhoneNumber>123-456-7890</MobilePhoneNumber>\n" +
-    "    <MembershipTypeCode>Gold</MembershipTypeCode>\n" +
-    "</customerDataSDO>";
+    static String testDoc = """
+            <customerDataSDO xmlns="http://www.example.com/">
+                <FirstName>John</FirstName>
+                <LastName>Smith</LastName>
+                <Email>jsmith@yahoo.com</Email>
+                <MobilePhoneNumber>123-456-7890</MobilePhoneNumber>
+                <MembershipTypeCode>Gold</MembershipTypeCode>
+            </customerDataSDO>""";
 
     public SDOHelperContextMultiThreadedTest(String name) {
         super(name);//, (HelperContext)SDOHelperContext.getInstance());

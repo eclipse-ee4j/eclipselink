@@ -1,6 +1,7 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2019, 2022 IBM Corporation. All rights reserved.
+ * Copyright (c) 2025 Contributors to the Eclipse Foundation.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,6 +28,22 @@
 //       - 456067 : Added support for defining query timeout units
 package org.eclipse.persistence.internal.databaseaccess;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.expressions.ParameterExpression;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.queries.CallQueryMechanism;
+import org.eclipse.persistence.internal.queries.DatabaseQueryMechanism;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.mappings.structures.ObjectRelationalDataTypeDescriptor;
+import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField;
+import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.ModifyQuery;
+import org.eclipse.persistence.queries.ReadObjectQuery;
+import org.eclipse.persistence.sessions.DatabaseRecord;
+
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -43,23 +60,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 import java.util.concurrent.TimeUnit;
-
-import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.exceptions.QueryException;
-import org.eclipse.persistence.exceptions.ValidationException;
-import org.eclipse.persistence.internal.expressions.ParameterExpression;
-import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.internal.queries.CallQueryMechanism;
-import org.eclipse.persistence.internal.queries.DatabaseQueryMechanism;
-import org.eclipse.persistence.internal.sessions.AbstractRecord;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.mappings.structures.ObjectRelationalDataTypeDescriptor;
-import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField;
-import org.eclipse.persistence.queries.DatabaseQuery;
-import org.eclipse.persistence.queries.ModifyQuery;
-import org.eclipse.persistence.queries.ReadObjectQuery;
-import org.eclipse.persistence.sessions.DatabaseRecord;
 
 /**
  * INTERNAL:
@@ -263,8 +263,7 @@ public abstract class DatabaseCall extends DatasourceCall {
         int size = this.parameters.size();
         for (int index = 0; index < size; index++) {
             Object parameter = this.parameters.get(index);
-            if (parameter instanceof OutputParameterForCallableStatement) {
-                OutputParameterForCallableStatement outParameter = (OutputParameterForCallableStatement)parameter;
+            if (parameter instanceof OutputParameterForCallableStatement outParameter) {
                 if (!outParameter.isCursor() || !isCursorOutputProcedure()) {
                     Object value = getOutputParameterValue(statement, index, session);
                     DatabaseField field = outParameter.getOutputField();
@@ -279,9 +278,8 @@ public abstract class DatabaseCall extends DatasourceCall {
                         }
                     } else if ((value instanceof Array) && (field.isObjectRelationalDatabaseField())) {
                         value = ObjectRelationalDataTypeDescriptor.buildContainerFromArray((Array)value, (ObjectRelationalDatabaseField)field, session);
-                    } else if (value instanceof ResultSet) {
+                    } else if (value instanceof ResultSet resultSet) {
                         // Support multiple out cursors, put list of records in row.
-                        ResultSet resultSet = (ResultSet)value;
                         setFields(null);
                         matchFieldOrder(resultSet, accessor, session);
                         value = accessor.processResultSet(resultSet, this, statement, session);
@@ -300,9 +298,8 @@ public abstract class DatabaseCall extends DatasourceCall {
      */
     @Override
     public DatabaseQueryMechanism buildQueryMechanism(DatabaseQuery query, DatabaseQueryMechanism mechanism) {
-        if (mechanism.isCallQueryMechanism() && (mechanism instanceof CallQueryMechanism)) {
+        if (mechanism.isCallQueryMechanism() && (mechanism instanceof CallQueryMechanism callMechanism)) {
             // Must also add the call singleton...
-            CallQueryMechanism callMechanism = ((CallQueryMechanism)mechanism);
             if (!callMechanism.hasMultipleCalls()) {
                 callMechanism.addCall(callMechanism.getCall());
                 callMechanism.setCall(null);
@@ -409,7 +406,7 @@ public abstract class DatabaseCall extends DatasourceCall {
         if (hasParameters()) {
             StringWriter writer = new StringWriter();
             writer.write(getSQLString());
-            writer.write(Helper.cr());
+            writer.write(System.lineSeparator());
             if (hasParameters()) {
                 AbstractSession session = null;
                 if (getQuery() != null) {
@@ -809,6 +806,12 @@ public abstract class DatabaseCall extends DatasourceCall {
         return returnMultipleResultSetCollections;
     }
 
+    public void setFields(List<DatabaseField> fields) {
+        //XXX - allow transition from vector to list in the api,
+        //once completed, remove the method taking vector argument
+        setFields(new Vector<>(fields));
+    }
+
     /**
      * The fields expected by the calls result set.
      */
@@ -1063,7 +1066,7 @@ public abstract class DatabaseCall extends DatasourceCall {
      */
     @Override
     public String toString() {
-        String str = Helper.getShortClassName(getClass());
+        String str = getClass().getSimpleName();
         if (getSQLString() == null) {
             return str;
         } else {
@@ -1080,14 +1083,17 @@ public abstract class DatabaseCall extends DatasourceCall {
         if (!isPrepared()) {
             throw ValidationException.cannotTranslateUnpreparedCall(toString());
         }
+        
+        boolean bindParameters = usesBinding(session) && parameters != null;
+        boolean bindPartial = session.getPlatform().shouldBindPartialParameters();
 
-        if(session.getPlatform().shouldBindPartialParameters() && (this.parameters != null)) {
+        if (bindParameters && bindPartial) {
             translateQueryStringAndBindParameters(translationRow, modifyRow, session);
-        } else if (usesBinding(session) && (this.parameters != null)) {
+        } else if (bindParameters) {
             boolean hasParameterizedIN = false;
             List<Object> parameters = getParameters();
             int size = parameters.size();
-            List<Object> translatedParametersValues = new ArrayList<Object>(size);
+            List<Object> translatedParametersValues = new ArrayList<>(size);
 
             for (int index = 0; index < size; index++) {
                 Object parameter = parameters.get(index);
@@ -1135,6 +1141,12 @@ public abstract class DatabaseCall extends DatasourceCall {
                         if (parameter instanceof ParameterExpression) {
                             field = ((ParameterExpression)parameter).getField();
                             translatedValue = ((ParameterExpression)parameter).getValue(translationRow, query, session);
+                            Object type = ((ParameterExpression) parameter).getType();
+                            //handle null passed into ...IN (?) as a parameter
+                            if (translatedValue == null && type != null && type.equals(Collection.class)) {
+                                // Must re-translate IN parameters.
+                                hasParameterizedIN = true;
+                            }
                         } else {
                             field = (DatabaseField)parameter;
                             translatedValue = translationRow.get(field);
@@ -1282,7 +1294,7 @@ public abstract class DatabaseCall extends DatasourceCall {
     /**
      * 
      * INTERNAL:
-     * 
+     * <p>
      * Get the return object from the statement. Use the parameter index to determine what return object to get.
      * @param statement SQL/JDBC statement to call stored procedure/function
      * @param index 0-based index in the argument list
@@ -1295,7 +1307,7 @@ public abstract class DatabaseCall extends DatasourceCall {
     /**
      * 
      * INTERNAL:
-     * 
+     * <p>
      * Get the return object from the statement. Use the parameter name to determine what return object to get.
      * @param statement SQL/JDBC statement to call stored procedure/function
      * @param name parameter name

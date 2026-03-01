@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -52,8 +52,8 @@ import org.eclipse.persistence.sdo.helper.SDOUnmarshalListener;
 import org.eclipse.persistence.sdo.helper.SDOXMLHelper;
 import org.eclipse.persistence.sdo.types.SDOPropertyType;
 import org.eclipse.persistence.sdo.types.SDOTypeType;
-import org.eclipse.persistence.exceptions.SDOException;
-import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.sdo.SDOException;
+import org.eclipse.persistence.oxm.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.NamespaceResolver;
@@ -100,8 +100,8 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
         // This ClassLoader is internal to SDO so no inter servlet-ejb container context issues should arise
         loader = new SDOClassLoader(aClassLoader, aContext);
         // WeakHashMap needs to be synchronized to prevent endless loop under the heavy load
-        xmlMarshallerMap = Collections.synchronizedMap(new WeakHashMap<Thread, XMLMarshaller>());
-        xmlUnmarshallerMap = Collections.synchronizedMap(new WeakHashMap<Thread, XMLUnmarshaller>());
+        xmlMarshallerMap = Collections.synchronizedMap(new WeakHashMap<>());
+        xmlUnmarshallerMap = Collections.synchronizedMap(new WeakHashMap<>());
     }
 
     /**
@@ -233,8 +233,7 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
             }
         }
 
-        if (unmarshalledObject instanceof XMLRoot) {
-            XMLRoot xmlRoot = (XMLRoot)unmarshalledObject;
+        if (unmarshalledObject instanceof XMLRoot xmlRoot) {
             XMLDocument xmlDocument = createDocument((DataObject)((XMLRoot)unmarshalledObject).getObject(), ((XMLRoot)unmarshalledObject).getNamespaceURI(), ((XMLRoot)unmarshalledObject).getLocalName());
             if(xmlRoot.getEncoding() != null) {
                 xmlDocument.setEncoding(xmlRoot.getEncoding());
@@ -317,8 +316,7 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
 
         }
 
-        if (unmarshalledObject instanceof XMLRoot) {
-            XMLRoot xmlRoot = (XMLRoot)unmarshalledObject;
+        if (unmarshalledObject instanceof XMLRoot xmlRoot) {
             XMLDocument xmlDocument = createDocument((DataObject)((XMLRoot)unmarshalledObject).getObject(), ((XMLRoot)unmarshalledObject).getNamespaceURI(), ((XMLRoot)unmarshalledObject).getLocalName());
             if(xmlRoot.getEncoding() != null) {
                 xmlDocument.setEncoding(xmlRoot.getEncoding());
@@ -329,8 +327,7 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
             xmlDocument.setSchemaLocation(xmlRoot.getSchemaLocation());
             xmlDocument.setNoNamespaceSchemaLocation(xmlRoot.getNoNamespaceSchemaLocation());
             return xmlDocument;
-        } else if (unmarshalledObject instanceof DataObject) {
-            DataObject unmarshalledDataObject = (DataObject)unmarshalledObject;
+        } else if (unmarshalledObject instanceof DataObject unmarshalledDataObject) {
             String localName = ((SDOType)((DataObject)unmarshalledObject).getType()).getXmlDescriptor().getDefaultRootElement();
             if (localName == null) {
                 localName = ((SDOType)((DataObject)unmarshalledObject).getType()).getXsdLocalName();
@@ -499,8 +496,7 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
             throw new IllegalArgumentException(SDOException.cannotPerformOperationWithNullInputParameter("save", "xmlDocument"));
         }
 
-        if (result instanceof StreamResult) {
-            StreamResult streamResult = (StreamResult)result;
+        if (result instanceof StreamResult streamResult) {
             Writer writer = streamResult.getWriter();
             if (null == writer) {
                 save(xmlDocument, streamResult.getOutputStream(), options);

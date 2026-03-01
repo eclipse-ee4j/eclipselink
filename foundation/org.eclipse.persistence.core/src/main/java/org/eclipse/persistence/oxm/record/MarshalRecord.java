@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,6 +14,34 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.oxm.record;
 
+import org.eclipse.persistence.core.queries.CoreAttributeGroup;
+import org.eclipse.persistence.exceptions.EclipseLinkException;
+import org.eclipse.persistence.oxm.exceptions.XMLMarshalException;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
+import org.eclipse.persistence.internal.core.helper.CoreField;
+import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
+import org.eclipse.persistence.internal.oxm.Constants;
+import org.eclipse.persistence.internal.oxm.ConversionManager;
+import org.eclipse.persistence.internal.oxm.Marshaller;
+import org.eclipse.persistence.internal.oxm.Namespace;
+import org.eclipse.persistence.internal.oxm.NamespaceResolver;
+import org.eclipse.persistence.internal.oxm.ObjectBuilder;
+import org.eclipse.persistence.internal.oxm.Root;
+import org.eclipse.persistence.internal.oxm.XMLBinaryDataHelper;
+import org.eclipse.persistence.internal.oxm.XPathFragment;
+import org.eclipse.persistence.internal.oxm.XPathNode;
+import org.eclipse.persistence.internal.oxm.XPathPredicate;
+import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
+import org.eclipse.persistence.internal.oxm.mappings.Field;
+import org.eclipse.persistence.internal.oxm.mappings.Login;
+import org.eclipse.persistence.internal.oxm.record.AbstractMarshalRecordImpl;
+import org.eclipse.persistence.oxm.record.ValidatingMarshalRecord.MarshalSAXParseException;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.xml.sax.ErrorHandler;
+import org.xml.sax.SAXException;
+
+import javax.xml.namespace.QName;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -21,35 +49,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Stack;
-
-import javax.xml.namespace.QName;
-
-import org.eclipse.persistence.exceptions.EclipseLinkException;
-import org.eclipse.persistence.exceptions.XMLMarshalException;
-import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
-import org.eclipse.persistence.internal.core.helper.CoreField;
-import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
-import org.eclipse.persistence.internal.oxm.ConversionManager;
-import org.eclipse.persistence.internal.oxm.Constants;
-import org.eclipse.persistence.internal.oxm.Marshaller;
-import org.eclipse.persistence.internal.oxm.Namespace;
-import org.eclipse.persistence.internal.oxm.NamespaceResolver;
-import org.eclipse.persistence.internal.oxm.ObjectBuilder;
-import org.eclipse.persistence.internal.oxm.Root;
-import org.eclipse.persistence.internal.oxm.XMLBinaryDataHelper;
-import org.eclipse.persistence.internal.oxm.XPathPredicate;
-import org.eclipse.persistence.internal.oxm.XPathFragment;
-import org.eclipse.persistence.internal.oxm.XPathNode;
-import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
-import org.eclipse.persistence.internal.oxm.mappings.Field;
-import org.eclipse.persistence.internal.oxm.mappings.Login;
-import org.eclipse.persistence.internal.oxm.record.AbstractMarshalRecordImpl;
-import org.eclipse.persistence.oxm.record.ValidatingMarshalRecord.MarshalSAXParseException;
-import org.eclipse.persistence.core.queries.CoreAttributeGroup;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.xml.sax.ErrorHandler;
-import org.xml.sax.SAXException;
 
 /**
  * <p>A MarshalRecord encapsulates the marshal target.</p>
@@ -416,7 +415,7 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
             return null;
         }
         String namespaceURI = qName.getNamespaceURI();
-        if(null == namespaceURI || 0 == namespaceURI.length()) {
+        if(null == namespaceURI || namespaceURI.isEmpty()) {
             if(getNamespaceResolver() != null && getNamespaceResolver().getDefaultNamespaceURI() != null) {
                 //need to add a default namespace declaration.
                 defaultNamespaceDeclaration(namespaceURI);
@@ -746,9 +745,9 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
         if(!this.hasCustomNamespaceMapper()) {
             return xPathFragment.getShortName();
         }
-        if(xPathFragment.getNamespaceURI() != null && xPathFragment.getNamespaceURI().length() > 0) {
+        if(xPathFragment.getNamespaceURI() != null && !xPathFragment.getNamespaceURI().isEmpty()) {
             String prefix = this.getPrefixForFragment(xPathFragment);
-            if(prefix != null && prefix.length() > 0) {
+            if(prefix != null && !prefix.isEmpty()) {
                 return prefix + Constants.COLON + xPathFragment.getLocalName();
             }
         }
@@ -771,7 +770,7 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
             return xPathFragment.getPrefix();
         }
         String uri = xPathFragment.getNamespaceURI();
-        if(uri == null || uri.length() == 0) {
+        if(uri == null || uri.isEmpty()) {
             return Constants.EMPTY_STRING;
         }
 

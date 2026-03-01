@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,8 +14,10 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.optimisticlocking.cascaded;
 
+import org.eclipse.persistence.indirection.ValueHolder;
+import org.eclipse.persistence.indirection.ValueHolderInterface;
+
 import java.util.Vector;
-import org.eclipse.persistence.indirection.*;
 
 public class Qualification {
     public int id;
@@ -32,7 +34,7 @@ public class Qualification {
     }
 
     public void addAward(Award award) {
-        getAwards().addElement(award);
+        getAwards().add(award);
         award.setQualification(this);
     }
 
@@ -49,11 +51,11 @@ public class Qualification {
     }
 
     public boolean hasAwards() {
-        return ((Vector) awards.getValue()).size() > 0;
+        return !((Vector) awards.getValue()).isEmpty();
     }
 
     public void removeAward(Award award) {
-        getAwards().removeElement(award);
+        getAwards().remove(award);
     }
 
     public void setAwards(Vector awards) {

@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,8 +17,9 @@
 //       - 458877 : Add national character support
 package org.eclipse.persistence.exceptions;
 
-import java.util.*;
 import org.eclipse.persistence.exceptions.i18n.ExceptionMessageGenerator;
+
+import java.util.Calendar;
 
 /**
  * <P><B>Purpose</B>: Conversion exceptions such as method or class not defined will raise this exception.
@@ -29,12 +30,14 @@ public class ConversionException extends EclipseLinkException {
     public final static int COULD_NOT_BE_CONVERTED = 3001;
     public final static int COULD_NOT_BE_CONVERTED_EXTENDED = 3002;
     public final static int INCORRECT_DATE_FORMAT = 3003;
+    public final static int INCORRECT_DATE_VALUE = 3010;
     public final static int INCORRECT_TIME_FORMAT = 3004;
     public final static int INCORRECT_TIMESTAMP_FORMAT = 3005;
     public final static int COULD_NOT_CONVERT_TO_BYTE_ARRAY = 3006;
     public final static int COULD_NOT_BE_CONVERTED_TO_CLASS = 3007;
     public final static int INCORRECT_DATE_TIME_FORMAT = 3008;
     public final static int UNABLE_TO_SET_PROPERTIES = 3009;
+    public static final int UNABLE_GET_VALUE_FROM_ENUM = 3011;
 
     /**
      * INTERNAL:
@@ -128,6 +131,14 @@ public class ConversionException extends EclipseLinkException {
         return conversionException;
     }
 
+    public static ConversionException incorrectDateValue(String dateString) {
+        Object[] args = { dateString };
+        String message = ExceptionMessageGenerator.buildMessage(ConversionException.class, INCORRECT_DATE_VALUE, args);
+        ConversionException conversionException = new ConversionException(message, dateString, java.sql.Date.class, null);
+        conversionException.setErrorCode(INCORRECT_DATE_VALUE);
+        return conversionException;
+    }
+
     public static ConversionException incorrectTimeFormat(String timeString) {
         Object[] args = { timeString };
         String message = ExceptionMessageGenerator.buildMessage(ConversionException.class, INCORRECT_TIME_FORMAT, args);
@@ -154,6 +165,14 @@ public class ConversionException extends EclipseLinkException {
 
     public static ConversionException incorrectDateTimeFormat(String dateTimeString) {
         return incorrectDateTimeFormat(dateTimeString, Calendar.class);
+    }
+
+    public static ConversionException unableGetValueFromEnum(Object targetClass, String attributeName, Exception error) {
+        Object[] args = { targetClass, attributeName, String.valueOf(error) };
+        String message = ExceptionMessageGenerator.buildMessage(ConversionException.class, UNABLE_GET_VALUE_FROM_ENUM, args);
+        ConversionException conversionException = new ConversionException(message, targetClass, null, error);
+        conversionException.setErrorCode(UNABLE_GET_VALUE_FROM_ENUM);
+        return conversionException;
     }
 
     /**

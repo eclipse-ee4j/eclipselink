@@ -1,0 +1,98 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[SIMPLEVALUES003]]
+=== Multiple Mappings for a Single Property
+
+Standard JAXB can have at most one mapping per Java field. Since
+EclipseLink MOXy 2.3, multiple mappings can be created for a single
+property using OXM metadata, with the caveat that at most one mapping
+will be readable (the rest will be "write-only").
+
+==== Example
+
+This example will use the following Java class:
+
+[[sthref81]]
+
+*_Example 4-37 Sample Java Class_*
+
+[source,oac_no_warn]
+----
+package example;
+ 
+import jakarta.xml.bind.annotation.*;
+ 
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
+public class CustomQuoteRequest {
+ 
+   private int requestId;
+ 
+   private String currencyPairCode;
+ 
+}
+ 
+----
+
+link:#CHDEDBIB[Example 4-38] shows how to define multiple mappings for
+the `currencyPairCode` in EclipseLink's OXM metadata format. Note that
+the second mapping has specified `write-only="true`".
+
+[[CHDEDBIB]]
+
+*_Example 4-38 Sample XML Schema_*
+
+[source,oac_no_warn]
+----
+...
+<java-type name="CustomQuoteRequest">
+   <xml-root-element/>
+   <java-attributes>
+      <xml-element java-attribute="requestId" name="id"/>
+      <xml-attribute java-attribute="currencyPairCode" xml-path="req/info/instrmt/@sym"/>                            
+      <xml-attribute java-attribute="currencyPairCode" xml-path="req/info/leg/token/@sym" write-only="true"/>           
+   </java-attributes>
+</java-type>
+...
+ 
+----
+
+==== XML Output
+
+link:#CHDEIEJF[Example 4-39] shows an example `CustomQuoteRequest`
+marshalled to XML.
+
+[[CHDEIEJF]]
+
+*_Example 4-39 Resulting XML_*
+
+[source,oac_no_warn]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<customQuoteRequest>
+   <id>881</id>
+   <req>
+      <info>
+         <instrmt sym="CAD/USD"/>
+         <leg>
+            <token sym="CAD/USD"/>
+         </leg>
+      </info>
+   </req>
+</customQuoteRequest>
+----

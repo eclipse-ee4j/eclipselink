@@ -1,0 +1,549 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[MULTITENANCY002]]
+=== Using Single-Table Multi-Tenancy
+
+With single-table multi-tenancy, any table (`Table` or `SecondaryTable`)
+to which an entity or mapped superclass maps can include rows for
+multiple tenants. Access to tenant-specific rows is restricted to the
+specified tenant.
+
+Tenant-specific rows are associated with the tenant by using one or more
+tenant discriminator columns. Discriminator columns are used with
+application context values to limit what a persistence context can
+access.
+
+The results of queries on the mapped tables are limited to the tenant
+discriminator value(s) provided as property values. This applies to all
+insert, update, and delete operations on the table. When multi-tenant
+metadata is applied at the mapped superclass level, it is applied to all
+subentities unless they specify their own multi-tenant metadata.
+
+NOTE: In the context of single-table multi-tenancy, ”single-table” means
+multiple tenants can share a single table, and each tenant's data is
+distinguished from other tenants' data via the discriminator column(s).
+It is possible to use multiple tables with single-table multi-tenancy;
+but in that case, an entity's persisted data is stored in multiple
+tables, and multiple tenants can share all the tables.
+
+[[BABIFFCI]]
+
+==== Main Tasks for Using Single-Table Multi-Tenancy
+
+The following tasks provide instructions for using single-table
+multi-tenancy:
+
+* link:#CHDBADCI[Task 1: Prerequisites]
+* link:#BABDFFJD[Task 2: Enable Single-Table Multi-Tenancy]
+* link:#BABFGJAJ[Task 3: Specify Tenant Discriminator Columns]
+* link:#BABHIDCG[Task 4: Perform Operations and Queries]
+* link:#CHDIHGID[Task 5: Use Single-Table Multi-Tenancy in an Inheritance Hierarchy]
+
+[[CHDBADCI]]
+
+===== Task 1: Prerequisites
+
+To implement and use single-table multi-tenancy, you need:
+
+* EclipseLink 2.4 or later.
++
+Download EclipseLink from
+`http://www.eclipse.org/eclipselink/downloads/`.
+* Any compliant Java Database Connectivity (JDBC) database, including
+Oracle Database, Oracle Database Express Edition (Oracle Database XE),
+or MySQL. These instructions are based on Oracle Database XE 11g Release
+2.
++
+For the certification matrix, see
+
+[[BABDFFJD]]
+
+===== Task 2: Enable Single-Table Multi-Tenancy
+
+Single-table multi-tenancy can be enabled declaratively using the
+`@Multitenant` annotation, in an Object Relational Mapping (ORM) XML
+file using the `<multitenant>` element, or by using annotations and XML
+together.
+
+====== Using the @Multitenant Annotation
+
+To use the `@Multitenant` annotation, include it with an `@Entity` or
+`@MappedSuperclass` annotation. For example:
+
+[source,oac_no_warn]
+----
+@Entity
+@Table(name=”EMP”)
+@Multitenant(SINGLE_TABLE)
+public class Employee {
+}
+----
+
+NOTE: Single-table is the default multi-tenancy type, so `SINGLE_TABLE` does
+not have to be included in `@Multitenant`.
+
+NOTE: The `@Table` annotation is not required, because the discriminator
+column is assumed to be on the primary table. However, if the
+discriminator column is defined on a secondary table, you must identify
+that table using `@SecondaryTable`.
+
+====== Using the <multitenant> Element
+
+To use the `<multitenant>` element, include the element within an
+`<entity>` element. For example:
+
+[source,oac_no_warn]
+----
+<entity class="model.Employee">
+   <multitenant type="SINGLE_TABLE">
+   ...
+   </multitenant>
+   ...
+</entity>
+----
+
+[[BABFGJAJ]]
+
+==== Task 3: Specify Tenant Discriminator Columns
+
+Discriminator columns are used together with an associated application
+context to indicate which rows in a table an application tenant can
+access.
+
+Tenant discriminator columns can be specified declaratively using the
+`@TenantDiscriminatorColumn` annotation or in an object-relational (ORM)
+XML file using the `<tenant-discriminator-column>` element.
+
+The following characteristics apply to discriminator columns:
+
+* Tenant discriminator column(s) must always be used with `@Multitenant`
+(or `<multitenant>` in the ORM XML file). You cannot specify the tenant
+discriminator column(s) only.
+* The tenant discriminator column is assumed to be on the primary table
+unless another table is explicitly specified.
+* On persist, the values of tenant discriminator columns are populated
+from their associated context properties.
+* When a multi-tenant entity is specified, the tenant discriminator
+column can default. Its default values are:
+** Name = `TENANT_ID` (the database column name)
+** Context property = `eclipselink.tenant.id` (the context property used
+to populate the database column)
+* Tenant discriminator columns are application definable. That is, the
+discriminator column is not tied to a specific column for each shared
+entity table. You can use `TENANT_ID`, `T_ID`, etc.
+* There is no limit on the number of tenant discriminator columns an
+application can define.
+* Any name can be used for a discriminator column.
+* Generated schemas include specified tenant discriminator columns.
+* Tenant discriminator columns can be mapped or unmapped:
+** When a tenant discriminator column is mapped, its associated mapping
+attribute must be marked as read only.
+** Both mapped and unmapped properties are used to form the additional
+criteria when issuing a SELECT query.
+
+===== Use the @TenantDiscriminatorColumn Annotation
+
+To use the `@TenantDiscriminatorColumn` annotation, include it with
+`@Multitenant` annotation on an entity or mapped superclass, and
+optionally include the `name` and `contextProperty` attributes. If you
+do not specify these attributes, the defaults `name = "TENANT-ID"` and
+`contextProperty = "eclipselink.tenant-id"` are used.
+
+For example:
+
+[source,oac_no_warn]
+----
+@Entity
+@Multitenant(SINGLE_TABLE)
+@TenantDiscriminatorColumn(name = "TENANT", contextProperty = "multitenant.id")
+public class Employee {
+}
+----
+
+To specify multiple tenant discriminator columns, include multiple
+`@TenantDiscriminatorColumn` annotations within the
+`@TenantDiscriminatorColumns` annotation, and include the table where
+the column is located if it is not located on the primary table. For
+example:
+
+[source,oac_no_warn]
+----
+@Entity
+@Table(name = "EMPLOYEE")
+@SecondaryTable(name = "RESPONSIBILITIES")
+@Multitenant(SINGLE_TABLE)
+@TenantDiscriminatorColumns({
+   @TenantDiscriminatorColumn(name = "TENANT_ID", 
+      contextProperty = "employee-tenant.id", length = 20)
+   @TenantDiscriminatorColumn(name = "TENANT_CODE", 
+      contextProperty = "employee-tenant.code", discriminatorType = STRING, 
+      table = "RESPONSIBILITIES")
+  }
+)
+public Employee() {
+   ...
+}
+----
+
+===== Use the <tenant-discriminator-column> Element
+
+To use the `<tenant-discriminator-column>` element, include the element
+within a `<multitenant>` element and optionally include the `name` and
+`context-property` attributes. If you do not specify these attributes,
+the defaults `name = "TENANT-ID"` and
+`contextProperty = "eclipselink.tenant-id"` are used.
+
+For example:
+
+[source,oac_no_warn]
+----
+<entity class="model.Employee">
+   <multitenant>
+      <tenant-discriminator-column name="TENANT"
+         context-property="multitenant.id"/>
+   </multitenant>
+   ...
+</entity>
+----
+
+To specify multiple columns, include additional
+`<tenant-discriminator-column>` elements, and include the table where
+the column is located if it is not located on the primary table. For
+example:
+
+[source,oac_no_warn]
+----
+<entity class="model.Employee">
+   <multitenant type="SINGLE_TABLE">
+      <tenant-discriminator-column name="TENANT_ID"
+         context-property="employee-tenant.id" length="20"/>
+      <tenant-discriminator-column name="TENANT_CODE"
+         context-property="employee-tenant.id" discriminator-type="STRING"
+         table="RESPONSIBILITIES"/>
+   </multitenant>
+   <table name="EMPLOYEE"/>
+   <secondary-table name="RESPONSIBILITIES"/>
+   ...
+</entity>
+----
+
+===== Map Tenant Discriminator Columns
+
+Tenant discriminator columns can be mapped to a primary key or to
+another column. The following example maps the tenant discriminator
+column to the primary key on the table during DDL generation:
+
+[source,oac_no_warn]
+----
+@Entity
+@Table(name = "ADDRESS")
+@Multitenant
+@TenantDiscriminatorColumn(name = "TENANT", contextProperty = "tenant.id",
+   primaryKey = true)
+public Address() {
+  ...
+}
+----
+
+The following example uses the ORM XML file to map the tenant
+discriminator column to a primary key:
+
+[source,oac_no_warn]
+----
+<entity class="model.Address">
+   <multitenant>
+      <tenant-discriminator-column name="TENANT"
+         context-property="multitenant.id" primary-key="true"/>
+   </multitenant>
+   <table name="ADDRESS"/>
+   ...
+</entity>
+----
+
+The following example maps the tenant discriminator column to another
+column named `AGE`:
+
+[source,oac_no_warn]
+----
+@Entity
+@Table(name = "Player")
+@Multitenant
+@TenantDiscriminatorColumn(name = "AGE", contextProperty = "tenant.age")
+public Player() {
+  ...
+ 
+  @Basic
+  @Column(name="AGE", insertable="false", updatable="false")
+  public int age;
+}
+----
+
+The following example uses the ORM XML file to map the tenant
+discriminator column to another column named `AGE`:
+
+[source,oac_no_warn]
+----
+<entity class="model.Player">
+  <multitenant>
+    <tenant-discriminator-column name="AGE" context-property="tenant.age"/>
+  </multitenant>
+  <table name="PLAYER"/>
+  ...
+  <attributes>
+    <basic name="age" insertable="false" updatable="false">
+      <column name="AGE"/>
+    </basic>
+    ...
+  </attributes>
+  ...
+</entity>
+----
+
+[[CHDIIAAF]]
+
+===== Define Persistence Unit and Entity Mappings Defaults
+
+In addition to configuring discriminator columns at the entity and
+mapped superclass levels, you can also configure them at the
+`persistence-unit-defaults` and `entity-mappings` levels to provide
+defaults. Defining the metadata at the these levels follows similar JPA
+metadata defaulting and overriding rules.
+
+Specify default tenant discriminator column metadata at the
+`persistence-unit-defaults` level in the ORM XML file. When defined at
+this level, the defaults apply to all entities of the persistence unit
+that have specified a multi-tenant type of `SINGLE_TABLE` minus those
+that specify their own tenant discriminator metadata. For example:
+
+[source,oac_no_warn]
+----
+<persistence-unit-metadata>
+  <persistence-unit-defaults>
+    <tenant-discriminator-column name="TENANT_ID" context-property="tenant.id"/>
+  </persistence-unit-defaults>
+</persistence-unit-metadata>
+----
+
+You can also specify tenant discriminator column metadata at the
+`entity-mappings` level in the ORM XML file. A setting at this level
+overrides a persistence unit default and applies to all entities with a
+multi-tenant type of `SINGLE_TABLE` of the mapping file, minus those
+that specify their own tenant discriminator metadata. For example:
+
+[source,oac_no_warn]
+----
+<entity-mappings>
+  ...
+      ...
+      <tenant-discriminator-column name="TENANT_ID" context-property="tenant.id"/>
+      ...
+</entity-mappings>
+----
+
+===== Configure Context Properties and Caching Scope
+
+Runtime context properties are used in conjunction with the
+multi-tenancy configuration on an entity (or mapped superclass) to
+implement the multi-tenancy strategy. For example, the tenant ID
+assigned to a tenant discriminator column for an entity is used at
+runtime (via an entity manager) to restrict access to data, based on
+that tenant's ownership of (or access to) the rows and tables of the
+database.
+
+At runtime, multi-tenancy properties can be specified in a persistence
+unit definition or passed to a create entity manager factory call.
+
+The order of precedence for tenant discriminator column properties is as
+follows:
+
+. `EntityManager`
+. `EntityManagerFactory`
+. Application context (when in a Jakarta EE container)
+
+For example, to set the configuration on a persistence unit in
+`persistence.xml`:
+
+[source,oac_no_warn]
+----
+<persistence-unit name="multitenant">
+   ...
+   <properties>
+      <property name="tenant.id" value="707"/>
+      ...
+   </properties>
+</persistence-unit>
+----
+
+Alternatively, to set the properties programmatically:
+
+[source,oac_no_warn]
+----
+HashMap properties = new HashMap();
+properties.put("tenant.id", "707");
+...     
+EntityManager em = Persistence.createEntityManagerFactory("multi-tenant", 
+      properties).createEntityManager();
+----
+
+NOTE: Swapping tenant IDs during a live `EntityManager` is not allowed.
+
+[[CHDBHBIG]]
+
+====== Configure a Shared Entity Manager
+
+By default, tenants share the entity manager factory. A single
+application instance with a shared `EntityManagerFactory` for a
+persistence unit can be responsible for handling requests from multiple
+tenants.
+
+The following example shows a shared entity manager factory
+configuration:
+
+[source,oac_no_warn]
+----
+EntityManager em = createEntityManager(MULTI_TENANT_PU);
+em.getTransaction().begin();
+em.setProperty(EntityManagerProperties.MULTITENANT_PROPERTY_DEFAULT, "my_id");
+----
+
+When using a shared entity manager factory, the L2 cache is by default
+not shared, and therefore multi-tenant entities have an `ISOLATED` cache
+setting.
+
+To share the cache, set the
+`eclipselink.multitenant.tenants-share-cache` property to `true`. This
+results in multi-tenant entities having a PROTECTED cache setting.
+
+CAUTION: Queries that use the cache may return data from other tenants when using
+the `PROTECTED` setting.
+
+====== Configure a Non-Shared Entity Manager
+
+To create an entity manager factory that is not shared, set the
+`eclipselink.multitenant.tenants-share-emf` property to `false`.
+
+When the entity manager factory is not shared, you must use the
+`eclipselink.session-name` property to provide a unique session name, as
+shown in the following example. This ensures that a unique server
+session and cache are provided for each tenant. This provides full
+caching capabilities. For example,
+
+[source,oac_no_warn]
+----
+HashMap properties = new HashMap();
+properties.put("tenant.id", "707");
+properties.put("eclipselink.session-name", "multi-tenant-707");
+...     
+EntityManager em = Persistence.createEntityManagerFactory("multitenant", 
+                      properties).createEntityManager();
+----
+
+Another example:
+
+[source,oac_no_warn]
+----
+HashMap properties = new HashMap();
+properties.put(PersistenceUnitProperties.MULTITENANT_SHARED_EMF, "false");
+properties.put(PersistenceUnitProperties.SESSION_NAME, "non-shared-emf-for-this-emp");
+properties.put(PersistenceUnitProperties.MULTITENANT_PROPERTY_DEFAULT, "this-emp");
+...     
+EntityManager em = Persistence.createEntityManagerFactory("multi-tenant-pu", properties).createEntityManager();
+----
+
+An example in the persistence unit definition:
+
+[source,oac_no_warn]
+----
+<persistence-unit name="multi-tenant-pu">
+  ...
+  <properties>
+    <property name="eclipselink.multitenant.tenants-share-emf" value="false"/>
+    <property name="eclipselink.session-name" 
+         value="non-shared-emf-for-this-emp"/>
+    <property name="eclipselink.tenant-id" value="this-emp"/>
+    ...
+  </properties>
+</persistence-unit>
+----
+
+====== Configure an Entity Manager
+
+When configuring properties at the level of the entity manager, you must
+specify the caching strategies, because the same server session can be
+used for each tenant. For example, you can set up an isolation level (L1
+cache) to ensure no shared tenant information exists in the L2 cache.
+These settings are set when creating the entity manager factory.
+
+[source,oac_no_warn]
+----
+HashMap tenantProperties = new HashMap();
+properties.put("tenant.id", "707");
+ 
+HashMap cacheProperties = new HashMap();
+properties.put("eclipselink.cache.shared.Employee", "false");
+properties.put("eclipselink.cache.size.Address", "10");
+properties.put("eclipselink.cache.type.Contract", "NONE");
+...     
+EntityManager em = Persistence.createEntityManagerFactory("multitenant", 
+                      cacheProperties).createEntityManager(tenantProperties);
+...
+----
+
+[[BABHIDCG]]
+
+==== Task 4: Perform Operations and Queries
+
+The tenant discriminator column is used at runtime through entity
+manager operations and querying. The tenant discriminator column and
+value are supported through the following entity manager operations:
+
+* `persist()`
+* `find()`
+* `refresh()`
+
+The tenant discriminator column and value are supported through the
+following queries:
+
+* Named queries
+* Update all
+* Delete all
+
+NOTE: Multi-tenancy is not supported through named native queries. To use
+named native queries in a multi-tenant environment, manually handle any
+multi-tenancy issues directly in the query. In general, it is best to
+avoid named native queries in a multi-tenant environment.
+
+[[CHDIHGID]]
+
+===== Task 5: Use Single-Table Multi-Tenancy in an Inheritance Hierarchy
+
+Inheritance strategies are configured by specifying the inheritance type
+(`@jakarta.persistence.Inheritance`). Single-table multi-tenancy can be
+used in an inheritance hierarchy, as follows:
+
+* Multi-tenant metadata can be applied only at the root level of the
+inheritance hierarchy when using a `SINGLE_TABLE` or `JOINED`
+inheritance strategy.
+* You can also specify multi-tenant metadata within a `TABLE_PER_CLASS`
+inheritance hierarchy. In this case, every entity has its own table,
+with all its mapping data (which is not the case with `SINGLE_TABLE` or
+`JOINED` strategies). Consequently, in the `TABLE_PER_CLASS` strategy,
+some entities of the hierarchy may be multi-tenant, while others may not
+be. The other inheritance strategies can only specify multi-tenancy at
+the root level, because you cannot isolate an entity to a single table
+to build only its type.

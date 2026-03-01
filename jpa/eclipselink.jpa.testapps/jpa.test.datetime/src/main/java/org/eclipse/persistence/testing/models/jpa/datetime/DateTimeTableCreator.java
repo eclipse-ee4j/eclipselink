@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -73,6 +73,16 @@ public class DateTimeTableCreator extends TogglingFastTableCreator {
         fieldPROVINCE.setShouldAllowNull(true);
         table.addField(fieldPROVINCE);
 
+        FieldDefinition fieldINSTANT = new FieldDefinition();
+        fieldINSTANT.setName("TIME_INSTANT");
+        fieldINSTANT.setTypeName("TIMESTAMP");
+        fieldINSTANT.setSize(6);
+        fieldINSTANT.setIsPrimaryKey(false);
+        fieldINSTANT.setIsIdentity(false);
+        fieldINSTANT.setUnique(false);
+        fieldINSTANT.setShouldAllowNull(true);
+        table.addField(fieldINSTANT);
+
         FieldDefinition fieldPOSTALCODE = new FieldDefinition();
         fieldPOSTALCODE.setName("UTIL_DATE");
         fieldPOSTALCODE.setTypeName("TIMESTAMP");
@@ -142,6 +152,16 @@ public class DateTimeTableCreator extends TogglingFastTableCreator {
         fieldCalToCal.setUnique(false);
         fieldCalToCal.setShouldAllowNull(true);
         table.addField(fieldCalToCal);
+
+        FieldDefinition fieldYear = new FieldDefinition();
+        fieldYear.setName("TIME_YEAR");
+        fieldYear.setTypeName("NUMERIC");
+        fieldYear.setSize(9);
+        fieldYear.setIsPrimaryKey(false);
+        fieldYear.setIsIdentity(false);
+        fieldYear.setUnique(false);
+        fieldYear.setShouldAllowNull(true);
+        table.addField(fieldYear);
 
         return table;
     }

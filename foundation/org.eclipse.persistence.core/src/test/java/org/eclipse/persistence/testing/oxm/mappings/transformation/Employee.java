@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -75,11 +75,10 @@ public class Employee
 
   public boolean equals(Object obj)
   {
-        if(!(obj instanceof Employee)) {
+        if(!(obj instanceof Employee emp)) {
             return false;
         }
-        Employee emp = (Employee)obj;
-        if(getStartTime() == emp.getStartTime() && getEndTime() == emp.getEndTime()) {
+      if(getStartTime() == emp.getStartTime() && getEndTime() == emp.getEndTime()) {
             return true;
         }
         return (getStartTime().equalsIgnoreCase(emp.getStartTime()) && getEndTime().equalsIgnoreCase(emp.getEndTime()) && getName().equalsIgnoreCase(emp.getName()));

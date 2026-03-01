@@ -1,0 +1,372 @@
+image:Elug_draft_icon.png[Image:Elug draft
+icon.png,title="Image:Elug draft icon.png"] *For the latest EclipseLink
+documentation, please see
+http://www.eclipse.org/eclipselink/documentation/*
+
+'''''
+
+*TOC*
+Special:Whatlinkshere_Configuring_an_Internal_Connection_Pool_(ELUG)[Related
+Topics]
+
+When you are using server sessions, you can configure the *default read
+connection pool* and *write connection pool*. You can also configure the
+optional *named connection pools* and *sequence connection pools* you
+may have created (see
+link:Creating%20an%20Internal%20Connection%20Pool%20(ELUG)#Introduction_to_the_Internal_Connection_Pool_Creation[Introduction
+to the Internal Connection Pool Creation]).
+
+[#Table 97-1]## *_Configurable Options for Connection Pools_*
+
+[width="100%",cols="<60%,<20%,<20%",options="header",]
+|===
+|*Option to Configure* |*Workbench* |*Java*
+|link:#Configuring_Connection_Pool_Sizes[Connection pool sizes]
+|image:support.gif[Supported.,title="Supported."]
+|image:support.gif[Supported.,title="Supported."]
+
+|link:#Configuring_Exclusive_Read_Connections[Exclusive read
+connections] 1 |image:support.gif[Supported.,title="Supported."]
+|image:support.gif[Supported.,title="Supported."]
+
+|link:#Configuring_a_Nontransactional_Read_Login[Nontransactional read
+login]1 |image:support.gif[Supported.,title="Supported."]
+|image:support.gif[Supported.,title="Supported."]
+
+|link:#Configuring_Properties[Properties]
+|image:support.gif[Supported.,title="Supported."]
+|image:support.gif[Supported.,title="Supported."]
+
+|link:#Configuring_Connection_Pool_Connection_Options[Connection pool
+connection options] 2, 3
+|image:support.gif[Supported.,title="Supported."]
+|image:support.gif[Supported.,title="Supported."]
+|===
+
+1Read connection pools only. 2Not applicable to write connection pools.
+2Available for sequence connection pools.
+
+== Configuring Connection Pool Sizes
+
+By default, if using EclipseLink internal connection pooling, the
+EclipseLink write connection pool maintains a minimum of five
+connections and a maximum of ten. The read connection pool maintains a
+minimum and maximum of two connections.
+
+Connection pool size can significantly influence the concurrency of your
+application and should be set to be large enough to handle your expected
+application load.
+
+[width="100%",cols="<100%",]
+|===
+|*Tip*: To maintain compatibility with JDBC drivers that do not support
+many connections, the default number of connections is small. If your
+JDBC driver supports it, use a larger number of connections for reading
+and writing.
+|===
+
+The smallest value you can enter is 0. Setting the maximum number of
+connections to 0 will make it impossible for EclipseLink to allocate any
+connections.
+
+The minimum number of connections should always be less than or equal to
+the maximum number of connections.
+
+If the maximum number of connections is in use, the next connection
+request will be blocked until a connection is available.
+
+=== How to Configure Connection Pool Size Using Workbench
+
+To specify the minimum and maximum number of connections in an
+EclipseLink internal connection pool, use this procedure:
+
+[arabic]
+. Expand a server session to reveal its connection pools in the
+*Navigator*.
+. Select a connection pool in the *Navigator*. Its properties appear in
+the Editor.
+. Click the *General* tab. The General tab appears.
+[#Figure 97-1]##*_General Tab, Connection Count Options_*
+image:cpcount.gif[General Tab, Connection Count
+Options,title="General Tab, Connection Count Options"]
+
+Enter the desired minimum and maximum number of connections and press
+*Enter* or use the increment and decrement arrows.
+
+For more information, see the following:
+
+* link:#Configuring_Connection_Pool_Sizes[Configuring Connection Pool
+Sizes]
+* link:Configuring%20a%20Session%20(ELUG)#Configuring_Common_Session_Options[Configuring
+Common Session Options]
+
+== Configuring Properties
+
+For all connection pools, except write connection pools, you can specify
+arbitrary named values, called properties.
+
+Some data sources require additional, driver-specific properties not
+supported in the `+ConnectionPool+` API. Add these properties to the
+`+ConnectionPool+` so that EclipseLink can pass them to the driver.
+
+=== How to Configure Properties Using Workbench
+
+To specify arbitrary named value pairs that EclipseLink associates with
+a `+ConnectionPool+`, use this procedure:
+
+[arabic]
+. Expand a server session to reveal its connection pools in the
+*Navigator*.
+. Select a read, named, or sequence connection pool in the *Navigator*.
+Its properties appear in the Editor.
+. Click the *Login* tab. The Login tab appears.
+. Click the *Properties* subtab. The Properties subtab appears.
+[#Figure 97-2]##*_Login Tab, Properties Subtab_* image:cpprop.gif[Login
+Tab, Properties Subtab,title="Login Tab, Properties Subtab"]
+. You can add, edit, or remove properties using Add Property dialog box
+that appears upon clicking Add, Edit or Remove.
+
+Complete the *Add Property* dialog box.
+
+Use the following information to add or edit a login property on the Add
+Property dialog box to add or edit a login property:
+
+[width="100%",cols="<6%,<94%",options="header",]
+|===
+|*Option* |*Description*
+|*Name* |The name by which EclipseLink retrieves the property value
+using the `+DatasourceLogin+` method `+getProperty+`.
+
+|*Value* |The value EclipseLink retrieves using the `+DatasourceLogin+`
+method `+getProperty+` passing in the corresponding property name. Using
+Workbench, you can set only character values which EclipseLink returns
+as `+String+` objects.
+|===
+
+To add (or change) a new *Name*/*Value* property, click *Add* (or
+*Edit*).
+
+To delete an existing property, select the *Name*/*Value* row and click
+*Remove*.
+
+For more information, see link:#Configuring_Properties[Configuring
+Properties]
+
+=== How to Configure Properties Using Java
+
+Using Java, you can set any `+Object+` value using the
+`+DatasourceLogin+` method `+setProperty+`. To remove a property, use
+the `+DatasourceLogin+` method `+removeProperty+`.
+
+== Configuring a Nontransactional Read Login
+
+When you use an external transaction controller (see
+link:Configuring%20a%20Session%20(ELUG)#Configuring_the_Server_Platform[Configuring
+the Server Platform]), establishing a connection requires not only the
+usual connection setup overhead, but also transactional overhead. If
+your application reads data only to display it and only infrequently
+modifies data, you can configure an internal read connection pool to use
+its own connection specification that does not use the external
+transaction controller. This may improve performance by reducing the
+time it takes to establish a new read connection.
+
+=== How to Configure Nontransactional Read Login Using Workbench
+
+To enable the configuration of nontransactional connection information
+for an EclipseLink read connection pool, use this procedure:
+
+[arabic]
+. Expand a server session to reveal its connection pools in the
+*Navigator*.
+. Select a read connection pool in the *Navigator*. Its properties
+appear in the Editor.
+. Click the *Login* tab. The Login tab appears.
+. Click the *Connection* subtab. The Connection subtab appears.
+[#Figure 97-3]## *_Login Tab, Connection Subtab_*
+image:cpnontrn.gif[Login Tab, Connection
+Subtab,title="Login Tab, Connection Subtab"]
+
+To enable a nontransactional read login, select the *Use
+Non-Transactional Read Login* option (see
+link:Introduction%20to%20Data%20Access%20(ELUG)#Externally_Managed_Transactional_Data_Sources[Externally
+Managed Transactional Data Sources]). Continue with
+link:#Configuring_Connection_Pool_Connection_Options[Configuring
+Connection Pool Connection Options] to specify the connection
+information.
+
+For more information, see
+link:#Configuring_a_Nontransactional_Read_Login[Configuring a
+Nontransactional Read Login].
+
+=== How to Configure Nontransactional Read Login Using Java
+
+Use the `+getLogin+` method of your connection pool to obtain a
+`+DatabaseLogin+`, and then use the following `+DatabaseLogin+` methods
+to configure the nontransactional read login options:
+
+* `+useExternalTransactionController+`
+* `+setDriverClass+`
+* `+setDriverClassName+`
+* `+setDriverURLHeader+`
+
+== Configuring Connection Pool Connection Options
+
+By default, connection pools use the login configuration specified for
+their session (see
+link:Configuring%20a%20Database%20Login%20(ELUG)#Configuring_Database_Login_Connection_Options[Configuring
+Database Login Connection Options] and
+link:Configuring%20an%20EIS%20Login%20(ELUG)#Configuring_EIS_Connection_Specification_Options_at_the_Session_Level[Configuring
+EIS Connection Specification Options at the Session Level]).
+
+For read, named, and sequence connection pools, you can override the
+session login configuration on a per-connection pool basis.
+
+To configure login configuration for a read connection pool, you must
+first enable it for link:#Configuring_a_Nontransactional_Read_Login[a
+nontransactional read login]).
+
+=== How to Configure Connection Pool Connection Options Using Workbench
+
+To configure connection information for an EclipseLink read, named, or
+sequence connection pool, use this procedure:
+
+[arabic]
+. Expand a server session to reveal its connection pools in the
+*Navigator*.
+. Select a read, named, or sequence connection pool in the *Navigator*.
+Its properties appear in the Editor.
+. Click the *Login* tab. The Login tab appears.
+. Click the *Connection* subtab. The Connection subtab appears.
+[#Figure 97-4]##*_Login Tab, Connection Subtab, Relational Session
+Connection Pool Options_* image:cpcon.gif[Login Tab, Connection Subtab,
+Relational Session Connection Pool
+Options,title="Login Tab, Connection Subtab, Relational Session Connection Pool Options"]
+[#Figure 97-5]##*** Login Tab, Connection Subtab, EIS Session Connection
+Pool Options*** image:cpconeis.gif[Login Tab, Connection Subtab, EIS
+Session Connection Pool
+Options,title="Login Tab, Connection Subtab, EIS Session Connection Pool Options"]
+. Ensure the *Use Non-Transaction Read Login* option is selected.
+. Complete each field on the Connection tab.
+
+Use the following information to complete fields on the Connection
+subtab:
+
+Field
+
+Description
+
+Database Driver1
+
+Specify the appropriate database driver:
+
+Driver Manager: Specify this option to configure the driver class and
+URL used to connect to the database. In this case, you must configure
+the Driver Class and Driver URL fields.
+
+J2EE Datasource: Specify this option to use a Java EE data source
+already configured on your target application server. In this case, you
+must configure the Datasource Name field.
+
+Note: If you select J2EE Datasource, you must use external connection
+pooling. You cannot use internal connection pools with this Database
+Driver option (for more information, see Configuring External Connection
+Pooling).
+
+Driver Class1
+
+Configure this field when Database Driver is set to Driver Manager.
+Select from the menu of options. This menu includes all JDBC drivers in
+the EclipseLink application classpath.
+
+URL1
+
+Configure this field when Database Driver is set to Driver Manager.
+Select from the menu of options relevant to the selected Driver Class
+and edit the URL to suit your data source.
+
+Datasource Name1
+
+Configure this field when Database Driver is set to J2EE Datasource.
+Specify any valid JNDI name that identifies the Java EE data source
+preconfigured on your target application server (For example:
+jdbc/EmployeeDB). By convention, all such names should resolve to the
+JDBC subcontext (relative to the standard java:comp/env naming context
+that is the root of all provided resource factories).
+
+Connection Specification Class2
+
+Specify the appropriate connection specification class for the selected
+Platform. Click Browse to choose from all the classes in the EclipseLink
+classpath. (For example: if Platform is
+org.eclipse.persistence.eis.aq.AQPlatform, use
+org.eclipse.persistence.eis.aq.AQEISConnectionSpec). For more
+information on platform configuration, see Configuring an EIS Data
+Source Platform at the Session Level.
+
+Connection Factory URL2
+
+Specify the appropriate connection factory URL for the selected
+Connection Specification Class (For example:
+jdbc:oracle:thin@:localhost:1521:orcl).
+
+1For sessions that contain a `+DatabaseLogin+`. 2For sessions that
+contain an `+EISLogin+`.
+
+For more information, see
+link:#Configuring_Connection_Pool_Connection_Options[Configuring
+Connection Pool Connection Options]
+
+== Configuring Exclusive Read Connections
+
+An exclusive connection is one that EclipseLink allocates specifically
+to a given session and one that is never used by any other session.
+
+Allowing concurrent reads on the same connection reduces the number of
+read connections required and reduces the risk of having to wait for an
+available connection. However, many JDBC drivers do not support
+concurrent reads.
+
+If you are using
+link:Introduction%20to%20Data%20Access%20(ELUG)#Internal_Connection_Pools[Internal
+Connection Pools], you can configure EclipseLink to acquire an exclusive
+connection from the read connection pool.
+
+By default, EclipseLink acquires exclusive read connections.
+
+If you are using external connection pools, read connections are always
+exclusive.
+
+=== How to Configure Exclusive Read Connections Using Workbench
+
+To configure an EclipseLink read connection pool to allocate exclusive
+connections, use this procedure:
+
+[arabic]
+. Expand a server session to reveal its connection pools in the
+*Navigator*.
+. Select a read connection pool in the *Navigator*. Its properties
+appear in the Editor.
+. Click the *Login* tab. The Login tab appears.
+. Click the *Connection* subtab. The Connection subtab appears.
+[#Figure 97-6]##*_Login Tab, Connection Subtab, Exclusive Connections
+Option_* image:exclus.gif[Login Tab, Connection Subtab, Exclusive
+Connections
+Option,title="Login Tab, Connection Subtab, Exclusive Connections Option"]
+
+Select the *Exclusive Connections* option to configure EclipseLink to
+acquire an exclusive connection from the read connection pool.
+
+Deselect the *Exclusive Connections* option to configure EclipseLink to
+share read connections and allow concurrent reads. Before selecting this
+option, ensure that your JDBC driver supports concurrent reads.
+
+For more information, see
+link:#Configuring_Exclusive_Read_Connections[Configuring Exclusive Read
+Connections]
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Release_1[Category: Release 1] Category:_Task[Category: Task]

@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,7 +27,7 @@ import javax.lang.model.type.PrimitiveType;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.TypeVariable;
 import javax.lang.model.type.WildcardType;
-import javax.lang.model.util.SimpleTypeVisitor8;
+import javax.lang.model.util.SimpleTypeVisitor14;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotatedElement;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
@@ -39,7 +40,7 @@ import org.eclipse.persistence.internal.jpa.modelgen.MetadataMirrorFactory;
  * @author Guy Pelletier
  * @since EclipseLink 1.2
  */
-public class TypeVisitor<R, P> extends SimpleTypeVisitor8<MetadataAnnotatedElement, MetadataAnnotatedElement> {
+public class TypeVisitor<R, P> extends SimpleTypeVisitor14<MetadataAnnotatedElement, MetadataAnnotatedElement> {
     public static String GENERIC_TYPE = "? extends Object";
 
     private static final Pattern PATTERN = Pattern.compile("[(@:)\\s]+");
@@ -157,6 +158,7 @@ public class TypeVisitor<R, P> extends SimpleTypeVisitor8<MetadataAnnotatedEleme
         // set method with the boxed class which will not be found. We deal with
         // boxing the type when generating the canonical model.
         annotatedElement.setPrimitiveType(primitiveType);
+        annotatedElement.setType(primitiveType.getKind().toString().toLowerCase());
         return annotatedElement;
     }
 
@@ -179,21 +181,14 @@ public class TypeVisitor<R, P> extends SimpleTypeVisitor8<MetadataAnnotatedEleme
     }
 
     private static String getName(TypeMirror type) {
-        String name = null;
-        switch (type.getKind()) {
-            case ARRAY:
-                name = getName(((ArrayType) type).getComponentType()) + "[]";
-                break;
-            case TYPEVAR:
-                name = ((TypeVariable) type).asElement().toString();
-                break;
-            case DECLARED:
-                name = ((DeclaredType) type).asElement().toString();
-                break;
-            default:
+        String name = switch (type.getKind()) {
+            case ARRAY -> getName(((ArrayType) type).getComponentType()) + "[]";
+            case TYPEVAR -> ((TypeVariable) type).asElement().toString();
+            case DECLARED -> ((DeclaredType) type).asElement().toString();
+            default ->
                 // type.getKind().isPrimitive()
-                name = type.toString();
-        }
+                    type.toString();
+        };
         //ignore ElementType.TYPE_USE annotations which may be applied
         //on the componentType in the array
         //XXX: on jdk8, returned String from TypeMirror.toString() looks like:

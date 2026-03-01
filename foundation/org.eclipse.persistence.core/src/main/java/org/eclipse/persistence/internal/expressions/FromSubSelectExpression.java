@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,12 +14,13 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.expressions;
 
-import java.io.*;
-import java.util.*;
-
-import org.eclipse.persistence.expressions.*;
+import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.queries.ReportItem;
+
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.util.Map;
 
 /**
  * Allow a table expression to be created on a sub-select to define a sub-select in the from clause.
@@ -102,7 +103,7 @@ public class FromSubSelectExpression extends TableExpression {
      * Also iterate over the sub-select if present.
      */
     @Override
-    public void iterateOn(ExpressionIterator iterator) {
+    public void iterateOn(ExpressionIterator<?> iterator) {
         super.iterateOn(iterator);
         if (this.subSelect != null) {
             this.subSelect.iterateOn(iterator);
@@ -114,7 +115,7 @@ public class FromSubSelectExpression extends TableExpression {
      * Also copy over the sub-select if present.
      */
     @Override
-    protected void postCopyIn(Map alreadyDone) {
+    protected void postCopyIn(Map<Expression, Expression> alreadyDone) {
         super.postCopyIn(alreadyDone);
         if (this.subSelect != null) {
             this.subSelect = (SubSelectExpression)this.subSelect.copiedVersionFrom(alreadyDone);

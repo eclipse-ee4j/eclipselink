@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,20 +20,21 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * <p><b>Purpose</b>: This annotation indicates that a specific property should be flagged as write-only
+ * This annotation indicates that a specific property should be flagged as write-only
  * by EclipseLink. The value for this property will be written out to XML during
  * a marshal, but ignored during unmarshal if flagged as write-only.
  *
- * <p><b>Example:</b><br>
- * <code>
- * &nbsp;@XmlRootElement(name="customer")<br>
- * &nbsp;public class Customer {<br>
- * &nbsp;&nbsp;&nbsp;&nbsp;...<br>
- * &nbsp;&nbsp;&nbsp;&nbsp;@XmlElement<br>
- * &nbsp;&nbsp;&nbsp;&nbsp;@XmlWriteOnly<br>
- * &nbsp;&nbsp;&nbsp;&nbsp;public String firstName<br>
- * &nbsp;&nbsp;&nbsp;&nbsp;...<br>
- * &nbsp;}</code>
+ * <p><b>Example:</b>
+ * {@snippet :
+ *  @XmlRootElement(name="customer")
+ *  public class Customer {
+ *
+ *      @XmlElement
+ *      @XmlWriteOnly
+ *      public String firstName;
+ *
+ *  }
+ * }
  */
 @Target({ElementType.FIELD, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)

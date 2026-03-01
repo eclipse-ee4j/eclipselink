@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,9 +14,11 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.identitymaps;
 
+import org.eclipse.persistence.internal.identitymaps.IdentityMap;
+import org.eclipse.persistence.testing.framework.TestCase;
+import org.eclipse.persistence.testing.framework.TestErrorException;
+
 import java.util.Vector;
-import org.eclipse.persistence.testing.framework.*;
-import org.eclipse.persistence.internal.identitymaps.*;
 
 /** Perfrom several remove operations on an identity map. <p>
 Ensure only that subsequent retrievals on the removal keys return null.
@@ -39,7 +41,7 @@ public class MultipleDeleteFromIdentityMapTest extends TestCase {
 
     public int identityIndexOf(Vector collection, Object target) {
         for (int index = collection.size(); index > 0; index--) {
-            if (collection.elementAt(index) == target) {
+            if (collection.get(index) == target) {
                 return index;
             }
         }
@@ -50,21 +52,21 @@ public class MultipleDeleteFromIdentityMapTest extends TestCase {
     @Override
     public void test() {
         for (int index = 0; index < primaryKeys.size(); index++) {
-            Vector key = (Vector)primaryKeys.elementAt(index);
-            Object value = originalObjects.elementAt(index);
+            Vector key = (Vector)primaryKeys.get(index);
+            Object value = originalObjects.get(index);
             map.put(key, value, null, 0);
         }
 
         deletedObjects = new Vector();
         for (int index = 0; index < deletionKeys.size(); index++) {
-            Vector key = (Vector)deletionKeys.elementAt(index);
-            deletedObjects.addElement(map.remove(key, null));
+            Vector key = (Vector)deletionKeys.get(index);
+            deletedObjects.add(map.remove(key, null));
         }
 
         retrievedObjects = new Vector();
         for (int index = 0; index < primaryKeys.size(); index++) {
-            Vector key = (Vector)primaryKeys.elementAt(index);
-            retrievedObjects.addElement(map.get(key));
+            Vector key = (Vector)primaryKeys.get(index);
+            retrievedObjects.add(map.get(key));
         }
     }
 
@@ -74,10 +76,10 @@ public class MultipleDeleteFromIdentityMapTest extends TestCase {
         int expectedSize = numberOfOriginalObjects - deletionKeys.size();
 
         for (int index = 0; index < deletionKeys.size(); index++) {
-            Vector key = (Vector)deletionKeys.elementAt(index);
+            Vector key = (Vector)deletionKeys.get(index);
             int originalPosition = primaryKeys.indexOf(key);
 
-            Object deletedObject = deletedObjects.elementAt(index);
+            Object deletedObject = deletedObjects.get(index);
 
             if (originalPosition >= 0) {
                 expectedSize += verifyMatchesOriginalObject(deletedObject, originalPosition);
@@ -100,7 +102,7 @@ public class MultipleDeleteFromIdentityMapTest extends TestCase {
 
     public int verifyMatchesOriginalObject(Object deletedObject, int originalPosition) {
         //deleted primary key was in identity map
-        Object originalObject = originalObjects.elementAt(originalPosition);
+        Object originalObject = originalObjects.get(originalPosition);
         if (originalObject == deletedObject) {
             return -1;
         } else {

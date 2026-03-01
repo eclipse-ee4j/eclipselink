@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -166,12 +166,12 @@ import org.eclipse.persistence.queries.FetchGroupTracker;
 /**
  * INTERNAL:
  * A mapped superclass accessor.
- *
+ * <p>
  * When adding new metadata objects, be sure to include their initialization in
  * initXMLObject. This sets the accessible object and the location of the
  * ORMetadata which is used when merging. Also new member metadata variables
  * need to be added to the merge method.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -195,17 +195,17 @@ public class MappedSuperclassAccessor extends ClassAccessor {
 
     private CacheMetadata m_cache;
     private CacheInterceptorMetadata m_cacheInterceptor;
-    private List<CacheIndexMetadata> m_cacheIndexes = new ArrayList<CacheIndexMetadata>();
+    private List<CacheIndexMetadata> m_cacheIndexes = new ArrayList<>();
 
-    private List<EntityListenerMetadata> m_entityListeners = new ArrayList<EntityListenerMetadata>();
-    private List<FetchGroupMetadata> m_fetchGroups = new ArrayList<FetchGroupMetadata>();
-    private List<NamedQueryMetadata> m_namedQueries = new ArrayList<NamedQueryMetadata>();
-    private List<NamedNativeQueryMetadata> m_namedNativeQueries = new ArrayList<NamedNativeQueryMetadata>();
-    private List<NamedStoredFunctionQueryMetadata> m_namedStoredFunctionQueries = new ArrayList<NamedStoredFunctionQueryMetadata>();
-    private List<NamedStoredProcedureQueryMetadata> m_namedStoredProcedureQueries = new ArrayList<NamedStoredProcedureQueryMetadata>();
-    private List<NamedPLSQLStoredFunctionQueryMetadata> m_namedPLSQLStoredFunctionQueries = new ArrayList<NamedPLSQLStoredFunctionQueryMetadata>();
-    private List<NamedPLSQLStoredProcedureQueryMetadata> m_namedPLSQLStoredProcedureQueries = new ArrayList<NamedPLSQLStoredProcedureQueryMetadata>();
-    private List<SQLResultSetMappingMetadata> m_sqlResultSetMappings = new ArrayList<SQLResultSetMappingMetadata>();
+    private List<EntityListenerMetadata> m_entityListeners = new ArrayList<>();
+    private List<FetchGroupMetadata> m_fetchGroups = new ArrayList<>();
+    private List<NamedQueryMetadata> m_namedQueries = new ArrayList<>();
+    private List<NamedNativeQueryMetadata> m_namedNativeQueries = new ArrayList<>();
+    private List<NamedStoredFunctionQueryMetadata> m_namedStoredFunctionQueries = new ArrayList<>();
+    private List<NamedStoredProcedureQueryMetadata> m_namedStoredProcedureQueries = new ArrayList<>();
+    private List<NamedPLSQLStoredFunctionQueryMetadata> m_namedPLSQLStoredFunctionQueries = new ArrayList<>();
+    private List<NamedPLSQLStoredProcedureQueryMetadata> m_namedPLSQLStoredProcedureQueries = new ArrayList<>();
+    private List<SQLResultSetMappingMetadata> m_sqlResultSetMappings = new ArrayList<>();
 
     private MetadataClass m_idClass;
     private MultitenantMetadata m_multitenant;
@@ -560,7 +560,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
      * specify a lifecycle annotation on a field so we don't need to check as we
      * do when checking the methods.
      *
-     * @see processAccessType()
+     * @see #processAccessType()
      */
     protected boolean hasObjectRelationalFieldMappingAnnotationsDefined() {
         Collection<MetadataField> fields = getJavaClass().getFields().values();
@@ -581,7 +581,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
      * of this accessor. Note: life cycle annotations are NOT object relational
      * mappings therefore should not influence the decision.
      *
-     * @see processAccessType()
+     * @see #processAccessType()
      */
     protected boolean hasObjectRelationalMethodMappingAnnotationsDefined() {
         Collection<MetadataMethod> methods = getJavaClass().getMethods().values();
@@ -729,7 +729,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
      * INTERNAL:
      * The pre-process method is called during regular deployment and metadata
      * processing.
-     *
+     * <p>
      * This method will pre-process the items of interest on this mapped
      * superclass for each entity class that inherits from it. The order of
      * processing is important, care must be taken if changes must be made.
@@ -744,6 +744,33 @@ public class MappedSuperclassAccessor extends ClassAccessor {
 
         // Process our parents metadata after processing our own.
         super.preProcess();
+    }
+
+    @Override
+    public void preProcessForCanonicalModel() {
+
+        // Process the named query metadata.
+        processNamedQueries();
+
+        // Process the named native query metadata.
+        processNamedNativeQueries();
+
+        // Process the named stored procedure query metadata
+        processNamedStoredProcedureQueries();
+
+        // Process the named stored function query metadata
+        processNamedStoredFunctionQueries();
+
+        // Process the named PLSQL stored procedure query metadata
+        processNamedPLSQLStoredProcedureQueries();
+
+        // Process the named PLSQL stored function query metadata
+        processNamedPLSQLStoredFunctionQueries();
+
+        // Process the sql result set mapping metadata
+        processSqlResultSetMappings();
+
+        super.preProcessForCanonicalModel();
     }
 
     /**
@@ -1016,6 +1043,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         }
 
         for (CacheIndexMetadata indexMetadata : m_cacheIndexes) {
+            indexMetadata.setProject(getProject());
             indexMetadata.process(getDescriptor(), null);
         }
     }
@@ -1143,13 +1171,13 @@ public class MappedSuperclassAccessor extends ClassAccessor {
      * same named fetch groups within XML and annotations and XML named fetch
      * groups must override a similar named fetch group defined within an
      * annotation.
-     *
+     * <p>
      * This method will be called from both Entity And MappedSuperclass. The
      * fetch groups from the entity are added first followed by those from its
      * mapped superclass(es).
      */
     protected void processFetchGroups() {
-        Map<String, FetchGroupMetadata> fetchGroups = new HashMap<String, FetchGroupMetadata>();
+        Map<String, FetchGroupMetadata> fetchGroups = new HashMap<>();
 
         // Process the XML fetch groups first.
         for (FetchGroupMetadata fetchGroup : m_fetchGroups) {
@@ -1522,20 +1550,20 @@ public class MappedSuperclassAccessor extends ClassAccessor {
     protected void processSequenceGenerator() {
         // Process the xml defined sequence generator first.
         if (m_sequenceGenerator != null) {
-            getProject().addSequenceGenerator(m_sequenceGenerator, getDescriptor().getDefaultCatalog(), getDescriptor().getDefaultSchema());
+            getProject().addSequenceGenerator(m_sequenceGenerator, getDescriptor().getDefaultCatalog(), getDescriptor().getDefaultSchema(), null);
         }
 
         MetadataAnnotation sequenceGenerators = getAnnotation(JPA_SEQUENCE_GENERATORS);
         if (sequenceGenerators != null) {
             for (Object sequenceGenerator : sequenceGenerators.getAttributeArray("value")) {
                 // Ask the common processor to process what we found.
-                getProject().addSequenceGenerator(new SequenceGeneratorMetadata((MetadataAnnotation) sequenceGenerator, this), getDescriptor().getDefaultCatalog(), getDescriptor().getDefaultSchema());
+                getProject().addSequenceGenerator(new SequenceGeneratorMetadata((MetadataAnnotation) sequenceGenerator, this), getDescriptor().getDefaultCatalog(), getDescriptor().getDefaultSchema(), null);
             }
         }
 
         if (isAnnotationPresent(JPA_SEQUENCE_GENERATOR)) {
             // Ask the common processor to process what we found.
-            getProject().addSequenceGenerator(new SequenceGeneratorMetadata(getAnnotation(JPA_SEQUENCE_GENERATOR), this), getDescriptor().getDefaultCatalog(), getDescriptor().getDefaultSchema());
+            getProject().addSequenceGenerator(new SequenceGeneratorMetadata(getAnnotation(JPA_SEQUENCE_GENERATOR), this), getDescriptor().getDefaultCatalog(), getDescriptor().getDefaultSchema(), null);
         }
     }
 
@@ -1594,19 +1622,19 @@ public class MappedSuperclassAccessor extends ClassAccessor {
     protected void processTableGenerator() {
         // Process the xml defined table generator first.
         if (m_tableGenerator != null) {
-            getProject().addTableGenerator(m_tableGenerator, getDescriptor().getDefaultCatalog(), getDescriptor().getDefaultSchema());
+            getProject().addTableGenerator(m_tableGenerator, getDescriptor().getDefaultCatalog(), getDescriptor().getDefaultSchema(), null);
         }
 
         MetadataAnnotation tableGenerators = getAnnotation(JPA_TABLE_GENERATORS);
         if (tableGenerators != null) {
             for (Object tableGenerator : tableGenerators.getAttributeArray("value")) {
                 // Ask the common processor to process what we found.
-                getProject().addTableGenerator(new TableGeneratorMetadata((MetadataAnnotation) tableGenerator, this), getDescriptor().getDefaultCatalog(), getDescriptor().getDefaultSchema());
+                getProject().addTableGenerator(new TableGeneratorMetadata((MetadataAnnotation) tableGenerator, this), getDescriptor().getDefaultCatalog(), getDescriptor().getDefaultSchema(), null);
             }
         }
 
         if (isAnnotationPresent(JPA_TABLE_GENERATOR)) {
-            getProject().addTableGenerator(new TableGeneratorMetadata(getAnnotation(JPA_TABLE_GENERATOR), this), getDescriptor().getDefaultCatalog(), getDescriptor().getDefaultSchema());
+            getProject().addTableGenerator(new TableGeneratorMetadata(getAnnotation(JPA_TABLE_GENERATOR), this), getDescriptor().getDefaultCatalog(), getDescriptor().getDefaultSchema(), null);
         }
     }
 

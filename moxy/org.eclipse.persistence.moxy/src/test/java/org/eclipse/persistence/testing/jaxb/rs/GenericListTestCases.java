@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -64,7 +64,7 @@ public class GenericListTestCases extends TestCase {
         try (InputStream entityStream = jsonResource.openStream();
                 Scanner scanner = new Scanner(entityStream, "UTF-8")) {
             String expected = scanner.useDelimiter("\\A").next();
-            assertEquals(expected, new String(outputStream.toByteArray()));
+            assertEquals(expected, outputStream.toString());
         }
     }
 

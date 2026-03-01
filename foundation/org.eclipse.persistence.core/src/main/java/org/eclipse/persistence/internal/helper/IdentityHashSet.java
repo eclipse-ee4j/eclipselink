@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,6 +15,19 @@
 package org.eclipse.persistence.internal.helper;
 
 
+// J2SE imports
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serial;
+import java.io.Serializable;
+import java.util.AbstractCollection;
+import java.util.Collection;
+import java.util.ConcurrentModificationException;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+import java.util.Set;
+
 /**
  * INTERNAL:
  * <p>
@@ -24,29 +37,17 @@ package org.eclipse.persistence.internal.helper;
  * object redefines its equals() method. Additionally, this implementation does
  * <b>not</b> allow null elements.
  * <p>
- * This class does <b>not</b> inherit from {@link AbstractSet} because the
- * method {@link AbstractSet#removeAll removeAll(Collection c)} does not work
+ * This class does <b>not</b> inherit from {@link java.util.AbstractSet} because the
+ * method {@link java.util.AbstractSet#removeAll removeAll(Collection c)} does not work
  * correctly with reference equality testing (NB the Javadocs for
- * {@link AbstractCollection} indicates that removeAll is an optional method).
+ * {@link java.util.AbstractCollection} indicates that removeAll is an optional method).
  *
  * @author Mike Norman (since TopLink 10.1.3)
  *
  */
-
-// J2SE imports
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
-import java.util.AbstractCollection;
-import java.util.Collection;
-import java.util.ConcurrentModificationException;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
-import java.util.Set;
-
 public class IdentityHashSet extends AbstractCollection implements Set, Cloneable, Serializable {
-    static final long serialVersionUID = 1619330892277906704L;
+    @Serial
+    private static final long serialVersionUID = 1619330892277906704L;
 
     // the default initial capacity
     static final int DEFAULT_INITIAL_CAPACITY = 32;
@@ -429,6 +430,7 @@ public class IdentityHashSet extends AbstractCollection implements Set, Cloneabl
      * <i>size</i> of the <code>IdentityHashSet</code>, followed by the
      * contents (in no particular order).
      */
+    @Serial
     private void writeObject(ObjectOutputStream s) throws IOException, ClassNotFoundException {
         // Write out the threshold, loadfactor (and any hidden 'magic' stuff).
         s.defaultWriteObject();
@@ -446,6 +448,7 @@ public class IdentityHashSet extends AbstractCollection implements Set, Cloneabl
     /**
      * Deserialize the <code>IdentityHashSet</code> from a stream.
      */
+    @Serial
     private void readObject(ObjectInputStream s) throws IOException, ClassNotFoundException {
         // Read in the threshold, loadfactor (and any hidden 'magic' stuff).
         s.defaultReadObject();

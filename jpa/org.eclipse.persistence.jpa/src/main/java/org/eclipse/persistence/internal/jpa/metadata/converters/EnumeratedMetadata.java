@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,6 +22,12 @@
 //       - 337323: Multi-tenant with shared schema support (part 1)
 package org.eclipse.persistence.internal.jpa.metadata.converters;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import org.eclipse.persistence.internal.helper.BasicTypeHelperImpl;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataHelper;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.converters.EnumTypeConverter;
 
@@ -29,14 +36,16 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.MappingAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataField;
 
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ENUMERATED_VALUE;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ENUM_ORDINAL;
 
 /**
  * INTERNAL:
  * Abstract converter class that parents both the JPA and Eclipselink
  * converters.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -83,8 +92,7 @@ public class EnumeratedMetadata extends MetadataConverter {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (super.equals(objectToCompare) && objectToCompare instanceof EnumeratedMetadata) {
-            EnumeratedMetadata enumerated = (EnumeratedMetadata) objectToCompare;
+        if (super.equals(objectToCompare) && objectToCompare instanceof EnumeratedMetadata enumerated) {
             return valuesMatch(m_enumeratedType, enumerated.getEnumeratedType());
         }
 
@@ -122,11 +130,44 @@ public class EnumeratedMetadata extends MetadataConverter {
         if (! EnumeratedMetadata.isValidEnumeratedType(referenceClass)) {
             throw ValidationException.invalidTypeForEnumeratedAttribute(mapping.getAttributeName(), referenceClass, accessor.getJavaClass());
         }
+        List<MetadataField> annotatedFields = new ArrayList<>();
+        Collection<MetadataField> fields = referenceClass.getFields().values();
         boolean isOrdinal = true;
+        for (MetadataField field : fields) {
+            if (field.isAnnotationPresent(JPA_ENUMERATED_VALUE)) {
+                isOrdinal = !"java.lang.String".equals(field.getType());
+                annotatedFields.add(field);
+            }
+        }
+        if (annotatedFields.size() > 1) {
+            throw ValidationException.incorrectNumberOfEnumeratedValueAnnotation(referenceClass.getName());
+        }
+        MetadataField annotatedField = null;
+        Class<?> fieldType = null;
+        if (annotatedFields.size() == 1) {
+            MetadataClass metadataClass = getMetadataFactory().getMetadataClass(referenceClass.getName());
+            annotatedField = metadataClass.getField(annotatedFields.get(0).getName());
+            fieldType = MetadataHelper.getClassForName(annotatedField.getType(), getMetadataFactory().getLoader());
+        }
         if (m_enumeratedType != null) {
+            // this setting wins
             isOrdinal = m_enumeratedType.equals(JPA_ENUM_ORDINAL);
         }
-        setConverter(mapping, new EnumTypeConverter(mapping, referenceClass.getName(), isOrdinal), isForMapKey);
+        EnumTypeConverter enumTypeConverter = new EnumTypeConverter(mapping, referenceClass.getName());
+        enumTypeConverter.setUseOrdinalValues(isOrdinal);
+        if (annotatedField != null) {
+            if (isOrdinal) {
+                if (!BasicTypeHelperImpl.getInstance().isIntegralType(fieldType) || char.class.equals(fieldType) || Character.class.equals(fieldType)) {
+                    throw ValidationException.invalidFieldTypeForOrdinalEnumType(annotatedFields.get(0).getName(), referenceClass);
+                }
+            } else {
+                if (!String.class.equals(fieldType)) {
+                    throw ValidationException.invalidFieldTypeForStringEnumType(annotatedFields.get(0).getName(), referenceClass);
+                }
+            }
+            enumTypeConverter.setEnumFieldName(annotatedField.getName());
+        }
+        setConverter(mapping, enumTypeConverter, isForMapKey);
     }
 
     /**

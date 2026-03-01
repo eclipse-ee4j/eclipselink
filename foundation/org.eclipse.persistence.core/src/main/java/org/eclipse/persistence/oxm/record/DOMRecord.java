@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,6 +14,36 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.oxm.record;
 
+import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.oxm.exceptions.XMLMarshalException;
+import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.oxm.ReferenceResolver;
+import org.eclipse.persistence.internal.oxm.UnmarshalXPathEngine;
+import org.eclipse.persistence.internal.oxm.XMLConversionManager;
+import org.eclipse.persistence.internal.oxm.XPathEngine;
+import org.eclipse.persistence.internal.oxm.mappings.Field;
+import org.eclipse.persistence.internal.oxm.record.TransformationRecord;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.oxm.IDResolver;
+import org.eclipse.persistence.oxm.NamespaceResolver;
+import org.eclipse.persistence.oxm.XMLConstants;
+import org.eclipse.persistence.oxm.XMLField;
+import org.eclipse.persistence.oxm.XMLLogin;
+import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
+import org.eclipse.persistence.platform.xml.XMLParser;
+import org.eclipse.persistence.platform.xml.XMLPlatform;
+import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
+import org.eclipse.persistence.platform.xml.XMLTransformer;
+import org.w3c.dom.Attr;
+import org.w3c.dom.Document;
+import org.w3c.dom.DocumentFragment;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
+import javax.xml.namespace.QName;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -26,38 +56,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.Vector;
-
-import javax.xml.namespace.QName;
-
-import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
-import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.internal.oxm.ReferenceResolver;
-import org.eclipse.persistence.internal.oxm.UnmarshalXPathEngine;
-import org.eclipse.persistence.internal.oxm.XMLConversionManager;
-import org.eclipse.persistence.oxm.IDResolver;
-import org.eclipse.persistence.oxm.XMLField;
-import org.eclipse.persistence.oxm.XMLConstants;
-import org.eclipse.persistence.oxm.XMLLogin;
-import org.eclipse.persistence.internal.oxm.XPathEngine;
-import org.eclipse.persistence.internal.oxm.mappings.Field;
-import org.eclipse.persistence.internal.oxm.record.TransformationRecord;
-import org.eclipse.persistence.internal.sessions.AbstractRecord;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.oxm.NamespaceResolver;
-import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
-import org.eclipse.persistence.platform.xml.XMLParser;
-import org.eclipse.persistence.platform.xml.XMLPlatform;
-import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
-import org.eclipse.persistence.platform.xml.XMLTransformer;
-import org.eclipse.persistence.exceptions.ValidationException;
-import org.eclipse.persistence.exceptions.XMLMarshalException;
-import org.w3c.dom.Attr;
-import org.w3c.dom.Document;
-import org.w3c.dom.DocumentFragment;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 /**
  * PUBLIC:
@@ -218,8 +216,7 @@ public class DOMRecord extends XMLRecord implements TransformationRecord {
      * to a node value usable with the XPathEngine.
      */
     private Object convertToNodeValue(Object value) {
-        if (value instanceof List) {
-            List values = (List)value;
+        if (value instanceof List values) {
             Vector nodeValues = new Vector(values.size());
             for (int index = 0; index < values.size(); index++) {
                 Object nestedValue = values.get(index);
@@ -279,7 +276,7 @@ public class DOMRecord extends XMLRecord implements TransformationRecord {
         XMLPlatform xmlPlatform = XMLPlatformFactory.getInstance().getXMLPlatform();
         Document document = xmlPlatform.createDocument();
 
-        if (defaultRootElementName == null || defaultRootElementName.length() == 0) {
+        if (defaultRootElementName == null || defaultRootElementName.isEmpty()) {
             DocumentFragment fragment = document.createDocumentFragment();
             return fragment;
         } else {
@@ -528,7 +525,7 @@ public class DOMRecord extends XMLRecord implements TransformationRecord {
         XMLConversionManager xmlCnvMgr = (XMLConversionManager) session.getDatasourcePlatform().getConversionManager();
         if (key.isTypedTextField() && (node != null)) {
             String schemaType = node.getAttributeNS(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
-            if ((null != schemaType) && (schemaType.length() > 0)) {
+            if ((null != schemaType) && (!schemaType.isEmpty())) {
                 QName qname = null;
                 int index = schemaType.indexOf(XMLConstants.COLON);
                 if (index == -1) {
@@ -587,7 +584,7 @@ public class DOMRecord extends XMLRecord implements TransformationRecord {
         NodeList replaced = null;
         boolean isEmptyCollection = false;
         if (nodeValue instanceof Collection) {
-            isEmptyCollection = ((Collection)nodeValue).size() == 0;
+            isEmptyCollection = ((Collection) nodeValue).isEmpty();
             replaced = XPathEngine.getInstance().replaceCollection(convertToXMLField(key), dom, (Collection)nodeValue, session);
         } else {
             replaced = XPathEngine.getInstance().replaceValue(convertToXMLField(key), dom, nodeValue, session);
@@ -612,7 +609,7 @@ public class DOMRecord extends XMLRecord implements TransformationRecord {
         List<XMLEntry> replaced = null;
 
         replaced = XPathEngine.getInstance().replaceCollection(xmlFields, valuesToWrite, dom, getDocPresPolicy(), lastUpdatedField, session);
-        if(replaced.size() == 0) {
+        if(replaced.isEmpty()) {
             XPathEngine.getInstance().create(xmlFields, dom, valuesToWrite, lastUpdatedField, getDocPresPolicy(), session);
         }
         return replaced;
@@ -659,7 +656,7 @@ public class DOMRecord extends XMLRecord implements TransformationRecord {
         Vector fields = getFields();
         Vector values = getValues();
         for (int i = 0; i < size; i++) {
-            tempMap.put(fields.elementAt(i), values.elementAt(i));
+            tempMap.put(fields.get(i), values.get(i));
         }
         return tempMap.entrySet();
     }
@@ -747,7 +744,7 @@ public class DOMRecord extends XMLRecord implements TransformationRecord {
     @Override
     public String toString() {
         StringWriter writer = new StringWriter();
-        writer.write(Helper.getShortClassName(getClass()));
+        writer.write(getClass().getSimpleName());
         writer.write("(");
         transformToWriter(writer);
         writer.write(")");

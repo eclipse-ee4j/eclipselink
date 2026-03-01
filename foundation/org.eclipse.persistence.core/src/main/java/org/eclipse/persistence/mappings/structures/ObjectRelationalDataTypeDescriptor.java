@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,14 +15,6 @@
 //     14/05/2012-2.4 Guy Pelletier
 //       - 376603: Provide for table per tenant support for multitenant applications
 package org.eclipse.persistence.mappings.structures;
-
-import java.sql.Array;
-import java.sql.Ref;
-import java.sql.Struct;
-import java.sql.Types;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.Vector;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
@@ -40,6 +32,15 @@ import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.queries.ValueReadQuery;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 
+import java.sql.Array;
+import java.sql.Ref;
+import java.sql.Struct;
+import java.sql.Types;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
+
 /**
  * <p><b>Purpose:</b>
  * Differentiates object-relational descriptors from normal relational descriptors.
@@ -49,11 +50,11 @@ import org.eclipse.persistence.sessions.DatabaseRecord;
 @SuppressWarnings("unchecked")
 public class ObjectRelationalDataTypeDescriptor extends RelationalDescriptor {
     protected String structureName;
-    protected Vector orderedFields;
-    protected Vector allOrderedFields;
+    protected List<DatabaseField> orderedFields;
+    protected List<DatabaseField> allOrderedFields;
 
     public ObjectRelationalDataTypeDescriptor() {
-        this.orderedFields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+        this.orderedFields = new ArrayList<>();
     }
 
     /**
@@ -63,7 +64,7 @@ public class ObjectRelationalDataTypeDescriptor extends RelationalDescriptor {
     @Override
     public void initialize(AbstractSession session) throws DescriptorException {
         super.initialize(session);
-        if (orderedFields==null || orderedFields.size()==0){
+        if (orderedFields==null || orderedFields.isEmpty()){
            orderedFields=getAllFields();
         }
         setAllOrderedFields();
@@ -77,7 +78,7 @@ public class ObjectRelationalDataTypeDescriptor extends RelationalDescriptor {
      * @param fieldName the name of the field to add ordering on.
      */
     public void addFieldOrdering(String fieldName) {
-        getOrderedFields().addElement(new DatabaseField(fieldName));
+        getOrderedFields().add(new DatabaseField(fieldName));
     }
 
     /**
@@ -87,7 +88,7 @@ public class ObjectRelationalDataTypeDescriptor extends RelationalDescriptor {
      * The field value better be an Array.
      */
     @Override
-    public Vector buildDirectValuesFromFieldValue(Object fieldValue) throws DatabaseException {
+    public List<Object> buildDirectValuesFromFieldValue(Object fieldValue) throws DatabaseException {
 
         if(fieldValue == null) {
             return null;
@@ -104,7 +105,7 @@ public class ObjectRelationalDataTypeDescriptor extends RelationalDescriptor {
      */
     @Override
     public Object buildFieldValueFromDirectValues(Vector directValues, String elementDataTypeName, AbstractSession session) throws DatabaseException {
-        Object[] fields = Helper.arrayFromVector(directValues);
+        Object[] fields = directValues.toArray(new Object[0]);
         try {
             session.getAccessor().incrementCallCount(session);
             java.sql.Connection connection = session.getAccessor().getConnection();
@@ -148,8 +149,8 @@ public class ObjectRelationalDataTypeDescriptor extends RelationalDescriptor {
             }
 
             int i = 0;
-            for (Enumeration stream = nestedRows.elements(); stream.hasMoreElements();) {
-                AbstractRecord nestedRow = (AbstractRecord)stream.nextElement();
+            for (Iterator iterator = nestedRows.iterator(); iterator.hasNext();) {
+                AbstractRecord nestedRow = (AbstractRecord) iterator.next();
                 fields[i++] = this.buildStructureFromRow(nestedRow, session, connection);
             }
 
@@ -169,7 +170,7 @@ public class ObjectRelationalDataTypeDescriptor extends RelationalDescriptor {
       * This method allows the field value to  be an ARRAY containing other structures
       * such as arrays or Struct, or direct values.
       */
-     static public Object buildContainerFromArray(Array fieldValue, ObjectRelationalDatabaseField arrayField, AbstractSession session) throws DatabaseException {
+     public static Object buildContainerFromArray(Array fieldValue, ObjectRelationalDatabaseField arrayField, AbstractSession session) throws DatabaseException {
         if (arrayField.getType()==null){
             return fieldValue;
         }
@@ -241,7 +242,7 @@ public class ObjectRelationalDataTypeDescriptor extends RelationalDescriptor {
         Object[] attributes = (Object[])fieldValue;
 
         for (int index = 0; index < getAllOrderedFields().size(); index++) {
-            DatabaseField field = (DatabaseField) getAllOrderedFields().get(index);
+            DatabaseField field = getAllOrderedFields().get(index);
             row.put(field, attributes[index]);
         }
 
@@ -253,9 +254,9 @@ public class ObjectRelationalDataTypeDescriptor extends RelationalDescriptor {
      * Creates allOrderedFields Vector, keeping allFields contents ordered.
      */
     private void setAllOrderedFields() {
-        allOrderedFields = new Vector(orderedFields.size());
-        Vector<DatabaseField> allFieldsCopy = new Vector(getAllFields());
-        for (DatabaseField orderedField : (Vector<DatabaseField>) getOrderedFields()) {
+        allOrderedFields = new ArrayList<>(orderedFields.size());
+        List<DatabaseField> allFieldsCopy = new ArrayList<>(getAllFields());
+        for (DatabaseField orderedField : getOrderedFields()) {
             Iterator<DatabaseField> iterator = allFieldsCopy.iterator();
             while (iterator.hasNext()) {
                 DatabaseField field = iterator.next();
@@ -273,7 +274,7 @@ public class ObjectRelationalDataTypeDescriptor extends RelationalDescriptor {
      * The field value better be an ARRAY.
      */
     @Override
-    public Vector buildNestedRowsFromFieldValue(Object fieldValue, AbstractSession session) throws DatabaseException {
+    public List<AbstractRecord> buildNestedRowsFromFieldValue(Object fieldValue, AbstractSession session) throws DatabaseException {
 
         if(fieldValue==null){
             return null;
@@ -281,13 +282,13 @@ public class ObjectRelationalDataTypeDescriptor extends RelationalDescriptor {
 
         Object[] structs = (Object[])fieldValue;
 
-        Vector nestedRows = new Vector(structs.length);
+        List<AbstractRecord> nestedRows = new Vector<>(structs.length);
         for (int i = 0; i < structs.length; i++) {
             Object[] struct = (Object[])structs[i];
             if (struct == null) {
                 return null;
             }
-            nestedRows.addElement(this.buildNestedRowFromFieldValue(struct));
+            nestedRows.add(this.buildNestedRowFromFieldValue(struct));
         }
         return nestedRows;
     }
@@ -335,7 +336,7 @@ public class ObjectRelationalDataTypeDescriptor extends RelationalDescriptor {
 
             Object[] fields = new Object[getOrderedFields().size()];
             for (int index = 0; index < getOrderedFields().size(); index++) {
-                DatabaseField field = (DatabaseField)getOrderedFields().elementAt(index);
+                DatabaseField field = getOrderedFields().get(index);
                 fields[index] = row.get(field);
             }
 
@@ -426,7 +427,7 @@ public class ObjectRelationalDataTypeDescriptor extends RelationalDescriptor {
      * INTERNAL:
      * Return the field order.
      */
-    public Vector getOrderedFields() {
+    public List<DatabaseField> getOrderedFields() {
         return orderedFields;
     }
 
@@ -434,7 +435,7 @@ public class ObjectRelationalDataTypeDescriptor extends RelationalDescriptor {
      * INTERNAL:
      * Return allFields contents ordered.
      */
-    private Vector getAllOrderedFields() {
+    private List<DatabaseField> getAllOrderedFields() {
         return allOrderedFields;
     }
 
@@ -446,8 +447,8 @@ public class ObjectRelationalDataTypeDescriptor extends RelationalDescriptor {
      */
     public Ref getRef(Object object, AbstractSession session) {
         SQLSelectStatement statement = new SQLSelectStatement();
-        statement.addTable(getTables().firstElement());// Assumed only one for obj-rel descriptors.
-        statement.getFields().addElement(new org.eclipse.persistence.expressions.ExpressionBuilder().ref());
+        statement.addTable(getTables().get(0));// Assumed only one for obj-rel descriptors.
+        statement.getFields().add(new org.eclipse.persistence.expressions.ExpressionBuilder().ref());
         statement.setWhereClause(getObjectBuilder().buildPrimaryKeyExpressionFromObject(object, session));
         statement.setRequiresAliases(true);
         statement.normalize(session, this);
@@ -499,7 +500,7 @@ public class ObjectRelationalDataTypeDescriptor extends RelationalDescriptor {
      * INTERNAL:
      * Set the field order.
      */
-    public void setOrderedFields(Vector orderedFields) {
+    public void setOrderedFields(List<DatabaseField> orderedFields) {
         this.orderedFields = orderedFields;
     }
 

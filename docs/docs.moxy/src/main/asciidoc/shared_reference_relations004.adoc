@@ -1,0 +1,118 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[SHAREDREFERENCERELATIONS004]]
+=== Mapping Composite Key Relationships
+
+If the objects that you want to map have multi-part keys (that is, a
+combination of fields that determines uniqueness), you can use
+EclipseLink's `@XmlKey` and `@XmlJoinNodes` to set up this relationship.
+
+One or more `@XmlKey` annotations can be used to declare the primary
+keys in a given class. For a single key, either `@XmlID` or `@XmlKey`
+can be used. For composite primary keys, multiple `@XmlKey` annotations
+can be used, or a single `@XmlID` can be combined with one or more
+`@XmlKey` annotations.
+
+NOTE: Composite Keys can be useful when using JAXB to map JPA entities. For
+more information see Converting JPA entities to/from XML (via JAXB).
+
+In link:#BABHFBDI[Example 7-8], each *Employee* has one *manager* but
+multiple *reports*, and *Employees* are uniquely identified by the
+combination of their `id` and `name` fields.
+
+[[BABHFBDI]]
+
+*_Example 7-8 Using the @XmlKey and @XmlJoinNodes Annotations_*
+
+[source,oac_no_warn]
+----
+package example;
+ 
+import jakarta.xml.bind.annotation.*;
+import org.eclipse.persistence.oxm.annotations.*;
+ 
+@XmlAccessorType(XmlAccessType.FIELD)
+public class Employee {
+    @XmlID
+    @XmlAttribute
+    private Integer id;
+ 
+    @XmlKey
+    @XmlAttribute
+    private String name;
+ 
+    @XmlJoinNodes( {
+        @XmlJoinNode(xmlPath = "manager/@id", referencedXmlPath = "@id"),
+        @XmlJoinNode(xmlPath = "manager/@name", referencedXmlPath = "@name") })
+    public Employee manager;
+ 
+    @XmlJoinNodes( {
+        @XmlJoinNode(xmlPath = "report/@id", referencedXmlPath = "@id"),
+        @XmlJoinNode(xmlPath = "report/@name", referencedXmlPath = "@name") })
+    public List<Employee> reports = new ArrayList<Employee>();
+ 
+    ...
+}
+ 
+----
+
+link:#BABHAEGF[Example 7-9] shows how to define this mapping information
+in EclipseLink's OXM metadata format.
+
+[[BABHAEGF]]
+
+*_Example 7-9 Sample XML Mapping_*
+
+[source,oac_no_warn]
+----
+...
+<java-type name="Employee">
+    <java-attributes>
+        <xml-attribute java-attribute="id" xml-id="true" />
+        <xml-attribute java-attribute="name" xml-key="true" />
+        <xml-join-nodes java-attribute="manager">
+            <xml-join-node xml-path="manager/@id" referenced-xml-path="@id" />
+            <xml-join-node xml-path="manager/@name" referenced-xml-path="@name" />
+        </xml-join-nodes>
+        <xml-join-nodes java-attribute="reports" container-type="java.util.ArrayList">
+            <xml-join-node xml-path="report/@id" referenced-xml-path="@id" />
+            <xml-join-node xml-path="report/@name" referenced-xml-path="@name" />
+        </xml-join-nodes>
+    </java-attributes>
+</java-type>
+...
+ 
+----
+
+This would produce the following XML:
+
+[source,oac_no_warn]
+----
+<company>
+   <employee id="1" name="Jane Doe">
+      <report id="2" name="John Smith"/>
+      <report id="3" name="Anne Jones"/>
+   </employee>
+   <employee id="2" name="John Smith">
+      <manager id="1" name="Jane Doe"/>
+   </employee>
+   <employee id="3" name="Anne Jones">
+      <manager id="1" name="Jane Doe"/>
+   </employee>
+</company>
+----

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,7 +37,6 @@ import javax.naming.InitialContext;
 import javax.naming.NameNotFoundException;
 import java.sql.Date;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.Vector;
@@ -107,8 +106,7 @@ public class SessionBeanHATests extends JUnitTestCase {
                 System.out.println("===FindAll iteration " + i);
                 List<Employee> result = getEmployeeService().findAll();
                 int employCount = 0;
-                for (Iterator<Employee> iterator = result.iterator(); iterator.hasNext(); ) {
-                    Employee employee = iterator.next();
+                for (Employee employee : result) {
                     employCount++;
                 }
                 if (employCount != jtaCount) {
@@ -130,8 +128,7 @@ public class SessionBeanHATests extends JUnitTestCase {
                 System.out.println("===FindAllNonJTA iteration " + i);
                 List<Employee> result = em.createQuery("Select e from Employee e", Employee.class).getResultList();
                 int employCount = 0;
-                for (Iterator<Employee> iterator = result.iterator(); iterator.hasNext(); ) {
-                    Employee employee = iterator.next();
+                for (Employee employee : result) {
                     employCount++;
                 }
                 if (employCount != nonJTACount) {
@@ -282,8 +279,8 @@ public class SessionBeanHATests extends JUnitTestCase {
         }
         org.eclipse.persistence.platform.server.ServerPlatform platform = JUnitTestCase.getServerSession("sessionbean").getServerPlatform();
 
-        for (int i = 0; i < helperRunnable.length; i++) {
-            platform.launchContainerRunnable(helperRunnable[i]);
+        for (FindAllThread allThread : helperRunnable) {
+            platform.launchContainerRunnable(allThread);
         }
 
         // wait all FindAllConcurrentlyThread's for finishing FindAll queries
@@ -291,17 +288,16 @@ public class SessionBeanHATests extends JUnitTestCase {
             Thread.sleep(3000);
 
             boolean finished = true;
-            for (int i = 0; i < helperRunnable.length; i++)
-            {
-                finished = finished && helperRunnable[i].finished;
+            for (FindAllThread findAllThread : helperRunnable) {
+                finished = finished && findAllThread.finished;
             }
             if (finished) break;
         }
 
         // verify if all FindAllConcurrentlyThread's are succeeded
-        for (int i = 0; i < helperRunnable.length; i++) {
-            if (!helperRunnable[i].succeeded)
-                fail("RAC failure caused some other exception: "+helperRunnable[i].relatedException);
+        for (FindAllThread findAllThread : helperRunnable) {
+            if (!findAllThread.succeeded)
+                fail("RAC failure caused some other exception: " + findAllThread.relatedException);
         }
     }
 

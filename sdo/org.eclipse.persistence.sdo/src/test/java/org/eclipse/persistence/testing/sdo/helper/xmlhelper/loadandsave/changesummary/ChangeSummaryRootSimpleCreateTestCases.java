@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,7 +18,6 @@ import commonj.sdo.ChangeSummary;
 import commonj.sdo.DataObject;
 import commonj.sdo.helper.XMLDocument;
 import junit.textui.TestRunner;
-import org.eclipse.persistence.sdo.SDOChangeSummary;
 
 public class ChangeSummaryRootSimpleCreateTestCases extends ChangeSummaryRootLoadAndSaveTestCases {
     public ChangeSummaryRootSimpleCreateTestCases(String name) {

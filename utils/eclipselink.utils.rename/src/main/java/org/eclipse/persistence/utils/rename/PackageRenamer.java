@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,9 +37,9 @@ import java.util.*;
 public class PackageRenamer {
     private static int BUFSIZ = 1024 * 4;
 
-    private List<File> ignoreFiles = new ArrayList<File>();
+    private List<File> ignoreFiles = new ArrayList<>();
 
-    private List<RenameValue> renameValues = new ArrayList<RenameValue>();
+    private List<RenameValue> renameValues = new ArrayList<>();
 
     private int numberOfTotalFile = 0;
 
@@ -228,9 +228,9 @@ public class PackageRenamer {
         // stringContainAllFile = readAllStringsFromFile(sourceFileName);
         try {
 
-            FileInputStream fis = new FileInputStream(new File(sourceFileName));
+            FileInputStream fis = new FileInputStream(sourceFileName);
             byte[] buf = new byte[BUFSIZ];
-            StringBuffer strBuf = new StringBuffer((int) new File(
+            StringBuilder strBuf = new StringBuilder((int) new File(
                     sourceFileName).length());
             int i = 0;
             while ((i = fis.read(buf)) != -1) {
@@ -325,7 +325,7 @@ public class PackageRenamer {
             fileData.setFileContentsString(fileData.getFileContentsString().replace('.', '\\'));
         }
 
-        if (extension != null && extension.length() > 0) {
+        if (extension != null && !extension.isEmpty()) {
             fileData.setFileContentsString(fileData.getFileContentsString()
                     + "." + extension);
         }
@@ -391,7 +391,7 @@ public class PackageRenamer {
                 renameValues.add(new RenameValue(packageOrClassName, value));
             }
         }
-        Collections.sort(renameValues, RenameValue.renameValueComparator());
+        renameValues.sort(RenameValue.renameValueComparator());
 
         /*
          * System.out.println("FILES TO IGNORE"); for (File file : ignoreFiles) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -13,13 +13,6 @@
 // Contributors:
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.oxm;
-
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
-
-import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.InheritancePolicy;
@@ -43,8 +36,8 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
+import org.eclipse.persistence.oxm.XMLNamespaceAware;
 import org.eclipse.persistence.oxm.NamespaceResolver;
-import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.oxm.documentpreservation.DocumentPreservationPolicy;
@@ -56,6 +49,12 @@ import org.eclipse.persistence.sessions.SessionProfiler;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+
+import javax.xml.namespace.QName;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
 
 /**
  * INTERNAL:
@@ -292,7 +291,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
             unmarshaller.getUnmarshalListener().beforeUnmarshal(domainObject, parent);
         }
         concreteDescriptor.getObjectBuilder().buildAttributesIntoObject(domainObject, null, databaseRow, query, joinManager, null, false, query.getSession());
-        if (isXmlDescriptor() && ((Descriptor) concreteDescriptor).getPrimaryKeyFieldNames().size() > 0) {
+        if (isXmlDescriptor() && !((Descriptor) concreteDescriptor).getPrimaryKeyFieldNames().isEmpty()) {
             Object pk = extractPrimaryKeyFromRow(databaseRow, query.getSession());
             if ((pk != null) && (((CacheId) pk).getPrimaryKey().length > 0)) {
                 DOMRecord domRecord = (DOMRecord) databaseRow;
@@ -431,7 +430,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
             return session.getDescriptor(domainObject.getClass()).getObjectBuilder().extractPrimaryKeyFromObject(domainObject, session);
         }
         List<DatabaseField> descriptorPrimaryKeyFields = getDescriptor().getPrimaryKeyFields();
-        if (null == descriptorPrimaryKeyFields || descriptorPrimaryKeyFields.size() == 0) {
+        if (null == descriptorPrimaryKeyFields || descriptorPrimaryKeyFields.isEmpty()) {
             return null;
         }
         return super.extractPrimaryKeyFromObject(domainObject, session);
@@ -481,13 +480,10 @@ public class XMLObjectBuilder extends ObjectBuilder {
     }
 
     public NamespaceResolver getNamespaceResolver() {
-        NamespaceResolver namespaceResolver = null;
-        if (isXmlDescriptor()) {
-            namespaceResolver = ((XMLDescriptor)getDescriptor()).getNamespaceResolver();
-        } else if (getDescriptor() instanceof org.eclipse.persistence.eis.EISDescriptor) {
-            namespaceResolver = ((org.eclipse.persistence.eis.EISDescriptor)getDescriptor()).getNamespaceResolver();
+        if (getDescriptor() instanceof XMLNamespaceAware d) {
+            return d.getNamespaceResolver();
         }
-        return namespaceResolver;
+        return null;
     }
     /**
      * Indicates if the object builder's descriptor is an XMLDescriptor.
@@ -547,10 +543,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
             relationshipMappings.clear();
         }
 
-        for (Enumeration<DatabaseMapping> mappings = this.descriptor.getMappings().elements();
-             mappings.hasMoreElements();) {
-            DatabaseMapping mapping = mappings.nextElement();
-
+        for (DatabaseMapping mapping: this.descriptor.getMappings()) {
             // Add attribute to mapping association
             if (!mapping.isWriteOnly()) {
                 if(mappingsByAttribute != null) {

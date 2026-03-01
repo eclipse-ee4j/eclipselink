@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,30 +14,30 @@
 //     James Sutherland - initial impl
 package org.eclipse.persistence.config;
 
-import org.eclipse.persistence.sessions.DataRecord;
-
 /**
  * Result type hint values.
- *
+ * <p>
  * The class contains all the valid values for QueryHints.RESULT_TYPE query hint.
- * By default in JPA for non-single select queries an Array of values is returned.
+ * By default, in JPA for non-single select queries an Array of values is returned.
  * If getSingleResult() is called the first array is returned, for getResultList() a List of arrays is returned.
  * <p>i.e. "Select e.firstName, e.lastName from Employee e" returns {@literal List<Object[]>}
  * <p>or the native query, "SELECT * FROM EMPLOYEE" returns {@literal List<Object[]>}
  * <p>The ResultType can be used to instead return a Map of values (DatabaseRecord, ReportQueryResult).
  * <p>It can also be used to return a single column, or single value.
- *
- * JPA Query Hint Usage:
- *
- * <p><code>query.setHint(QueryHints.RESULT_TYPE, ResultType.Map);</code>
+ * <p>JPA Query Hint usage:
+ * {@snippet :
+ *  query.setHint(QueryHints.RESULT_TYPE, ResultType.Map);
+ * }
  * <p>or
- * <p><code>@QueryHint(name=QueryHints.RESULT_TYPE, value=ResultType.Map)</code>
+ * {@snippet :
+ *  @QueryHint(name=QueryHints.RESULT_TYPE, value=ResultType.Map)
+ * }
  *
  * <p>Hint values are case-insensitive.
  * "" could be used instead of default value ResultType.Array.
  *
  * @see QueryHints#RESULT_TYPE
- * @see DataRecord
+ * @see org.eclipse.persistence.sessions.DataRecord
  * @see org.eclipse.persistence.sessions.DatabaseRecord
  * @see org.eclipse.persistence.queries.ReportQueryResult
  * @see org.eclipse.persistence.queries.ReportQuery#setReturnType(int)
@@ -45,7 +45,7 @@ import org.eclipse.persistence.sessions.DataRecord;
  *
  * @author James Sutherland
  */
-public class ResultType {
+public final class ResultType {
     /**
      * An Object array of values is returned {@literal (List<Object[]> or Object[])}.
      */
@@ -73,4 +73,8 @@ public class ResultType {
      * The default type is Array.
      */
     public static final String DEFAULT = Array;
+
+    private ResultType() {
+        // no instance please
+    }
 }

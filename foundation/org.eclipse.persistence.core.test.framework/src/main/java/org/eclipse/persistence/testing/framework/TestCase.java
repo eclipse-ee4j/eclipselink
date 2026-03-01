@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -411,8 +411,8 @@ public abstract class TestCase extends junit.framework.TestCase implements TestE
         setIndentationString(Helper.getTabs(getNestedCounter()));
 
         try {
-            log.write(org.eclipse.persistence.internal.helper.Helper.cr() + getIndentationString() + "TEST NAME:   " + getName() + org.eclipse.persistence.internal.helper.Helper.cr());
-            log.write(getIndentationString() + "TEST DESCRIPTION: " + getDescription() + org.eclipse.persistence.internal.helper.Helper.cr());
+            log.write(System.lineSeparator() + getIndentationString() + "TEST NAME:   " + getName() + System.lineSeparator());
+            log.write(getIndentationString() + "TEST DESCRIPTION: " + getDescription() + System.lineSeparator());
             log.flush();
         } catch (IOException exception) {
         }
@@ -436,9 +436,9 @@ public abstract class TestCase extends junit.framework.TestCase implements TestE
         setIndentationString(Helper.getTabs(getNestedCounter()));
 
         try {
-            log.write(org.eclipse.persistence.internal.helper.Helper.cr() + getIndentationString() + "VERSION:   " + org.eclipse.persistence.sessions.DatabaseLogin.getVersion());
-            log.write(org.eclipse.persistence.internal.helper.Helper.cr() + getIndentationString() + "TEST NAME:   " + getName() + org.eclipse.persistence.internal.helper.Helper.cr());
-            log.write(getIndentationString() + "TEST DESCRIPTION: " + getDescription() + org.eclipse.persistence.internal.helper.Helper.cr());
+            log.write(System.lineSeparator() + getIndentationString() + "VERSION:   " + org.eclipse.persistence.sessions.DatabaseLogin.getVersion());
+            log.write(System.lineSeparator() + getIndentationString() + "TEST NAME:   " + getName() + System.lineSeparator());
+            log.write(getIndentationString() + "TEST DESCRIPTION: " + getDescription() + System.lineSeparator());
             log.flush();
         } catch (IOException exception) {
         }
@@ -455,7 +455,6 @@ public abstract class TestCase extends junit.framework.TestCase implements TestE
      * be reset back to the state from where the test started.
      */
     public void reset() throws Throwable {
-        return;
     }
 
     /**
@@ -485,7 +484,6 @@ public abstract class TestCase extends junit.framework.TestCase implements TestE
      * from where the test started.
      */
     protected void resetVerify() throws Throwable {
-        return;
     }
 
     @Override
@@ -553,7 +551,6 @@ public abstract class TestCase extends junit.framework.TestCase implements TestE
      * that test should perform before running the actual test.
      */
     protected void setup() throws Throwable {
-        return;
     }
 
     /**
@@ -593,7 +590,6 @@ public abstract class TestCase extends junit.framework.TestCase implements TestE
      * override it.
      */
     protected void verify() throws Throwable {
-        return;
     }
 
     /**

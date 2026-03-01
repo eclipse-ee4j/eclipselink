@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,8 +20,6 @@ import org.eclipse.persistence.internal.jpa.config.columns.JoinColumnImpl;
 import org.eclipse.persistence.internal.jpa.config.columns.JoinFieldImpl;
 import org.eclipse.persistence.internal.jpa.config.tables.JoinTableImpl;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.RelationshipAccessor;
-import org.eclipse.persistence.internal.jpa.metadata.columns.JoinColumnMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.columns.JoinFieldMetadata;
 import org.eclipse.persistence.jpa.config.BatchFetch;
 import org.eclipse.persistence.jpa.config.Cascade;
 import org.eclipse.persistence.jpa.config.JoinColumn;
@@ -40,8 +38,8 @@ public class AbstractRelationshipMappingImpl<T extends RelationshipAccessor, R> 
     public AbstractRelationshipMappingImpl(T t) {
         super(t);
 
-        getMetadata().setJoinColumns(new ArrayList<JoinColumnMetadata>());
-        getMetadata().setJoinFields(new ArrayList<JoinFieldMetadata>());
+        getMetadata().setJoinColumns(new ArrayList<>());
+        getMetadata().setJoinFields(new ArrayList<>());
     }
 
     public JoinColumn addJoinColumn() {

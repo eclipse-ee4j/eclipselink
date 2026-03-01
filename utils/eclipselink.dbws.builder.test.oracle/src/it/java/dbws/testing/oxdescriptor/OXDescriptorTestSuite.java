@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,7 +16,7 @@ package dbws.testing.oxdescriptor;
 
 //javase imports
 import java.math.BigDecimal;
-import java.util.Vector;
+import java.util.List;
 
 //java eXtension imports
 import javax.wsdl.WSDLException;
@@ -27,6 +27,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static org.eclipse.persistence.internal.xr.XRDynamicClassLoader.COLLECTION_WRAPPER_SUFFIX;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -73,84 +74,88 @@ public class OXDescriptorTestSuite extends DBWSTestSuite {
     public static final String ARECORD_DESCRIPTOR_JAVACLASSNAME = ARECORD_DATABASETYPE.toLowerCase();
 
     static final String CREATE_PACKAGE_OXPACKAGE =
-        "CREATE OR REPLACE PACKAGE OXPACKAGE AS" +
-            "\nTYPE TBL1 IS TABLE OF VARCHAR2(111) INDEX BY BINARY_INTEGER;" +
-            "\nTYPE TBL2 IS TABLE OF NUMBER INDEX BY BINARY_INTEGER;" +
-            "\nTYPE ARECORD IS RECORD (" +
-                "\nT1 TBL1," +
-                "\nT2 TBL2," +
-                "\nT3 BOOLEAN" +
-            "\n);" +
-            "\nTYPE TBL3 IS TABLE OF ARECORD INDEX BY PLS_INTEGER;" +
-            "\nTYPE TBL4 IS TABLE OF TBL2 INDEX BY PLS_INTEGER;" +
-            "\nPROCEDURE P1(SIMPLARRAY IN TBL1, FOO IN VARCHAR2);" +
-            "\nPROCEDURE P2(OLD IN TBL2, NEW IN TBL2);" +
-            "\nPROCEDURE P4(REC IN ARECORD);" +
-            "\nPROCEDURE P5(OLDREC IN ARECORD, NEWREC OUT ARECORD);" +
-            "\nPROCEDURE P7(SIMPLARRAY IN TBL1, FOO IN VARCHAR2);" +
-            "\nPROCEDURE P7(SIMPLARRAY IN TBL1, FOO IN VARCHAR2, BAR IN VARCHAR2);" +
-            "\nPROCEDURE P8(FOO IN VARCHAR2);" +
-            "\nPROCEDURE P8(FOO IN VARCHAR2, BAR IN VARCHAR2);" +
-            "\nFUNCTION F2(OLD IN TBL2, SIMPLARRAY IN TBL1) RETURN TBL2;" +
-            "\nFUNCTION F4(RECARRAY IN TBL3, OLDREC IN ARECORD) RETURN TBL3;" +
-        "\nEND OXPACKAGE;";
+            """
+                    CREATE OR REPLACE PACKAGE OXPACKAGE AS
+                    TYPE TBL1 IS TABLE OF VARCHAR2(111) INDEX BY BINARY_INTEGER;
+                    TYPE TBL2 IS TABLE OF NUMBER INDEX BY BINARY_INTEGER;
+                    TYPE ARECORD IS RECORD (
+                    T1 TBL1,
+                    T2 TBL2,
+                    T3 BOOLEAN
+                    );
+                    TYPE TBL3 IS TABLE OF ARECORD INDEX BY PLS_INTEGER;
+                    TYPE TBL4 IS TABLE OF TBL2 INDEX BY PLS_INTEGER;
+                    PROCEDURE P1(SIMPLARRAY IN TBL1, FOO IN VARCHAR2);
+                    PROCEDURE P2(OLD IN TBL2, NEW IN TBL2);
+                    PROCEDURE P4(REC IN ARECORD);
+                    PROCEDURE P5(OLDREC IN ARECORD, NEWREC OUT ARECORD);
+                    PROCEDURE P7(SIMPLARRAY IN TBL1, FOO IN VARCHAR2);
+                    PROCEDURE P7(SIMPLARRAY IN TBL1, FOO IN VARCHAR2, BAR IN VARCHAR2);
+                    PROCEDURE P8(FOO IN VARCHAR2);
+                    PROCEDURE P8(FOO IN VARCHAR2, BAR IN VARCHAR2);
+                    FUNCTION F2(OLD IN TBL2, SIMPLARRAY IN TBL1) RETURN TBL2;
+                    FUNCTION F4(RECARRAY IN TBL3, OLDREC IN ARECORD) RETURN TBL3;
+                    END OXPACKAGE;""";
 
     static final String CREATE_PACKAGE_BODY_OXPACKAGE =
-        "\nCREATE OR REPLACE PACKAGE BODY OXPACKAGE AS" +
-            "\nPROCEDURE P1(SIMPLARRAY IN TBL1, FOO IN VARCHAR2) AS" +
-            "\nBEGIN" +
-                "\nNULL;" +
-            "\nEND P1;" +
-            "\nPROCEDURE P2(OLD IN TBL2, NEW IN TBL2) AS" +
-            "\nBEGIN" +
-                "\nNULL;" +
-            "\nEND P2;" +
-            "\nPROCEDURE P4(REC IN ARECORD) AS" +
-            "\nBEGIN" +
-                "\nNULL;" +
-            "\nEND P4;" +
-            "\nPROCEDURE P5(OLDREC IN ARECORD, NEWREC OUT ARECORD) AS" +
-            "\nBEGIN" +
-                "\nNEWREC.T1 := OLDREC.T1;" +
-                "\nNEWREC.T2 := OLDREC.T2;" +
-                "\nNEWREC.T3 := OLDREC.T3;" +
-            "\nEND P5;" +
-            "\nPROCEDURE P7(SIMPLARRAY IN TBL1, FOO IN VARCHAR2) AS" +
-            "\nBEGIN" +
-                "\nNULL;" +
-            "\nEND P7;" +
-            "\nPROCEDURE P7(SIMPLARRAY IN TBL1, FOO IN VARCHAR2, BAR IN VARCHAR2) AS" +
-            "\nBEGIN" +
-                "\nNULL;" +
-            "\nEND P7;" +
-            "\nPROCEDURE P8(FOO IN VARCHAR2) AS" +
-            "\nBEGIN" +
-                "\nNULL;" +
-            "\nEND P8;" +
-            "\nPROCEDURE P8(FOO IN VARCHAR2, BAR IN VARCHAR2) AS" +
-            "\nBEGIN" +
-                "\nNULL;" +
-            "\nEND P8;" +
-            "\nFUNCTION F2(OLD IN TBL2, SIMPLARRAY IN TBL1) RETURN TBL2 IS" +
-            "\nBEGIN" +
-                "\nRETURN OLD;" +
-            "\nEND F2;" +
-            "\nFUNCTION F4(RECARRAY IN TBL3, OLDREC IN ARECORD) RETURN TBL3 IS" +
-            "\nBEGIN" +
-                "\nRETURN RECARRAY;" +
-            "\nEND F4;" +
-         "\nEND OXPACKAGE;";
+            """
+
+                    CREATE OR REPLACE PACKAGE BODY OXPACKAGE AS
+                    PROCEDURE P1(SIMPLARRAY IN TBL1, FOO IN VARCHAR2) AS
+                    BEGIN
+                    NULL;
+                    END P1;
+                    PROCEDURE P2(OLD IN TBL2, NEW IN TBL2) AS
+                    BEGIN
+                    NULL;
+                    END P2;
+                    PROCEDURE P4(REC IN ARECORD) AS
+                    BEGIN
+                    NULL;
+                    END P4;
+                    PROCEDURE P5(OLDREC IN ARECORD, NEWREC OUT ARECORD) AS
+                    BEGIN
+                    NEWREC.T1 := OLDREC.T1;
+                    NEWREC.T2 := OLDREC.T2;
+                    NEWREC.T3 := OLDREC.T3;
+                    END P5;
+                    PROCEDURE P7(SIMPLARRAY IN TBL1, FOO IN VARCHAR2) AS
+                    BEGIN
+                    NULL;
+                    END P7;
+                    PROCEDURE P7(SIMPLARRAY IN TBL1, FOO IN VARCHAR2, BAR IN VARCHAR2) AS
+                    BEGIN
+                    NULL;
+                    END P7;
+                    PROCEDURE P8(FOO IN VARCHAR2) AS
+                    BEGIN
+                    NULL;
+                    END P8;
+                    PROCEDURE P8(FOO IN VARCHAR2, BAR IN VARCHAR2) AS
+                    BEGIN
+                    NULL;
+                    END P8;
+                    FUNCTION F2(OLD IN TBL2, SIMPLARRAY IN TBL1) RETURN TBL2 IS
+                    BEGIN
+                    RETURN OLD;
+                    END F2;
+                    FUNCTION F4(RECARRAY IN TBL3, OLDREC IN ARECORD) RETURN TBL3 IS
+                    BEGIN
+                    RETURN RECARRAY;
+                    END F4;
+                    END OXPACKAGE;""";
 
     static final String CREATE_TYPE_OXPACKAGE_TBL1 =
         "CREATE OR REPLACE TYPE OXPACKAGE_TBL1 AS TABLE OF VARCHAR2(111)";
     static final String CREATE_TYPE_OXPACKAGE_TBL2 =
         "CREATE OR REPLACE TYPE OXPACKAGE_TBL2 AS TABLE OF NUMBER";
     static final String CREATE_TYPE_OXPACKAGE_ARECORD =
-        "CREATE OR REPLACE TYPE OXPACKAGE_ARECORD AS OBJECT (" +
-              "\nT1 OXPACKAGE_TBL1," +
-              "\nT2 OXPACKAGE_TBL2," +
-              "\nT3 INTEGER" +
-         "\n)";
+            """
+                    CREATE OR REPLACE TYPE OXPACKAGE_ARECORD AS OBJECT (
+                    T1 OXPACKAGE_TBL1,
+                    T2 OXPACKAGE_TBL2,
+                    T3 INTEGER
+                    )""";
     static final String CREATE_TYPE_OXPACKAGE_TBL3 =
         "CREATE OR REPLACE TYPE OXPACKAGE_TBL3 AS TABLE OF OXPACKAGE_ARECORD";
     static final String CREATE_TYPE_OXPACKAGE_TBL4 =
@@ -388,67 +393,67 @@ public class OXDescriptorTestSuite extends DBWSTestSuite {
 
     // ASSERT METHODS
     protected void tbl1Asserts(XMLDescriptor tbl1Descriptor) {
-        assertTrue("Wrong Java class name.  Expected [" + TBL1_DESCRIPTOR_JAVACLASSNAME + "] but was [" + tbl1Descriptor.getJavaClassName() + "]", tbl1Descriptor.getJavaClassName().equals(TBL1_DESCRIPTOR_JAVACLASSNAME));
-        Vector<DatabaseMapping> mappings = tbl1Descriptor.getMappings();
-        assertTrue("Wrong number of mappings.  Expected [1] but was [" + mappings.size() + "]", mappings.size() == 1);
+        assertEquals("Wrong Java class name.  Expected [" + TBL1_DESCRIPTOR_JAVACLASSNAME + "] but was [" + tbl1Descriptor.getJavaClassName() + "]", tbl1Descriptor.getJavaClassName(), TBL1_DESCRIPTOR_JAVACLASSNAME);
+        List<DatabaseMapping> mappings = tbl1Descriptor.getMappings();
+        assertEquals("Wrong number of mappings.  Expected [1] but was [" + mappings.size() + "]", 1, mappings.size());
         DatabaseMapping mapping = mappings.get(0);
-        assertTrue("Incorrect mapping attribute name.  Expected [" + BaseDBWSBuilderHelper.ITEMS_MAPPING_ATTRIBUTE_NAME + "] but was [" + mapping.getAttributeName() + "]", mapping.getAttributeName().equals(BaseDBWSBuilderHelper.ITEMS_MAPPING_ATTRIBUTE_NAME));
+        assertEquals("Incorrect mapping attribute name.  Expected [" + BaseDBWSBuilderHelper.ITEMS_MAPPING_ATTRIBUTE_NAME + "] but was [" + mapping.getAttributeName() + "]", BaseDBWSBuilderHelper.ITEMS_MAPPING_ATTRIBUTE_NAME, mapping.getAttributeName());
         assertTrue("Incorrect mapping type.  Expected [(XML) AbstractCompositeDirectCollection mapping], but was [" + mapping.getClass().getName() + "]", mapping.isXMLMapping() && mapping.isAbstractCompositeDirectCollectionMapping());
         XMLCompositeDirectCollectionMapping xdcm = (XMLCompositeDirectCollectionMapping)mapping;
-        assertTrue("Incorrect mapping XPath.  Expected [item/text()] but was [" + xdcm.getXPath() + "]", xdcm.getXPath().equals("item/text()"));
-        assertTrue("Wrong component class for mapping.  Expected [" + String.class + "] but was [" + xdcm.getAttributeElementClass() + "]", xdcm.getAttributeElementClass().equals(String.class));
+        assertEquals("Incorrect mapping XPath.  Expected [item/text()] but was [" + xdcm.getXPath() + "]", "item/text()", xdcm.getXPath());
+        assertEquals("Wrong component class for mapping.  Expected [" + String.class + "] but was [" + xdcm.getAttributeElementClass() + "]", xdcm.getAttributeElementClass(), String.class);
     }
 
     protected void tbl2Asserts(XMLDescriptor tbl2Descriptor) {
-        assertTrue("Wrong Java class name.  Expected [" + TBL2_DESCRIPTOR_JAVACLASSNAME + "] but was [" + tbl2Descriptor.getJavaClassName() + "]", tbl2Descriptor.getJavaClassName().equals(TBL2_DESCRIPTOR_JAVACLASSNAME));
-        Vector<DatabaseMapping> mappings = tbl2Descriptor.getMappings();
-        assertTrue("Wrong number of mappings.  Expected [1] but was [" + mappings.size() + "]", mappings.size() == 1);
+        assertEquals("Wrong Java class name.  Expected [" + TBL2_DESCRIPTOR_JAVACLASSNAME + "] but was [" + tbl2Descriptor.getJavaClassName() + "]", tbl2Descriptor.getJavaClassName(), TBL2_DESCRIPTOR_JAVACLASSNAME);
+        List<DatabaseMapping> mappings = tbl2Descriptor.getMappings();
+        assertEquals("Wrong number of mappings.  Expected [1] but was [" + mappings.size() + "]", 1, mappings.size());
         DatabaseMapping mapping = mappings.get(0);
-        assertTrue("Incorrect mapping attribute name.  Expected [" + BaseDBWSBuilderHelper.ITEMS_MAPPING_ATTRIBUTE_NAME + "] but was [" + mapping.getAttributeName() + "]", mapping.getAttributeName().equals(BaseDBWSBuilderHelper.ITEMS_MAPPING_ATTRIBUTE_NAME));
+        assertEquals("Incorrect mapping attribute name.  Expected [" + BaseDBWSBuilderHelper.ITEMS_MAPPING_ATTRIBUTE_NAME + "] but was [" + mapping.getAttributeName() + "]", BaseDBWSBuilderHelper.ITEMS_MAPPING_ATTRIBUTE_NAME, mapping.getAttributeName());
         assertTrue("Incorrect mapping type.  Expected [(XML) AbstractCompositeDirectCollection mapping], but was [" + mapping.getClass().getName() + "]", mapping.isXMLMapping() && mapping.isAbstractCompositeDirectCollectionMapping());
         XMLCompositeDirectCollectionMapping xdcm = (XMLCompositeDirectCollectionMapping)mapping;
-        assertTrue("Incorrect mapping XPath.  Expected [item/text()] but was [" + xdcm.getXPath() + "]", xdcm.getXPath().equals("item/text()"));
-        assertTrue("Wrong component class for mapping.  Expected [" + BigDecimal.class + "] but was [" + xdcm.getAttributeElementClass() + "]", xdcm.getAttributeElementClass().equals(BigDecimal.class));
+        assertEquals("Incorrect mapping XPath.  Expected [item/text()] but was [" + xdcm.getXPath() + "]", "item/text()", xdcm.getXPath());
+        assertEquals("Wrong component class for mapping.  Expected [" + BigDecimal.class + "] but was [" + xdcm.getAttributeElementClass() + "]", xdcm.getAttributeElementClass(), BigDecimal.class);
     }
 
     protected void tbl3Asserts(XMLDescriptor tbl3Descriptor) {
-        assertTrue("Wrong Java class name.  Expected [" + TBL3_DESCRIPTOR_JAVACLASSNAME + "] but was [" + tbl3Descriptor.getJavaClassName() + "]", tbl3Descriptor.getJavaClassName().equals(TBL3_DESCRIPTOR_JAVACLASSNAME));
-        Vector<DatabaseMapping> mappings = tbl3Descriptor.getMappings();
-        assertTrue("Wrong number of mappings.  Expected [1] but was [" + mappings.size() + "]", mappings.size() == 1);
+        assertEquals("Wrong Java class name.  Expected [" + TBL3_DESCRIPTOR_JAVACLASSNAME + "] but was [" + tbl3Descriptor.getJavaClassName() + "]", tbl3Descriptor.getJavaClassName(), TBL3_DESCRIPTOR_JAVACLASSNAME);
+        List<DatabaseMapping> mappings = tbl3Descriptor.getMappings();
+        assertEquals("Wrong number of mappings.  Expected [1] but was [" + mappings.size() + "]", 1, mappings.size());
         DatabaseMapping mapping = mappings.get(0);
-        assertTrue("Incorrect mapping attribute name.  Expected [" + BaseDBWSBuilderHelper.ITEMS_MAPPING_ATTRIBUTE_NAME + "] but was [" + mapping.getAttributeName() + "]", mapping.getAttributeName().equals(BaseDBWSBuilderHelper.ITEMS_MAPPING_ATTRIBUTE_NAME));
+        assertEquals("Incorrect mapping attribute name.  Expected [" + BaseDBWSBuilderHelper.ITEMS_MAPPING_ATTRIBUTE_NAME + "] but was [" + mapping.getAttributeName() + "]", BaseDBWSBuilderHelper.ITEMS_MAPPING_ATTRIBUTE_NAME, mapping.getAttributeName());
         assertTrue("Incorrect mapping type.  Expected [(XML) AbstractCompositeCollection mapping] but was [" + mapping.getClass().getName() + "]", mapping.isXMLMapping() && mapping.isAbstractCompositeCollectionMapping());
         XMLCompositeCollectionMapping xccm = (XMLCompositeCollectionMapping)mapping;
-        assertTrue("Incorrect mapping XPath.  Expected [item] but was [" + xccm.getXPath() + "]", xccm.getXPath().equals("item"));
-        assertTrue("Incorrect reference class name.  Expected [" + ARECORD_DESCRIPTOR_JAVACLASSNAME + "] but was [" + xccm.getReferenceClassName() + "]", xccm.getReferenceClassName().equals(ARECORD_DESCRIPTOR_JAVACLASSNAME));
+        assertEquals("Incorrect mapping XPath.  Expected [item] but was [" + xccm.getXPath() + "]", "item", xccm.getXPath());
+        assertEquals("Incorrect reference class name.  Expected [" + ARECORD_DESCRIPTOR_JAVACLASSNAME + "] but was [" + xccm.getReferenceClassName() + "]", xccm.getReferenceClassName(), ARECORD_DESCRIPTOR_JAVACLASSNAME);
     }
     protected void tbl4Asserts(XMLDescriptor tbl4Descriptor) {
-        assertTrue("Wrong Java class name.  Expected [" +TBL4_DESCRIPTOR_JAVACLASSNAME + "] but was [" + tbl4Descriptor.getJavaClassName() + "]", tbl4Descriptor.getJavaClassName().equals(TBL4_DESCRIPTOR_JAVACLASSNAME));
-        Vector<DatabaseMapping> mappings = tbl4Descriptor.getMappings();
-        assertTrue("Wrong number of mappings.  Expected [1] but was [" + mappings.size() + "]", mappings.size() == 1);
+        assertEquals("Wrong Java class name.  Expected [" + TBL4_DESCRIPTOR_JAVACLASSNAME + "] but was [" + tbl4Descriptor.getJavaClassName() + "]", tbl4Descriptor.getJavaClassName(), TBL4_DESCRIPTOR_JAVACLASSNAME);
+        List<DatabaseMapping> mappings = tbl4Descriptor.getMappings();
+        assertEquals("Wrong number of mappings.  Expected [1] but was [" + mappings.size() + "]", 1, mappings.size());
         DatabaseMapping mapping = mappings.get(0);
-        assertTrue("Incorrect mapping attribute name.  Expected [" + BaseDBWSBuilderHelper.ITEMS_MAPPING_ATTRIBUTE_NAME + "] but was [" + mapping.getAttributeName() + "]", mapping.getAttributeName().equals(BaseDBWSBuilderHelper.ITEMS_MAPPING_ATTRIBUTE_NAME));
+        assertEquals("Incorrect mapping attribute name.  Expected [" + BaseDBWSBuilderHelper.ITEMS_MAPPING_ATTRIBUTE_NAME + "] but was [" + mapping.getAttributeName() + "]", BaseDBWSBuilderHelper.ITEMS_MAPPING_ATTRIBUTE_NAME, mapping.getAttributeName());
         assertTrue("Incorrect mapping type.  Expected [AbstractCompositeCollection mapping] but was [" + mapping.getClass().getName() + "]", mapping.isAbstractCompositeCollectionMapping());
     }
     protected void aRecordAsserts(XMLDescriptor aRecordDescriptor) {
-        assertTrue("Wrong Java class name.  Expected [" + ARECORD_DESCRIPTOR_JAVACLASSNAME + "] but was [" + aRecordDescriptor.getJavaClassName() + "]", aRecordDescriptor.getJavaClassName().equals(ARECORD_DESCRIPTOR_JAVACLASSNAME));
-        Vector<DatabaseMapping> mappings = aRecordDescriptor.getMappings();
-        assertTrue("Wrong number of mappings.  Expected [3] but was [" + mappings.size() + "]", mappings.size() == 3);
+        assertEquals("Wrong Java class name.  Expected [" + ARECORD_DESCRIPTOR_JAVACLASSNAME + "] but was [" + aRecordDescriptor.getJavaClassName() + "]", aRecordDescriptor.getJavaClassName(), ARECORD_DESCRIPTOR_JAVACLASSNAME);
+        List<DatabaseMapping> mappings = aRecordDescriptor.getMappings();
+        assertEquals("Wrong number of mappings.  Expected [3] but was [" + mappings.size() + "]", 3, mappings.size());
         DatabaseMapping dm1 = mappings.get(0);
-        assertTrue("Incorrect mapping attribute name.  Expected [t1] but was [" + dm1.getAttributeName() + "]", dm1.getAttributeName().equals("t1"));
+        assertEquals("Incorrect mapping attribute name.  Expected [t1] but was [" + dm1.getAttributeName() + "]", "t1", dm1.getAttributeName());
         assertTrue("Incorrect mapping type.  Expected [(XML) AbstractCompositeDirectCollection mapping] but was [" + dm1.getClass().getName() +"]", dm1.isXMLMapping() && dm1.isAbstractCompositeDirectCollectionMapping());
         XMLCompositeDirectCollectionMapping  xcom1 = (XMLCompositeDirectCollectionMapping)dm1;
-        assertTrue("Incorrect mapping XPath.  Expected [t1/item/text()] but was [" + xcom1.getXPath() + "]", xcom1.getXPath().equals("t1/item/text()"));
-        assertTrue("Incorrect attribute element class.  Expected [" + String.class + "] but was [" + xcom1.getAttributeElementClass() + "]", xcom1.getAttributeElementClass().equals(String.class));
+        assertEquals("Incorrect mapping XPath.  Expected [t1/item/text()] but was [" + xcom1.getXPath() + "]", "t1/item/text()", xcom1.getXPath());
+        assertEquals("Incorrect attribute element class.  Expected [" + String.class + "] but was [" + xcom1.getAttributeElementClass() + "]", xcom1.getAttributeElementClass(), String.class);
         DatabaseMapping dm2 = mappings.get(1);
-        assertTrue("Incorrect mapping attribute name.  Expected [t2] but was [" + dm2.getAttributeName() + "]", dm2.getAttributeName().equals("t2"));
+        assertEquals("Incorrect mapping attribute name.  Expected [t2] but was [" + dm2.getAttributeName() + "]", "t2", dm2.getAttributeName());
         assertTrue("Incorrect mapping type.  Expected [(XML) AbstractCompositeDirectCollection mapping ]but was [" + dm2.getClass().getName() +"]", dm2.isXMLMapping() && dm2.isAbstractCompositeDirectCollectionMapping());
         XMLCompositeDirectCollectionMapping xcom2 = (XMLCompositeDirectCollectionMapping)dm2;
-        assertTrue("Incorrect mapping XPath.  Expected [t2/item/text()] but was [" + xcom2.getXPath() + "]", xcom2.getXPath().equals("t2/item/text()"));
-        assertTrue("Incorrect attribute element class.  Expected [" + BigDecimal.class + "] but was [" + xcom2.getAttributeElementClass() + "]", xcom2.getAttributeElementClass().equals(BigDecimal.class));
+        assertEquals("Incorrect mapping XPath.  Expected [t2/item/text()] but was [" + xcom2.getXPath() + "]", "t2/item/text()", xcom2.getXPath());
+        assertEquals("Incorrect attribute element class.  Expected [" + BigDecimal.class + "] but was [" + xcom2.getAttributeElementClass() + "]", xcom2.getAttributeElementClass(), BigDecimal.class);
         DatabaseMapping dm3 = mappings.get(2);
-        assertTrue("Incorrect mapping attribute name.  Expected [t3] but was [" + dm3.getAttributeName() + "]", dm3.getAttributeName().equals("t3"));
+        assertEquals("Incorrect mapping attribute name.  Expected [t3] but was [" + dm3.getAttributeName() + "]", "t3", dm3.getAttributeName());
         assertTrue("Incorrect mapping type.  Expected [(XML) DirectToField mapping] but was [" + dm3.getClass().getName() + "]", dm3.isXMLMapping() && dm3.isDirectToFieldMapping());
-        assertTrue("Incorrect mapping XPath.  Expected [t3/text()] but was [" + ((XMLDirectMapping)dm3).getXPath() + "]", ((XMLDirectMapping)dm3).getXPath().equals("t3/text()"));
+        assertEquals("Incorrect mapping XPath.  Expected [t3/text()] but was [" + ((XMLDirectMapping) dm3).getXPath() + "]", "t3/text()", ((XMLDirectMapping) dm3).getXPath());
     }
 }

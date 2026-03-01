@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,16 +14,23 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.jpql;
 
-import java.util.*;
-
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.internal.queries.JPQLCallQueryMechanism;
-import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.mappings.*;
-import org.eclipse.persistence.testing.framework.*;
-import org.eclipse.persistence.testing.models.employee.domain.*;
+import org.eclipse.persistence.mappings.DirectToFieldMapping;
+import org.eclipse.persistence.queries.ObjectLevelReadQuery;
+import org.eclipse.persistence.queries.ReadAllQuery;
+import org.eclipse.persistence.queries.ReportQuery;
+import org.eclipse.persistence.queries.ReportQueryResult;
+import org.eclipse.persistence.testing.framework.TestErrorException;
+import org.eclipse.persistence.testing.framework.TestWarningException;
+import org.eclipse.persistence.testing.framework.TransactionalTestCase;
+import org.eclipse.persistence.testing.models.employee.domain.Address;
+import org.eclipse.persistence.testing.models.employee.domain.Employee;
+import org.eclipse.persistence.testing.models.employee.domain.Project;
+
+import java.util.Vector;
 
 /**
  * Generic EJBQL test case.
@@ -82,11 +89,11 @@ public class JPQLTestCase extends TransactionalTestCase {
         Vector attributes = new Vector();
         Object currentObject;
         for (int i = 0; i < objects.size(); i++) {
-            currentObject = objects.elementAt(i);
+            currentObject = objects.get(i);
             if (currentObject.getClass() == ReportQueryResult.class) {
-                attributes.addElement(((ReportQueryResult)currentObject).get(attributeName));
+                attributes.add(((ReportQueryResult)currentObject).get(attributeName));
             } else {
-                attributes.addElement(mapping.getAttributeValueFromObject(currentObject));
+                attributes.add(mapping.getAttributeValueFromObject(currentObject));
             }
         }
         return attributes;
@@ -117,7 +124,7 @@ public class JPQLTestCase extends TransactionalTestCase {
         Employee empMatch = null;
         Vector<Employee> employees = vectorOfEmployees;
         String firstName;
-        StringBuffer partialFirstName;
+        StringBuilder partialFirstName;
 
         // Loop through the collection of employees to find one that matches our test requirements
         for(int i=0; i<employees.size();i++) {
@@ -323,8 +330,8 @@ public class JPQLTestCase extends TransactionalTestCase {
             return true;
         }
         if (supportedPlatforms != null) {
-            for (Iterator iterator = supportedPlatforms.iterator(); iterator.hasNext();) {
-                Class<?> platformClass = (Class)iterator.next();
+            for (Object supportedPlatform : supportedPlatforms) {
+                Class<?> platformClass = (Class) supportedPlatform;
                 if (platformClass.isInstance(platform)) {
                     supported = true;
                 }
@@ -333,8 +340,8 @@ public class JPQLTestCase extends TransactionalTestCase {
             supported = true;
         }
         if (unsupportedPlatforms != null) {
-            for (Iterator iterator = unsupportedPlatforms.iterator(); iterator.hasNext();) {
-                Class<?> platformClass = (Class)iterator.next();
+            for (Object unsupportedPlatform : unsupportedPlatforms) {
+                Class<?> platformClass = (Class) unsupportedPlatform;
                 if (platformClass.isInstance(platform)) {
                     notSupported = true;
                 }
@@ -347,13 +354,13 @@ public class JPQLTestCase extends TransactionalTestCase {
         if (supportedPlatforms == null) {
             supportedPlatforms = new Vector();
         }
-        supportedPlatforms.addElement(platform);
+        supportedPlatforms.add(platform);
     }
 
     public void addUnsupportedPlatform(Class<?> platform) {
         if (unsupportedPlatforms == null) {
             unsupportedPlatforms = new Vector();
         }
-        unsupportedPlatforms.addElement(platform);
+        unsupportedPlatforms.add(platform);
     }
 }

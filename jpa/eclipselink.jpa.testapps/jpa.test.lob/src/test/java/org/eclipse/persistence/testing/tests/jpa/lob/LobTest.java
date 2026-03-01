@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,6 +26,7 @@ import org.eclipse.persistence.testing.models.jpa.lob.LobTableCreator;
 import org.eclipse.persistence.testing.models.jpa.lob.SerializableNonEntity;
 
 import java.lang.reflect.Field;
+import java.util.Arrays;
 
 /**
  * JUnit test case(s) for the TopLink EntityMappingsXMLProcessor.
@@ -127,8 +128,8 @@ public class LobTest extends JUnitTestCase {
         }
 
         // entity manager has been closed - image is detached object.
-        assertTrue("byte-arrays do not match", Helper.compareByteArrays(image.getAudio(), originalImage.getAudio()));
-        assertTrue("char-arrays do not match", Helper.compareCharArrays(image.getCommentary(), originalImage.getCommentary()));
+        assertEquals("byte-arrays do not match", 0, Arrays.compare(image.getAudio(), originalImage.getAudio()));
+        assertEquals("char-arrays do not match", 0, Arrays.compare(image.getCommentary(), originalImage.getCommentary()));
         assertTrue("Byte-arrays do not match", Helper.compareArrays(image.getPicture(), originalImage.getPicture()));
         assertEquals(image.getScript(), originalImage.getScript());
     }

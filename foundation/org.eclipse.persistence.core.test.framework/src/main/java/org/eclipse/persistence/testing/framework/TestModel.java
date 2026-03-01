@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,6 +26,7 @@ import org.eclipse.persistence.sessions.factories.SessionManager;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -105,7 +106,7 @@ public class TestModel extends TestCollection {
      * Basically this means that required system will recreate new database.
      */
     public final void addForcedRequiredSystem(TestSystem requiredSystem) {
-        getForcedRequiredSystems().addElement(requiredSystem);
+        getForcedRequiredSystems().add(requiredSystem);
     }
 
     /**
@@ -122,7 +123,7 @@ public class TestModel extends TestCollection {
      * Basically this means that required system will recreate new database.
      */
     public final void addRequiredSystem(TestSystem requiredSystem) {
-        getRequiredSystems().addElement(requiredSystem);
+        getRequiredSystems().add(requiredSystem);
     }
 
     /**
@@ -180,8 +181,8 @@ public class TestModel extends TestCollection {
     private void configure() throws Exception {
         Vector<TestSystem> systems = buildRequiredSystems();
 
-        for (Enumeration<TestSystem> enumtr = systems.elements(); enumtr.hasMoreElements();) {
-            TestSystem system = enumtr.nextElement();
+        for (Iterator<TestSystem> iterator = systems.iterator(); iterator.hasNext();) {
+            TestSystem system = iterator.next();
 
             // To improve test consistency always force systems to be reset.
             if (shouldResetSystemAfterEachTestModel()) {
@@ -193,8 +194,8 @@ public class TestModel extends TestCollection {
 
         systems = buildForcedRequiredSystems();
 
-        for (Enumeration<TestSystem> enumtr = systems.elements(); enumtr.hasMoreElements();) {
-            TestSystem system = enumtr.nextElement();
+        for (Iterator<TestSystem> iterator = systems.iterator(); iterator.hasNext();) {
+            TestSystem system = iterator.next();
             getExecutor().forceConfigureSystem(system);
         }
     }
@@ -211,13 +212,13 @@ public class TestModel extends TestCollection {
             setupEntity();
             setFinishedTests(new Vector<>());
             try {
-                for (Enumeration<Test> tests = getTests().elements(); tests.hasMoreElements();) {
-                    junit.framework.Test test = tests.nextElement();
+                for (Iterator<Test> iterator = getTests().iterator(); iterator.hasNext();) {
+                    junit.framework.Test test = iterator.next();
                     if ((TestExecutor.getDefaultJUnitTestResult() != null) && TestExecutor.getDefaultJUnitTestResult().shouldStop()) {
                             break;
                     }
                     executor.execute(test);
-                    getFinishedTests().addElement(test);
+                    getFinishedTests().add(test);
                 }
             } catch (Throwable exception) {
                 try {
@@ -264,7 +265,7 @@ public class TestModel extends TestCollection {
     @Override
     protected void logFootNote(Writer log) {
         try {
-            log.write(org.eclipse.persistence.internal.helper.Helper.cr() + getIndentationString() + "RESULTS OF TEST MODEL: " + getName() + org.eclipse.persistence.internal.helper.Helper.cr());
+            log.write(System.lineSeparator() + getIndentationString() + "RESULTS OF TEST MODEL: " + getName() + System.lineSeparator());
         } catch (IOException exception) {
         }
     }
@@ -276,8 +277,8 @@ public class TestModel extends TestCollection {
     @Override
     protected void logRegressionHeadNote(Writer log) {
         try {
-            log.write(org.eclipse.persistence.internal.helper.Helper.cr() + getIndentationString() + "TEST MODEL NAME: " + getName() + org.eclipse.persistence.internal.helper.Helper.cr());
-            log.write(getIndentationString() + "MODEL DESCRIPTION: " + getDescription() + org.eclipse.persistence.internal.helper.Helper.cr());
+            log.write(System.lineSeparator() + getIndentationString() + "TEST MODEL NAME: " + getName() + System.lineSeparator());
+            log.write(getIndentationString() + "MODEL DESCRIPTION: " + getDescription() + System.lineSeparator());
         } catch (IOException exception) {
         }
     }
@@ -288,9 +289,9 @@ public class TestModel extends TestCollection {
     @Override
     protected void logHeadNote(Writer log) {
         try {
-            log.write(org.eclipse.persistence.internal.helper.Helper.cr() + getIndentationString() + "VERSION: " + org.eclipse.persistence.sessions.DatabaseLogin.getVersion());
-            log.write(org.eclipse.persistence.internal.helper.Helper.cr() + getIndentationString() + "TEST MODEL NAME: " + getName() + org.eclipse.persistence.internal.helper.Helper.cr());
-            log.write(getIndentationString() + "MODEL DESCRIPTION: " + getDescription() + org.eclipse.persistence.internal.helper.Helper.cr());
+            log.write(System.lineSeparator() + getIndentationString() + "VERSION: " + org.eclipse.persistence.sessions.DatabaseLogin.getVersion());
+            log.write(System.lineSeparator() + getIndentationString() + "TEST MODEL NAME: " + getName() + System.lineSeparator());
+            log.write(getIndentationString() + "MODEL DESCRIPTION: " + getDescription() + System.lineSeparator());
         } catch (IOException exception) {
         }
     }
@@ -300,7 +301,6 @@ public class TestModel extends TestCollection {
      * that test collection should perform after running itself.
      */
     public void reset() {
-        return;
     }
 
     /**
@@ -339,8 +339,7 @@ public class TestModel extends TestCollection {
             if (this.sessionLog.getLevel() != getSession().getSessionLog().getLevel()) {
                 System.out.println("Log level changed by test model:" + this);
             }
-            if (this.login instanceof DatabaseLogin) {
-                DatabaseLogin login = (DatabaseLogin)this.login;
+            if (this.login instanceof DatabaseLogin login) {
                 if (login.shouldBindAllParameters() != getSession().getLogin().shouldBindAllParameters()) {
                     System.out.println("Binding changed by test model:" + this);
                 }
@@ -405,7 +404,6 @@ public class TestModel extends TestCollection {
      * that test collection should perform before running itself.
      */
     public void setup() {
-        return;
     }
 
     /**
@@ -495,6 +493,6 @@ public class TestModel extends TestCollection {
         if (isSetup() || (!getTests().isEmpty())) {
             return super.testAt(index);
         }
-        return getFinishedTests().elementAt(index);
+        return getFinishedTests().get(index);
     }
 }

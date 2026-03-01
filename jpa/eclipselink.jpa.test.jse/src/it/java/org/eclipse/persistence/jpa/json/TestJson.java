@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2022, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,6 +30,7 @@ import org.eclipse.persistence.jpa.test.framework.DDLGen;
 import org.eclipse.persistence.jpa.test.framework.Emf;
 import org.eclipse.persistence.jpa.test.framework.EmfRunner;
 import org.eclipse.persistence.jpa.test.framework.Property;
+import org.eclipse.persistence.sessions.Session;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -254,4 +255,32 @@ public class TestJson implements JsonTestConverter.ConverterStatus {
         }
     }
 
+    @Test
+    public void testEscapedQuestionMarkInSQLOperator() {
+        EntityManager em = emf.createEntityManager();
+
+        if (emf.unwrap(Session.class).getPlatform().isOracle()) {
+            JsonValue value = Json.createObjectBuilder()
+                    .add("id", "1007")
+                    .build();
+            try {
+                em.getTransaction().begin();
+                JsonEntity e = new JsonEntity(1007, value);
+                em.persist(e);
+                em.flush();
+                em.getTransaction().commit();
+                em.clear();
+
+                JsonEntity dbValue = em.createQuery(
+                    "SELECT v FROM JsonEntity v WHERE SQL('JSON_EXISTS(?, ''$??(@.id == 1007)'')', v.value)", JsonEntity.class)
+                    .getSingleResult();
+                Assert.assertEquals(value, dbValue.getValue());
+            } finally {
+                if (em.getTransaction().isActive()) {
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
+        }
+    }
 }

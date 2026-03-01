@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,9 +20,8 @@ public class PhoneNumber {
     public String number;
 
     public boolean equals(Object theObject){
-        if(theObject instanceof PhoneNumber){
-            PhoneNumber phone = (PhoneNumber)theObject;
-           if(!areaCode.equals(phone.areaCode)){
+        if(theObject instanceof PhoneNumber phone){
+            if(!areaCode.equals(phone.areaCode)){
                return false;
            }
            if(!number.equals(phone.number)){

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,14 +14,6 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.oxm.record;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import javax.xml.XMLConstants;
-
 import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.NamespaceResolver;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
@@ -31,6 +23,13 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
+
+import javax.xml.XMLConstants;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  *  Internal:
@@ -213,11 +212,11 @@ public class XMLFragmentReader extends DOMReader {
      */
     protected String resolveNamespacePrefix(String prefix) {
         String uri = null;
-        if (null == prefix || prefix.length() == 0) {
+        if (null == prefix || prefix.isEmpty()) {
             for (int i = nsresolverList.size() - 1; i >= 0; i--) {
                 NamespaceResolver next = nsresolverList.get(i);
                 uri = next.getDefaultNamespaceURI();
-                if ((uri != null) && uri.length() > 0) {
+                if ((uri != null) && !uri.isEmpty()) {
                     break;
                 }
             }
@@ -225,7 +224,7 @@ public class XMLFragmentReader extends DOMReader {
             for (int i = nsresolverList.size() - 1; i >= 0; i--) {
                 NamespaceResolver next = nsresolverList.get(i);
                 uri = next.resolveNamespacePrefix(prefix);
-                if ((uri != null) && uri.length() > 0) {
+                if ((uri != null) && !uri.isEmpty()) {
                     break;
                 }
             }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,34 +15,37 @@
 package org.eclipse.persistence.annotations;
 
 /**
- * An enum that is used within the ChangeTracking annotation.
+ * An enum that is used within the {@linkplain ChangeTracking} annotation.
  *
- * @see org.eclipse.persistence.annotations.ChangeTracking
+ * @see ChangeTracking
  * @author Guy Pelletier
  * @since Oracle TopLink 11.1.1.0.0
  */
 public enum ChangeTrackingType {
     /**
-     * An ATTRIBUTE change tracking type allows change tracking at the attribute
+     * Allows change tracking at the attribute
      * level of an object. Objects with changed attributes will be processed in
      * the commit process to include any changes in the results of the commit.
+     * <p>
      * Unchanged objects will be ignored.
      */
     ATTRIBUTE,
 
     /**
-     * An OBJECT change tracking policy allows an object to calculate for itself
+     * Allows an object to calculate for itself
      * whether it has changed. Changed objects will be processed in the commit
      * process to include any changes in the results of the commit.
+     * <p>
      * Unchanged objects will be ignored.
      */
     OBJECT,
 
     /**
-     * A DEFERRED change tracking policy defers all change detection to the
-     * UnitOfWork's change detection process. Essentially, the calculateChanges()
-     * method will run for all objects in a UnitOfWork.
-     * This is the default ObjectChangePolicy
+     * Defers all change detection to the {@linkplain org.eclipse.persistence.sessions.UnitOfWork}'s change detection process.
+     * Essentially, the {@linkplain org.eclipse.persistence.internal.sessions.UnitOfWorkImpl#calculateChanges(java.util.Map, org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet, boolean, boolean)}
+     * method will run for all objects in a {@linkplain org.eclipse.persistence.sessions.UnitOfWork}.
+     * <p>
+     * This is the default {@linkplain org.eclipse.persistence.descriptors.changetracking.ObjectChangePolicy}
      */
     DEFERRED,
 

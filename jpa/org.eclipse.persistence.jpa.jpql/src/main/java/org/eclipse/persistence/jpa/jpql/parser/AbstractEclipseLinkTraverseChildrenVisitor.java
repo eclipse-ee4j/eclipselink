@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -44,17 +44,7 @@ public abstract class AbstractEclipseLinkTraverseChildrenVisitor extends Abstrac
     }
 
     @Override
-    public void visit(CastExpression expression) {
-        visit((Expression) expression);
-    }
-
-    @Override
     public void visit(ConnectByClause expression) {
-        visit((Expression) expression);
-    }
-
-    @Override
-    public void visit(DatabaseType expression) {
         visit((Expression) expression);
     }
 
@@ -90,11 +80,6 @@ public abstract class AbstractEclipseLinkTraverseChildrenVisitor extends Abstrac
 
     @Override
     public void visit(TableVariableDeclaration expression) {
-        visit((Expression) expression);
-    }
-
-    @Override
-    public void visit(UnionClause expression) {
         visit((Expression) expression);
     }
 }

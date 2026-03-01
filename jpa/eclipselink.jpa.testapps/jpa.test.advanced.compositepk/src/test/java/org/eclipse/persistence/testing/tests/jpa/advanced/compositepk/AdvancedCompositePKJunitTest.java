@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2022 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -230,7 +230,7 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
         Department department = createEntityManager().find(Department.class, m_departmentPK);
 
         assertNotNull("Error on reading back the ordered department list.", department);
-        assertTrue("The number of scientists were incorrect.", department.getScientists().size() > 0);
+        assertTrue("The number of scientists were incorrect.", !department.getScientists().isEmpty());
     }
 
     public void testReadJuniorScientist() {
@@ -346,7 +346,7 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
             department = em.find(Department.class, new DepartmentPK("DEPT B", "ROLE B", "LOCATION B"));
 
             assertNotNull("Office's department not properly persisted", office.getDepartment());
-            assertTrue("Department's offices not properly persisted", department.getOffices().size() > 0);
+            assertTrue("Department's offices not properly persisted", !department.getOffices().isEmpty());
 
 
         } catch (Exception e){

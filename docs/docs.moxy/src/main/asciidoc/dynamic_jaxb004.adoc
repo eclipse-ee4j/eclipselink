@@ -1,0 +1,164 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[DYNAMICJAXB004]]
+=== Bootstrapping from EclipseLink Metadata (OXM)
+
+If you would like to have more control over how your `DynamicEntities`
+will be mapped to XML, you can instead bootstrap from an EclipseLink OXM
+Metadata file. Using this approach, you can take advantage of
+EclipseLink's robust mappings framework and customize how each complex
+type in XML maps to its Java counterpart. The following API on
+`DynamicJAXBContextFactory` can be used to bootstrap from an OXM file:
+
+[[sthref202]]
+
+*_Example 9-11 Creating a DynamicJAXBContext_*
+
+[source,oac_no_warn]
+----
+/**
+ * Create a <tt>DynamicJAXBContext</tt>, using an EclipseLink OXM file as the metadata source.
+ *
+ * @param classLoader
+ *      The application's current class loader, which will be used to first lookup classes to
+ *      see if they exist before new <tt>DynamicTypes</tt> are generated. Can be <tt>null</tt>,
+ *      in which case <tt>Thread.currentThread().getContextClassLoader()</tt> will be used.
+ * @param properties
+ *      Map of properties to use when creating a new <tt>DynamicJAXBContext</tt>.  This map must
+ *      contain a key of JAXBContext.ECLIPSELINK_OXM_XML_KEY, with a value of... (see below)
+ *
+ * @return
+ *      A new instance of <tt>DynamicJAXBContext</tt>.
+ *
+ * @throws JAXBException
+ *      if an error was encountered while creating the <tt>DynamicJAXBContext</tt>.
+ */
+public static DynamicJAXBContext createContextFromOXM(ClassLoader classLoader, Map<String, ?> properties) throws JAXBException {
+ 
+----
+
+Links to the actual OXM files are passed in via the `properties`
+parameter, using a special key,
+`JAXBContextProperties.OXM_METADATA_SOURCE`. The value of this key will
+be a handle to the OXM metadata file, in the form of one of the
+following:
+
+* `java.io.File`
+* `java.io.InputStream`
+* `java.io.Reader`
+* `java.net.URL`
+* `javax.xml.stream.XMLEventReader`
+* `javax.xml.stream.XMLStreamReader`
+* `javax.xml.transform.Source`
+* `org.w3c.dom.Node`
+* `org.xml.sax.InputSource`
+
+`Lists` of the above inputs are acceptable as well, to bootstrap from
+multiple OXM files. For more information, see the documentation on the
+`DynamicJAXBContextFactory` class.
+
+In the following example, we will obtain our OXM file as a resource from
+our `ClassLoader`, and use the resulting `InputStream` to bootstrap a
+`DynamicJAXBContext`:
+
+[source,oac_no_warn]
+----
+InputStream iStream = myClassLoader.getResourceAsStream("example/resources/eclipselink/eclipselink-oxm.xml");
+ 
+Map<String, Object> properties = new HashMap<String, Object>();
+properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, iStream);
+ 
+DynamicJAXBContext jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(myClassLoader, properties);
+----
+
+==== Example
+
+Using the sample OXM in link:#BABCECHB[Example 9-12], we will show an
+example of how to create and marshall a new object using Dynamic MOXy.
+It is important to note the `type` attributes. Because there is no
+underlying Java class, the types of each property must be explicitly
+specified.
+
+[[BABCECHB]]
+
+*_Example 9-12 Sample XML Schema_*
+
+[source,oac_no_warn]
+----
+<?xml version="1.0" encoding="US-ASCII"?>
+<xml-bindings xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema" package-name="example">
+ 
+    <java-types>
+        <java-type name="Customer">
+            <xml-root-element name="customer"/>
+            <java-attributes>
+                <xml-element java-attribute="firstName" type="java.lang.String"/>
+                <xml-element java-attribute="lastName" type="java.lang.String"/>
+                <xml-element java-attribute="address" type="example.Address"/>
+            </java-attributes>
+        </java-type>
+ 
+        <java-type name="Address">
+            <java-attributes>
+                <xml-element java-attribute="street" type="java.lang.String"/>
+                <xml-element java-attribute="city" type="java.lang.String"/>
+                <xml-element java-attribute="province" type="java.lang.String"/>
+                <xml-element java-attribute="postalCode" type="java.lang.String"/>
+            </java-attributes>
+        </java-type>
+    </java-types>
+ 
+</xml-bindings>
+ 
+----
+
+The code in link:#BGBHBFEG[Example 9-13] demonstrates:
+
+* Passing the OXM file to `DynamicJAXBContextFactory` to create a
+`DynamicJAXBContext`
+* Creating new `DynamicEntities` and setting their properties
+* Creating a `JAXBMarshaller` and marshalling the Java objects to XML
+
+[[BGBHBFEG]]
+
+*_Example 9-13 Sample Application Code_*
+
+[source,oac_no_warn]
+----
+InputStream iStream = myClassLoader.getResourceAsStream("example/resources/eclipselink/eclipselink-oxm.xml");
+ 
+Map<String, Object> properties = new HashMap<String, Object>();
+properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, iStream);
+ 
+DynamicJAXBContext jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(myClassLoader, properties);
+ 
+DynamicEntity newCustomer = dContext.newDynamicEntity("example.Customer");
+newCustomer.set("firstName", "George");
+newCustomer.set("lastName", "Jones");
+ 
+DynamicEntity newAddress = dContext.newDynamicEntity("example.Address");
+newAddress.set("street", "227 Main St.");
+newAddress.set("city", "Toronto");
+newAddress.set("province", "Ontario");
+newAddress.set("postalCode", "M5V1E6");
+ 
+newCustomer.set("address", newAddress);
+ 
+dContext.createMarshaller().marshal(newCustomer, System.out);
+----

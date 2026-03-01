@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,8 +20,7 @@ import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.sessions.server.ClientSession;
 
-import java.util.Enumeration;
-import java.util.Vector;
+import java.util.List;
 
 /**
  * <p>
@@ -101,22 +100,20 @@ public class WriteObjectTest extends TransactionalTestCase {
 
         String mutationString = "M"; // The string to append
 
-        /**
+        /*
          * Here the class of the object passed is used to get the corresponding
          * descriptor, which is then used to find the mappings and determine if
          * one exists that can be mutated
          */
         Class<?> objectClass = objectToBeMutated.getClass();
         ClassDescriptor descriptor = getSession().getProject().getClassDescriptor(objectClass);
-        Vector<DatabaseMapping> mappings = descriptor.getMappings();
+        List<DatabaseMapping> mappings = descriptor.getMappings();
 
         if (isInUOW) {
             mutationString += "U";
         }
 
-        Enumeration<DatabaseMapping> en = mappings.elements();
-
-        /**
+        /*
          * Parse the mappings for the object's descriptor to find a suitable
          * mapping that can be mutated.  The mapping must meet the conditions:
          * Not a primary key mapping
@@ -126,12 +123,12 @@ public class WriteObjectTest extends TransactionalTestCase {
          * The loop exits once an appropriate mapping is found or the list of
          * mappings has been fully parsed (whichever occurs first)
          */
-        while (en.hasMoreElements ()) {
-            dbMapping = en.nextElement();
+        for (DatabaseMapping mapping : mappings) {
+            dbMapping = mapping;
 
             if (!dbMapping.isPrimaryKeyMapping()
                     && dbMapping.isDirectToFieldMapping()
-                    &&!((AbstractDirectMapping) dbMapping).hasConverter()
+                    && !((AbstractDirectMapping) dbMapping).hasConverter()
                     && (dbMapping.getAttributeAccessor().getAttributeClass())
                     .getName().contains("String")) {
                 mutatableMapping = dbMapping;
@@ -139,7 +136,7 @@ public class WriteObjectTest extends TransactionalTestCase {
             }
         }
 
-        /**
+        /*
          * If a mapping was found that can be mutated, use TopLink methods to
          * modify the value stored in the object for that mapping.  Otherwise
          * do nothing.

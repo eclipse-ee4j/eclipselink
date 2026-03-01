@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,7 +16,6 @@ package org.eclipse.persistence.internal.jpa.config.queries;
 
 import java.util.ArrayList;
 
-import org.eclipse.persistence.internal.jpa.metadata.queries.PLSQLParameterMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.PLSQLRecordMetadata;
 import org.eclipse.persistence.jpa.config.PlsqlParameter;
 import org.eclipse.persistence.jpa.config.PlsqlRecord;
@@ -32,7 +31,7 @@ public class PlsqlRecordImpl extends AbstractPlsqlTypeImpl<PLSQLRecordMetadata, 
     public PlsqlRecordImpl() {
         super(new PLSQLRecordMetadata());
 
-        getMetadata().setFields(new ArrayList<PLSQLParameterMetadata>());
+        getMetadata().setFields(new ArrayList<>());
     }
 
     @Override

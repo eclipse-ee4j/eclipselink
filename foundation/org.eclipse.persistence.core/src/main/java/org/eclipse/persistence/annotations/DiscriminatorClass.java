@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,7 +21,7 @@ import java.lang.annotation.Target;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * A DiscriminatorClass is used within a VariableOneToOne annotation.
+ * A DiscriminatorClass is used within a {@linkplain VariableOneToOne} annotation.
  *
  * @author Guy Pelletier
  * @since Eclipselink 1.0
@@ -30,12 +30,12 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 public @interface DiscriminatorClass {
     /**
-     * (Required) The discriminator to be stored on the database.
+     * The discriminator to be stored on the database.
      */
     String discriminator();
 
     /**
-     * (Required) The class to the instantiated with the given discriminator.
+     * The class to the instantiated with the given discriminator.
      */
     Class<?> value();
 }

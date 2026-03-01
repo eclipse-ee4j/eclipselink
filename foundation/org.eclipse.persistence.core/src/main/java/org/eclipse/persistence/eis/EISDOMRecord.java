@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,13 +14,12 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.eis;
 
-import java.lang.reflect.*;
-
-import jakarta.resource.cci.*;
-import org.w3c.dom.*;
-
+import jakarta.resource.cci.MappedRecord;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.oxm.record.XMLRecord;
+import org.w3c.dom.Element;
+
+import java.lang.reflect.Method;
 
 /**
  * <p>An <code>EISDOMRecord</code> is a wrapper for a DOM tree.  It provides a

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,10 +14,11 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.oxm.mappings.directtofield.typeattribute;
 
-import java.io.InputStream;
-import java.util.Calendar;
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
+
+import java.io.InputStream;
+import java.util.Calendar;
 
 public class TypeAttributeTimeTestCases extends XMLMappingTestCases {
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/directtofield/typeattribute/TypeAttributeTime.xml";
@@ -59,7 +60,7 @@ public class TypeAttributeTimeTestCases extends XMLMappingTestCases {
             fail("No Exception was thrown");
         } catch (ConversionException ex) {
             System.out.println(ex.getMessage());
-            assertTrue("The wrong exception was thrown for invalid time format", ex.getErrorCode() == ConversionException.INCORRECT_TIME_FORMAT);
+            assertEquals("The wrong exception was thrown for invalid time format", ConversionException.INCORRECT_TIME_FORMAT, ex.getErrorCode());
         }
     }
 }

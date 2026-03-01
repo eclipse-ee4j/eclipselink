@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2022 Oracle, IBM and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle, IBM and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,12 +16,12 @@
 //        - ECL1535 : UUIDGenerator intermittently fails to initialize
 package org.eclipse.persistence.sequencing;
 
-import java.util.UUID;
-import java.util.Vector;
-
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.queries.ValueReadQuery;
+
+import java.util.UUID;
+import java.util.Vector;
 
 public class UUIDSequence extends Sequence {
 
@@ -35,8 +35,7 @@ public class UUIDSequence extends Sequence {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof UUIDSequence) {
-            UUIDSequence other = (UUIDSequence)obj;
+        if (obj instanceof UUIDSequence other) {
             return this.getName().equals(other.getName());
         } else {
             return false;
@@ -50,10 +49,14 @@ public class UUIDSequence extends Sequence {
             query = getDatasourcePlatform().getUUIDQuery();
         }
         if (query != null) {
-            return writeSession.executeQuery(query);
-        } else {
-            return UUID.randomUUID().toString();
+            Object result = writeSession.executeQuery(query);
+            if (result instanceof String s) {
+                return UUID.fromString(s);
+            }
+            //should not happen
+            return result;
         }
+        return UUID.randomUUID();
     }
 
     @Override

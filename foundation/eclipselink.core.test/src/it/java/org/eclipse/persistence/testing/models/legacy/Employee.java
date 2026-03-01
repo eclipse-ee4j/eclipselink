@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,8 +14,8 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.legacy;
 
-import java.util.*;
-import java.io.*;
+import java.io.Serializable;
+import java.util.Vector;
 
 public class Employee implements Serializable {
     public String firstName;
@@ -37,8 +37,8 @@ public class Employee implements Serializable {
         example.address = "885 Meadowlands Dr.";
         example.computer = Computer.example1(example);
 
-        example.shipments.addElement(Shipment.example1(example));
-        example.shipments.addElement(Shipment.example2(example));
+        example.shipments.add(Shipment.example1(example));
+        example.shipments.add(Shipment.example2(example));
 
         return example;
     }
@@ -52,8 +52,8 @@ public class Employee implements Serializable {
         example.address = "885 Meadowlands Dr.";
         example.computer = Computer.example2(example);
 
-        example.shipments.addElement(Shipment.example3(example));
-        example.shipments.addElement(Shipment.example4(example));
+        example.shipments.add(Shipment.example3(example));
+        example.shipments.add(Shipment.example4(example));
 
         return example;
     }
@@ -66,9 +66,9 @@ public class Employee implements Serializable {
         example.address = "885 Meadowlands Dr.";
         example.computer = Computer.example3(example);
 
-        example.shipments.addElement(InsuredShipment.example1(example));
-        example.shipments.addElement(InsuredShipment.example2(example));
-        example.shipments.addElement(GaurenteedShipment.example2(example));
+        example.shipments.add(InsuredShipment.example1(example));
+        example.shipments.add(InsuredShipment.example2(example));
+        example.shipments.add(GaurenteedShipment.example2(example));
 
         return example;
     }
@@ -102,7 +102,7 @@ public class Employee implements Serializable {
         example.lastName = "Louis";
         example.address = "885 Meadowlands Dr.";
         example.computer = Computer.example6(example);
-        example.shipments.addElement(GaurenteedShipment.example1(example));
+        example.shipments.add(GaurenteedShipment.example1(example));
 
         return example;
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,17 +14,51 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.performance;
 
-import java.io.*;
-
 import org.eclipse.persistence.Version;
-import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.sessions.Session;
+import org.eclipse.persistence.testing.framework.TestModel;
+import org.eclipse.persistence.testing.framework.TestSuite;
 import org.eclipse.persistence.testing.models.performance.Address;
 import org.eclipse.persistence.testing.models.performance.EmploymentPeriod;
-import org.eclipse.persistence.testing.models.performance.toplink.*;
-import org.eclipse.persistence.testing.framework.*;
-import org.eclipse.persistence.testing.tests.performance.reading.*;
-import org.eclipse.persistence.testing.tests.performance.writing.*;
+import org.eclipse.persistence.testing.models.performance.toplink.Employee;
+import org.eclipse.persistence.testing.models.performance.toplink.EmployeeSystem;
+import org.eclipse.persistence.testing.models.performance.toplink.PhoneNumber;
+import org.eclipse.persistence.testing.tests.performance.reading.ReadAllAddressTest;
+import org.eclipse.persistence.testing.tests.performance.reading.ReadAllBigBadObjectTest;
+import org.eclipse.persistence.testing.tests.performance.reading.ReadAllCompletelyBatchedEmployeeTest;
+import org.eclipse.persistence.testing.tests.performance.reading.ReadAllCompletelyEmployeeTest;
+import org.eclipse.persistence.testing.tests.performance.reading.ReadAllCompletelyJoinedEmployeeTest;
+import org.eclipse.persistence.testing.tests.performance.reading.ReadAllComplexExpressionEmployeeTest;
+import org.eclipse.persistence.testing.tests.performance.reading.ReadAllComplexExpressionUnitOfWorkConformEmployeeTest;
+import org.eclipse.persistence.testing.tests.performance.reading.ReadAllEmployeeTest;
+import org.eclipse.persistence.testing.tests.performance.reading.ReadAllExpressionInheritanceProjectTest;
+import org.eclipse.persistence.testing.tests.performance.reading.ReadAllHugeCacheAddressTest;
+import org.eclipse.persistence.testing.tests.performance.reading.ReadAllInMemoryComplexExpressionEmployeeTest;
+import org.eclipse.persistence.testing.tests.performance.reading.ReadAllInMemoryEmployeeTest;
+import org.eclipse.persistence.testing.tests.performance.reading.ReadAllUnitOfWorkConformingEmployeeTest;
+import org.eclipse.persistence.testing.tests.performance.reading.ReadAllUnitOfWorkEmployeeTest;
+import org.eclipse.persistence.testing.tests.performance.reading.ReadObjectByPrimaryKeyAddressTest;
+import org.eclipse.persistence.testing.tests.performance.reading.ReadObjectByPrimaryKeyBigBadObjectTest;
+import org.eclipse.persistence.testing.tests.performance.reading.ReadObjectByPrimaryKeyEmployeeTest;
+import org.eclipse.persistence.testing.tests.performance.reading.ReadObjectCompletelyEmployeeTest;
+import org.eclipse.persistence.testing.tests.performance.reading.ReadObjectComplexExpressionEmployeeTest;
+import org.eclipse.persistence.testing.tests.performance.reading.ReadObjectInMemoryComplexExpressionEmployeeTest;
+import org.eclipse.persistence.testing.tests.performance.reading.ReadObjectInMemoryEmployeeTest;
+import org.eclipse.persistence.testing.tests.performance.reading.ReadObjectNamedQueryEmployeeTest;
+import org.eclipse.persistence.testing.tests.performance.writing.ComplexUpdateEmployeeUnitOfWorkTest;
+import org.eclipse.persistence.testing.tests.performance.writing.InsertAddressUnitOfWorkTest;
+import org.eclipse.persistence.testing.tests.performance.writing.InsertBigBadObjectUnitOfWorkTest;
+import org.eclipse.persistence.testing.tests.performance.writing.InsertDeleteAddressUnitOfWorkTest;
+import org.eclipse.persistence.testing.tests.performance.writing.InsertEmployeeUnitOfWorkTest;
+import org.eclipse.persistence.testing.tests.performance.writing.UnitOfWorkNoChangesClientSessionEmployeeTest;
+import org.eclipse.persistence.testing.tests.performance.writing.UpdateAddressUnitOfWorkTest;
+import org.eclipse.persistence.testing.tests.performance.writing.UpdateBigBadObjectUnitOfWorkTest;
+import org.eclipse.persistence.testing.tests.performance.writing.UpdateEmployeeUnitOfWorkTest;
+
+import java.io.IOException;
+import java.io.Writer;
 
 /**
  * This tests the performance of various toplink operations/ fine grained use cases. Its purpose is
@@ -326,7 +360,7 @@ public class PerformanceTestModel extends TestModel {
             Employee empInsert = new Employee();
             empInsert.setFirstName("Brendan");
             empInsert.setMale();
-            empInsert.setLastName("" + j + "");
+            empInsert.setLastName("" + j);
             empInsert.setSalary(100000);
             EmploymentPeriod employmentPeriod = new EmploymentPeriod();
             java.sql.Date startDate = Helper.dateFromString("1901-12-31");
@@ -350,7 +384,7 @@ public class PerformanceTestModel extends TestModel {
         DatabaseSession session = getSession().getProject().createServerSession();
 
         // Enable binding for 10.1.3 runs.
-        if (Version.getVersion().indexOf("10.1.3") != -1) {
+        if (Version.getVersion().contains("10.1.3")) {
             session.getLogin().setShouldBindAllParameters(true);
         }
 
@@ -377,10 +411,10 @@ public class PerformanceTestModel extends TestModel {
         super.logHeadNote(log);
         try {
             if (!System.getProperties().containsKey("toplink.loadbuild.baseline-version")) {
-                log.write(getIndentationString() + "BASELINE VERSION: NONE SET" + org.eclipse.persistence.internal.helper.Helper.cr());
+                log.write(getIndentationString() + "BASELINE VERSION: NONE SET" + System.lineSeparator());
             } else {
                 String baselineVersion = System.getProperties().getProperty("toplink.loadbuild.baseline-version");
-                log.write(getIndentationString() + "BASELINE VERSION: " + baselineVersion + org.eclipse.persistence.internal.helper.Helper.cr());
+                log.write(getIndentationString() + "BASELINE VERSION: " + baselineVersion + System.lineSeparator());
             }
         } catch (IOException exception) {
         }

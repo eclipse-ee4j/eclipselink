@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,13 +14,15 @@
 //     dminsky - initial API and implementation
 package org.eclipse.persistence.testing.tests.identitymaps.cacheinvalidation;
 
-import java.util.*;
-
 import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.sessions.*;
+import org.eclipse.persistence.sessions.UnitOfWork;
+import org.eclipse.persistence.testing.framework.QuerySQLTracker;
+import org.eclipse.persistence.testing.framework.TestCase;
+import org.eclipse.persistence.testing.framework.TestErrorException;
+import org.eclipse.persistence.testing.models.insurance.PolicyHolder;
 
-import org.eclipse.persistence.testing.framework.*;
-import org.eclipse.persistence.testing.models.insurance.*;
+import java.util.List;
+import java.util.Vector;
 
 /**
  * Test the refreshing of an object graph after invalidation
@@ -91,12 +93,12 @@ public class UnitOfWorkRefreshAfterInvalidationTest extends TestCase {
         }
         // problems were detected, errors vector has > 0 entries - print a verbose list of erroneous statements
         if (!errors.isEmpty()) {
-            StringBuffer buffer = new StringBuffer();
+            StringBuilder buffer = new StringBuilder();
             buffer.append("Errors occurred with duplicate SQL being executed whilst building an object tree. The UnitOfWork cache should have been hit instead:");
-            buffer.append(Helper.cr());
-            for (int i = 0; i < errors.size(); i++) {
-                buffer.append(errors.get(i));
-                buffer.append(Helper.cr());
+            buffer.append(System.lineSeparator());
+            for (Object error : errors) {
+                buffer.append(error);
+                buffer.append(System.lineSeparator());
             }
             throw new TestErrorException(buffer.toString());
         }

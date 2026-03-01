@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -44,15 +44,12 @@ public class CustomSexConverter implements Converter {
         if (objectValue != null) {
             String sex = (String) objectValue;
 
-            if (sex.equals("Made of testosterone")) {
-                return "M";
-            } else if (sex.equals("Made of estrogen")) {
-                return "F";
-            } else if (sex.equals("Male")) {
-                return "M";
-            } else {
-                return "F";
-            }
+            return switch (sex) {
+                case "Made of testosterone" -> "M";
+                case "Made of estrogen" -> "F";
+                case "Male" -> "M";
+                default -> "F";
+            };
         }
 
         return null;

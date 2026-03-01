@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,17 +14,18 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.oxm.mappings.sequenced;
 
+import org.eclipse.persistence.oxm.sequenced.SequencedObject;
+import org.eclipse.persistence.oxm.sequenced.Setting;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import org.eclipse.persistence.oxm.sequenced.*;
 
 public class Dependent implements SequencedObject {
 
     private String firstName;
     private String lastName;
     private Address address;
-    private List<Setting> settings = new ArrayList<Setting>();
+    private List<Setting> settings = new ArrayList<>();
 
     public Address getAddress() {
         return address;
@@ -69,10 +70,7 @@ public class Dependent implements SequencedObject {
                 return false;
             }
             */
-            if(!Comparer.equals(settings, testDependent.getSettings())) {
-                return false;
-            }
-            return true;
+            return Comparer.equals(settings, testDependent.getSettings());
         } catch(ClassCastException e) {
             return false;
         }

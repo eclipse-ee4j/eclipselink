@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,12 +14,6 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.sessions.remote;
 
-import java.rmi.server.ObjID;
-import java.util.IdentityHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.queries.CursoredStreamPolicy;
 import org.eclipse.persistence.queries.DatabaseQuery;
@@ -28,6 +22,12 @@ import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.queries.ScrollableCursorPolicy;
 import org.eclipse.persistence.sessions.Login;
 import org.eclipse.persistence.sessions.remote.DistributedSession;
+
+import java.rmi.server.ObjID;
+import java.util.IdentityHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 
 /**
  * Defines set of abstract methods which one must overwrite for any kind to implement a communication mechanism.
@@ -124,7 +124,7 @@ public abstract class RemoteConnection implements java.io.Serializable {
      * INTERNAL:
      * Get the read-only classes
      */
-    public abstract Vector getDefaultReadOnlyClasses();
+    public abstract List<Class<?>> getDefaultReadOnlyClasses();
 
     /**
      * Get descriptor
@@ -292,7 +292,7 @@ public abstract class RemoteConnection implements java.io.Serializable {
             // find next power-of-2 size
             Map recursiveSet = new IdentityHashMap(remoteObjectCollection.size() + 1);
             for (Object serverSideDomainObject : remoteObjectCollection) {
-                clientObjectCollection.addElement(session.getObjectCorrespondingTo(serverSideDomainObject, remoteCursoredStream.getObjectDescriptors(), recursiveSet, query));
+                clientObjectCollection.add(session.getObjectCorrespondingTo(serverSideDomainObject, remoteCursoredStream.getObjectDescriptors(), recursiveSet, query));
             }
             stream.setObjectCollection(clientObjectCollection);
         }

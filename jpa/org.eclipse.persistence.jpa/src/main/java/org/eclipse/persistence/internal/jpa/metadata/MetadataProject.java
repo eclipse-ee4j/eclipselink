@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -124,6 +124,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import jakarta.persistence.SharedCacheMode;
 import jakarta.persistence.spi.PersistenceUnitInfo;
@@ -135,12 +136,14 @@ import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.jpa.deployment.PersistenceUnitProcessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ConverterAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EmbeddableAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EntityAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.InterfaceAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.MappedSuperclassAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.PackageAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.DirectCollectionAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.MappingAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.RelationshipAccessor;
@@ -148,6 +151,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 import org.eclipse.persistence.internal.jpa.metadata.converters.AbstractConverterMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.StructConverterMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.graphs.NamedEntityGraphMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.listeners.EntityListenerMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.partitioning.AbstractPartitioningMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.ComplexTypeMetadata;
@@ -175,7 +179,7 @@ import org.eclipse.persistence.sessions.Project;
  * INTERNAL:
  * A MetadataProject stores metadata and also helps to facilitate the metadata
  * processing.
- *
+ * <p>
  * Key notes:
  * - Care should be taken when using Sets to hold metadata and checking their
  *   equality. In most cases you should be able to us a List or Map since most
@@ -284,6 +288,9 @@ public class MetadataProject {
     // Query metadata.
     private Map<String, NamedQueryMetadata> m_queries;
 
+    // Entity Graph metadata.
+    private Map<String, NamedEntityGraphMetadata> m_entityGraphs;
+
     // SQL result set mapping
     private Map<String, SQLResultSetMappingMetadata> m_sqlResultSetMappings;
 
@@ -322,6 +329,9 @@ public class MetadataProject {
     // persistence unit (unless they exclude them).
     private Set<EntityListenerMetadata> m_defaultListeners;
 
+    // The package accessors for this project
+    private Map<String, PackageAccessor> m_packageAccessors;
+
     /**
      * INTERNAL:
      * Create and return a new MetadataProject with puInfo as its PersistenceUnitInfo,
@@ -341,39 +351,41 @@ public class MetadataProject {
         m_multitenantSharedEmf = multitenantSharedEmf;
         m_multitenantSharedCache = multitenantSharedCache;
 
-        m_owningRelationshipAccessors = new ArrayList<RelationshipAccessor>();
-        m_nonOwningRelationshipAccessors = new ArrayList<RelationshipAccessor>();
-        m_embeddableMappingAccessors = new ArrayList<MappingAccessor>();
-        m_directCollectionAccessors = new ArrayList<DirectCollectionAccessor>();
-        m_accessorsWithCustomizer = new ArrayList<ClassAccessor>();
+        m_owningRelationshipAccessors = new ArrayList<>();
+        m_nonOwningRelationshipAccessors = new ArrayList<>();
+        m_embeddableMappingAccessors = new ArrayList<>();
+        m_directCollectionAccessors = new ArrayList<>();
+        m_accessorsWithCustomizer = new ArrayList<>();
 
         // Using linked collections since their ordering needs to be preserved.
-        m_entityMappings = new LinkedHashMap<String, XMLEntityMappings>();
-        m_defaultListeners = new LinkedHashSet<EntityListenerMetadata>();
+        m_entityMappings = new LinkedHashMap<>();
+        m_defaultListeners = new LinkedHashSet<>();
 
-        m_queries = new HashMap<String, NamedQueryMetadata>();
-        m_sqlResultSetMappings = new HashMap<String, SQLResultSetMappingMetadata>();
-        m_allAccessors = new HashMap<String, ClassAccessor>();
-        m_entityAccessors = new HashMap<String, EntityAccessor>();
-        m_embeddableAccessors = new HashMap<String, EmbeddableAccessor>();
-        m_rootEmbeddableAccessors = new HashMap<String, EmbeddableAccessor>();
-        m_interfaceAccessors = new HashMap<String, InterfaceAccessor>();
-        m_mappedSuperclasseAccessors = new HashMap<String, MappedSuperclassAccessor>();
-        m_generatedValues = new HashMap<MetadataClass, GeneratedValueMetadata>();
-        m_tableGenerators = new HashMap<String, TableGeneratorMetadata>();
-        m_sequenceGenerators = new HashMap<String, SequenceGeneratorMetadata>();
-        m_uuidGenerators = new HashMap<String, UuidGeneratorMetadata>();
-        m_converters = new HashMap<String, AbstractConverterMetadata>();
-        m_converterAccessors = new HashMap<String, ConverterAccessor>();
-        m_autoApplyConvertAccessors = new HashMap<String, ConverterAccessor>();
-        m_partitioningPolicies = new HashMap<String, AbstractPartitioningMetadata>();
-        m_complexMetadataTypes = new HashMap<String, ComplexTypeMetadata>();
-        m_metamodelMappedSuperclasses = new HashMap<String, MappedSuperclassAccessor>();
-        m_virtualClasses = new HashMap<String, ClassAccessor>();
-        m_accessorsWithDerivedId = new HashMap<String, ClassAccessor>();
+        m_queries = new HashMap<>();
+        m_entityGraphs = new HashMap<>();
+        m_sqlResultSetMappings = new HashMap<>();
+        m_allAccessors = new HashMap<>();
+        m_entityAccessors = new HashMap<>();
+        m_embeddableAccessors = new HashMap<>();
+        m_rootEmbeddableAccessors = new HashMap<>();
+        m_interfaceAccessors = new HashMap<>();
+        m_mappedSuperclasseAccessors = new HashMap<>();
+        m_generatedValues = new HashMap<>();
+        m_tableGenerators = new HashMap<>();
+        m_sequenceGenerators = new HashMap<>();
+        m_uuidGenerators = new HashMap<>();
+        m_converters = new HashMap<>();
+        m_converterAccessors = new HashMap<>();
+        m_autoApplyConvertAccessors = new HashMap<>();
+        m_partitioningPolicies = new HashMap<>();
+        m_complexMetadataTypes = new HashMap<>();
+        m_metamodelMappedSuperclasses = new HashMap<>();
+        m_virtualClasses = new HashMap<>();
+        m_accessorsWithDerivedId = new HashMap<>();
 
-        m_idClasses = new HashSet<String>();
-        m_interfacesImplementedByEntities = new HashSet<String>();
+        m_idClasses = new HashSet<>();
+        m_interfacesImplementedByEntities = new HashSet<>();
+        m_packageAccessors = new HashMap<>();
     }
 
     /**
@@ -658,6 +670,13 @@ public class MetadataProject {
     }
 
     /**
+     * INTERNAL: Add the Entity Graph by name.
+     */
+    public void addNamedEntityGraph(String name, NamedEntityGraphMetadata entityGraphMetadata) {
+        m_entityGraphs.put(name, entityGraphMetadata);
+    }
+
+    /**
      * INTERNAL:
      * Add the partitioning policy by name.
      */
@@ -710,11 +729,20 @@ public class MetadataProject {
 
     /**
      * INTERNAL:
+     * Add a package-info metadata to the project.
+     */
+    public void addPackageAccessor(PackageAccessor packageAccessor) {
+        m_packageAccessors.put(packageAccessor.getName(), packageAccessor);
+    }
+
+
+    /**
+     * INTERNAL:
      * Add a sequence generator metadata to the project. The actual processing
      * isn't done till processSequencing is called.
      */
-    public void addSequenceGenerator(SequenceGeneratorMetadata sequenceGenerator, String defaultCatalog, String defaultSchema) {
-        String name = sequenceGenerator.getName();
+    public void addSequenceGenerator(SequenceGeneratorMetadata sequenceGenerator, String defaultCatalog, String defaultSchema, String generatedName) {
+        String name = (sequenceGenerator.getName() != null) ? sequenceGenerator.getName() : generatedName;
 
         // Check if the sequence generator name uses a reserved name.
         if (name.equals(DEFAULT_TABLE_GENERATOR)) {
@@ -741,7 +769,7 @@ public class MetadataProject {
         for (TableGeneratorMetadata otherTableGenerator : m_tableGenerators.values()) {
             if ((tableGenerator != otherTableGenerator) && (otherTableGenerator.getPkColumnValue() != null) && otherTableGenerator.getPkColumnValue().equals(sequenceGenerator.getSequenceName())) {                // generator name will be used instead of an empty sequence name / pk column name
                 // generator name will be used instead of an empty sequence name / pk column name
-                if (otherTableGenerator.getPkColumnValue().length() > 0) {
+                if (!otherTableGenerator.getPkColumnValue().isEmpty()) {
                     throw ValidationException.conflictingSequenceNameAndTablePkColumnValueSpecified(sequenceGenerator.getSequenceName(), sequenceGenerator.getLocation(), otherTableGenerator.getLocation());
                 }
             }
@@ -750,7 +778,7 @@ public class MetadataProject {
         // Add the sequence generator if there isn't an existing one or if
         // we should override an existing one.
         if (sequenceGenerator.shouldOverride(m_sequenceGenerators.get(name))) {
-            m_sequenceGenerators.put(sequenceGenerator.getName(), sequenceGenerator);
+            m_sequenceGenerators.put(name, sequenceGenerator);
         }
     }
 
@@ -800,11 +828,11 @@ public class MetadataProject {
      * Add a table generator metadata to the project. The actual processing
      * isn't done till processSequencing is called.
      */
-    public void addTableGenerator(TableGeneratorMetadata tableGenerator, String defaultCatalog, String defaultSchema) {
+    public void addTableGenerator(TableGeneratorMetadata tableGenerator, String defaultCatalog, String defaultSchema, String generatedName) {
         // Process the default values.
         processTable(tableGenerator, "", defaultCatalog, defaultSchema, tableGenerator);
 
-        String generatorName = tableGenerator.getGeneratorName();
+        String generatorName = (tableGenerator.getGeneratorName() != null) ? tableGenerator.getGeneratorName() : generatedName;
 
         // Check if the table generator name uses a reserved name.
         if (generatorName.equals(DEFAULT_SEQUENCE_GENERATOR)) {
@@ -826,7 +854,7 @@ public class MetadataProject {
         for (SequenceGeneratorMetadata sequenceGenerator : m_sequenceGenerators.values()) {
             if ((otherSequenceGenerator != sequenceGenerator) && (sequenceGenerator.getSequenceName() != null) && sequenceGenerator.getSequenceName().equals(tableGenerator.getPkColumnValue())) {
                 // generator name will be used instead of an empty sequence name / pk column name
-                if (sequenceGenerator.getSequenceName().length() > 0) {
+                if (!sequenceGenerator.getSequenceName().isEmpty()) {
                     throw ValidationException.conflictingSequenceNameAndTablePkColumnValueSpecified(sequenceGenerator.getSequenceName(), sequenceGenerator.getLocation(), tableGenerator.getLocation());
                 }
             }
@@ -887,13 +915,13 @@ public class MetadataProject {
                 DynamicClassLoader dcl = (DynamicClassLoader) loader;
 
                 // Create the dynamic classes.
-                Map<String, MetadataDescriptor> dynamicClasses = new HashMap<String, MetadataDescriptor>();
+                Map<String, MetadataDescriptor> dynamicClasses = new HashMap<>();
                 for (ClassAccessor accessor : m_virtualClasses.values()) {
                     createDynamicClass(accessor.getDescriptor(), dynamicClasses, dcl);
                 }
 
                 // Create the dynamic types.
-                Map<String, DynamicType> dynamicTypes = new HashMap<String, DynamicType>();
+                Map<String, DynamicType> dynamicTypes = new HashMap<>();
                 for (MetadataDescriptor descriptor : dynamicClasses.values()) {
                     createDynamicType(descriptor, dynamicTypes, dcl);
                 }
@@ -1012,13 +1040,13 @@ public class MetadataProject {
                 ca = m_autoApplyConvertAccessors.get(wrapperType);
             }
         }
-        
+
         return ca;
     }
-    
+
     private String resolvePrimitiveWrapper(MetadataClass cls) {
         String wrapperType = null;
-        
+
         if (cls.isPrimitive() && !cls.isArray() && !m_autoApplyConvertAccessors.isEmpty()) {
             // Look for Converters for the Wrapper equivalent of the primitive
             switch (cls.getTypeName()) {
@@ -1228,6 +1256,36 @@ public class MetadataProject {
     }
 
     /**
+     * INTERNAL: Return Collection of {@code NamedEntityGraph}s defined in given {@code accessor}.
+     */
+    public Set<NamedEntityGraphMetadata> getNamedEntityGraphs(MetadataAccessor accessor) {
+        return m_entityGraphs.values()
+                .stream()
+                .filter(v -> v.getAccessibleObject() == accessor.getAccessibleObject())
+                .collect(Collectors.toSet());
+    }
+
+    /**
+     * INTERNAL: Return Collection of {@code NamedQueries} (all variants) defined in given {@code accessor}.
+     */
+    public Set<NamedQueryMetadata> getNamedQueries(MetadataAccessor accessor) {
+        return m_queries.values()
+                .stream()
+                .filter(v -> v.getAccessibleObject() == accessor.getAccessibleObject())
+                .collect(Collectors.toSet());
+    }
+
+    /**
+     * INTERNAL: Return Collection of {@code SQLResultSetMapping}s defined in given {@code accessor}.
+     */
+    public Set<SQLResultSetMappingMetadata> getNamedSQLResultSetMappings(MetadataAccessor accessor) {
+        return m_sqlResultSetMappings.values()
+                .stream()
+                .filter(v -> v.getAccessibleObject() == accessor.getAccessibleObject())
+                .collect(Collectors.toSet());
+    }
+
+    /**
      * INTERNAL:
      * Return the named partitioning policy.
      */
@@ -1294,10 +1352,17 @@ public class MetadataProject {
      * INTERNAL:
      * Add a root level embeddable accessor. Nested embeddables will be
      * pre-processed from their roots down.
-     * @see processStage1()
+     * @see #processStage1()
      */
     public Collection<EmbeddableAccessor> getRootEmbeddableAccessors() {
         return m_rootEmbeddableAccessors.values();
+    }
+
+    /**
+     * INTERNAL:
+     */
+    public Collection<PackageAccessor> getPackageAccessors() {
+        return m_packageAccessors.values();
     }
 
     /**
@@ -1321,7 +1386,7 @@ public class MetadataProject {
 
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                     method = AccessController.doPrivileged(new PrivilegedGetDeclaredMethod(PersistenceUnitInfo.class, "getSharedCacheMode", null));
-                    m_sharedCacheMode = AccessController.doPrivileged(new PrivilegedMethodInvoker<SharedCacheMode>(method, m_persistenceUnitInfo));
+                    m_sharedCacheMode = AccessController.doPrivileged(new PrivilegedMethodInvoker<>(method, m_persistenceUnitInfo));
                 } else {
                     method = PrivilegedAccessHelper.getDeclaredMethod(PersistenceUnitInfo.class, "getSharedCacheMode", null);
                     m_sharedCacheMode = PrivilegedAccessHelper.invokeMethod(method, m_persistenceUnitInfo, null);
@@ -1341,7 +1406,7 @@ public class MetadataProject {
 
     /**
      * INTERNAL:
-     * Sets the SharedCacheMode value. 
+     * Sets the SharedCacheMode value.
      */
     public void setSharedCacheMode(SharedCacheMode m_sharedCacheMode) {
         this.m_sharedCacheMode = m_sharedCacheMode;
@@ -1359,7 +1424,7 @@ public class MetadataProject {
      * INTERNAL:
      */
     public List<StructConverterMetadata> getStructConverters(){
-        List<StructConverterMetadata> structConverters = new ArrayList<StructConverterMetadata>();
+        List<StructConverterMetadata> structConverters = new ArrayList<>();
 
         for (AbstractConverterMetadata converter : m_converters.values()) {
             if (converter.isStructConverter()) {
@@ -1377,7 +1442,7 @@ public class MetadataProject {
      * and mappedsuperclass with no children classes.
      */
     public Collection<String> getWeavableClassNames() {
-        Set<String> weavableClassNames = new HashSet<String>(m_allAccessors.keySet());
+        Set<String> weavableClassNames = new HashSet<>(m_allAccessors.keySet());
         weavableClassNames.addAll(m_mappedSuperclasseAccessors.keySet());
         return Collections.unmodifiableCollection(weavableClassNames);
     }
@@ -1393,7 +1458,7 @@ public class MetadataProject {
                 hasCA = m_autoApplyConvertAccessors.containsKey(wrapperType);
             }
         }
-        
+
         return hasCA;
     }
 
@@ -1719,23 +1784,24 @@ public class MetadataProject {
      *   3 - you can't have both a sequence generator and a table generator with
      *       the same DEFAULT_AUTO_GENERATOR name.
      *
-     * @see addTableGenerator and addSequenceGenerator.
+     * @see #addTableGenerator(TableGeneratorMetadata, String, String, String)
+     * @see #addSequenceGenerator(SequenceGeneratorMetadata, String, String, String)
      */
     protected void processSequencingAccessors() {
         if (! m_generatedValues.isEmpty()) {
             // 1 - Build our map of sequences keyed on generator names.
-            Hashtable<String, Sequence> sequences = new Hashtable<String, Sequence>();
+            Hashtable<String, Sequence> sequences = new Hashtable<>();
 
-            for (SequenceGeneratorMetadata sequenceGenerator : m_sequenceGenerators.values()) {
-                sequences.put(sequenceGenerator.getName(), sequenceGenerator.process(m_logger));
+            for (String key: m_sequenceGenerators.keySet()) {
+                sequences.put(key, m_sequenceGenerators.get(key).process(m_logger, key));
             }
 
             for (UuidGeneratorMetadata uuidGenerator : m_uuidGenerators.values()) {
                 sequences.put(uuidGenerator.getName(), uuidGenerator.process(m_logger));
             }
 
-            for (TableGeneratorMetadata tableGenerator : m_tableGenerators.values()) {
-                sequences.put(tableGenerator.getGeneratorName(), tableGenerator.process(m_logger));
+            for (Map.Entry<String, TableGeneratorMetadata>entry: m_tableGenerators.entrySet()) {
+                sequences.put(entry.getKey(), entry.getValue().process(m_logger, entry.getKey()));
             }
 
             // 2 - Check if the user defined default generators, otherwise
@@ -1753,19 +1819,19 @@ public class MetadataProject {
                 // Process the default values.
                 processTable(tableGenerator, defaultTableGeneratorName, getPersistenceUnitDefaultCatalog(), getPersistenceUnitDefaultSchema(), tableGenerator);
 
-                sequences.put(DEFAULT_TABLE_GENERATOR, tableGenerator.process(m_logger));
+                sequences.put(DEFAULT_TABLE_GENERATOR, tableGenerator.process(m_logger, defaultTableGeneratorName));
             }
 
             if (! sequences.containsKey(DEFAULT_SEQUENCE_GENERATOR)) {
-                sequences.put(DEFAULT_SEQUENCE_GENERATOR, new SequenceGeneratorMetadata(DEFAULT_SEQUENCE_GENERATOR, getPersistenceUnitDefaultCatalog(), getPersistenceUnitDefaultSchema()).process(m_logger));
+                sequences.put(DEFAULT_SEQUENCE_GENERATOR, new SequenceGeneratorMetadata(DEFAULT_SEQUENCE_GENERATOR, getPersistenceUnitDefaultCatalog(), getPersistenceUnitDefaultSchema()).process(m_logger, DEFAULT_SEQUENCE_GENERATOR));
             }
 
             if (! sequences.containsKey(DEFAULT_IDENTITY_GENERATOR)) {
-                sequences.put(DEFAULT_IDENTITY_GENERATOR, new SequenceGeneratorMetadata(DEFAULT_IDENTITY_GENERATOR, 1, getPersistenceUnitDefaultCatalog(), getPersistenceUnitDefaultSchema(), true).process(m_logger));
+                sequences.put(DEFAULT_IDENTITY_GENERATOR, new SequenceGeneratorMetadata(DEFAULT_IDENTITY_GENERATOR, 1, getPersistenceUnitDefaultCatalog(), getPersistenceUnitDefaultSchema(), true).process(m_logger, DEFAULT_IDENTITY_GENERATOR));
             }
 
             if (! sequences.containsKey(DEFAULT_UUID_GENERATOR)) {
-                sequences.put(DEFAULT_UUID_GENERATOR, new UuidGeneratorMetadata().process(m_logger));
+                sequences.put(DEFAULT_UUID_GENERATOR, new UuidGeneratorMetadata(DEFAULT_UUID_GENERATOR).process(m_logger));
             }
 
             // Use a temporary sequence generator to build a qualifier to set on
@@ -1802,11 +1868,11 @@ public class MetadataProject {
      *  - gather a list of mapping accessors for all entities and embeddables.
      *  - discover all global converter specifications.
      *  - discover mapped superclasses and inheritance parents.
-     *
+     * <p>
      * NOTE: This method should only perform any preparatory work like, class
      * discovery, flag settings etc. Hard processing will begin in stage 2.
      *
-     * @see processStage2
+     * @see #processStage2()
      */
     public void processStage1() {
         // 1 - Pre-process the entities first. This will also pre-process
@@ -1846,17 +1912,24 @@ public class MetadataProject {
                 embeddable.preProcess();
             }
         }
+
+        // 5 - Pre-process the package-infos.
+        for (PackageAccessor packageAccessor : getPackageAccessors()) {
+            if (! packageAccessor.isPreProcessed()) {
+                packageAccessor.preProcess();
+            }
+        }
     }
 
     /**
      * INTERNAL:
      * Stage 2 processing will perform the following tasks:
-     * - process all direct mapping accessors from entities, embeddables and
-     *   mapped superclasses.
+     * - process all direct mapping accessors from entities, embeddables,
+     *   mapped superclasses and package-info.
      * - gather a list of relationship accessors and any other special interest
      *   accessors to be processed in stage 3.
      *
-     * @see processStage3
+     * @see #processStage3(PersistenceUnitProcessor.Mode)
      */
     public void processStage2() {
         // process metamodel mappedSuperclasses separately from entity descriptors
@@ -1880,6 +1953,14 @@ public class MetadataProject {
             // EmbeddableAccessor is normally fast tracked if it is a reference.
             if (! embeddable.isProcessed()) {
                 embeddable.process();
+            }
+        }
+
+        for (PackageAccessor packageAccessor : getPackageAccessors()) {
+            // If the accessor hasn't been processed yet, then process it. An
+            // EmbeddableAccessor is normally fast tracked if it is a reference.
+            if (! packageAccessor.isProcessed()) {
+                packageAccessor.process();
             }
         }
     }
@@ -1963,12 +2044,12 @@ public class MetadataProject {
         // Build a fully qualified name and set it on the table.
         // schema, attach it if specified
         String tableName = name;
-        if (! schema.equals("")) {
+        if (!schema.isEmpty()) {
             tableName = schema + "." + tableName;
         }
 
         // catalog, attach it if specified
-        if (! catalog.equals("")) {
+        if (!catalog.isEmpty()) {
             tableName = catalog + "." + tableName;
         }
 
@@ -1981,6 +2062,9 @@ public class MetadataProject {
         // Process the unique constraints.
         table.processUniqueConstraints();
 
+        // Process the check constraints.
+        table.processCheckConstraints();
+
         // Process the index metadata.
         table.processIndexes();
 
@@ -1989,6 +2073,12 @@ public class MetadataProject {
 
         // Process the creation suffix.
         table.processCreationSuffix();
+
+        // Process options.
+        table.processOptions();
+
+        // Process the comment.
+        table.processComment();
     }
 
     /**
@@ -2104,6 +2194,6 @@ public class MetadataProject {
         }
         return false;
     }
- }
+}
 
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,6 +14,13 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.oxm.mappings;
 
+import org.eclipse.persistence.internal.oxm.record.namespaces.MapNamespacePrefixMapper;
+import org.eclipse.persistence.internal.oxm.record.namespaces.PrefixMapperNamespaceResolver;
+import org.eclipse.persistence.oxm.MediaType;
+import org.eclipse.persistence.oxm.NamespacePrefixMapper;
+import org.eclipse.persistence.oxm.XMLRoot;
+import org.xml.sax.InputSource;
+
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -21,17 +28,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Map.Entry;
-
-import org.eclipse.persistence.internal.oxm.record.namespaces.MapNamespacePrefixMapper;
-import org.eclipse.persistence.internal.oxm.record.namespaces.PrefixMapperNamespaceResolver;
-import org.eclipse.persistence.oxm.MediaType;
-import org.eclipse.persistence.oxm.NamespacePrefixMapper;
-import org.eclipse.persistence.oxm.NamespaceResolver;
-import org.eclipse.persistence.oxm.XMLRoot;
-import org.xml.sax.InputSource;
 
 public abstract class XMLWithJSONMappingTestCases extends XMLMappingTestCases{
     private String controlJSONLocation;
@@ -69,7 +66,7 @@ public abstract class XMLWithJSONMappingTestCases extends XMLMappingTestCases{
     }
 
     protected Map<String, String> getAdditionalNamsespaces() {
-        return new HashMap<String, String>();
+        return new HashMap<>();
     }
 
     public void testJSONUnmarshalFromInputSource() throws Exception {
@@ -89,9 +86,8 @@ public abstract class XMLWithJSONMappingTestCases extends XMLMappingTestCases{
 
             inputStream.close();
 
-            if ((getJSONReadControlObject() instanceof XMLRoot) && (testObject instanceof XMLRoot)) {
+            if ((getJSONReadControlObject() instanceof XMLRoot) && (testObject instanceof XMLRoot testObj)) {
                 XMLRoot controlObj = (XMLRoot)getReadControlObject();
-                XMLRoot testObj = (XMLRoot)testObject;
                 compareXMLRootObjects(controlObj, testObj);
             } else {
                 assertEquals(getJSONReadControlObject(), testObject);
@@ -122,7 +118,7 @@ public abstract class XMLWithJSONMappingTestCases extends XMLMappingTestCases{
                 fail("An exception should have occurred but didn't.");
                 return;
             }
-            compareStrings("testJSONMarshalToOutputStream", new String(os.toByteArray()));
+            compareStrings("testJSONMarshalToOutputStream", os.toString());
             os.close();
         }
     }
@@ -146,7 +142,7 @@ public abstract class XMLWithJSONMappingTestCases extends XMLMappingTestCases{
                 return;
             }
 
-            compareStrings("testJSONMarshalToOutputStream", new String(os.toByteArray()));
+            compareStrings("testJSONMarshalToOutputStream", os.toString());
             os.close();
         }
     }
@@ -211,7 +207,7 @@ public abstract class XMLWithJSONMappingTestCases extends XMLMappingTestCases{
     }
 
     protected String getJSONControlString(String fileName){
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         try {
             InputStream inputStream = ClassLoader.getSystemResourceAsStream(fileName);
             InputStreamReader inputStreamReader = new InputStreamReader(inputStream);

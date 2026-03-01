@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2021 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,6 +29,8 @@
 //       - 538183: SETTING QUERYHINTS.CURSOR ON A NAMEDQUERY THROWS QUERYEXCEPTION
 //     09/02/2019-3.0 Alexandre Jacob
 //        - 527415: Fix code when locale is tr, az or lt
+//     12/14/2023: Tomas Kraus
+//       - New Jakarta Persistence 3.2 Features
 package org.eclipse.persistence.internal.jpa;
 
 import java.security.AccessController;
@@ -99,9 +101,9 @@ import org.eclipse.persistence.queries.ValueReadQuery;
 
 /**
  * The class processes query hints.
- *
+ * <p>
  * EclipseLink query hints and their values defined in org.eclipse.persistence.config package.
- *
+ * <p>
  * To add a new query hint:
  *   Define a new hint in QueryHints;
  *   Add a class containing hint's values if required to config package (like CacheUsage);
@@ -127,7 +129,7 @@ public class QueryHintsHandler {
 
     /**
      * Verifies the hints.
-     *
+     * <p>
      * If session != null then logs a FINEST message for each hint.
      * queryName parameter used only for identifying the query in messages,
      * if it's null then "null" will be used.
@@ -147,7 +149,7 @@ public class QueryHintsHandler {
 
     /**
      * Verifies the hint.
-     *
+     * <p>
      * If session != null then logs a FINEST message.
      * queryName parameter used only for identifying the query in messages,
      * if it's null then "null" will be used.
@@ -155,6 +157,12 @@ public class QueryHintsHandler {
      */
     public static void verify(String hintName, Object hintValue, String queryName, AbstractSession session) {
         Hint.verify(hintName, shouldUseDefault(hintValue), hintValue, queryName, session);
+    }
+
+    // Retrieve query hints Map from DatabaseQuery
+    @SuppressWarnings("unchecked")
+    static Map<String, Object> get(DatabaseQuery query) {
+        return (Map<String, Object>) query.getProperty(QUERY_HINT_PROPERTY);
     }
 
     /**
@@ -168,8 +176,7 @@ public class QueryHintsHandler {
         DatabaseQuery hintQuery = query;
         for (Map.Entry<String, Object> entry : hints.entrySet()) {
             String hintName = entry.getKey();
-            if (entry.getValue() instanceof Object[]) {
-                Object[] values = (Object[])entry.getValue();
+            if (entry.getValue() instanceof Object[] values) {
                 for (int index = 0; index < values.length; index++) {
                     hintQuery = apply(hintName, values[index], hintQuery, loader, activeSession);
                 }
@@ -222,7 +229,7 @@ public class QueryHintsHandler {
      * should be used.
      */
     protected static boolean shouldUseDefault(Object hintValue) {
-        return (hintValue != null) &&  (hintValue instanceof String) && (((String)hintValue).length() == 0);
+        return (hintValue != null) &&  (hintValue instanceof String) && (((String) hintValue).isEmpty());
     }
 
     public static Set<String> getSupportedHints(){
@@ -319,6 +326,7 @@ public class QueryHintsHandler {
             addHint(new SerializedObject());
             addHint(new ReturnNameValuePairsHint());
             addHint(new PrintInnerJoinInWhereClauseHint());
+            addHint(new QueryResultsCacheValidation());
         }
 
         Hint(String name, String defaultValue) {
@@ -361,7 +369,7 @@ public class QueryHintsHandler {
 
             Map<String, Object> existingHints = (Map<String, Object>)query.getProperty(QUERY_HINT_PROPERTY);
             if (existingHints == null){
-                existingHints = new HashMap<String, Object>();
+                existingHints = new HashMap<>();
                 query.setProperty(QUERY_HINT_PROPERTY, existingHints);
             }
             existingHints.put(hintName, hintValue);
@@ -426,7 +434,7 @@ public class QueryHintsHandler {
         static <T> T newInstance(Class<T> theClass, DatabaseQuery query, String hint) {
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                    return AccessController.doPrivileged(new PrivilegedNewInstanceFromClass<T>(theClass));
+                    return AccessController.doPrivileged(new PrivilegedNewInstanceFromClass<>(theClass));
                 } else {
                     return PrivilegedAccessHelper.newInstanceFromClass(theClass);
                 }
@@ -438,8 +446,7 @@ public class QueryHintsHandler {
         void initialize() {
             if(valueArray != null) {
                 valueMap = new HashMap<>(valueArray.length);
-                if(valueArray instanceof Object[][]) {
-                    Object[][] valueArray2 = (Object[][])valueArray;
+                if(valueArray instanceof Object[][] valueArray2) {
                     for(int i=0; i<valueArray2.length; i++) {
                         valueMap.put(getUpperCaseString(valueArray2[i][0]), valueArray2[i][1]);
                         if(valueArray2[i][1] == null) {
@@ -571,10 +578,10 @@ public class QueryHintsHandler {
             if (query.isObjectLevelReadQuery()) {
                 if (valueToApply.equals(CacheRetrieveMode.BYPASS) || valueToApply.equals(CacheRetrieveMode.BYPASS.name())) {
                     query.retrieveBypassCache();
+                } else if (valueToApply.equals(CacheRetrieveMode.USE) || valueToApply.equals(CacheRetrieveMode.USE.name())) {
+                    // Explicitly clear the bypass cache flag to allow Query-level USE to override EntityManager-level BYPASS
+                    query.setShouldRetrieveBypassCache(false);
                 }
-
-                // CacheRetrieveMode.USE will use the EclipseLink default of
-                // shouldCheckDescriptorForCacheUsage which in most cases is CheckCacheByPrimaryKey.
             } else {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
             }
@@ -614,12 +621,15 @@ public class QueryHintsHandler {
             } else if (valueToApply.equals(CacheStoreMode.REFRESH) || valueToApply.equals(CacheStoreMode.REFRESH.name())) {
                 if (query.isObjectLevelReadQuery()) {
                     ((ObjectLevelReadQuery) query).refreshIdentityMapResult();
+                    // Explicitly clear the bypass cache flag to allow Query-level REFRESH to override EntityManager-level BYPASS
+                    query.setShouldStoreBypassCache(false);
                 } else {
                     throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
                 }
+            } else if (valueToApply.equals(CacheStoreMode.USE) || valueToApply.equals(CacheStoreMode.USE.name())) {
+                // Explicitly clear the bypass cache flag to allow Query-level USE to override EntityManager-level BYPASS
+                query.setShouldStoreBypassCache(false);
             }
-
-            // CacheStoreMode.USE will use the EclipseLink default maintainCache.
 
             return query;
         }
@@ -830,11 +840,28 @@ public class QueryHintsHandler {
         @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             if (query.isObjectLevelReadQuery()) {
-                ((ObjectLevelReadQuery) query).setWaitTimeout(QueryHintsHandler.parseIntegerHint(valueToApply, QueryHints.PESSIMISTIC_LOCK_TIMEOUT));
+                // According to QueryHints.PESSIMISTIC_LOCK_TIMEOUT javadoc valid values are Integer or Strings
+                // that can be parsed to int values.
+                // String class is final so no need to use instanceof
+                if (valueToApply.getClass() == String.class) {
+                    ((ObjectLevelReadQuery) query).setWaitTimeout(QueryHintsHandler.parseIntegerHint(valueToApply, QueryHints.PESSIMISTIC_LOCK_TIMEOUT));
+                // Now the second case, which must be Number. Anything else will cause class cast exception.
+                } else {
+                    int value;
+                    try {
+                        value = ((Number) valueToApply).intValue();
+                    } catch (ClassCastException cce) {
+                        throw new IllegalArgumentException(
+                                ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",
+                                                                   new String[] {getQueryId(query), name, getPrintValue(valueToApply)}));
+                    }
+                    ((ObjectLevelReadQuery) query).setWaitTimeout(value);
+                }
             } else {
-                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
+                throw new IllegalArgumentException(
+                        ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",
+                                                           new String[] {getQueryId(query), name, getPrintValue(valueToApply)}));
             }
-
             return query;
         }
     }
@@ -847,12 +874,28 @@ public class QueryHintsHandler {
         @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             if (query.isObjectLevelReadQuery()) {
-                TimeUnit unit = TimeUnit.valueOf((String)valueToApply);
-                ((ObjectLevelReadQuery) query).setWaitTimeoutUnit(unit);
+                // According to QueryHints.PESSIMISTIC_LOCK_TIMEOUT_UNIT javadoc valid value is TimeUnit
+                // But let's handle String values too to be foolproof
+                // String class is final so no need to use instanceof
+                if (valueToApply.getClass() == String.class) {
+                    ((ObjectLevelReadQuery) query).setWaitTimeoutUnit(TimeUnit.valueOf((String) valueToApply));
+                // Now the second case, which must be TimeUnit. Anything else will cause class cast exception.
+                } else {
+                    TimeUnit unit;
+                    try {
+                        unit = (TimeUnit) valueToApply;
+                    } catch (ClassCastException cce) {
+                        throw new IllegalArgumentException(
+                                ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",
+                                                                   new String[] {getQueryId(query), name, getPrintValue(valueToApply)}));
+                    }
+                    ((ObjectLevelReadQuery) query).setWaitTimeoutUnit(unit);
+                }
             } else {
-                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
+                throw new IllegalArgumentException(
+                        ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",
+                                                           new String[] {getQueryId(query), name, getPrintValue(valueToApply)}));
             }
-
             return query;
         }
     }
@@ -1959,7 +2002,23 @@ public class QueryHintsHandler {
 
         @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
-            query.setQueryTimeout(QueryHintsHandler.parseIntegerHint(valueToApply, QueryHints.JDBC_TIMEOUT));
+            // According to QueryHints.JDBC_TIMEOUT javadoc valid values are Integer or Strings
+            // that can be parsed to int values.
+            // String class is final so no need to use instanceof
+            if (valueToApply.getClass() == String.class) {
+                query.setQueryTimeout(QueryHintsHandler.parseIntegerHint(valueToApply, QueryHints.JDBC_TIMEOUT));
+            // Now the second case, which must be Number. Anything else will cause class cast exception.
+            } else {
+                int value;
+                try {
+                    value = ((Number) valueToApply).intValue();
+                } catch (ClassCastException cce) {
+                    throw new IllegalArgumentException(
+                            ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",
+                                                               new String[] {getQueryId(query), name, getPrintValue(valueToApply)}));
+                }
+                query.setQueryTimeout(value);
+            }
             query.setIsPrepared(false);
             return query;
         }
@@ -1973,12 +2032,22 @@ public class QueryHintsHandler {
 
         @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
-            try {
-                TimeUnit unit = TimeUnit.valueOf((String)valueToApply);
+            // According to QueryHints.QUERY_TIMEOUT_UNIT javadoc, provided value shall be TimeUnit
+            // But let's handle String values too to be foolproof
+            // String class is final so no need to use instanceof
+            if (valueToApply.getClass() == String.class) {
+                query.setQueryTimeoutUnit(TimeUnit.valueOf((String) valueToApply));
+            // Now the second case, which must be TimeUnit. Anything else will cause class cast exception.
+            } else {
+                TimeUnit unit;
+                try {
+                    unit = (TimeUnit) valueToApply;
+                } catch (ClassCastException cce) {
+                    throw new IllegalArgumentException(
+                            ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",
+                                                               new String[] {getQueryId(query), name, getPrintValue(valueToApply)}));
+                }
                 query.setQueryTimeoutUnit(unit);
-            }
-            catch(IllegalArgumentException e) {
-                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
             }
             return query;
         }
@@ -1992,7 +2061,23 @@ public class QueryHintsHandler {
 
         @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
-            query.setQueryTimeout(QueryHintsHandler.parseIntegerHint(valueToApply, QueryHints.QUERY_TIMEOUT));
+            // According to QueryHints.QUERY_TIMEOUT javadoc valid values are Strings that can be parsed to int values.
+            // Let's also accept Number values to be compatible with QueryHints.PESSIMISTIC_LOCK_TIMEOUT
+            // String class is final so no need to use instanceof
+            if (valueToApply.getClass() == String.class) {
+                query.setQueryTimeout(QueryHintsHandler.parseIntegerHint(valueToApply, QueryHints.QUERY_TIMEOUT));
+            // Now the second case, which must be Number. Anything else will cause class cast exception.
+            } else {
+                int value;
+                try {
+                    value = ((Number) valueToApply).intValue();
+                } catch (ClassCastException cce) {
+                    throw new IllegalArgumentException(
+                            ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",
+                                                               new String[] {getQueryId(query), name, getPrintValue(valueToApply)}));
+                }
+                query.setQueryTimeout(value);
+            }
             query.setIsPrepared(false);
             return query;
         }
@@ -2219,6 +2304,26 @@ public class QueryHintsHandler {
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             if (query.isObjectLevelReadQuery()) {
                 ((ObjectLevelReadQuery)query).setPrintInnerJoinInWhereClause((Boolean)valueToApply);
+            } else {
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
+            }
+            return query;
+        }
+    }
+
+    protected static class QueryResultsCacheValidation extends Hint {
+        QueryResultsCacheValidation() {
+            super(QueryHints.QUERY_RESULTS_CACHE_VALIDATION, HintValues.FALSE);
+            valueArray = new Object[][] {
+                    {HintValues.TRUE, Boolean.TRUE},
+                    {HintValues.FALSE, Boolean.FALSE}
+            };
+        }
+
+        @Override
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
+            if (query instanceof ReadQuery) {
+                ((ReadQuery)query).setAllowQueryResultsCacheValidation((Boolean)valueToApply);
             } else {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
             }

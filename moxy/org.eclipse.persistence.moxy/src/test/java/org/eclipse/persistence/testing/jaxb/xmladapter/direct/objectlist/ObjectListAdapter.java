@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,9 +24,9 @@ public class ObjectListAdapter extends XmlAdapter<String, List<PhoneNumber>> {
 
     @Override
     public String marshal(List<PhoneNumber> list) throws Exception {
-        String string = "";
+        StringBuilder string = new StringBuilder();
         for(PhoneNumber phoneNumber : list) {
-            string += "," + phoneNumber.value;
+            string.append(",").append(phoneNumber.value);
         }
         return string.substring(1);
     }

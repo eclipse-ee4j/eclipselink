@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,17 +15,10 @@
 
 package org.eclipse.persistence.testing.oxm.mappings.compositecollection.keepaselement;
 
+import org.w3c.dom.Element;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlRootElement;
-import jakarta.xml.bind.annotation.XmlType;
-
-import org.eclipse.persistence.testing.oxm.mappings.anyobject.withoutgroupingelement.RootKeepAsElement;
-import org.w3c.dom.Element;
 
 public class Doc {
     protected List<Elem> elem;
@@ -33,8 +26,8 @@ public class Doc {
     protected List<Object> elem1;
 
     public Doc(){
-        elem = new ArrayList<Elem>();
-        elem1 = new ArrayList<Object>();
+        elem = new ArrayList<>();
+        elem1 = new ArrayList<>();
     }
 
     public List<Elem> getElem() {
@@ -54,8 +47,7 @@ public class Doc {
     }
 
     public boolean equals(Object object) {
-        if (object instanceof Doc) {
-            Doc anotherDoc = (Doc) object;
+        if (object instanceof Doc anotherDoc) {
             if (elem == null && anotherDoc.getElem() != null) {
                 return false;
             }
@@ -79,9 +71,7 @@ public class Doc {
             for(int i=0;i<obj1.size(); i++){
                 Object firstObject = obj1.get(i);
                 Object secondObject =obj2.get(i);
-                if ((firstObject instanceof Element) && (secondObject instanceof Element)) {
-                    Element elem1 = (Element )firstObject;
-                    Element elem2 = (Element) secondObject;
+                if ((firstObject instanceof Element elem1) && (secondObject instanceof Element elem2)) {
 
                     if (!(elem1.getLocalName().equals(elem2.getLocalName()))) {
                         return false;

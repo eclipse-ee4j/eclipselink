@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,20 +16,21 @@
 //       - 518155: [jpa22] add support for repeatable annotations
 package org.eclipse.persistence.annotations;
 
+import java.lang.annotation.Repeatable;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
 import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-import java.lang.annotation.Repeatable;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-
 /**
  * A StructConverter is a special type of converter that handles the conversion of a specific
- * database Struct type.  This is normally used for extended database types such as spatial geometric types.
- *
- * A StructConverter is different than a regular attribute Converter, and does not implement the same interface.
+ * database Struct type. This is normally used for extended database types such as spatial geometric types.
+ * <p>
+ * A StructConverter is different from a regular attribute Converter, and does not implement the same interface.
+ * <p>
  * A StructConverter will be used to convert any matching Struct type.
  *
  * @see org.eclipse.persistence.platform.database.converters.StructConverter
@@ -39,18 +40,16 @@ import java.lang.annotation.Target;
 @Repeatable(StructConverters.class)
 public @interface StructConverter {
     /**
-     * (Required) Name this converter. The name should be unique across the
-     * whole persistence unit.
+     * The name of this converter. The name should be unique across the whole persistence unit.
      */
     String name();
 
     /**
-     * (Required) The StructConverter class to be used. This class must implement the
-     * EclipseLink org.eclipse.persistence.platform.database.converters.StructConverter
-     * interface.
-     *
-     * You may also alternatively specify a pre-defined EclipseLink
-     * org.eclipse.persistence.config.StructConverterType
+     * The StructConverter class to be used. This class must implement the
+     * {@linkplain org.eclipse.persistence.platform.database.converters.StructConverter} interface.
+     * <p>
+     * You may also alternatively specify a pre-defined
+     * {@linkplain org.eclipse.persistence.config.StructConverterType}
      *
      * @see org.eclipse.persistence.platform.database.converters.StructConverter
      * @see org.eclipse.persistence.config.StructConverterType

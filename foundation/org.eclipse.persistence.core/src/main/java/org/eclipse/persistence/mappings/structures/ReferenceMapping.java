@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -13,11 +13,6 @@
 // Contributors:
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.mappings.structures;
-
-import java.sql.Ref;
-import java.sql.Struct;
-import java.util.Map;
-import java.util.Vector;
 
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.DescriptorException;
@@ -44,6 +39,12 @@ import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.eclipse.persistence.queries.QueryByExamplePolicy;
 import org.eclipse.persistence.queries.WriteObjectQuery;
 import org.eclipse.persistence.sessions.DatabaseRecord;
+
+import java.sql.Ref;
+import java.sql.Struct;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p><b>Purpose:</b>
@@ -77,9 +78,9 @@ public class ReferenceMapping extends ObjectReferenceMapping {
      * Returns all the aggregate fields.
      */
     @Override
-    protected Vector collectFields() {
-        Vector fields = new Vector(1);
-        fields.addElement(getField());
+    protected List<DatabaseField> collectFields() {
+        List<DatabaseField> fields = new ArrayList<>(1);
+        fields.add(getField());
         return fields;
     }
 
@@ -133,7 +134,7 @@ public class ReferenceMapping extends ObjectReferenceMapping {
         // For bug 2730536 convert the field to be an ObjectRelationalDatabaseField.
         ObjectRelationalDatabaseField field = (ObjectRelationalDatabaseField)getField();
         field.setSqlType(java.sql.Types.REF);
-        if (referenceDescriptor instanceof ObjectRelationalDataTypeDescriptor) {
+        if (referenceDescriptor.isObjectRelationalDataTypeDescriptor()) {
             field.setSqlTypeName(((ObjectRelationalDataTypeDescriptor)referenceDescriptor).getStructureName());
         }
 

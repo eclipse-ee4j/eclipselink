@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2022 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,14 +24,11 @@ package org.eclipse.persistence.internal.helper;
 
 import java.io.Closeable;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.io.StringWriter;
-import java.io.Writer;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
@@ -39,13 +36,14 @@ import java.math.BigInteger;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.Timestamp;
+import java.time.DateTimeException;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.Date;
-import java.util.Enumeration;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -58,7 +56,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import org.eclipse.persistence.config.SystemProperties;
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.ValidationException;
-import org.eclipse.persistence.internal.core.helper.CoreHelper;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.logging.AbstractSessionLog;
@@ -69,16 +67,13 @@ import org.eclipse.persistence.logging.SessionLog;
  * <p>
  * <b>Purpose</b>: Define any useful methods that are missing from the base Java.
  */
-public class Helper extends CoreHelper implements Serializable {
+public class Helper implements Serializable {
 
     /** Used to configure JDBC level date optimization. */
     public static boolean shouldOptimizeDates = false;
 
     /** Used to store null values in hashtables, is helper because need to be serializable. */
     public static final Object NULL_VALUE = new Helper();
-
-    /** Used to convert {@code null} value to {@link String}. */
-    private static final String NULL_STRING = "null";
 
     /** PERF: Used to cache a set of calendars for conversion/printing purposes. */
     protected static final Queue<Calendar> calendarCache = initCalendarCache();
@@ -90,9 +85,6 @@ public class Helper extends CoreHelper implements Serializable {
 
     // Changed static initialization to lazy initialization for bug 2756643
 
-    /** Store CR string, for some reason \n is not platform independent. */
-    protected static String CR;
-
     /** formatting strings for indenting */
     public static final String SPACE = " ";
     public static final String INDENT = "  ";
@@ -100,17 +92,8 @@ public class Helper extends CoreHelper implements Serializable {
     /** Store newline string */
     public static final String NL = "\n";
 
-    /** Prime the platform-dependent path separator */
-    protected static String PATH_SEPARATOR = null;
-
-    /** Prime the platform-dependent file separator */
-    protected static String FILE_SEPARATOR = null;
-
     /** Prime the platform-dependent current working directory */
     protected static String CURRENT_WORKING_DIRECTORY = null;
-
-    /** Prime the platform-dependent temporary directory */
-    protected static String TEMP_DIRECTORY = null;
 
     /** Backdoor to allow 0 to be used in primary keys.
      * @deprecated
@@ -232,12 +215,6 @@ public class Helper extends CoreHelper implements Serializable {
         getCalendarCache().offer(calendar);
     }
 
-    public static <E> void addAllToVector(Vector<E> theVector, Vector<? extends E> elementsToAdd) {
-        for (Enumeration<? extends E> stream = elementsToAdd.elements(); stream.hasMoreElements();) {
-            theVector.addElement(stream.nextElement());
-        }
-    }
-
     public static <T> Vector<T> addAllUniqueToVector(Vector<T> objects, List<T> objectsToAdd) {
         if (objectsToAdd == null) {
             return objects;
@@ -264,99 +241,6 @@ public class Helper extends CoreHelper implements Serializable {
             }
         }
         return objects;
-    }
-
-    /**
-    * Convert the specified vector into an array.
-    */
-    public static Object[] arrayFromVector(Vector<?> vector) {
-        Object[] result = new Object[vector.size()];
-        for (int i = 0; i < vector.size(); i++) {
-            result[i] = vector.elementAt(i);
-        }
-        return result;
-    }
-
-    /**
-     * Convert {@link Integer} to hexadecimal {@link String}.
-     * @param i An {@link Integer} to be converted to a hexadecimal string.
-     * @return The {@link String} representation of the unsigned integer value represented by the argument
-     *         in hexadecimal or {@code "null"} if provided {@link Integer} argument is {@code null}.
-     */
-    public static String integerToHexString(final Integer i) {
-        return i != null ? Integer.toHexString(i) : NULL_STRING;
-    }
-
-    /**
-     * Convert the HEX string to a byte array.
-     * HEX allows for binary data to be printed.
-     */
-    public static byte[] buildBytesFromHexString(String hex) {
-        String tmpString = hex;
-        if ((tmpString.length() % 2) != 0) {
-            throw ConversionException.couldNotConvertToByteArray(hex);
-        }
-        byte[] bytes = new byte[tmpString.length() / 2];
-        int byteIndex;
-        int strIndex;
-        byte digit1;
-        byte digit2;
-        for (byteIndex = bytes.length - 1, strIndex = tmpString.length() - 2; byteIndex >= 0;
-                 byteIndex--, strIndex -= 2) {
-            digit1 = (byte)Character.digit(tmpString.charAt(strIndex), 16);
-            digit2 = (byte)Character.digit(tmpString.charAt(strIndex + 1), 16);
-            if ((digit1 == -1) || (digit2 == -1)) {
-                throw ConversionException.couldNotBeConverted(hex, ClassConstants.APBYTE);
-            }
-            bytes[byteIndex] = (byte)((digit1 * 16) + digit2);
-        }
-        return bytes;
-    }
-
-    /**
-     * Convert the byte array to a HEX string.
-     * HEX allows for binary data to be printed.
-     */
-    public static String buildHexStringFromBytes(byte[] bytes) {
-        char[] hexArray = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
-        StringBuilder stringBuilder = new StringBuilder();
-        int tempByte;
-        for (int byteIndex = 0; byteIndex < (bytes).length; byteIndex++) {
-            tempByte = (bytes)[byteIndex];
-            if (tempByte < 0) {
-                tempByte = tempByte + 256;//compensate for the fact that byte is signed in Java
-            }
-            tempByte = (byte)(tempByte / 16);//get the first digit
-            if (tempByte > 16) {
-                throw ConversionException.couldNotBeConverted(bytes, ClassConstants.STRING);
-            }
-            stringBuilder.append(hexArray[tempByte]);
-
-            tempByte = (bytes)[byteIndex];
-            if (tempByte < 0) {
-                tempByte = tempByte + 256;
-            }
-            tempByte = (byte)(tempByte % 16);//get the second digit
-            if (tempByte > 16) {
-                throw ConversionException.couldNotBeConverted(bytes, ClassConstants.STRING);
-            }
-            stringBuilder.append(hexArray[tempByte]);
-        }
-        return stringBuilder.toString();
-    }
-
-    /**
-      * Create a new Vector containing all of the map elements.
-      */
-    public static <T> Vector<T> buildVectorFromMapElements(Map<?, T> map) {
-        Vector<T> vector = new Vector<>(map.size());
-        Iterator<T> iterator = map.values().iterator();
-
-        while (iterator.hasNext()) {
-            vector.addElement(iterator.next());
-        }
-
-        return vector;
     }
 
     /**
@@ -515,7 +399,7 @@ public class Helper extends CoreHelper implements Serializable {
         return res;
     }
 
-    public static <T> Class<T> getClassFromClasseName(final String className, final ClassLoader classLoader) {
+    public static <T> Class<T> getClassFromClassName(final String className, final ClassLoader classLoader) {
         if (className == null) {
             return null;
         }
@@ -526,7 +410,7 @@ public class Helper extends CoreHelper implements Serializable {
     }
 
     public static String getComponentTypeNameFromArrayString(String aString) {
-        if (aString == null || aString.length() == 0) {
+        if (aString == null || aString.isEmpty()) {
             return null;
         }
         // complex array component type case
@@ -583,33 +467,9 @@ public class Helper extends CoreHelper implements Serializable {
         return one.equals(two);
     }
 
-    public static boolean compareByteArrays(byte[] array1, byte[] array2) {
-        if (array1.length != array2.length) {
-            return false;
-        }
-        for (int index = 0; index < array1.length; index++) {
-            if (array1[index] != array2[index]) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    public static boolean compareCharArrays(char[] array1, char[] array2) {
-        if (array1.length != array2.length) {
-            return false;
-        }
-        for (int index = 0; index < array1.length; index++) {
-            if (array1[index] != array2[index]) {
-                return false;
-            }
-        }
-        return true;
-    }
-
     /**
     * PUBLIC:
-    *
+    * <p>
     * Compare two vectors of types. Return true if the size of the vectors is the
     * same and each of the types in the first Vector are assignable from the types
     * in the corresponding objects in the second Vector.
@@ -638,33 +498,6 @@ public class Helper extends CoreHelper implements Serializable {
     }
 
     /**
-      * PUBLIC:
-      * Compare the elements in 2 hashtables to see if they are equal
-      *
-      * Added Nov 9, 2000 JED Patch 2.5.1.8
-      */
-    public static boolean compareHashtables(Hashtable<?, ?> hashtable1, Hashtable<?, ?> hashtable2) {
-        Enumeration<?> enumtr;
-        Object element;
-
-        if (hashtable1.size() != hashtable2.size()) {
-            return false;
-        }
-
-        Hashtable<?, ?> clonedHashtable = (Hashtable<?, ?>)hashtable2.clone();
-
-        enumtr = hashtable1.elements();
-        while (enumtr.hasMoreElements()) {
-            element = enumtr.nextElement();
-            if (clonedHashtable.remove(element) == null) {
-                return false;
-            }
-        }
-
-        return clonedHashtable.isEmpty();
-    }
-
-    /**
      * Compare two potential arrays and return true if they are the same. Will
      * check for BigDecimals as well.
      */
@@ -673,10 +506,10 @@ public class Helper extends CoreHelper implements Serializable {
         Class<?> secondClass = secondValue.getClass();
 
         // Arrays must be checked for equality because default does identity
-        if ((firstClass == ClassConstants.APBYTE) && (secondClass == ClassConstants.APBYTE)) {
-            return compareByteArrays((byte[])firstValue, (byte[])secondValue);
-        } else if ((firstClass == ClassConstants.APCHAR) && (secondClass == ClassConstants.APCHAR)) {
-            return compareCharArrays((char[])firstValue, (char[])secondValue);
+        if ((firstClass == CoreClassConstants.APBYTE) && (secondClass == CoreClassConstants.APBYTE)) {
+            return Arrays.compare((byte[])firstValue, (byte[])secondValue) == 0;
+        } else if ((firstClass == CoreClassConstants.APCHAR) && (secondClass == CoreClassConstants.APCHAR)) {
+            return Arrays.compare((char[])firstValue, (char[])secondValue) == 0;
         } else if ((firstClass.isArray()) && (secondClass.isArray())) {
             return compareArrays((Object[])firstValue, (Object[])secondValue);
         } else if (firstValue instanceof java.math.BigDecimal && secondValue instanceof java.math.BigDecimal) {
@@ -701,30 +534,6 @@ public class Helper extends CoreHelper implements Serializable {
     }
 
     /**
-      * Return a new vector with no duplicated values.
-      */
-    public static <E> Vector<E> concatenateUniqueVectors(Vector<? extends E> first, Vector<? extends E> second) {
-        Vector<E> concatenation;
-        E element;
-
-        concatenation = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
-
-        for (Enumeration<? extends E> stream = first.elements(); stream.hasMoreElements();) {
-            concatenation.addElement(stream.nextElement());
-        }
-
-        for (Enumeration<? extends E> stream = second.elements(); stream.hasMoreElements();) {
-            element = stream.nextElement();
-            if (!concatenation.contains(element)) {
-                concatenation.addElement(element);
-            }
-        }
-
-        return concatenation;
-
-    }
-
-    /**
       * Return a new List with no duplicated values.
       */
     public static <E> List<E> concatenateUniqueLists(List<? extends E> first, List<? extends E> second) {
@@ -741,21 +550,21 @@ public class Helper extends CoreHelper implements Serializable {
 
     }
 
+    /**
+     * @deprecated Use {@linkplain Vector#Vector(Collection)} followed by {@linkplain Vector#addAll(Collection)} instead.
+     */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public static <E> Vector<E> concatenateVectors(Vector<? extends E> first, Vector<? extends E> second) {
-        Vector<E> concatenation;
-
-        concatenation = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
-
-        for (Enumeration<? extends E> stream = first.elements(); stream.hasMoreElements();) {
-            concatenation.addElement(stream.nextElement());
-        }
-
-        for (Enumeration<? extends E> stream = second.elements(); stream.hasMoreElements();) {
-            concatenation.addElement(stream.nextElement());
-        }
-
+        Vector<E> concatenation = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+        concatenation.addAll(first);
+        concatenation.addAll(second);
         return concatenation;
+    }
 
+    public static <E> List<E> concatenateLists(List<? extends E> first, List<? extends E> second) {
+        List<E> concatenation = new ArrayList<>(first);
+        concatenation.addAll(second);
+        return concatenation;
     }
 
     /** Return a copy of the vector containing a subset starting at startIndex
@@ -781,59 +590,6 @@ public class Helper extends CoreHelper implements Serializable {
     }
 
     /**
-     * Copy an array of strings to a new array
-     */
-    public static String[] copyStringArray(String[] original){
-        if (original == null){
-            return null;
-        }
-        int length = original.length;
-        String[] copy = new String[length];
-        System.arraycopy(original, 0, copy, 0, length);
-        return copy;
-    }
-
-
-    /**
-     * Copy an array of int to a new array
-     */
-    public static int[] copyIntArray(int[] original){
-        if (original == null){
-            return null;
-        }
-        int length = original.length;
-        int[] copy = new int[length];
-        System.arraycopy(original, 0, copy, 0, length);
-        return copy;
-    }
-
-    /**
-     * Copy an array of boolean to a new array
-     * @param original
-     * @return
-     */
-    public static boolean[] copyBooleanArray(boolean[] original){
-        if (original == null){
-            return null;
-        }
-        int length = original.length;
-        boolean[] copy = new boolean[length];
-        System.arraycopy(original, 0, copy, 0, length);
-        return copy;
-    }
-
-    /**
-     * Return a string containing the platform-appropriate
-     * characters for carriage return.
-     */
-    public static String cr() {
-        if (CR == null) {
-            CR = PrivilegedAccessHelper.getSystemProperty("line.separator");
-        }
-        return CR;
-    }
-
-    /**
      * Return the name of the "current working directory".
      */
     public static String currentWorkingDirectory() {
@@ -845,19 +601,8 @@ public class Helper extends CoreHelper implements Serializable {
     }
 
     /**
-     * Return the name of the "temporary directory".
-     */
-    public static String tempDirectory() {
-        // Bug 2756643
-        if (TEMP_DIRECTORY == null) {
-            TEMP_DIRECTORY = PrivilegedAccessHelper.getSystemProperty("java.io.tmpdir");
-        }
-        return TEMP_DIRECTORY;
-    }
-
-    /**
      * Answer a Date from a long
-     *
+     * <p>
      * This implementation is based on the java.sql.Date class, not java.util.Date.
      * @param longObject - milliseconds from the epoch (00:00:00 GMT
      * Jan 1, 1970).  Negative values represent dates prior to the epoch.
@@ -874,13 +619,12 @@ public class Helper extends CoreHelper implements Serializable {
      * i.e. year is from 0, month is 0-11, date is 1-31.
      */
     public static java.sql.Date dateFromYearMonthDate(int year, int month, int day) {
-        // Use a calendar to compute the correct millis for the date.
-        Calendar localCalendar = allocateCalendar();
-        localCalendar.clear();
-        localCalendar.set(year, month, day, 0, 0, 0);
-        long millis = localCalendar.getTimeInMillis();
-        java.sql.Date date = new java.sql.Date(millis);
-        releaseCalendar(localCalendar);
+        java.sql.Date date = null;
+        try {
+            date = java.sql.Date.valueOf(LocalDate.of(year, month + 1, day));
+        } catch (DateTimeException exception) {
+            throw ConversionException.incorrectDateValue(year + "-" + (month + 1) + "-" + day);
+        }
         return date;
     }
 
@@ -888,9 +632,9 @@ public class Helper extends CoreHelper implements Serializable {
      * Answer a Date from a string representation.
      * The string MUST be a valid date and in one of the following
      * formats: YYYY/MM/DD, YYYY-MM-DD, YY/MM/DD, YY-MM-DD.
-     *
+     * <p>
      * This implementation is based on the java.sql.Date class, not java.util.Date.
-     *
+     * <p>
      * The Date class contains  some minor gotchas that you have to watch out for.
      * @param dateString - string representation of date
      * @return  - date representation of string
@@ -925,29 +669,13 @@ public class Helper extends CoreHelper implements Serializable {
 
     /**
      * Answer a Date from a timestamp
-     *
+     * <p>
      * This implementation is based on the java.sql.Date class, not java.util.Date.
      * @param timestamp - timestamp representation of date
      * @return  - date representation of timestampObject
      */
     public static java.sql.Date dateFromTimestamp(java.sql.Timestamp timestamp) {
         return sqlDateFromUtilDate(timestamp);
-    }
-
-    /**
-     * Returns true if the file of this name does indeed exist
-     */
-    public static boolean doesFileExist(String fileName) {
-        FileReader reader = null;
-        try {
-            reader = new FileReader(fileName);
-        } catch (FileNotFoundException fnfException) {
-            return false;
-        } finally {
-        Helper.close(reader);
-        }
-
-        return true;
     }
 
     /**
@@ -964,28 +692,6 @@ public class Helper extends CoreHelper implements Serializable {
         }
 
         return buffer.toString();
-    }
-
-    /**
-     * Extracts the actual path to the jar file.
-     */
-    public static String extractJarNameFromURL(java.net.URL url) {
-        String tempName = url.getFile();
-        int start = tempName.indexOf("file:") + 5;
-        int end = tempName.indexOf("!/");
-        return tempName.substring(start, end);
-    }
-
-    /**
-     * Return a string containing the platform-appropriate
-     * characters for separating directory and file names.
-     */
-    public static String fileSeparator() {
-        //Bug 2756643
-        if (FILE_SEPARATOR == null) {
-            FILE_SEPARATOR = PrivilegedAccessHelper.getSystemProperty("file.separator");
-        }
-        return FILE_SEPARATOR;
     }
 
     /**
@@ -1045,7 +751,7 @@ public class Helper extends CoreHelper implements Serializable {
     /**
      * Return the class instance from the class
      */
-    public static Object getInstanceFromClass(final Class<?> classFullName) {
+    public static <T> T getInstanceFromClass(final Class<T> classFullName) {
         if (classFullName == null) {
             return null;
         }
@@ -1067,32 +773,10 @@ public class Helper extends CoreHelper implements Serializable {
     }
 
     /**
-     *    Answers the unqualified class name for the provided class.
-     */
-    public static String getShortClassName(Class<?> javaClass) {
-        return getShortClassName(javaClass.getName());
-    }
-
-    /**
      *    Answers the unqualified class name from the specified String.
      */
     public static String getShortClassName(String javaClassName) {
         return javaClassName.substring(javaClassName.lastIndexOf('.') + 1);
-    }
-
-    /**
-     *    Answers the unqualified class name for the specified object.
-     */
-    public static String getShortClassName(Object object) {
-        return getShortClassName(object.getClass());
-    }
-
-    /**
-     *    return a package name for the specified class.
-     */
-    public static String getPackageName(Class<?> javaClass) {
-        String className = Helper.getShortClassName(javaClass);
-        return javaClass.getName().substring(0, (javaClass.getName().length() - (className.length() + 1)));
     }
 
     /**
@@ -1107,61 +791,11 @@ public class Helper extends CoreHelper implements Serializable {
     }
 
     /**
-     * Returns the index of the the first <code>null</code> element found in the specified
-     * <code>Vector</code> starting the search at the starting index specified.
-     * Return  an int &gt;= 0 and less than size if a <code>null</code> element was found.
-     * Return -1 if a <code>null</code> element was not found.
-     * This is needed in jdk1.1, where <code>Vector.contains(Object)</code>
-     * for a <code>null</code> element will result in a <code>NullPointerException</code>....
-     */
-    public static int indexOfNullElement(Vector<?> v, int index) {
-        int size = v.size();
-        for (int i = index; i < size; i++) {
-            if (v.elementAt(i) == null) {
-                return i;
-            }
-        }
-        return -1;
-    }
-
-    /**
      * ADVANCED
      * returns true if the class in question is a primitive wrapper
      */
     public static boolean isPrimitiveWrapper(Class<?> classInQuestion) {
         return classInQuestion.equals(Character.class) || classInQuestion.equals(Boolean.class) || classInQuestion.equals(Byte.class) || classInQuestion.equals(Short.class) || classInQuestion.equals(Integer.class) || classInQuestion.equals(Long.class) || classInQuestion.equals(Float.class) || classInQuestion.equals(Double.class);
-    }
-
-    /**
-     * Returns true if the string given is an all upper case string
-     */
-    public static boolean isUpperCaseString(String s) {
-        char[] c = s.toCharArray();
-        for (int i = 0; i < s.length(); i++) {
-            if (Character.isLowerCase(c[i])) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    /**
-     * Returns true if the character given is a vowel. I.e. one of a,e,i,o,u,A,E,I,O,U.
-     */
-    public static boolean isVowel(char c) {
-        return (c == 'A') || (c == 'a') || (c == 'e') || (c == 'E') || (c == 'i') || (c == 'I') || (c == 'o') || (c == 'O') || (c == 'u') || (c == 'U');
-    }
-
-    /**
-     * Return an array of the files in the specified directory.
-     * This allows us to simplify jdk1.1 code a bit.
-     */
-    public static File[] listFilesIn(File directory) {
-        if (directory.isDirectory()) {
-            return directory.listFiles();
-        } else {
-            return new File[0];
-        }
     }
 
     /**
@@ -1182,7 +816,7 @@ public class Helper extends CoreHelper implements Serializable {
         }
 
         Vector<Object> returnVector = new Vector<>();
-        returnVector.addElement(theObject);
+        returnVector.add(theObject);
         return (Vector<T>) returnVector;
     }
 
@@ -1243,18 +877,6 @@ public class Helper extends CoreHelper implements Serializable {
     }
 
     /**
-     * Return a string containing the platform-appropriate
-     * characters for separating entries in a path (e.g. the classpath)
-     */
-    public static String pathSeparator() {
-        // Bug 2756643
-        if (PATH_SEPARATOR == null) {
-            PATH_SEPARATOR = PrivilegedAccessHelper.getSystemProperty("path.separator");
-        }
-        return PATH_SEPARATOR;
-    }
-
-    /**
      * Return a String containing the printed stacktrace of an exception.
      */
     public static String printStackTraceToString(Throwable aThrowable) {
@@ -1278,36 +900,6 @@ public class Helper extends CoreHelper implements Serializable {
         return milliseconds + "ms";
     }
 
-    /**
-     * Given a Vector, print it, even if there is a null in it
-     */
-    public static String printVector(Vector<?> vector) {
-        StringWriter stringWriter = new StringWriter();
-        stringWriter.write("[");
-        Enumeration<?> enumtr = vector.elements();
-        stringWriter.write(String.valueOf(enumtr.nextElement()));
-        while (enumtr.hasMoreElements()) {
-            stringWriter.write(" ");
-            stringWriter.write(String.valueOf(enumtr.nextElement()));
-        }
-        stringWriter.write("]");
-        return stringWriter.toString();
-
-    }
-
-    public static <K, V> Hashtable<K, V> rehashHashtable(Hashtable<K, V> table) {
-        Hashtable<K, V> rehashedTable = new Hashtable<>(table.size() + 2);
-
-        Enumeration<V> values = table.elements();
-        for (Enumeration<K> keys = table.keys(); keys.hasMoreElements();) {
-            K key = keys.nextElement();
-            V value = values.nextElement();
-            rehashedTable.put(key, value);
-        }
-
-        return rehashedTable;
-    }
-
     public static <K, V> Map<K, V> rehashMap(Map<K, V> table) {
         Map<K, V> rehashedTable = new HashMap<>(table.size() + 2);
 
@@ -1319,41 +911,6 @@ public class Helper extends CoreHelper implements Serializable {
         }
 
         return rehashedTable;
-    }
-
-    /**
-     * Returns a String which has had enough non-alphanumeric characters removed to be equal to
-     * the maximumStringLength.
-     */
-    public static String removeAllButAlphaNumericToFit(String s1, int maximumStringLength) {
-        int s1Size = s1.length();
-        if (s1Size <= maximumStringLength) {
-            return s1;
-        }
-
-        // Remove the necessary number of characters
-        StringBuilder buf = new StringBuilder();
-        int numberOfCharsToBeRemoved = s1.length() - maximumStringLength;
-        int s1Index = 0;
-        while ((numberOfCharsToBeRemoved > 0) && (s1Index < s1Size)) {
-            char currentChar = s1.charAt(s1Index);
-            if (Character.isLetterOrDigit(currentChar)) {
-                buf.append(currentChar);
-            } else {
-                numberOfCharsToBeRemoved--;
-            }
-            s1Index++;
-        }
-
-        // Append the rest of the character that were not parsed through.
-        // Is it quicker to build a substring and append that?
-        while (s1Index < s1Size) {
-            buf.append(s1.charAt(s1Index));
-            s1Index++;
-        }
-
-        //
-        return buf.toString();
     }
 
     /**
@@ -1392,27 +949,6 @@ public class Helper extends CoreHelper implements Serializable {
     }
 
     /**
-     * Returns a String which has had enough of the specified character removed to be equal to
-     * the maximumStringLength.
-     */
-    public static String removeVowels(String s1) {
-        // Remove the vowels
-        StringBuilder buf = new StringBuilder();
-        int s1Size = s1.length();
-        int s1Index = 0;
-        while (s1Index < s1Size) {
-            char currentChar = s1.charAt(s1Index);
-            if (!isVowel(currentChar)) {
-                buf.append(currentChar);
-            }
-            s1Index++;
-        }
-
-        //
-        return buf.toString();
-    }
-
-    /**
      * Replaces the first subString of the source with the replacement.
      */
     public static String replaceFirstSubString(String source, String subString, String replacement) {
@@ -1429,8 +965,8 @@ public class Helper extends CoreHelper implements Serializable {
         T currentElement;
 
         for (int i = theVector.size() - 1; i > -1; i--) {
-            currentElement = theVector.elementAt(i);
-            tempVector.addElement(currentElement);
+            currentElement = theVector.get(i);
+            tempVector.add(currentElement);
         }
 
         return tempVector;
@@ -1448,68 +984,6 @@ public class Helper extends CoreHelper implements Serializable {
             len--;
         }
         return originalString.substring(0, len);
-    }
-
-    /**
-     * Returns a String which is a concatenation of two string which have had enough
-     * vowels removed from them so that the sum of the sized of the two strings is less than
-     * or equal to the specified size.
-     */
-    public static String shortenStringsByRemovingVowelsToFit(String s1, String s2, int maximumStringLength) {
-        int size = s1.length() + s2.length();
-        if (size <= maximumStringLength) {
-            return s1 + s2;
-        }
-
-        // Remove the necessary number of characters
-        int s1Size = s1.length();
-        int s2Size = s2.length();
-        StringBuilder buf1 = new StringBuilder();
-        StringBuilder buf2 = new StringBuilder();
-        int numberOfCharsToBeRemoved = size - maximumStringLength;
-        int s1Index = 0;
-        int s2Index = 0;
-        int modulo2 = 0;
-
-        // While we still want to remove characters, and not both string are done.
-        while ((numberOfCharsToBeRemoved > 0) && !((s1Index >= s1Size) && (s2Index >= s2Size))) {
-            if ((modulo2 % 2) == 0) {
-                // Remove from s1
-                if (s1Index < s1Size) {
-                    if (isVowel(s1.charAt(s1Index))) {
-                        numberOfCharsToBeRemoved--;
-                    } else {
-                        buf1.append(s1.charAt(s1Index));
-                    }
-                    s1Index++;
-                }
-            } else {
-                // Remove from s2
-                if (s2Index < s2Size) {
-                    if (isVowel(s2.charAt(s2Index))) {
-                        numberOfCharsToBeRemoved--;
-                    } else {
-                        buf2.append(s2.charAt(s2Index));
-                    }
-                    s2Index++;
-                }
-            }
-            modulo2++;
-        }
-
-        // Append the rest of the character that were not parsed through.
-        // Is it quicker to build a substring and append that?
-        while (s1Index < s1Size) {
-            buf1.append(s1.charAt(s1Index));
-            s1Index++;
-        }
-        while (s2Index < s2Size) {
-            buf2.append(s2.charAt(s2Index));
-            s2Index++;
-        }
-
-        //
-        return buf1.toString() + buf2;
     }
 
     /**
@@ -1847,15 +1321,8 @@ public class Helper extends CoreHelper implements Serializable {
     }
 
     /**
-     * Can be used to mark code if a workaround is added for a JDBC driver or other bug.
-     */
-    public static void systemBug(String description) {
-        // Use sender to find what is needy.
-    }
-
-    /**
      * Answer a Time from a Date
-     *
+     * <p>
      * This implementation is based on the java.sql.Date class, not java.util.Date.
      * @param date - time representation of date
      * @return  - time representation of dateObject
@@ -2066,13 +1533,6 @@ public class Helper extends CoreHelper implements Serializable {
     }
 
     /**
-     * Can be used to mark code as need if something strange is seen.
-     */
-    public static void toDo(String description) {
-        // Use sender to find what is needy.
-    }
-
-    /**
      * Convert dotted format class name to slashed format class name.
      * @return String
      */
@@ -2087,55 +1547,8 @@ public class Helper extends CoreHelper implements Serializable {
     }
 
     /**
-     * If the size of the original string is larger than the passed in size,
-     * this method will remove the vowels from the original string.
-     *
-     * The removal starts backward from the end of original string, and stops if the
-     * resulting string size is equal to the passed in size.
-     *
-     * If the resulting string is still larger than the passed in size after
-     * removing all vowels, the end of the resulting string will be truncated.
-     */
-    public static String truncate(String originalString, int size) {
-        if (originalString.length() <= size) {
-            //no removal and truncation needed
-            return originalString;
-        }
-        String vowels = "AaEeIiOoUu";
-        StringBuilder newStringBufferTmp = new StringBuilder(originalString.length());
-
-        //need to remove the extra characters
-        int counter = originalString.length() - size;
-        for (int index = (originalString.length() - 1); index >= 0; index--) {
-            //search from the back to the front, if vowel found, do not append it to the resulting (temp) string!
-            //i.e. if vowel not found, append the chararcter to the new string buffer.
-            if (vowels.indexOf(originalString.charAt(index)) == -1) {
-                newStringBufferTmp.append(originalString.charAt(index));
-            } else {
-                //vowel found! do NOT append it to the temp buffer, and decrease the counter
-                counter--;
-                if (counter == 0) {
-                    //if the exceeded characters (counter) of vowel haven been removed, the total
-                    //string size should be equal to the limits, so append the reversed remaining string
-                    //to the new string, break the loop and return the shrunk string.
-                    StringBuilder newStringBuffer = new StringBuilder(size);
-                    newStringBuffer.append(originalString.substring(0, index));
-                    //need to reverse the string
-                    //bug fix: 3016423. append(BunfferString) is jdk1.4 version api. Use append(String) instead
-                    //in order to support jdk1.3.
-                    newStringBuffer.append(newStringBufferTmp.reverse());
-                    return newStringBuffer.toString();
-                }
-            }
-        }
-
-        //the shrunk string still too long, revrese the order back and truncate it!
-        return newStringBufferTmp.reverse().substring(0, size);
-    }
-
-    /**
      * Answer a Date from a long
-     *
+     * <p>
      * This implementation is based on the java.sql.Date class, not java.util.Date.
      * @param longObject - milliseconds from the epoch (00:00:00 GMT
      * Jan 1, 1970).  Negative values represent dates prior to the epoch.
@@ -2185,21 +1598,12 @@ public class Helper extends CoreHelper implements Serializable {
 
     /**
      * Convert the specified array into a vector.
+     * @deprecated Use {@linkplain Collections#addAll(Collection, Object[])} instead.
      */
     public static <T> Vector<T> vectorFromArray(T[] array) {
         Vector<T> result = new Vector<>(array.length);
-        for (int i = 0; i < array.length; i++) {
-            result.addElement(array[i]);
-        }
+        Collections.addAll(result, array);
         return result;
-    }
-
-    /**
-     * Convert the byte array to a HEX string.
-     * HEX allows for binary data to be printed.
-     */
-    public static void writeHexString(byte[] bytes, Writer writer) throws IOException {
-        writer.write(buildHexStringFromBytes(bytes));
     }
 
     /**
@@ -2207,16 +1611,16 @@ public class Helper extends CoreHelper implements Serializable {
      */
     public static boolean isEquivalentToNull(Object value) {
         return (!isZeroValidPrimaryKey
-                    && (((value.getClass() == ClassConstants.LONG) && ((Long) value == 0L))
-                            || ((value.getClass() == ClassConstants.INTEGER) && ((Integer) value == 0))));
+                    && (((value.getClass() == CoreClassConstants.LONG) && ((Long) value == 0L))
+                            || ((value.getClass() == CoreClassConstants.INTEGER) && ((Integer) value == 0))));
     }
 
     /**
      * Returns true if the passed value is Number that is negative or equals to zero.
      */
     public static boolean isNumberNegativeOrZero(Object value) {
-        return ((value.getClass() == ClassConstants.BIGDECIMAL) && (((BigDecimal)value).signum() <= 0)) ||
-                ((value.getClass() == ClassConstants.BIGINTEGER) && (((BigInteger)value).signum() <= 0)) ||
+        return ((value.getClass() == CoreClassConstants.BIGDECIMAL) && (((BigDecimal)value).signum() <= 0)) ||
+                ((value.getClass() == CoreClassConstants.BIGINTEGER) && (((BigInteger)value).signum() <= 0)) ||
                 ((value instanceof Number) && (((Number)value).longValue() <= 0));
     }
 
@@ -2326,7 +1730,22 @@ public class Helper extends CoreHelper implements Serializable {
             restOfName = methodName.substring(POSITION_AFTER_IS_PREFIX);
         }
         //added for bug 234222 - property name generation differs from Introspector.decapitalize
-        return java.beans.Introspector.decapitalize(restOfName);
+        return decapitalize(restOfName);
+    }
+
+    public static String decapitalize(String s) {
+        // XXX - behaviour of this method must be same as of Introspector.decapitalize
+        // which is not used to avoid dependency on java.desktop
+        if (s == null || s.isEmpty()) {
+            return s;
+        }
+        if (s.length() > 1 && Character.isUpperCase(s.charAt(1))
+                && Character.isUpperCase(s.charAt(0))) {
+            return s;
+        }
+        char[] chars = s.toCharArray();
+        chars[0] = Character.toLowerCase(chars[0]);
+        return new String(chars);
     }
 
     public static String getDefaultStartDatabaseDelimiter(){
@@ -2407,9 +1826,5 @@ public class Helper extends CoreHelper implements Serializable {
             }
         }
         return false;
-    }
-
-    public static long timeWithRoundMiliseconds() {
-        return new Date().getTime() / 1000 * 1000;
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,7 +14,8 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.eis;
 
-import jakarta.resource.cci.*;
+import jakarta.resource.cci.ConnectionFactory;
+import jakarta.resource.cci.ConnectionSpec;
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.databaseaccess.Platform;
 import org.eclipse.persistence.sessions.DatasourceLogin;
@@ -99,7 +100,7 @@ public class EISLogin extends DatasourceLogin {
      * Return the JNDI URL for the managed connection factory for the JCA adapter connecting to.
      */
     public String getConnectionFactoryURL() {
-        if ((getConnectionSpec().getName() == null) || (getConnectionSpec().getName().size() == 0)) {
+        if ((getConnectionSpec().getName() == null) || (getConnectionSpec().getName().isEmpty())) {
             return null;
         }
         return getConnectionSpec().getName().get(0);
@@ -110,7 +111,7 @@ public class EISLogin extends DatasourceLogin {
      * Set the JNDI URL for the managed connection factory for the JCA adapter connecting to.
      */
     public void setConnectionFactoryURL(String url) {
-        if ((url == null) || (url.length() == 0)) {
+        if ((url == null) || (url.isEmpty())) {
             return;
         }
         getConnectionSpec().setName(url);

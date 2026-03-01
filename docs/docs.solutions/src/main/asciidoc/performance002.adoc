@@ -1,0 +1,439 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[PERFORMANCE002]]
+=== Monitoring and Optimizing EclipseLink-Enabled Applications
+
+The most important challenge to performance tuning is knowing what to
+optimize. To improve the performance of your application, identify the
+areas of your application that do not operate at peak efficiency. This
+section contains information about these subjects:
+
+* link:#CHDJJDDH[Performance Optimization Recommendations and Tips]
+* link:#CHDIAFJI[Task 1: Measure EclipseLink Performance with the EclipseLink Profiler]
+* link:#CIAFFAIF[Task 2: Measure EclipseLink Performance in the Server Environment]
+* link:#CIAFGJHI[Task 3: Measure Fetch Group Field Usage]
+* link:#CHDICBBA[Task 4: Identify Sources of Application Performance Problems]
+* link:#CHDDCABJ[Task 5: Modify Poorly-Performing Application Components]
+* link:#CHDHGFDI[Task 6: Measure Performance Again]
+
+[[CHDJJDDH]]
+
+==== Performance Optimization Recommendations and Tips
+
+EclipseLink provides a diverse set of features to measure and optimize
+application performance. You can enable or disable most features in the
+descriptors or session, making any resulting performance gains
+global.Performance considerations are present at every step of the
+development cycle. Although this implies an awareness of performance
+issues in your design and implementation, it does not mean that you
+should expect to achieve the best possible performance in your first
+pass.
+
+For example, if optimization complicates the design, leave it until the
+final development phase. You should still plan for these optimizations
+from your first iteration, to make them easier to integrate later.
+
+The most important concept associated with tuning your EclipseLink
+application is the idea of an iterative approach. The most effective way
+to tune your application is to do the following tasks:
+
+* link:#CHDIAFJI[Task 1: Measure EclipseLink Performance with the
+EclipseLink Profiler].
+* link:#CIAFFAIF[Task 2: Measure EclipseLink Performance in the Server
+Environment]
+* link:#CIAFGJHI[Task 3: Measure Fetch Group Field Usage]
+* link:#CHDICBBA[Task 4: Identify Sources of Application Performance
+Problems].
+* link:#CHDDCABJ[Task 5: Modify Poorly-Performing Application
+Components].
+* link:#CHDHGFDI[Task 6: Measure Performance Again].
+
+[[CHDIAFJI]]
+
+==== Task 1: Measure EclipseLink Performance with the EclipseLink Profiler
+
+The EclipseLink performance profiler helps you identify performance
+problems by logging performance statistics for every executed query in a
+given session. Use the performance profiler to monitor a single query,
+or simple single-threaded use case.
+
+The EclipseLink performance profiler logs the following information to
+the log file.
+
+*_Table 18-1 Information Logged by the EclipseLink Performance
+Profiler_*
+
+|===
+|*Information Logged* |*Description*
+|Query Class |Query class name.
+
+|Domain Class |Domain class name.
+
+|Total Time |Total execution time of the query, including any nested
+queries (in milliseconds).
+
+|Local Time |Execution time of the query, excluding any nested queries
+(in milliseconds).
+
+|Number of Objects |The total number of objects affected.
+
+|Number of Objects Handled per Second |How many objects were handled per
+second of transaction time.
+
+|Logging |the amount of time spent printing logging messages (in
+milliseconds).
+
+|SQL Prepare |The amount of time spent preparing the SQL script (in
+milliseconds).
+
+|SQL Execute |The amount of time spent executing the SQL script (in
+milliseconds).
+
+|Row Fetch |The amount of time spent fetching rows from the database (in
+milliseconds)
+
+|Cache |The amount of time spent searching or updating the object cache
+(in milliseconds)
+
+|Object Build |The amount of time spent building the domain object (in
+milliseconds)
+
+|query Prepare |the amount of time spent to prepare the query prior to
+execution (in milliseconds)
+
+|SQL Generation |the amount of time spent to generate the SQL script
+before it is sent to the database (in milliseconds)
+|===
+
+[[CHDDAEHF]]
+
+===== Enabling the EclipseLink Profiler
+
+The EclipseLink performance profiler is an instance of
+`org.eclipse.persistence.tools.profiler.PerformanceProfiler` class. To
+enable it, add the following line to the `persistence.xml` file:
+
+[source,oac_no_warn]
+----
+<property name="eclipselink.profiler" value="PerformanceProfiler.logProfiler"/>
+----
+
+In addition to enabling the EclipseLink profiler, The
+`PerformanceProfiler` class public API also provides the functionality
+described in link:#CHDGBGGC[Table 18-2]:
+
+[[CHDGBGGC]]
+
+*_Table 18-2 Additional PerformanceProfiler Functionality_*
+
+|===
+|*To...* |*Use...*
+|Disable the profiler |`dontLogProfile`
+
+|Organize the profiler log into a summary of all the individual
+operation profiles including operation statistics like the shortest time
+of all the operations that were profiled, the total time of all the
+operations, the number of objects returned by profiled queries, and the
+total time that was spent in each kind of operation that was profiled
+|`logProfileSummary`
+
+|Organize the profiler log into a summary of all the individual
+operation profiles by query |`logProfileSummaryByQuery`
+
+|Organize the profiler log into a summary of all the individual
+operation profiles by class. |`logProfileSummaryByClass`
+|===
+
+===== Accessing and Interpreting Profiler Results
+
+You can see profiling results by opening the profile log in a text
+reader, such as Notepad.
+
+The profiler output file indicates the health of a EclipseLink-enabled
+application.
+
+link:#CHDBGFGG[Example 18-7] shows an sample of the EclipseLink profiler
+output.
+
+[[CHDBGFGG]]
+
+*_Example 18-7 Performance Profiler Output_*
+
+[source,oac_no_warn]
+----
+Begin Profile of{
+ReadAllQuery(com.demos.employee.domain.Employee)
+Profile(ReadAllQuery,# of obj=12, time=139923809,sql execute=21723809,
+prepare=49523809, row fetch=39023809, time/obj=11623809,obj/sec=8)
+} End Profile
+----
+
+link:#CHDBGFGG[Example 18-7] shows the following information about the
+query:
+
+* `ReadAllQuery(com.demos.employee.domain.Employee)`: specific query
+profiled, and its arguments.
+* `Profile(ReadAllQuery`: start of the profile and the type of query.
+* `# of obj=12`: number of objects involved in the query.
+* `time=139923809`: total execution time of the query (in milliseconds).
+* `sql execute=21723809`: total time spent executing the SQL statement.
+* `prepare=49523809`: total time spent preparing the SQL statement.
+* `row fetch=39023809`: total time spent fetching rows from the
+database.
+* `time/obj=116123809`: number of nanoseconds spent on each object.
+* `obj/sec=8`: number of objects handled per second.
+
+[[CIAFFAIF]]
+
+==== Task 2: Measure EclipseLink Performance in the Server Environment
+
+Use the Performance Monitor to provide detailed profiling and monitoring
+information in a multithreaded server environment. Use the performance
+monitor to monitor a server, multiple threads, or long running
+processes.
+
+Enable the monitor in `persistence.xml` file as follows:
+
+[source,oac_no_warn]
+----
+<property name="eclipselink.profiler" value="PerformanceMonitor"/>
+----
+
+The performance monitor can also be enabled through code using a
+`SessionCustomizer`.
+
+The performance monitor will output a dump of cumulative statistics
+every minute to the EclipseLink log. The statistics contains three sets
+of information:
+
+* *Info*; statistics that are constant informational data, such as the
+session name, or time of login.
+* *Counter*; statistics that are cumulative counters of total
+operations, such as cache hits, or query executions.
+* *Timer*; statistics that are cumulative measurements of total time (in
+nano seconds) for a specific type of operation, reading, writing,
+database operations.
+
+Statistics are generally grouped in total and also by query type, query
+class, and query name. Counters and timers are generally recorded for
+the same operations, so the time per operation could also be calculated.
+
+The time between statistic dumps can be configured by using the
+`setDumpTime(long)` method in the `PerformanceMonitor` class. If dumping
+the results is not desired, then the `dumpTime` attribute can be set to
+be very large such as `Long.MAX_VALUE`. The statistic can also be
+accessed in a Java program with the `getOperationTime(String)` method.
+
+The performance monitor can also be configured with a profile weight.
+The profile weights are defined in the `SessionProfiler` class and used
+by the PerformanceMonitor class. The weights include:
+
+* `NONE`—No statistics are recorded.
+* `NORMAL`—Informational statistics are recorded.
+* `HEAVY`—Informational, counter and timer statistics are recorded.
+* `ALL`—All statistics are recorded (this is the default).
++
+ +
+
+NOTE: In the current release, the performance monitor responds with the same
+information for the `HEAVY` and `ALL` values.
+
+[[CIAFGJHI]]
+
+==== Task 3: Measure Fetch Group Field Usage
+
+Use the Fetch Group Monitor to measure fetch group field usage. This can
+be useful for performance analysis in a complex system.
+
+Enable this monitor by using the system property
+`org.eclipse.persistence.fetchgroupmonitor=true`.
+
+The monitor outputs the attribute used for a class every time a new
+attribute is accessed.
+
+[[CHDICBBA]]
+
+==== Task 4: Identify Sources of Application Performance Problems
+
+Areas of the application where performance problems could occur include
+the following:
+
+* Identifying General Performance Optimization
+* Schema
+* Mappings and Descriptors
+* Sessions
+* Cache
+* Data Access
+* Queries
+* Unit of Work
+* Application Server and Database Optimization
+
+link:#CHDDCABJ[Task 5: Modify Poorly-Performing Application Components]
+provides some guidelines for dealing with problems in each of these
+areas.
+
+[[CHDDCABJ]]
+
+==== Task 5: Modify Poorly-Performing Application Components
+
+For each source of application performance problems listed in
+link:#CHDICBBA[Task 4: Identify Sources of Application Performance
+Problems], you can try specific workarounds, as described in this
+section.
+
+===== Identifying General Performance Optimizations
+
+*Avoid overriding EclipseLink default behavior unless your application
+requires it*. Some of these defaults are suitable for a development
+environment; you should change these defaults to suit your production
+environment. These defaults may include:
+
+* Batch writing – See "jdbc.batch-writing" in _Jakarta Persistence API
+(JPA) Extensions Reference for EclipseLink_.
+* Statement caching – See "jdbc.cache-statements" in _Jakarta
+Persistence API (JPA) Extensions Reference for EclipseLink_.
+* Read and write connection pool size – See "connection-pool" in
+_Jakarta Persistence API (JPA) Extensions Reference for EclipseLink_.
+* Session cache size – See "maintain-cache" in _Jakarta Persistence API
+(JPA) Extensions Reference for EclipseLink_.
+
+*Use the Workbench rather than manual coding.* These tools are not only
+easy to use: the default configuration they export to deployment XML
+(and the code it generates, if required) represents best practices
+optimized for most applications.
+
+===== Schema
+
+Optimization is an important consideration when you design your database
+schema and object model. Most performance issues occur when the object
+model or database schema is too complex, as this can make the database
+slow and difficult to query. This is most likely to happen if you derive
+your database schema directly from a complex object model.
+
+To optimize performance, design the object model and database schema
+together. However, allow each model to be designed optimally: do not
+require a direct one-to-one correlation between the two.
+
+Possible ways to optimize the schema include:
+
+* Aggregating two tables into one
+* Splitting one table into many
+* Using a collapsed hierarchy
+* Choosing one out of many
+
+See "Data Storage Schema" in _EclipseLink Concepts_ for additional
+information.
+
+===== Mappings and Descriptors
+
+If you find performance bottlenecks in your mapping and descriptors, try
+these solutions:
+
+* Always use indirection (lazy loading). It is not only critical in
+optimizing database access, but also allows EclipseLink to make several
+other optimizations including optimizing its cache access and unit of
+work processing. See "cache-usage" in _Jakarta Persistence API (JPA)
+Extensions Reference for EclipseLink_.
+* Avoid using method access in your EclipseLink mappings, especially if
+you have expensive or potentially dangerous side-effect code in your get
+or set methods; use the default direct attribute access instead. See
+"Using Method or Direct Field Access" in the _EclipseLink Concepts_.
+* Avoid using the existence checking option checkCacheThenDatabase on
+descriptors, unless required by the application. The default existence
+checking behavior offers better performance. See "@ExistenceChecking" in
+_Jakarta Persistence API (JPA) Extensions Reference for EclipseLink_.
+* Avoid expensive initialization in the default constructor that
+EclipseLink uses to instantiate objects. Instead, use lazy
+initialization or use an EclipseLink instantiation policy to configure
+the descriptor to use a different constructor. See
+"@InstantiationCopyPolicy" in _Jakarta Persistence API (JPA) Extensions
+Reference for EclipseLink_.
+
+===== Cache
+
+You can often improve performance through caching, even in a clustered
+environment by implementing cache coordination. Cache coordination
+allows multiple, possibly distributed instances of a session to
+broadcast object changes among each other so that each session's cache
+can be kept up-to-date. For detailed information about optimizing cache
+behavior, see "Understanding Caching" in _EclipseLink Concepts_ and the
+following examples:
+
+* `http://wiki.eclipse.org/EclipseLink/Examples/JPA/Caching`
+* `http://wiki.eclipse.org/EclipseLink/Examples/JPA/CacheCoordination`
+* `http://wiki.eclipse.org/EclipseLink/Examples/JPA/DCN`
+
+===== Data Access
+
+Depending on the type of data source your application accesses,
+EclipseLink offers a variety of `Login` options that you can use to tune
+the performance of low level data reads and writes. For optimizing
+higher-level data reads and writes, "Understanding Data Access" in
+_EclipseLink Concepts_ offers several techniques to improve data access
+performance for your application. These techniques show you how to:
+
+* Optimize JDBC driver properties.
+* Optimize data format.
+* Use batch writing for optimization.
+* Use Outer-Join Reading with Inherited Subclasses.
+* Use Parameterized SQL (Parameter Binding) and Prepared Statement
+Caching for Optimization.
+
+===== Queries
+
+EclipseLink provides an extensive query API for reading, writing, and
+updating data. "Understanding EclipseLink Queries" in _EclipseLink
+Concepts_ offers several techniques to improve query performance for
+your application. These techniques show you how to:
+
+* Use parameterized SQL and prepared statement caching for optimization.
+* Use named queries for optimization.
+* Use batch and join reading for optimization.
+* Use partial object queries and fetch groups for optimization.
+* Use read-only queries for optimization.
+* Use JDBC fetch size for optimization.
+* Use cursored streams and scrollable cursors for optimization.
+* Use result set pagination for optimization.
+
+It also includes links to read and write optimization examples.
+
+===== Application Server and Database Optimization
+
+To optimize the application server and database performance, consider
+these techniques:
+
+* Configuring your application server and database correctly can have a
+big impact on performance and scalability. Ensure that you correctly
+optimize these key components of your application in addition to your
+EclipseLink application and persistence.
+* For your application or Jakarta EE server, ensure your memory, thread
+pool and connection pool sizes are sufficient for your server's expected
+load, and that your JVM has been configured optimally.
+* Ensure that your database has been configured correctly for optimal
+performance and its expected load.
+
+[[CHDHGFDI]]
+
+==== Task 6: Measure Performance Again
+
+Finally, after identifying possible performance bottlenecks and taking
+some action on them, rerun your application, again with the profiler
+enabled (see link:#CHDDAEHF[Enabling the EclipseLink Profiler]). Review
+the results and, if more action is required, follow the procedures
+outlined in link:#CHDDCABJ[Task 5: Modify Poorly-Performing Application
+Components].

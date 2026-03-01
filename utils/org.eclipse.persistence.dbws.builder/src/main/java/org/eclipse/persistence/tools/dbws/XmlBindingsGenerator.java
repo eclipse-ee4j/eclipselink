@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -75,7 +75,7 @@ public class XmlBindingsGenerator {
      */
     public static List<XmlBindings> generateXmlBindings(List<ClassDescriptor> descriptors) {
         // group the descriptors by package name
-        HashMap<String, List<XMLDescriptor>> descriptorMap = new HashMap<String, List<XMLDescriptor>>();
+        HashMap<String, List<XMLDescriptor>> descriptorMap = new HashMap<>();
         for (ClassDescriptor cdesc : descriptors) {
             XMLDescriptor xdesc = (XMLDescriptor) cdesc;
             String packageName = getPackageName(xdesc.getJavaClassName());
@@ -85,13 +85,13 @@ public class XmlBindingsGenerator {
             }
             List<XMLDescriptor> descriptorList = descriptorMap.get(packageName);
             if (descriptorList == null) {
-                descriptorList = new ArrayList<XMLDescriptor>();
+                descriptorList = new ArrayList<>();
                 descriptorMap.put(packageName, descriptorList);
             }
             descriptorList.add(xdesc);
         }
 
-        List<XmlBindings> bindingsList = new ArrayList<XmlBindings>();
+        List<XmlBindings> bindingsList = new ArrayList<>();
         // generate an XmlBindings for each package
         for (String pkg : descriptorMap.keySet()) {
             List<XMLDescriptor> xdescList = descriptorMap.get(pkg);
@@ -113,7 +113,7 @@ public class XmlBindingsGenerator {
      */
     public static XmlBindings generateXmlBindings(String packageName, List<XMLDescriptor> descriptors) {
         String defaultNamespace = null;
-        Map<String, String> prefixMap = new HashMap<String, String>();
+        Map<String, String> prefixMap = new HashMap<>();
 
         JavaTypes jTypes = new JavaTypes();
         for (XMLDescriptor xdesc : descriptors) {
@@ -137,7 +137,7 @@ public class XmlBindingsGenerator {
 
         XmlBindings xmlBindings = null;
         // if there are no JavaTypes, there's nothing to do
-        if (jTypes.getJavaType().size() > 0) {
+        if (!jTypes.getJavaType().isEmpty()) {
             xmlBindings = new XmlBindings();
             xmlBindings.setJavaTypes(jTypes);
             xmlBindings.setPackageName(packageName);
@@ -240,7 +240,7 @@ public class XmlBindingsGenerator {
         if (xAtt == null) {
             return null;
         }
-        return new JAXBElement<XmlAttribute>(new QName("http://www.eclipse.org/eclipselink/xsds/persistence/oxm", "xml-attribute"), XmlAttribute.class, xAtt);
+        return new JAXBElement<>(new QName("http://www.eclipse.org/eclipselink/xsds/persistence/oxm", "xml-attribute"), XmlAttribute.class, xAtt);
     }
 
     /**
@@ -274,7 +274,7 @@ public class XmlBindingsGenerator {
         if (xElt == null) {
             return null;
         }
-        return new JAXBElement<XmlElement>(new QName("http://www.eclipse.org/eclipselink/xsds/persistence/oxm", "xml-element"), XmlElement.class, xElt);
+        return new JAXBElement<>(new QName("http://www.eclipse.org/eclipselink/xsds/persistence/oxm", "xml-element"), XmlElement.class, xElt);
     }
 
     /**
@@ -324,7 +324,7 @@ public class XmlBindingsGenerator {
             xmlNullPolicy.setXsiNilRepresentsNull(nullPolicy.isNullRepresentedByXsiNil());
             xmlNullPolicy.setNullRepresentationForXml(XmlMarshalNullRepresentation.fromValue(nullPolicy.getMarshalNullRepresentation().toString()));
 
-            xAtt.setXmlAbstractNullPolicy(new JAXBElement<XmlAbstractNullPolicy>(new QName("http://www.eclipse.org/eclipselink/xsds/persistence/oxm", "xml-null-policy"), XmlAbstractNullPolicy.class, xmlNullPolicy));
+            xAtt.setXmlAbstractNullPolicy(new JAXBElement<>(new QName("http://www.eclipse.org/eclipselink/xsds/persistence/oxm", "xml-null-policy"), XmlAbstractNullPolicy.class, xmlNullPolicy));
         }
         return xAtt;
     }
@@ -437,7 +437,7 @@ public class XmlBindingsGenerator {
             xmlNullPolicy.setXsiNilRepresentsNull(nullPolicy.isNullRepresentedByXsiNil());
             xmlNullPolicy.setNullRepresentationForXml(XmlMarshalNullRepresentation.fromValue(nullPolicy.getMarshalNullRepresentation().toString()));
 
-            xElt.setXmlAbstractNullPolicy(new JAXBElement<XmlAbstractNullPolicy>(new QName("http://www.eclipse.org/eclipselink/xsds/persistence/oxm", "xml-null-policy"), XmlAbstractNullPolicy.class, xmlNullPolicy));
+            xElt.setXmlAbstractNullPolicy(new JAXBElement<>(new QName("http://www.eclipse.org/eclipselink/xsds/persistence/oxm", "xml-null-policy"), XmlAbstractNullPolicy.class, xmlNullPolicy));
         }
         return xElt;
     }

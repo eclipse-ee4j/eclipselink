@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -48,9 +48,10 @@ public class PLSQLRecord2TestSuite extends DBWSTestSuite {
     static final String SCHEMA = System.getProperty(DATABASE_USERNAME_KEY, DEFAULT_DATABASE_USERNAME);
 
     static final String CREATE_EMPREC_TYPE =
-        "create or replace TYPE pkgrec_wrapper2_empRecType AS OBJECT ("+
-          "\np_empno NUMBER (4), p_ename VARCHAR2 (20)"+
-        "\n)";
+            """
+                    create or replace TYPE pkgrec_wrapper2_empRecType AS OBJECT (
+                    p_empno NUMBER (4), p_ename VARCHAR2 (20)
+                    )""";
 
     static final String DROP_EMPREC_TYPE = "DROP TYPE pkgrec_wrapper2_empRecType";
 
@@ -132,8 +133,8 @@ public class PLSQLRecord2TestSuite extends DBWSTestSuite {
             runDdl(conn, CREATE_EMP_TABLE, ddlDebug);
             try {
                 Statement stmt = conn.createStatement();
-                for (int i = 0; i < POPULATE_EMP_TABLE.length; i++) {
-                    stmt.addBatch(POPULATE_EMP_TABLE[i]);
+                for (String s : POPULATE_EMP_TABLE) {
+                    stmt.addBatch(s);
                 }
                 stmt.executeBatch();
             } catch (SQLException e) {
@@ -179,8 +180,7 @@ public class PLSQLRecord2TestSuite extends DBWSTestSuite {
      *
      */
     protected static void executeDDLForString(List<String> ddls, String ddlString) {
-        for (int i = 0; i < ddls.size(); i++) {
-            String ddl = ddls.get(i);
+        for (String ddl : ddls) {
             if (ddl.contains(ddlString)) {
                 runDdl(conn, ddl, ddlDebug);
                 break;

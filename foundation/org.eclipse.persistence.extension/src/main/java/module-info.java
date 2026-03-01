@@ -15,6 +15,8 @@
  */
 module org.eclipse.persistence.extension {
     requires transitive org.eclipse.persistence.core;
+    requires static org.jgroups;
+    requires static org.slf4j;
 
     exports org.eclipse.persistence.logging.slf4j;
     exports org.eclipse.persistence.sessions.coordination.jgroups;

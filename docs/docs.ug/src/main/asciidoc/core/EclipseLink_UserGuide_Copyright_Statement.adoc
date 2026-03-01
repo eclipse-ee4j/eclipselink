@@ -1,0 +1,4 @@
+The initial contribution of the EclipseLink User’s Guide is based on
+work copyrighted by Oracle and was submitted with permission.
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]

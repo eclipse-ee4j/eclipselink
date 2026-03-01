@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,30 +14,10 @@
 //     Blaise Doughan - 2.5 - initial implementation
 package org.eclipse.persistence.internal.oxm;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.lang.reflect.Array;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Collection;
-
-import javax.xml.namespace.QName;
-import javax.xml.transform.Result;
-import javax.xml.transform.dom.DOMResult;
-import javax.xml.transform.sax.SAXResult;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.validation.Schema;
-
 import org.eclipse.persistence.core.queries.CoreAttributeGroup;
 import org.eclipse.persistence.core.sessions.CoreSession;
 import org.eclipse.persistence.exceptions.EclipseLinkException;
-import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.oxm.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
@@ -70,6 +50,25 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.ext.LexicalHandler;
+
+import javax.xml.namespace.QName;
+import javax.xml.transform.Result;
+import javax.xml.transform.dom.DOMResult;
+import javax.xml.transform.sax.SAXResult;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.validation.Schema;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.lang.reflect.Array;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Collection;
 
 public abstract class XMLMarshaller<
     ABSTRACT_SESSION extends CoreAbstractSession,
@@ -913,9 +912,8 @@ public abstract class XMLMarshaller<
             }
         }
 
-        if (object instanceof Root) {
+        if (object instanceof Root xroot) {
             isXMLRoot = true;
-            Root xroot = (Root) object;
             encoding = xroot.getEncoding() != null ? xroot.getEncoding() : encoding;
         }
 
@@ -986,8 +984,7 @@ public abstract class XMLMarshaller<
         }
 
         //if this is a simple xml root, the session and descriptor will be null
-        if (result instanceof StreamResult) {
-            StreamResult streamResult = (StreamResult) result;
+        if (result instanceof StreamResult streamResult) {
             Writer writer = streamResult.getWriter();
             if (writer != null) {
                 marshal(object, writer, session, xmlDescriptor);
@@ -1015,16 +1012,14 @@ public abstract class XMLMarshaller<
                     throw XMLMarshalException.marshalException(e);
                 }
             }
-        }else if (result instanceof DOMResult) {
-            DOMResult domResult = (DOMResult) result;
+        }else if (result instanceof DOMResult domResult) {
             // handle case where the node is null
             if (domResult.getNode() == null) {
                 domResult.setNode(this.objectToXML(object));
             } else {
                 marshal(object, domResult.getNode());
             }
-        } else if (result instanceof SAXResult) {
-            SAXResult saxResult = (SAXResult) result;
+        } else if (result instanceof SAXResult saxResult) {
             marshal(object, saxResult.getHandler());
         } else if (result instanceof ExtendedResult){
             marshal(object, ((ExtendedResult)result).createRecord(), session, xmlDescriptor, isXMLRoot);
@@ -1088,9 +1083,8 @@ public abstract class XMLMarshaller<
             }
         }
 
-        if (object instanceof Root) {
+        if (object instanceof Root xroot) {
             isXMLRoot = true;
-            Root xroot = (Root) object;
             version = xroot.getXMLVersion() != null ? xroot.getXMLVersion() : version;
             encoding = xroot.getEncoding() != null ? xroot.getEncoding() : encoding;
         }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,18 +15,19 @@
 //     ailitchev - Bug 244124 in 2.1 - Add AttributeGroup for nesting and LoadGroup support
 package org.eclipse.persistence.queries;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-
 import org.eclipse.persistence.core.queries.CoreAttributeGroup;
+import org.eclipse.persistence.descriptors.DescriptorCustomizer;
 import org.eclipse.persistence.descriptors.FetchGroupManager;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.queries.AttributeItem;
 import org.eclipse.persistence.internal.queries.EntityFetchGroup;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.UnitOfWork;
+
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * A FetchGroup is a performance enhancement that allows a group of attributes
@@ -59,7 +60,7 @@ import org.eclipse.persistence.sessions.UnitOfWork;
  * users named groups can be defined in code and added to the
  * {@link FetchGroupManager#addFetchGroup(FetchGroup)}. Adding named groups in
  * code is typically done in a {@link
- * org.eclipse.persistence.config.DescriptorCustomizer}and should be done
+ * DescriptorCustomizer}and should be done
  * before the session is initialized at login. To use a named FetchGroup on a
  * query the native {@link ObjectLevelReadQuery#setFetchGroupName(String)} can
  * be used of for JPA users the {@link
@@ -130,7 +131,7 @@ public class FetchGroup extends AttributeGroup {
     /**
      * INTERNAL:
      * Called on attempt to get value of an attribute that hasn't been fetched yet.
-     * Returns an error message in case jakarta.persistence.EntityNotFoundException
+     * Returns an error message in case {@code jakarta.persistence.EntityNotFoundException}
      * should be thrown by the calling method,
      * null otherwise.
      * <p>
@@ -178,7 +179,7 @@ public class FetchGroup extends AttributeGroup {
     /**
      * INTERNAL:
      * Called on attempt to assign value to an attribute that hasn't been fetched yet.
-     * Returns an error message in case jakarta.persistence.EntityNotFoundException
+     * Returns an error message in case {@code jakarta.persistence.EntityNotFoundException}
      * should be thrown by the calling method,
      * null otherwise.
      * <p>

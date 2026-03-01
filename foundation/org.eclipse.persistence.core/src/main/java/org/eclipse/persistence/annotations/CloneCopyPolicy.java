@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,44 +15,41 @@
 
 package org.eclipse.persistence.annotations;
 
-import static java.lang.annotation.ElementType.TYPE;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
 /**
- * A CloneCopyPolicy is used to set an
- * org.eclipse.persistence.descriptors.copying.CloneCopyPolicy on an Entity.
- * A CloneCopyPolicy must specify at one or both of the "method" or
- * "workingCopyMethod".
- *
- * "workingCopyMethod" is used to clone objects that will be returned to the
- * user as they are registered in EclipseLink's transactional mechanism, the
- * UnitOfWork.
- *
- * "method" will be used for the clone that is used for comparison in
- * conjunction with EclipseLink's DeferredChangeDetectionPolicy
- *
- * A CloneCopyPolicy should be specified on an Entity, MappedSuperclass or
- * Embeddable.
- *
- * Example:
- * {@literal @}Entity
- * {@literal @}CloneCopyPolicy(method="myCloneMethod")
- *
+ * A CloneCopyPolicy is used to set an {@linkplain org.eclipse.persistence.descriptors.copying.CloneCopyPolicy}
+ * on an Entity. A CloneCopyPolicy must specify at least one or both of the {@linkplain #method()} or {@linkplain #workingCopyMethod()}.
+ * <ul>
+ * <li>{@linkplain #workingCopyMethod()} is used to clone objects that will be returned to the user
+ *      as they are registered in EclipseLink's transactional mechanism, the {@linkplain org.eclipse.persistence.sessions.UnitOfWork}.</li>
+ * <li>{@linkplain #method()} is used for the clone that is used for comparison in conjunction with
+ *      EclipseLink's {@linkplain org.eclipse.persistence.descriptors.changetracking.DeferredChangeDetectionPolicy}.</li>
+ * </ul>
+ * <p>
+ * A CloneCopyPolicy can be specified on an Entity, MappedSuperclass or Embeddable.
+ * <p><b>Example:</b>
+ * {@snippet :
+ *  @Entity
+ *  @CloneCopyPolicy(method="myCloneMethod")
+ * }
  * or:
- *
- * {@literal @}Entity
- * {@literal @}CloneCopyPolicy(method="myCloneMethod", workingCopyMethod="myWorkingCopyCloneMethod")
- *
- * or:
- * {@literal @}Entity
- * {@literal @}CloneCopyPolicy(workingCopyMethodName="myWorkingCopyClone")
+ * {@snippet :
+ *  @Entity
+ *  @CloneCopyPolicy(method="myCloneMethod", workingCopyMethod="myWorkingCopyCloneMethod")
+ * }
+ * {@snippet :
+ *  @Entity
+ *  @CloneCopyPolicy(workingCopyMethodName="myWorkingCopyClone")
+ * }
  *
  * @see org.eclipse.persistence.descriptors.copying.CloneCopyPolicy
- * @see org.eclipse.persistence.annotations.CloneCopyPolicy
- * @see org.eclipse.persistence.annotations.CopyPolicy
+ * @see CloneCopyPolicy
+ * @see CopyPolicy
  *
  * @author tware
  */
@@ -61,19 +58,19 @@ import java.lang.annotation.Target;
 public @interface CloneCopyPolicy {
 
     /**
-     * (Optional)
-     * Either method or workingCopyMethod must be specified
-     * this defines a method that will be used to create a clone that will be
-     * used for comparison by EclipseLink's DeferredChangeDetectionPolicy
+     * Defines a method that will be used to create a clone that will be
+     * used for comparison by EclipseLink's {@linkplain org.eclipse.persistence.descriptors.changetracking.DeferredChangeDetectionPolicy}.
+     * <p>
+     * Either method or {@linkplain #workingCopyMethod()} must be specified
      */
     String method();
 
     /**
-     * (Optional)
-     * Either method or workingCopyMethod must be specified
-     * this defines a method that will be used to create a clone that will be
+     * Defines a method that will be used to create a clone that will be
      * used to create the object returned when registering an Object in an
-     * EclipseLink UnitOfWork
+     * EclipseLink {@linkplain org.eclipse.persistence.sessions.UnitOfWork}.
+     * <p>
+     * Either {@linkplain #method()} or workingCopyMethod must be specified
      */
     String workingCopyMethod();
 }

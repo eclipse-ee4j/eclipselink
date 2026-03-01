@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2020, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -115,7 +115,7 @@ public class DeadLockComponent {
     /**
      * Constructor to be used when we start undoing our recursion due to having found a repeated thread that allows to
      * conclude we have discovered our dead lock. When we do this, we will not populate any additionla data on the DTO.
-     *
+     * <p>
      * Create a new DeadLockComponent.
      *
      */

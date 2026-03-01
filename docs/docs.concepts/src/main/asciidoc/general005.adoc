@@ -1,0 +1,100 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[GENERAL005]]
+=== Key Tools
+
+This section describes the support for EclipseLink provided by Oracle
+JDeveloper, Eclipse, and NetBeans development environments. Any tooling
+is compatible with EclipseLink, but these offer specific integration.
+
+This section contains the following subsections:
+
+* link:#BABGBABF[Oracle JDeveloper]
+* link:#BABDFFCB[Eclipse]
+* link:#BABCCIDI[NetBeans]
+
+[[BABGBABF]][[OTLCG166]]
+
+==== Oracle JDeveloper
+
+Oracle JDeveloper is a Jakarta EE development environment with
+end-to-end support to develop, debug, and deploy e-business applications
+and web services.
+
+For JDeveloper information and downloads, see:
+
+`http://www.oracle.com/us/products/tools/019657.htm`
+
+JDeveloper includes a number of features to aid in the development of
+applications that use EclipseLink. These features include wizards to
+reverse engineer JPA entities from database tables and to generate EJB
+3.0 Session Beans with `EntityManager` injection. It also includes
+methods for querying JPA entities and to test client generation.
+
+JDeveloper tools enable you to quickly and easily configure and map your
+Java classes and JPA entities to different data sources, including
+relational databases and XML schemas without using code.
+
+DBWSBuilder script (included in EclipseLink install) can be used to run
+the DBWSBuilder utility to generate the Web service. JDeveloper uses the
+API provided, but does not use the DBWSBuilder script directly.
+
+For more information on Oracle JDeveloper's EclipseLink support, see
+JDeveloper online help.
+
+[[BABDFFCB]][[OTLCG168]]
+
+==== Eclipse
+
+The Eclipse IDE provides a number of features and utilities to help you
+create, run, and maintain applications that use JPA. These capabilities
+are extended if you install OEPE.
+
+For Eclipse IDE information and downloads, see:
+
+`http://www.oracle.com/technetwork/developer-tools/eclipse/overview/index.html`
+
+The Dali Java Persistence Tools Project provides extensible frameworks
+and tools for defining and editing object-relational mappings for JPA
+entities. JPA mapping support focuses on minimizing the complexity of
+mapping by providing entity generation wizards, design-time validation,
+and a robust UI for entity and persistence unit configuration.
+
+For Dali information and downloads, see:
+
+`http://www.eclipse.org/webtools/dali`
+
+Other tools and utilities from the Oracle, open source, and third party
+vendor communities are available from the Eclipse Marketplace.
+
+`http://marketplace.eclipse.org/`
+
+[[BABCCIDI]][[OTLCG169]]
+
+==== NetBeans
+
+NetBeans IDE bundles Oracle GlassFish Server, which includes
+EclipseLink. The IDE provides full support for JPA-based code
+development. This support includes entity class wizards for constructing
+entities and editor hints to ensure that entities conform to the JPA
+specification. NetBeans also provides a persistence unit editor for
+constructing a `persistence.xml` file.
+
+For NetBeans information and downloads, see:
+
+`http://netbeans.org/index.html`

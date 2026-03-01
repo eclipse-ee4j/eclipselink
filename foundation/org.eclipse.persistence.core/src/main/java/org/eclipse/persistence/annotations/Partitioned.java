@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,7 +26,9 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * Partitioning is used to partition the data for a class across multiple difference databases
  * or across a database cluster such as Oracle RAC.
  * Partitioning can provide improved scalability by allowing multiple database machines to service requests.
- * This annotation configures the named partitioning policy to be used for this Entity or relationship.
+ * <p>
+ * This annotation configures the named {@linkplain org.eclipse.persistence.descriptors.partitioning.PartitioningPolicy partitioning policy}
+ * to be used for this Entity or relationship.
  * <p>
  * Partitioning can be enabled on an Entity, relationship, query, or session/persistence unit.
  *
@@ -46,7 +48,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 public @interface Partitioned {
     /**
-     * (Required) name of partitioning policy to use.
+     * The name of {@linkplain org.eclipse.persistence.descriptors.partitioning.PartitioningPolicy partitioning policy} to use.
      */
     String value();
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2021, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,7 +21,6 @@ module org.eclipse.persistence.moxy {
     requires jakarta.mail;
     requires static jakarta.validation;
     requires static jakarta.ws.rs;
-    requires org.eclipse.persistence.asm;
     requires transitive org.eclipse.persistence.core;
     requires static com.sun.tools.xjc;
     requires static com.sun.xml.bind.core;
@@ -34,6 +33,7 @@ module org.eclipse.persistence.moxy {
     exports org.eclipse.persistence.jaxb.compiler.facets;
     exports org.eclipse.persistence.jaxb.dynamic;
     exports org.eclipse.persistence.jaxb.dynamic.metadata;
+    exports org.eclipse.persistence.jaxb.i18n;
     exports org.eclipse.persistence.jaxb.javamodel;
     exports org.eclipse.persistence.jaxb.javamodel.oxm;
     exports org.eclipse.persistence.jaxb.javamodel.reflection;
@@ -44,9 +44,11 @@ module org.eclipse.persistence.moxy {
     exports org.eclipse.persistence.jaxb.rs;
     exports org.eclipse.persistence.jaxb.xmlmodel;
     opens org.eclipse.persistence.jaxb.xmlmodel to jakarta.xml.bind;
+    opens org.eclipse.persistence.jaxb.rs; //required for MOXyJSON provider injection
 
     //exported through MOXy PUBLIC API
     exports org.eclipse.persistence.internal.jaxb;
+    exports org.eclipse.persistence.internal.jaxb.many;
 
     provides jakarta.xml.bind.JAXBContextFactory with org.eclipse.persistence.jaxb.XMLBindingContextFactory;
     provides com.sun.tools.xjc.Plugin with org.eclipse.persistence.jaxb.plugins.BeanValidationPlugin;

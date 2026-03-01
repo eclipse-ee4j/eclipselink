@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,7 +25,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * A ReturnInsert annotation allows for INSERT operations to return values back
  * into the object being written. This allows for table default values, trigger
  * or stored procedures computed values to be set back into the object.
- *
+ * <p>
  * A ReturnInsert annotation can only be specified on a Basic mapping.
  *
  * @author Guy Pelletier

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,37 +26,36 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * The Convert annotation specifies that a named converter should be used with
  * the corresponding mapped attribute. The Convert annotation has the following
  * reserved names:
- *  <ul>
- *  <li> serialized: Will use a SerializedObjectConverter
- *  on the associated mapping. When using a SerializedObjectConverter the database representation is a
- *  binary field holding a serialized version of the object and the object-model representation is a the
- *  actual object.
- *  <li> class-instance: Will use an ClassInstanceConverter
- *  on the associated mapping.  When using a ClassInstanceConverter the database representation is a
- *  String representing the Class name and the object-model representation is an instance
- *  of that class built with a no-args constructor.<br>
- *  <li> xml: Will use an SerializedObjectConverter with the XMLSerializer
- *  on the associated mapping.  When using a XMLSerializer the database representation is a
- *  character field holding a serialized version of the object and the object-model representation is a the
- *  actual object.<br>
- *  <li> json: Will use an SerializedObjectConverter with the JSONSerializer
- *  on the associated mapping.  When using a JSONSerializer the database representation is a
- *  character field holding a serialized version of the object and the object-model representation is a the
- *  actual object.<br>
- *  <li> kryo: Will use an SerializedObjectConverter with the KryoSerializer
- *  on the associated mapping.  When using a KryoSerializer the database representation is a
- *  binary field holding a serialized version of the object and the object-model representation is a the
- *  actual object.<br>
- *  <li> none - Will place no converter on the associated mapping. This can be used to override a situation where either
- *  another converter is defaulted or another converter is set.
- *  </ul>
+ * <ul>
+ *  <li>{@value #SERIALIZED}: Uses a {@linkplain org.eclipse.persistence.mappings.converters.SerializedObjectConverter}
+ *  on the associated mapping. When using a {@linkplain org.eclipse.persistence.mappings.converters.SerializedObjectConverter}
+ *  the database representation is a binary field holding a serialized version of the object and the object-model representation is a the
+ *  actual object.</li>
+ *  <li>{@value #CLASS_INSTANCE}: Uses an {@linkplain org.eclipse.persistence.mappings.converters.ClassInstanceConverter}
+ *  on the associated mapping. When using a {@linkplain org.eclipse.persistence.mappings.converters.ClassInstanceConverter}
+ *  the database representation is a String representing the Class name and the object-model representation is an instance
+ *  of that class built with a no-args constructor.</li>
+ *  <li>{@value #XML}: Uses an {@linkplain org.eclipse.persistence.mappings.converters.SerializedObjectConverter}
+ *  with the {@linkplain org.eclipse.persistence.sessions.serializers.XMLSerializer} on the associated mapping.
+ *  When using a {@linkplain org.eclipse.persistence.sessions.serializers.XMLSerializer} the database representation is a
+ *  character field holding a serialized version of the object and the object-model representation is a the actual object.</li>
+ *  <li>{@value #JSON}: Uses an {@linkplain org.eclipse.persistence.mappings.converters.SerializedObjectConverter}
+ *  with the {@linkplain org.eclipse.persistence.sessions.serializers.JSONSerializer} on the associated mapping.
+ *  When using a {@linkplain org.eclipse.persistence.sessions.serializers.JSONSerializer} the database representation is a
+ *  character field holding a serialized version of the object and the object-model representation is a the actual object.</li>
+ *  <li>{@value #KRYO}: Uses an {@linkplain org.eclipse.persistence.mappings.converters.SerializedObjectConverter}
+ *  with the org.eclipse.persistence.sessions.serializers.kryo.KryoSerializer on the associated mapping.
+ *  When using a org.eclipse.persistence.sessions.serializers.kryo.KryoSerializer the database representation is a
+ *  binary field holding a serialized version of the object and the object-model representation is a the actual object.</li>
+ *  <li>{@value #NONE}: Places no converter on the associated mapping. This can be used to override a situation where either
+ *  another converter is defaulted or another converter is set.</li>
+ * </ul>
+ * <p>
+ * When these reserved converters are not used, it is necessary to define a converter to use using the {@linkplain Converter} annotation.
  *
- *  When these reserved converters are not used, it is necessary to define a converter to use using the
- *  {@literal @}Converter annotation.
- *
- * @see org.eclipse.persistence.annotations.Converter
- * @see org.eclipse.persistence.annotations.ObjectTypeConverter
- * @see org.eclipse.persistence.annotations.TypeConverter
+ * @see Converter
+ * @see ObjectTypeConverter
+ * @see TypeConverter
  * @see org.eclipse.persistence.mappings.converters.SerializedObjectConverter
  * @see org.eclipse.persistence.mappings.converters.ClassInstanceConverter
  *
@@ -67,13 +66,13 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 public @interface Convert {
     /**
-     * (Optional) The name of the converter to be used.
+     * The name of the converter to be used.
      */
-    String value() default "none";
+    String value() default NONE;
 
     /**
      * Constant name for the reserved Java serialization converter.
-     * This will serialize the
+     * This will use Java Serialization to convert the object to and from a binary format.
      */
     String SERIALIZED = "serialized";
 
@@ -85,13 +84,13 @@ public @interface Convert {
 
     /**
      * Constant name for the reserved XML converter.
-     * This will use JAXB to convert the object to and from XML.
+     * This will use XML Binding runtime to convert the object to and from XML.
      */
     String XML = "xml";
 
     /**
      * Constant name for the reserved JSON converter.
-     * This will use EclipseLink Moxy JAXB to convert the object to and from JSON.
+     * This will use EclipseLink Moxy runtime to convert the object to and from JSON.
      */
     String JSON = "json";
 

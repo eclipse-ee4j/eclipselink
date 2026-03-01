@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,24 +15,23 @@
 //       - JPA 2.0 - OrderedList support.
 package org.eclipse.persistence.annotations;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
 import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-
 /**
- * OrderCorrection annotation may be specified together with OrderColumn annotation.
- * Its OrderCorrectionType value defines what should be done in case
- * the order list read from the data base is invalid
+ * OrderCorrection annotation may be specified together with {@linkplain jakarta.persistence.OrderColumn} annotation.
+ * Its {@linkplain OrderCorrectionType} value defines what should be done in case
+ * the order list read from the database is invalid
  * (has nulls, duplicates, negative values, values greater/equal to list size -
  * the only valid order list of n elements is: {0, 1,..., n-1}).
+ * <p>
+ * If the annotation is not specified then {@linkplain OrderCorrectionType#READ_WRITE} used.
  *
- * If the annotation is not specified than OrderCorrectionValue.READ_WRITE used.
- *
- * @see "org.eclipse.persistence.jpa.config.OrderColumn"
- * @see org.eclipse.persistence.annotations.OrderCorrectionType
+ * @see OrderCorrectionType
  *
  */
 @Target({METHOD, FIELD})

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -62,7 +62,7 @@ public class ClientServerSequenceDeadlockTest2 extends ClientServerSequenceDeadl
             boolean createEmployeesFirst = (i % 2) == 0;
             fifoArray[i] = new FIFO(numObjects);
             fifoInArray[i] = new FIFO(numObjects);
-            getClients().addElement(new EmployeeSeqDeadlockClient2(this.server, getSession(), "Client " + i, numObjects, createEmployeesFirst, fifoArray[i], fifoInArray[i]));
+            getClients().add(new EmployeeSeqDeadlockClient2(this.server, getSession(), "Client " + i, numObjects, createEmployeesFirst, fifoArray[i], fifoInArray[i]));
             clientStateArray[i] = THREAD_UNDEFINED;
             clientLastActionTimeArray[i] = 0;
             firstHalfDone[i] = false;
@@ -77,7 +77,7 @@ public class ClientServerSequenceDeadlockTest2 extends ClientServerSequenceDeadl
     @Override
     public void test() {
         for (int i = 0; i < NUM_CLIENTS; i++) {
-            EmployeeSeqDeadlockClient client = (EmployeeSeqDeadlockClient)clients.elementAt(i);
+            EmployeeSeqDeadlockClient client = (EmployeeSeqDeadlockClient)clients.get(i);
             client.start();
             clientStateArray[i] = THREAD_RUNNING;
         }
@@ -86,7 +86,7 @@ public class ClientServerSequenceDeadlockTest2 extends ClientServerSequenceDeadl
             for (int i = 0; i < NUM_CLIENTS; i++) {
                 if (clientStateArray[i] == THREAD_RUNNING) {
                     if ((NUM_CLIENTS - doneClients) == 1) {
-                        ((EmployeeClient)getClients().elementAt(i)).pleaseStop();
+                        ((EmployeeClient)getClients().get(i)).pleaseStop();
                     }
                     long currentTime = System.currentTimeMillis();
                     if (!fifoArray[i].isEmpty()) {
@@ -118,7 +118,7 @@ public class ClientServerSequenceDeadlockTest2 extends ClientServerSequenceDeadl
                             clientStateArray[i] = THREAD_LOCKED;
                             deadlock = true;
                             doneClients++;
-                            ((Thread)getClients().elementAt(i)).stop();
+                            ((Thread)getClients().get(i)).stop();
                             //                        System.out.println("Client# = " + i + " DEADLOCK");
                         }
                     }

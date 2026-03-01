@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,8 +15,6 @@
 //     Juan Pablo Gardella = 2.7.4 - Fix for the bug #543063
 package org.eclipse.persistence.internal.oxm.record;
 
-import javax.xml.validation.Schema;
-
 import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.Unmarshaller;
 import org.xml.sax.Attributes;
@@ -29,6 +27,8 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXNotRecognizedException;
 import org.xml.sax.SAXNotSupportedException;
 import org.xml.sax.ext.LexicalHandler;
+
+import javax.xml.validation.Schema;
 
 /**
  * A common super class for all non SAX based XMLReaders.

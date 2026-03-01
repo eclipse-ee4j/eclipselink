@@ -1,0 +1,6 @@
+For EclipseLink DBWS documentation,including JAX-WS and JAX-RS, see
+http://www.eclipse.org/eclipselink/dbws.php
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Release_1.1[Category: Release 1.1] Category:_DBWS[Category:
+DBWS]

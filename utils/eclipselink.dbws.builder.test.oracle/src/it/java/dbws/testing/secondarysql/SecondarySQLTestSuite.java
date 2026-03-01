@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,7 +28,6 @@ import java.io.StringReader;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
-import java.util.Iterator;
 
 import javax.wsdl.WSDLException;
 
@@ -55,17 +54,18 @@ import dbws.testing.DBWSTestSuite;
 public class SecondarySQLTestSuite extends DBWSTestSuite {
 
     static final String CREATE_SECONDARY_TABLE =
-        "CREATE TABLE DBWS_SECONDARY (" +
-            "\nEMPNO NUMERIC(4)," +
-            "\nENAME VARCHAR(10)," +
-            "\nJOB VARCHAR(9)," +
-            "\nMGR NUMERIC(4)," +
-            "\nHIREDATE DATE," +
-            "\nSAL DECIMAL(7,2)," +
-            "\nCOMM DECIMAL(7,2)," +
-            "\nDEPTNO NUMERIC(2)," +
-            "\nPRIMARY KEY (EMPNO)" +
-        "\n)";
+            """
+                    CREATE TABLE DBWS_SECONDARY (
+                    EMPNO NUMERIC(4),
+                    ENAME VARCHAR(10),
+                    JOB VARCHAR(9),
+                    MGR NUMERIC(4),
+                    HIREDATE DATE,
+                    SAL DECIMAL(7,2),
+                    COMM DECIMAL(7,2),
+                    DEPTNO NUMERIC(2),
+                    PRIMARY KEY (EMPNO)
+                    )""";
     static final String[] POPULATE_SECONDARY_TABLE = new String[] {
         "INSERT INTO DBWS_SECONDARY VALUES (7369,'SMITH','CLERK',7902,TO_DATE('1980-12-17 00:00:00','YYYY-MM-DD HH24:MI:SS'),800.88,NULL,20)",
         "INSERT INTO DBWS_SECONDARY VALUES (7499,'ALLEN','SALESMAN',7698,TO_DATE('1981-2-20 00:00:00','YYYY-MM-DD HH24:MI:SS'),1600,300,30)",
@@ -138,8 +138,8 @@ public class SecondarySQLTestSuite extends DBWSTestSuite {
             runDdl(conn, CREATE_GET_SECONDARY_BY_NAME_PROC, ddlDebug);
             try {
                 Statement stmt = conn.createStatement();
-                for (int i = 0; i < POPULATE_SECONDARY_TABLE.length; i++) {
-                    stmt.addBatch(POPULATE_SECONDARY_TABLE[i]);
+                for (String s : POPULATE_SECONDARY_TABLE) {
+                    stmt.addBatch(s);
                 }
                 stmt.executeBatch();
             }
@@ -282,8 +282,8 @@ public class SecondarySQLTestSuite extends DBWSTestSuite {
          Element ec = doc.createElement("collection");
          doc.appendChild(ec);
          XRDynamicEntity_CollectionWrapper xrDynEntityCol = (XRDynamicEntity_CollectionWrapper) result;
-         for (Iterator xrIt = xrDynEntityCol.iterator(); xrIt.hasNext(); ) {
-             marshaller.marshal(xrIt.next(), ec);
+         for (Object o : xrDynEntityCol) {
+             marshaller.marshal(o, ec);
          }
          Document controlDoc = xmlParser.parse(new StringReader(ALL_RESPONSE_MSG));
          assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
@@ -505,8 +505,8 @@ public class SecondarySQLTestSuite extends DBWSTestSuite {
          Element ec = doc.createElement("collection");
          doc.appendChild(ec);
          XRDynamicEntity_CollectionWrapper xrDynEntityCol = (XRDynamicEntity_CollectionWrapper) result;
-         for (Iterator xrIt = xrDynEntityCol.iterator(); xrIt.hasNext(); ) {
-             marshaller.marshal(xrIt.next(), ec);
+         for (Object o : xrDynEntityCol) {
+             marshaller.marshal(o, ec);
          }
          Document controlDoc = xmlParser.parse(new StringReader(GETBYNAME_RESPONSE_MSG));
          assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));

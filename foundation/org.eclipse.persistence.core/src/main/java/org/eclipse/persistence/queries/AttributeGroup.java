@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,16 +16,16 @@
 //       - 397772: JPA 2.1 Entity Graph Support
 package org.eclipse.persistence.queries;
 
+import org.eclipse.persistence.core.queries.CoreAttributeGroup;
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.internal.queries.AttributeItem;
+import org.eclipse.persistence.sessions.CopyGroup;
+
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.Map;
-
-import org.eclipse.persistence.core.queries.CoreAttributeGroup;
-import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.internal.queries.AttributeItem;
-import org.eclipse.persistence.sessions.CopyGroup;
 
 /**
  * <b>Purpose</b>: An AttributeGroup represents a set of mappings and nested
@@ -91,7 +91,7 @@ public class AttributeGroup extends CoreAttributeGroup<AttributeItem, ClassDescr
      *    group.addAttribute("firstName", group1);<br>
      *    group.addAttribute("manager.address", group2);
      * </code>
-     *
+     * <p>
      * Note that existing group corresponding to attributeNameOrPath
      * will be overridden with the passed group.
      *
@@ -101,6 +101,14 @@ public class AttributeGroup extends CoreAttributeGroup<AttributeItem, ClassDescr
      */
     public void addAttribute(String attributeNameOrPath, AttributeGroup group) {
         super.addAttribute(attributeNameOrPath, group);
+    }
+
+    /**
+     * Remove an attribute from the group.
+     * @param attributeNameOrPath a simple attribute, array or attributes forming a path
+     */
+    public void removeAttribute(String attributeNameOrPath) {
+        super.removeAttribute(attributeNameOrPath);
     }
 
     /**

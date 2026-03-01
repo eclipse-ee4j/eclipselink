@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2022 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -54,6 +54,7 @@ import org.eclipse.persistence.testing.models.jpa.advanced.Department;
 import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.advanced.Employee.Gender;
 import org.eclipse.persistence.testing.models.jpa.advanced.EmployeePopulator;
+import org.eclipse.persistence.testing.models.jpa.advanced.entities.EntityFloat;
 import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitDomainObjectComparer;
 import org.junit.Assert;
 
@@ -162,6 +163,9 @@ public class AdvancedQueryTest extends JUnitTestCase {
         suite.addTest(new AdvancedQueryTest("testVersionChangeWithReadLock"));
         suite.addTest(new AdvancedQueryTest("testVersionChangeWithWriteLock"));
         suite.addTest(new AdvancedQueryTest("testNamedQueryAnnotationOverwritePersistenceXML"));
+        suite.addTest(new AdvancedQueryTest("testFloatSortWithPessimisticLock"));
+        suite.addTest(new AdvancedQueryTest("testFloatQualifiedIdProjectionWithPessimisticLock"));
+        suite.addTest(new AdvancedQueryTest("testFloatSimpleIdProjectionWithPessimisticLock"));
         suite.addTest(new AdvancedQueryTest("testTearDown"));
         return suite;
     }
@@ -184,6 +188,8 @@ public class AdvancedQueryTest extends JUnitTestCase {
         employeePopulator.buildExamples();
         //Persist the examples in the database
         employeePopulator.persistExample(session);
+        // EntityFloat instances to test issue #2301
+        EntityFloatPopulator.populate(session);
     }
 
     public void testTearDown() {
@@ -214,7 +220,7 @@ public class AdvancedQueryTest extends JUnitTestCase {
             if (queryResult != employee) {
                 fail("Employees are not equal: " + employee + ", " + queryResult);
             }
-            if (counter.getSqlStatements().size() > 0) {
+            if (!counter.getSqlStatements().isEmpty()) {
                 fail("Cache hit do not occur: " + counter.getSqlStatements());
             }
         } finally {
@@ -278,7 +284,7 @@ public class AdvancedQueryTest extends JUnitTestCase {
             if (queryResult != employee) {
                 fail("Employees are not equal: " + employee + ", " + queryResult);
             }
-            if (counter.getSqlStatements().size() > 0) {
+            if (!counter.getSqlStatements().isEmpty()) {
                 fail("Cache hit do not occur: " + counter.getSqlStatements());
             }
         } finally {
@@ -654,7 +660,7 @@ public class AdvancedQueryTest extends JUnitTestCase {
             if (queryResult != employee) {
                 fail("Employees are not equal: " + employee + ", " + queryResult);
             }
-            if (counter.getSqlStatements().size() > 0) {
+            if (!counter.getSqlStatements().isEmpty()) {
                 fail("Cache hit do not occur: " + counter.getSqlStatements());
             }
         } finally {
@@ -684,7 +690,7 @@ public class AdvancedQueryTest extends JUnitTestCase {
             em = createEntityManager();
             beginTransaction(em);
             query = em.createNativeQuery("Select * from CMP3_EMPLOYEE where F_NAME = 'Bobo' AND EMP_ID = " + emp.getId());
-            if (query.getResultList().size() == 0) {
+            if (query.getResultList().isEmpty()) {
                 fail("Native query did not commit transaction.");
             } else {
                 // clean up - bring back the original name
@@ -724,7 +730,7 @@ public class AdvancedQueryTest extends JUnitTestCase {
             if (!queryResult.getFirstName().equals(employee.getFirstName())) {
                 fail("Employees are not equal: " + employee + ", " + queryResult);
             }
-            if (counter.getSqlStatements().size() > 0) {
+            if (!counter.getSqlStatements().isEmpty()) {
                 fail("Cache hit do not occur: " + counter.getSqlStatements());
             }
         } finally {
@@ -756,7 +762,7 @@ public class AdvancedQueryTest extends JUnitTestCase {
             query.setParameter("firstName", employee.getFirstName());
             // Test that list works as well.
             query.getResultList();
-            if (counter.getSqlStatements().size() > 0) {
+            if (!counter.getSqlStatements().isEmpty()) {
                 fail("Cache hit do not occur: " + counter.getSqlStatements());
             }
         } finally {
@@ -794,7 +800,7 @@ public class AdvancedQueryTest extends JUnitTestCase {
             if (query.getSingleResult() == null) {
                 fail("Query did not check session cache.");
             }
-            if (counter.getSqlStatements().size() > 0) {
+            if (!counter.getSqlStatements().isEmpty()) {
                 fail("Cache hit do not occur: " + counter.getSqlStatements());
             }
             rollbackTransaction(em);
@@ -807,7 +813,7 @@ public class AdvancedQueryTest extends JUnitTestCase {
             if (query.getResultList().size() != 1) {
                 fail("Query did not check session cache.");
             }
-            if (counter.getSqlStatements().size() > 0) {
+            if (!counter.getSqlStatements().isEmpty()) {
                 fail("Cache hit do not occur: " + counter.getSqlStatements());
             }
         } finally {
@@ -869,7 +875,7 @@ public class AdvancedQueryTest extends JUnitTestCase {
             if (result.size() != query.getResultList().size()) {
                 fail("List result size is not correct on 2nd cached query.");
             }
-            if (counter.getSqlStatements().size() > 0) {
+            if (!counter.getSqlStatements().isEmpty()) {
                 fail("Query cache was not used: " + counter.getSqlStatements());
             }
             clearCache();
@@ -898,7 +904,7 @@ public class AdvancedQueryTest extends JUnitTestCase {
             if (!query.getResultList().isEmpty()) {
                 fail("List result size is not correct.");
             }
-            if (counter.getSqlStatements().size() > 0) {
+            if (!counter.getSqlStatements().isEmpty()) {
                 fail("Query cache was not used: " + counter.getSqlStatements());
             }
             rollbackTransaction(em);
@@ -2151,8 +2157,8 @@ public class AdvancedQueryTest extends JUnitTestCase {
             }
             boolean found = false;
             for (Buyer buyer : results) {
-                found = found || buyer.getCreditCards().size() > 0;
-                found = found || buyer.getCreditLines().size() > 0;
+                found = found || !buyer.getCreditCards().isEmpty();
+                found = found || !buyer.getCreditLines().isEmpty();
             }
             assertTrue("No data to join.", found);
             int queries = 2;
@@ -2543,7 +2549,7 @@ public class AdvancedQueryTest extends JUnitTestCase {
             if (!queryResult.getId().equals(employee.getId())) {
                 fail("Employees are not equal: " + employee + ", " + queryResult);
             }
-            if (counter.getSqlStatements().size() > 0) {
+            if (!counter.getSqlStatements().isEmpty()) {
                 fail("Cache hit did not occur: " + counter.getSqlStatements());
             }
         } finally {
@@ -2582,7 +2588,7 @@ public class AdvancedQueryTest extends JUnitTestCase {
             if (queryResult != employee) {
                 fail("Employees are not equal: " + employee + ", " + queryResult);
             }
-            if (counter.getSqlStatements().size() > 0) {
+            if (!counter.getSqlStatements().isEmpty()) {
                 fail("Cache hit do not occur: " + counter.getSqlStatements());
             }
             employee.setLastName("fail");
@@ -2598,7 +2604,7 @@ public class AdvancedQueryTest extends JUnitTestCase {
             if (queryResult != null) {
                 fail("Employees should not be found, " + queryResult);
             }
-            if (counter.getSqlStatements().size() == 0) {
+            if (counter.getSqlStatements().isEmpty()) {
                 fail("Cache hit should not occur: " + counter.getSqlStatements());
             }
             closeEntityManager(em);
@@ -2616,7 +2622,7 @@ public class AdvancedQueryTest extends JUnitTestCase {
             if (!queryResult2.getName().equals(buyer.getName())) {
                 fail("Buyers are not equal: " + buyer + ", " + queryResult2);
             }
-            if (counter.getSqlStatements().size() > 0) {
+            if (!counter.getSqlStatements().isEmpty()) {
                 fail("Cache hit do not occur: " + counter.getSqlStatements());
             }
         } finally {
@@ -2707,4 +2713,65 @@ public class AdvancedQueryTest extends JUnitTestCase {
             closeEntityManager(em);
         }
     }
+
+    // Based on reproduction scenario from issue #2301 (https://github.com/eclipse-ee4j/eclipselink/issues/2301)
+    public void testFloatSortWithPessimisticLock() {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        List<EntityFloat> entities;
+        try {
+            entities = em.createQuery("SELECT f FROM EntityFloat f WHERE (f.height < ?1) ORDER BY f.height DESC, f.length",
+                           EntityFloat.class)
+                    .setParameter(1, 8.0)
+                    .setLockMode(LockModeType.PESSIMISTIC_WRITE) // Cause of issue
+                    .setMaxResults(2)
+                    .getResultList();
+            commitTransaction(em);
+        } catch (PersistenceException ex) {
+            rollbackTransaction(em);
+            throw ex;
+        }
+        assertEquals(2, entities.size());
+        assertEquals(70071, entities.get(0).getId());
+        assertEquals(70077, entities.get(1).getId());
+    }
+
+    // Based on reproduction scenario from issue #2339
+    public void testFloatQualifiedIdProjectionWithPessimisticLock() {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        List<Integer> results;
+        try {
+            results = em.createQuery("SELECT f.id FROM EntityFloat f ORDER BY f.width DESC", Integer.class)
+                    .setLockMode(LockModeType.PESSIMISTIC_WRITE)
+                    .setMaxResults(1)
+                    .getResultList();
+            commitTransaction(em);
+        } catch (PersistenceException ex) {
+            rollbackTransaction(em);
+            throw ex;
+        }
+        assertEquals(1, results.size());
+        assertEquals(70077, results.get(0).intValue());
+    }
+
+    // Based on reproduction scenario from issue #2339
+    public void testFloatSimpleIdProjectionWithPessimisticLock() {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        List<Integer> results;
+        try {
+            results = em.createQuery("SELECT id FROM EntityFloat ORDER BY width DESC", Integer.class)
+                    .setLockMode(LockModeType.PESSIMISTIC_WRITE)
+                    .setMaxResults(1)
+                    .getResultList();
+            commitTransaction(em);
+        } catch (PersistenceException ex) {
+            rollbackTransaction(em);
+            throw ex;
+        }
+        assertEquals(1, results.size());
+        assertEquals(70077, results.get(0).intValue());
+    }
+
 }

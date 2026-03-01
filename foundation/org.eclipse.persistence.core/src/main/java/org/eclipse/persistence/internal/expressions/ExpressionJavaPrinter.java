@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,11 +14,13 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.expressions;
 
-import java.io.*;
-import java.util.Calendar;
-import org.eclipse.persistence.internal.databaseaccess.*;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
+import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.ConversionManager;
+
+import java.io.StringWriter;
+import java.util.Calendar;
 
 /**
  * <p><b>Purpose</b>: Expression Java printer.
@@ -65,7 +67,7 @@ public class ExpressionJavaPrinter {
     public void printJava(Object object) {
         if (object == null) {
             printString("null");
-        } else if (object.getClass() == ClassConstants.STRING) {
+        } else if (object.getClass() == CoreClassConstants.STRING) {
             printString("\"");
             printString((String)object);
             printString("\"");
@@ -85,13 +87,13 @@ public class ExpressionJavaPrinter {
             printString("new java.sql.Time(");
             printString(String.valueOf(((java.sql.Time)object).getTime()));
             printString("L)");
-        } else if (object.getClass() == ClassConstants.UTILDATE) {
+        } else if (object.getClass() == CoreClassConstants.UTILDATE) {
             printString("new java.util.Date(");
             printString(String.valueOf(((java.util.Date)object).getTime()));
             printString("L)");
-        } else if (object.getClass() == ClassConstants.BYTE) {
+        } else if (object.getClass() == CoreClassConstants.BYTE) {
             printByte((Byte)object);
-        } else if (object.getClass() == ClassConstants.APBYTE) {
+        } else if (object.getClass() == CoreClassConstants.APBYTE) {
             printString("new byte[] {");
             byte[] bytes = (byte[])object;
             if (bytes.length > 0) {
@@ -102,7 +104,7 @@ public class ExpressionJavaPrinter {
                 }
             }
             printString("}");
-        } else if (object.getClass() == ClassConstants.ABYTE) {
+        } else if (object.getClass() == CoreClassConstants.ABYTE) {
             printString("new Byte[] {");
             Byte[] bytes = (Byte[])object;
             if (bytes.length > 0) {
@@ -113,9 +115,9 @@ public class ExpressionJavaPrinter {
                 }
             }
             printString("}");
-        } else if (object.getClass() == ClassConstants.CHAR) {
+        } else if (object.getClass() == CoreClassConstants.CHAR) {
             printCharacter((Character)object);
-        } else if (object.getClass() == ClassConstants.APCHAR) {
+        } else if (object.getClass() == CoreClassConstants.APCHAR) {
             printString("new char[] {");
             char[] chars = (char[])object;
             if (chars.length > 0) {
@@ -141,11 +143,11 @@ public class ExpressionJavaPrinter {
                 }
             }
             printString("}");
-        } else if (object.getClass() == ClassConstants.BIGDECIMAL) {
+        } else if (object.getClass() == CoreClassConstants.BIGDECIMAL) {
             printString("new java.math.BigDecimal(\"");
             printString(object.toString());
             printString("\")");
-        } else if (object.getClass() == ClassConstants.BIGINTEGER) {
+        } else if (object.getClass() == CoreClassConstants.BIGINTEGER) {
             printString("new java.math.BigInteger(\"");
             printString(object.toString());
             printString("\")");

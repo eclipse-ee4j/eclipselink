@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,91 +14,51 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.tools.schemaframework;
 
-import java.io.*;
-import java.util.*;
-import org.eclipse.persistence.exceptions.*;
+import java.io.IOException;
+import java.io.Writer;
+import java.util.Arrays;
+
+import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 /**
  * <p>
  * <b>Purpose</b>: Define a unique key constraint for a table.
  */
-public class UniqueKeyConstraint implements Serializable {
-    protected String name;
-    protected Vector<String> sourceFields; // field names
+public class UniqueKeyConstraint extends KeyConstraintObjectDefinition {
 
     public UniqueKeyConstraint() {
-        this.name = "";
-        this.sourceFields = new Vector<>();
+        super("");
     }
 
     public UniqueKeyConstraint(String name, String sourceField) {
-        this();
-        this.name = name;
-        sourceFields.addElement(sourceField);
+        super(name, sourceField);
     }
 
     public UniqueKeyConstraint(String name, String[] sourceFields) {
-        this();
-        this.name = name;
-        for(String sourceField : sourceFields) {
-            this.sourceFields.addElement(sourceField);
-        }
-    }
-
-    /**
-     * PUBLIC:
-     */
-    public void addSourceField(String sourceField) {
-        getSourceFields().addElement(sourceField);
+        super(name);
+        getSourceFields().addAll(Arrays.asList(sourceFields));
     }
 
     /**
      * INTERNAL:
      * Append the database field definition string to the table creation statement.
      */
+    @Override
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public void appendDBString(Writer writer, AbstractSession session) {
         try {
-            writer.write("UNIQUE (");
-            for (Enumeration<String> sourceEnum = getSourceFields().elements();
-                 sourceEnum.hasMoreElements();) {
-                writer.write(sourceEnum.nextElement());
-                if (sourceEnum.hasMoreElements()) {
-                    writer.write(", ");
-                }
+            writer.write("UNIQUE ");
+            appendKeys(writer, getSourceFields());
+            super.appendDBString(writer, session);
+        } catch (RuntimeException ex) {
+            if (ex.getCause() instanceof IOException) {
+                throw ValidationException.fileError((IOException) ex.getCause());
             }
-            writer.write(")");
+            throw ValidationException.fileError((new IOException(ex.getCause())));
         } catch (IOException ioException) {
             throw ValidationException.fileError(ioException);
         }
-    }
-
-    /**
-     * PUBLIC:
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * PUBLIC:
-     */
-    public Vector<String> getSourceFields() {
-        return sourceFields;
-    }
-
-    /**
-     * PUBLIC:
-     */
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    /**
-     * PUBLIC:
-     */
-    public void setSourceFields(Vector<String> sourceFields) {
-        this.sourceFields = sourceFields;
     }
 }
 

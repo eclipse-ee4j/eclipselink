@@ -1,0 +1,14 @@
+*image:Elug_draft_icon.png[Warning,title="Warning"] This page is
+obsolete. Please see the
+_http://www.eclipse.org/eclipselink/documentation/[EclipseLink
+Documentation Center]_ for current information.*
+
+This page lists all sections in the
+_link:EclipseLink_UserGuide[EclipseLink User’s Guide 1.x]_, organized by
+architecture.
+
+See
+link:Introduction_to_EclipseLink_Application_Development_%28ELUG%29#Selecting_an_Architecture_with_EclipseLink[Selecting
+an Architecture with EclipseLink] for more information.
+
+Category:EclipseLink_User's_Guide[Category:EclipseLink User’s Guide]

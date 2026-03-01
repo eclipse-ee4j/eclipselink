@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2021 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,20 +18,6 @@
 //     09/03/2015 - Will Dazey
 //       - 456067 : Added support for defining query timeout units
 package org.eclipse.persistence.sessions.factories;
-
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
 
 import org.eclipse.persistence.descriptors.CMPPolicy;
 import org.eclipse.persistence.descriptors.CachePolicy;
@@ -75,6 +61,8 @@ import org.eclipse.persistence.internal.indirection.IndirectionPolicy;
 import org.eclipse.persistence.internal.indirection.NoIndirectionPolicy;
 import org.eclipse.persistence.internal.indirection.ProxyIndirectionPolicy;
 import org.eclipse.persistence.internal.indirection.TransparentIndirectionPolicy;
+import org.eclipse.persistence.internal.queries.ContainerPolicy;
+import org.eclipse.persistence.internal.queries.MappedKeyMapContainerPolicy;
 import org.eclipse.persistence.internal.queries.ReportItem;
 import org.eclipse.persistence.internal.sessions.factories.DirectToXMLTypeMappingHelper;
 import org.eclipse.persistence.mappings.AggregateCollectionMapping;
@@ -88,6 +76,7 @@ import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.mappings.ManyToManyMapping;
 import org.eclipse.persistence.mappings.OneToManyMapping;
 import org.eclipse.persistence.mappings.OneToOneMapping;
+import org.eclipse.persistence.mappings.RelationTableMechanism;
 import org.eclipse.persistence.mappings.TransformationMapping;
 import org.eclipse.persistence.mappings.VariableOneToOneMapping;
 import org.eclipse.persistence.mappings.converters.Converter;
@@ -95,12 +84,14 @@ import org.eclipse.persistence.mappings.converters.ObjectTypeConverter;
 import org.eclipse.persistence.mappings.converters.SerializedObjectConverter;
 import org.eclipse.persistence.mappings.converters.TypeConversionConverter;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
+import org.eclipse.persistence.mappings.foundation.MapKeyMapping;
 import org.eclipse.persistence.mappings.querykeys.DirectQueryKey;
 import org.eclipse.persistence.mappings.querykeys.QueryKey;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.FetchGroup;
 import org.eclipse.persistence.queries.InMemoryQueryIndirectionPolicy;
 import org.eclipse.persistence.queries.MethodBaseQueryRedirector;
+import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReadQuery;
@@ -112,6 +103,19 @@ import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.DatasourceLogin;
 import org.eclipse.persistence.sessions.Login;
 import org.eclipse.persistence.sessions.Project;
+
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 
 /**
  * <p><b>Purpose</b>: Allow for a class storing a TopLink project's descriptors (meta-data) to be generated.
@@ -127,7 +131,7 @@ public class ProjectClassGenerator {
     protected String outputFileName;
     protected Writer outputWriter;
     protected Project project;
-    protected Hashtable<ClassDescriptor, String> descriptorMethodNames;
+    protected Map<ClassDescriptor, String> descriptorMethodNames;
 
     /**
      * PUBLIC:
@@ -138,7 +142,7 @@ public class ProjectClassGenerator {
         this.outputFileName = "TopLinkProject.java";
         this.className = "TopLinkProject";
         this.packageName = "";
-        this.descriptorMethodNames = new Hashtable<>();
+        this.descriptorMethodNames = new HashMap<>();
     }
 
     /**
@@ -171,11 +175,11 @@ public class ProjectClassGenerator {
     }
 
     protected void addAggregateCollectionMappingLines(NonreflectiveMethodDefinition method, String mappingName, AggregateCollectionMapping mapping) {
-        Enumeration<DatabaseField> targetKeysEnum = mapping.getTargetForeignKeyFields().elements();
-        Enumeration<DatabaseField> sourceKeysEnum = mapping.getSourceKeyFields().elements();
-        while (sourceKeysEnum.hasMoreElements()) {
-            DatabaseField sourceField = sourceKeysEnum.nextElement();
-            DatabaseField targetField = targetKeysEnum.nextElement();
+        Iterator<DatabaseField> iterator1 = mapping.getTargetForeignKeyFields().iterator();
+        Iterator<DatabaseField> iterator = mapping.getSourceKeyFields().iterator();
+        while (iterator.hasNext()) {
+            DatabaseField sourceField = iterator.next();
+            DatabaseField targetField = iterator1.next();
             method.addLine(mappingName + ".addTargetForeignKeyFieldName(\"" + targetField.getQualifiedName() + "\", \"" + sourceField.getQualifiedName() + "\");");
         }
     }
@@ -186,12 +190,13 @@ public class ProjectClassGenerator {
         }
         method.addLine(mappingName + ".setIsNullAllowed(" + mapping.isNullAllowed() + ");");
 
-        for (Iterator<String> fieldTranslationEnum = mapping.getAggregateToSourceFields().keySet().iterator();
-                 fieldTranslationEnum.hasNext();) {
-            String aggregateFieldName = fieldTranslationEnum.next();
+        for (String aggregateFieldName : mapping.getAggregateToSourceFields().keySet()) {
             DatabaseField sourceField = mapping.getAggregateToSourceFields().get(aggregateFieldName);
             //may need to account for delimiting on the sourceField in the future
             method.addLine(mappingName + ".addFieldNameTranslation(\"" + sourceField.getQualifiedName() + "\", \"" + aggregateFieldName + "\");");
+        }
+        for (String attribute: mapping.getMapsIdMappingAttributes()) {
+            method.addLine(mappingName + ".addMapsIdMappingAttribute(\"" + attribute + "\");");
         }
     }
 
@@ -240,7 +245,7 @@ public class ProjectClassGenerator {
             method.addLine("// Pessimistic Locking Policy");
             method.addLine("cmpPolicy.setPessimisticLockingPolicy(new PessimisticLockingPolicy());");
 
-            if (ObjectLevelReadQuery.LOCK == sourceCMPPolicy.getPessimisticLockingPolicy().getLockingMode()) {
+            if (ObjectBuildingQuery.LOCK == sourceCMPPolicy.getPessimisticLockingPolicy().getLockingMode()) {
                 method.addLine("cmpPolicy.getPessimisticLockingPolicy().setLockingMode(ObjectLevelReadQuery.LOCK);");
             } else {
                 method.addLine("cmpPolicy.getPessimisticLockingPolicy().setLockingMode(ObjectLevelReadQuery.LOCK_NOWAIT);");
@@ -319,7 +324,7 @@ public class ProjectClassGenerator {
 
         // Isolated Session support
         if (descriptor.getCachePolicy().isIsolated()) {
-            method.addLine("descriptor.setIsIsolated(true);");
+            method.addLine("descriptor.setCacheIsolation(CacheIsolationType.ISOLATED);");
         }
 
         // Refreshing
@@ -350,17 +355,7 @@ public class ProjectClassGenerator {
         }
 
         // Instantiation
-        if (!descriptor.getInstantiationPolicy().isUsingDefaultConstructor()) {
-            if (descriptor.getInstantiationPolicy().getFactoryClassName() != null) {
-                if (descriptor.getInstantiationPolicy().getFactoryMethodName() != null) {
-                    method.addLine("descriptor.useFactoryInstantiationPolicy(" + descriptor.getInstantiationPolicy().getFactoryClassName() + ".class, \"" + descriptor.getInstantiationPolicy().getMethodName() + "\", \"" + descriptor.getInstantiationPolicy().getFactoryMethodName() + "\");");
-                } else {
-                    method.addLine("descriptor.useFactoryInstantiationPolicy(" + descriptor.getInstantiationPolicy().getFactoryClassName() + ".class, \"" + descriptor.getInstantiationPolicy().getMethodName() + "\");");
-                }
-            } else {
-                method.addLine("descriptor.useMethodInstantiationPolicy(\"" + descriptor.getInstantiationPolicy().getMethodName() + "\");");
-            }
-        }
+        addInstantiationPolicyLines(method, descriptor);
 
         // Amendment
         if (descriptor.getAmendmentClassName() != null) {
@@ -395,12 +390,27 @@ public class ProjectClassGenerator {
         }
 
         method.addLine(mappingName + ".setDirectFieldName(\"" + mapping.getDirectFieldName() + "\");");
+        if (mapping.getDirectField().getTypeName() != null) {
+            method.addLine(mappingName + ".setDirectFieldClassification(" + mapping.getDirectField().getTypeName() + ".class);");
+        } else if (mapping.getDirectField().getType() != null) {
+            method.addLine(mappingName + ".setDirectFieldClassification(" + mapping.getDirectField().getType().getName() + ".class);");
+        }
 
-        Enumeration<DatabaseField> sourceKeysEnum = mapping.getSourceKeyFields().elements();
-        Enumeration<DatabaseField> referenceKeysEnum = mapping.getReferenceKeyFields().elements();
-        while (referenceKeysEnum.hasMoreElements()) {
-            DatabaseField sourceField = sourceKeysEnum.nextElement();
-            DatabaseField referenceField = referenceKeysEnum.nextElement();
+        if (mapping.getAttributeClassificationName() != null) {
+            method.addLine(mappingName + ".setAttributeClassification(" + mapping.getAttributeClassificationName() + ".class);");
+        } else if (mapping.getAttributeClassification() != null) {
+            method.addLine(mappingName + ".setAttributeClassification(" + mapping.getAttributeClassification().getName() + ".class);");
+        } else if (mapping.getDirectField().getTypeName() != null) {
+            method.addLine(mappingName + ".setAttributeClassification(" + mapping.getDirectField().getTypeName() + ".class);");
+        } else if (mapping.getDirectField().getType() != null) {
+            method.addLine(mappingName + ".setAttributeClassification(" + mapping.getDirectField().getType().getName() + ".class);");
+        }
+
+        Iterator<DatabaseField> iterator1 = mapping.getSourceKeyFields().iterator();
+        Iterator<DatabaseField> iterator = mapping.getReferenceKeyFields().iterator();
+        while (iterator.hasNext()) {
+            DatabaseField sourceField = iterator1.next();
+            DatabaseField referenceField = iterator.next();
             method.addLine(mappingName + ".addReferenceKeyFieldName(\"" + referenceField.getQualifiedName() + "\", \"" + sourceField.getQualifiedName() + "\");");
         }
 
@@ -414,9 +424,16 @@ public class ProjectClassGenerator {
     }
 
     protected void addDirectMapMappingLines(NonreflectiveMethodDefinition method, String mappingName, DirectMapMapping mapping) {
-        DatabaseField  directKeyField = mapping.getDirectKeyField();
+        DatabaseField directKeyField = mapping.getDirectKeyField();
         if(directKeyField != null) {
             method.addLine(mappingName + ".setDirectKeyFieldName(\"" + directKeyField.getQualifiedName() + "\");");
+        }
+
+        ContainerPolicy containerPolicy = mapping.getContainerPolicy();
+        if (containerPolicy.isMappedKeyMapPolicy()) {
+            method.addLine("");
+            addMappedKeyMapContainerPolicyLines(method, mappingName, (MappedKeyMapContainerPolicy) containerPolicy);
+            method.addLine("");
         }
 
         Converter converter = mapping.getKeyConverter();
@@ -424,6 +441,42 @@ public class ProjectClassGenerator {
             addConverterLines(method, mappingName + "KeyConverter", converter);
             method.addLine(mappingName + ".setKeyConverter(" + mappingName + "KeyConverter" + ");");
         }
+    }
+
+    protected void addMappedKeyMapContainerPolicyLines(NonreflectiveMethodDefinition method, String mappingName, MappedKeyMapContainerPolicy policy) {
+        MapKeyMapping keyMapping = policy.getKeyMapping();
+        String keyMappingName = mappingName + "KeyMapping";
+        String keyMappingClassName = keyMapping.getClass().getName();
+        String keyMappingPackageName = keyMappingClassName.substring(0, keyMappingClassName.lastIndexOf('.'));
+        if (keyMappingPackageName.equals("org.eclipse.persistence.mappings")) {
+            keyMappingClassName = keyMapping.getClass().getSimpleName();
+        }
+        method.addLine(keyMappingClassName + " " + keyMappingName + " = new " + keyMappingClassName + "();");
+
+        DatabaseMapping dm = (DatabaseMapping) keyMapping;
+        if (dm.isReadOnly()) {
+            method.addLine(keyMappingName + ".readOnly();");
+        }
+        if (dm.isOneToOneMapping()) {
+            addOneToOneMappingLines(method, keyMappingName, (OneToOneMapping) dm);
+        } else if (dm.isAggregateObjectMapping()) {
+            addAggregateObjectMappingLines(method, keyMappingName, (AggregateObjectMapping) dm);
+        } else if (dm.isDirectToFieldMapping()) {
+            if (dm.getDescriptor() != null && dm.getDescriptor().isAggregateDescriptor()) {
+                method.addLine(keyMappingName + ".setFieldName(\"" + dm.getField().getName() + "\");");
+            } else {
+                method.addLine(keyMappingName + ".setFieldName(\"" + dm.getField().getQualifiedName() + "\");");
+            }
+        }
+
+        method.addLine(keyMappingName + ".setDescriptor(descriptor);");
+
+        method.addLine("");
+        String policyName = mappingName + "ContainerPolicy";
+        method.addLine("MappedKeyMapContainerPolicy " + policyName + " = new MappedKeyMapContainerPolicy(" + policy.getContainerClassName() + ".class);");
+        method.addLine(policyName + ".setKeyMapping(" + keyMappingName + ");");
+        method.addLine(policyName + ".setValueMapping((MapComponentMapping) " + mappingName + ");");
+        method.addLine(mappingName + ".setContainerPolicy(" + policyName + ");");
     }
 
     protected void addFetchGroupManagerLine(NonreflectiveMethodDefinition method, ClassDescriptor descriptor) {
@@ -445,9 +498,7 @@ public class ProjectClassGenerator {
         if (namedFetchGroups.isEmpty()) {
             return;
         }
-        for (Iterator<FetchGroup> namedFetchGroupIter = namedFetchGroups.values().iterator();
-             namedFetchGroupIter.hasNext();) {
-            FetchGroup namedFetchGroup = namedFetchGroupIter.next();
+        for (FetchGroup namedFetchGroup : namedFetchGroups.values()) {
             String fetchGroupIdentifier = namedFetchGroup.getName() + "FetchGroup";
             method.addLine("");
             method.addLine("//Named fetch group -- " + fetchGroupIdentifier);
@@ -461,7 +512,7 @@ public class ProjectClassGenerator {
     // supported nested FetchGroup and FetchItem properties
     protected void addFetchGroupLines(NonreflectiveMethodDefinition method, FetchGroup fetchGroup, String fetchGroupIdentifier) {
         method.addLine("FetchGroup " + fetchGroupIdentifier + " = new FetchGroup();");
-        if (!fetchGroup.getName().equals("")) {
+        if (!fetchGroup.getName().isEmpty()) {
             method.addLine(fetchGroupIdentifier + ".setName(\"" + fetchGroup.getName() + "\");");
         }
         for (String attribute: fetchGroup.getAttributeNames()) {
@@ -583,12 +634,17 @@ public class ProjectClassGenerator {
                 } else {
                     method.addLine(mappingName + ".useMapClass(" + collectionClassName + ".class, \"" + keyMethodName + "\");");
                 }
+                ContainerPolicy containerPolicy = mapping.getContainerPolicy();
+                if (containerPolicy.isMappedKeyMapPolicy()) {
+                    method.addLine("");
+                    addMappedKeyMapContainerPolicyLines(method, mappingName, (MappedKeyMapContainerPolicy) containerPolicy);
+                    method.addLine("");
+                }
             }
 
             // Ordering.
-            Iterator<Expression> queryKeyExpressions = collectionMapping.getOrderByQueryKeyExpressions().iterator();
-            while (queryKeyExpressions.hasNext()) {
-                FunctionExpression expression = (FunctionExpression) queryKeyExpressions.next();
+            for (Expression value : collectionMapping.getOrderByQueryKeyExpressions()) {
+                FunctionExpression expression = (FunctionExpression) value;
                 String queryKeyName = expression.getBaseExpression().getName();
 
                 if (expression.getOperator().getSelector() == ExpressionOperator.Descending) {
@@ -633,7 +689,7 @@ public class ProjectClassGenerator {
         method.addLine("HistoryPolicy " + policyName + " = new HistoryPolicy();");
         for (DatabaseTable table : policy.getHistoricalTables()) {
             String sourceName;
-            if (table.getTableQualifier().equals("")) {
+            if (table.getTableQualifier().isEmpty()) {
                 sourceName = table.getName();
             } else {
                 sourceName = table.getTableQualifier() + "." + table.getName();
@@ -672,9 +728,7 @@ public class ProjectClassGenerator {
                 if (policy.shouldUseClassNameAsIndicator()) {
                     method.addLine("descriptor.getInheritancePolicy().useClassNameAsIndicator();");
                 } else {
-                    for (Iterator<String> indicatorsEnum = policy.getClassNameIndicatorMapping().keySet().iterator();
-                             indicatorsEnum.hasNext();) {
-                        String className = indicatorsEnum.next();
+                    for (String className : (Iterable<String>) policy.getClassNameIndicatorMapping().keySet()) {
                         Object value = policy.getClassNameIndicatorMapping().get(className);
                         method.addLine("descriptor.getInheritancePolicy().addClassIndicator(" + className + ".class, " + printString(value) + ");");
                     }
@@ -698,9 +752,7 @@ public class ProjectClassGenerator {
     protected void addInterfaceLines(NonreflectiveMethodDefinition method, InterfacePolicy policy) {
         method.addLine("// Interface Properties.");
         if (policy.isInterfaceChildDescriptor()) {
-            for (Iterator<String> interfacesEnum = policy.getParentInterfaceNames().iterator();
-                     interfacesEnum.hasNext();) {
-                String parentInterfaceName = interfacesEnum.next();
+            for (String parentInterfaceName : policy.getParentInterfaceNames()) {
                 method.addLine("descriptor.getInterfacePolicy().addParentInterface(" + parentInterfaceName + ".class);");
             }
         }
@@ -711,19 +763,19 @@ public class ProjectClassGenerator {
             method.addLine(mappingName + ".setRelationTableName(\"" + mapping.getRelationTable().getQualifiedName() + "\");");
         }
 
-        Enumeration<DatabaseField> sourceRelationKeysEnum = mapping.getSourceRelationKeyFields().elements();
-        Enumeration<DatabaseField> sourceKeysEnum = mapping.getSourceKeyFields().elements();
-        while (sourceRelationKeysEnum.hasMoreElements()) {
-            DatabaseField sourceField = sourceKeysEnum.nextElement();
-            DatabaseField relationField = sourceRelationKeysEnum.nextElement();
+        Iterator<DatabaseField> iterator3 = mapping.getSourceRelationKeyFields().iterator();
+        Iterator<DatabaseField> iterator2 = mapping.getSourceKeyFields().iterator();
+        while (iterator3.hasNext()) {
+            DatabaseField sourceField = iterator2.next();
+            DatabaseField relationField = iterator3.next();
             method.addLine(mappingName + ".addSourceRelationKeyFieldName(\"" + relationField.getQualifiedName() + "\", \"" + sourceField.getQualifiedName() + "\");");
         }
 
-        Enumeration<DatabaseField> targetRelationKeysEnum = mapping.getTargetRelationKeyFields().elements();
-        Enumeration<DatabaseField> targetKeysEnum = mapping.getTargetKeyFields().elements();
-        while (targetRelationKeysEnum.hasMoreElements()) {
-            DatabaseField targetField = targetKeysEnum.nextElement();
-            DatabaseField relationField = targetRelationKeysEnum.nextElement();
+        Iterator<DatabaseField> iterator1 = mapping.getTargetRelationKeyFields().iterator();
+        Iterator<DatabaseField> iterator = mapping.getTargetKeyFields().iterator();
+        while (iterator1.hasNext()) {
+            DatabaseField targetField = iterator.next();
+            DatabaseField relationField = iterator1.next();
             method.addLine(mappingName + ".addTargetRelationKeyFieldName(\"" + relationField.getQualifiedName() + "\", \"" + targetField.getQualifiedName() + "\");");
         }
 
@@ -735,18 +787,10 @@ public class ProjectClassGenerator {
         String mappingClassName = mapping.getClass().getName();
         String packageName = mappingClassName.substring(0, mappingClassName.lastIndexOf('.'));
         if (packageName.equals("org.eclipse.persistence.mappings")) {
-            mappingClassName = Helper.getShortClassName(mapping);
+            mappingClassName = mapping.getClass().getSimpleName();
         }
         method.addLine(mappingClassName + " " + mappingName + " = new " + mappingClassName + "();");
-        if (!mapping.isWriteOnly()) {
-            method.addLine(mappingName + ".setAttributeName(\"" + mapping.getAttributeName() + "\");");
-            if (mapping.getGetMethodName() != null) {
-                method.addLine(mappingName + ".setGetMethodName(\"" + mapping.getGetMethodName() + "\");");
-            }
-            if (mapping.getSetMethodName() != null) {
-                method.addLine(mappingName + ".setSetMethodName(\"" + mapping.getSetMethodName() + "\");");
-            }
-        }
+        addMappingAccessorLines(method, mappingName, mapping);
         if (mapping.isAbstractDirectMapping()) {
             AbstractDirectMapping directMapping = (AbstractDirectMapping)mapping;
             if (mapping.getDescriptor().isAggregateDescriptor()) {
@@ -797,21 +841,29 @@ public class ProjectClassGenerator {
         method.addLine("descriptor.addMapping(" + mapping.getAttributeName() + "Mapping);");
     }
 
+    protected void addMappingAccessorLines(NonreflectiveMethodDefinition method, String mappingName, DatabaseMapping mapping) {
+        if (!mapping.isWriteOnly()) {
+            method.addLine(mappingName + ".setAttributeName(\"" + mapping.getAttributeName() + "\");");
+            if (mapping.getGetMethodName() != null) {
+                method.addLine(mappingName + ".setGetMethodName(\"" + mapping.getGetMethodName() + "\");");
+            }
+            if (mapping.getSetMethodName() != null) {
+                method.addLine(mappingName + ".setSetMethodName(\"" + mapping.getSetMethodName() + "\");");
+            }
+        }
+    }
+
     protected void addObjectTypeConverterLines(NonreflectiveMethodDefinition method, String converterName, ObjectTypeConverter converter) {
         if (converter.getDefaultAttributeValue() != null) {
             method.addLine(converterName + ".setDefaultAttributeValue(" + printString(converter.getDefaultAttributeValue()) + ");");
         }
-        for (Iterator<Object> typesEnum = converter.getAttributeToFieldValues().keySet().iterator();
-                 typesEnum.hasNext();) {
-            Object attributeValue = typesEnum.next();
+        for (Object attributeValue : converter.getAttributeToFieldValues().keySet()) {
             Object fieldValue = converter.getAttributeToFieldValues().get(attributeValue);
             method.addLine(converterName + ".addConversionValue(" + printString(fieldValue) + ", " + printString(attributeValue) + ");");
         }
 
         // Read-only conversions.
-        for (Iterator<Object> typesEnum = converter.getFieldToAttributeValues().keySet().iterator();
-                 typesEnum.hasNext();) {
-            Object fieldValue = typesEnum.next();
+        for (Object fieldValue : converter.getFieldToAttributeValues().keySet()) {
             Object attributeValue = converter.getFieldToAttributeValues().get(fieldValue);
             if (!converter.getAttributeToFieldValues().containsKey(attributeValue)) {
                 method.addLine(converterName + ".addToAttributeOnlyConversionValue(" + printString(fieldValue) + ", " + printString(attributeValue) + ");");
@@ -820,19 +872,18 @@ public class ProjectClassGenerator {
     }
 
     protected void addOneToManyMappingLines(NonreflectiveMethodDefinition method, String mappingName, OneToManyMapping mapping) {
-        Enumeration<DatabaseField> targetKeysEnum = mapping.getTargetForeignKeyFields().elements();
-        Enumeration<DatabaseField> sourceKeysEnum = mapping.getSourceKeyFields().elements();
-        while (sourceKeysEnum.hasMoreElements()) {
-            DatabaseField sourceField = sourceKeysEnum.nextElement();
-            DatabaseField targetField = targetKeysEnum.nextElement();
+        Iterator<DatabaseField> iterator1 = mapping.getTargetForeignKeyFields().iterator();
+        Iterator<DatabaseField> iterator = mapping.getSourceKeyFields().iterator();
+        while (iterator.hasNext()) {
+            DatabaseField sourceField = iterator.next();
+            DatabaseField targetField = iterator1.next();
             method.addLine(mappingName + ".addTargetForeignKeyFieldName(\"" + targetField.getQualifiedName() + "\", \"" + sourceField.getQualifiedName() + "\");");
         }
     }
 
+    @SuppressWarnings({"unchecked"})
     protected void addOneToOneMappingLines(NonreflectiveMethodDefinition method, String mappingName, OneToOneMapping mapping) {
-        for (Iterator<DatabaseField> foreignKeysEnum = mapping.getSourceToTargetKeyFields().keySet().iterator();
-             foreignKeysEnum.hasNext();) {
-            DatabaseField sourceField = foreignKeysEnum.next();
+        for (DatabaseField sourceField : mapping.getSourceToTargetKeyFields().keySet()) {
             DatabaseField targetField = mapping.getSourceToTargetKeyFields().get(sourceField);
             if (mapping.getForeignKeyFields().contains(sourceField)) {
                 method.addLine(mappingName + ".addForeignKeyFieldName(\"" + sourceField.getQualifiedName() + "\", \"" + targetField.getQualifiedName() + "\");");
@@ -840,6 +891,46 @@ public class ProjectClassGenerator {
                 method.addLine(mappingName + ".addTargetForeignKeyFieldName(\"" + targetField.getQualifiedName() + "\", \"" + sourceField.getQualifiedName() + "\");");
             }
         }
+
+        if (mapping.derivesId()) {
+            method.addLine(mappingName + ".setDerivesId(true);");
+        }
+        if (mapping.getMapsIdValue() != null) {
+            method.addLine(mappingName + ".setMapsIdValue(\"" + mapping.getMapsIdValue() + "\");");
+        }
+        if (mapping.getDerivedIdMapping() != null) {
+            method.addLine(mappingName + ".setDerivedIdMapping(" + mapping.getDerivedIdMapping().getAttributeName() + "Mapping);");
+        }
+
+        if (mapping.isJPAId()) {
+            method.addLine(mappingName + ".setIsJPAId();");
+        }
+
+        if (mapping.getRelationTableMechanism() != null) {
+            RelationTableMechanism mechanism = mapping.getRelationTableMechanism();
+            String mechanismName = mappingName + "RelationalTableMechanism";
+            method.addLine("RelationTableMechanism " + mechanismName + " = new RelationTableMechanism();");
+            method.addLine(mechanismName + ".setRelationTableName(\"" + mechanism.getRelationTableName() + "\");");
+
+            Iterator<String> relationKeyFieldNames = mechanism.getSourceRelationKeyFieldNames().iterator();
+            Iterator<String> keyFieldNames = mechanism.getSourceKeyFieldNames().iterator();
+            while (relationKeyFieldNames.hasNext()) {
+                String relationKeyField = relationKeyFieldNames.next();
+                String keyField = keyFieldNames.next();
+                method.addLine(mechanismName + ".addSourceRelationKeyFieldName(\"" + relationKeyField + "\", \"" + keyField +"\");");
+            }
+
+            relationKeyFieldNames = mechanism.getTargetRelationKeyFieldNames().iterator();
+            keyFieldNames = mechanism.getTargetKeyFieldNames().iterator();
+            while (relationKeyFieldNames.hasNext()) {
+                String relationKeyField = relationKeyFieldNames.next();
+                String keyField = keyFieldNames.next();
+                method.addLine(mechanismName + ".addTargetRelationKeyFieldName(\"" + relationKeyField + "\", \"" + keyField +"\");");
+            }
+
+            method.addLine(mappingName + ".setRelationTableMechanism(" + mechanismName + ");");
+        }
+
         if (!mapping.shouldVerifyDelete()) {
             method.addLine(mappingName + ".setShouldVerifyDelete(false);");
         }
@@ -849,23 +940,20 @@ public class ProjectClassGenerator {
         String policyClassName = policy.getClass().getName();
         String packageName = policyClassName.substring(0, policyClassName.lastIndexOf('.'));
         if (packageName.equals("org.eclipse.persistence.descriptors")) {
-            policyClassName = Helper.getShortClassName(policy);
+            policyClassName = policy.getClass().getSimpleName();
         }
         method.addLine(policyClassName + " lockingPolicy = new " + policyClassName + "();");
 
-        if (policy instanceof SelectedFieldsLockingPolicy) {
-            SelectedFieldsLockingPolicy fieldPolicy = (SelectedFieldsLockingPolicy)policy;
+        if (policy instanceof SelectedFieldsLockingPolicy fieldPolicy) {
             for ( DatabaseField field : fieldPolicy.getLockFields()) {
                 method.addLine("lockingPolicy.addLockFieldName(\"" + field.getQualifiedName() + "\");");
             }
-        } else if (policy instanceof VersionLockingPolicy) {
-            VersionLockingPolicy versionPolicy = (VersionLockingPolicy)policy;
+        } else if (policy instanceof VersionLockingPolicy versionPolicy) {
             method.addLine("lockingPolicy.setWriteLockFieldName(\"" + versionPolicy.getWriteLockField().getQualifiedName() + "\");");
             if (versionPolicy.isStoredInObject()) {
                 method.addLine("lockingPolicy.storeInObject();");
             }
-            if (policy instanceof TimestampLockingPolicy) {
-                TimestampLockingPolicy timestampPolicy = (TimestampLockingPolicy)policy;
+            if (policy instanceof TimestampLockingPolicy timestampPolicy) {
                 if (timestampPolicy.usesLocalTime()) {
                     method.addLine("lockingPolicy.useLocalTime();");
                 }
@@ -951,12 +1039,12 @@ public class ProjectClassGenerator {
         }
 
         // Named queries.
-        if (descriptor.getQueryManager().getAllQueries().size() > 0) {
+        if (!descriptor.getQueryManager().getAllQueries().isEmpty()) {
             method.addLine("// Named Queries.");
-            Enumeration<DatabaseQuery> namedQueries = descriptor.getQueryManager().getAllQueries().elements();
+            Iterator<DatabaseQuery> iterator = descriptor.getQueryManager().getAllQueries().iterator();
             int iteration = 0;
-            while (namedQueries.hasMoreElements()) {
-                addNamedQueryLines(method, namedQueries.nextElement(), descriptor.getQueryManager(), iteration);
+            while (iterator.hasNext()) {
+                addNamedQueryLines(method, iterator.next(), descriptor.getQueryManager(), iteration);
                 ++iteration;
             }
         }
@@ -966,7 +1054,7 @@ public class ProjectClassGenerator {
         //Bug2612384 Deals with the possibility of multi-line SQL statements.
         //Expects beginning and closing quotes to be in place
         if (qlString != null) {
-            String insertString = "\" " + Helper.cr() + '\t' + '\t' + "+ " + "\"";
+            String insertString = "\" " + System.lineSeparator() + '\t' + '\t' + "+ " + "\"";
             qlString = qlString.trim().replaceAll("\n", insertString);
         }
         return qlString;
@@ -974,19 +1062,19 @@ public class ProjectClassGenerator {
 
     protected void addXMLInteractionLines(NonreflectiveMethodDefinition method, XMLInteraction interaction, String variableName) {
         method.addLine("org.eclipse.persistence.eis.XMLInteraction " + variableName + " = new org.eclipse.persistence.eis.XMLInteraction();");
-        if ((interaction.getFunctionName() != null) && (interaction.getFunctionName().length() != 0)) {
+        if ((interaction.getFunctionName() != null) && (!interaction.getFunctionName().isEmpty())) {
             method.addLine(variableName + ".setFunctionName(\"" + interaction.getFunctionName() + "\");");
         }
-        if ((interaction.getInputRecordName() != null) && (interaction.getInputRecordName().length() != 0)) {
+        if ((interaction.getInputRecordName() != null) && (!interaction.getInputRecordName().isEmpty())) {
             method.addLine(variableName + ".setInputRecordName(\"" + interaction.getInputRecordName() + "\");");
         }
-        if ((interaction.getInputRootElementName() != null) && (interaction.getInputRootElementName().length() != 0)) {
+        if ((interaction.getInputRootElementName() != null) && (!interaction.getInputRootElementName().isEmpty())) {
             method.addLine(variableName + ".setInputRootElementName(\"" + interaction.getInputRootElementName() + "\");");
         }
-        if ((interaction.getInputResultPath() != null) && (interaction.getInputResultPath().length() != 0)) {
+        if ((interaction.getInputResultPath() != null) && (!interaction.getInputResultPath().isEmpty())) {
             method.addLine(variableName + ".setInputResultPath(\"" + interaction.getInputResultPath() + "\");");
         }
-        if ((interaction.getOutputResultPath() != null) && (interaction.getOutputResultPath().length() != 0)) {
+        if ((interaction.getOutputResultPath() != null) && (!interaction.getOutputResultPath().isEmpty())) {
             method.addLine(variableName + ".setOutputResultPath(\"" + interaction.getOutputResultPath() + "\");");
         }
         for (int index = interaction.getArgumentNames().size();
@@ -1113,13 +1201,13 @@ public class ProjectClassGenerator {
             }
 
             // Lock mode.
-            if (readQuery.getLockMode() != ObjectLevelReadQuery.DEFAULT_LOCK_MODE) {
+            if (readQuery.getLockMode() != ObjectBuildingQuery.DEFAULT_LOCK_MODE) {
                 String lockMode = null;
-                if (readQuery.getLockMode() == ObjectLevelReadQuery.NO_LOCK && !readQuery.isReportQuery()) {
+                if (readQuery.getLockMode() == ObjectBuildingQuery.NO_LOCK && !readQuery.isReportQuery()) {
                     lockMode = "ObjectLevelReadQuery.NO_LOCK";
-                } else if (readQuery.getLockMode() == ObjectLevelReadQuery.LOCK) {
+                } else if (readQuery.getLockMode() == ObjectBuildingQuery.LOCK) {
                     lockMode = "ObjectLevelReadQuery.LOCK";
-                } else if (readQuery.getLockMode() == ObjectLevelReadQuery.LOCK_NOWAIT) {
+                } else if (readQuery.getLockMode() == ObjectBuildingQuery.LOCK_NOWAIT) {
                     lockMode = "ObjectLevelReadQuery.LOCK_NOWAIT";
                 }
                 if (lockMode != null) {
@@ -1190,8 +1278,7 @@ public class ProjectClassGenerator {
             }
 
             //joinedAttribute
-            for (Iterator<Expression> joinedEnum = readQuery.getJoinedAttributeManager().getJoinedAttributeExpressions().iterator(); joinedEnum.hasNext();) {
-                Expression joinedExp = joinedEnum.next();
+            for (Expression joinedExp : readQuery.getJoinedAttributeManager().getJoinedAttributeExpressions()) {
                 builderString = buildBuilderString(builderString, method, iteration, queryIdentifier);
                 buildExpressionString(builderString, method, queryIdentifier, joinedExp, ".addJoinedAttribute(");
             }
@@ -1299,8 +1386,7 @@ public class ProjectClassGenerator {
 
         // Query arguments.
         Iterator<String> argumentTypes = query.getArgumentTypeNames().iterator();
-        for (Iterator<String> arguments = query.getArguments().iterator(); arguments.hasNext();) {
-            String argument = arguments.next();
+        for (String argument : query.getArguments()) {
             String argumentTypeName = argumentTypes.next();
             method.addLine(queryIdentifier + ".addArgument(\"" + argument + "\", " + argumentTypeName + ".class);");
         }
@@ -1382,15 +1468,13 @@ public class ProjectClassGenerator {
             }
         }
 
-        Iterator<FieldTransformation> fieldTransformations = mapping.getFieldTransformations().iterator();
-        while (fieldTransformations.hasNext()) {
-            FieldTransformation trans = fieldTransformations.next();
+        for (FieldTransformation trans : mapping.getFieldTransformations()) {
             String fieldName = trans.getFieldName();
             if (trans instanceof MethodBasedFieldTransformation) {
-                String methodName = ((MethodBasedFieldTransformation)trans).getMethodName();
+                String methodName = ((MethodBasedFieldTransformation) trans).getMethodName();
                 method.addLine(mappingName + ".addFieldTransformation(\"" + fieldName + "\", \"" + methodName + "\");");
             } else {
-                String transformerClass = ((TransformerBasedFieldTransformation)trans).getTransformerClassName();
+                String transformerClass = ((TransformerBasedFieldTransformation) trans).getTransformerClassName();
                 method.addLine(mappingName + ".addFieldTransformer(\"" + fieldName + "\", new " + transformerClass + "());");
             }
         }
@@ -1442,10 +1526,8 @@ public class ProjectClassGenerator {
     }
 
     protected void addVariableOneToOneMappingLines(NonreflectiveMethodDefinition method, String mappingName, VariableOneToOneMapping mapping) {
-        for (Iterator<DatabaseField> foreignKeysEnum = mapping.getSourceToTargetQueryKeyNames().keySet().iterator();
-                 foreignKeysEnum.hasNext();) {
-            DatabaseField sourceField = foreignKeysEnum.next();
-            String targetQueryKey = (String)mapping.getSourceToTargetQueryKeyNames().get(sourceField);
+        for (DatabaseField sourceField : mapping.getSourceToTargetQueryKeyNames().keySet()) {
+            String targetQueryKey = mapping.getSourceToTargetQueryKeyNames().get(sourceField);
             if (mapping.getForeignKeyFields().contains(sourceField)) {
                 method.addLine(mappingName + ".addForeignQueryKeyName(\"" + sourceField.getQualifiedName() + "\", \"" + targetQueryKey + "\");");
             } else {
@@ -1456,9 +1538,7 @@ public class ProjectClassGenerator {
         if (mapping.getTypeField() != null) {
             method.addLine(mappingName + ".setTypeFieldName(\"" + mapping.getTypeFieldName() + "\");");
 
-            for (Iterator<String> typeIndicatorsEnum = mapping.getTypeIndicatorNameTranslation().keySet().iterator();
-                     typeIndicatorsEnum.hasNext();) {
-                String className = typeIndicatorsEnum.next();
+            for (String className : (Iterable<String>) mapping.getTypeIndicatorNameTranslation().keySet()) {
                 Object value = mapping.getTypeIndicatorNameTranslation().get(className);
                 method.addLine(mappingName + ".addClassIndicator(" + className + ".class, " + printString(value) + ");");
             }
@@ -1501,7 +1581,7 @@ public class ProjectClassGenerator {
 
         NonreflectiveMethodDefinition method = new NonreflectiveMethodDefinition();
 
-        method.setName("build" + getDescriptorMethodNames().get(descriptor) + "ClassDescriptor");
+        method.setName("build" + getDescriptorMethodName(descriptor) + "ClassDescriptor");
         method.setReturnType("ClassDescriptor");
 
         // ClassDescriptor
@@ -1525,22 +1605,18 @@ public class ProjectClassGenerator {
 
         if ((!descriptor.isAggregateDescriptor()) && (!descriptor.isDescriptorForInterface())) {
             // Tables
-            for (Enumeration<DatabaseTable> tablesEnum = descriptor.getTables().elements();
-                 tablesEnum.hasMoreElements();) {
-                String tableName = tablesEnum.nextElement().getQualifiedName();
+            for (DatabaseTable table: descriptor.getTables()) {
+                String tableName = table.getQualifiedName();
                 method.addLine("descriptor.addTableName(\"" + tableName + "\");");
             }
 
             // Primary key
             if (!descriptor.isChildDescriptor()) {
-                for (Enumeration<String> keysEnum = descriptor.getPrimaryKeyFieldNames().elements();
-                     keysEnum.hasMoreElements();) {
-                    method.addLine("descriptor.addPrimaryKeyFieldName(\"" + keysEnum.nextElement() + "\");");
+                for (String key: descriptor.getPrimaryKeyFieldNames()) {
+                    method.addLine("descriptor.addPrimaryKeyFieldName(\"" + key + "\");");
                 }
             }
-            for (Iterator<Map<DatabaseField, DatabaseField>> multipleTablePrimaryKeysEnum = descriptor.getAdditionalTablePrimaryKeyFields().values().iterator();
-                 multipleTablePrimaryKeysEnum.hasNext();) {
-                Map<DatabaseField, DatabaseField> keyMapping = multipleTablePrimaryKeysEnum.next();
+            for (Map<DatabaseField, DatabaseField> keyMapping : descriptor.getAdditionalTablePrimaryKeyFields().values()) {
                 Iterator<DatabaseField> keyMappingSourceFieldsEnum = keyMapping.keySet().iterator();
                 Iterator<DatabaseField> keyMappingTargetFieldsEnum = keyMapping.values().iterator();
                 while (keyMappingSourceFieldsEnum.hasNext()) {
@@ -1592,8 +1668,8 @@ public class ProjectClassGenerator {
         if (!descriptor.getQueryKeys().isEmpty()) {
             method.addLine("");
             method.addLine("// Query keys.");
-            for (Iterator<QueryKey> queryKeysEnum = descriptor.getQueryKeys().values().iterator(); queryKeysEnum.hasNext();) {
-                addQueryKeyLines(method, queryKeysEnum.next());
+            for (QueryKey queryKey : descriptor.getQueryKeys().values()) {
+                addQueryKeyLines(method, queryKey);
             }
         }
 
@@ -1601,9 +1677,8 @@ public class ProjectClassGenerator {
         if (!descriptor.getMappings().isEmpty()) {
             method.addLine("");
             method.addLine("// Mappings.");
-            for (Enumeration<DatabaseMapping> mappingsEnum = sortMappings(descriptor.getMappings()).elements();
-                     mappingsEnum.hasMoreElements();) {
-                addMappingLines(method, mappingsEnum.nextElement());
+            for (DatabaseMapping databaseMapping : sortMappings(descriptor.getMappings())) {
+                addMappingLines(method, databaseMapping);
                 method.addLine("");
             }
         } else {
@@ -1620,10 +1695,24 @@ public class ProjectClassGenerator {
         return method;
     }
 
+    protected void addInstantiationPolicyLines(NonreflectiveMethodDefinition method, ClassDescriptor descriptor) {
+        if (!descriptor.getInstantiationPolicy().isUsingDefaultConstructor()) {
+            if (descriptor.getInstantiationPolicy().getFactoryClassName() != null) {
+                if (descriptor.getInstantiationPolicy().getFactoryMethodName() != null) {
+                    method.addLine("descriptor.useFactoryInstantiationPolicy(" + descriptor.getInstantiationPolicy().getFactoryClassName() + ".class, \"" + descriptor.getInstantiationPolicy().getMethodName() + "\", \"" + descriptor.getInstantiationPolicy().getFactoryMethodName() + "\");");
+                } else {
+                    method.addLine("descriptor.useFactoryInstantiationPolicy(" + descriptor.getInstantiationPolicy().getFactoryClassName() + ".class, \"" + descriptor.getInstantiationPolicy().getMethodName() + "\");");
+                }
+            } else {
+                method.addLine("descriptor.useMethodInstantiationPolicy(\"" + descriptor.getInstantiationPolicy().getMethodName() + "\");");
+            }
+        }
+    }
+
     /**
      *  Take an unsorted list of descriptors and sort it so that the order is maintained.
      */
-    private List<ClassDescriptor> buildSortedListOfDescriptors(List<ClassDescriptor> descriptors) {
+    protected List<ClassDescriptor> buildSortedListOfDescriptors(List<ClassDescriptor> descriptors) {
         List<ClassDescriptor> returnDescriptors = Helper.addAllUniqueToList(new ArrayList<>(descriptors.size()), descriptors);
         returnDescriptors.sort(new DescriptorCompare());
         return returnDescriptors;
@@ -1636,12 +1725,11 @@ public class ProjectClassGenerator {
 
         String loginClassName = datasourceLogin.getClass().getName();
         if (datasourceLogin.getClass().equals(DatabaseLogin.class)) {
-            loginClassName = Helper.getShortClassName(datasourceLogin);
+            loginClassName = datasourceLogin.getClass().getSimpleName();
         }
         method.addLine(loginClassName + " login = new " + loginClassName + "();");
 
-        if (datasourceLogin instanceof DatabaseLogin) {
-            DatabaseLogin login = (DatabaseLogin)datasourceLogin;
+        if (datasourceLogin instanceof DatabaseLogin login) {
             method.addLine("login.usePlatform(new " + login.getPlatformClassName() + "());");
             // CR#3349 Change from setDriverClass() to setDriverClassName()
             method.addLine("login.setDriverClassName(\"" + login.getDriverClassName() + "\");");
@@ -1694,8 +1782,7 @@ public class ProjectClassGenerator {
             if (login.shouldUseExternalTransactionController()) {
                 method.addLine("login.setUsesExternalTransactionController(" + login.shouldUseExternalTransactionController() + ");");
             }
-        } else if (datasourceLogin instanceof EISLogin) {
-            EISLogin eisLogin = (EISLogin)datasourceLogin;
+        } else if (datasourceLogin instanceof EISLogin eisLogin) {
             method.addLine("login.setConnectionSpec(new " + eisLogin.getConnectionSpec().getClass().getName() + "());");
             if (eisLogin.getConnectionFactoryURL() != null) {
                 method.addLine("login.setConnectionFactoryURL(\"" + eisLogin.getConnectionFactoryURL() + "\");");
@@ -1716,9 +1803,7 @@ public class ProjectClassGenerator {
                 method.addLine("");
                 method.addLine("// Sequencing.");
             }
-            Iterator<Sequence> it = sequences.values().iterator();
-            while (it.hasNext()) {
-                Sequence sequence = it.next();
+            for (Sequence sequence : sequences.values()) {
                 method.addLine(setDefaultOrAddSequenceString(sequence, false));
             }
         }
@@ -1737,14 +1822,12 @@ public class ProjectClassGenerator {
             prefix = "login.addSequence(new ";
         }
         String str;
-        if (sequence instanceof TableSequence) {
-            TableSequence ts = (TableSequence)sequence;
+        if (sequence instanceof TableSequence ts) {
             str = "TableSequence(\"" + ts.getName() + "\", " + ts.getPreallocationSize() + ", \"" + ts.getTableName() + "\", \"" + ts.getNameFieldName() + "\", \"" + ts.getCounterFieldName() + "\"));";
-        } else if (sequence instanceof UnaryTableSequence) {
-            UnaryTableSequence uts = (UnaryTableSequence)sequence;
+        } else if (sequence instanceof UnaryTableSequence uts) {
             str = "UnaryTableSequence(\"" + uts.getName() + "\", " + uts.getPreallocationSize() + ", \"" + uts.getCounterFieldName() + "\"));";
         } else {
-            String typeName = Helper.getShortClassName(sequence);
+            String typeName = sequence.getClass().getSimpleName();
             str = typeName + "(\"" + sequence.getName() + "\", " + sequence.getPreallocationSize() + "));";
         }
         return prefix + str;
@@ -1755,11 +1838,8 @@ public class ProjectClassGenerator {
      * first using the local class name then the qualified one for duplicates.
      */
     protected void computeDescriptorMethodNames() {
-        Hashtable<String, ClassDescriptor> shortNames = new Hashtable<>();
-        Iterator<ClassDescriptor> descriptors = project.getOrderedDescriptors().iterator();
-        while (descriptors.hasNext()) {
-            ClassDescriptor descriptor = descriptors.next();
-
+        Map<String, ClassDescriptor> shortNames = new HashMap<>();
+        for (ClassDescriptor descriptor : project.getOrderedDescriptors()) {
             // Singleton interface descriptors should not exist.
             if (!(descriptor.isDescriptorForInterface() && (descriptor.getInterfacePolicy().getImplementorDescriptor() != null))) {
                 String shortName = Helper.getShortClassName(descriptor.getJavaClassName());
@@ -1779,7 +1859,7 @@ public class ProjectClassGenerator {
     /**
      * PUBLIC:
      * Generate the project class, output the java source code to the stream or file.
-     * useUnicode determines if unicode escaped characters for non_ASCII charaters will be used.
+     * useUnicode determines if unicode escaped characters for non_ASCII characters will be used.
      */
     public void generate(boolean useUnicode) throws ValidationException {
         if (getOutputWriter() == null) {
@@ -1792,8 +1872,8 @@ public class ProjectClassGenerator {
 
         CodeGenerator generator = new CodeGenerator(useUnicode);
         generator.setOutput(getOutputWriter());
-        generateProjectClass().write(generator);
         try {
+            generateProjectClass().write(generator);
             getOutputWriter().flush();
             getOutputWriter().close();
         } catch (IOException exception) {
@@ -1804,7 +1884,7 @@ public class ProjectClassGenerator {
     /**
      * PUBLIC:
      * Generate the project class, output the java source code to the stream or file.
-     * Unicode escaped characters for non_ASCII charaters will be used.
+     * Unicode escaped characters for non_ASCII characters will be used.
      */
     public void generate() throws ValidationException {
         generate(true);
@@ -1823,17 +1903,20 @@ public class ProjectClassGenerator {
         classDefinition.setSuperClass("org.eclipse.persistence.sessions.Project");
         classDefinition.setPackageName(getPackageName());
 
+        classDefinition.addImport("org.eclipse.persistence.config.*");
         classDefinition.addImport("org.eclipse.persistence.sessions.*");
         classDefinition.addImport("org.eclipse.persistence.descriptors.*");
         classDefinition.addImport("org.eclipse.persistence.descriptors.invalidation.*");
         classDefinition.addImport("org.eclipse.persistence.mappings.*");
         classDefinition.addImport("org.eclipse.persistence.mappings.converters.*");
+        classDefinition.addImport("org.eclipse.persistence.mappings.foundation.MapComponentMapping");
         classDefinition.addImport("org.eclipse.persistence.queries.*");
         classDefinition.addImport("org.eclipse.persistence.expressions.ExpressionBuilder");
         classDefinition.addImport("org.eclipse.persistence.history.HistoryPolicy");
         classDefinition.addImport("org.eclipse.persistence.sequencing.*");
+        classDefinition.addImport("org.eclipse.persistence.internal.queries.MappedKeyMapContainerPolicy");
 
-        classDefinition.setComment("This class was generated by the TopLink project class generator." + Helper.cr() + "It stores the meta-data (descriptors) that define the TopLink mappings." + Helper.cr() + "## " + DatabaseLogin.getVersion() + " ##" + Helper.cr() + "@see org.eclipse.persistence.sessions.factories.ProjectClassGenerator");
+        classDefinition.setComment("This class was generated by the TopLink project class generator." + System.lineSeparator() + "It stores the meta-data (descriptors) that define the TopLink mappings." + System.lineSeparator() + "## " + DatasourceLogin.getVersion() + " ##" + System.lineSeparator() + "@see org.eclipse.persistence.sessions.factories.ProjectClassGenerator");
 
         classDefinition.addMethod(buildConstructor());
 
@@ -1860,10 +1943,14 @@ public class ProjectClassGenerator {
         return className;
     }
 
-    protected Hashtable<ClassDescriptor, String> getDescriptorMethodNames() {
+    protected Map<ClassDescriptor, String> getDescriptorMethodNames() {
         return descriptorMethodNames;
     }
 
+    protected String getDescriptorMethodName(ClassDescriptor descriptor) {
+        return getDescriptorMethodNames().get(descriptor);
+
+    }
     /**
      * PUBLIC:
      * Return the file name that the generate .java file will be output to.
@@ -1945,8 +2032,7 @@ public class ProjectClassGenerator {
         }
 
         //Bug2662265
-        if (value instanceof java.util.Date) {
-            java.util.Date date = (java.util.Date)value;
+        if (value instanceof java.util.Date date) {
             return "new " + value.getClass().getName() + "(" + date.getTime() + "L)";
         }
 
@@ -1987,7 +2073,7 @@ public class ProjectClassGenerator {
         setOutputFileName(newClassName);
     }
 
-    protected void setDescriptorMethodNames(Hashtable<ClassDescriptor, String> descriptorMethodNames) {
+    protected void setDescriptorMethodNames(Map<ClassDescriptor, String> descriptorMethodNames) {
         this.descriptorMethodNames = descriptorMethodNames;
     }
 
@@ -2040,57 +2126,49 @@ public class ProjectClassGenerator {
     /**
      * Short the mappings by type.
      */
-    protected Vector<DatabaseMapping> sortMappings(Vector<DatabaseMapping> mappings) {
-        Vector<DatabaseMapping> sortedMappings = new Vector<>(mappings.size());
+    protected List<DatabaseMapping> sortMappings(List<DatabaseMapping> mappings) {
+        List<DatabaseMapping> sortedMappings = new ArrayList<>(mappings.size());
 
-        for (Enumeration<DatabaseMapping> mappingsEnum = mappings.elements(); mappingsEnum.hasMoreElements();) {
-            DatabaseMapping mapping = mappingsEnum.nextElement();
+        for (DatabaseMapping mapping : mappings) {
             if (mapping.getClass().equals(DirectToFieldMapping.class)) {
-                sortedMappings.addElement(mapping);
+                sortedMappings.add(mapping);
             }
         }
-        for (Enumeration<DatabaseMapping> mappingsEnum = mappings.elements(); mappingsEnum.hasMoreElements();) {
-            DatabaseMapping mapping = mappingsEnum.nextElement();
+        for (DatabaseMapping mapping : mappings) {
             if (mapping.isTransformationMapping()) {
-                sortedMappings.addElement(mapping);
+                sortedMappings.add(mapping);
             }
         }
-        for (Enumeration<DatabaseMapping> mappingsEnum = mappings.elements(); mappingsEnum.hasMoreElements();) {
-            DatabaseMapping mapping = mappingsEnum.nextElement();
+        for (DatabaseMapping mapping : mappings) {
             if (mapping.isAggregateMapping()) {
-                sortedMappings.addElement(mapping);
+                sortedMappings.add(mapping);
             }
         }
-        for (Enumeration<DatabaseMapping> mappingsEnum = mappings.elements(); mappingsEnum.hasMoreElements();) {
-            DatabaseMapping mapping = mappingsEnum.nextElement();
+        for (DatabaseMapping mapping : mappings) {
             if (mapping.isDirectCollectionMapping()) {
-                sortedMappings.addElement(mapping);
+                sortedMappings.add(mapping);
             }
         }
-        for (Enumeration<DatabaseMapping> mappingsEnum = mappings.elements(); mappingsEnum.hasMoreElements();) {
-            DatabaseMapping mapping = mappingsEnum.nextElement();
+        for (DatabaseMapping mapping : mappings) {
             if (mapping.isObjectReferenceMapping()) {
-                sortedMappings.addElement(mapping);
+                sortedMappings.add(mapping);
             }
         }
-        for (Enumeration<DatabaseMapping> mappingsEnum = mappings.elements(); mappingsEnum.hasMoreElements();) {
-            DatabaseMapping mapping = mappingsEnum.nextElement();
+        for (DatabaseMapping mapping : mappings) {
             if (mapping.isOneToManyMapping()) {
-                sortedMappings.addElement(mapping);
+                sortedMappings.add(mapping);
             }
         }
-        for (Enumeration<DatabaseMapping> mappingsEnum = mappings.elements(); mappingsEnum.hasMoreElements();) {
-            DatabaseMapping mapping = mappingsEnum.nextElement();
+        for (DatabaseMapping mapping : mappings) {
             if (mapping.isManyToManyMapping()) {
-                sortedMappings.addElement(mapping);
+                sortedMappings.add(mapping);
             }
         }
 
         // Others
-        for (Enumeration<DatabaseMapping> mappingsEnum = mappings.elements(); mappingsEnum.hasMoreElements();) {
-            DatabaseMapping mapping = mappingsEnum.nextElement();
+        for (DatabaseMapping mapping : mappings) {
             if (!sortedMappings.contains(mapping)) {
-                sortedMappings.addElement(mapping);
+                sortedMappings.add(mapping);
             }
         }
 

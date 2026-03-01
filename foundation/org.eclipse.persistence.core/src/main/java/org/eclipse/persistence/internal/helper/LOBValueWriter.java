@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,14 +14,6 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.helper;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.Vector;
-
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
@@ -35,6 +27,13 @@ import org.eclipse.persistence.queries.Call;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.eclipse.persistence.queries.WriteObjectQuery;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * INTERNAL:
@@ -61,7 +60,7 @@ public class LOBValueWriter {
 
     /**
      * This is the default constructor for the class.
-     *
+     * <p>
      * Bug 2804663 - Each DatabaseAccessor will now hold on to its own instance
      * of this class, hence a singleton pattern is not applicable.
      */
@@ -92,12 +91,12 @@ public class LOBValueWriter {
     * Fetch the locator(s) from the result set and write LOB value to the table
     */
     public void fetchLocatorAndWriteValue(DatabaseCall dbCall, Object resultSet) throws SQLException {
-        Enumeration<DatabaseField> enumFields = dbCall.getContexts().getFields().elements();
-        Enumeration<?> enumValues = dbCall.getContexts().getValues().elements();
+        Iterator<DatabaseField> iterator1 = dbCall.getContexts().getFields().iterator();
+        Iterator<?> iterator = dbCall.getContexts().getValues().iterator();
         AbstractSession executionSession = dbCall.getQuery().getSession().getExecutionSession(dbCall.getQuery());
-        while (enumFields.hasMoreElements()) {
-            DatabaseField field = enumFields.nextElement();
-            Object value = enumValues.nextElement();
+        while (iterator1.hasNext()) {
+            DatabaseField field = iterator1.next();
+            Object value = iterator.next();
 
             //write the value through the locator
             executionSession.getPlatform().writeLOB(field, value, (ResultSet)resultSet, executionSession);
@@ -109,7 +108,7 @@ public class LOBValueWriter {
     */
     private SQLSelectStatement buildSelectStatementForLocator(WriteObjectQuery writeQuery, DatabaseCall call, AbstractSession session) {
         SQLSelectStatement selectStatement = new SQLSelectStatement();
-        Vector<DatabaseTable> tables = writeQuery.getDescriptor().getTables();
+        List<DatabaseTable> tables = writeQuery.getDescriptor().getTables();
         selectStatement.setTables(tables);
         //rather than get ALL fields from the descriptor, only use the LOB-related fields to build the minimal SELECT statement.
         selectStatement.setFields(call.getContexts().getFields());

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,21 +29,20 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.xml.namespace.QName;
+
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDODataObject;
 import org.eclipse.persistence.sdo.SDOProperty;
 import org.eclipse.persistence.sdo.SDOType;
 import org.eclipse.persistence.sdo.helper.SDOHelperContext;
-import org.eclipse.persistence.sdo.types.SDOWrapperType;
-import org.eclipse.persistence.sdo.types.SDOXMLHelperLoadOptionsType;
 import org.eclipse.persistence.sdo.helper.SDOTypeHelper;
 import org.eclipse.persistence.sdo.helper.SDOXMLHelper;
 import org.eclipse.persistence.sdo.helper.SDOXSDHelper;
 import org.eclipse.persistence.sdo.helper.extension.SDOUtil;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sdo.types.*;
-import org.eclipse.persistence.exceptions.SDOException;
-import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.sdo.SDOException;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
@@ -71,7 +70,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
     private Map<Class<?>, SDOType> interfacesToSDOTypeHashMap;
 
     /** Map of impl classes -{@literal >} SDOType */
-    private Map<Class<?>, SDOType> implClassesToSDOType = new HashMap<Class<?>, SDOType>();
+    private Map<Class<?>, SDOType> implClassesToSDOType = new HashMap<>();
 
     /** Map containing built-in types for primitive and SDO types */
     private final Map commonjHashMap = new HashMap();
@@ -437,7 +436,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
      * Initializes the wrappersHashMap HashMap.
      */
     private void initWrappersHashMap() {
-        wrappersHashMap = new HashMap<QName, SDOType>();
+        wrappersHashMap = new HashMap<>();
 
         wrappersHashMap.put(SDOConstants.SDO_BOOLEAN.getQName(), SDO_BOOLEAN_WRAPPER);
         wrappersHashMap.put(SDOConstants.SDO_BYTE.getQName(), SDO_BYTE_WRAPPER);
@@ -597,28 +596,28 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
     }
 
     private static void initSDOTypeForSimpleJavaTypeMap() {
-        sdoTypeForSimpleJavaType.put(ClassConstants.STRING, SDOConstants.SDO_STRING);
-        sdoTypeForSimpleJavaType.put(ClassConstants.BOOLEAN, SDOConstants.SDO_BOOLEANOBJECT);
-        sdoTypeForSimpleJavaType.put(ClassConstants.PBOOLEAN, SDOConstants.SDO_BOOLEAN);
-        sdoTypeForSimpleJavaType.put(ClassConstants.BYTE, SDOConstants.SDO_BYTEOBJECT);
-        sdoTypeForSimpleJavaType.put(ClassConstants.PBYTE, SDOConstants.SDO_BYTE);
-        sdoTypeForSimpleJavaType.put(ClassConstants.ABYTE, SDOConstants.SDO_BYTES);
-        sdoTypeForSimpleJavaType.put(ClassConstants.APBYTE, SDOConstants.SDO_BYTES);
-        sdoTypeForSimpleJavaType.put(ClassConstants.CHAR, SDOConstants.SDO_CHARACTEROBJECT);
-        sdoTypeForSimpleJavaType.put(ClassConstants.PCHAR, SDOConstants.SDO_CHARACTER);
-        sdoTypeForSimpleJavaType.put(ClassConstants.BIGDECIMAL, SDOConstants.SDO_DECIMAL);
-        sdoTypeForSimpleJavaType.put(ClassConstants.UTILDATE, SDOConstants.SDO_DATE);
-        sdoTypeForSimpleJavaType.put(ClassConstants.DOUBLE, SDOConstants.SDO_DOUBLEOBJECT);
-        sdoTypeForSimpleJavaType.put(ClassConstants.PDOUBLE, SDOConstants.SDO_DOUBLE);
-        sdoTypeForSimpleJavaType.put(ClassConstants.FLOAT, SDOConstants.SDO_FLOATOBJECT);
-        sdoTypeForSimpleJavaType.put(ClassConstants.PFLOAT, SDOConstants.SDO_FLOAT);
-        sdoTypeForSimpleJavaType.put(ClassConstants.INTEGER, SDOConstants.SDO_INTOBJECT);
-        sdoTypeForSimpleJavaType.put(ClassConstants.PINT, SDOConstants.SDO_INT);
-        sdoTypeForSimpleJavaType.put(ClassConstants.BIGINTEGER, SDOConstants.SDO_INTEGER);
-        sdoTypeForSimpleJavaType.put(ClassConstants.LONG, SDOConstants.SDO_LONGOBJECT);
-        sdoTypeForSimpleJavaType.put(ClassConstants.PLONG, SDOConstants.SDO_LONG);
-        sdoTypeForSimpleJavaType.put(ClassConstants.SHORT, SDOConstants.SDO_SHORTOBJECT);
-        sdoTypeForSimpleJavaType.put(ClassConstants.PSHORT, SDOConstants.SDO_SHORT);
+        sdoTypeForSimpleJavaType.put(CoreClassConstants.STRING, SDOConstants.SDO_STRING);
+        sdoTypeForSimpleJavaType.put(CoreClassConstants.BOOLEAN, SDOConstants.SDO_BOOLEANOBJECT);
+        sdoTypeForSimpleJavaType.put(CoreClassConstants.PBOOLEAN, SDOConstants.SDO_BOOLEAN);
+        sdoTypeForSimpleJavaType.put(CoreClassConstants.BYTE, SDOConstants.SDO_BYTEOBJECT);
+        sdoTypeForSimpleJavaType.put(CoreClassConstants.PBYTE, SDOConstants.SDO_BYTE);
+        sdoTypeForSimpleJavaType.put(CoreClassConstants.ABYTE, SDOConstants.SDO_BYTES);
+        sdoTypeForSimpleJavaType.put(CoreClassConstants.APBYTE, SDOConstants.SDO_BYTES);
+        sdoTypeForSimpleJavaType.put(CoreClassConstants.CHAR, SDOConstants.SDO_CHARACTEROBJECT);
+        sdoTypeForSimpleJavaType.put(CoreClassConstants.PCHAR, SDOConstants.SDO_CHARACTER);
+        sdoTypeForSimpleJavaType.put(CoreClassConstants.BIGDECIMAL, SDOConstants.SDO_DECIMAL);
+        sdoTypeForSimpleJavaType.put(CoreClassConstants.UTILDATE, SDOConstants.SDO_DATE);
+        sdoTypeForSimpleJavaType.put(CoreClassConstants.DOUBLE, SDOConstants.SDO_DOUBLEOBJECT);
+        sdoTypeForSimpleJavaType.put(CoreClassConstants.PDOUBLE, SDOConstants.SDO_DOUBLE);
+        sdoTypeForSimpleJavaType.put(CoreClassConstants.FLOAT, SDOConstants.SDO_FLOATOBJECT);
+        sdoTypeForSimpleJavaType.put(CoreClassConstants.PFLOAT, SDOConstants.SDO_FLOAT);
+        sdoTypeForSimpleJavaType.put(CoreClassConstants.INTEGER, SDOConstants.SDO_INTOBJECT);
+        sdoTypeForSimpleJavaType.put(CoreClassConstants.PINT, SDOConstants.SDO_INT);
+        sdoTypeForSimpleJavaType.put(CoreClassConstants.BIGINTEGER, SDOConstants.SDO_INTEGER);
+        sdoTypeForSimpleJavaType.put(CoreClassConstants.LONG, SDOConstants.SDO_LONGOBJECT);
+        sdoTypeForSimpleJavaType.put(CoreClassConstants.PLONG, SDOConstants.SDO_LONG);
+        sdoTypeForSimpleJavaType.put(CoreClassConstants.SHORT, SDOConstants.SDO_SHORTOBJECT);
+        sdoTypeForSimpleJavaType.put(CoreClassConstants.PSHORT, SDOConstants.SDO_SHORT);
     }
 
     @Override
@@ -818,7 +817,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
                 SDOType baseType = (SDOType)nextType.getBaseTypes().get(0);
                 while (baseType != null && !baseType.isDataType()) {
                     descriptorsToAdd.add(baseType);
-                    if (baseType.getBaseTypes().size() == 0) {
+                    if (baseType.getBaseTypes().isEmpty()) {
                         descriptorsToAdd.add(baseType);
                         // baseType should now be root of inheritance
                         baseType.setupInheritance(null);
@@ -1152,7 +1151,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
 
     @Override
     public void reset() {
-        interfacesToSDOTypeHashMap = new HashMap<Class<?>, SDOType>();
+        interfacesToSDOTypeHashMap = new HashMap<>();
         namespaceResolver = null;
 
         initWrapperTypes();
@@ -1200,13 +1199,11 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
             SDOType existingType = (SDOType) propertyToReturn.getType();
             boolean typeMismatch = false;
 
-            if (propDOType instanceof SDOType) {
-                SDOType newType = (SDOType) propDOType;
+            if (propDOType instanceof SDOType newType) {
                 if (!newType.getQName().equals(existingType.getQName())) {
                     typeMismatch = true;
                 }
-            } else if (propDOType instanceof DataObject) {
-                DataObject newTypeDO = (DataObject) propDOType;
+            } else if (propDOType instanceof DataObject newTypeDO) {
                 if (!newTypeDO.get("name").equals(existingType.getName()) || !newTypeDO.get("uri").equals(existingType.getURI())) {
                     typeMismatch = true;
                 }
@@ -1330,7 +1327,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
         }
         NamespaceResolver nr = getNamespaceResolver();
         String existingPrefixForUri = nr.resolveNamespaceURI(uri);
-        if ((existingPrefixForUri == null) || existingPrefixForUri.equals("")) {
+        if ((existingPrefixForUri == null) || existingPrefixForUri.isEmpty()) {
             //doesn't exist so generate one
             //String newPrefix = nr.generatePrefix();
             String newPrefix = generatePrefix(uri);
@@ -1344,15 +1341,12 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
 
     private String generatePrefix(String uri) {
         NamespaceResolver nr = getNamespaceResolver();
-        if (uri.equals(SDOConstants.SDO_URL)) {
-            return nr.generatePrefix("sdo");
-        } else if (uri.equals(SDOConstants.SDOXML_URL)) {
-            return nr.generatePrefix("sdoXML");
-        } else if (uri.equals(SDOConstants.SDOJAVA_URL)) {
-            return nr.generatePrefix("sdoJava");
-        } else {
-            return nr.generatePrefix();
-        }
+        return switch (uri) {
+            case SDOConstants.SDO_URL -> nr.generatePrefix("sdo");
+            case SDOConstants.SDOXML_URL -> nr.generatePrefix("sdoXML");
+            case SDOConstants.SDOJAVA_URL -> nr.generatePrefix("sdoJava");
+            default -> nr.generatePrefix();
+        };
     }
 
     /**
@@ -1364,7 +1358,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
         NamespaceResolver nr = getNamespaceResolver();
 
         String existingPrefixForURI = nr.resolveNamespaceURI(uri);
-        if ((existingPrefixForURI != null) && !existingPrefixForURI.equals("")) {
+        if ((existingPrefixForURI != null) && !existingPrefixForURI.isEmpty()) {
             //if there is already a prefix for this uri return that one
             return existingPrefixForURI;
         }

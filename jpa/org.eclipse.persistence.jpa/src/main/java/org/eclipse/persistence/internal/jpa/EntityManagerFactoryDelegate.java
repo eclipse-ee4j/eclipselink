@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2021 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,6 +29,10 @@
 //       - 489787: Fixed NullPointerException when specifying non-entity object to PersistenceUnitUtil.isLoaded
 //     09/02/2019-3.0 Alexandre Jacob
 //        - 527415: Fix code when locale is tr, az or lt
+//     08/23/2023: Tomas Kraus
+//       - New Jakarta Persistence 3.2 Features
+//     12/05/2023: Tomas Kraus
+//       - New Jakarta Persistence 3.2 Features
 package org.eclipse.persistence.internal.jpa;
 
 import java.util.Collections;
@@ -36,19 +40,25 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 import jakarta.persistence.Cache;
 import jakarta.persistence.EntityGraph;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.FlushModeType;
 import jakarta.persistence.PersistenceException;
+import jakarta.persistence.PersistenceUnitTransactionType;
 import jakarta.persistence.PersistenceUnitUtil;
 import jakarta.persistence.Query;
+import jakarta.persistence.SchemaManager;
 import jakarta.persistence.SynchronizationType;
+import jakarta.persistence.TypedQueryReference;
 import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.metamodel.Attribute;
 import jakarta.persistence.metamodel.Metamodel;
-
 import org.eclipse.persistence.config.EntityManagerProperties;
 import org.eclipse.persistence.config.FlushClearCache;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
@@ -61,7 +71,6 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.internal.sessions.PropertiesHandler;
 import org.eclipse.persistence.jpa.JpaEntityManagerFactory;
-import org.eclipse.persistence.queries.AttributeGroup;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReadQuery;
@@ -152,6 +161,9 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
     /** Pointer to the EntityManagerFactoryImpl that created me */
     protected JpaEntityManagerFactory owner = null;
 
+    /** Persistence unit schema manager. */
+    private SchemaManagerImpl schemaManager = null;
+
     /**
      * Will return an instance of the Factory. Should only be called by
      * EclipseLink.
@@ -171,7 +183,7 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
 
     /**
      * Create a dynamic persistence unit which does not use the persistence.xml.
-     * Instead all configuration is driven from the provided persistence unit
+     * Instead, all configuration is driven from the provided persistence unit
      * properties and descriptors.
      */
     public EntityManagerFactoryDelegate(String persistenceUnitName, Map<String, Object> properties, List<ClassDescriptor> descriptors, JpaEntityManagerFactory owner) {
@@ -281,7 +293,7 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
         // (a reopened emf will re-populate the same metaModel)
         // (a new persistence unit will generate a new metaModel)
         if (setupImpl != null) {
-            // 260511 null check so that closing a EM
+            // 260511 null check so that closing an EM
             // created from the constructor no longer throws a NPE
             setupImpl.undeploy();
         }
@@ -289,7 +301,7 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
     }
 
     /**
-     * Indicates whether or not this factory is open. Returns <code>true</code>
+     * Indicates whether this factory is open. Returns <code>true</code>
      * until a call to {@link #close} is made.
      */
     @Override
@@ -364,6 +376,7 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
     }
 
     @Override
+    @SuppressWarnings("removal")
     protected void finalize() throws Throwable {
         if (isOpen()) {
             close();
@@ -454,7 +467,7 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
      * Re-bootstrap this factory.  This method will rebuild the EntityManagerFactory.  It should be used
      * in conjunction with a MetadataSource to allow mappings to be changed in a running system.  All existing
      * EntityMangers will continue to function with the old metadata, but new factories will use the new metadata.
-     *
+     * <p>
      * This call will throw an exception when called on EntityManagerFactoryImplDelegate
      */
     @Override
@@ -544,6 +557,25 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
             throw new IllegalStateException(ExceptionLocalization.buildMessage("getpersistenceunitutil_called_on_closed_emf"));
         }
         return this;
+    }
+
+    // TODO-API-3.2 - SEPersistenceUnitInfo must return new PersistenceUnitTransactionType instead of old spi
+    @Override
+    @SuppressWarnings("removal")
+    public PersistenceUnitTransactionType getTransactionType() {
+        // Temporary mapping between old and new PersistenceUnitTransactionType
+        return switch (setupImpl.getPersistenceUnitInfo().getTransactionType()) {
+            case JTA -> PersistenceUnitTransactionType.JTA;
+            case RESOURCE_LOCAL -> PersistenceUnitTransactionType.RESOURCE_LOCAL;
+        };
+    }
+
+    @Override
+    public SchemaManager getSchemaManager() {
+        if (schemaManager == null) {
+            schemaManager = new SchemaManagerImpl(getDatabaseSession(), owner.getProperties());
+        }
+        return schemaManager;
     }
 
     /**
@@ -664,7 +696,7 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
         if (!this.isOpen()) {
             throw new IllegalStateException(ExceptionLocalization.buildMessage("operation_on_closed_entity_manager_factory"));
         }
-        /**
+        /*
          * Login the session and initialize descriptors - if not already, subsequent calls will just return the session
          * 322585: Login the session on the first call to getMetamodel() or getCriteriaBuilder()
          * after EMF predeploy() completes.  This will do a DB login that calls
@@ -698,44 +730,51 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
         this.setupImpl.setMetamodel(aMetamodel);
     }
 
-    /**
-     * Determine the load state of a given persistent attribute of an entity
-     * belonging to the persistence unit.
-     *
-     * @param entity
-     *            containing the attribute
-     * @param attributeName
-     *            name of attribute whose load state is to be determined
-     * @return false if entity's state has not been loaded or if the attribute
-     *         state has not been loaded, otherwise true
-     */
     @Override
     public boolean isLoaded(Object entity, String attributeName) {
-        if (Boolean.TRUE.equals(EntityManagerFactoryImpl.isLoaded(entity, attributeName, session))) {
-            return true;
-        }
-        return false;
+        return Boolean.TRUE.equals(
+                EntityManagerFactoryImpl.isLoaded(entity, attributeName, session));
     }
 
-    /**
-     * Determine the load state of an entity belonging to the persistence unit.
-     * This method can be used to determine the load state of an entity passed
-     * as a reference. An entity is considered loaded if all attributes for
-     * which FetchType EAGER has been specified have been loaded. The
-     * isLoaded(Object, String) method should be used to determine the load
-     * state of an attribute. Not doing so might lead to unintended loading of
-     * state.
-     *
-     * @param entity
-     *            whose load state is to be determined
-     * @return false if the entity has not been loaded, else true.
-     */
+    @Override
+    public <E> boolean isLoaded(E entity, Attribute<? super E, ?> attribute) {
+        return isLoaded(entity, attribute.getName());
+    }
+
     @Override
     public boolean isLoaded(Object entity) {
-        if (Boolean.TRUE.equals(EntityManagerFactoryImpl.isLoaded(entity, session))) {
-            return true;
-        }
-        return false;
+        return Boolean.TRUE.equals(
+                EntityManagerFactoryImpl.isLoaded(entity, session));
+    }
+
+    @Override
+    public void load(Object entity, String attributeName) {
+        EntityManagerFactoryImpl.load(entity, attributeName, session);
+    }
+
+    @Override
+    public <E> void load(E entity, Attribute<? super E, ?> attribute) {
+        EntityManagerFactoryImpl.load(entity, attribute.getName(), session);
+    }
+
+    @Override
+    public void load(Object entity) {
+        EntityManagerFactoryImpl.load(entity, session);
+    }
+
+    @Override
+    public boolean isInstance(Object entity, Class<?> entityClass) {
+        return EntityManagerFactoryImpl.isInstance(entity, entityClass, session);
+    }
+
+    @Override
+    public String getName() {
+        return setupImpl.getPersistenceUnitInfo().getPersistenceUnitName();
+    }
+
+    @Override
+    public <T> Class<? extends T> getClass(T entity) {
+        return EntityManagerFactoryImpl.getClass(entity, session);
     }
 
     /**
@@ -756,6 +795,11 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
         } catch (Exception e){
             throw new PersistenceException(e);
         }
+    }
+
+    @Override
+    public Object getVersion(Object entity) {
+        return EntityManagerFactoryImpl.getVersion(entity, session);
     }
 
     /**
@@ -789,6 +833,11 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
     }
 
     @Override
+    public <R> Map<String, TypedQueryReference<R>> getNamedQueries(Class<R> resultType) {
+        return EntityManagerFactoryImpl.getNamedQueries(resultType, getAbstractSession());
+    }
+
+    @Override
     public <T> T unwrap(Class<T> cls) {
         if (cls.equals(JpaEntityManagerFactory.class) || cls.equals(EntityManagerFactoryImpl.class)) {
             return (T) this;
@@ -808,10 +857,69 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
 
     @Override
     public <T> void addNamedEntityGraph(String graphName, EntityGraph<T> entityGraph) {
-        AttributeGroup group = ((EntityGraphImpl)entityGraph).getAttributeGroup().clone();
-        group.setName(graphName);
-        this.getAbstractSession().getAttributeGroups().put(graphName, group);
-        this.getAbstractSession().getDescriptor(((EntityGraphImpl)entityGraph).getClassType()).addAttributeGroup(group);
+        EntityManagerFactoryImpl.addNamedEntityGraph(graphName, entityGraph, getAbstractSession());
+    }
+
+    @Override
+    public <E> Map<String, EntityGraph<? extends E>> getNamedEntityGraphs(Class<E> entityType) {
+        return EntityManagerFactoryImpl.getNamedEntityGraphs(entityType, getAbstractSession(), getMetamodel());
+    }
+
+    @Override
+    public void runInTransaction(Consumer<EntityManager> work) {
+        try (EntityManager em = createEntityManager()) {
+            switch (getTransactionType()) {
+                case JTA:
+                    em.joinTransaction();
+                    work.accept(em);
+                    return;
+                case RESOURCE_LOCAL:
+                    EntityTransaction et = em.getTransaction();
+                    et.begin();
+                    try {
+                        work.accept(em);
+                        et.commit();
+                        return;
+                    } catch (Exception e) {
+                        if (et.isActive()) {
+                            et.rollback();
+                        }
+                        throw e;
+                    }
+                // This may happen only when JPA gets new transaction type
+                default:
+                    throw new IllegalStateException(
+                            "Unknown transaction type " + setupImpl.getPersistenceUnitInfo().getTransactionType().name());
+            }
+        }
+    }
+
+    @Override
+    public <R> R callInTransaction(Function<EntityManager, R> work) {
+        try (EntityManager em = createEntityManager()) {
+            switch (getTransactionType()) {
+                case JTA:
+                    em.joinTransaction();
+                    return work.apply(em);
+                case RESOURCE_LOCAL:
+                    EntityTransaction et = em.getTransaction();
+                    et.begin();
+                    try {
+                        R result = work.apply(em);
+                        et.commit();
+                        return result;
+                    } catch (Exception e) {
+                        if (et.isActive()) {
+                            et.rollback();
+                        }
+                        throw e;
+                    }
+                // This may happen only when JPA gets new transaction type
+                default:
+                    throw new IllegalStateException(
+                            "Unknown transaction type " + setupImpl.getPersistenceUnitInfo().getTransactionType().name());
+            }
+        }
     }
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -17,10 +17,14 @@
 //       - 263904: [PATCH] ExpressionOperator doesn't compare arrays correctly
 package org.eclipse.persistence.testing.tests.expressions;
 
-import java.util.*;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionOperator;
+import org.eclipse.persistence.testing.framework.TestErrorException;
+import org.eclipse.persistence.testing.framework.UnitTestCase;
 import org.eclipse.persistence.tools.schemaframework.PopulationManager;
-import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.testing.framework.*;
+
+import java.util.Arrays;
+import java.util.Vector;
 
 public class ExpressionOperatorUnitTestSuite extends ExpressionTestSuite {
     public ExpressionOperatorUnitTestSuite() {

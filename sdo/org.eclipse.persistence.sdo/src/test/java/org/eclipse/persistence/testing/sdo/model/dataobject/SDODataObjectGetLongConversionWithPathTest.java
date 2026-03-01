@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,7 +20,6 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Date;
 
-import junit.framework.TestCase;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDOProperty;
@@ -284,7 +283,7 @@ public class SDODataObjectGetLongConversionWithPathTest extends SDODataObjectCon
         property_c.setType(SDOConstants.SDO_BYTES);
         type_c.addDeclaredProperty(property_c);
         dataObject_c._setType(type_c);
-        dataObject_c.set(property_c, new String("eee").getBytes());
+        dataObject_c.set(property_c, "eee".getBytes());
         try {
             dataObject_a.getLong(propertyPath_a_b_c);
         } catch (Exception e) {

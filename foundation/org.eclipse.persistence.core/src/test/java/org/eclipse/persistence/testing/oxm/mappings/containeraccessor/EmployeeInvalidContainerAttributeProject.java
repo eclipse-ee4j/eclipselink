@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -12,8 +12,6 @@
 
 package org.eclipse.persistence.testing.oxm.mappings.containeraccessor;
 
-import java.util.ArrayList;
-
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
@@ -21,6 +19,8 @@ import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLInverseReferenceMapping;
 import org.eclipse.persistence.sessions.Project;
+
+import java.util.ArrayList;
 
 public class EmployeeInvalidContainerAttributeProject extends Project {
     public EmployeeInvalidContainerAttributeProject(boolean methodAccess) {

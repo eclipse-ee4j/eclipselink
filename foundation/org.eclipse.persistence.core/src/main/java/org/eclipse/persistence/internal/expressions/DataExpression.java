@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,12 +14,6 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.expressions;
 
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.history.AsOfClause;
@@ -28,6 +22,12 @@ import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.history.DecoratedDatabaseTable;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.querykeys.QueryKey;
+
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Superclass for all expression that have a context.
@@ -67,14 +67,14 @@ public abstract class DataExpression extends BaseExpression {
 
     public void addDerivedField(Expression addThis) {
         if (derivedFields == null) {
-            derivedFields = new ArrayList();
+            derivedFields = new ArrayList<>();
         }
         derivedFields.add(addThis);
     }
 
     public void addDerivedTable(Expression addThis) {
         if (derivedTables == null) {
-            derivedTables = new ArrayList();
+            derivedTables = new ArrayList<>();
         }
         derivedTables.add(addThis);
     }
@@ -132,11 +132,11 @@ public abstract class DataExpression extends BaseExpression {
         tableAliases = null;
     }
 
-    public List<Expression> copyCollection(List<Expression> in, Map alreadyDone) {
+    public List<Expression> copyCollection(List<Expression> in, Map<Expression, Expression> alreadyDone) {
         if (in == null) {
             return null;
         }
-        List<Expression> result = new ArrayList(in.size());
+        List<Expression> result = new ArrayList<>(in.size());
         for (Expression exp : in) {
             result.add(exp.copiedVersionFrom(alreadyDone));
         }
@@ -188,6 +188,12 @@ public abstract class DataExpression extends BaseExpression {
         return asOfClause;
     }
 
+    /**
+     * INTERNAL:
+     * Get persistence class descriptor of this expression.
+     *
+     * @return the persistence class descriptor
+     */
     public ClassDescriptor getDescriptor() {
         return null;
     }
@@ -222,7 +228,25 @@ public abstract class DataExpression extends BaseExpression {
         return ((DataExpression)this.baseExpression).getDescriptor();
     }
 
+    /**
+     * INTERNAL:
+     * Get {@link DatabaseMapping} for this {@link Expression}.
+     * Aggregate mapping will not be resolved.
+     *
+     * @return the mapping for current expression or {@code null} when no mapping was found
+     */
     public DatabaseMapping getMapping() {
+        return getMapping(false);
+    }
+
+    // Package local only, should not be exposed as API.
+    /**
+     * Get {@link DatabaseMapping} for this {@link Expression}.
+     *
+     * @param resolveAggregate trigger resolution of aggregate mapping
+     * @return the mapping for current expression or {@code null} when no mapping was found
+     */
+    DatabaseMapping getMapping(boolean resolveAggregate) {
         if (this.baseExpression == null) {
             return null;
         }
@@ -230,7 +254,39 @@ public abstract class DataExpression extends BaseExpression {
         if (descriptor == null) {
             return null;
         }
-        return descriptor.getObjectBuilder().getMappingForAttributeName(getName());
+        DatabaseMapping mapping = descriptor.getObjectBuilder().getMappingForAttributeName(getName());
+
+        // Retrieve aggregate mapping when requested
+        if (mapping == null && resolveAggregate && baseExpression.isObjectExpression()
+                && ((ObjectExpression)baseExpression).derivedExpressions != null) {
+            mapping = getAggregateMapping(getName());
+        }
+
+        return mapping;
+    }
+
+    // Retrieve the aggregate mapping.
+    private DatabaseMapping getAggregateMapping(String name) {
+        List<Expression> derivedExpressions = ((ObjectExpression)baseExpression).derivedExpressions;
+        if (derivedExpressions.size() > 1) {
+            Expression derivedExpression = derivedExpressions.get(derivedExpressions.size() - 2);
+            if (derivedExpression.isObjectExpression()) {
+                ObjectExpression objectExpression = (ObjectExpression) derivedExpression;
+                DatabaseMapping parentMapping = null;
+                if (objectExpression.baseExpression != null) {
+                    ClassDescriptor parentDescriptor = ((DataExpression) this.baseExpression).getDescriptor();
+                    parentMapping = parentDescriptor.getObjectBuilder().getMappingForAttributeName(objectExpression.getName());
+                }
+                if (parentMapping != null && parentMapping.isAggregateMapping()) {
+                    ClassDescriptor parentDescriptor;
+                    parentDescriptor = objectExpression.getDescriptor();
+                    if (parentDescriptor != null && parentDescriptor.isAggregateDescriptor()) {
+                        return parentDescriptor.getObjectBuilder().getMappingForAttributeName(name);
+                    }
+                }
+            }
+        }
+        return null;
     }
 
     public QueryKey getQueryKeyOrNull() {
@@ -286,7 +342,7 @@ public abstract class DataExpression extends BaseExpression {
 
     @Override
     public boolean hasBeenAliased() {
-        return ((tableAliases != null) && (tableAliases.size() != 0));
+        return ((tableAliases != null) && (!tableAliases.isEmpty()));
 
     }
 
@@ -305,6 +361,11 @@ public abstract class DataExpression extends BaseExpression {
         return false;
     }
 
+    // Just placeholder for overriding method in QueryKeyExpression
+    boolean isAttribute(boolean resolveAggregate) {
+        return false;
+    }
+
     @Override
     public boolean isDataExpression() {
         return true;
@@ -315,7 +376,7 @@ public abstract class DataExpression extends BaseExpression {
      * For iterating using an inner class
      */
     @Override
-    public void iterateOn(ExpressionIterator iterator) {
+    public void iterateOn(ExpressionIterator<?> iterator) {
         super.iterateOn(iterator);
         if (baseExpression != null) {
             baseExpression.iterateOn(iterator);
@@ -382,7 +443,7 @@ public abstract class DataExpression extends BaseExpression {
      * Used for cloning.
      */
     @Override
-    protected void postCopyIn(Map alreadyDone) {
+    protected void postCopyIn(Map<Expression, Expression> alreadyDone) {
         super.postCopyIn(alreadyDone);
         clearAliases();
         this.derivedFields = copyCollection(this.derivedFields, alreadyDone);

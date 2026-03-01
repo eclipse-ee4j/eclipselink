@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -20,28 +20,6 @@
 //     IBM - Bug 537795: CASE THEN and ELSE scalar expression Constants should not be casted to CASE operand type
 package org.eclipse.persistence.internal.expressions;
 
-import static org.eclipse.persistence.queries.ReadAllQuery.Direction.CHILD_TO_PARENT;
-
-import java.io.CharArrayWriter;
-import java.io.IOException;
-import java.io.Writer;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.IdentityHashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeMap;
-import java.util.TreeSet;
-import java.util.Vector;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.exceptions.ValidationException;
@@ -56,12 +34,10 @@ import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.FunctionField;
 import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.history.DecoratedDatabaseTable;
 import org.eclipse.persistence.internal.history.UniversalAsOfClause;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.AggregateCollectionMapping;
-import org.eclipse.persistence.mappings.AggregateObjectMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DirectCollectionMapping;
 import org.eclipse.persistence.mappings.ManyToManyMapping;
@@ -73,6 +49,27 @@ import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.queries.SQLCall;
+
+import java.io.CharArrayWriter;
+import java.io.IOException;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.IdentityHashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeMap;
+import java.util.TreeSet;
+import java.util.Vector;
+
+import static org.eclipse.persistence.queries.ReadAllQuery.Direction.CHILD_TO_PARENT;
 
 /**
  * <p><b>Purpose</b>: Print SELECT statement.
@@ -92,7 +89,7 @@ public class SQLSelectStatement extends SQLStatement {
     protected int fieldCounter=0;
 
     /** Fields being selected (can include expressions). */
-    protected Vector fields;
+    protected List fields;
 
     /** Fields not being selected (can include expressions). */
     protected List<Object> nonSelectFields;
@@ -148,17 +145,18 @@ public class SQLSelectStatement extends SQLStatement {
     protected boolean shouldCacheFieldAliases;
 
     public SQLSelectStatement() {
-        this.fields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(2);
+        this.fields = new ArrayList(2);
         this.tables = new ArrayList<>(4);
         this.requiresAliases = false;
         this.useUniqueFieldAliases=false;
         this.isAggregateSelect = false;
         this.distinctState = ObjectLevelReadQuery.UNCOMPUTED_DISTINCT;
         this.currentAliasNumber = 0;
+        this.fieldAliases = null;
     }
 
     public void addField(DatabaseField field) {
-        getFields().addElement(field);
+        getFields().add(field);
     }
 
     /**
@@ -166,7 +164,7 @@ public class SQLSelectStatement extends SQLStatement {
      * is for and aggregate function.
      */
     public void addField(Expression expression) {
-        if (expression instanceof FunctionExpression) {
+        if (expression.isFunctionExpression()) {
             if (expression.getOperator().isAggregateOperator()) {
                 setIsAggregateSelect(true);
             }
@@ -270,9 +268,9 @@ public class SQLSelectStatement extends SQLStatement {
                     outerJoinedAliases.add(newAlias);
                     writer.write(newAlias.getQualifiedNameDelimited(printer.getPlatform()));
                 } else {// do normal outer stuff for Informix
-                    for (Enumeration<DatabaseTable> target = outerExpression.getMapping().getReferenceDescriptor().getTables().elements();
-                         target.hasMoreElements();) {
-                        DatabaseTable newTarget = target.nextElement();
+                    for (Iterator<DatabaseTable> target = outerExpression.getMapping().getReferenceDescriptor().getTables().iterator();
+                         target.hasNext();) {
+                        DatabaseTable newTarget = target.next();
                         DatabaseTable newAlias = outerExpression.aliasForTable(newTarget);
                         writer.write(", OUTER ");
                         writer.write(newTarget.getQualifiedNameDelimited(printer.getPlatform()));
@@ -291,7 +289,7 @@ public class SQLSelectStatement extends SQLStatement {
      * Most platforms use this syntax, support is also offered for Oracle to join in the where clause (although it should use the FROM clause as the WHERE clause is obsolete).
      * This is also used for inner joins when configured in the platform.
      */
-    public void appendFromClauseForOuterJoin(ExpressionSQLPrinter printer, List<DatabaseTable> outerJoinedAliases, Collection aliasesOfTablesToBeLocked, boolean shouldPrintUpdateClauseForAllTables) throws IOException {
+    public void appendFromClauseForOuterJoin(ExpressionSQLPrinter printer, List<DatabaseTable> outerJoinedAliases, Collection<DatabaseTable> aliasesOfTablesToBeLocked, boolean shouldPrintUpdateClauseForAllTables) throws IOException {
         Writer writer = printer.getWriter();
         AbstractSession session = printer.getSession();
         DatabasePlatform platform = session.getPlatform();
@@ -433,13 +431,13 @@ public class SQLSelectStatement extends SQLStatement {
                             mapKeyTable = holder.mapKeyHolder.targetTable;
                             tablesInOrder.add(mapKeyAlias);
                         }
-                        TreeMap indexToExpressionMap = new TreeMap();
+                        TreeMap<Integer, Expression> indexToExpressionMap = new TreeMap<>();
                         mapTableIndexToExpression(holder.outerJoinedMappingCriteria, indexToExpressionMap, tablesInOrder);
-                        Expression sourceToRelationJoin = (Expression)indexToExpressionMap.get(1);
-                        Expression relationToTargetJoin = (Expression)indexToExpressionMap.get(2);
+                        Expression sourceToRelationJoin = indexToExpressionMap.get(1);
+                        Expression relationToTargetJoin = indexToExpressionMap.get(2);
                         Expression relationToKeyJoin = null;
                         if (isMapKeyObject) {
-                            relationToKeyJoin = (Expression)indexToExpressionMap.get(3);
+                            relationToKeyJoin = indexToExpressionMap.get(3);
                         }
 
                         if (outerExpression.shouldUseOuterJoin()) {
@@ -537,7 +535,7 @@ public class SQLSelectStatement extends SQLStatement {
     /**
      * Print the FOR UPDATE clause after each join if required.
      */
-    protected void printForUpdateClauseOnJoin(DatabaseTable alias, ExpressionSQLPrinter printer, boolean shouldPrintUpdateClauseForAllTables, Collection aliasesOfTablesToBeLocked, DatabasePlatform platform) {
+    protected void printForUpdateClauseOnJoin(DatabaseTable alias, ExpressionSQLPrinter printer, boolean shouldPrintUpdateClauseForAllTables, Collection<DatabaseTable> aliasesOfTablesToBeLocked, DatabasePlatform platform) {
         if (shouldPrintUpdateClauseForAllTables || (aliasesOfTablesToBeLocked != null && aliasesOfTablesToBeLocked.remove(alias))) {
             getForUpdateClause().printSQL(printer, this);
         }
@@ -561,7 +559,7 @@ public class SQLSelectStatement extends SQLStatement {
         boolean shouldPrintUpdateClause = printer.getPlatform().shouldPrintForUpdateClause()
                 && !printer.getPlatform().shouldPrintLockingClauseAfterWhereClause()
                 && (getForUpdateClause() != null);
-        Collection aliasesOfTablesToBeLocked = null;
+        Collection<DatabaseTable> aliasesOfTablesToBeLocked = null;
         boolean shouldPrintUpdateClauseForAllTables = false;
         if (shouldPrintUpdateClause) {
             aliasesOfTablesToBeLocked = getForUpdateClause().getAliasesOfTablesToBeLocked(this);
@@ -627,7 +625,7 @@ public class SQLSelectStatement extends SQLStatement {
 
         printer.getWriter().write(" GROUP BY ");
 
-        Vector<DatabaseField> newFields = new Vector<>();
+        List<DatabaseField> newFields = new ArrayList<>();
         // to avoid printing a comma before the first field
         printer.setIsFirstElementPrinted(false);
         for (Expression expression : getGroupByExpressions()) {
@@ -765,8 +763,8 @@ public class SQLSelectStatement extends SQLStatement {
             Expression expression = expressionsEnum.next();
 
             /*
-             *  Allow the platform to indicate if they support parameter expressions in the ORDER BY clause 
-             *  as a whole, regardless if individual functions allow binding. We make that decision here 
+             *  Allow the platform to indicate if they support parameter expressions in the ORDER BY clause
+             *  as a whole, regardless if individual functions allow binding. We make that decision here
              *  before we continue parsing into generic API calls
              */
             if(!printer.getPlatform().supportsOrderByParameters()) {
@@ -777,7 +775,7 @@ public class SQLSelectStatement extends SQLStatement {
                         ((ConstantExpression) expression).setCanBind(false);
                     }
                 } else if (printer.getPlatform().isDynamicSQLRequiredForFunctions()) {
-                    if(expression.isParameterExpression() 
+                    if(expression.isParameterExpression()
                             || (expression.isConstantExpression() && printer.getPlatform().shouldBindLiterals())) {
                         printer.getCall().setUsesBinding(false);
                     }
@@ -822,12 +820,12 @@ public class SQLSelectStatement extends SQLStatement {
     /**
      * INTERNAL: Alias the tables in all of our nodes.
      */
-    public void assignAliases(Vector allExpressions) {
+    public void assignAliases(List<Expression> allExpressions) {
         // For sub-selects all statements must share aliasing information.
         // For  CR#2627019
         currentAliasNumber = getCurrentAliasNumber();
 
-        ExpressionIterator iterator = new ExpressionIterator() {
+        ExpressionIterator<Void> iterator = new ExpressionIterator<>() {
             @Override
             public void iterate(Expression each) {
                 currentAliasNumber = each.assignTableAliasesStartingAt(currentAliasNumber);
@@ -840,9 +838,9 @@ public class SQLSelectStatement extends SQLStatement {
                 getBuilder().assignTableAliasesStartingAt(currentAliasNumber);
             }
         } else {
-            for (Enumeration expressionEnum = allExpressions.elements();
-                     expressionEnum.hasMoreElements();) {
-                Expression expression = (Expression)expressionEnum.nextElement();
+            for (Iterator<Expression> iterator1 = allExpressions.iterator();
+                 iterator1.hasNext();) {
+                Expression expression = iterator1.next();
                 iterator.iterateOn(expression);
             }
         }
@@ -884,7 +882,7 @@ public class SQLSelectStatement extends SQLStatement {
      * This is used by cursored stream to determine if an expression used distinct as the size must account for this.
      */
     public void computeDistinct() {
-        ExpressionIterator iterator = new ExpressionIterator() {
+        ExpressionIterator<Void> iterator = new ExpressionIterator<>() {
             @Override
             public void iterate(Expression expression) {
                 if (expression.isQueryKeyExpression() && ((QueryKeyExpression)expression).shouldQueryToManyRelationship()) {
@@ -939,23 +937,24 @@ public class SQLSelectStatement extends SQLStatement {
         // Compute tables should never defer to computeTablesFromTables
         // This iterator will pull all the table aliases out of an expression, and
         // put them in a map.
-        ExpressionIterator iterator = new ExpressionIterator() {
+        ExpressionIterator<Map<DatabaseTable, DatabaseTable>> iterator = new ExpressionIterator<>() {
             @Override
             public void iterate(Expression each) {
                 TableAliasLookup aliases = each.getTableAliases();
 
                 if (aliases != null) {
-                    // Insure that an aliased table is only added to a single
+                    // Ensure that an aliased table is only added to a single
                     // FROM clause.
                     if (!aliases.haveBeenAddedToStatement()) {
-                        aliases.addToMap((Map<DatabaseTable, DatabaseTable>)getResult());
+                        aliases.addToMap(getResult());
                         aliases.setHaveBeenAddedToStatement(true);
                     }
                 }
             }
         };
 
-        iterator.setResult(new Hashtable(5));
+        //changing the collection type changes the ordering of aliases
+        iterator.setResult(new Hashtable<>(5));
 
         if (getWhereClause() != null) {
             iterator.iterateOn(getWhereClause());
@@ -968,16 +967,16 @@ public class SQLSelectStatement extends SQLStatement {
 
         //Iterate on fields as well in that rare case where the select is not in the where clause
         for (Object field : getFields()) {
-            if (field instanceof Expression) {
-                iterator.iterateOn((Expression)field);
+            if (field instanceof Expression e) {
+                iterator.iterateOn(e);
             }
         }
 
         //Iterate on non-selected fields as well in that rare case where the from is not in the where clause
         if (hasNonSelectFields()) {
             for (Object field : getNonSelectFields()) {
-                if (field instanceof Expression) {
-                    iterator.iterateOn((Expression)field);
+                if (field instanceof Expression e) {
+                    iterator.iterateOn(e);
                 }
             }
         }
@@ -985,7 +984,7 @@ public class SQLSelectStatement extends SQLStatement {
         // Always iterator on the builder, as the where clause may not contain the builder, i.e. value=value.
         iterator.iterateOn(getBuilder());
 
-        Map<DatabaseTable, DatabaseTable> allTables = (Map<DatabaseTable, DatabaseTable>)iterator.getResult();
+        Map<DatabaseTable, DatabaseTable> allTables = iterator.getResult();
         setTableAliases(allTables);
 
         for (DatabaseTable table : allTables.values()) {
@@ -998,6 +997,7 @@ public class SQLSelectStatement extends SQLStatement {
      * no ambiguity
      */
     public void computeTablesFromTables() {
+        //changing the collection type changes the ordering of aliases
         Map<DatabaseTable, DatabaseTable> allTables = new Hashtable<>();
         AsOfClause asOfClause = null;
 
@@ -1042,14 +1042,15 @@ public class SQLSelectStatement extends SQLStatement {
 
         //check all fields for a match
         for (Object fieldOrExpression : fields) {
-            if (fieldOrExpression instanceof DatabaseField) {
-                DatabaseField field = (DatabaseField)fieldOrExpression;
+            if (fieldOrExpression instanceof DatabaseField field) {
                 DataExpression exp = (DataExpression)expression;
 
                 if (field.equals(orderByField)) {
                     // Ignore aggregates
-                    while (((DataExpression)exp.getBaseExpression()).getMapping() instanceof AggregateObjectMapping) {
+                    DatabaseMapping mapping = ((DataExpression) exp.getBaseExpression()).getMapping();
+                    while (mapping != null && mapping.isAggregateObjectMapping()) {
                         exp = (DataExpression)exp.getBaseExpression();
+                        mapping = exp.getMapping();
                     }
                     if (exp.getBaseExpression() == getBuilder()) {
                         // found a match
@@ -1092,7 +1093,7 @@ public class SQLSelectStatement extends SQLStatement {
      * INTERNAL:
      * Return all the fields
      */
-    public Vector getFields() {
+    public List getFields() {
         return fields;
     }
 
@@ -1388,7 +1389,7 @@ public class SQLSelectStatement extends SQLStatement {
      */
     public final void normalize(AbstractSession session, ClassDescriptor descriptor) {
         // 2612538 - the default size of Map (32) is appropriate
-        normalize(session, descriptor, new IdentityHashMap());
+        normalize(session, descriptor, new IdentityHashMap<>());
     }
 
     /**
@@ -1399,7 +1400,7 @@ public class SQLSelectStatement extends SQLStatement {
      * @param clonedExpressions With 2612185 allows additional expressions
      * from multiple bases to be rebuilt on the correct cloned base.
      */
-    public void normalize(AbstractSession session, ClassDescriptor descriptor, Map clonedExpressions) {
+    public void normalize(AbstractSession session, ClassDescriptor descriptor, Map<Expression, Expression> clonedExpressions) {
         // Initialize the builder.
         if (getBuilder() == null) {
             if (getWhereClause() == null) {
@@ -1453,7 +1454,7 @@ public class SQLSelectStatement extends SQLStatement {
 
         // Compute all other expressions used other than the where clause, i.e. select, order by, group by.
         // Also must ensure that all expression use a unique builder.
-        Vector allExpressions = new Vector();
+        List<Expression> allExpressions = new ArrayList<>();
 
         // Process select expressions.
         rebuildAndAddExpressions(getFields(), allExpressions, builder, clonedExpressions);
@@ -1551,20 +1552,20 @@ public class SQLSelectStatement extends SQLStatement {
         }
 
         for (int index = 0; index < allExpressions.size(); index++) {
-            Expression expression = (Expression)allExpressions.get(index);
+            Expression expression = allExpressions.get(index);
             expression.getBuilder().setSession(session);
             expression.normalize(normalizer);
         }
         // distinct state has been set by normalization, see may be that should be reversed
         if (shouldDistinctBeUsed() && !isDistinctComputed && !session.getPlatform().isLobCompatibleWithDistinct()) {
             for (Object field : getFields()) {
-                if (field instanceof DatabaseField) {
-                    if (Helper.isLob((DatabaseField)field)) {
+                if (field instanceof DatabaseField dbField) {
+                    if (Helper.isLob(dbField)) {
                         dontUseDistinct();
                         break;
                     }
-                } else if (field instanceof Expression) {
-                    if (Helper.hasLob(((Expression)field).getSelectionFields(this.query))) {
+                } else if (field instanceof Expression expression) {
+                    if (Helper.hasLob(expression.getSelectionFields(this.query))) {
                         dontUseDistinct();
                         break;
                     }
@@ -1652,7 +1653,7 @@ public class SQLSelectStatement extends SQLStatement {
      * This is used in the multiple table and subclasses read so all of the descriptor's
      * possible tables must be mapped to the view.
      */
-    public void normalizeForView(AbstractSession theSession, ClassDescriptor theDescriptor, Map clonedExpressions) {
+    public void normalizeForView(AbstractSession theSession, ClassDescriptor theDescriptor, Map<Expression, Expression> clonedExpressions) {
         ExpressionBuilder builder;
 
         // bug 3878553 - alias all view selects.
@@ -1744,10 +1745,9 @@ public class SQLSelectStatement extends SQLStatement {
     /**
      * Print the SQL representation of the statement on a stream.
      */
-    public Vector<DatabaseField> printSQL(ExpressionSQLPrinter printer) {
+    public List<DatabaseField> printSQL(ExpressionSQLPrinter printer) {
         try {
-            Vector<DatabaseField> selectFields = null;
-            selectFields = printSQLSelect(printer);
+            List<DatabaseField> selectFields = printSQLSelect(printer);
             printSQLWhereKeyWord(printer);
             printSQLWhereClause(printer);
             printSQLHierarchicalQueryClause(printer);
@@ -1762,8 +1762,7 @@ public class SQLSelectStatement extends SQLStatement {
         }
     }
 
-    public Vector<DatabaseField> printSQLSelect(ExpressionSQLPrinter printer) throws IOException {
-        Vector<DatabaseField> selectFields = null;
+    public List<DatabaseField> printSQLSelect(ExpressionSQLPrinter printer) throws IOException {
         printer.setRequiresDistinct(shouldDistinctBeUsed());
 
         if (hasUnionExpressions()) {
@@ -1784,7 +1783,7 @@ public class SQLSelectStatement extends SQLStatement {
             printer.printString("DISTINCT ");
         }
 
-        selectFields = writeFieldsIn(printer);
+        List<DatabaseField> selectFields = writeFieldsIn(printer);
         //fix bug:6070214: turn off unique field aliases after fields are written
         setUseUniqueFieldAliases(false);
 
@@ -1846,7 +1845,7 @@ public class SQLSelectStatement extends SQLStatement {
     /**
      * Rebuild the expressions with the correct expression builder if using a different one.
      */
-    public void rebuildAndAddExpressions(List expressions, List allExpressions, ExpressionBuilder primaryBuilder, Map clonedExpressions) {
+    public void rebuildAndAddExpressions(List expressions, List<Expression> allExpressions, ExpressionBuilder primaryBuilder, Map<Expression, Expression> clonedExpressions) {
         for (int index = 0; index < expressions.size(); index++) {
             Object fieldOrExpression = expressions.get(index);
             // Allow for special fields that contain a functional transformation.
@@ -1889,14 +1888,13 @@ public class SQLSelectStatement extends SQLStatement {
      * Exact copy of the another rebuildAndAddExpressions adopted to a Map with Expression values
      * as the first parameter (instead of Vector in the original method)
      */
-    public void rebuildAndAddExpressions(Map expressions, Vector allExpressions, ExpressionBuilder primaryBuilder, Map clonedExpressions) {
+    public void rebuildAndAddExpressions(Map expressions, List<Expression> allExpressions, ExpressionBuilder primaryBuilder, Map<Expression, Expression> clonedExpressions) {
         Iterator it = expressions.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry entry = (Map.Entry)it.next();
             Object fieldOrExpression = entry.getValue();
 
-            if (fieldOrExpression instanceof Expression) {
-                Expression expression = (Expression)fieldOrExpression;
+            if (fieldOrExpression instanceof Expression expression) {
                 ExpressionBuilder originalBuilder = expression.getBuilder();
 
                 if (originalBuilder != primaryBuilder) {
@@ -1914,7 +1912,7 @@ public class SQLSelectStatement extends SQLStatement {
                     entry.setValue(expression);
                 }
 
-                allExpressions.addElement(expression);
+                allExpressions.add(expression);
             }
         }
     }
@@ -2011,8 +2009,8 @@ public class SQLSelectStatement extends SQLStatement {
      */
     public void setFields(Vector fields) {
         for (Object fieldOrExpression : fields) {
-            if (fieldOrExpression instanceof FunctionExpression) {
-                if (((FunctionExpression)fieldOrExpression).getOperator().isAggregateOperator()) {
+            if (fieldOrExpression instanceof FunctionExpression functionExpression) {
+                if (functionExpression.getOperator().isAggregateOperator()) {
                     setIsAggregateSelect(true);
                     break;
                 }
@@ -2151,11 +2149,8 @@ public class SQLSelectStatement extends SQLStatement {
         } else {
             printer.printString(field.getNameDelimited(printer.getPlatform()));
         }
-        if (this.getUseUniqueFieldAliases()){
-            String alias = generatedAlias(field.getNameDelimited(printer.getPlatform()));
-            if (shouldCacheFieldAliases()) {
-                fieldAliases.put(field, alias);
-            }
+        if (this.getUseUniqueFieldAliases()) {
+            String alias = generatedAlias(field);
             printer.printString(" AS " + alias);
         }
     }
@@ -2164,11 +2159,24 @@ public class SQLSelectStatement extends SQLStatement {
         return shouldCacheFieldAliases;
     }
 
+    /**
+     * Enable field aliases caching.
+     * Generated alias for a field may be retrieved using {@link #getAliasFor(DatabaseField)}.
+     */
     public void enableFieldAliasesCaching() {
-        fieldAliases = new HashMap<>();
+        if (fieldAliases == null) {
+            fieldAliases = new HashMap<>();
+        }
         shouldCacheFieldAliases = true;
     }
 
+    /**
+     * Get cached alias for field.
+     *
+     * @param field the field to search for an alias.
+     * @return when caching is enabled, returns the cached alias for the field or {@code null}
+     *         when no alias exists, when caching is disabled, returns {@code ""}
+     */
     public String getAliasFor(DatabaseField field) {
         if (shouldCacheFieldAliases()) {
             return fieldAliases.get(field);
@@ -2178,27 +2186,35 @@ public class SQLSelectStatement extends SQLStatement {
     }
 
     /**
-    * Returns a generated alias based on the column name.  If the new alias will be too long
-    * The alias is automatically truncated
-    */
-    public String generatedAlias(String fieldName) {
-        return "a" + getNextFieldCounterValue();
-     }
+     * Returns a generated alias based on the common prefix and generated number.
+     * Generated aliases may be cached for later usage when caching is enabled using
+     * {@link #enableFieldAliasesCaching()}.
+     *
+     * @param field database field
+     * @return the generated alias
+     */
+    public String generatedAlias(DatabaseField field) {
+        String alias = "a" + getNextFieldCounterValue();
+        if (shouldCacheFieldAliases()) {
+            fieldAliases.put(field, alias);
+        }
+        return alias;
+    }
 
     /**
      * INTERNAL:
      */
-    protected void writeFieldsFromExpression(ExpressionSQLPrinter printer, Expression expression, Vector<DatabaseField> newFields) {
+    protected void writeFieldsFromExpression(ExpressionSQLPrinter printer, Expression expression, List<DatabaseField> newFields) {
         expression.writeFields(printer, newFields, this);
     }
 
     /**
      * INTERNAL:
      */
-    protected Vector<DatabaseField> writeFieldsIn(ExpressionSQLPrinter printer) {
+    protected List<DatabaseField> writeFieldsIn(ExpressionSQLPrinter printer) {
         this.lastTable = null;
 
-        Vector<DatabaseField> newFields = NonSynchronizedVector.newInstance();
+        List<DatabaseField> newFields = new ArrayList<>();
 
         for (Object next : getFields()) {
             // Fields can be null placeholders for fetch groups.
@@ -2226,24 +2242,24 @@ public class SQLSelectStatement extends SQLStatement {
      *     (employee.emp_id = proj_emp.emp_id) and (proj_emp.proj_id = project.proj_id)
      *   tablesInOrder:
      *     employee, proj_emp, project
-     *
+     * <p>
      *   results:
      *     map:
      *          1 -&gt; (employee.emp_id = proj_emp.emp_id)
      *          2 -&gt; (proj_emp.proj_id = project.proj_id)
      *     returned SortedSet: {0, 1, 2}.
-     *
+     * <p>
      *     Note that tablesInOrder must contain all tables used by expression
      */
-    public static SortedSet mapTableIndexToExpression(Expression expression, TreeMap map, List<DatabaseTable> tablesInOrder) {
+    public static SortedSet<Integer> mapTableIndexToExpression(Expression expression, TreeMap<Integer, Expression> map, List<DatabaseTable> tablesInOrder) {
         // glassfish issue 2440:
         // - Use DataExpression.getAliasedField instead of getField. This
         // allows to distinguish source and target tables in case of a self
         // referencing relationship.
         // - Removed the block handling ParameterExpressions, because it is
         // not possible to get into that method with a ParameterExpression.
-        TreeSet tables = new TreeSet();
-        if(expression instanceof DataExpression) {
+        TreeSet<Integer> tables = new TreeSet<>();
+        if(expression.isDataExpression()) {
             DataExpression de = (DataExpression)expression;
             if(de.getAliasedField() != null) {
                 tables.add(tablesInOrder.indexOf(de.getAliasedField().getTable()));
@@ -2256,12 +2272,13 @@ public class SQLSelectStatement extends SQLStatement {
         // (employee.emp_id1 = proj_emp.emp_id1).and((employee.emp_id2 = proj_emp.emp_id2).and((proj_emp.proj_id1 = project.proj_id1).and(proj_emp.proj_id2 = project.proj_id2)))
         // Never adding (always overriding) cached expression (the code before the fix) resulted in the first child (employee.emp_id1 = proj_emp.emp_id1) being overridden and lost.
         // Always adding to the cached in the map expression would result in (proj_emp.proj_id1 = project.proj_id1).and(proj_emp.proj_id2 = project.proj_id2)) added twice.
-        TreeMap originalMap = (TreeMap)map.clone();
-        if(expression instanceof CompoundExpression) {
+        @SuppressWarnings({"unchecked"})
+        TreeMap<Integer, Expression> originalMap = (TreeMap<Integer, Expression>) map.clone();
+        if(expression.isCompoundExpression()) {
             CompoundExpression ce = (CompoundExpression)expression;
             tables.addAll(mapTableIndexToExpression(ce.getFirstChild(), map, tablesInOrder));
             tables.addAll(mapTableIndexToExpression(ce.getSecondChild(), map, tablesInOrder));
-        } else if(expression instanceof FunctionExpression) {
+        } else if(expression.isFunctionExpression()) {
             FunctionExpression fe = (FunctionExpression)expression;
             Iterator<Expression> it = fe.getChildren().iterator();
             while(it.hasNext()) {
@@ -2270,8 +2287,8 @@ public class SQLSelectStatement extends SQLStatement {
         }
 
         if(tables.size() == 2) {
-            Object last = tables.last();
-            Expression cachedExpression = (Expression)originalMap.get(last);
+            Integer last = tables.last();
+            Expression cachedExpression = originalMap.get(last);
             if(cachedExpression == null) {
                 map.put(last, expression);
             } else {
@@ -2293,22 +2310,22 @@ public class SQLSelectStatement extends SQLStatement {
      *     (employee.emp_id = proj_emp.emp_id) and (proj_emp.proj_id = project.proj_id)
      *   tablesInOrder:
      *     employee, proj_emp, project
-     *
+     * <p>
      *   results:
      *     returned map:
      *          proj_emp -&gt; (employee.emp_id = proj_emp.emp_id)
      *          project -&gt; (proj_emp.proj_id = project.proj_id)
-     *
+     * <p>
      *     Note that tablesInOrder must contain all tables used by expression
      */
-    public static Map mapTableToExpression(Expression expression, Vector tablesInOrder) {
-        TreeMap indexToExpressionMap = new TreeMap();
+    public static Map<DatabaseTable, Expression> mapTableToExpression(Expression expression, List<DatabaseTable> tablesInOrder) {
+        TreeMap<Integer, Expression> indexToExpressionMap = new TreeMap<>();
         mapTableIndexToExpression(expression, indexToExpressionMap, tablesInOrder);
-        HashMap map = new HashMap(indexToExpressionMap.size());
-        Iterator it = indexToExpressionMap.entrySet().iterator();
+        Map<DatabaseTable, Expression> map = new HashMap<>(indexToExpressionMap.size());
+        Iterator<Map.Entry<Integer, Expression>> it = indexToExpressionMap.entrySet().iterator();
         while(it.hasNext()) {
-            Map.Entry entry = (Map.Entry)it.next();
-            int index = (Integer) entry.getKey();
+            Map.Entry<Integer, Expression> entry = it.next();
+            int index = entry.getKey();
             map.put(tablesInOrder.get(index), entry.getValue());
         }
         return map;

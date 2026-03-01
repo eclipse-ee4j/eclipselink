@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -173,7 +173,7 @@ public abstract class AbstractPathExpressionStateObject extends AbstractStateObj
             char character = text.charAt(index);
 
             if (character == DOT) {
-                if (word.length() > 0) {
+                if (!word.isEmpty()) {
                     // Append the content of the buffer to the end of the last segment
                     if (appendToLastSegment) {
                         String currentPath = paths.get(pathCount - 1);
@@ -199,7 +199,7 @@ public abstract class AbstractPathExpressionStateObject extends AbstractStateObj
             }
         }
 
-        if (word.length() > 0) {
+        if (!word.isEmpty()) {
             // Append the content of the buffer to the end of the last segment
             if (appendToLastSegment) {
                 String currentPath = paths.get(pathCount - 1);
@@ -609,7 +609,7 @@ public abstract class AbstractPathExpressionStateObject extends AbstractStateObj
         if (stateObject != null) {
             String variable = stateObject.toString();
 
-            if (variable.length() > 0) {
+            if (!variable.isEmpty()) {
                 writer.append(variable);
 
                 if (hasItems()) {

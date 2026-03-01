@@ -1,0 +1,1000 @@
+image:Elug_draft_icon.png[Image:Elug draft
+icon.png,title="Image:Elug draft icon.png"] *For the latest EclipseLink
+documentation, please see
+http://www.eclipse.org/eclipselink/documentation/*
+
+'''''
+
+*TOC* Special:Whatlinkshere_Introduction_to_Cache_(ELUG)[Related Topics]
+
+The EclipseLink cache is an in-memory repository that stores recently
+read or written objects based on class and primary key values.
+EclipseLink uses the cache to do the following:
+
+* Improve performance by holding recently read or written objects and
+accessing them in-memory to minimize database access.
+* Manage locking and isolation level.
+* Manage object identity.
+
+== Cache Architecture
+
+EclipseLink uses two types of cache: the *session cache* maintains
+objects retrieved from and written to the data source; and the *unit of
+work cache* holds objects while they participate in transactions. When a
+unit of work successfully commits to the data source, EclipseLink
+updates the session cache accordingly.
+
+[width="100%",cols="<100%",]
+|===
+|*_Note_*: You can also configure a query to cache its results (see
+link:Using%20Advanced%20Query%20API%20(ELUG)[How to Cache Results in a
+ReadQuery])
+|===
+
+As this figure shows, the session cache and the unit of work cache work
+together with the data source connection to manage objects in an
+EclipseLink application. The object life cycle relies on these three
+mechanisms.
+
+[#Figure 98-1]## *_Object Life Cycle and the EclipseLink Caches_*
+
+.Object Life Cycle and the EclipseLink Caches
+image::cacharch.gif[Object Life Cycle and the EclipseLink
+Caches,title="Object Life Cycle and the EclipseLink Caches"]
+
+=== Session Cache
+
+The session cache is a shared cache that services clients attached to a
+given session. When you read objects from or write objects to the data
+source using a client session, EclipseLink saves a copy of the objects
+in the parent server session’s cache and makes them accessible to all
+other processes in the session.
+
+EclipseLink adds objects to the session cache from the following:
+
+* The data store, when EclipseLink executes a read operation
+* The unit of work cache, when a unit of work successfully commits a
+transaction
+
+An isolated client session is a special type of client session that
+provides its own session cache isolated from the shared object cache of
+its parent server session. The isolated client session cache can be used
+to improve user-based security or to avoid caching highly volatile data.
+Developers can choose on a per object type whether default shared
+session cache or the isolated client session cache is used.
+
+For more information, see
+link:Introduction%20to%20EclipseLink%20Sessions%20(ELUG)#Isolated_Client_Sessions[Isolated
+Client Sessions].
+
+=== Unit of Work Cache
+
+The unit of work cache services operations within the unit of work. It
+maintains and isolates objects from the session cache, and writes
+changed or new objects to the session cache after the unit of work
+commits changes to the data source.
+
+== Cache Concepts
+
+This section describes concepts unique to the EclipseLink cache,
+including the following:
+
+* link:#Cache_Type_and_Object_Identity[Cache Type and Object Identity]
+* link:#Querying_and_the_Cache[Querying and the Cache]
+* link:#Stale_Data[Stale Data]
+* link:#Query_Refreshes[Query Refreshes]
+* link:#Cache_Invalidation[Cache Invalidation]
+* link:#Cache_Coordination[Cache Coordination]
+* link:#Cache_Isolation[Cache Isolation]
+* link:#Cache_Locking_and_Transaction_Isolation[Cache Locking and
+Transaction Isolation]
+* link:#Cache_Optimization[Cache Optimization]
+
+=== Cache Type and Object Identity
+
+EclipseLink preserves object identity through its cache using the
+primary key attributes of a persistent entity. These attributes may or
+may not be assigned through sequencing (see
+link:Introduction%20to%20Projects_(ELUG)#Projects_and_Sequencing[Projects
+and Sequencing]). In a Java application, object identity is preserved if
+each object in memory is represented by one, and only one, object
+instance. Multiple retrievals of the same object return references to
+the same object instance–not multiple copies of the same object.
+
+Maintaining object identity is extremely important when the
+application’s object model contains circular references between objects.
+You must ensure that the two objects are referencing each other
+directly, rather than copies of each other. Object identity is important
+when multiple parts of the application may be modifying the same object
+simultaneously.
+
+We recommend that you always maintain object identity. Disable object
+identity only if absolutely necessary, for example, for read-only
+objects (see link:Configuring%20a%20Descriptor%20(ELUG)[Configuring
+Read-Only Descriptors]).
+
+You can configure how object identity is managed on a class-by-class
+basis. The `+ClassDescriptor+` object provides the cache and identity
+map options described in this table.
+
+[#Table 98-1]## *_Cache and Identity Map Options_*
+
+Option (Identity Map)
+
+Caching
+
+Guaranteed Identity
+
+Memory Use
+
+Full Identity Map
+
+Yes
+
+Yes
+
+Very High
+
+Weak Identity Map
+
+Yes
+
+Yes
+
+Low
+
+Soft Identity Map
+
+Yes
+
+Yes
+
+High
+
+Soft Cache Weak Identity Map and Hard Cache Weak Identity Map
+
+Yes
+
+Yes
+
+Medium-high
+
+No Identity Map
+
+No
+
+No
+
+None
+
+For more information, see
+link:#Guidelines_for_Configuring_the_Cache_and_Identity_Maps[Guidelines
+for Configuring the Cache and Identity Maps].
+
+==== Full Identity Map
+
+This option provides full caching and guaranteed identity: objects are
+never flushed from memory unless they are deleted.
+
+It caches all objects and does not remove them. Cache size doubles
+whenever the maximum size is reached. This method may be
+memory-intensive when many objects are read. Do not use this option on
+batch operations.
+
+We recommend using this identity map when the data set size is small and
+memory is in large supply.
+
+==== Weak Identity Map
+
+This option is similar to the full identity map, except that the map
+holds the objects by using weak references. This method allows full
+garbage collection and provides full caching and guaranteed identity.
+
+The weak identity map uses less memory than full identity map but also
+does not provide a durable caching strategy across client/server
+transactions. Objects are available for garbage collection when the
+application no longer references them on the server side (that is, from
+within the server JVM).
+
+==== Soft Identity Map
+
+This option is similar to the weak identity map, except that the map
+uses soft references instead of weak references. This method allows full
+garbage collection and provides full caching and guaranteed identity.
+
+The soft identity map allows for optimal caching of the objects, while
+still allowing the JVM to garbage collect the objects if memory is low.
+
+==== Soft Cache Weak Identity Map and Hard Cache Weak Identity Map
+
+These options are similar to the weak identity map except that they
+maintain a most frequently used subcache. The subcache uses soft or hard
+references to ensure that these objects are garbage-collected only if
+the system is low on memory.
+
+The soft cache weak identity map and hard cache weak identity map
+provide more efficient memory use. They release objects as they are
+garbage-collected, except for a fixed number of most recently used
+objects. Note that weakly cached objects might be flushed if the
+transaction spans multiple client/server invocations. The size of the
+subcache is proportional to the size of the identity map as specified by
+the `+ClassDescriptor+` method `+setIdentityMapSize+`. You should set
+this cache size to be as large as the maximum number of objects (of the
+same type) referenced within a transaction (see
+link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Cache_Type_and_Size_at_the_Descriptor_Level[Configuring
+Cache Type and Size at the Descriptor Level]).
+
+We recommend using this identity map in most circumstances as a means to
+control memory used by the cache.
+
+For more information, see
+link:#What_you_may_need_to_Know_About_the_Internals_of_Weak,_Soft,_and_Hard_Identity_Maps[What
+you may need to Know About the Internals of Weak&#44; Soft&#44; and Hard
+Identity Maps].
+
+==== No Identity Map
+
+This option does not preserve object identity and does not cache
+objects.
+
+We do not recommend using the no identity map option. Instead, review
+the alternatives of cache invalidation and isolated caching.
+
+==== Guidelines for Configuring the Cache and Identity Maps
+
+You can configure the cache at the project
+(link:Configuring%20a%20Project%20(ELUG)#Configuring_Cache_Type_and_Size_at_the_Project_Level[Configuring
+Cache Type and Size at the Project Level]) or descriptor
+(link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Cache_Type_and_Size_at_the_Descriptor_Level[Configuring
+Cache Type and Size at the Descriptor Level]) level.
+
+Use the following guidelines when configuring your cache and identity
+map:
+
+* If objects with a long life span and object identity are important,
+use a `+SoftIdentityMap+`, `+SoftCacheWeakIdentityMap+` or
+`+HardCacheWeakIdentityMap+` policy. For more information on when to
+choose one or the other, see
+link:#What_you_may_need_to_Know_About_the_Internals_of_Weak,_Soft,_and_Hard_Identity_Maps[What
+you may need to Know About the Internals of Weak&#44; Soft&#44; and Hard
+Identity Maps].
+* If object identity is important, but caching is not, use a
+`+WeakIdentityMap+` policy.
+* If an object has a long life span or requires frequent access, or
+object identity is important, use a `+FullIdentityMap+` policy.
+
+[width="100%",cols="<100%",]
+|===
+|*WARNING:* Use the `+FullIdentityMap+` only if the class has a small
+number of finite instances. Otherwise, a memory leak will occur.’’’
+|===
+
+* If an object has a short life span or requires frequent access, and
+identity is not important, use a `+CacheIdentityMap+` policy.
+
+* If objects are discarded immediately after being read from the
+database, such as in a batch operation, use a `+NoIdentityMap+` policy.
+The `+NoIdentityMap+` does not preserve object identity.
+
+[width="100%",cols="<100%",]
+|===
+|*Note:* We do not recommend the use of `+CacheIdentityMap+` and
+`+NoIdentityMap+` policies.
+|===
+
+==== What You May Need to Know About the Internals of Weak, Soft, and Hard Identity Maps
+
+The `+WeakIdentiyMap+` and `+SoftIdentityMap+` use JVM weak and soft
+references to ensure that any object referenced by the application is
+held in the cache. Once the application releases its’ reference to the
+object, the JVM is free to garbage collection the objects. When a weak
+and soft reference is garbage collected - is determined by the JVM. In
+general one could expect a weak reference to be garbage collected on
+each JVM garbage collector, and a soft reference to be garbage collected
+when the JVM determines memory is low.
+
+The `+SoftCacheWeakIdentityMap+` and `+HardCacheWeakIdentityMap+` types
+of identity map contain the following two caches:
+
+* Reference cache: implemented as a `+LinkedList+` that contains soft or
+hard references, respectively.
+* Weak cache: implemented as a `+HashMap+` that contains weak
+references.
+
+When you create a `+SoftCacheWeakIdentityMap+` or
+`+HardCacheWeakIdentityMap+` with a specified size, the reference cache
+`+LinkedList+` is exactly this size. The weak cache `+HashMap+` is
+initialized to 100 percent of the specified size: the weak cache will
+grow when more objects than the specified size are read in. Because
+EclipseLink does not control garbage collection, the JVM can reap the
+weakly held objects whenever it sees fit.
+
+Because the reference cache is implemented as a `+LinkedList+`, new
+objects are added to the end of the list. Because of this, it is by
+nature a least recently used (LRU) cache: fixed size, object at the top
+of the list is deleted, provided the maximum size has been reached.
+
+The `+SoftCacheWeakIdentityMap+` and `+HardCacheWeakIdentityMap+` are
+essentially the same type of identity map. The
+`+HardCacheWeakIdentityMap+` was constructed to work around an issue
+with some JVMs.
+
+If your application reaches a low system memory condition frequently
+enough, or if your platform’s JVM treats weak and soft references the
+same, the objects in the reference cache may be garbage-collected so
+often that you will not benefit from the performance improvement
+provided by it. If this is the case, we recommend that you use the
+`+HardCacheWeakIdentityMap+`. It is identical to the
+`+SoftCacheWeakIdentityMap+` except that it uses hard references in the
+reference cache. This guarantees that your application will benefit from
+the performance improvement provided by it.
+
+When an object in a `+HardCacheWeakIdentityMap+` or
+`+SoftCacheWeakIdentityMap+` is pushed out of the reference cache, it
+gets put in the weak cache. Although it is still cached, EclipseLink
+cannot guarantee that it will be there for any length of time because
+the JVM can decide to garbage-collect weak references at anytime.
+
+=== Querying and the Cache
+
+A query that is run against the shared session cache is known as an
+*in-memory query*. Careful configuration of in-memory querying can
+improve performance (see
+link:Introduction%20to%20EclipseLink%20Queries%20(ELUG)#How_to_Use_In-Memory_Queries[How
+to Use In-Memory Queries]).
+
+By default, a query that looks for a single object based on primary key
+attempts to retrieve the required object from the cache first, searches
+the data source only if the object is not in the cache. All other query
+types search the database first, by default. You can specify whether a
+given query runs against the in-memory cache, the database, or both.
+
+For more information, see
+link:Introduction%20to%20EclipseLink%20Queries%20(ELUG)[Queries and the
+Cache].
+
+=== Handling Stale Data
+
+*Stale data* is an artifact of caching, in which an object in the cache
+is not the most recent version committed to the data source. To avoid
+stale data, implement an appropriate cache locking strategy.
+
+By default, EclipseLink optimizes concurrency to minimize cache locking
+during read or write operations. Use the default EclipseLink isolation
+level, unless you have a very specific reason to change it. For more
+information on isolation levels in EclipseLink, see
+link:#Cache_Isolation[Cache Isolation].
+
+Cache locking regulates when processes read or write an object.
+Depending on how you configure it, cache locking determines whether a
+process can read or write an object that is in use within another
+process.
+
+A well-managed cache makes your application more efficient. There are
+very few cases in which you turn the cache off entirely, because the
+cache reduces database access, and is an important part of managing
+object identity.
+
+To make the most of your cache strategy and to minimize your
+application’s exposure to stale data, we recommend the following:
+
+* link:#Configuring_a_Locking_Policy[Configuring a Locking Policy]
+* link:#Configuring_the_Cache_on_a_Per-Class_Basis[Configuring the Cache
+on a Per-Class Basis]
+* link:#Forcing_a_Cache_Refresh_when_Required_on_a_Per-Query_Basis[Forcing
+a Cache Refresh when Required on a Per-Query Basis]
+* link:#Configuring_Cache_Invalidation[Configuring Cache Invalidation]
+* link:#Configuring_Cache_Coordination[Configuring Cache Coordination]
+
+==== Configuring a Locking Policy
+
+Make sure you configure a locking policy so that you can prevent or at
+least identify when values have already changed on an object you are
+modifying. Typically, this is done using optimistic locking. EclipseLink
+offers several locking policies such as numeric version field,
+time-stamp version field, and some or all fields.
+
+For more information, see
+link:Configuring%20a%20Descriptor%20(ELUG)[Configuring Locking Policy].
+
+==== Configuring the Cache on a Per-Class Basis
+
+If other applications can modify the data used by a particular class,
+use a weaker style of cache for the class. For example, the
+`+SoftCacheWeakIdentityMap+` or `+WeakIdentityMap+` minimizes the length
+of time the cache maintains an object whose reference has been removed.
+
+For more information, see
+link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Cache_Type_and_Size_at_the_Descriptor_Level[Configuring
+Cache Type and Size at the Descriptor Level].
+
+==== Forcing a Cache Refresh when Required on a Per-Query Basis
+
+Any query can include a flag that forces EclipseLink to go to the data
+source for the most up-to-date version of selected objects and update
+the cache with this information.
+
+For more information, see the following:
+
+* link:#Cache_Refresh_API[Cache Refresh API]
+* link:Using%20Basic%20Query%20API%20(ELUG)#Using_DatabaseQuery_Queries[Using
+DatabaseQuery Queries]
+* link:Using%20Basic%20Query%20API%20(ELUG)#Using_Named_Queries[Using
+Named Queries]
+
+==== Configuring Cache Invalidation
+
+Using descriptor API, you can designate an object as invalid: when any
+query attempts to read an invalid object, EclipseLink will go to the
+data source for the most up to date version of that object and update
+the cache with this information. You can manually designate an object as
+invalid or use a `+CacheInvalidationPolicy+` to control the conditions
+under which an object is designated invalid.
+
+For more information, see link:#Cache_Invalidation[Cache Invalidation].
+
+==== Configuring Cache Coordination
+
+If your application is primarily read-based and the changes are all
+being performed by the same Java application operating with multiple,
+distributed sessions, you may consider using the EclipseLink cache
+coordination feature. Although this will not prevent stale data, it
+should greatly minimize it.
+
+For more information, see link:#Cache_Coordination[Cache Coordination].
+
+=== Explicit Query Refreshes
+
+Some distributed systems require only a small number of objects to be
+consistent across the servers in the system. Conversely, other systems
+require that several specific objects must always be guaranteed to be
+up-to-date, regardless of the cost. If you build such a system, you can
+explicitly refresh selected objects from the database at appropriate
+intervals, without incurring the full cost of distributed cache
+coordination.
+
+To implement this type of strategy, do the following:
+
+[arabic]
+. Configure a set of queries that refresh the required objects.
+. Establish an appropriate refresh policy.
+. Invoke the queries as required to refresh the objects.
+
+==== Refresh Policy
+
+When you execute a query, if the required objects are in the cache,
+EclipseLink returns the cached objects without checking the database for
+a more recent version. This reduces the number of objects that
+EclipseLink must build from database results, and is optimal for
+noncoordinated cache environments. However, this may not always be the
+best strategy for a coordinated cache environment.
+
+To override this behavior, set a refresh policy that specifies that the
+objects from the database always take precedence over objects in the
+cache. This updates the cached objects with the data from the database.
+
+You can implement this type of refresh policy on each EclipseLink
+descriptor, or just on certain queries, depending upon the nature of the
+application.
+
+For more information, see the following:
+
+* link:Configuring%20a%20Descriptor%20(ELUG)[Configuring Cache
+Refreshing]
+* link:Introduction%20to%20EclipseLink%20Queries%20(ELUG)[How to Refresh
+the Cache]
+
+[cols="<",]
+|===
+|*Note:* Refreshing does not prevent phantom reads from occurring.
+|===
+
+=== Cache Invalidation
+
+By default, objects remain in the session cache until they are
+explicitly deleted (see
+link:Using%20Basic%20Unit%20of%20Work%20API%20(ELUG)[Deleting Objects])
+or garbage collected when using a weak identity map (see
+link:Configuring%20a%20Project%20(ELUG)[Configuring Cache Type and Size
+at the Project Level]).
+
+Alternatively, you can configure any object with a
+`+CacheInvalidationPolicy+` that lets you specify, either automatically
+or manually, under what circumstances a cached object is invalid: when
+any query attempts to read an invalid object, EclipseLink will go to the
+data source for the most up-to-date version of that object, and update
+the cache with this information.
+
+You can use any of the following `+CacheInvalidationPolicy+` instances:
+
+* `+DailyCacheInvalidationPolicy+`: the object is automatically flagged
+as invalid at a specified time of day.
+* `+NoExpiryCacheInvalidationPolicy+`: the object can only be flagged as
+invalid by explicitly calling
+`+org.eclipse.persistence.sessions.IdentityMapAccessor+` method
+`+invalidateObject+`.
+* `+TimeToLiveCacheInvalidationPolicy+`: the object is automatically
+flagged as invalid after a specified time period has elapsed since the
+object was read.
+
+You can configure a cache invalidation policy in the following ways:
+
+* At the project level that applies to all objects (
+link:Configuring%20a%20Project%20(ELUG)[Configuring Cache Expiration at
+the Project Level])
+* At the descriptor level to override the project level configuration on
+a per-object basis (
+link:Configuring%20a%20Descriptor%20(ELUG)[Configuring Cache Expiration
+at the Descriptor Level])
+* At the query level that applies to the results returned by the query
+(link:Using%20Advanced%20Query%20API%20(ELUG)[How to Configure Cache
+Expiration at the Query Level])
+
+If you configure a query to cache results in its own internal cache (see
+link:Introduction%20to%20EclipseLink%20Queries%20(ELUG)[How to Cache
+Query Results in the Query Cache]), the cache invalidation policy you
+configure at the query level applies to the query’s internal cache in
+the same way it would apply to the session cache.
+
+If you are using a coordinated cache (see link:#Cache_Coordination[Cache
+Coordination]), you can customize how EclipseLink communicates the fact
+that an object has been declared invalid. For more information, see
+link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Cache_Coordination_Change_Propagation_at_the_Descriptor_Level[Configuring
+Cache Coordination Change Propagation at the Descriptor Level].
+
+=== Cache Coordination
+
+The need to maintain up-to-date data for all applications is a key
+design challenge for building a distributed application. The difficulty
+of this increases as the number of servers within an environment
+increases. EclipseLink provides a distributed cache coordination feature
+that ensures data in distributed applications remains current.
+
+Cache coordination reduces the number of optimistic lock exceptions
+encountered in a distributed architecture, and decreases the number of
+failed or repeated transactions in an application. However, cache
+coordination in no way eliminates the need for an effective locking
+policy. To effectively ensure working with up-to-date data, cache
+coordination must be used with optimistic or pessimistic locking. We
+recommend that you use cache coordination with an optimistic locking
+policy (see
+link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Locking_Policy[Configuring
+Locking Policy]).
+
+You can use cache invalidation to improve cache coordination efficiency.
+For more information, see link:#Cache_Invalidation[Cache Invalidation].
+
+=== Cache Isolation
+
+Isolated client sessions provide a mechanism for disabling the shared
+server session cache. Any classes marked as isolated only cache objects
+relative to the life cycle of their client session. These classes never
+utilize the shared server session cache. This is the best mechanism to
+prevent caching as it is configured on a per-class basis allowing
+caching for some classes, and denying for others.
+
+For more information, see
+link:Introduction%20to%20EclipseLink%20Sessions%20(ELUG)#Isolated_Client_Sessions[Isolated
+Client Sessions].
+
+=== Cache Locking and Transaction Isolation
+
+By default, EclipseLink optimizes concurrency to minimize cache locking
+during read or write operations. Use the default EclipseLink transaction
+isolation configuration unless you have a very specific reason to change
+it.
+
+For more information, see
+link:Using%20Advanced%20Unit%20of%20Work%20API%20(ELUG)[Database
+Transaction Isolation Levels].
+
+=== Cache Optimization
+
+Tune the EclipseLink cache for each class to help eliminate the need for
+distributed cache coordination. Always tune these settings before
+implementing cache coordination.
+
+For more information, see
+link:Optimizing%20the%20EclipseLink%20Application%20(ELUG)[Optimizing
+Cache].
+
+== Cache Coordination
+
+As the following figure shows, cache coordination is a session feature
+that allows multiple, possibly distributed, instances of a session to
+broadcast object changes among each other so that each session’s cache
+is either kept up-to-date or notified that the cache must update an
+object from the data source the next time it is read.
+
+[width="100%",cols="<100%",]
+|===
+|*Note:* You cannot use isolated client sessions (see
+link:Introduction%20to%20EclipseLink%20Sessions%20(ELUG)#Isolated_Client_Sessions[Isolated
+Client Sessions]) with cache coordination.
+|===
+
+[#Figure 98-2]## *_Cache Coordination_*
+
+.Cache Coordination
+image::cachcord.gif[Cache Coordination,title="Cache Coordination"]
+
+When sessions are distributed, that is, when an application contains
+multiple sessions (in the same JVM, in multiple JVMs, possibly on
+different servers), as long as the servers hosting the sessions are
+interconnected on the network, sessions can participate in cache
+coordination. Coordinated cache types that require discovery services
+also require the servers to support User Datagram Protocol (UDP)
+communication and multicast configuration (for more information, see
+link:#Coordinated_Cache_Architecture[Coordinated Cache Architecture]).
+
+This section describes the following:
+
+* link:#When_to_Use_Cache_Coordination[When to Use Cache Coordination]
+* link:#Coordinated_Cache_Architecture[Coordinated Cache Architecture]
+* link:#Coordinated_Cache[Coordinated Cache Types]
+* link:#Custom_Coordinated_Cache[Custom Coordinated Cache]
+
+For more information, see
+link:Configuring%20a%20Coordinated%20Cache%20(ELUG)[Configuring a
+Coordinated Cache].
+
+=== When to Use Cache Coordination
+
+Cache coordination can enhance performance and reduce the likelihood of
+stale data for applications that have the following characteristics:
+
+* Changes are all being performed by the same Java application operating
+with multiple, distributed sessions
+* Primarily read-based
+* Regularly requests and updates the same objects
+
+To maximize performance, avoid cache coordination for applications that
+do not have these characteristics. For more information about
+alternatives to cache coordination, see
+link:Optimizing%20the%20EclipseLink%20Application%20(ELUG)#Optimizing_Cache[Optimizing
+Cache].
+
+Cache coordination enhances performance mainly by avoiding data source
+access.
+
+Cache coordination reduces the occurrence of stale data by increasing
+the likelihood that distributed caches are kept up-to-date with changes
+and are notified when one of the distributed caches must update an
+object from the data source the next time it is read.
+
+Cache coordination reduces the number of optimistic lock exceptions
+encountered in a distributed architecture, and decreases the number of
+failed or repeated transactions in an application. However, cache
+coordination in no way eliminates the need for an effective locking
+policy. To effectively ensure working with up-to-date data, cache
+coordination must be used with optimistic or pessimistic locking. We
+recommend that you use cache coordination with an optimistic locking
+policy (see
+link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Locking_Policy[Configuring
+Locking Policy]).
+
+For other options to reduce the likelihood of stale data, see
+link:#Stale_Data[Stale Data].
+
+=== Coordinated Cache Architecture
+
+EclipseLink provides coordinated cache implementations that perform
+discovery and message transport services using various technologies
+including the following:
+
+* Java Message Service (JMS) – See link:#JMS_Coordinated_Cache[JMS
+Coordinated Cache]
+* Remote Method Invocation (RMI) – See link:#RMI_Coordinated_Cache[RMI
+Coordinated Cache]
+* Common Object Request Broker Architecture (CORBA) – See
+link:#CORBA_Coordinated_Cache[CORBA Coordinated Cache]
+
+Regardless of the type of discovery and message transport you choose to
+use, the following are the principal objects that provide coordinated
+cache functionality:
+
+* link:#Session[Session]
+* link:#Descriptor[Descriptor]
+* link:#Unit_of_Work[Unit of Work]
+
+==== Session
+
+When you enable a session for change propagation, the session provides
+discovery and message transport services using either JMS, RMI, CORBA,
+or Oracle Application Server 10g Cluster.
+
+Discovery services ensure that sessions announce themselves to other
+sessions participating in cache coordination. Discovery services use UDP
+communication and multicast configuration to monitor sessions as they
+join and leave the coordinated cache. All coordinated cache types
+(except JMS) require discovery services.
+
+Message transport services allow the session to broadcast object change
+notifications to other sessions participating in cache coordination when
+a unit of work from this session commits a change.
+
+==== Descriptor
+
+You can configure how object changes are broadcast on a
+descriptor-by-descriptor basis. This lets you fine-tune the type of
+notification to make.
+
+For example, for an object with few attributes, you can configure its
+descriptor to send object changes. For an object with many attributes,
+it may be more efficient to configure its descriptor so that the object
+is flagged as invalid (so that other sessions will know to update the
+object from the data source the next time it is read).
+
+==== Unit of Work
+
+Only changes committed by a unit of work are subject to propagation when
+cache coordination is enabled. The unit of work computes the appropriate
+change set based on the descriptor configuration of affected objects.
+
+=== Coordinated Cache Types
+
+You can create the following types of coordinated cache:
+
+* link:#JMS_Coordinated_Cache[JMS Coordinated Cache]
+* link:#RMI_Coordinated_Cache[RMI Coordinated Cache]
+* link:#CORBA_Coordinated_Cache[CORBA Coordinated Cache]
+
+==== JMS Coordinated Cache
+
+For a JMS coordinated cache, when a particular session’s coordinated
+cache starts up, it uses its JNDI naming service information to locate
+and create a connection to the JMS server. The coordinated cache is
+ready when all participating sessions are connected to the same topic on
+the same JMS server. At this point, sessions can start sending and
+receiving object change messages. You can then configure all sessions
+that are participating in the same coordinated cache with the same JMS
+and JNDI naming service information.
+
+Because you must supply the necessary information to connect to the JMS
+Topic, a JMS coordinated cache does not use a discovery service.
+
+If you do use cache coordination, we recommend that you use JMS cache
+coordination: JMS is robust, easy to configure, and provides efficient
+support for asynchronous change propagation.
+
+For more information, see
+link:Configuring%20a%20JMS%20Coordinated%20Cache%20(ELUG)#Configuring_a_JMS_Coordinated_Cache[Configuring
+a JMS Coordinated Cache].
+
+For more information on configuring JMS, refer to your see JMS
+provider’s documentation.
+
+==== RMI Coordinated Cache
+
+For an RMI coordinated cache, when a particular session’s coordinated
+cache starts up, the session binds its connection in its naming service
+(either an RMI registry or JNDI), creates an announcement message (that
+includes its own naming service information), and broadcasts the
+announcement to its multicast group (see
+link:Configuring%20a%20Coordinated%20Cache%20(ELUG)#Configuring_a_Multicast_Group_Address[Configuring
+a Multicast Group Address] and
+link:Configuring%20a%20Coordinated%20Cache%20(ELUG)#Configuring_a_Multicast_Port[Configuring
+a Multicast Port]). When a session that belongs to the same multicast
+group receives this announcement, it uses the naming service information
+in the announcement message to establish bidirectional connections with
+the newly announced session’s coordinated cache. The coordinated cache
+is ready when all participating sessions are interconnected in this way,
+at which point sessions can start sending and receiving object change
+messages. You can then configure each session with naming information
+that identifies the host on which the session is deployed.
+
+If you do use cache coordination, we recommend that you use RMI cache
+coordination only if you require synchronous change propagation (see
+link:Configuring%20a%20Coordinated%20Cache%20(ELUG)#Configuring_the_Synchronous_Change_Propagation_Mode[Configuring
+the Synchronous Change Propagation Mode]).
+
+EclipseLink also supports cache coordination using RMI over the Internet
+Inter-ORB Protocol (IIOP). An RMI/IIOP coordinated cache uses RMI (and a
+JNDI naming service) for discovery and message transport services.
+
+[width="100%",cols="<100%",]
+|===
+|*Note:* If you use an RMI coordinated cache, we recommend that you use
+RMI/IIOP only if absolutely necessary.
+|===
+
+For more information, see
+link:Configuring%20an%20RMI%20Coordinated%20Cache%20(ELUG)#Configuring_an_RMI_Coordinated_Cache[Configuring
+an RMI Coordinated Cache].
+
+==== CORBA Coordinated Cache
+
+For a CORBA coordinated cache, when a particular session’s coordinated
+cache starts up, the session binds its connection in JNDI, creates an
+announcement message (that includes its own JNDI naming service
+information), and broadcasts the announcement to its multicast group
+(see
+link:Configuring%20a%20Coordinated%20Cache%20(ELUG)#Configuring_a_Multicast_Group_Address[Configuring
+a Multicast Group Address] and
+link:Configuring%20a%20Coordinated%20Cache%20(ELUG)#Configuring_a_Multicast_Port[Configuring
+a Multicast Port]). When a session that belongs to the same multicast
+group receives this announcement, it uses the naming service information
+in the announcement message to establish bidirectional connections with
+the newly announced session’s coordinated cache. The coordinated cache
+is ready when all participating sessions are interconnected in this way,
+at which point, sessions can start sending and receiving object change
+messages. You can then configure each session with naming information
+that identifies the host on which the session is deployed.
+
+Currently, EclipseLink provides support for the Sun Object Request
+Broker.
+
+For more information on configuring a CORBA coordinated cache, see
+link:Configuring%20a%20CORBA%20Coordinated%20Cache%20(ELUG)[Configuring
+a CORBA Coordinated Cache].
+
+=== Custom Coordinated Cache
+
+Using the classes in `+org.eclipse.persistence.sessions.coordination+`
+package, you can define your own coordinated cache for custom solutions.
+
+Once you have created the required cache coordination classes, for more
+information on configuring a user-defined coordinated cache, see
+link:Configuring%20a%20Custom%20Coordinated%20Cache%20(ELUG)[Configuring
+a Custom Coordinated Cache].
+
+== Cache API
+
+To configure the EclipseLink cache, you use the appropriate API in the
+following objects:
+
+* link:#Object_Identity_API[Object Identity API]
+* link:#Cache_Refresh_API[Cache Refresh API]
+* link:#Cache_Invalidation_API[Cache Invalidation API]
+* link:#Cache_Coordination_API[Cache Coordination API]
+
+=== Object Identity API
+
+You configure object identity using the following `+ClassDescriptor+`
+API:
+
+[#Example 98-1]##
+
+`+useCacheIdentityMap()+`
+
+`+useFullIdentityMap()+`
+
+`+useHardCacheWeakIdentityMap()+`
+
+`+useNoIdentityMap()+`
+
+`+useSoftCacheWeakIdentityMap()+`
+
+`+useWeakIdentityMap()+`
+
+`+useSoftIdentityMap() +`
+
+For more information, see
+link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Cache_Type_and_Size_at_the_Descriptor_Level[Configuring
+Cache Type and Size at the Descriptor Level].
+
+=== Cache Refresh API
+
+You configure cache refresh using the following `+ClassDescriptor+` API:
+
+[#Example 98-2]##
+
+`+alwaysRefreshCache()+`
+
+`+alwaysRefreshCacheOnRemote()+`
+
+`+disableCacheHits()+`
+
+`+disableCacheHitsOnRemote()+`
+
+`+onlyRefreshCacheIfNewerVersion()+`
+
+You can also configure cache refresh using the following API calls:
+
+* `+Session+`: `+refreshObject+` method
+* `+DatabaseSession+` and `+UnitOfWork: refreshAndLockObject+` methods
+* `+ObjectLevelReadQuery: refreshIdentityMapResult+` and
+`+refreshRemoteIdentityMapResult+` methods
+
+For more information, see
+link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Cache_Refreshing[Configuring
+Cache Refreshing].
+
+=== Cache Invalidation API
+
+You configure cache invalidation using `+ClassDescriptor+` methods
+`+getCacheInvalidationPolicy+` and `+setCacheInvalidationPolicy+` to
+configure an
+`+org.eclipse.persistence.descriptors.invalidation.CacheInvalidationPolicy+`.
+
+You can use any of the following `+CacheInvalidationPolicy+` instances:
+
+* `+DailyCacheInvalidationPolicy+`: The object is automatically flagged
+as invalid at a specified time of day.
+* `+NoExpiryCacheInvalidationPolicy+`: The object can only be flagged as
+invalid by explicitly calling
+`+org.eclipse.persistence.sessions.IdentityMapAccessor+` method
+`+invalidateObject+`.
+* `+TimeToLiveCacheInvalidationPolicy+`: The object is automatically
+flagged as invalid after a specified time period has elapsed since the
+object was read.
+
+You can also configure cache invalidation using a variety of API calls
+accessible through the `+Session+`. The
+`+org.eclipse.persistence.sessions.IdentityMapAccessor+` provides the
+following methods:
+
+* `+getRemainingValidTime+`: Returns the remaining life of the specified
+object. This time represents the difference between the next expiry time
+of the object and its read time.
+* `+invalidateAll+`: Sets all objects for all classes to be invalid in
+EclipseLink identity maps.
+* `+invalidateClass(Class klass)+` and
+`+invalidateClass(Class klass, boolean recurse)+`: Set all objects of a
+specified class to be invalid in EclipseLink identity maps.
+* `+invalidateObject(Object object)+`,
+`+invalidateObject(Record rowWithPrimaryKey, Class klass)+` and
+`+invalidateObject(Vector primaryKey, Class klass)+`: Set an object to
+be invalid in EclipseLink identity maps.
+* `+invalidateObjects(Expression selectionCriteria)+` and
+`+invalidateObjects(Vector collection)+`: Set all objects from the
+specified Expression/collection to be invalid in EclipseLink identity
+maps.
+* `+isValid(Record recordContainingPrimaryKey, Class theClass)+`,
+`+isValid(Object object)+` and
+`+isValid(java.util.Vector primaryKey, Class theClass)+`: Return
+`+true+` if the object is valid in EclipseLink identity maps.
+
+For more information, see the following:
+
+* link:Configuring%20a%20Project%20(ELUG)#Configuring_Cache_Expiration_at_the_Project_Level[Configuring
+Cache Expiration at the Project Level]
+* link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Cache_Expiration_at_the_Descriptor_Level[Configuring
+Cache Expiration at the Descriptor Level]
+* link:Using%20Advanced%20Query%20API%20(ELUG)#How_to_Configure_Cache_Expiration_at_the_Query_Level[How
+to Configure Cache Expiration at the Query Level]
+
+=== Cache Coordination API
+
+Configure cache coordination using the following `+Session+` methods:
+
+[#Example 98-3]##
+
+`+Session.getCommandManager().+`
+`+    setShouldPropagateAsynchronously(boolean)+`
+
+`+Session.getCommandManager().getDiscoveryManager().+`
+`+    setAnnouncementDelay()+` `+    setMulticastGroupAddress()+`
+`+    setMulticastPort()+` `+    setPacketTimeToLive()+`
+
+`+Session.getCommandManager().getTransportManager().+`
+`+    setEncryptedPassword()+` `+    setInitialContextFactoryName()+`
+`+    setLocalContextProperties(Hashtable)+`
+`+    setNamingServiceType() +`_`+passing\'\' \'\'in\'\' \'\'one\'\' \'\'of:+`_
+`+        TransportManager.JNDI_NAMING_SERVICE+`
+`+        TransportManager.REGISTRY_NAMING_SERVICE+`
+`+    setPassword()+` `+    setRemoteContextProperties(Hashtable)+`
+`+    setShouldRemoveConnectionOnError()+` `+    setUserName()+`
+
+You configure how object changes are propagated using the following
+`+ClassDescriptor+` methods:
+
+[#Example 98-4]##
+
+`+setCacheSynchronizationType() +`_`+passing\'\' \'\'in\'\' \'\'one\'\' \'\'of:+`_
+`+    ClassDescriptor.DO_NOT_SEND_CHANGES+`
+`+    ClassDescriptor.INVALIDATE_CHANGED_OBJECTS+`
+`+    ClassDescriptor.SEND_NEW_OBJECTS_WITH_CHANGES+`
+`+    ClassDescriptor.SEND_OBJECT_CHANGES+`
+
+For more information, see
+link:Configuring%20a%20Coordinated%20Cache%20(ELUG)#i1128398[Configuring
+Common Coordinated Cache Options].
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Release_1[Category: Release 1] Category:_Concept[Category:
+Concept]

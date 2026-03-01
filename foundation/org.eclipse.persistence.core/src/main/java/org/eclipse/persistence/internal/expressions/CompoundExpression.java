@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -15,13 +15,20 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.expressions;
 
-import java.io.*;
-import java.util.*;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.history.*;
-import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.internal.databaseaccess.*;
+import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.expressions.ExpressionOperator;
+import org.eclipse.persistence.history.AsOfClause;
+import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
+import org.eclipse.persistence.internal.helper.DatabaseTable;
+
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * Abstract class for expression that have exactly two children, such as and/or and relations.
@@ -51,9 +58,9 @@ public abstract class CompoundExpression extends Expression {
             return false;
         }
         CompoundExpression expression = (CompoundExpression) object;
-        return ((this.operator == expression.operator) || ((this.operator != null) && this.operator.equals(expression.operator)))
-            && ((this.firstChild == expression.firstChild) || ((this.firstChild != null) && this.firstChild.equals(expression.firstChild)))
-            && ((this.secondChild == expression.secondChild) || ((this.secondChild != null) && this.secondChild.equals(expression.secondChild)));
+        return (Objects.equals(this.operator, expression.operator))
+            && (Objects.equals(this.firstChild, expression.firstChild))
+            && (Objects.equals(this.secondChild, expression.secondChild));
     }
 
     /**
@@ -97,7 +104,7 @@ public abstract class CompoundExpression extends Expression {
     @Override
     public Expression asOf(AsOfClause clause) {
         final AsOfClause finalClause = clause;
-        ExpressionIterator iterator = new ExpressionIterator() {
+        ExpressionIterator<Void> iterator = new ExpressionIterator<>() {
             @Override
             public void iterate(Expression each) {
                 if (each.isDataExpression()) {
@@ -130,7 +137,7 @@ public abstract class CompoundExpression extends Expression {
      * INTERNAL:
      */
     @Override
-    public Expression create(Expression base, List arguments, ExpressionOperator operator) {
+    public Expression create(Expression base, List<?> arguments, ExpressionOperator operator) {
         setFirstChild(base);
         if (!arguments.isEmpty()) {
             setSecondChild((Expression)arguments.get(0));
@@ -210,7 +217,7 @@ public abstract class CompoundExpression extends Expression {
      * For iterating using an inner class
      */
     @Override
-    public void iterateOn(ExpressionIterator iterator) {
+    public void iterateOn(ExpressionIterator<?> iterator) {
         super.iterateOn(iterator);
         if (this.firstChild != null) {
             this.firstChild.iterateOn(iterator);
@@ -286,7 +293,7 @@ public abstract class CompoundExpression extends Expression {
      * Used for cloning.
      */
     @Override
-    protected void postCopyIn(Map alreadyDone) {
+    protected void postCopyIn(Map<Expression, Expression> alreadyDone) {
         super.postCopyIn(alreadyDone);
         if (this.firstChild != null) {
             setFirstChild(this.firstChild.copiedVersionFrom(alreadyDone));
@@ -325,13 +332,13 @@ public abstract class CompoundExpression extends Expression {
      */
     @Override
     public Expression rebuildOn(Expression newBase) {
-        Vector arguments;
+        List<Expression> arguments;
 
         Expression first = this.firstChild.rebuildOn(newBase);
         if (this.secondChild == null) {
-            arguments = NonSynchronizedVector.newInstance(0);
+            arguments = new ArrayList<>(0);
         } else {
-            arguments = NonSynchronizedVector.newInstance(1);
+            arguments = new ArrayList<>(1);
             arguments.add(this.secondChild.rebuildOn(newBase));
         }
         return first.performOperator(this.operator, arguments);
@@ -372,13 +379,13 @@ public abstract class CompoundExpression extends Expression {
      */
     @Override
     public Expression twistedForBaseAndContext(Expression newBase, Expression context, Expression oldBase) {
-        Vector arguments;
+        List<Expression> arguments;
 
         if (this.secondChild == null) {
-            arguments = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(0);
+            arguments = new ArrayList<>(0);
         } else {
-            arguments = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(1);
-            arguments.addElement(this.secondChild.twistedForBaseAndContext(newBase, context, oldBase));
+            arguments = new ArrayList<>(1);
+            arguments.add(this.secondChild.twistedForBaseAndContext(newBase, context, oldBase));
         }
 
         Expression first = this.firstChild.twistedForBaseAndContext(newBase, context, oldBase);

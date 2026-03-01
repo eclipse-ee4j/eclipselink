@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,7 +18,7 @@ package org.eclipse.persistence.indirection;
  * INTERNAL:
  * This interface defines functionality required by ValueHolders for OneToOneMappings that
  * have LAZY access weaved into them and use Property (method) based access
- *
+ * <p>
  * The weaving feature adds a paralell valueholder to the class it weaves and uses that valueholder
  * to control the lazy loading.  The methods on this interface provide information about how that weaved
  * valueholder is related to the underlying value.

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,13 +14,23 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.sessions;
 
-import java.io.*;
-import java.util.*;
-
+import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractRecord;
-import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.exceptions.*;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.sessions.DataRecord;
+
+import java.io.Serializable;
+import java.io.StringWriter;
+import java.util.AbstractSet;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.Set;
+import java.util.Vector;
 
 /**
  * <p>
@@ -359,13 +369,13 @@ public abstract class AbstractRecord extends CoreAbstractRecord implements DataR
         // Optimize check.
         int index = key.index;
         if ((index >= 0) && (index < getFields().size())) {
-            DatabaseField field = getFields().elementAt(index);
+            DatabaseField field = getFields().get(index);
             if ((field == key) || field.equals(key)) {
                 return field;
             }
         }
         for (index = 0; index < getFields().size(); index++) {
-            DatabaseField field = getFields().elementAt(index);
+            DatabaseField field = getFields().get(index);
             if ((field == key) || field.equals(key)) {
                 return field;
             }
@@ -619,10 +629,9 @@ public abstract class AbstractRecord extends CoreAbstractRecord implements DataR
 
     @Override
     public boolean equals(Object object) {
-        if (!(object instanceof Map.Entry)) {
+        if (!(object instanceof Map.Entry entry)) {
         return false;
             }
-        Map.Entry entry = (Map.Entry)object;
         return compare(key, entry.getKey()) && compare(value, entry.getValue());
     }
 
@@ -637,7 +646,7 @@ public abstract class AbstractRecord extends CoreAbstractRecord implements DataR
     }
 
         private boolean compare(Object object1, Object object2) {
-            return (object1 == null ? object2 == null : object1.equals(object2));
+            return (Objects.equals(object1, object2));
         }
     }
 
@@ -734,9 +743,9 @@ public abstract class AbstractRecord extends CoreAbstractRecord implements DataR
     public Object remove(DatabaseField key) {
         int index = getFields().indexOf(key);
         if (index >= 0) {
-            getFields().removeElementAt(index);
-            Object value = getValues().elementAt(index);
-            getValues().removeElementAt(index);
+            getFields().remove(index);
+            Object value = getValues().get(index);
+            getValues().remove(index);
             resetSize();
             return value;
         }
@@ -806,18 +815,18 @@ public abstract class AbstractRecord extends CoreAbstractRecord implements DataR
     @Override
     public String toString() {
         StringWriter writer = new StringWriter();
-        writer.write(Helper.getShortClassName(getClass()));
+        writer.write(getClass().getSimpleName());
         writer.write("(");
 
         for (int index = 0; index < getFields().size(); index++) {
-            writer.write(Helper.cr());
+            writer.write(System.lineSeparator());
             writer.write("\t");
-            writer.write(String.valueOf((getFields().elementAt(index))));
+            writer.write(String.valueOf((getFields().get(index))));
             writer.write(" => ");
-            writer.write(String.valueOf((getValues().elementAt(index))));
+            writer.write(String.valueOf((getValues().get(index))));
         }
         if (this.sopObject != null) {
-            writer.write(Helper.cr());
+            writer.write(System.lineSeparator());
             writer.write(" sopObject = ");
             writer.write(this.sopObject.toString());
         }

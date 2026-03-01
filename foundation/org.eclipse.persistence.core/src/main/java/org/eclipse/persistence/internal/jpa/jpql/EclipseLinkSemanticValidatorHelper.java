@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -16,11 +16,6 @@
 //
 package org.eclipse.persistence.internal.jpa.jpql;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 import org.eclipse.persistence.jpa.jpql.ITypeHelper;
@@ -32,6 +27,12 @@ import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
 import org.eclipse.persistence.jpa.jpql.parser.SimpleSelectStatement;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.querykeys.QueryKey;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * The EclipseLink implementation of {@link SemanticValidatorHelper}, which directly accesses
@@ -66,12 +67,7 @@ final class EclipseLinkSemanticValidatorHelper implements SemanticValidatorHelpe
         if (ExpressionTools.stringIsNotEmpty(variableName)) {
 
             // Add the IdentificationVariable to the list
-            List<IdentificationVariable> variables = identificationVariables.get(variableName);
-
-            if (variables == null) {
-                variables = new ArrayList<>();
-                identificationVariables.put(variableName, variables);
-            }
+            List<IdentificationVariable> variables = identificationVariables.computeIfAbsent(variableName, k -> new ArrayList<>());
 
             variables.add(identificationVariable);
         }
@@ -130,7 +126,7 @@ final class EclipseLinkSemanticValidatorHelper implements SemanticValidatorHelpe
             }
         }
 
-        return names.toArray(new String[names.size()]);
+        return names.toArray(new String[0]);
     }
 
     @Override
@@ -363,9 +359,7 @@ final class EclipseLinkSemanticValidatorHelper implements SemanticValidatorHelpe
             return false;
         }
 
-        if (mapping instanceof DatabaseMapping) {
-
-            DatabaseMapping databaseMapping = (DatabaseMapping) mapping;
+        if (mapping instanceof DatabaseMapping databaseMapping) {
 
             return databaseMapping.isForeignReferenceMapping()            ||
                    databaseMapping.isAbstractCompositeCollectionMapping() ||

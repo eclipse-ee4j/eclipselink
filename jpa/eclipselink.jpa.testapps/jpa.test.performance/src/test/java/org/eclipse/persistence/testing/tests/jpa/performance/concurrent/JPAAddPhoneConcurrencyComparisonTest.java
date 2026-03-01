@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,8 +18,6 @@ import jakarta.persistence.EntityManager;
 import org.eclipse.persistence.testing.framework.ConcurrentPerformanceComparisonTest;
 import org.eclipse.persistence.testing.models.jpa.performance.Employee;
 import org.eclipse.persistence.testing.models.jpa.performance.PhoneNumber;
-
-import java.util.Iterator;
 
 /**
  * This test compares the concurrency of complex updating Employee.
@@ -54,8 +52,7 @@ public class JPAAddPhoneConcurrencyComparisonTest extends ConcurrentPerformanceC
         manager.getTransaction().begin();
         Employee employee = manager.find(Employee.class, this.employee.getId());
         PhoneNumber workFax = null;
-        for (Iterator<PhoneNumber> iterator = employee.getPhoneNumbers().iterator(); iterator.hasNext();) {
-            PhoneNumber phone = iterator.next();
+        for (PhoneNumber phone : employee.getPhoneNumbers()) {
             if (phone.getType().equals("work-fax")) {
                 workFax = phone;
                 break;
@@ -75,7 +72,7 @@ public class JPAAddPhoneConcurrencyComparisonTest extends ConcurrentPerformanceC
             manager.getTransaction().commit();
         } catch (Exception exception) {
             this.errors++;
-            System.out.println("" + this.errors + ":" + exception);
+            System.out.println(this.errors + ":" + exception);
         }
         manager.close();
     }

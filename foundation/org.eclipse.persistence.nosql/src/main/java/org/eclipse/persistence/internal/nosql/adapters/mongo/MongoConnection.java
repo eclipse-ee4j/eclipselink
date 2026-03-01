@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,12 +15,17 @@
 //     Gunnar Wagenknecht - isExternal support
 package org.eclipse.persistence.internal.nosql.adapters.mongo;
 
-import jakarta.resource.*;
-import jakarta.resource.cci.*;
+import jakarta.resource.ResourceException;
+import jakarta.resource.cci.Connection;
+import jakarta.resource.cci.ConnectionMetaData;
+import jakarta.resource.cci.Interaction;
+import jakarta.resource.cci.LocalTransaction;
+import jakarta.resource.cci.ResultSetInfo;
 
 import org.eclipse.persistence.exceptions.ValidationException;
 
-import com.mongodb.DB;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoDatabase;
 
 /**
  * Connection to Mongo
@@ -32,31 +37,41 @@ import com.mongodb.DB;
 public class MongoConnection implements Connection {
     protected MongoJCAConnectionSpec spec;
     protected MongoTransaction transaction;
-    protected DB db;
+    protected MongoClient mongo;
+    protected String databaseName;
     protected boolean isExternal;
 
     /**
      * Create the connection on a native AQ session.
      * The session must be connected to a JDBC connection.
      */
-    public MongoConnection(DB db, boolean isExternal, MongoJCAConnectionSpec spec) {
-        this.db = db;
+    public MongoConnection(MongoClient mongo, String databaseName, boolean isExternal, MongoJCAConnectionSpec spec) {
+        this.mongo = mongo;
+        this.databaseName = databaseName;
         this.transaction = new MongoTransaction(this);
         this.spec = spec;
         this.isExternal = isExternal;
     }
 
-    public DB getDB() {
-        return db;
+    public MongoDatabase getDB() {
+        return mongo.getDatabase(databaseName);
+    }
+
+    public MongoClient getClient() {
+        return this.mongo;
+    }
+
+    public String getDatabaseName() {
+        return databaseName;
     }
 
     /**
-     * Close the AQ native session and the database connection.
+     * Close MongoDB client with all underlying cached resources.
      */
     @Override
     public void close() throws ResourceException {
         try {
-            this.db.getMongo().close();
+            this.mongo.close();
         } catch (Exception exception) {
             ResourceException resourceException = new ResourceException(exception.toString());
             resourceException.initCause(exception);

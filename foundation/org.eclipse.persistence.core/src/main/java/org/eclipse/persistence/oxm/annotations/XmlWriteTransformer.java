@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,58 +14,59 @@
 //     Oracle = 2.2 - Initial contribution
 package org.eclipse.persistence.oxm.annotations;
 
+import java.lang.annotation.Repeatable;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
 import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-
-import org.eclipse.persistence.mappings.transformers.FieldTransformer;
-
 /**
- * Annotation for org.eclipse.persistence.mappings.oxm.XMLTransformationMapping.
- * WriteTransformer defines transformation of the attribute value to a single
- * XML value (XPath is specified in the WriteTransformer).
+ * Annotation for {@linkplain org.eclipse.persistence.oxm.mappings.XMLTransformationMapping}.
+ * XmlWriteTransformer defines transformation of the attribute value to a single
+ * XML value (XPath is specified in the XmlWriteTransformer).
+ * <p>
+ * One or more XmlWriteTransformer annotations may be specified directly on the method or
+ * attribute. Multiple occurrences of {@linkplain XmlWriteTransformer} annotation
+ * can be wrapped into {@linkplain XmlWriteTransformers} annotation. No XmlWriteTransformers specified for read-only
+ * mapping. Unless the {@linkplain org.eclipse.persistence.oxm.mappings.XMLTransformationMapping} is write-only,
+ * it should have a {@linkplain XmlReadTransformer} defining transformation of XML value(s) into attribute value.
  *
- * A single XmlWriteTransformer may be specified directly on the method or
- * attribute. Multiple XmlWriteTransformers should be wrapped into
- * XmlWriteTransformers annotation. No XmlWriteTransformers specified for read-only
- * mapping. Unless the XMLTransformationMapping is write-only, it should have a
- * ReadTransformer, it defines transformation of XML value(s)
- * into attribute value.
- *
- * @see org.eclipse.persistence.oxm.annotations.XmlReadTransformer
- * @see org.eclipse.persistence.oxm.annotations.XmlTransformation
- * @see org.eclipse.persistence.oxm.annotations.XmlWriteTransformers
+ * @see XmlReadTransformer
+ * @see XmlTransformation
+ * @see XmlWriteTransformers
  *
  */
-
 @Target({METHOD, FIELD})
 @Retention(RUNTIME)
+@Repeatable(XmlWriteTransformers.class)
 public @interface XmlWriteTransformer {
-
     /**
      * User-defined class that must implement the
-     * org.eclipse.persistence.mappings.transformers.FieldTransformer interface.
-     * The class will be instantiated, its buildFieldValue will be used to
-     * create the value to be written into XML document.
-     * Either transformerClass or method must be specified, but not both.
+     * {@linkplain org.eclipse.persistence.mappings.transformers.FieldTransformer} interface.
+     * The class will be instantiated, its {@linkplain org.eclipse.persistence.mappings.transformers.FieldTransformer#buildFieldValue(Object, String, org.eclipse.persistence.sessions.Session)}
+     * will be used to create the value to be written into XML document.
+     * <p>
+     * Either transformerClass or {@linkplain #method()}  must be specified, but not both.
      */
-    Class<? extends FieldTransformer> transformerClass() default FieldTransformer.class;
+    Class<?> transformerClass() default void.class;
 
     /**
      * The mapped class must have a method with this name which returns a value
      * to be written into the XML document.
-     * The method may require an XmlTransient annotation to avoid being mapped as
-     * an XmlElement  by default.
-     * Either transformerClass or method must be specified, but not both.
+     * <p>
+     * The method may require an {@linkplain jakarta.xml.bind.annotation.XmlTransient} annotation to avoid being mapped as
+     * an XmlElement by default.
+     * <p>
+     * Either {@linkplain #transformerClass()} or method must be specified, but not both.
      */
     String method() default "";
 
     /**
      * Specify here the XPath into which the value should be written.
-     * The only case when this could be skipped is if a single WriteTransformer
+     * <p>
+     * The only case when this could be skipped is if a single XmlWriteTransformer
      * annotates an attribute - the attribute's name will be
      * used as an element name.
      */

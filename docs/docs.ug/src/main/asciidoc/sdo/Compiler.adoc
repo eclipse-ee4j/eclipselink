@@ -1,0 +1,49 @@
+[#sdo-example-compiler]
+=== Running the SDO Compiler
+
+* <<sdo-example-compiler-overview>>
+* <<sdo-example-compiler-setup>>
+* <<sdo-example-compiler-run>>
+
+[#sdo-example-compiler-overview]
+==== Overview
+
+The following example will demonstrate how to use EclipseLink's SDO
+functionality to:
+
+* Generate Java source files from an XML Schema using the SDO Compiler
+
+[#sdo-example-compiler-setup]
+==== Setup
+
+. Ensure that you have EclipseLink correctly installed and configured
+for your environment. Please see
+link:/EclipseLink/Installing_and_Configuring_EclipseLink[EclipseLink/Installing
+and Configuring EclipseLink] for more information.
+
+[#sdo-example-compiler-run]
+==== Running the SDO Compiler
+
+The SDO compiler can be run to generate Static SDO Java files from an
+XML Schema:
+
+[source,bash]
+----
+<ECLIPSELINK_HOME>/eclipselink/bin/sdo-compiler.sh [-options]
+<ECLIPSELINK_HOME>\eclipselink\bin\sdo-compiler.cmd [-options]
+
+Options:
+   -help                        Prints the help message text
+   -sourceFile <filename>       The input schema file (required)
+   -targetDirectory <dirname>   The directory to generate Java source (optional)
+   -logLevel <level>            Specify the integer value of the logging level
+                                (8=OFF,7=SEVERE,6=WARNING,5=INFO,4=CONFIG,3=FINE,2=FINER(default),1=FINEST,0=ALL)
+Example:
+   sdo-compiler.sh -sourceFile config/Customer.xsd -targetDirectory sdo-compiler-output -logLevel 8
+----
+
+For each complex type in the schema, the compiler will generate both an
+interface (e.g. `+CustomerType.java+`), and a concrete implementation
+which subclasses `+org.eclipse.persistence.sdo.SDODataObject+` (e.g.
+`+CustomerTypeImpl.java+`).
+

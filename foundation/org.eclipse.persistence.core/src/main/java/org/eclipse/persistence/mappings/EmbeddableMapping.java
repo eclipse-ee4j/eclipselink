@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,7 +27,7 @@ import org.eclipse.persistence.mappings.converters.Converter;
  * Common interface to those mappings that are used to map JPA Embedded objects.
  *  - ElementCollection {@literal ->} AggregateCollectionMapping
  *  - Embedded {@literal ->} AggregateObjectMapping
- *
+ * <p>
  * This interface was build to ease the metadata processing, namely to avoid
  * costly casting between the mappings above since their common parent is
  * DatabaseMapping.

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,16 +14,14 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.oxm.schemareference;
 
-import java.io.File;
-import java.io.InputStream;
+import org.eclipse.persistence.oxm.exceptions.XMLMarshalException;
+import org.eclipse.persistence.oxm.schema.XMLSchemaFileReference;
+import org.w3c.dom.Document;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-
-import org.eclipse.persistence.oxm.*;
-import org.eclipse.persistence.oxm.schema.*;
-import org.eclipse.persistence.exceptions.XMLMarshalException;
-
-import org.w3c.dom.Document;
+import java.io.File;
+import java.io.InputStream;
 
 public class XMLSchemaFileReferenceTests extends org.eclipse.persistence.testing.oxm.XMLTestCase {
     private java.io.File schemaFile;
@@ -67,9 +65,9 @@ public class XMLSchemaFileReferenceTests extends org.eclipse.persistence.testing
             boolean isValid = schemaReference.isValid(doc, null);
         }catch(XMLMarshalException e)
         {
-            assertTrue("An unexpected XMLMarshalException was caught", e.getErrorCode()==XMLMarshalException.ERROR_RESOLVING_XML_SCHEMA);
+            assertEquals("An unexpected XMLMarshalException was caught", XMLMarshalException.ERROR_RESOLVING_XML_SCHEMA, e.getErrorCode());
             return;
         }
-        assertTrue("An XMLValidation should have been caught but wasn't.", false);
+        fail("An XMLValidation should have been caught but wasn't.");
     }
 }

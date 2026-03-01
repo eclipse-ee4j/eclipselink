@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,20 +14,22 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.feature;
 
-import org.eclipse.persistence.internal.databaseaccess.*;
+import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.sequencing.Sequence;
 import org.eclipse.persistence.sessions.DatabaseSession;
-import org.eclipse.persistence.testing.tests.expressions.*;
-import org.eclipse.persistence.testing.framework.*;
+import org.eclipse.persistence.testing.framework.TestErrorException;
+import org.eclipse.persistence.testing.framework.TestModel;
+import org.eclipse.persistence.testing.framework.TestSuite;
 import org.eclipse.persistence.testing.models.aggregate.AggregateSystem;
 import org.eclipse.persistence.testing.models.collections.CollectionsSystem;
+import org.eclipse.persistence.testing.models.employee.relational.EmployeeSystem;
 import org.eclipse.persistence.testing.models.inheritance.InheritanceSystem;
 import org.eclipse.persistence.testing.models.legacy.LegacySystem;
 import org.eclipse.persistence.testing.models.mapping.MappingSystem;
 import org.eclipse.persistence.testing.models.multipletable.ProjectSystem;
 import org.eclipse.persistence.testing.models.ownership.OwnershipSystem;
-import org.eclipse.persistence.testing.models.employee.relational.EmployeeSystem;
 import org.eclipse.persistence.testing.tests.employee.EmployeeBasicTestModel;
+import org.eclipse.persistence.testing.tests.expressions.ExpressionTestSuite;
 import org.eclipse.persistence.testing.tests.inheritance.InheritanceTestModel;
 
 /**

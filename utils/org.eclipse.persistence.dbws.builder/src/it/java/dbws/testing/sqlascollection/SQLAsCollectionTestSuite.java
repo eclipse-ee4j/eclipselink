@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -142,12 +142,13 @@ import static dbws.testing.DBWSTestSuite.runDdl;
 public class SQLAsCollectionTestSuite extends ProviderHelper implements Provider<SOAPMessage> {
 
     static final String CREATE_SQLCOLLECTION_TABLE =
-        "CREATE TABLE IF NOT EXISTS sqlascollection (" +
-            "\nID NUMERIC NOT NULL," +
-            "\nNAME varchar(25)," +
-            "\nSINCE date," +
-            "\nPRIMARY KEY (ID)" +
-        "\n)";
+            """
+                    CREATE TABLE IF NOT EXISTS sqlascollection (
+                    ID NUMERIC NOT NULL,
+                    NAME varchar(25),
+                    SINCE date,
+                    PRIMARY KEY (ID)
+                    )""";
     static String[] POPULATE_SQLCOLLECTION_TABLE = new String[] {
         "INSERT INTO sqlascollection (ID, NAME, SINCE) VALUES (1, 'mike', '2001-12-25')",
         "INSERT INTO sqlascollection (ID, NAME, SINCE) VALUES (2, null,'2001-12-25')",

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -98,7 +98,7 @@ public class ExpressionTest extends JUnitTestCase {
             r.setSelectionCriteria(expression);
             @SuppressWarnings({"unchecked"})
             Vector<Customer> v = (Vector<Customer>)getServerSession().executeQuery(r);
-            assertTrue("Test error: No Customers found",v.size()!=0 );
+            assertTrue("Test error: No Customers found", !v.isEmpty());
             Customer returned = v.firstElement();
             assertEquals("Test error: No Customers found", "Manotick", returned.getCity());
 
@@ -149,7 +149,7 @@ public class ExpressionTest extends JUnitTestCase {
             r.setSelectionCriteria(expression);
             @SuppressWarnings({"unchecked"})
             Vector<Customer> v = (Vector<Customer>)getServerSession().executeQuery(r);
-            assertTrue("Test error: No Customers found", v.size()!=0 );
+            assertTrue("Test error: No Customers found", !v.isEmpty());
             Customer returned = v.firstElement();
             assertEquals("Test error: No Customers found", " anotick", returned.getCity());
 
@@ -205,7 +205,7 @@ public class ExpressionTest extends JUnitTestCase {
             r.setSelectionCriteria(expression);
             @SuppressWarnings({"unchecked"})
             Vector<Customer> v = (Vector<Customer>)getServerSession().executeQuery(r);
-            assertTrue("Test error: No Customers found", v.size()!=0 );
+            assertTrue("Test error: No Customers found", !v.isEmpty());
             Customer returned = v.firstElement();
             assertTrue("Test error: No Customers found", "ManotickM".equals(returned.getCity()) || "Manotick".equals(returned.getCity()));
 
@@ -257,7 +257,7 @@ public class ExpressionTest extends JUnitTestCase {
             r.setSelectionCriteria(expression);
             @SuppressWarnings({"unchecked"})
             Vector<Customer> v = (Vector<Customer>)getServerSession().executeQuery(r);
-            assertTrue("Test error: No Customers found", v.size()!=0 );
+            assertTrue("Test error: No Customers found", !v.isEmpty());
             Customer returned = v.firstElement();
             assertEquals("Test error: No Customers found", "Manotic ", returned.getCity());
 
@@ -312,7 +312,7 @@ public class ExpressionTest extends JUnitTestCase {
             r.setSelectionCriteria(expression);
             @SuppressWarnings({"unchecked"})
             Vector<Item> v = (Vector<Item>)getServerSession().executeQuery(r);
-            assertTrue("Test error: No Items found",v.size()!=0 );
+            assertTrue("Test error: No Items found", !v.isEmpty());
             Item returned = v.firstElement();
             assertEquals("Test error: No Items found", "itemi", returned.getName());
 
@@ -368,7 +368,7 @@ public class ExpressionTest extends JUnitTestCase {
             r.setSelectionCriteria(expression);
             @SuppressWarnings({"unchecked"})
             Vector<Item> v = (Vector<Item>)getServerSession().executeQuery(r);
-            assertTrue("Test error: No Items found",v.size()!=0 );
+            assertTrue("Test error: No Items found", !v.isEmpty());
             Item returned = v.firstElement();
             assertEquals("Test error: No Items found", " tem ", returned.getName());
         }catch(Exception e){
@@ -417,7 +417,7 @@ public class ExpressionTest extends JUnitTestCase {
             r.setSelectionCriteria(expression);
             @SuppressWarnings({"unchecked"})
             Vector<Item> v = (Vector<Item>)getServerSession().executeQuery(r);
-            assertTrue("Test error: No Items found", v.size()!=0 );
+            assertTrue("Test error: No Items found", !v.isEmpty());
             Item returned = v.firstElement();
             assertEquals("Test error: IncorrectItem found", "itemi", returned.getName());
 
@@ -467,7 +467,7 @@ public class ExpressionTest extends JUnitTestCase {
             r.setSelectionCriteria(expression);
             @SuppressWarnings({"unchecked"})
             Vector<Item> v = (Vector<Item>)getServerSession().executeQuery(r);
-            assertTrue("Test error: No Items found", v.size()!=0 );
+            assertTrue("Test error: No Items found", !v.isEmpty());
             Item returned = v.firstElement();
             assertEquals("Test error: IncorrectItem found", "itemi", returned.getName());
 
@@ -518,7 +518,7 @@ public class ExpressionTest extends JUnitTestCase {
             r.setSelectionCriteria(expression);
             @SuppressWarnings({"unchecked"})
             Vector<Item> v = (Vector<Item>)getServerSession().executeQuery(r);
-            assertTrue("Test error: No Items found", v.size()!=0 );
+            assertTrue("Test error: No Items found", !v.isEmpty());
             Item returned = v.firstElement();
             assertEquals("Test error: IncorrectItem found", "itemi", returned.getName());
 

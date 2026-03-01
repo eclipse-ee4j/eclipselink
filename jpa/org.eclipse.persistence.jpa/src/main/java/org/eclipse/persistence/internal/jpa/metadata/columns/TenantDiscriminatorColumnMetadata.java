@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,7 +35,7 @@ import static org.eclipse.persistence.config.PersistenceUnitProperties.MULTITENA
 
 /**
  * Object to hold onto tenant discriminator metadata.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -88,8 +88,7 @@ public class TenantDiscriminatorColumnMetadata extends DiscriminatorColumnMetada
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (super.equals(objectToCompare) && objectToCompare instanceof TenantDiscriminatorColumnMetadata) {
-            TenantDiscriminatorColumnMetadata tenantDiscriminator = (TenantDiscriminatorColumnMetadata) objectToCompare;
+        if (super.equals(objectToCompare) && objectToCompare instanceof TenantDiscriminatorColumnMetadata tenantDiscriminator) {
 
             if (! valuesMatch(m_primaryKey, tenantDiscriminator.getPrimaryKey())) {
                 return false;
@@ -136,7 +135,7 @@ public class TenantDiscriminatorColumnMetadata extends DiscriminatorColumnMetada
         }
 
         // Set the primary key setting
-        field.setPrimaryKey(m_primaryKey == null ? false : m_primaryKey);
+        field.setPrimaryKey(m_primaryKey != null && m_primaryKey);
 
         return field;
     }

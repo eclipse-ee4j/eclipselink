@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,7 +14,12 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.codegen;
 
-import java.util.*;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * INTERNAL:
@@ -27,17 +32,17 @@ public abstract class MethodDefinition extends CodeDefinition {
     protected boolean isAbstract;
     protected boolean isConstructor;
     protected String returnType;
-    protected Vector<String> argumentNames;
-    protected Vector<String> lines;
-    protected Vector<String> exceptions;
-    protected StringBuffer storedBuffer;
+    protected List<String> argumentNames;
+    protected List<String> lines;
+    protected List<String> exceptions;
+    protected StringBuilder storedBuffer;
 
     protected MethodDefinition() {
         this.isConstructor = false;
         this.returnType = "void";
-        this.lines = new Vector<>();
-        this.exceptions = new Vector<>();
-        this.storedBuffer = new StringBuffer();
+        this.lines = new ArrayList<>();
+        this.exceptions = new ArrayList<>();
+        this.storedBuffer = new StringBuilder();
     }
 
     public void addException(String exceptionTypeName) {
@@ -46,8 +51,8 @@ public abstract class MethodDefinition extends CodeDefinition {
 
     public void addLine(String line) {
         this.storedBuffer.append(line);
-        getLines().addElement(this.storedBuffer.toString());
-        this.storedBuffer = new StringBuffer();
+        getLines().add(this.storedBuffer.toString());
+        this.storedBuffer = new StringBuilder();
     }
 
     /**
@@ -58,8 +63,7 @@ public abstract class MethodDefinition extends CodeDefinition {
     }
 
     private void adjustExceptions(Map<String, Set<String>> typeNameMap) {
-        for (Iterator<String> i = new Vector<>(getExceptions()).iterator(); i.hasNext();) {
-            String exceptionName = i.next();
+        for (String exceptionName : new ArrayList<>(getExceptions())) {
             String adjustedExceptionName = adjustTypeName(exceptionName, typeNameMap);
 
             if (!exceptionName.equals(adjustedExceptionName)) {
@@ -77,8 +81,7 @@ public abstract class MethodDefinition extends CodeDefinition {
         StringBuilder lineInProgress = new StringBuilder(line);
         Set<String> typeNames = parseForTypeNames(lineInProgress.toString());
 
-        for (Iterator<String> i = typeNames.iterator(); i.hasNext();) {
-            String typeName = i.next();
+        for (String typeName : typeNames) {
             String adjustedTypeName = adjustTypeName(typeName, typeNameMap);
 
             if (!typeName.equals(adjustedTypeName)) {
@@ -95,8 +98,8 @@ public abstract class MethodDefinition extends CodeDefinition {
     }
 
     private void adjustLines(Map<String, Set<String>> typeNameMap) {
-        for (Iterator<String> i = new Vector<>(getLines()).iterator(); i.hasNext();) {
-            adjustLine(i.next(), typeNameMap);
+        for (String s : new ArrayList<>(getLines())) {
+            adjustLine(s, typeNameMap);
         }
     }
 
@@ -122,11 +125,9 @@ public abstract class MethodDefinition extends CodeDefinition {
             return true;
         }
 
-        if (!(object instanceof MethodDefinition)) {
+        if (!(object instanceof MethodDefinition methodDefinition)) {
             return false;
         }
-
-        MethodDefinition methodDefinition = (MethodDefinition)object;
 
         if ((this.name == null) && (methodDefinition.getName() != null)) {
             return false;
@@ -168,9 +169,9 @@ public abstract class MethodDefinition extends CodeDefinition {
         return false;
     }
 
-    protected Vector<String> getArgumentNames() {
+    protected List<String> getArgumentNames() {
         if (this.argumentNames == null) {
-            this.argumentNames = new Vector<>(5);
+            this.argumentNames = new ArrayList<>(5);
         }
         return argumentNames;
     }
@@ -187,15 +188,15 @@ public abstract class MethodDefinition extends CodeDefinition {
         return getArgumentNames().size();
     }
 
-    protected abstract Vector<String> getArgumentTypeNames();
+    protected abstract List<String> getArgumentTypeNames();
 
-    protected abstract Vector<String> getArgumentTypes();
+    protected abstract List<String> getArgumentTypes();
 
-    public Vector<String> getLines() {
+    public List<String> getLines() {
         return lines;
     }
 
-    protected Vector<String> getExceptions() {
+    protected List<String> getExceptions() {
         return this.exceptions;
     }
 
@@ -236,25 +237,25 @@ public abstract class MethodDefinition extends CodeDefinition {
     protected void putTypeNamesInMap(Map<String, Set<String>> typeNameMap) {
         putTypeNameInMap(getReturnType(), typeNameMap);
 
-        for (Iterator<String> i = getExceptions().iterator(); i.hasNext();) {
-            putTypeNameInMap(i.next(), typeNameMap);
+        for (String string : getExceptions()) {
+            putTypeNameInMap(string, typeNameMap);
         }
 
-        for (Iterator<String> i = getArgumentTypeNames().iterator(); i.hasNext();) {
-            putTypeNameInMap(i.next(), typeNameMap);
+        for (String s : getArgumentTypeNames()) {
+            putTypeNameInMap(s, typeNameMap);
         }
     }
 
     protected void replaceException(String oldExceptionName, String newExceptionName) {
         int index = getExceptions().indexOf(oldExceptionName);
         getExceptions().remove(oldExceptionName);
-        getExceptions().insertElementAt(newExceptionName, index);
+        getExceptions().add(index, newExceptionName);
     }
 
     protected void replaceLine(String oldLine, String newLine) {
         int index = getLines().indexOf(oldLine);
         getLines().remove(oldLine);
-        getLines().insertElementAt(newLine, index);
+        getLines().add(index, newLine);
     }
 
     public void setIsAbstract(boolean isAbstract) {
@@ -273,7 +274,7 @@ public abstract class MethodDefinition extends CodeDefinition {
      * Write the code out to the generator's stream.
      */
     @Override
-    public void writeBody(CodeGenerator generator) {
+    public void writeBody(CodeGenerator generator) throws IOException {
         if (!isConstructor()) {
             generator.writeType(getReturnType());
             generator.write(" ");
@@ -296,18 +297,18 @@ public abstract class MethodDefinition extends CodeDefinition {
 
             generator.cr();
 
-            for (Enumeration<String> linesEnum = getLines().elements(); linesEnum.hasMoreElements();) {
+            for (String s : getLines()) {
                 generator.tab();
-                generator.writeln(linesEnum.nextElement());
+                generator.writeln(s);
             }
 
             generator.write("}");
         }
     }
 
-    protected abstract void writeArguments(CodeGenerator generator);
+    protected abstract void writeArguments(CodeGenerator generator) throws IOException;
 
-    protected void writeThrowsClause(CodeGenerator generator) {
+    protected void writeThrowsClause(CodeGenerator generator) throws IOException {
         generator.write(" throws ");
 
         for (Iterator<String> exceptionIterator = this.exceptions.iterator(); exceptionIterator.hasNext();) {

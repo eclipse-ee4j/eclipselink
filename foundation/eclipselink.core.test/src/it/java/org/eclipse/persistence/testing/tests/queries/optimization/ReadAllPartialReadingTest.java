@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,10 +14,13 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.queries.optimization;
 
-import java.util.*;
-import org.eclipse.persistence.testing.models.employee.domain.*;
-import org.eclipse.persistence.testing.framework.*;
 import org.eclipse.persistence.testing.framework.ReadAllTest;
+import org.eclipse.persistence.testing.framework.TestErrorException;
+import org.eclipse.persistence.testing.models.employee.domain.Employee;
+import org.eclipse.persistence.testing.models.employee.domain.PhoneNumber;
+
+import java.util.Enumeration;
+import java.util.Vector;
 
 /**
  * This class tests the batch reading feature.
@@ -55,10 +58,10 @@ public class ReadAllPartialReadingTest extends ReadAllTest {
     }
 
     protected void verifyEmployee(Employee employee) {
-        if (!employee.getLastName().equals("")) {
+        if (!employee.getLastName().isEmpty()) {
             throw new TestErrorException("last name was read.");
         }
-        if (this.attribute.equals("firstName") && employee.getFirstName().equals("")) {
+        if (this.attribute.equals("firstName") && employee.getFirstName().isEmpty()) {
             throw new TestErrorException("first name was not read.");
         }
         if (this.attribute.equals("address") && (employee.getAddress() == null)) {

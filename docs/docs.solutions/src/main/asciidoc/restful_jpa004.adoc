@@ -1,0 +1,1003 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[RESTJPA004]]
+=== RESTful Data Services API Reference
+
+The following types of RESTful operations can be used with JPA via HTTP
+when using RESTful Data Services:
+
+* link:#CHDEIFFJ[Entity Operations]
+* link:#CHDDAJBI[Entity Operations on Relationships]
+* link:#CHDJFCIF[Query Operations]
+* link:#CHDEHGDH[Base Operations]
+* link:#CHDFCFFA[Metadata Operations]
+
+[[CHDEIFFJ]]
+
+'''''
+
+=== Entity Operations
+
+Entity operations are those performed against a specific entity type
+within the persistence unit.
+
+The base URI for entity operations is as follows:
+
+`/persistence/{version}/{unit-name}/entity/{type}/*`
+
+The `{type}` value refers to the type name (descriptor alias).
+
+Supported entity operations are:
+
+* link:#CHDEBJID[FIND]
+* link:#CHDCIIIG[PERSIST]
+* link:#CHDGJGDD[MERGE]
+* link:#CHDDDDAB[DELETE]
+
+[[CHDEBJID]]
+
+'''''
+
+==== FIND
+
+*HTTP Request Syntax*
+
+`GET /persistence/{version}/{unit-name}/entity/{type}/{id}?{hints}`
+
+where:
+
+* `{id}` is a string
+* _`hints`_ are specified using HTTP query parameters, with the key
+being the name of the EclipseLink query hint
+
+*Example*
+
+`GET http://localhost:8080/exampleApp/persistence/v1.0/ExamplePU/entity/Foo/1`
+
+*Produces*
+
+JSON or XML
+
+*Response*
+
+* `OK`, with a payload containing the entity
+* `NOT_FOUND` if the entity does not exist
+
+*Usage*
+
+*Composite Keys*
+
+Composite keys are supported. The `+` character is reserved and
+therefore cannot be used in fields that represent keys. Composite keys
+are separated using the `+` character and should be specified in an
+order corresponding to the Java default sorting of the attribute names.
+
+For example, consider an entity `Phone`, with attributes `extB`=`123`
+and `extA`=`321`. The URL to find the entity is:
+
+`http://localhost:8080/exampleApp/persistence/v1.0/ExamplePU/entity/Phone/321+123`
+
+The `321` comes before the `123` because `extA` comes before `extB` when
+sorted in Java.
+
+*Result Caching*
+
+Default EclipseLink and HTTP caching is enabled and configured through
+standard means.
+
+*Refresh*
+
+The `EntityManager.refresh` operation can be invoked using the `find`
+with the query hint for `Refresh`.
+
+*Attributes*
+
+Navigating into the attributes of an entity (for example, to get the
+`Address` entity associated with an employee in a single REST request)
+is supported to one level, for example:
+
+`/persistence/v1.0/{unit-name}/entity/{type}/{id}/{relationship}` will
+work
+
+while
+
+`/persistence/v1.0/{unit-name}/entity/{type}/{id}/{relationship}/{index}/{relationship2`}
+will not
+
+[[CHDCIIIG]]
+
+'''''
+
+==== PERSIST
+
+*HTTP Request Syntax*
+
+`PUT /persistence/{version}/{unit-name}/entity/{type}`
+
+*Example*
+
+`PUT http://localhost:8080/exampleApp/persistence/v1.0/ExamplePU/entity/Foo`
+
+*Consumes*
+
+JSON or XML
+
+*Payload*
+
+Entity
+
+*Produces*
+
+JSON or XML
+
+*Response*
+
+Payload containing the entity returned by the persist operation
+
+*Usage*
+
+`PUT` is required to be idempotent. As a result, it will fail if called
+with an object that expects the server to provide an ID field. Typically
+this will occur if the metadata specifies a generated key and the field
+that contains that key is unpopulated.
+
+[[CHDGJGDD]]
+
+'''''
+
+==== MERGE
+
+*HTTP Request Syntax*
+
+`POST /persistence/{version}/{unit-name}/entity/{type}`
+
+*Example*
+
+`POST http://localhost:8080/exampleApp/persistence/v1.0/ExamplePU/entity/Foo`
+
+*Consumes*
+
+JSON or XML
+
+*Payload*
+
+Entity
+
+*Produces*
+
+JSON or XML
+
+*Response*
+
+Payload containing the entity returned by the merge operation.
+
+Merge takes an object graph and makes it part of the persistence context
+through comparison. It compares the object and all related objects to
+the ones that already exist and issues `INSERT`s, `UPDATE`s, and
+`DELETE`s to put the object in the persistence context.
+
+[[CHDDDDAB]]
+
+'''''
+
+==== DELETE
+
+*HTTP Request Syntax*
+
+`DELETE /persistence/{version}/{unit-name}/entity/{type}{id}`
+
+where `{id}` is defined using a string
+
+*Example*
+
+`DELETE http://localhost:8080/exampleApp/persistence/v1.0/ExamplePU/entity/Foo/1`
+
+*Response*
+
+`OK`
+
+[[CHDDAJBI]]
+
+'''''
+
+=== Entity Operations on Relationships
+
+The base URI for relationship operations is as follows:
+
+`/persistence/{version}/{unit-name}/entity/{entity}/{id}/{relationship}`
+
+Supported relationship operations are:
+
+* link:#CHDCEJCC[READ]
+* link:#CHDBEDDA[ADD]
+* link:#CHDDGAII[REMOVE]
+
+[[CHDCEJCC]]
+
+'''''
+
+==== READ
+
+Use this operation to get the values of a relationship.
+
+*HTTP Request Syntax*
+
+`GET /persistence/{version}/{unit-name}/entity/{type}/{id}/{relationship}`
+
+where:
+
+* `{id}` is a string.
+* `{relationship}` is the JPA name of the relationship.
+
+*Example*
+
+`GET http://localhost:8080/exampleApp/persistence/v1.0/ExamplePU/entity/Foo/1/myRelationship`
+
+*Produces*
+
+JSON or XML
+
+*Response*
+
+* `OK`, Payload containing an entity or a list of entities.
+* `NOT_FOUND` if the entity does not exist
+
+[[CHDBEDDA]]
+
+'''''
+
+==== ADD
+
+Use this operation to add to a list or replace the value of a
+many-to-one relationship.
+
+*HTTP Request Syntax*
+
+`POST /persistence/{version}/{unit-name}/entity/{type}/{id}/{relationship}?{partner}`
+
+NOTE: As of EclipseLink 2.4.2, `partner` should be specified as a query
+parameter. Specifying `partner` as a matrix parameter is deprecated.
+
+*Examples*
+
+For unidirectional relationships, `{partner}` is not required, for
+example:
+
+`POST http://localhost:8080/exampleApp/persistence/v1.0/ExamplePU/entity/Foo/1/myRelationship`
+
+For bi-directional relationships, you must provide the name of the
+attribute that makes up the opposite side of the relationship. For
+example, to update an `Auction.bid` where the opposite side of the
+relationship is `Bid.auction`, use the following:
+
+`POST http://localhost:8080/exampleApp/persistence/v1.0/ExamplePU/entity/Foo/1/myRelationship?partner=bid`
+
+*Consumes*
+
+JSON or XML
+
+*Payload*
+
+Entity with the new value.
+
+NOTE: Relationship objects can be passed by value or by reference. See
+xref:{relativedir}/restful_jpa002.adoc#CHDBDBHJ["Passing By Value vs. Passing By
+Reference"].
+
+*Produces*
+
+JSON or XML
+
+*Response*
+
+Payload containing the entity with the added element
+
+[[CHDDGAII]]
+
+'''''
+
+==== REMOVE
+
+Use this operation to remove a specific entity from the list or a null
+on a many-to-one relationship.
+
+*HTTP Request Syntax*
+
+`DELETE /persistence/{version}/{unit-name}/entity/{type}/{id}/{relationship}?{relationshipListItemId}`
+
+where `relationshipListItemId` is an optional query parameter. The
+`relationshipListItemId` is meaningful only when the `{relationship}` to
+be removed is a list. The `relationshipListItemId` should be set to the
+`id` of a member in the relationship list when only that member of the
+relationship list needs to be removed. The entire list specified by the
+`{relationship}` will be removed when `relationshipListItemId` is not
+specified.
+
+*Example*
+
+`DELETE http://localhost:8080/exampleApp/persistence/v1.0/ExamplePU/entity/Foo/1/myRelationship`
+
+*Consumes*
+
+JSON or XML
+
+NOTE: Relationship objects can be passed by value or by reference. See
+xref:{relativedir}/restful_jpa002.adoc#CHDBDBHJ["Passing By Value vs. Passing By
+Reference"].
+
+*Produces*
+
+JSON or XML
+
+*Response*
+
+* OK
+* Payload containing the entity with the removed element
+
+[[CHDJFCIF]]
+
+'''''
+
+=== Query Operations
+
+The base URI for query operations is as follows:
+
+`GET /persistence/{version}/{unit-name}/query/{name}{params}`
+
+The following query operations are supported:
+
+Named queries doing reads can be run two ways in JPA. Both are supported
+in the REST API. They are:
+
+* link:#CHDBDEBE[Query Returning List of Results]
+* link:#CHDIHEJJ[Update/Delete Query]
+
+[[CHDBDEBE]]
+
+'''''
+
+==== Query Returning List of Results
+
+*HTTP Request Syntax*
+
+`GET /persistence/{version}/{unit-name}/query/{name};{parameters}? {hints}`
+
+where:
+
+* _`parameters`_ are specified using HTTP matrix parameters
+* _`hints`_ are specified using HTTP query parameters and with the key
+being the name of the EclipseLink query hint
+
+*Examples*
+
+`GET http://localhost:8080/exampleApp/persistence/v1.0/ExamplePU/query/Foo.findByName;name=myname`
+
+`GET http://localhost:8080/exampleApp/persistence/v1.0/ExamplePU/query/Foo.findByName;name=myname?eclipselink.jdbc.max-results=500`
+
+*Produces*
+
+JSON or XML
+
+*Response*
+
+A payload containing a list of entities. An XML response contains a
+`List` as a grouping name for a collection of items and `item` as a
+grouping name for each member of a collection returned. JSON responses
+use square brackets `[]` to encapsulate a collection and curly braces
+`{}` to encapsulate each member of a collection. For example:
+
+*XML Example*
+
+[source,oac_no_warn]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<List>
+   <item>
+      <firstName>Miles</firstName>
+      <lastName>Davis</lastName>
+      <manager>
+         <firstName>Charlie</firstName>
+         <lastName>Parker</lastName>
+         <gender>Male</gender>
+         <id>26</id>
+      </manager>
+   </item>
+   <item>
+      <firstName>Charlie</firstName>
+      <lastName>Parker</lastName>
+      <manager>
+         <firstName>Louis</firstName>
+         <lastName>Armstrong</lastName>
+         <gender>Male</gender>
+         <id>27</id>
+      </manager>
+   </item>
+</List>
+----
+
+*JSON Example*
+
+[source,oac_no_warn]
+----
+[
+   {
+      "firstName": "Miles",
+      "lastName": "Davis",
+      "manager": {
+         "firstName": "Charlie",
+         "lastName": "Parker",
+         "gender": "Male",
+         "id": 26
+      }
+   },
+   {
+      "firstName": "Charlie",
+      "lastName": "Parker",
+      "manager": {
+         "firstName": "Louis",
+         "lastName": "Armstrong",
+         "gender": "Male",
+         "id": 27
+      }
+   }
+]
+----
+
+[[CHDIHEJJ]]
+
+'''''
+
+==== Update/Delete Query
+
+*HTTP Request Syntax*
+
+`POST /persistence/{version}/{unit-name}/query/{name};parameters?hints`
+
+where:
+
+* _`parameters`_ are specified using HTTP matrix parameters
+* _`hints`_ are specified using HTTP query parameters and with the key
+being the name of the EclipseLink query hint
+
+*Examples*
+
+`POST http://localhost:8080/exampleApp/persistence/v1.0/ExamplePU/query/Foo.deleteAllByName;name=myname`
+
+`POST http://localhost:8080/exampleApp/persistence/v1.0/ExamplePU/query/Foo.updateName;name=myname?eclipselink.jdbc.max-results=500`
+
+*Produces*
+
+JSON or XML
+
+*Response*
+
+A payload containing the number of entities updated or deleted
+
+[[CHDHEJAJ]]
+
+'''''
+
+=== Single Result Queries
+
+*HTTP Request Syntax*
+
+`GET /persistence/{version}/{unit-name}/singleResultQuery/{name};{parameters}?{hints}`
+
+where:
+
+* _`parameters`_ are specified using HTTP matrix parameters
+* _`hints`_ are specified using HTTP query parameters and with the key
+being the name of the EclipseLink query hint
+
+*Example*
+
+`GET http://localhost:8080/exampleApp/persistence/v1.0/ExamplePU/singleResultQuery/Foo.findByName;name=myname`
+
+*Produces*
+
+JSON, XML, or application/octet-stream
+
+*Response*
+
+A payload containing an entity
+
+[[CHDEHGDH]]
+
+'''''
+
+=== Base Operations
+
+Base operations are:
+
+* link:#CHDCCFCI[List Existing Persistence Units]
+
+[[CHDCCFCI]]
+
+'''''
+
+==== List Existing Persistence Units
+
+*HTTP Request Syntax*
+
+`GET /persistence/{version}`
+
+*Example*
+
+`GET http://localhost:8080/exampleApp/persistence/v1.0`
+
+*Produces*
+
+JSON or XML
+
+*Response*
+
+A payload containing a list of persistence unit names and links to
+metadata about them. For example:
+
+[source,oac_no_warn]
+----
+[
+   {
+ 
+      "_link": {
+         "href": "http://localhost:8080/exampleApp/persistence/v1.0/employee/metadata",
+         "method": "application/json",
+         "rel": "employee"
+      }
+   },
+   {
+      "_link": {
+         "href": "http://localhost:8080/exampleApp/persistence/v1.0/traveler/metadata",
+         "method": "application/json",
+         "rel": "traveler"
+      }
+   }
+]
+----
+
+[[CHDFCFFA]]
+
+'''''
+
+=== Metadata Operations
+
+The following metadata operations are supported:
+
+* link:#CHDGHGHB[List Types in a Persistence Unit]
+* link:#CHDGEFIJ[List Queries in a Persistence Unit]
+* link:#CHDJBAFI[Describe a Specific Entity]
+
+[[CHDGHGHB]]
+
+'''''
+
+==== List Types in a Persistence Unit
+
+*HTTP Request Syntax*
+
+`GET /persistence/{version}/{unit-name}/metadata`
+
+*Example*
+
+`GET http://localhost:8080/exampleApp/persistence/v1.0/ExamplePU/metadata`
+
+*Produces*
+
+JSON
+
+*Response*
+
+* `OK`, with a payload containing a list of types, with links to more
+detailed metadata, for example:
++
+[source,oac_no_warn]
+----
+{
+    "persistenceUnitName": "hr",
+    "types": [
+        {
+            "_link": {
+                "href": "http://localhost:8080/eclipselink.jpars.test/persistence/v1.0/hr/metadata/entity/Employee",
+                "method": "application/json",
+                "rel": "Employee"
+            }
+        },
+        {
+            "_link": {
+                "href": "http://localhost:8080/eclipselink.jpars.test/persistence/v1.0/hr/metadata/entity/PhoneNumber",
+                "method": "application/json",
+                "rel": "PhoneNumber"
+            }
+        }
+    ]
+}
+----
+* `NOT_FOUND` if the persistence unit is not found
+
+[[CHDGEFIJ]]
+
+'''''
+
+==== List Queries in a Persistence Unit
+
+*HTTP Request Syntax*
+
+`GET /persistence/{version}/{unit-name}/metadata/query`
+
+*Example*
+
+`GET http://localhost:8080/exampleApp/persistence/v1.0/ExamplePU/metadata/query`
+
+*Produces*
+
+JSON
+
+*Response*
+
+* `OK` with a payload containing a list of all available queries, for
+example:
++
+[source,oac_no_warn]
+----
+[
+    {
+        "queryName": "Employee.count",
+        "returnTypes": [
+            "Long"
+        ],
+        "linkTemplate": {
+            "method": "get",
+            "href": "http://localhost:8080/eclipselink.jpars.test/persistence/v1.0/hr/query/Employee.count",
+            "rel": "execute"
+        },
+        "jpql": "SELECT count(e) FROM Employee e"
+    },
+    {
+        "queryName": "EmployeeAddress.getRegion",
+        "returnTypes": [
+            "String",
+            "String",
+            "String"
+        ],
+        "linkTemplate": {
+            "method": "get",
+            "href": "http://localhost:8080/eclipselink.jpars.test/persistence/v1.0/hr/query/EmployeeAddress.getRegion",
+            "rel": "execute"
+        },
+        "jpql": "SELECT u.postalCode, u.province, u.street FROM EmployeeAddress u"
+    },
+    {
+        "queryName": "Employee.getPhoneNumbers",
+        "returnTypes": [
+            "String",
+            "String",
+            "PhoneNumber"
+        ],
+        "linkTemplate": {
+            "method": "get",
+            "href": "http://localhost:8080/eclipselink.jpars.test/persistence/v1.0/hr/query/Employee.getPhoneNumbers",
+            "rel": "execute"
+        },
+        "jpql": "SELECT e.firstName, e.lastName, pn FROM Employee e JOIN e.phoneNumbers pn"
+    },
+    {
+        "queryName": "EmployeeAddress.getPicture",
+        "returnTypes": [
+            "byte[]"
+        ],
+        "linkTemplate": {
+            "method": "get",
+            "href": "http://localhost:8080/eclipselink.jpars.test/persistence/v1.0/hr/query/EmployeeAddress.getPicture;id={id}",
+            "rel": "execute"
+        },
+        "jpql": "SELECT u.areaPicture FROM EmployeeAddress u where u.id = :id"
+    },
+    {
+        "queryName": "EmployeeAddress.updatePostalCode",
+        "returnTypes": [
+            "EmployeeAddress"
+        ],
+        "linkTemplate": {
+            "method": "post",
+            "href": "http://localhost:8080/eclipselink.jpars.test/persistence/v1.0/hr/query/EmployeeAddress.updatePostalCode;postalCode={postalCode};id={id}",
+            "rel": "execute"
+        },
+        "jpql": "UPDATE EmployeeAddress u SET u.postalCode = :postalCode where u.id = :id"
+    },
+    {
+        "queryName": "Employee.salaryMax",
+        "returnTypes": [
+            "int",
+            "Object"
+        ],
+        "linkTemplate": {
+            "method": "get",
+            "href": "http://localhost:8080/eclipselink.jpars.test/persistence/v1.0/hr/query/Employee.salaryMax",
+            "rel": "execute"
+        },
+        "jpql": "SELECT e.id, max(e.salary) AS max_salary from Employee e GROUP BY e.id, e.salary"
+    },
+    {
+        "queryName": "EmployeeAddress.getAll",
+        "returnTypes": [
+            "EmployeeAddress"
+        ],
+        "linkTemplate": {
+            "method": "get",
+            "href": "http://localhost:8080/eclipselink.jpars.test/persistence/v1.0/hr/query/EmployeeAddress.getAll",
+            "rel": "execute"
+        },
+        "jpql": "SELECT u FROM EmployeeAddress u"
+    },
+    {
+        "queryName": "EmployeeAddress.getById",
+        "returnTypes": [
+            "EmployeeAddress"
+        ],
+        "linkTemplate": {
+            "method": "get",
+            "href": "http://localhost:8080/eclipselink.jpars.test/persistence/v1.0/hr/query/EmployeeAddress.getById;id={id}",
+            "rel": "execute"
+        },
+        "jpql": "SELECT u FROM EmployeeAddress u where u.id = :id"
+    },
+    {
+        "queryName": "Employee.getManagerById",
+        "returnTypes": [
+            "String",
+            "String",
+            "Employee"
+        ],
+        "linkTemplate": {
+            "method": "get",
+            "href": "http://localhost:8080/eclipselink.jpars.test/persistence/v1.0/hr/query/Employee.getManagerById;id={id}",
+            "rel": "execute"
+        },
+        "jpql": "select u.firstName, u.lastName, u.manager from Employee u where u.id = :id"
+    },
+    {
+        "queryName": "Employee.findAll",
+        "returnTypes": [
+            "Employee"
+        ],
+        "linkTemplate": {
+            "method": "get",
+            "href": "http://localhost:8080/eclipselink.jpars.test/persistence/v1.0/hr/query/Employee.findAll",
+            "rel": "execute"
+        },
+        "jpql": "SELECT e FROM Employee e ORDER BY e.id"
+    },
+    {
+        "queryName": "Employee.getManager",
+        "returnTypes": [
+            "String",
+            "String",
+            "Employee"
+        ],
+        "linkTemplate": {
+            "method": "get",
+            "href": "http://localhost:8080/eclipselink.jpars.test/persistence/v1.0/hr/query/Employee.getManager",
+            "rel": "execute"
+        },
+        "jpql": "select u.firstName, u.lastName, u.manager from Employee u"
+    }
+]
+----
+* `NOT_FOUND` if persistence unit is not found
+
+[[CHDJBAFI]]
+
+'''''
+
+==== Describe a Specific Entity
+
+*HTTP Request Syntax*
+
+`GET /persistence/{version}/{unit-name}/metadata/entity/` _`type`_
+
+*Example*
+
+`GET http://localhost:8080/CustomerApp/persistence/v1.0/Inventory/metadata/entity/Customer`
+
+*Produces*
+
+JSON
+
+*Response*
+
+* `OK`, with a payload containing details about the entity and available
+operations on it, for example,
++
+[source,oac_no_warn]
+----
+{
+    "name": "Employee",
+    "attributes": [
+        {
+            "name": "id",
+            "type": "int"
+        },
+        {
+            "name": "firstName",
+            "type": "String"
+        },
+        {
+            "name": "gender",
+            "type": "Gender"
+        },
+        {
+            "name": "lastName",
+            "type": "String"
+        },
+        {
+            "name": "salary",
+            "type": "double"
+        },
+        {
+            "name": "version",
+            "type": "Long"
+        },
+        {
+            "name": "period",
+            "type": "EmploymentPeriod"
+        },
+        {
+            "name": "manager",
+            "type": "Employee"
+        },
+        {
+            "name": "office",
+            "type": "Office"
+        },
+        {
+            "name": "address",
+            "type": "EmployeeAddress"
+        },
+        {
+            "name": "certifications",
+            "type": "List<Certification>"
+        },
+        {
+            "name": "responsibilities",
+            "type": "List<String>"
+        },
+        {
+            "name": "projects",
+            "type": "List<Project>"
+        },
+        {
+            "name": "expertiseAreas",
+            "type": "List<Expertise>"
+        },
+        {
+            "name": "managedEmployees",
+            "type": "List<Employee>"
+        },
+        {
+            "name": "phoneNumbers",
+            "type": "List<PhoneNumber>"
+        }
+    ],
+    "linkTemplates": [
+        {
+            "method": "get",
+            "href": "http://localhost:8080/eclipselink.jpars.test/persistence/v1.0/hr/entity/Employee/{primaryKey}",
+            "rel": "find"
+        },
+        {
+            "method": "put",
+            "href": "http://localhost:8080/eclipselink.jpars.test/persistence/v1.0/hr/entity/Employee",
+            "rel": "persist"
+        },
+        {
+            "method": "post",
+            "href": "http://localhost:8080/eclipselink.jpars.test/persistence/v1.0/hr/entity/Employee",
+            "rel": "update"
+        },
+        {
+            "method": "delete",
+            "href": "http://localhost:8080/eclipselink.jpars.test/persistence/v1.0/hr/entity/Employee/{primaryKey}",
+            "rel": "delete"
+        }
+    ],
+    "queries": [
+        {
+            "queryName": "Employee.count",
+            "returnTypes": [
+                "Long"
+            ],
+            "linkTemplate": {
+                "method": "get",
+                "href": "http://localhost:8080/eclipselink.jpars.test/persistence/v1.0/hr/query/Employee.count",
+                "rel": "execute"
+            },
+            "jpql": "SELECT count(e) FROM Employee e"
+        },
+        {
+            "queryName": "Employee.getPhoneNumbers",
+            "returnTypes": [
+                "String",
+                "String",
+                "PhoneNumber"
+            ],
+            "linkTemplate": {
+                "method": "get",
+                "href": "http://localhost:8080/eclipselink.jpars.test/persistence/v1.0/hr/query/Employee.getPhoneNumbers",
+                "rel": "execute"
+            },
+            "jpql": "SELECT e.firstName, e.lastName, pn FROM Employee e JOIN e.phoneNumbers pn"
+        },
+        {
+            "queryName": "Employee.salaryMax",
+            "returnTypes": [
+                "int",
+                "Object"
+            ],
+            "linkTemplate": {
+                "method": "get",
+                "href": "http://localhost:8080/eclipselink.jpars.test/persistence/v1.0/hr/query/Employee.salaryMax",
+                "rel": "execute"
+            },
+            "jpql": "SELECT e.id, max(e.salary) AS max_salary from Employee e GROUP BY e.id, e.salary"
+        },
+        {
+            "queryName": "Employee.getManagerById",
+            "returnTypes": [
+                "String",
+                "String",
+                "Employee"
+            ],
+            "linkTemplate": {
+                "method": "get",
+                "href": "http://localhost:8080/eclipselink.jpars.test/persistence/v1.0/hr/query/Employee.getManagerById;id={id}",
+                "rel": "execute"
+            },
+            "jpql": "select u.firstName, u.lastName, u.manager from Employee u where u.id = :id"
+        },
+        {
+            "queryName": "Employee.findAll",
+            "returnTypes": [
+                "Employee"
+            ],
+            "linkTemplate": {
+                "method": "get",
+                "href": "http://localhost:8080/eclipselink.jpars.test/persistence/v1.0/hr/query/Employee.findAll",
+                "rel": "execute"
+            },
+            "jpql": "SELECT e FROM Employee e ORDER BY e.id"
+        },
+        {
+            "queryName": "Employee.getManager",
+            "returnTypes": [
+                "String",
+                "String",
+                "Employee"
+            ],
+            "linkTemplate": {
+                "method": "get",
+                "href": "http://localhost:8080/eclipselink.jpars.test/persistence/v1.0/hr/query/Employee.getManager",
+                "rel": "execute"
+            },
+            "jpql": "select u.firstName, u.lastName, u.manager from Employee u"
+        }
+    ]
+}
+----
+* `NOT_FOUND` if the persistence unit is not found
+
+'''''

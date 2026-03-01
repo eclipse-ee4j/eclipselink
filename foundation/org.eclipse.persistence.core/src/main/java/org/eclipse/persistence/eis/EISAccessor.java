@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,12 +21,10 @@ import jakarta.resource.cci.Interaction;
 import jakarta.resource.cci.InteractionSpec;
 import jakarta.resource.cci.Record;
 import jakarta.resource.cci.RecordFactory;
-
 import org.eclipse.persistence.eis.interactions.EISInteraction;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.internal.databaseaccess.DatasourceAccessor;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.SessionLog;
@@ -109,7 +107,7 @@ public class EISAccessor extends DatasourceAccessor {
             // Log connection information.
             if (session.shouldLog(SessionLog.CONFIG, SessionLog.CONNECTION)) {// Avoid printing if no logging required.
                 ConnectionMetaData metaData = getCCIConnection().getMetaData();
-                Object[] args = { metaData.getUserName(), metaData.getEISProductName(), metaData.getEISProductVersion(), Helper.cr(), "\t" };
+                Object[] args = { metaData.getUserName(), metaData.getEISProductName(), metaData.getEISProductVersion(), System.lineSeparator(), "\t" };
                 session.log(SessionLog.CONFIG, SessionLog.CONNECTION, "connected_user_database", args, this);
             }
         } catch (ResourceException exception) {

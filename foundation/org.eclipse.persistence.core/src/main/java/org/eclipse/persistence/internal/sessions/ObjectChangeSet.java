@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,6 +14,20 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.sessions;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.FetchGroupManager;
+import org.eclipse.persistence.descriptors.TimestampLockingPolicy;
+import org.eclipse.persistence.descriptors.VersionLockingPolicy;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
+import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
+import org.eclipse.persistence.internal.identitymaps.CacheKey;
+import org.eclipse.persistence.logging.SessionLog;
+import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
+import org.eclipse.persistence.queries.FetchGroup;
+import org.eclipse.persistence.queries.ReadObjectQuery;
+
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -22,20 +36,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.descriptors.FetchGroupManager;
-import org.eclipse.persistence.descriptors.TimestampLockingPolicy;
-import org.eclipse.persistence.descriptors.VersionLockingPolicy;
-import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
-import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
-import org.eclipse.persistence.internal.helper.ClassConstants;
-import org.eclipse.persistence.internal.identitymaps.CacheKey;
-import org.eclipse.persistence.logging.SessionLog;
-import org.eclipse.persistence.mappings.DatabaseMapping;
-import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
-import org.eclipse.persistence.queries.FetchGroup;
-import org.eclipse.persistence.queries.ReadObjectQuery;
 
 /**
  * <p>
@@ -49,6 +49,7 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
     /** Allow change sets to be compared by changes for batching. */
     public static class ObjectChangeSetComparator implements Comparator, Serializable {
 
+        @Serial
         private static final long serialVersionUID = -7902750710186726851L;
 
         /**
@@ -347,7 +348,7 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
     @Override
     public Class<?> getClassType(org.eclipse.persistence.sessions.Session session) {
         if (classType == null) {
-            classType = session.getDatasourcePlatform().getConversionManager().convertObject(getClassName(), ClassConstants.CLASS);
+            classType = session.getDatasourcePlatform().getConversionManager().convertObject(getClassName(), CoreClassConstants.CLASS);
         }
         return classType;
     }
@@ -534,7 +535,8 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
                         session.getParent().log(SessionLog.SEVERE, SessionLog.CACHE, "entity_not_available_during_merge", new Object[]{descriptor.getJavaClassName(), cacheKey.getKey(), Thread.currentThread().getName(), cacheKey.getActiveThread()});
                         break;
                     }
-                    synchronized (cacheKey) {
+                    cacheKey.getInstanceLock().lock();
+                    try {
                         if (cacheKey.isAcquired()) {
                             try {
                                 cacheKey.wait(10);
@@ -543,6 +545,8 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
                             }
                         }
                         domainObject = cacheKey.getObject();
+                    } finally {
+                        cacheKey.getInstanceLock().unlock();
                     }
                 }
                 cacheKey.releaseDeferredLock();
@@ -838,6 +842,7 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
      * Override the default serialization.  Object Change Sets will be serialized differently
      * depending on the type of cache synchronization they use.
      */
+    @Serial
     private void readObject(java.io.ObjectInputStream stream) throws java.io.IOException, ClassNotFoundException {
         int cacheSyncType = stream.read();
         this.cacheSynchronizationType = cacheSyncType;
@@ -1071,6 +1076,7 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
      * Override the default serialization since different parts of an ObjectChangeSet will
      * be serialized depending on the type of CacheSynchronizationType
      */
+    @Serial
     private void writeObject(java.io.ObjectOutputStream stream) throws java.io.IOException {
         stream.write(this.cacheSynchronizationType);
         stream.writeBoolean(this.shouldBeDeleted);
@@ -1190,8 +1196,8 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
             this.writeLockValue = session.getPlatform(descriptor.getJavaClass()).getConversionManager().convertObject(this.writeLockValue, CoreClassConstants.TIMESTAMP);
             this.initialWriteLockValue = session.getPlatform(descriptor.getJavaClass()).getConversionManager().convertObject(this.initialWriteLockValue, CoreClassConstants.TIMESTAMP);
         } else if (descriptor.getOptimisticLockingPolicy() instanceof VersionLockingPolicy) {
-            this.writeLockValue = session.getPlatform(descriptor.getJavaClass()).getConversionManager().convertObject(this.writeLockValue, ClassConstants.BIGDECIMAL);
-            this.initialWriteLockValue = session.getPlatform(descriptor.getJavaClass()).getConversionManager().convertObject(this.initialWriteLockValue, ClassConstants.BIGDECIMAL);
+            this.writeLockValue = session.getPlatform(descriptor.getJavaClass()).getConversionManager().convertObject(this.writeLockValue, CoreClassConstants.BIGDECIMAL);
+            this.initialWriteLockValue = session.getPlatform(descriptor.getJavaClass()).getConversionManager().convertObject(this.initialWriteLockValue, CoreClassConstants.BIGDECIMAL);
         }
     }
 
@@ -1327,7 +1333,7 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
     }
     
     public boolean hasProtectedForeignKeys() {
-        return (this.protectedForeignKeys != null) && (this.protectedForeignKeys.size() > 0);
+        return (this.protectedForeignKeys != null) && (!this.protectedForeignKeys.isEmpty());
     }
 
 }

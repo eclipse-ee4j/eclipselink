@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,6 +15,7 @@
 package org.eclipse.persistence.internal.oxm;
 
 import javax.xml.namespace.QName;
+import java.util.Objects;
 
 /**
  * <p>Root is used to hold an Object along with the corresponding QName and some other related information.
@@ -106,7 +107,7 @@ public class Root {
      * @param rootElementUri the new namespace uri
      */
     public void setNamespaceURI(String rootElementUri) {
-        if(rootElementUri != null && rootElementUri.length() ==0){
+        if(rootElementUri != null && rootElementUri.isEmpty()){
             this.namespaceUri = null;
         }else{
                this.namespaceUri = rootElementUri;
@@ -251,18 +252,18 @@ public class Root {
         Root root = (Root) o;
 
         if (nil != root.nil) return false;
-        if (declaredType != null ? !declaredType.equals(root.declaredType) : root.declaredType != null) return false;
-        if (encoding != null ? !encoding.equals(root.encoding) : root.encoding != null) return false;
-        if (localName != null ? !localName.equals(root.localName) : root.localName != null) return false;
-        if (namespaceUri != null ? !namespaceUri.equals(root.namespaceUri) : root.namespaceUri != null) return false;
-        if (noNamespaceSchemaLocation != null ? !noNamespaceSchemaLocation.equals(root.noNamespaceSchemaLocation) : root.noNamespaceSchemaLocation != null)
+        if (!Objects.equals(declaredType, root.declaredType)) return false;
+        if (!Objects.equals(encoding, root.encoding)) return false;
+        if (!Objects.equals(localName, root.localName)) return false;
+        if (!Objects.equals(namespaceUri, root.namespaceUri)) return false;
+        if (!Objects.equals(noNamespaceSchemaLocation, root.noNamespaceSchemaLocation))
             return false;
-        if (prefix != null ? !prefix.equals(root.prefix) : root.prefix != null) return false;
-        if (rootObject != null ? !rootObject.equals(root.rootObject) : root.rootObject != null) return false;
-        if (schemaLocation != null ? !schemaLocation.equals(root.schemaLocation) : root.schemaLocation != null)
+        if (!Objects.equals(prefix, root.prefix)) return false;
+        if (!Objects.equals(rootObject, root.rootObject)) return false;
+        if (!Objects.equals(schemaLocation, root.schemaLocation))
             return false;
-        if (schemaType != null ? !schemaType.equals(root.schemaType) : root.schemaType != null) return false;
-        if (xmlVersion != null ? !xmlVersion.equals(root.xmlVersion) : root.xmlVersion != null) return false;
+        if (!Objects.equals(schemaType, root.schemaType)) return false;
+        if (!Objects.equals(xmlVersion, root.xmlVersion)) return false;
 
         return true;
     }

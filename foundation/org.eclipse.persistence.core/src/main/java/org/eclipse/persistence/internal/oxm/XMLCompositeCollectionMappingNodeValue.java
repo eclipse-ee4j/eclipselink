@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,13 +14,9 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.oxm;
 
-import java.util.List;
-
-import javax.xml.namespace.QName;
-
 import org.eclipse.persistence.core.queries.CoreAttributeGroup;
 import org.eclipse.persistence.core.queries.CoreAttributeItem;
-import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.oxm.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.mappings.CompositeCollectionMapping;
@@ -39,6 +35,9 @@ import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
+
+import javax.xml.namespace.QName;
+import java.util.List;
 
 /**
  * INTERNAL:
@@ -136,10 +135,10 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
 
                             String xpath = leafType.getLocalPart();
                             String uri = leafType.getNamespaceURI();
-                            if (uri != null && uri.length() > 0) {
+                            if (uri != null && !uri.isEmpty()) {
                                 frag.setNamespaceURI(uri);
                                 String prefix = ((Descriptor) xmlCompositeCollectionMapping.getDescriptor()).getNonNullNamespaceResolver().resolveNamespaceURI(uri);
-                                if (prefix != null && prefix.length() > 0) {
+                                if (prefix != null && !prefix.isEmpty()) {
                                     xpath = prefix + Constants.COLON + xpath;
                                 }
                             }

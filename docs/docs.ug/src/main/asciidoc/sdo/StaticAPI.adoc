@@ -1,0 +1,268 @@
+[#sdo-example-static]
+=== Using Type Safe DataObjects to Manipulate XML
+
+* <<sdo-example-static-overview>>
+* <<sdo-example-static-setup>>
+* <<sdo-example-static-run>>
+* <<sdo-example-static-init>>
+* <<sdo-example-static-unmarshall>>
+* <<sdo-example-static-track>>
+* <<sdo-example-static-modify>>
+* <<sdo-example-static-marshall>>
+* <<sdo-example-static-interpret>>
+* <<sdo-example-static-download>>
+
+[#sdo-example-static-overview]
+==== Overview
+
+The following example will demonstrate how to use EclipseLink's SDO
+functionality to:
+
+* Generate Java source files from an XML Schema using the SDO Compiler
+* Define a set of SDO Types from an XML Schema
+* Load an XML file and modify its data
+* Monitor changes made to the data
+* Save the modified data to XML
+
+[#sdo-example-static-setup]
+==== Setup
+
+. Ensure that you have EclipseLink correctly installed and configured
+for your environment. Please see
+link:/EclipseLink/Installing_and_Configuring_EclipseLink[EclipseLink/Installing
+and Configuring EclipseLink] for more information.
+. Ensure that you have ANT correctly installed and configured.
+. Unzip the Example ZIP file to a new directory.
+. Edit the `+env.properties+` file in the root directory of the example
+and specify the path to your EclipseLink `+jlib+` directory:
+
+[source,properties]
+----
+...
+# Edit eclipselink.jlib to point to your EclipseLink jlib directory
+eclipselink.jlib=C:/EclipseLink-1.0/eclipselink/jlib
+...
+----
+
+You can compile and run the Example at any time by typing `+ant+` from
+the Example directory.
+
+For Eclipse IDE users, a `+.project+` file is included in the Example
+directory. To setup this project in Eclipse:
+
+. From the "File" menu, choose "Import..."
+. In the Import dialog, choose "General > Existing Projects into
+Workspace", and click "Next".
+. Click "Browse" to select a root directory, and point to the folder
+containing this example. After selecting the directory, you should see
+the project name in the "Projects" list. Click "Finish".
+
+This project is configured to use a classpath variable,
+`+ECLIPSELINK_JLIB+`, to point to the required JAR files. After the
+project is imported, you should define a variable called
+`+ECLIPSELINK_JLIB+` to point to your EclipseLink `+jlib+` directory.
+
+[#sdo-example-static-run]
+==== [#Running_the_SDO_Compiler .mw-headline]#Running the SDO Compiler#
+
+The SDO compiler can be run to generate Static SDO Java files from an
+XML Schema:
+
+[source,bash]
+----
+<ECLIPSELINK_HOME>/eclipselink/bin/sdo-compiler.sh [-options]
+<ECLIPSELINK_HOME>\eclipselink\bin\sdo-compiler.cmd [-options]
+
+Options:
+   -help                        Prints the help message text
+   -sourceFile <filename>       The input schema file (required)
+   -targetDirectory <dirname>   The directory to generate Java source (optional)
+   -logLevel <level>            Specify the integer value of the logging level
+                                (8=OFF,7=SEVERE,6=WARNING,5=INFO,4=CONFIG,3=FINE,2=FINER(default),1=FINEST,0=ALL)
+Example:
+   sdo-compiler.sh -sourceFile config/Customer.xsd -targetDirectory sdo-compiler-output -logLevel 8
+----
+
+For each complex type in the schema, the compiler will generate both an
+interface (e.g. `+CustomerType.java+`), and a concrete implementation
+which subclasses `+org.eclipse.persistence.sdo.SDODataObject+` (e.g.
+`+CustomerTypeImpl.java+`). For this example we will only deal with the
+generated interfaces.
+
+In this example, the SDO Compiler is run from the "`+run.sdo.compiler+`"
+task in the ANT build file.
+
+[#sdo-example-static-init]
+==== Initializing the Types from XML Schema
+
+The first thing that needs to be done in an SDO application is to set up
+the metadata for the Types and Properties. This is most commonly done by
+loading an XML schema, although it may also be done programmatically.
+
+[source,java]
+----
+FileInputStream xsdInputStream = new FileInputStream("Customer.xsd");
+XSDHelper.INSTANCE.define(xsdInputStream, null);
+----
+
+[#sdo-example-static-unmarshall]
+==== Unmarshalling the XML Document
+
+With the SDO Types and Properties defined from the schema, we can now
+load an XML document based on that schema, and then obtain a
+CustomerType object and begin modifying its contents.
+
+....
+FileInputStream xmlInputStream = new FileInputStream("Customer-data.xml");
+XMLDocument xmlDocument = XMLHelper.INSTANCE.load(xmlInputStream);
+CustomerType customer = (CustomerType) xmlDocument.getRootObject();
+....
+
+[#sdo-example-static-track]
+==== Tracking Object Modifications using Change Summary
+
+SDO's Change Summary provides access to change history information for
+the DataObjects in a data graph. A change history covers any
+modifications that have been made to a data graph starting from the
+point when logging was activated.
+
+In order to use Change Summary, we have defined an element of type
+"`+sdo:ChangeSummaryType+`" on our root complex type:
+
+[source,xml]
+----
+<xs:complexType name="customer-type">
+    <xs:sequence>
+        ...
+        <xs:element name="changeSummary" type="sdo:ChangeSummaryType" minOccurs="0"/>
+
+    </xs:sequence>
+</xs:complexType>
+----
+
+Before we start modifying our data, we must enable logging:
+
+[source,java]
+----
+customer.getChangeSummary().beginLogging();
+----
+
+From this point on, any modifications to the DataObject will be captured
+in the Change Summary, until logging is deactivated:
+
+[source,java]
+----
+customer.getChangeSummary().endLogging();
+----
+
+[#sdo-example-static-modify]
+==== Modifying the DataObjects
+
+Below are examples of manipulating the DataObjects using the static
+classes. Note that there are JavaBean-type accessors on the static
+interfaces.
+
+Modifying the ShippingAddress ZipCode:
+
+[source,java]
+----
+AddressType address = customer.getContactInfo().getShippingAddress();
+address.setZipCode("27601");
+----
+
+Adding a new PhoneNumber:
+
+[source,java]
+----
+PhoneNumber phoneNumber =
+  (PhoneNumber) DataFactory.INSTANCE.create("urn:customer-example", "phone-number");
+phoneNumber.setNumberType("home");
+phoneNumber.setValue("(613) 555-3333");
+customer.getContactInfo().getPhoneNumber().add(phoneNumber);
+----
+
+Removing all "cell" PhoneNumbers:
+
+[source,java]
+----
+ArrayList phoneNumbersToRemove = new ArrayList();
+List phoneNumbers = customer.getContactInfo().getPhoneNumber();
+Iterator it = phoneNumbers.iterator();
+while (it.hasNext()) {
+   PhoneNumber phoneNumber = (PhoneNumber) it.next();
+   if (phoneNumber.getNumberType().equals("cell")) {
+      phoneNumbersToRemove.add(phoneNumber);
+   }
+}
+phoneNumbers.removeAll(phoneNumbersToRemove);
+----
+
+[#sdo-example-static-marshall]
+==== Marshalling the DataObjects
+
+The following code segment demonstrates how to marshal DataObjects
+wrapped in a `+commonj.sdo.helper.XMLDocument+` back to XML. In this
+example the stream we are saving to is `+System.out+`, so the XML text
+will be printed to the console.
+
+[source,java]
+----
+XMLHelper.INSTANCE.save(xmlDocument, System.out, null);
+----
+
+[#sdo-example-static-interpret]
+==== Interpreting the Change Summary
+
+When the document is saved to `+System.out+`, we can see the change
+summary information in the XML:
+
+[source,xml]
+----
+<ns1:customer ...>
+   ...
+   <changeSummary logging="false" xmlns:sdo="commonj.sdo"
+      create="#/ns1:contact-info/ns1:phone-number[2]"
+      delete="#/changeSummary/ns1:contact-info/ns1:phone-number[2]">
+      <ns1:contact-info sdo:ref="#/ns1:contact-info">
+         <ns1:phone-number sdo:ref="#/ns1:contact-info/ns1:phone-number[1]"/>
+         <ns1:phone-number number-type="cell">(613) 555-2222</ns1:phone-number>
+      </ns1:contact-info>
+      <shipping-address sdo:ref="#/ns1:contact-info/shipping-address">
+         <zip-code>12345</zip-code>
+      </shipping-address>
+   </changeSummary>
+</ns1:customer>
+----
+
+* For DataObjects with modified data type properties, the Change Summary
+element contains a copy of the DataObject from the data graph, but
+containing only the properties which have changed, and showing their old
+values.  In our example, we see a "`+shipping-address+`" element which
+references "`+#/ns1:contact-info/shipping-address+`" (the element that
+was modified), along with its old value, "`+12345+`".
+
+* DataObjects which are currently in the data graph, but were not
+present when logging was started are indicated in the change summary
+with a "`+create+`" attribute. If more than one DataObject had been
+created, the attribute would contain a space-separated list of
+references, one for each DataObject. In our example, we see a
+"`+create+`" attribute indicating that
+"`+#/ns1:contact-info/ns1:phone-number\[2\]+`" (the second phone number
+in the XML) is the newly created one.
+
+* DataObjects deleted during logging are flagged with the "`+delete+`"
+attribute. In this case the change summary also contains a deep copy of
+the object which was deleted, as it no longer appears in the data graph.
+Here, we see a "`+delete+`" attribute indicating that
+"`+#/changeSummary/ns1:contact-info/ns1:phone-number\[2\]+`" (the second
+phone number in the _Change Summary_) is the one that was deleted from
+the XML.
+
+[#sdo-example-static-download]
+==== Download
+
+Download the "Examples Zip" from the EclipseLink
+http://www.eclipse.org/eclipselink/downloads/[Downloads] page. Code for
+this example will be found in the
+`+org.eclipse.persistence.example.sdo.staticapi.zip+` file.
+

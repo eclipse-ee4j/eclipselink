@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -13,6 +13,7 @@
 package org.eclipse.persistence.testing.jaxb.jaxbcontext;
 
 import java.io.InputStream;
+import java.io.StringWriter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.net.URL;
@@ -22,13 +23,12 @@ import jakarta.xml.bind.*;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.eclipse.persistence.exceptions.SessionLoaderException;
+import org.eclipse.persistence.sessions.factories.SessionLoaderException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
 import org.eclipse.persistence.jaxb.javamodel.reflection.JavaClassImpl;
-import org.eclipse.persistence.testing.oxm.classloader.JARClassLoader;
 import org.w3c.dom.Document;
 
 public class JaxbContextCreationTests extends junit.framework.TestCase {
@@ -46,8 +46,8 @@ public class JaxbContextCreationTests extends junit.framework.TestCase {
         try {
             JAXBContext context = JAXBContextFactory.createContext("org.eclipse.persistence.testing.jaxb.jaxbcontext.fake", Thread.currentThread().getContextClassLoader());
         } catch(JAXBException ex) {
-            assertTrue(((org.eclipse.persistence.exceptions.JAXBException)ex.getLinkedException()).getErrorCode() == org.eclipse.persistence.exceptions.JAXBException.NO_OBJECT_FACTORY_OR_JAXB_INDEX_IN_PATH);
-            assertTrue(((org.eclipse.persistence.exceptions.JAXBException)ex.getLinkedException()).getInternalException() instanceof ValidationException);
+            assertTrue(((org.eclipse.persistence.jaxb.JAXBException)ex.getLinkedException()).getErrorCode() == org.eclipse.persistence.jaxb.JAXBException.NO_OBJECT_FACTORY_OR_JAXB_INDEX_IN_PATH);
+            assertTrue(((org.eclipse.persistence.jaxb.JAXBException)ex.getLinkedException()).getInternalException() instanceof ValidationException);
         }
     }
 
@@ -75,8 +75,8 @@ public class JaxbContextCreationTests extends junit.framework.TestCase {
                 }
             });
         } catch(JAXBException ex) {
-            assertTrue(((org.eclipse.persistence.exceptions.JAXBException)ex.getLinkedException()).getErrorCode() == org.eclipse.persistence.exceptions.JAXBException.NO_OBJECT_FACTORY_OR_JAXB_INDEX_IN_PATH);
-            assertTrue(((org.eclipse.persistence.exceptions.JAXBException)ex.getLinkedException()).getInternalException() instanceof SessionLoaderException);
+            assertTrue(((org.eclipse.persistence.jaxb.JAXBException)ex.getLinkedException()).getErrorCode() == org.eclipse.persistence.jaxb.JAXBException.NO_OBJECT_FACTORY_OR_JAXB_INDEX_IN_PATH);
+            assertTrue(((org.eclipse.persistence.jaxb.JAXBException)ex.getLinkedException()).getInternalException() instanceof SessionLoaderException);
         }
     }
 
@@ -142,8 +142,8 @@ public class JaxbContextCreationTests extends junit.framework.TestCase {
             classes[0] = ConcreteClassWithMultiArgConstructor.class;
             JAXBContextFactory.createContext(classes, null);
         } catch(JAXBException e) {
-            org.eclipse.persistence.exceptions.JAXBException je = (org.eclipse.persistence.exceptions.JAXBException) e.getLinkedException();
-            assertEquals(org.eclipse.persistence.exceptions.JAXBException.FACTORY_METHOD_OR_ZERO_ARG_CONST_REQ, je.getErrorCode());
+            org.eclipse.persistence.jaxb.JAXBException je = (org.eclipse.persistence.jaxb.JAXBException) e.getLinkedException();
+            assertEquals(org.eclipse.persistence.jaxb.JAXBException.FACTORY_METHOD_OR_ZERO_ARG_CONST_REQ, je.getErrorCode());
             return;
         }
         fail();
@@ -193,7 +193,7 @@ public class JaxbContextCreationTests extends junit.framework.TestCase {
         boolean hasArgs = javaClass.hasActualTypeArguments();
         Collection getArgs = javaClass.getActualTypeArguments();
         assertFalse(hasArgs);
-        assertTrue(getArgs.size()== 0);
+        assertTrue(getArgs.isEmpty());
     }
 
     /**
@@ -204,5 +204,32 @@ public class JaxbContextCreationTests extends junit.framework.TestCase {
         JAXBContext context = JAXBContext.newInstance(this.getClass().getPackage().getName() + ".xlink");
         assertNotNull(context);
     }
+
+    public void testCreateContextWithMultipleOutputDocuments() throws Exception {
+        final StringWriter sw = new StringWriter();
+
+        //Describe types
+        Class<?>[] classes = new Class<?>[2];
+        classes[0] = Collection.class;
+        classes[1] = Employee.class;
+
+        //Prepare data to marshall
+        Employee e1 = new Employee();
+        e1.id = 1;
+        e1.name = "Jeeves Sobs";
+        Employee e2 = new Employee();
+        e2.id = 2;
+        e2.name = "John Smith";
+        Collection<Employee> employeeCollection = new HashSet<>();
+        employeeCollection.add(e1);
+        employeeCollection.add(e2);
+
+        JAXBContext jaxbContext = JAXBContextFactory.createContext(classes, null);
+        Marshaller marshaller = jaxbContext.createMarshaller();
+        marshaller.marshal(employeeCollection, sw);
+        assertTrue(sw.toString().contains("<?xml version=\"1.0\" encoding=\"UTF-8\"?><employee id=\"1\"><name>Jeeves Sobs</name></employee>"));
+        assertTrue(sw.toString().contains("<?xml version=\"1.0\" encoding=\"UTF-8\"?><employee id=\"2\"><name>John Smith</name></employee>"));
+    }
+
 
 }

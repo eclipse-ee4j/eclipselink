@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,7 +34,7 @@ import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 /**
  * INTERNAL:
  * PropertyMetadata. Each mapping may be assigned user-defined properties.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -78,8 +78,7 @@ public class PropertyMetadata extends ORMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (objectToCompare instanceof PropertyMetadata) {
-            PropertyMetadata property = (PropertyMetadata) objectToCompare;
+        if (objectToCompare instanceof PropertyMetadata property) {
 
             if (! valuesMatch(m_name, property.getName())) {
                 return false;
@@ -97,7 +96,8 @@ public class PropertyMetadata extends ORMetadata {
 
     @Override
     public int hashCode() {
-        int result = m_name != null ? m_name.hashCode() : 0;
+        int result = super.hashCode();
+        result = 31 * result + (m_name != null ? m_name.hashCode() : 0);
         result = 31 * result + (m_value != null ? m_value.hashCode() : 0);
         result = 31 * result + (m_valueTypeName != null ? m_valueTypeName.hashCode() : 0);
         return result;

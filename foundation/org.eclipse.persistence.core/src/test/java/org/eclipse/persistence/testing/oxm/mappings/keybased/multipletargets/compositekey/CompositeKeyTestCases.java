@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,8 +27,6 @@ import org.eclipse.persistence.testing.oxm.mappings.keybased.multipletargets.com
 import org.eclipse.persistence.testing.oxm.mappings.keybased.multipletargets.compositekey.elementkey.CompositeElementKeyWithGroupingSingleNodeTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.keybased.multipletargets.compositekey.elementkey.CompositeElementKeyWithGroupingTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.keybased.multipletargets.compositekey.nestedattributekey.NestedAttributeKeyTestCases;
-import org.eclipse.persistence.testing.oxm.mappings.keybased.multipletargets.singlekey.elementkey.SingleElementKeyTestCases;
-import org.eclipse.persistence.testing.oxm.mappings.keybased.multipletargets.singlekey.elementkey.SingleElementKeyWithGroupingTestCases;
 
 public class CompositeKeyTestCases extends TestCase {
     public static Test suite() {

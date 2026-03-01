@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,16 +14,18 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.jpql;
 
-import java.util.*;
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.testing.models.employee.domain.*;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.queries.ReadAllQuery;
+import org.eclipse.persistence.testing.models.employee.domain.Employee;
+
+import java.util.Vector;
 
 public class ComplexReverseParameterTest extends org.eclipse.persistence.testing.tests.jpql.JPQLParameterTestCase {
     @Override
     public void setup() {
         // Get the baseline employees for the verify
-        Employee emp = (Employee)getSomeEmployees().firstElement();
+        Employee emp = (Employee)getSomeEmployees().get(0);
 
         String firstName = "firstName";
         String lastName = "lastName";
@@ -44,7 +46,7 @@ public class ComplexReverseParameterTest extends org.eclipse.persistence.testing
 
         Vector employees = (Vector)getSession().executeQuery(raq, parameters);
 
-        emp = (Employee)employees.firstElement();
+        emp = (Employee)employees.get(0);
 
         // Set up the EJBQL using the retrieved employees
         String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE ";

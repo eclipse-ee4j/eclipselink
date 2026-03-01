@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,8 +28,7 @@ public class AttTypes {
     public Image i;
 
     public boolean equals(Object obj){
-        if(obj instanceof AttTypes){
-            AttTypes attObj = (AttTypes)obj;
+        if(obj instanceof AttTypes attObj){
             if(d == null && attObj.d != null || s == null && attObj.s != null || i == null && attObj.i != null || (d != null && !(d.equals(attObj.d))) || (i != null && !(i.equals(attObj.i))) || (s != null && !(s.equals(attObj.s)))){
                 return false;
             }

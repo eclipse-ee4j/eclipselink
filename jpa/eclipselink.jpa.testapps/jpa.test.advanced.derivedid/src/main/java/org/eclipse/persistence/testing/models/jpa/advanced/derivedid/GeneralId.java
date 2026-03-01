@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -48,8 +48,7 @@ public class GeneralId {
     }
 
     public boolean equals(Object other) {
-        if (other instanceof GeneralId) {
-            final GeneralId otherGeneralId = (GeneralId) other;
+        if (other instanceof GeneralId otherGeneralId) {
             return (otherGeneralId.firstName.equals(firstName) && otherGeneralId.lastName.equals(lastName));
         }
 

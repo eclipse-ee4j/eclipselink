@@ -1,0 +1,1346 @@
+image:Elug_draft_icon.png[Image:Elug draft
+icon.png,title="Image:Elug draft icon.png"] *For the latest EclipseLink
+documentation, please see
+http://www.eclipse.org/eclipselink/documentation/*
+
+'''''
+
+*TOC* Special:Whatlinkshere_Configuring_a_Session_(ELUG)[Related topics]
+
+This table lists the types of EclipseLink sessions that you can
+configure and provides a cross-reference to the type-specific chapter
+that lists the configurable options supported by that type.
+
+[#Table 85-1]##
+
+If you are creating…
+
+See…
+
+Server and client sessions
+
+Configuring Server Sessions
+
+Unit of Work Sessions
+
+Introduction to EclipseLink Transactions
+
+Isolated Client Sessions
+
+Configuring Exclusive Isolated Client Sessions for Virtual Private
+Database
+
+Historical sessions
+
+Configuring Historical Sessions
+
+Session broker and client sessions
+
+Configuring Session Broker and Client Sessions
+
+Database sessions
+
+Configuring Database Sessions
+
+For more information, see the following:
+
+* link:Introduction%20to%20EclipseLink%20Sessions%20(ELUG)[Introduction
+to EclipseLink Sessions]
+* link:Creating%20a%20Session%20(ELUG)[Creating a Session]
+
+== Configuring Common Session Options
+
+This table lists the configurable options shared by two or more
+EclipseLink session types. In addition to the configurable options
+described here, you must also configure the options described for the
+specific
+link:Introduction%20to%20EclipseLink%20Sessions%20(ELUG)#Session_Types[Session
+Types], as shown in The link:#Table_85-1[Configuring EclipseLink
+Sessions] table.
+
+[#Table 85-2]##
+
+Option to Configure
+
+EclipseLink Workbench
+
+Java
+
+Primary mapping project
+
+Session login
+
+Logging
+
+Multiple mapping projects
+
+Performance profiler
+
+Exception handler
+
+Session customizer class
+
+Server platform
+
+Session event listener
+
+Configuring a Coordinated Cache
+
+Integrity checker
+
+Connection policy
+
+Named queries
+
+== Configuring a Primary Mapping Project
+
+The mapping project contains your EclipseLink mapping metadata (see
+link:Introduction%20to%20Projects_(ELUG)[Introduction to Projects]),
+including descriptors and mappings. Each session is associated with at
+least one project so that the session can register the descriptors.
+
+This table summarizes which sessions support a primary mapping project
+configuration.
+
+[#Table 85-3]##
+
+Session
+
+Using the Workbench
+
+Using Java
+
+Server and Client Sessions
+
+Session broker and client sessions
+
+Database sessions
+
+Using the Workbench, you can export your mapping metadata as either a
+deployment XML file or as a Java class. Consequently, in a session, you
+can specify the mapping project as an XML file or as a Java class.
+
+If you export your mapping metadata as a Java class, you must compile it
+and
+link:Creating%20a%20Session%20(ELUG)#Configuring_a_Sessions_Configuration[add
+it to the session configuration classpath] before adding it to a
+session.
+
+Note: When specifying the mapping project using XML, you can specify the
+Java resource path. In most applications, the sessions.xml and
+project.xml files are deployed inside the JAR file, and the project XML
+path is specified as a Java resource path. When specifying the Java
+resource path, ensure that you are using the forward slash character ( /
+) for directories, not the back slash (  ).
+
+For example, com/myapp/mypersistence/my-project.xml, or
+META-INF/my-project.xml.
+
+See link:#Configuring_Multiple_Mapping_Projects[Configuring Multiple
+Mapping Projects] for information on configuring additional EclipseLink
+projects for the session.
+
+=== How to Configure a Primary Mapping Project Using Workbench
+
+To specify the primary EclipseLink project metadata for your session,
+use this procedure:
+
+[arabic]
+. Select a server or database session in the *Navigator*. Its properties
+appear in the Editor.
+. Click the *General* tab. The General tab appears.
+. Click the *Project* subtab. The Project subtab appears.
+[#Figure 85-1]##*_General Tab, Project Subtab, Primary Project Option_*
+image:sesgen.gif[General Tab, Project Subtab, Primary Project
+Option,title="General Tab, Project Subtab, Primary Project Option"]
+. Select the following options:
+* Click *Edit* to define the primary project. The Edit PrimaryProject
+dialog box appears.
+* Use the *Multiple Projects* option to
+link:#Configuring_Multiple_Mapping_Projects[add additional projects to
+the session]. [#Figure 85-2]##*_Edit Primary Project Dialog Box_*
+image:editprj.gif[Edit Primary Project Dialog
+Box,title="Edit Primary Project Dialog Box"]
+. Complete each field on the Edit Primary Project dialog box.
+
+Use this information to enter date in each field of the Edit Primary
+Project dialog box:
+
+[width="100%",cols="<9%,<91%",options="header",]
+|===
+|*Field* |*Description*
+|*XML* |Select *XML* to add a mapping project as a deployment XML file.
+Click *Browse* to select the file.
+
+|*Class* |Select *Class* to add a mapping project as a _compiled_ Java
+class file. Click *Browse* to select the file.
+|===
+
+=== How to Configure a Primary Mapping Project Using Java
+
+Using Java, you can register descriptors with a session using the
+following API:
+
+* `+Project+` API – Read your `+project.xml+` file (or instantiate your
+project class) and create your session using `+Project+` method
+`+createServerSession+` or `+createDatabaseSession+`.
+* `+Session+` API – Add a descriptor or set of descriptors to a session
+using the `+DatabaseSession+` API that the following table lists.
+Descriptors should be registered before login, but independent sets of
+descriptors can be added after login.
+
+[#Table 85-4]## *_DatabaseSession API for Registering Descriptors_*
+
+[width="100%",cols="<29%,<71%",options="header",]
+|===
+|*Session Method* |*Description*
+|`+addDescriptors(Project)+` |Add to the session all the descriptors
+owned by the passed in `+Project+`.
+
+|`+addDescriptors(Vector)+` |Add to the session all the descriptors in
+the passed in `+Vector+`.
+
+|`+addDescriptor(Descriptor)+` |Add an individual descriptor to the
+session.
+|===
+
+== Configuring a Session Login
+
+A session login encapsulates details of data source access for any
+session that persists to a data source. The session login overrides any
+other login configuration.
+
+This table summarizes which sessions support session login
+configuration.
+
+[#Table 85-5]##
+
+Session
+
+Session Login
+
+Server and Client Sessions
+
+Session Broker and Client Sessions
+
+Database Sessions
+
+The session login provides access to a variety of features, including
+the following:
+
+* Connection configuration such as whether or not to use external
+connection pooling.
+* Sequencing configuration (that overrides sequencing configuration made
+at the project level, if any).
+* Miscellaneous options specific to your chosen data source.
+* Properties (arbitrary, application-specific named values).
+
+For more information, see the following:
+
+* link:Introduction%20to%20Data%20Access%20(ELUG)#Data_Source_Login_Types[Data
+Source Login Types]
+* link:Configuring%20a%20Data%20Source%20Login%20(ELUG)[Configuring a
+Data Source Login]
+
+== Configuring Logging
+
+Use the EclipseLink logging framework to record EclipseLink behavior to
+a log file or session console.
+
+This table summarizes which sessions support logging configuration.
+
+[#Table 85-6]##
+
+Session
+
+Using the Workbench
+
+Using Java
+
+Server and client sessions
+
+Unit of work sessions
+
+Session broker and client sessions
+
+Database sessions
+
+[width="100%",cols="<100%",]
+|===
+|*Note*: If the session belongs to a session broker, you must specify
+the logging information in the session broker – not in the session
+itself.
+|===
+
+By default, EclipseLink uses its own native logger. Alternatively, you
+can configure EclipseLink to
+link:#How_to_Configure_a_Session_to_use_the_java.util.logging_Package[use
+the `+java.util.logging+` package].
+
+For more information, see
+link:Introduction%20to%20EclipseLink%20Sessions%20(ELUG)#Logging[Logging].
+
+=== How to Configure Logging Using Workbench
+
+To specify the logging information for a session, use this procedure:
+
+[arabic]
+. Select a database session in the *Navigator*. Its properties appear in
+the Editor.
+. Click the *Logging* tab. The Logging tab appears.
+[#Figure 85-3]##*_Logging Tab_* image:seslog.gif[Logging
+Tab,title="Logging Tab"]
+. Complete the Logging fields on the tab.
+
+Use the following information to enter data in each field of the Logging
+tab to select the profiler option to use with this session:
+
+Option
+
+Description
+
+No Logging
+
+Select this option to specify that nothing is logged for this session.
+
+Server
+
+Select this option to use logging capabilities of the application server
+to which you are deploying this application.
+
+Java
+
+Select this option to use java.util.logging package.
+
+Standard
+
+Select this option to use the EclipseLink logging framework. When
+selected, you can optionally configure the following options.
+
+Logging Level
+
+Define the amount of logging information to record (in ascending order
+of information):
+
+Config – Log only login, JDBC connection, and database information.
+
+Info (default) – Log the login/logout per sever session, with user name.
+After acquiring the session, detailed information is logged.
+
+Warning – Log exceptions that do not force EclipseLink to stop,
+including all exceptions not logged with Severe level. This does not
+include a stack trace.
+
+Severe – Log exceptions indicating EclipseLink cannot continue, and any
+exceptions generated during login. This includes a stack trace.
+
+Fine – Log SQL (including thread information).
+
+Finer – Similar to warning. Includes stack trace.
+
+Finest – Includes additional low-level information.
+
+All – Log everything.
+
+Console
+
+Select this option to display logging information to the standard
+console output.
+
+File
+
+Select this option to record logging information in a file. Click Browse
+to specify the name and location of the log file.
+
+Options
+
+Select this option to override additional logging option defaults for
+Java and Standard logging only.
+
+Log Exception Stack Trace
+
+Select this option to include the stack trace with any exception written
+to the log.
+
+Default: For SEVERE messages, log stack trace. For WARNING messages,
+only log stack trace at log level FINER or lower.
+
+Print Connection
+
+Select this option to include the connection identifier in any
+connection related log messages.
+
+Default: Enabled for all message and log levels.
+
+Print Date
+
+Select this option to include the date and time at which the log message
+was generated.
+
+Default: Enabled for all message and log levels.
+
+Print Session
+
+Select this option to include the session name in any session related
+log messages.
+
+Default: Enabled for all message and log levels.
+
+Print Thread
+
+Select this option to include the thread name in any thread related log
+messages.
+
+Default: Log only at log level FINER or lower.
+
+=== How to Configure Logging Using Session API in Java
+
+If you use EclipseLink native logging (the default), then at run time,
+you can configure logging options using
+`+org.eclipse.persistence.sessions.Session+` logging API.
+
+The `+Session+` interface defines the following logging methods:
+
+* `+setSessionLog+` – specify the type of logging to use (any
+implementor of `+org.eclipse.persistence.logging.SessionLog+`)
+* `+dontLogMessages+` – disable logging
+* `+setLog+` – specify the `+java.io.Writer+` to which the session logs
+messages
+* `+setLogLevel+` – specify the level at which the session logs using
+`+org.eclipse.persistence.logging.SessionLog+` constants:
+** `+OFF+`
+** `+SEVERE+`
+** `+WARNING+`
+** `+INFO+`
+** `+CONFIG+`
+** `+FINE+`
+** `+FINER+`
+** `+FINEST+`
+** `+ALL+`
+
+This example illustrates how to configure a session to use
+`+java.util.logging+` package.
+
+[#Example 85-1]## *_Configuring a Session to Use java.util.logging_*
+
+`+session.setSessionLog(new JavaLog());+`
+
+This example illustrates how to configure a session to use the server
+log that OC4J provides. For more information about server logging, see
+link:Introduction%20to%20EclipseLink%20Sessions%20(ELUG)#Server_Logging[Server
+Logging].
+
+*_Configuring a Session to Use Application Server Logging_*
+
+`+session.setSessionLog(new OjdlLog());+`
+
+This example illustrates how to configure a session to log to a
+`+java.io.Writer+`:
+
+[#Example 85-3]## *_Configuring a Session to Log to a java.io.Writer_*
+
+`+session.setLog(myWriter);+`
+
+=== How to Configure a Session to use the java.util.logging Package
+
+If you use `+java.util.logging+` package, then you configure logging
+options in the __`+/lib/logging.properties+` file. Messages are written
+to zero or multiple destinations based on this configuration file.
+
+If you configure a session to use `+java.util.logging+` package,
+consider the following:
+
+* link:#logging.properties[logging.properties]
+* link:#Formatters[Formatters]
+* link:#Namespace[Namespace]
+
+==== logging.properties
+
+Configure the `+logging.properties+` file as this example illustrates:
+
+[#Example 85-4]## *_java.util.logging Configuration in
+logging.properties_*
+
+[source,java]
+----
+ handlers = java.util.logging.ConsoleHandler
+ java.util.logging.ConsoleHandler.level = CONFIG
+ java.util.logging.ConsoleHandler.formatter = org.eclipse.persistence.logging.LogFormatter
+ org.eclipse.persistence.LoggingSession.connection.level = CONFIG
+----
+
+For information about the types of formatters available, see
+link:#Formatters[Formatters].
+
+==== Formatters
+
+EclipseLink provides two formatters: `+LogFormatter+` and
+`+XMLLogFormatter+`. They override the `+SimpleFormatter+` and
+`+XMLFormatter+` `+java.util.logging+` formatters and always log session
+and connection info when available. They also log thread and exception
+stack trace information at certain levels as specified by the logging
+level.
+
+==== Namespace
+
+Namespace is supported for `+java.util.logging+`. This table lists the
+static constants defined in
+`+org.eclipse.persistence.sessions.SessionLog+` for EclipseLink
+components and the corresponding strings in `+logging.properties+`.
+
+[#Table 85-7]## *_Logging Property FIle Names_*
+
+[width="100%",cols="<25%,<75%",options="header",]
+|===
+|*SessionLog* |*logging.properites*
+|Not Applicable |`+org.eclipse.persistence+`
+|Not Applicable |`+org.eclipse.persistence.+`
+|`+SQL+` |`+org.eclipse.persistence.+``+.sql+`
+|`+TRANSACTION+` |`+org.eclipse.persistence.+``+.transaction+`
+|`+EVENT+` |`+org.eclipse.persistence.+``+.event+`
+|`+CONNECTION+` |`+org.eclipse.persistence.+``+.connection+`
+|`+QUERY+` |`+org.eclipse.persistence.+``+.query+`
+|`+CACHE+` |`+org.eclipse.persistence.+``+.cache+`
+|`+PROPAGATION+` |`+org.eclipse.persistence.+``+.propagation+`
+|`+SEQUENCING+` |`+org.eclipse.persistence.+``+.sequencing+`
+|`+EJB+` |`+org.eclipse.persistence.+``+.ejb+`
+|`+EJB_OR_METADATA+` |`+org.eclipse.persistence.+``+.ejb_or_metadata+`
+|`+WEAVER+` |`+org.eclipse.persistence.+``+.weaver+`
+|`+PROPERTIES+` |`+org.eclipse.persistence.+``+.properties+`
+|`+SERVER+` |`+org.eclipse.persistence.+``+.server+`
+|===
+
+In the `+logging.properties+` names listed in the
+link:#Table_85-7[Logging Property FIle Names] table, note that is the
+name of the session that the application is running in. For example, if
+the name of the session is `+MyApplication+`, then you would use
+`+org.eclipse.persistence.MyApplication.sql+` for the SQL logging
+property.
+
+An application can also define its own namespace and write to it through
+the logging API, as long as the logger for that namespace is defined in
+the logging configuration. Otherwise messages are written to the parent
+logger, `+org.eclipse.persistence.+`.
+
+== Configuring Multiple Mapping Projects
+
+Each session is associated with at least
+link:#Configuring_a_Primary_Mapping_Project[one mapping project]. You
+can include additional EclipseLink mapping projects for a session.
+
+This table summarizes which sessions support additional mapping project
+configuration.
+
+[#Table 85-8]##
+
+Session
+
+Using the Workbench
+
+Using Java
+
+Server and client sessions
+
+Session Broker and Client Sessions
+
+Database sessions
+
+=== How to Configure Multiple Mapping Projects Using Workbench
+
+To specify additional EclipseLink projects for your session, use this
+procedure:
+
+[arabic]
+. Select a server or database session in the *Navigator*. Its properties
+appear in the Editor.
+. Click the *General* tab. The General tab appears.
+. Click the *Project* subtab. The Project subtab appears.
+[#Figure 85-4 ]##*_General Tab, Project Subtab, Multiple Projects
+Options_* image:sesgenad.gif[General Tab, Project Subtab, Multiple
+Projects
+Options,title="General Tab, Project Subtab, Multiple Projects Options"]
+. Select *Multiple Projects* option. The Multiple Projects subtab
+appears.
+. Click the *Multiple Projects* subtab.
++
+*_General Tab, Multiple Projects Subtab_* image:sesadv.gif[General Tab,
+Multiple Projects Subtab,title="General Tab, Multiple Projects Subtab"]
+. To add an additional mapping project to this session, click *Add*. For
+more information, see
+link:#Configuring_a_Primary_Mapping_Project[Configuring a Primary
+Mapping Project]. To remove EclipseLink mapping projects, select the
+project file and click *Remove*.
+
+=== How to Configure Multiple Mapping Projects Using Java
+
+Using Java, you can register descriptors from more than one project with
+a session using the `+DatabaseSession+` API that this table lists. You
+can register descriptors before login, but you can add independent sets
+of descriptors after login.
+
+[#Table 85-9]## *_DatabaseSession API for Registering Descriptors_*
+
+[width="100%",cols="<26%,<74%",options="header",]
+|===
+|*Session Method* |*Description*
+|`+addDescriptors(Project)+` |Add additional descriptor to the session
+in the form of a project.
+
+|`+addDescriptors(Vector)+` |Add a vector of individual descriptor files
+to the session in the form of a project.
+
+|`+addDescriptor(Descriptor)+` |Add individual descriptor to the
+session.
+|===
+
+== Configuring a Performance Profiler
+
+To successfully improve the performance of an EclipseLink application,
+you must measure performance before and after each optimization.
+EclipseLink provides a variety of built-in performance measuring
+features (known as profilers) that you can configure at the session
+level.
+
+This table summarizes which sessions support performance profiler
+configuration.
+
+[#Table 85-10]##
+
+Session
+
+Using the Workbench
+
+Using Java
+
+Server and client sessions
+
+Session broker and client sessions
+
+Database sessions
+
+EclipseLink provides the following profilers:
+
+* EclipseLink profiler: logs performance statistics for every executed
+query in a given session (see
+link:Optimizing%20the%20EclipseLink%20Application%20(ELUG)#Measuring_EclipseLink_Performance_with_the_EclipseLink_Profiler[Measuring
+EclipseLink Performance with the EclipseLink Profiler])
+
+=== How to Configure a Performance Profiler Using Workbench
+
+To specify the type of profiler in a session, use this procedure:
+
+[arabic]
+. Select a session in the *Navigator*. Its properties appear in the
+Editor.
+. Click the *Options* tab. The Options tab appears. *_Options Tab,
+Profiler Options_* image:sespro.gif[Options Tab, Profiler
+Options,title="Options Tab, Profiler Options"]
+. Complete the *Profiler* field on the tab.
+
+Use the following information to select the profiler option to use with
+this session:
+
+Option
+
+Description
+
+No Profiler
+
+Disable all profiling.
+
+Standard (EclipseLink)
+
+Enable EclipseLink profiling. For more information, see the following:
+
+How to Configure the EclipseLink Performance Profiler
+
+Measuring EclipseLink Performance with the EclipseLink Profiler
+
+=== How to Configure a Performance Profiler Using Java
+
+You can use Java to configure a session with a profiler using
+`+Session+` method `+setProfiler+`, as this example shows.
+
+[#Example 85-5]## *_Configuring a Session with an EclipseLink Profiler_*
+
+`+session.setProfiler(new PerformanceProfiler());+`
+
+To end a profiling session, use `+Session+` method `+clearProfiler+`.
+
+== Configuring an Exception Handler
+
+You can associate a single exception handling class with each session.
+This class must implement the
+`+org.eclipse.persistence.exceptions.ExceptionHandler+` interface.
+
+This table summarizes which sessions support exception handler
+configuration.
+
+[#Table 85-11]## *_Session Support for Exception Handler Configuration_*
+
+Session
+
+Using the Workbench
+
+Using Java
+
+Server and client sessions
+
+Session broker and client sessions
+
+Database sessions
+
+For an example exception handler implementation, see
+link:#How_to_Configure_an_Exception_Handler_Using_Java[Using Java].
+
+For more information, see
+link:Introduction%20to%20EclipseLink%20Sessions%20(ELUG)#Exception_Handlers[Exception
+Handlers].
+
+=== How to Configure an Exception Handler Using Workbench
+
+To specify the exception handler class in a session, use this procedure:
+
+[arabic]
+. Select a session in the *Navigator*. Its properties appear in the
+Editor.
+. Click the *Options* tab. The Options tab appears. *_Options Tab,
+Exception Handler Field_* image:sescust.gif[Options Tab, Exception
+Handler Field,title="Options Tab, Exception Handler Field"]
+. Complete the *Exception Handler* field.
+. Click *Browse* and select the exception handler class for this
+session.
+
+=== How to Configure an Exception Handler Using Java
+
+This example shows an example exception handler implementation. In this
+implementation, the exception handler always tries to reestablish the
+connection if it has been reset by peer, but only retries a query if it
+is an instance of `+ReadQuery+`. Note that this exception handler either
+returns the result of the reexecuted `+ReadQuery+` or throws an
+exception.
+
+[#Example 85-6]## *_Implementing an Exception Handler_*
+
+[source,java]
+----
+ session.setExceptionHandler(
+   new ExceptionHandler() {
+     public Object handleException(RuntimeException exception) {
+       if (exception instanceof DatabaseException) {
+         DatabaseException dbex = (DatabaseException) exception;
+         if ((dbex.getInternalException() instanceof SQLException) &&
+            (((SQLException) dbex.getInternalException()).getErrorCode() == MyDriver.CONNECTION_RESET_BY_PEER)) {
+            dbex.getAccessor().reestablishConnection(dbex.getSession());
+            if (dbex.getQuery() instanceof ReadQuery) {
+              return dbex.getSession().executeQuery(dbex.getQuery(), dbex.getQuery().getTranslationRow());
+            }
+            throw exception;
+         }
+       }
+       throw exception;
+     }
+   }
+ );
+----
+
+[width="100%",cols="<100%",]
+|===
+|*Note*: Unhandled exceptions must be rethrown by the exception handler
+code.
+|===
+
+== Configuring a Session Customizer Class
+
+A session customizer class is a Java class that implements the
+`+org.eclipse.persistence.internal.sessions.factories.SessionCustomizer+`
+interface and provides a default (zero-argument) constructor. You can
+use a session customizer to customize a session at run time on a loaded
+session before login occurs, similar to how you can use an
+link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Amendment_Methods[amendment
+method to customize a descriptor]) For example, you can use a session
+customizer class to define and register session event listeners with the
+session event manager (see
+link:#Configuring_Session_Event_Listeners[Configuring Session Event
+Listeners]).
+
+This table summarizes which sessions support customizer class
+configuration.
+
+[#Table 85-12]## *_Session Support for Customizer Class Configuration_*
+
+Session
+
+Using the Workbench
+
+How to Use Java
+
+Server and client sessions
+
+Session broker and client sessions
+
+Database sessions
+
+For more information, see
+link:Introduction%20to%20EclipseLink%20Sessions%20(ELUG)#Session_Customization[Session
+Customization].
+
+=== How to Configure Customizer Class Using Workbench
+
+To specify the session customizer class in a session, use this
+procedure:
+
+[arabic]
+. Select a session in the *Navigator*. Its properties appear in the
+Editor.
+. Click the *Options* tab. The Options tab appears. *_Options Tab,
+Session Customizer Class Field_* image:sestran.gif[Options Tab, Session
+Customizer Class
+Field,title="Options Tab, Session Customizer Class Field"]
+. Complete the *Session Customizer Class* field.
+. Click *Browse* and select the customizer class for this session.
+
+=== How to Configure Customizer Class Using Java
+
+When using Java, create a customize class that implements the
+`+org.eclipse.persistence.internal.sessions.factories.SessionCustomizer+`
+interface. This example illustrates the creation of the session
+customizer. The `+customize+` method contains the configuration of the
+`+Login+` owned by the `+Session+` with the appropriate transaction
+isolation.
+
+[#Example 85-7]## *_Creating a SessionCustomizer Class_*
+
+[source,java]
+----
+ import  org.eclipse.persistence.internal.sessions.factories.SessionCustomizer;
+ import org.eclipse.persistence.sessions.Session;
+ import org.eclipse.persistence.sessions.DatabaseLogin;
+
+ public class EmployeeSessionCustomizer implements SessionCustomizer {
+
+     public void customize(Sesssion session) {
+         DatabaseLogin login = (DatabaseLogin)session.getDatasourceLogin();
+         login.setTransactionIsolation(DatabaseLogin.TRANSACTION_READ_UNCOMMITTED);
+     }
+ }
+----
+
+== Configuring the Server Platform
+
+The EclipseLink server platform defines how a session integrates with a
+Java EE server including the following:
+
+* Run-time services: Enables the deployment of a Java Management
+Extensions (JMX) MBean that allows monitoring of the EclipseLink
+session.
+* External transaction controller: Integrates the EclipseLink session
+with the server’s Java Transaction API (JTA) service. This should always
+be used when using EJB or JTA transactions. You configure EclipseLink to
+integrate with the container’s external transaction service by
+specifying an EclipseLink external transaction controller. For more
+information on external transaction services, see
+link:Introduction%20to%20EclipseLink%20Transactions_(ELUG)#Unit_of_Work_Transaction_Demarcation[Unit
+of Work Transaction Demarcation].
+
+This table summarizes which sessions support a server platform.
+
+[#Table 85-13]## *_Session Support for Server Platform_*
+
+Session
+
+Using the Workbench
+
+Using Java
+
+Server and client sessions
+
+Session broker and client sessions
+
+Database sessions
+
+=== How to Configure the Server Platform Using Workbench
+
+To specify the server platform options for a session, use this
+procedure:
+
+[arabic]
+. Select a session in the *Navigator*. Its properties appear in the
+Editor.
+. Click the *General* tab. The General tab appears.
+. Click the *Server Platform* subtab. The Server Platform subtab
+appears. *_General Tab, Server Platform Subtab_* image:sessp.gif[General
+Tab, Server Platform Subtab,title="General Tab, Server Platform Subtab"]
+. Enter complete each field on the Server Platform subtab.
+
+Use the following information to enter data in each field of the Server
+Platform subtab:
+
+Field
+
+Description
+
+Server Platform
+
+Check this field if you intend to deploy your application to a Java EE
+application server.
+
+If you check this field, you must configure the target application
+server by selecting a Platform.
+
+Platform
+
+Select the Java EE application server to which you will deploy your
+application.
+
+EclipseLink supports the following Java EE application servers:
+
+OC4J 10.1.3
+
+SunAS 9
+
+WebLogic 10.3
+
+WebLogic 10
+
+WebLogic 9.0
+
+WebSphere 6.1
+
+JBoss 4.2.2
+
+JBoss 4.2.2
+
+GlassFish 2.1
+
+GlassFish 3
+
+Custom
+
+EclipseLink supports the following Java Servlet container servers:
+
+Tomcat 6
+
+For detailed information about supported application server versions and
+configuration requirements, see Integrating EclipseLink with an
+Application Server. Select Custom if you have created your own
+org.eclipse.persistence.platform.server.ServerPlatform class to use an
+application server not currently supported by EclipseLink or to override
+an existing ServerPlatform. If you select Custom, you must specify your
+custom ServerPlatform class by selecting a Server Platform Class.
+
+The server platform you select overrides the default server platform set
+at the sessions configuration leve.
+
+Enable Runtime Services
+
+Check this field to configure the EclipseLink runtime to enable the
+deployment of a JMX MBean that allows monitoring of the EclipseLink
+session.
+
+Enable External Transaction Controller (JTA)
+
+Check this field if you intend to integrate your application with an
+external transaction controller. For more information, see Unit of Work
+Transaction Demarcation.
+
+If you configure Platform for a Java EE application server that
+EclipseLink supports, the EclipseLink runtime will automatically select
+the appropriate external transaction controller class.
+
+If you configure Platform as Custom, you must specify an external
+transaction controller class by selecting an External Transaction
+Controller.
+
+Server Platform Class
+
+This option is only available if you configure Platform as Custom.
+
+Click Browse to select your custom ServerPlatform class.
+
+Transaction Controller Class (JTA)
+
+This option is only available if you configure Platform as Custom.
+
+If you checked Enable External Transaction Controller (JTA), click
+Browse to select the transaction controller class that corresponds with
+your custom ServerPlatform class.
+
+=== How to Configure the Server Platform Using Java
+
+When using Java, you must pass the session in a server platform
+constructor. This example illustrates using a session customizer (see
+link:Customizing%20the%20EclipseLink%20Application_(ELUG)#Using_the_Session_Customizer_Class[Using
+the Session Customizer Class]) to configure a session with a server
+platform from the `+org.eclipse.persistence.platform.server+` package.
+
+[#Example 85-8]## *_Configuring a Session with a Server Platform_*
+
+[source,java]
+----
+ import org.eclipse.persistence.internal.sessions.factories.SessionCustomizer;
+ ...
+ public class MySessionCustomizer implements SessionCustomizer {
+    public void customize (Session session) {
+       Server server = (Server)session;
+       server.setServerPlatform(new Oc4j_11_1_1_Platform(DatabaseSession)server)):
+    }
+ }
+----
+
+== Configuring Session Event Listeners
+
+As you perform persistence operations with a session, the session
+produces various events (see
+link:Introduction%20to%20EclipseLink%20Sessions%20(ELUG)#Session_Event_Manager_Events[Session
+Event Manager Events]) that the EclipseLink runtime uses to coordinate
+its various components. You can configure a session with one or more
+link:Introduction%20to%20EclipseLink%20Sessions%20(ELUG)#Session_Event_Listeners[session
+event listeners] to customize session behavior and debug session
+operations. For example, session event listeners play an important role
+in the
+link:Configuring%20Exclusive%20Isolated%20Client%20Sessions%20for%20Virtual%20Private%20Database%20(ELUG)#Configuring_Exclusive_Isolated_Client_Sessions_for_Virtual_Private_Database[configuration
+of isolated sessions].
+
+This table summarizes which sessions support event listeners
+(SessionEventListener).
+
+[#Table 85-14]## *_Session Support for Event Listeners_*
+
+Session
+
+Using the Workbench
+
+Using Java
+
+Server and client sessions
+
+Session broker and client sessions
+
+Database sessions
+
+=== How to Configure Session Event Listeners Using Workbench
+
+*Session Event Listeners*
+
+To specify the event listener class in a session, use this procedure:
+
+[arabic]
+. Select a session in the *Navigator*. Its properties appear in the
+Editor.
+. Click the *Options* tab. The Options tab appears. *_Options Tab, Event
+Listeners field_* image:sesevnt.gif[Options Tab, Event Listeners
+field,title="Options Tab, Event Listeners field"]
+. To add a new event listener, click *Add*, then select the event
+listener class for this session. To remove an existing event listener,
+select the *Event Listener* and click *Remove*.
+
+=== How to Configure Session Event Listeners Using Java
+
+This example illustrates how to use Java to register a session event
+listener with a session. EclipseLink provides a `+SessionEventAdapter+`
+to simplify creating a `+SessionEventListener+`. The
+`+SessionEventAdapter+` provides a default implementation of all the
+methods of the `+SessionEventListener+` interface. You need only
+override the specific methods of interest. Typically, you would define
+session event listeners in a
+link:#Configuring_a_Session_Customizer_Class[session customizer class].
+
+[#Example 85-9]## *_Using the Session Event Adapter to Create a Session
+Event Listener_*
+
+[source,java]
+----
+ ...
+ SessionEventAdapter myEventListener = new SessionEventAdapter() {
+     // Listen for PostCommitUnitOfWork events
+     public void postCommitUnitOfWork(SessionEvent event) {
+         // Call the handler routine
+         unitOfWorkCommitted();
+     }
+ };
+ mySession.getEventManager().addListener(myEventListener);
+ ...
+----
+
+For information on how to add logging to your listeners, see
+link:Introduction%20to%20EclipseLink%20Sessions%20(ELUG)#Logging[Logging].
+
+== Configuring the Integrity Checker
+
+When you log into a session, EclipseLink initializes and validates the
+descriptors you registered with it. By configuring the integrity
+checker, you can customize this validation process to do the following:
+
+* link:#Check_Database[Check Database]
+* link:#Catch_All_Exceptions[Catch All Exceptions]
+* link:#Catch_Instantiation_Policy_Exceptions[Catch Instantiation Policy
+Exceptions]
+
+This table summarizes which sessions support descriptor integrity
+checking configuration.
+
+[#Table 85-15]## *_Session Support for Checking Descriptor Integrity_*
+
+Session
+
+Using the Workbench
+
+Using Java
+
+Server and client sessions
+
+Session broker and client sessions
+
+Database sessions
+
+*Check Database*
+
+The `+IntegrityChecker+` method `+setShouldCheckDatabase+` specifies
+whether or not the integrity checker should verify the descriptor’s
+metadata against the database metadata. This will report any errors due
+to missing or incorrect table or fields specified in the descriptors.
+This is turned off by default as it adds a significant overhead to
+connecting a session.
+
+*Catch All Exceptions*
+
+By default, the integrity checker catches all exceptions that occur
+during initialization, and throws a single exception at the end of
+initialization reporting all of the errors detected. If you only want
+the first exception encountered, you can disable this feature using
+`+IntegrityChecker+` method `+setShouldCatchExceptions(false)+`.
+
+*Catch Instantiation Policy Exceptions*
+
+By default, the integrity checker tests the default or configured
+constructor for each descriptor initialized in the session. To disable
+this feature, use `+IntegrityChecker+` method
+`+setShouldCheckInstantiationPolicy(false)+`.
+
+=== How to Configure the Integrity Checker Using Java
+
+As this example shows, you can configure the integrity checker
+validation process.
+
+[#Example 85-10]## *_Configuring the Integrity Checker_*
+
+[source,java]
+----
+ session.getIntegrityChecker().setShouldCheckDatabase(true);
+ session.getIntegrityChecker().setShouldCatchExceptions(false);
+ session.getIntegrityChecker().setShouldCheckInstantiationPolicy(false);
+ session.login();
+----
+
+== Configuring Connection Policy
+
+Using a connection policy, you can control how an EclipseLink session
+acquires and uses read and write connections, including the following:
+
+* link:#Exclusive_Write_Connections[Exclusive Write Connections]
+* link:#Lazy_Connection_Acquisition[Lazy Connection Acquisition]
+
+This table summarizes which sessions support connection policy
+configuration.
+
+[#Table 85-16]## *_Session Support for Connection Policy_*
+
+Session
+
+Using Workbench
+
+Using Java
+
+Server and client sessions
+
+Session broker and client sessions
+
+Database sessions
+
+*Exclusive Write Connections*
+
+An exclusive connection is one that EclipseLink allocates to a client
+session for reading (of isolated data) and writing for the duration of
+the client session’s life cycle.
+
+By default, exclusive connections are not used and a client session uses
+the server session’s read connection pool for all non-pessimistic read
+queries. A connection is obtained from the read connection pool for each
+read query execution and released back to the pool after the query is
+executed. A connection is only obtained from the write connection pool
+for the unit of work commit operation, or, potentially, earlier if data
+modify queries, or read queries using pessimistic locking are used. The
+connection will be release back to the write connection pool after the
+unit of work is committed or released. Exclusive connections are
+provided for use with database read security or Virtual Private Database
+(VPD) support. When using an exclusive connection, you will obtain it
+from the server session’s write connection pool. When you acquire the
+client, the exclusive connection will be used for read queries to
+isolated classes (see
+link:Introduction%20to%20EclipseLink%20Sessions%20(ELUG)#Isolated_Client_Sessions[Isolated
+Client Sessions]), exclusive read queries, pessimistic read queries, and
+for the unit of work commit operation. The exclusive connection will
+only be released when the client session is released. EclipseLink still
+acquires a shared connection from the read connection pool for reading
+nonisolated data. If you use a JTA-managed external connection pool with
+exclusive connections, do not reuse a client session across JTA
+transaction boundaries, as the physical JTA database connection is
+released and acquired from the connection pool relative to the JTA
+transaction life cycle. A new client session, or the active unit of
+work, should be used for each JTA transaction. For more information, see
+link:Configuring%20an%20Internal%20Connection%20Pool%20(ELUG)#Configuring_Exclusive_Read_Connections[Configuring
+Exclusive Read Connections].
+
+You can also configure exclusive connections on a
+client-session-by-client-session basis (see
+link:Acquiring%20and%20Using%20Sessions%20at%20Run%20Time%20(ELUG)#How_to_Acquire_a_Client_Session_that_Uses_Exclusive_Connections[How
+to Acquire a Client Session that Uses Exclusive Connections]) and for
+named queries (see
+link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Named_Query_Advanced_Options[Configuring
+Named Query Advanced Options]).
+
+[width="100%",cols="<100%",]
+|===
+|*Note*: If any client session contains an exclusive connection, you
+must release the session (see
+link:Acquiring%20and%20Using%20Sessions%20at%20Run%20Time%20(ELUG)#Logging_Out_of_a_Session[Logging
+Out of a Session]) when you are finished using it. We do not recommend
+relying on the finalizer to release the connection when the session is
+garbage-collected. If you are using an active unit of work in a JTA
+transaction, you do not need to release the client session–the unit of
+work will release it after the JTA transaction completes.
+|===
+
+*Lazy Connection Acquisition*
+
+By default, EclipseLink acquires write connections lazily, when you
+perform the first unit of work commit operation, exclusive read query,
+or pessimistic read query with your client session. The write connection
+will also be released after each unit of work it committed or released.
+
+Alternatively, you can configure EclipseLink to acquire the write
+connection at the time you acquire a client session, and release the
+connection when you release the client session.
+
+You can also configure lazy connection acquisition on a
+client-session-by-client-session basis (see
+link:Acquiring%20and%20Using%20Sessions%20at%20Run%20Time%20(ELUG)#How_to_Acquire_a_Client_Session_that_Does_Not_Use_Lazy_Connection_Allocation[How
+to Acquire a Client Session that Does Not Use Lazy Connection
+Allocation]).
+
+=== How to Configure Connection Policy Using Workbench
+
+To specify the connection policy in a session, use this procedure:
+
+[arabic]
+. Select a session in the *Navigator*. Its properties appear in the
+Editor.
+. Click the *Connection Policy* tab. The Connection Policy tab appears.
+*_Connection Policy Tab_* image:sescpol.gif[Connection Policy
+Tab,title="Connection Policy Tab"]
+
+=== How to Configure Connection Policy Using Java
+
+To configure whether or not an exclusive connection is allocated to a
+particular isolated session, use the
+`+org.eclipse.persistence.sessions.server.ConnectionPolicy+` method
+`+setExclusiveMode+`. You can set the `+ExclusiveMode+` to one of the
+following:
+
+* `+Transactional+` - triggers the creation of a `+ClientSession+`. You
+can also enable this option by selecting *Acquire Connections Lazily* in
+link:#How_to_Configure_Connection_Policy_Using_TopLink_Workbench[Workbench].
+* `+Isolated+` - triggers the creation of an
+`+ExclusiveIsolatedClientSession+`. You can also enable this option by
+selecting *Acquire Exclusive Connection* in
+link:#How_to_Configure_Connection_Policy_Using_TopLink_Workbench[Workbench].
+* `+Asways+` - also triggers the creation of an
+`+ExclusiveIsolatedClientSession+`. Note that this mode allows the usage
+of an exclusive connection without requiring isolation. You cannot use
+Workbench to set this option.
+
+To define a map of properties used to support an isolated session, use
+the following `+ConnectionPolicy+` methods:
+
+* `+setProperty(Object key, Object value)+`: Adds the property `+value+`
+to the `+Map+` under `+key+`, overwriting the existing value if `+key+`
+already exists in the `+Map+`. Note that these properties are not
+specifically geared toward an isolated client session. EclipseLink
+runtime makes them available during the creation of a client session in
+a `+PostAcquireExclusiveConnection+` event, but does not pass them to
+any event. Instead, it keeps these properties in the
+`+ConnectionPolicy+`, which, in turn, is kept by the client session.
+* `+Object getProperty(Object key)+`: Returns the value associated with
+`+key+` as an `+Object+`.
+* `+boolean hasProperties+`: Returns `+true+` if one or more properties
+exist in the `+Map+`; otherwise returns false.
+
+The EclipseLink runtime passes this `+Map+` into `+SessionEvent+` events
+`+PostAcquireExclusiveConnection+` and `+PreReleaseExclusiveConnection+`
+so that your implementation can make the appropriate PL/SQL calls to the
+underlying database platform (see
+link:Configuring%20Exclusive%20Isolated%20Client%20Sessions%20for%20Virtual%20Private%20Database%20(ELUG)#Using_PostAcquireExclusiveConnection_Event_Handler[Using
+PostAcquireExclusiveConnection Event Handler] and
+link:Configuring%20Exclusive%20Isolated%20Client%20Sessions%20for%20Virtual%20Private%20Database%20(ELUG)#Using_PreReleaseExclusiveConnection_Event_Handler[Using
+PreReleaseExclusiveConnection Event Handler]).
+
+To configure the session to use a named connection pool, use the
+`+ConnectionPool+` constructor that takes a `+String+` connection pool
+name as an argument, as follows:
+
+`+Session clientSession = server.acquireClientSession(new ConnectionPolicy("myConnectionPool"));+`
+
+== Configuring Named Queries at the Session Level
+
+A *named query* is an EclipseLink query that you create and store, by
+name, in a session for later retrieval and execution. Named queries
+improve application performance, because they are prepared once and they
+(and all their associated supporting objects) can be efficiently reused
+thereafter making them well-suited for frequently executed operations.
+
+If a named query is global to a project, configure it at the session
+level. Alternatively, you can configure a named query at the descriptor
+level (see
+link:Configuring%20a%20Descriptor%20(ELUG)#Configuring_Named_Queries_at_the_Descriptor_Level[Configuring
+Named Queries at the Descriptor Level]).
+
+Use named queries to specify SQL, EJB QL, or EclipseLink `+Expression+`
+queries to access your data source.
+
+This table summarizes which sessions support named query configuration.
+
+[#Table 85-17]##
+
+Session
+
+Using the Workbench
+
+Using Java
+
+Server and client sessions
+
+Session broker and client sessions
+
+Database sessions
+
+After you create a named query, you can execute it by name on the
+EclipseLink session (see
+link:Using%20Basic%20Query%20API%20(ELUG)#Using_Named_Queries[Using
+Named Queries]).
+
+For more information about named queries, see
+link:Introduction%20to%20EclipseLink%20Queries%20(ELUG)#Named_Queries[Named
+Queries].
+
+=== How to Configure Named Queries at the Session Level Using Java
+
+You can store a query by name in a `+Session+` using `+Session+` method
+`+addQuery(String name, DatabaseQuery query)+`.
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Release_1[Category: Release 1] Category:_Task[Category: Task]

@@ -1,0 +1,62 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[MULTITENANCY001]]
+=== Introduction to the Solution
+
+EclipseLink offers considerable flexibility in how you can design and
+implement features for isolating tenants. Possibilities include the
+following:
+
+*Application Isolation options*
+
+* Separate container/server
+* Separate application within the same container/server
+* Separate entity manager factory and shared cache within the same
+application
+* Shared entity manager factory with tenant isolation per entity manager
+
+*Data isolation options*
+
+* Separate database
+* Separate schema/tablespace
+* Separate tables
+* Shared table with row isolation
+* Query filtering
+* Oracle Virtual Private Database (VPD)
+
+EclipseLink includes the following options for providing multi-tenancy
+in the data source:
+
+* *Single-table multi-tenancy* allows tenants to share tables. Each
+tenant has its own rows, identified by discriminator columns, and those
+rows are invisible to other tenants. See
+xref:{relativedir}/multitenancy002.adoc#MULTITENANCY002[Using Single-Table Multi-Tenancy].
+* With *table-per-tenant* multi-tenancy, each tenant has its own table
+or tables, identified by table tenant discriminators, and those tables
+are invisible to other users. See
+xref:{relativedir}/multitenancy003.adoc#MULTITENANCY003[Using Table-Per-Tenant Multi-Tenancy].
+* With (*VDP*) multi-tenancy, tenants use a VDP database, which provides
+the functionality to support multiple tenants sharing the same table.
+See xref:{relativedir}/multitenancy004.adoc#MULTITENANCY004[Using VPD Multi-Tenancy].
+
+EclipseLink further provides tenant-specific extensions through
+extensible entities using extensible entities and `MetadataSource`. For
+information about those features, see
+xref:{relativedir}/extensible.adoc#EXTENSIBLE[Chapter 12, "Making JPA Entities and JAXB
+Beans Extensible,"] and xref:{relativedir}/metadatasource.adoc#METADATASOURCE[Chapter 13,
+"Using an External MetaData Source."]

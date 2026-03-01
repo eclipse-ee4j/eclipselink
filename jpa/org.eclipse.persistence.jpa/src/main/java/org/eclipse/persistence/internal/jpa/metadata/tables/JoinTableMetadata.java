@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,7 +40,7 @@ import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 /**
  * INTERNAL:
  * Object to hold onto join table metadata in a EclipseLink database table.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -57,11 +57,11 @@ public class JoinTableMetadata extends RelationalTableMetadata {
     // XML element, rather it is mapped as a separate element in a sequence with
     // it. Therefore, this element is only populated through annotation
     // processing right now, BUT this should be made available from our
-    // eclipselink-orm.xml and therefore maintaining a better annoation/xml
+    // eclipselink-orm.xml and therefore maintaining a better annotation/xml
     // mirror which was unfortunately not followed with JPA 2.1.
     private ForeignKeyMetadata m_inverseForeignKey;
 
-    private List<JoinColumnMetadata> m_inverseJoinColumns = new ArrayList<JoinColumnMetadata>();
+    private List<JoinColumnMetadata> m_inverseJoinColumns = new ArrayList<>();
 
     /**
      * INTERNAL:
@@ -104,8 +104,7 @@ public class JoinTableMetadata extends RelationalTableMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (super.equals(objectToCompare) && objectToCompare instanceof JoinTableMetadata) {
-            JoinTableMetadata joinTable = (JoinTableMetadata) objectToCompare;
+        if (super.equals(objectToCompare) && objectToCompare instanceof JoinTableMetadata joinTable) {
 
             if (! valuesMatch(m_inverseJoinColumns, getInverseJoinColumns())) {
                 return false;
@@ -119,7 +118,8 @@ public class JoinTableMetadata extends RelationalTableMetadata {
 
     @Override
     public int hashCode() {
-        int result = m_inverseForeignKey != null ? m_inverseForeignKey.hashCode() : 0;
+        int result = super.hashCode();
+        result = 31 * result + (m_inverseForeignKey != null ? m_inverseForeignKey.hashCode() : 0);
         result = 31 * result + (m_inverseJoinColumns != null ? m_inverseJoinColumns.hashCode() : 0);
         return result;
     }

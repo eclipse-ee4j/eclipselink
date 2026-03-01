@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,25 +14,23 @@
 //     dminsky - initial API and implementation
 package org.eclipse.persistence.testing.tests.sessionbroker;
 
-import java.util.*;
-
-import org.eclipse.persistence.testing.framework.TestCase;
-
-import org.eclipse.persistence.testing.models.employee.relational.EmployeeProject;
-import org.eclipse.persistence.testing.models.employee.domain.Address;
-import org.eclipse.persistence.testing.models.employee.domain.Employee;
-
-import org.eclipse.persistence.sessions.DatabaseSession;
-import org.eclipse.persistence.sessions.Project;
-import org.eclipse.persistence.sessions.DatabaseLogin;
-import org.eclipse.persistence.sessions.UnitOfWork;
-import org.eclipse.persistence.sessions.broker.SessionBroker;
-import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.queries.DeleteAllQuery;
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.UpdateAllQuery;
-import org.eclipse.persistence.exceptions.EclipseLinkException;
+import org.eclipse.persistence.sessions.DatabaseLogin;
+import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.sessions.Project;
+import org.eclipse.persistence.sessions.UnitOfWork;
+import org.eclipse.persistence.sessions.broker.SessionBroker;
+import org.eclipse.persistence.testing.framework.TestCase;
+import org.eclipse.persistence.testing.models.employee.domain.Address;
+import org.eclipse.persistence.testing.models.employee.domain.Employee;
+import org.eclipse.persistence.testing.models.employee.relational.EmployeeProject;
+
+import java.util.Vector;
 
 public class SessionBrokerCustomFunctionTest extends TestCase {
 
@@ -82,7 +80,7 @@ public class SessionBrokerCustomFunctionTest extends TestCase {
 
             ReadAllQuery query = new ReadAllQuery(Address.class);
             ExpressionBuilder builder = query.getExpressionBuilder();
-            Vector<Expression> args = new Vector<Expression>();
+            Vector<Expression> args = new Vector<>();
             args.add(builder.get("country"));
             Expression expression = builder.getFunction(CustomDatabasePlatform.OPERATOR_SELECTOR, args).equal("CANADA");
             query.setSelectionCriteria(expression);
@@ -103,7 +101,7 @@ public class SessionBrokerCustomFunctionTest extends TestCase {
             UpdateAllQuery query = new UpdateAllQuery(Employee.class);
             ExpressionBuilder builder = query.getExpressionBuilder();
 
-            Vector<Expression> args = new Vector<Expression>();
+            Vector<Expression> args = new Vector<>();
             args.add(builder.get("lastName"));
 
             Expression expression = builder.getFunction(CustomDatabasePlatform.OPERATOR_SELECTOR, args).equal("SMITH");
@@ -129,7 +127,7 @@ public class SessionBrokerCustomFunctionTest extends TestCase {
             DeleteAllQuery query = new DeleteAllQuery(Employee.class);
             ExpressionBuilder builder = query.getExpressionBuilder();
 
-            Vector<Expression> args = new Vector<Expression>();
+            Vector<Expression> args = new Vector<>();
             args.add(builder.get("lastName"));
 
             Expression expression = builder.getFunction(CustomDatabasePlatform.OPERATOR_SELECTOR, args).equal("SMITH");

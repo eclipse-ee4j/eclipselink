@@ -1,0 +1,52 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[MIGRATETOPLINK]]
+== Migrating from Native TopLink
+
+This chapter describes how to migrate applications using "native"
+TopLink object-relational mapping (ORM) APIs to the current EclipseLink
+APIs.
+
+This chapter includes the following sections:
+
+* xref:{relativedir}/sect1test001.adoc#MIGRATETOPLINK000[Introduction to the Solution]
+* xref:{relativedir}/migrnativetoplink001.adoc#MIGRATETOPLINK001[Implementing the Solution]
+* xref:{relativedir}/migrnativetoplink002.adoc#MIGRATETOPLINK002[Additional Resources]
+
+*Use Case*
+
+A developer wants to upgrade an application that uses the older TopLink
+native ORM to use a current EclipseLink ORM implementation.
+
+*Solution*
+
+Follow the instructions in this chapter to upgrade the application.
+
+*Components*
+
+* EclipseLink 2.4 or later.
+* (Optional) EclipseLink Workbench.
+
+//Introduction to the Solution
+include::{rootdir}/sect1test001.adoc[]
+
+//Implementing the Solution
+include::{rootdir}/migrnativetoplink001.adoc[]
+
+//Additional Resources
+include::{rootdir}/migrnativetoplink002.adoc[]

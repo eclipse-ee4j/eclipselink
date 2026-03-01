@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,29 +14,31 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.sessions.factories.model;
 
-import java.util.Vector;
 import org.eclipse.persistence.internal.sessions.factories.model.session.SessionConfig;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * INTERNAL:
  */
 public class SessionConfigs {
-    private Vector<SessionConfig> m_sessionConfigs;
+    private List<SessionConfig> m_sessionConfigs;
     private String m_version;
 
     public SessionConfigs() {
-        m_sessionConfigs = new Vector<>();
+        m_sessionConfigs = new ArrayList<>();
     }
 
     public void addSessionConfig(SessionConfig sessionConfig) {
         m_sessionConfigs.add(sessionConfig);
     }
 
-    public void setSessionConfigs(Vector<SessionConfig> sessionConfigs) {
+    public void setSessionConfigs(List<SessionConfig> sessionConfigs) {
         m_sessionConfigs = sessionConfigs;
     }
 
-    public Vector<SessionConfig> getSessionConfigs() {
+    public List<SessionConfig> getSessionConfigs() {
         return m_sessionConfigs;
     }
 

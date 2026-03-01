@@ -54,7 +54,7 @@ public class OracleNoSQLJCAConnectionSpec implements ConnectionSpec {
                     .filter(authPrincipalType -> authPrincipalType.authPrincipalName.equals(authPrincipalName))
                     .findFirst();
         }
-    };
+    }
 
 
     /** NoSQL service type.
@@ -84,7 +84,7 @@ public class OracleNoSQLJCAConnectionSpec implements ConnectionSpec {
                     .filter(service -> service.serviceName.equals(serviceName))
                     .findFirst();
         }
-    };
+    }
 
     private ServiceType service;
 

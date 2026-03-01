@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,7 +37,6 @@ import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Project;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.SmallProject;
 import org.junit.Assert;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
@@ -145,17 +144,17 @@ public class SQLResultSetMappingTest extends JUnitTestCase {
         query.setSQLResultSetMapping(resultSetMapping);
         List results = (List)getServerSession("fieldaccess").executeQuery(query);
         assertNotNull("No result returned", results);
-        assertTrue("Empty list returned", (results.size()!=0));
+        assertTrue("Empty list returned", (!results.isEmpty()));
 
-        for (Iterator iterator = results.iterator(); iterator.hasNext(); ){
-            Object[] resultElement = (Object[])iterator.next();
+        for (Object result : results) {
+            Object[] resultElement = (Object[]) result;
             assertTrue("Failed to Return 3 items", (resultElement.length == 3));
             // Using Number as Different db/drivers  can return different types
             // e.g. Oracle with ijdbc14.jar returns BigDecimal where as
             // Derby with derbyclient.jar returns Double
-            assertTrue("Failed to return column",(resultElement[0] instanceof Number) );
-            assertTrue("Failed to return LargeProject", (resultElement[1] instanceof LargeProject) );
-            assertTrue("Failed To Return SmallProject", (resultElement[2] instanceof SmallProject) );
+            assertTrue("Failed to return column", (resultElement[0] instanceof Number));
+            assertTrue("Failed to return LargeProject", (resultElement[1] instanceof LargeProject));
+            assertTrue("Failed To Return SmallProject", (resultElement[2] instanceof SmallProject));
             Assert.assertNotEquals("Returned same data in both result elements", ((SmallProject) resultElement[2]).getName(), ((LargeProject) resultElement[1]).getName());
         }
     }
@@ -179,7 +178,7 @@ public class SQLResultSetMappingTest extends JUnitTestCase {
             project.setDescription("To A new changed description");
             results = (List)getServerSession("fieldaccess").executeQuery(query);
             assertNotNull("No result returned", results);
-            assertTrue("Empty list returned", (results.size()!=0));
+            assertTrue("Empty list returned", (!results.isEmpty()));
             Assert.assertNotEquals("Object was not refreshed", "To A new changed description", project.getDescription());
         }finally{
             if (isTransactionActive(em)){
@@ -207,7 +206,7 @@ public class SQLResultSetMappingTest extends JUnitTestCase {
         params.add(4000);
         List results = (List)getServerSession("fieldaccess").executeQuery(query, params);
         assertNotNull("No result returned", results);
-        assertTrue("Empty list returned", (results.size()!=0));
+        assertTrue("Empty list returned", (!results.isEmpty()));
     }
 
     public void testBindParametersWithPostitional() {
@@ -226,7 +225,7 @@ public class SQLResultSetMappingTest extends JUnitTestCase {
         params.add(4000);
         List results = (List)getServerSession("fieldaccess").executeQuery(query, params);
         assertNotNull("No result returned", results);
-        assertTrue("Empty list returned", (results.size()!=0));
+        assertTrue("Empty list returned", (!results.isEmpty()));
     }
     public void testSimpleInheritance() {
         SQLResultSetMapping resultSetMapping = new SQLResultSetMapping("SimpleInheritance");
@@ -241,10 +240,9 @@ public class SQLResultSetMappingTest extends JUnitTestCase {
         query.setSQLResultSetMapping(resultSetMapping);
         List results = (List)getServerSession("fieldaccess").executeQuery(query);
         assertNotNull("No result returned", results);
-        assertTrue("Empty list returned", (results.size()!=0));
-        for (Iterator iterator = results.iterator(); iterator.hasNext(); ){
-            Object project = iterator.next();
-            assertTrue("Failed to return a project", (project instanceof Project) );
+        assertTrue("Empty list returned", (!results.isEmpty()));
+        for (Object project : results) {
+            assertTrue("Failed to return a project", (project instanceof Project));
         }
     }
 
@@ -268,7 +266,7 @@ public class SQLResultSetMappingTest extends JUnitTestCase {
         try{
             List results = (List)((JpaEntityManager)em.getDelegate()).getActiveSession().executeQuery(query);
             assertNotNull("No result returned", results);
-            assertTrue("Empty list returned", (results.size()!=0));
+            assertTrue("Empty list returned", (!results.isEmpty()));
             smallProject = (SmallProject)(results.get(0));
             smallProject.setDescription("A relatively new Description");
             commitTransaction(em);
@@ -303,12 +301,11 @@ public class SQLResultSetMappingTest extends JUnitTestCase {
         assertNotNull("No result returned", results);
         assertTrue("Incorrect number of results returned, expected 2 got "+results.size(), (results.size()==2));
 
-        for (Iterator iterator = results.iterator(); iterator.hasNext(); ){
-            Object resultElement = iterator.next();
-            assertTrue("Failed to return Employee", (resultElement instanceof Employee) );
-            Employee emp = (Employee)resultElement;
-            assertNotNull("Failed to get an address for Employee "+emp.getFirstName(), emp.getAddress() );
-        }
+         for (Object resultElement : results) {
+             assertTrue("Failed to return Employee", (resultElement instanceof Employee));
+             Employee emp = (Employee) resultElement;
+             assertNotNull("Failed to get an address for Employee " + emp.getFirstName(), emp.getAddress());
+         }
     }
 
 

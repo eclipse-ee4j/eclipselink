@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2024 Contributors to the Eclipse Foundation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -71,6 +72,7 @@ public abstract class AbstractPathExpression extends AbstractExpression {
      * @param identificationVariable The identification variable that was already parsed, which means
      * the beginning of the parsing should start with a dot
      */
+    @SuppressWarnings("this-escape")
     protected AbstractPathExpression(AbstractExpression parent, AbstractExpression identificationVariable) {
         super(parent);
         this.pathSize = -1;
@@ -86,6 +88,7 @@ public abstract class AbstractPathExpression extends AbstractExpression {
      * the beginning of the parsing should start with a dot
      * @param paths The path expression that is following the identification variable
      */
+    @SuppressWarnings("this-escape")
     public AbstractPathExpression(AbstractExpression parent,
                                   AbstractExpression identificationVariable,
                                   String paths) {
@@ -196,7 +199,7 @@ public abstract class AbstractPathExpression extends AbstractExpression {
         endsWithDot = (character == DOT);
 
         // Make sure the last path is added to the list
-        if (singlePath.length() > 0) {
+        if (!singlePath.isEmpty()) {
             paths.add(singlePath.toString());
         }
 
@@ -209,7 +212,7 @@ public abstract class AbstractPathExpression extends AbstractExpression {
                 identificationVariable = buildNullExpression();
             }
             else {
-                identificationVariable = new IdentificationVariable(this, paths.get(0));
+                identificationVariable = new IdentificationVariable(this, paths.get(0), false);
             }
         }
     }
@@ -279,6 +282,16 @@ public abstract class AbstractPathExpression extends AbstractExpression {
         return identificationVariable.isVirtual();
     }
 
+    /**
+     * Determines whether the path's identification variable is virtual and not used in the query with the {@code this} keyword.
+     *
+     * @return <code>true</code> if this identification variable was virtually created and is not explicitly used in this path expression; <code>false</code> otherwise (is not virtual or is virtual and referenced with the {@code this} keyword)
+     */
+    public final boolean hasImplicitIdentificationVariable() {
+        checkPaths();
+        return identificationVariable.isVirtual() && !paths.get(0).equals(Expression.THIS);
+    }
+
     @Override
     protected final void parse(WordParser wordParser, boolean tolerant) {
         wordParser.moveForward(getText());
@@ -310,7 +323,7 @@ public abstract class AbstractPathExpression extends AbstractExpression {
      *
      * @param variableName The identification variable that was generated to identify the "root" object
      */
-    protected final void setVirtualIdentificationVariable(String variableName) {
+    public final void setVirtualIdentificationVariable(String variableName) {
 
         identificationVariable = new IdentificationVariable(this, variableName, true);
 

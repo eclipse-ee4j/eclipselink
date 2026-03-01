@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,7 +14,8 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.performance;
 
-import java.io.*;
+import java.io.Serializable;
+import java.io.StringWriter;
 
 /**
  * <p><b>Purpose</b>: Describes an Employee's phone number.
@@ -99,15 +100,11 @@ public class PhoneNumber implements Serializable {
      * Required for Hibernate cache to work.
      */
     public boolean equals(Object object) {
-        if (object instanceof PhoneNumber) {
-            PhoneNumber phone = (PhoneNumber)object;
+        if (object instanceof PhoneNumber phone) {
             if (! getType().equals(phone.getType())) {
                 return false;
             }
-            if ((getOwner() == null) || (phone.getOwner() == null) || (getOwner().getId() != phone.getOwner().getId())) {
-                return false;
-            }
-            return true;
+            return (getOwner() != null) && (phone.getOwner() != null) && (getOwner().getId() == phone.getOwner().getId());
         } else {
             return false;
         }

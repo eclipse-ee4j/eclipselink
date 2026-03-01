@@ -54,8 +54,7 @@ public class TestQueryIN {
         EntityManager em = emf.createEntityManager();
 
         try {
-            TypedQuery<EntityTbl01> query = em.createQuery(""
-                    + "SELECT t FROM EntityTbl01 t "
+            TypedQuery<EntityTbl01> query = em.createQuery("SELECT t FROM EntityTbl01 t "
                         + "WHERE t.itemString1 IN ('HELLO', 'ONE', 'WORLD', 'PEOPLE')", EntityTbl01.class);
             List<EntityTbl01> dto01 = query.getResultList();
             Assert.assertNotNull(dto01);
@@ -88,8 +87,7 @@ public class TestQueryIN {
 
         try {
             // test 1
-            TypedQuery<EntityTbl01> query = em.createQuery(""
-                    + "SELECT t FROM EntityTbl01 t "
+            TypedQuery<EntityTbl01> query = em.createQuery("SELECT t FROM EntityTbl01 t "
                         + "WHERE t.itemString1 IN (?1, ?2, ?3, ?4)", EntityTbl01.class);
             query.setParameter(1, "HELLO");
             query.setParameter(2, "ONE");
@@ -106,8 +104,7 @@ public class TestQueryIN {
             Assert.assertEquals(Integer.valueOf(1), dto01.get(0).getItemInteger1());
 
             // equivalent test 2
-            query = em.createQuery(""
-                    + "SELECT t FROM EntityTbl01 t "
+            query = em.createQuery("SELECT t FROM EntityTbl01 t "
                         + "WHERE t.itemString1 IN ?1", EntityTbl01.class);
             query.setParameter(1, Arrays.asList("HELLO", "ONE", "WORLD", "PEOPLE"));
             dto01 = query.getResultList();
@@ -321,8 +318,7 @@ public class TestQueryIN {
         EntityManager em = emf.createEntityManager();
 
         try {
-            TypedQuery<EntityTbl01> query = em.createQuery(""
-                    + "SELECT t FROM EntityTbl01 t "
+            TypedQuery<EntityTbl01> query = em.createQuery("SELECT t FROM EntityTbl01 t "
                         + "WHERE t.itemString1 IN ("
                             + "SELECT u.itemString1 FROM EntityTbl01 u "
                             + "WHERE u.itemString2 = 'SEVEN')", EntityTbl01.class);
@@ -356,8 +352,7 @@ public class TestQueryIN {
         EntityManager em = emf.createEntityManager();
 
         try {
-            TypedQuery<EntityTbl01> query = em.createQuery(""
-                    + "SELECT t FROM EntityTbl01 t "
+            TypedQuery<EntityTbl01> query = em.createQuery("SELECT t FROM EntityTbl01 t "
                         + "WHERE t.itemString1 IN ("
                             + "SELECT u.itemString1 FROM EntityTbl01 u "
                             + "WHERE u.itemString2 = ?2)", EntityTbl01.class);
@@ -538,8 +533,7 @@ public class TestQueryIN {
         EntityManager em = emf.createEntityManager();
 
         try {
-            TypedQuery<EntityTbl01> query = em.createQuery(""
-                    + "SELECT t FROM EntityTbl01 t "
+            TypedQuery<EntityTbl01> query = em.createQuery("SELECT t FROM EntityTbl01 t "
                         + "WHERE t.itemString1 IN ("
                             + "SELECT u.itemString1 FROM EntityTbl01 u "
                             + "WHERE u.itemString2 IN ('TEN', 'SEVEN', 'ELEVEN'))", EntityTbl01.class);
@@ -573,8 +567,7 @@ public class TestQueryIN {
         EntityManager em = emf.createEntityManager();
 
         try {
-            TypedQuery<EntityTbl01> query = em.createQuery(""
-                    + "SELECT t FROM EntityTbl01 t "
+            TypedQuery<EntityTbl01> query = em.createQuery("SELECT t FROM EntityTbl01 t "
                         + "WHERE t.itemString1 IN ("
                             + "SELECT u.itemString1 FROM EntityTbl01 u "
                             + "WHERE u.itemString2 IN (?2, ?3, ?4))", EntityTbl01.class);

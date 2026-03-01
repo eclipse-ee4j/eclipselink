@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,11 +14,18 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.expressions;
 
-import java.util.*;
-
-import org.eclipse.persistence.expressions.*;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 /**
  * <b>Purpose:</b>Represents The FOR UPDATE OF fine-grained pessimistically
@@ -42,7 +49,7 @@ public class ForUpdateOfClause extends ForUpdateClause {
 
     public List<Expression> getLockedExpressions() {
         if (lockedExpressions == null) {
-            lockedExpressions = new ArrayList();
+            lockedExpressions = new ArrayList<>();
         }
         return lockedExpressions;
     }
@@ -121,9 +128,9 @@ public class ForUpdateOfClause extends ForUpdateClause {
      * like SQLServer
      */
     @Override
-    public Collection getAliasesOfTablesToBeLocked(SQLSelectStatement statement) {
+    public Collection<DatabaseTable> getAliasesOfTablesToBeLocked(SQLSelectStatement statement) {
         int expected = statement.getTableAliases().size();
-        HashSet aliases = new HashSet(expected);
+        Set<DatabaseTable> aliases = new HashSet<>(expected);
         ExpressionBuilder clonedBuilder = statement.getBuilder();
         Iterator<Expression> iterator = getLockedExpressions().iterator();
         while (iterator.hasNext() && aliases.size() < expected) {
@@ -136,9 +143,7 @@ public class ForUpdateOfClause extends ForUpdateClause {
                 next = ((FieldExpression)next).getBaseExpression();
             }
             DatabaseTable[] expAliases = next.getTableAliases().keys();
-            for (int i=0; i<expAliases.length; i++) {
-                aliases.add(expAliases[i]);
-            }
+            aliases.addAll(Arrays.asList(expAliases));
         }
         return aliases;
     }

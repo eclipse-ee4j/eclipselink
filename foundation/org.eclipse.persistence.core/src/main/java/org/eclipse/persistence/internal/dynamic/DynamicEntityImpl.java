@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,18 +18,12 @@
 package org.eclipse.persistence.internal.dynamic;
 
 //javase imports
-import static org.eclipse.persistence.internal.helper.Helper.getShortClassName;
-
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.changetracking.ChangeTracker;
 import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.dynamic.DynamicType;
-import org.eclipse.persistence.exceptions.DynamicException;
+import org.eclipse.persistence.dynamic.DynamicException;
 import org.eclipse.persistence.indirection.IndirectContainer;
 import org.eclipse.persistence.indirection.ValueHolderInterface;
 import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
@@ -51,6 +45,11 @@ import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.remote.DistributedSession;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * This abstract class is used to represent an entity which typically is not
  * realized in Java code. In combination with the DynamicClassLoader ASM is used
@@ -59,7 +58,7 @@ import org.eclipse.persistence.sessions.remote.DistributedSession;
  * customized to use a custom AttributeAccessor ({@link ValuesAccessor}).
  * <p>
  * <b>Type/Property Meta-model</b>: This dynamic entity approach also includes a
- * meta-model facade to simplify access to the types and property information so
+ * metamodel facade to simplify access to the types and property information so
  * that clients can more easily understand the model. Each
  * {@link DynamicTypeImpl} wraps the underlying EclipseLink
  * relational-descriptor and the {@link DynamicPropertiesManager} wraps each mapping.
@@ -137,18 +136,15 @@ public abstract class DynamicEntityImpl implements DynamicEntity, PersistenceEnt
                     throw DynamicException.invalidPropertyName(dpm.getType(), propertyName);
                 }
             }
-            PropertyWrapper wrapper = propertiesMap.get(propertyName);
-            if (wrapper == null) { // properties can be added after constructor is called
-                wrapper = new PropertyWrapper();
-                propertiesMap.put(propertyName, wrapper);
-            }
+            // properties can be added after constructor is called
+            PropertyWrapper wrapper = propertiesMap.computeIfAbsent(propertyName, k -> new PropertyWrapper());
             Object value = wrapper.getValue();
             // trigger any indirection
-            if (value instanceof ValueHolderInterface) {
-                value = ((ValueHolderInterface<?>) value).getValue();
+            if (value instanceof ValueHolderInterface<?> vhi) {
+                value = vhi.getValue();
             }
-            else if (value instanceof IndirectContainer) {
-                value = ((IndirectContainer<?>) value).getValueHolder().getValue();
+            else if (value instanceof IndirectContainer<?> ic) {
+                value = ic.getValueHolder().getValue();
             }
             try {
                 return (T) value;
@@ -179,11 +175,8 @@ public abstract class DynamicEntityImpl implements DynamicEntity, PersistenceEnt
                     !_persistence_getFetchGroup().containsAttributeInternal(propertyName)) {
                 return false;
             }
-            PropertyWrapper wrapper = propertiesMap.get(propertyName);
-            if (wrapper == null) { // properties can be added after constructor is called
-                wrapper = new PropertyWrapper();
-                propertiesMap.put(propertyName, wrapper);
-            }
+            // properties can be added after constructor is called
+            PropertyWrapper wrapper = propertiesMap.computeIfAbsent(propertyName, k -> new PropertyWrapper());
             return wrapper.isSet();
         }
         else {
@@ -201,7 +194,7 @@ public abstract class DynamicEntityImpl implements DynamicEntity, PersistenceEnt
     }
 
     /**
-     * Sets the.
+     * Set the persistence value for the given property to the specified value.
      *
      * @param propertyName the property name
      * @param value the value
@@ -219,16 +212,13 @@ public abstract class DynamicEntityImpl implements DynamicEntity, PersistenceEnt
                 throw DynamicException.invalidPropertyName(dpm.getType(), propertyName);
             }
         }
-        PropertyWrapper wrapper = propertiesMap.get(propertyName);
-        if (wrapper == null) { // properties can be added after constructor is called
-            wrapper = new PropertyWrapper();
-            propertiesMap.put(propertyName, wrapper);
-        }
+        // properties can be added after constructor is called
+        PropertyWrapper wrapper = propertiesMap.computeIfAbsent(propertyName, k -> new PropertyWrapper());
         Object oldValue = null;
         Object wrapperValue = wrapper.getValue();
-        if (wrapperValue instanceof ValueHolderInterface<?>) {
+        if (wrapperValue instanceof ValueHolderInterface<?> vhi) {
             @SuppressWarnings({"unchecked"})
-            ValueHolderInterface<Object> vh = (ValueHolderInterface<Object>) wrapperValue;
+            ValueHolderInterface<Object> vh = (ValueHolderInterface<Object>) vhi;
             if (vh.isInstantiated()) {
                 oldValue = vh.getValue();
             }
@@ -592,7 +582,7 @@ public abstract class DynamicEntityImpl implements DynamicEntity, PersistenceEnt
         // this will print something like {Emp 10} or {Phone 234-5678 10}
         StringBuilder sb = new StringBuilder(20);
         sb.append('{');
-        sb.append(getShortClassName(this.getClass()));
+        sb.append(getClass().getSimpleName());
         if (primaryKey != null) {
             sb.append(' ');
             sb.append(primaryKey);

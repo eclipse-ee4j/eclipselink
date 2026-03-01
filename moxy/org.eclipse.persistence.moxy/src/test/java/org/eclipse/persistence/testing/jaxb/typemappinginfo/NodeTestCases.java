@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -13,26 +13,22 @@
 // Contributors:
 //  - rbarkhouse - 18 December 2012 - 2.4 - Initial implementation
 package org.eclipse.persistence.testing.jaxb.typemappinginfo;
-import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import jakarta.xml.bind.JAXBElement;
-import jakarta.xml.bind.Marshaller;
+
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stax.StAXSource;
-import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
 import org.eclipse.persistence.jaxb.TypeMappingInfo.ElementScope;
-import org.eclipse.persistence.oxm.XMLConstants;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 
 public class NodeTestCases extends TypeMappingInfoTestCases {

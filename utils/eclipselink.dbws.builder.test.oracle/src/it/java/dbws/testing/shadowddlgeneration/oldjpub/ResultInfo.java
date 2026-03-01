@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -108,7 +108,7 @@ public class ResultInfo {
     }
 
     public static ResultInfo getResultInfo(Iterator<ViewRow> iter) throws SQLException {
-        ArrayList<ResultInfo> a = new ArrayList<ResultInfo>();
+        ArrayList<ResultInfo> a = new ArrayList<>();
         while (iter.hasNext()) {
             ViewRow vr = iter.next();
             if (vr.isUserArguments() || vr.isAllArguments()) {
@@ -118,7 +118,7 @@ public class ResultInfo {
                 a.add(new ResultInfo((AllMethodResults)vr));
             }
         }
-        if (a.size() == 0) {
+        if (a.isEmpty()) {
             throw new SQLException("Exhausted ResultSet in ResultInfo");
         }
         return a.get(0);

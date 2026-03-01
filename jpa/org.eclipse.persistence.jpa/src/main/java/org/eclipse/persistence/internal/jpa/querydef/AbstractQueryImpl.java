@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2011, 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -15,20 +15,25 @@
 //     Gordon Yorke - Initial development
 //     02/03/2017 - Dalia Abo Sheasha
 //       - 509693 : EclipseLink generates inconsistent SQL statements for SubQuery
+//     08/22/2023: Tomas Kraus
+//       - New Jakarta Persistence 3.2 Features
 package org.eclipse.persistence.internal.jpa.querydef;
 
+import java.io.Serial;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import jakarta.persistence.criteria.AbstractQuery;
 import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.ParameterExpression;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import jakarta.persistence.metamodel.EntityType;
 import jakarta.persistence.metamodel.Metamodel;
-
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 
 /**
@@ -47,6 +52,7 @@ import org.eclipse.persistence.expressions.ExpressionBuilder;
  */
 public abstract class AbstractQueryImpl<T> extends CommonAbstractCriteriaImpl<T> implements AbstractQuery<T> {
 
+    @Serial
     private static final long serialVersionUID = -5270020290752637882L;
 
     protected ResultType queryResult;
@@ -62,9 +68,23 @@ public abstract class AbstractQueryImpl<T> extends CommonAbstractCriteriaImpl<T>
 
     public AbstractQueryImpl(Metamodel metamodel, ResultType queryResult, CriteriaBuilderImpl queryBuilder, Class<T> resultType){
         super(metamodel, queryBuilder, resultType);
-        this.roots = new HashSet<Root<?>>();
+        this.roots = new HashSet<>();
         this.queryResult = queryResult;
         this.baseExpression = new ExpressionBuilder();
+    }
+
+    // Allows complete copy of CommonAbstractCriteriaImpl. Required for cast implementation and shall remain pkg private.
+    AbstractQueryImpl(Metamodel metamodel, Expression<Boolean> where, CriteriaBuilderImpl queryBuilder,
+                      Class<T> queryType, Set<ParameterExpression<?>> parameters,
+                      ResultType queryResult, boolean distinct, Predicate havingClause,List<Expression<?>> groupBy,
+                      Set<Root<?>> roots, org.eclipse.persistence.expressions.Expression baseExpression) {
+        super(metamodel, where, queryBuilder, queryType, parameters);
+        this.queryResult = queryResult;
+        this.distinct = distinct;
+        this.havingClause = havingClause;
+        this.groupBy = groupBy;
+        this.roots = roots;
+        this.baseExpression = baseExpression;
     }
 
     /**
@@ -73,7 +93,8 @@ public abstract class AbstractQueryImpl<T> extends CommonAbstractCriteriaImpl<T>
      * Replaces the previous specified grouping expressions, if any.
      * If no grouping expressions are specified, any previously
      * added grouping expressions are simply removed.
-     * @param grouping  list of zero or more grouping expressions
+     *
+     * @param grouping list of zero or more grouping expressions
      * @return the modified query
      */
     @Override
@@ -95,10 +116,8 @@ public abstract class AbstractQueryImpl<T> extends CommonAbstractCriteriaImpl<T>
      */
     @Override
     public AbstractQuery<T> groupBy(Expression<?>... grouping){
-        this.groupBy = new ArrayList<Expression<?>>();
-        for (Expression<?> exp : grouping){
-            this.groupBy.add(exp);
-        }
+        this.groupBy = new ArrayList<>();
+        Collections.addAll(this.groupBy, grouping);
         return this;
     }
 
@@ -106,12 +125,13 @@ public abstract class AbstractQueryImpl<T> extends CommonAbstractCriteriaImpl<T>
      * Specify a restriction over the groups of the query. Replaces the previous
      * having restriction(s), if any.
      *
-     * @param restriction
-     *            a simple or compound boolean expression
+     * @param restriction a simple or compound boolean expression
      * @return the modified query
+     * @throws NullPointerException when restriction expression is {@code null}
      */
     @Override
     public AbstractQuery<T> having(Expression<Boolean> restriction) {
+        Objects.requireNonNull(restriction, "Restriction expression is null");
         findRootAndParameters(restriction);
         if (((InternalExpression)restriction).isCompoundExpression() || ((InternalExpression)restriction).isPredicate()) {
             this.havingClause = (Predicate) restriction;
@@ -127,24 +147,23 @@ public abstract class AbstractQueryImpl<T> extends CommonAbstractCriteriaImpl<T>
      * previously added restriction(s), if any. If no restrictions are
      * specified, any previously added restrictions are simply removed.
      *
-     * @param restrictions
-     *            zero or more restriction predicates
+     * @param restrictions zero or more restriction predicates
      * @return the modified query
      */
     @Override
-    public AbstractQuery<T> having(Predicate... restrictions){
-        if (restrictions != null && restrictions.length > 0) {
-            Predicate conjunction = this.queryBuilder.conjunction();
-            for (Predicate predicate : restrictions) {
-                conjunction = this.queryBuilder.and(conjunction, predicate);
-            }
-            findRootAndParameters(conjunction);
-            this.havingClause = conjunction;
-        }
+    public AbstractQuery<T> having(Predicate... restrictions) {
+        return having(restrictions != null ? List.of(restrictions) : null);
+    }
+
+    @Override
+    public AbstractQuery<T> having(List<Predicate> restrictions) {
+        Predicate predicate = queryBuilder.and(restrictions);
+        findRootAndParameters(predicate);
+        this.havingClause = predicate;
         return this;
     }
 
-    public abstract void addJoin(FromImpl join);
+    public abstract void addJoin(FromImpl<?, ?> join);
 
     /**
      * Specify whether duplicate query results will be eliminated. A true value
@@ -170,15 +189,15 @@ public abstract class AbstractQueryImpl<T> extends CommonAbstractCriteriaImpl<T>
         return getBaseExpression(null);
     }
     
-    protected org.eclipse.persistence.expressions.Expression getBaseExpression(Root root) {
+    protected org.eclipse.persistence.expressions.Expression getBaseExpression(Root<?> root) {
         if (this.roots.isEmpty()) {
             baseExpression = new ExpressionBuilder();
         } else if (this.roots.size() == 1) {
-            baseExpression = ((RootImpl) this.roots.iterator().next()).getCurrentNode();
+            baseExpression = ((RootImpl<?>) this.roots.iterator().next()).getCurrentNode();
         } else if (root != null) {
-            for (Root r : this.roots) {
+            for (Root<?> r : this.roots) {
                 if (r == root) {
-                    baseExpression = ((RootImpl) r).getCurrentNode();
+                    baseExpression = ((RootImpl<?>) r).getCurrentNode();
                 }
             }
         }
@@ -192,7 +211,7 @@ public abstract class AbstractQueryImpl<T> extends CommonAbstractCriteriaImpl<T>
     @Override
     public List<Expression<?>> getGroupList(){
         if (this.groupBy == null){
-            this.groupBy = new ArrayList<Expression<?>>();
+            this.groupBy = new ArrayList<>();
         }
         return this.groupBy;
     }
@@ -219,10 +238,8 @@ public abstract class AbstractQueryImpl<T> extends CommonAbstractCriteriaImpl<T>
     }
 
     @Override
-    protected void integrateRoot(RootImpl root) {
-        if (!this.roots.contains(root)) {
-            this.roots.add(root);
-        }
+    protected void integrateRoot(RootImpl<?> root) {
+        this.roots.add(root);
     }
 
     /**
@@ -236,7 +253,7 @@ public abstract class AbstractQueryImpl<T> extends CommonAbstractCriteriaImpl<T>
         return this.distinct;
     }
 
-    protected void findJoins(FromImpl root) {
+    protected void findJoins(FromImpl<?, ?> root) {
         root.findJoins(this);
     }
 
@@ -273,11 +290,12 @@ public abstract class AbstractQueryImpl<T> extends CommonAbstractCriteriaImpl<T>
      * This method only overrides the return type of the corresponding
      * AbstractQuery method.
      *
-     * @param restriction
-     *            a simple or compound boolean expression
+     * @param restriction a simple or compound boolean expression
      * @return the modified query
+     * @throws NullPointerException when restriction expression is {@code null}
      */
     @Override
+    @SuppressWarnings("unchecked")
     public AbstractQuery<T> where(Expression<Boolean> restriction){
         return (AbstractQuery<T>)super.where(restriction);
     }
@@ -290,12 +308,19 @@ public abstract class AbstractQueryImpl<T> extends CommonAbstractCriteriaImpl<T>
      * method only overrides the return type of the corresponding AbstractQuery
      * method.
      *
-     * @param restrictions
-     *            zero or more restriction predicates
+     * @param restrictions zero or more restriction predicates
      * @return the modified query
+     * @throws NullPointerException when restrictions array is {@code null}
      */
     @Override
+    @SuppressWarnings("unchecked")
     public AbstractQuery<T> where(Predicate... restrictions) {
+        return (AbstractQuery<T>) super.where(restrictions);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public AbstractQuery<T> where(List<Predicate> restrictions) {
         return (AbstractQuery<T>) super.where(restrictions);
     }
 

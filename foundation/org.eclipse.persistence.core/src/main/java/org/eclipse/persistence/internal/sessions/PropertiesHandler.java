@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2018 IBM Corporation and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,14 +30,6 @@
 //       - 533148 : Add the eclipselink.jpa.sql-call-deferral property
 package org.eclipse.persistence.internal.sessions;
 
-import java.security.AccessController;
-import java.security.PrivilegedAction;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-
 import org.eclipse.persistence.annotations.IdValidation;
 import org.eclipse.persistence.config.BatchWriting;
 import org.eclipse.persistence.config.CacheType;
@@ -57,6 +49,14 @@ import org.eclipse.persistence.internal.security.PrivilegedGetSystemProperty;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 
+import java.security.AccessController;
+import java.security.PrivilegedAction;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+
 /**
  *
  * The class processes some of EclipseLink properties.
@@ -69,9 +69,9 @@ import org.eclipse.persistence.queries.ObjectLevelReadQuery;
  *      appending entity or class name (like DescriptorCustomizerProp -
  *      it corresponds to "eclipselink.descriptor.customizer." prefix that allows to
  *      define properties like "eclipselink.descriptor.customizer.myPackage.MyClass").
- *
+ * <p>
  * EclipseLink properties and their values defined in org.eclipse.persistence.config package.
- *
+ * <p>
  * To add a new property:
  *   Define a new property in PersistenceUnitProperties;
  *   Add a class containing property's values if required to config package (like CacheType);
@@ -187,7 +187,7 @@ public class PropertiesHandler {
      * Empty String value indicates that the default property value should be used.
      */
     protected static boolean shouldUseDefault(String value) {
-        return value != null &&  value.length() == 0;
+        return value != null && value.isEmpty();
     }
 
     protected static abstract class Prop {
@@ -421,8 +421,7 @@ public class PropertiesHandler {
         void initialize() {
             if(valueArray != null) {
                 valueMap = new HashMap(valueArray.length);
-                if(valueArray instanceof Object[][]) {
-                    Object[][] valueArray2 = (Object[][])valueArray;
+                if(valueArray instanceof Object[][] valueArray2) {
                     for(int i=0; i<valueArray2.length; i++) {
                         valueMap.put(getUpperCaseString((String)valueArray2[i][0]), valueArray2[i][1]);
                         if(valueArray2[i][1] == null) {
@@ -492,7 +491,7 @@ public class PropertiesHandler {
             String pcg = "org.eclipse.persistence.logging.";
             valueArray = new Object[][] {
                 {LoggerType.DefaultLogger, pcg + "DefaultSessionLog"},
-                {LoggerType.JavaLogger, pcg + "JavaLog"}
+                {LoggerType.JavaLogger, pcg + "jul.JavaLog"}
             };
         }
     }
@@ -569,6 +568,11 @@ public class PropertiesHandler {
                 {TargetDatabase.Oracle9, pcg + "oracle.Oracle9Platform"},
                 {TargetDatabase.Oracle10, pcg + "oracle.Oracle10Platform"},
                 {TargetDatabase.Oracle11, pcg + "oracle.Oracle11Platform"},
+                {TargetDatabase.Oracle12, pcg + "oracle.Oracle12Platform"},
+                {TargetDatabase.Oracle18, pcg + "oracle.Oracle18Platform"},
+                {TargetDatabase.Oracle19, pcg + "oracle.Oracle19Platform"},
+                {TargetDatabase.Oracle21, pcg + "oracle.Oracle21Platform"},
+                {TargetDatabase.Oracle23, pcg + "oracle.Oracle23Platform"},
                 {TargetDatabase.Attunity, pcg + "AttunityPlatform"},
                 {TargetDatabase.Cloudscape, pcg + "CloudscapePlatform"},
                 {TargetDatabase.Database, pcg + "DatabasePlatform"},
@@ -586,6 +590,7 @@ public class PropertiesHandler {
                 {TargetDatabase.MySQL4, pcg + "MySQLPlatform"}, // 211249: keep backwards compatibility
                 {TargetDatabase.PointBase,  pcg + "PointBasePlatform"},
                 {TargetDatabase.PostgreSQL,  pcg + "PostgreSQLPlatform"},
+                {TargetDatabase.PostgreSQL10,  pcg + "PostgreSQL10Platform"},
                 {TargetDatabase.SQLAnywhere,  pcg + "SQLAnywherePlatform"},
                 {TargetDatabase.SQLServer,  pcg + "SQLServerPlatform"},
                 {TargetDatabase.Sybase,  pcg + "SybasePlatform"},
@@ -613,7 +618,8 @@ public class PropertiesHandler {
                 {TargetServer.WebLogic_10, pcg + "wls.WebLogic_10_Platform"},
                 {TargetServer.WebLogic_12, pcg + "wls.WebLogic_12_Platform"},
                 {TargetServer.JBoss, pcg + "jboss.JBossPlatform"},
-                {TargetServer.SAPNetWeaver_7_1, pcg + "sap.SAPNetWeaver_7_1_Platform"}
+                {TargetServer.SAPNetWeaver_7_1, pcg + "sap.SAPNetWeaver_7_1_Platform"},
+                {TargetServer.WildFly, pcg + "wildfly.WildFlyPlatform"}
                 };
         }
     }

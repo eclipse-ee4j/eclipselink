@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,13 +23,13 @@ package org.eclipse.persistence.internal.helper;
 
 //javase imports
 
-import java.io.Serializable;
-
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.core.helper.CoreField;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+
+import java.io.Serializable;
 
 import static java.lang.Integer.MIN_VALUE;
 
@@ -47,6 +47,7 @@ public class DatabaseField implements Cloneable, Serializable, CoreField  {
     protected int scale;
     protected int length;
     protected int precision;
+    protected int secondPrecision;
     protected boolean isUnique;
     protected boolean isNullable;
     protected boolean isUpdatable;
@@ -54,6 +55,8 @@ public class DatabaseField implements Cloneable, Serializable, CoreField  {
     protected boolean isCreatable;
     protected boolean isPrimaryKey;
     protected String columnDefinition;
+    protected String comment;
+    protected String optionalSuffix;
 
     /** Column name of the field. */
     protected String name;
@@ -131,7 +134,7 @@ public class DatabaseField implements Cloneable, Serializable, CoreField  {
             setName(qualifiedName, startDelimiter, endDelimiter);
             this.table = new DatabaseTable();
         } else {
-            setName(qualifiedName.substring(index + 1, qualifiedName.length()), startDelimiter, endDelimiter);
+            setName(qualifiedName.substring(index + 1), startDelimiter, endDelimiter);
             this.table = new DatabaseTable(qualifiedName.substring(0, index), startDelimiter, endDelimiter);
         }
         initDDLFields();
@@ -164,6 +167,7 @@ public class DatabaseField implements Cloneable, Serializable, CoreField  {
         scale = 0;
         length = 0;
         precision = 0;
+        secondPrecision = -1;
         isUnique = false;
         isNullable = true;
         isUpdatable = true;
@@ -171,6 +175,8 @@ public class DatabaseField implements Cloneable, Serializable, CoreField  {
         isCreatable = true;
         isPrimaryKey = false;
         columnDefinition = "";
+        comment = "";
+        optionalSuffix = "";
     }
 
     /**
@@ -275,6 +281,13 @@ public class DatabaseField implements Cloneable, Serializable, CoreField  {
     }
 
     /**
+     * Get the SQL fragment that is used when generating the DDL for the column.
+     */
+    public String getComment() {
+        return this.comment;
+    }
+
+    /**
      * Return the expected index that this field will occur in the result set
      * row. This is used to optimize performance of database row field lookups.
      */
@@ -309,6 +322,13 @@ public class DatabaseField implements Cloneable, Serializable, CoreField  {
     }
 
     /**
+     * Get the SQL fragment appended to the generated DDL.
+     */
+    public String getOptionalSuffix() {
+        return this.optionalSuffix;
+    }
+
+    /**
      * Returns the precision for a decimal column when generating DDL.
      */
     public int getPrecision() {
@@ -337,11 +357,20 @@ public class DatabaseField implements Cloneable, Serializable, CoreField  {
             return getNameDelimited(platform);
         }
     }
+
     /**
      * Returns the scale for a decimal column when generating DDL.
      */
     public int getScale() {
         return this.scale;
+    }
+
+    /**
+     * Get the number of decimal digits to use for storing fractional
+     * seconds in a SQL time or timestamp column when generating DDL.
+     */
+    public int getSecondPrecision() {
+        return this.secondPrecision;
     }
 
     public DatabaseTable getTable() {
@@ -398,7 +427,7 @@ public class DatabaseField implements Cloneable, Serializable, CoreField  {
         if (this.table.getName() == null) {
             return false;
         }
-        return !(this.table.getName().equals(""));
+        return !(this.table.getName().isEmpty());
     }
 
     /**
@@ -491,6 +520,13 @@ public class DatabaseField implements Cloneable, Serializable, CoreField  {
     }
 
     /**
+     * Set the SQL fragment that is used when generating the DDL for the column.
+     */
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
+    /**
      * Set the expected index that this field will occur in the result set row.
      * This is used to optimize performance of database row field lookups.
      */
@@ -534,7 +570,7 @@ public class DatabaseField implements Cloneable, Serializable, CoreField  {
 
     /**
      * Set the unqualified name of the field.
-     *
+     * <p>
      * If the name contains database delimiters, they will be stripped and a flag will be set to have them
      * added when the DatabaseField is written to SQL
      */
@@ -544,12 +580,12 @@ public class DatabaseField implements Cloneable, Serializable, CoreField  {
 
     /**
      * Set the unqualified name of the field.
-     *
+     * <p>
      * If the name contains database delimiters, they will be stripped and a flag will be set to have them
      * added when the DatabaseField is written to SQL
      */
     public void setName(String name, String startDelimiter, String endDelimiter) {
-        if ((startDelimiter != null) && (endDelimiter != null) && !startDelimiter.equals("")&& !endDelimiter.equals("") && name.startsWith(startDelimiter) && name.endsWith(endDelimiter)){
+        if ((startDelimiter != null) && (endDelimiter != null) && !startDelimiter.isEmpty() && !endDelimiter.isEmpty() && name.startsWith(startDelimiter) && name.endsWith(endDelimiter)){
             this.name = name.substring(startDelimiter.length(), name.length() - endDelimiter.length());
             this.useDelimiters = true;
         } else {
@@ -568,10 +604,27 @@ public class DatabaseField implements Cloneable, Serializable, CoreField  {
     }
 
     /**
+     * Used to specify the SQL fragment appended to the generated DDL.
+     */
+    public void setOptionalSuffix(String optionalSuffix) {
+        this.optionalSuffix = optionalSuffix;
+    }
+
+    /**
      * Used to specify the precision for a decimal column when generating DDL.
      */
     public void setPrecision(int precision) {
         this.precision = precision;
+    }
+
+    /**
+     * Used to specify the number of decimal digits to use for storing fractional
+     * seconds in a SQL time or timestamp column when generating DDL.
+     * <p>
+     * Applies only to columns of time or timestamp type.
+     */
+    public void setSecondPrecision(int secondPrecision) {
+        this.secondPrecision = secondPrecision;
     }
 
     /**

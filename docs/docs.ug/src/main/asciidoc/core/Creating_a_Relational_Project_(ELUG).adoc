@@ -1,0 +1,165 @@
+image:Elug_draft_icon.png[Image:Elug draft
+icon.png,title="Image:Elug draft icon.png"] *For the latest EclipseLink
+documentation, please see
+http://www.eclipse.org/eclipselink/documentation/*
+
+'''''
+
+*TOC* Special:Whatlinkshere_Creating_a_Relational_Project_(ELUG)[Related
+Topics]
+
+You can create a project using the Workbench or Java code. We recommend
+using the Workbench to create projects and generate deployment XML or
+Java source versions of the project for use at run time. For more
+information, see the following:
+
+* link:Creating%20a%20Project%20(ELUG)#How_to_Create_a_Project_Using_the_Workbench[How
+to Create a Project Using the Workbench]
+* link:Creating%20a%20Project%20(ELUG)#How_to_Create_a_Project_Using_Java[How
+to Create a Project Using Java].
+
+You can use EclipseLink to create a relational project, if any of the
+following conditions are met:
+
+* You have both an object and data model: see
+link:#Creating_a_Project_from_an_Existing_Object_and_Data_Model[Creating
+a Project from an Existing Object and Data Model].
+* You have an object model, but no data model yet: see
+link:#Creating_a_Project_from_an_Existing_Object_Model[Creating a
+Project from an Existing Object Model].
+* You have a data model, but no object model yet:
+link:#Creating_a_Project_from_an_Existing_Data_Model[Creating a Project
+from an Existing Data Model].
+
+For more information, see
+link:Introduction%20to%20Relational%20Projects%20(ELUG)[Introduction to
+Relational Projects].
+
+== Creating a Project from an Existing Object and Data Model
+
+If you have both an existing object model (Java classes for your domain
+objects) and data model (such as an existing database schema), use this
+procedure to create your EclipseLink project.
+
+=== How to Create a Project from an Existing Object and Data Model Using Workbench
+
+[arabic]
+. link:Creating%20a%20Project%20(ELUG)#How_to_Create_a_Project_Using_the_Workbench[Create
+the project].
+. link:Configuring%20a%20Project%20(ELUG)#Configuring_Project_Classpath[Configure
+the project classpath].
+. link:Using%20Workbench%20(ELUG)#How_to_Import_and_Update_Classes[Import
+classes].
+. link:Using%20Workbench%20(ELUG)#Importing_Tables_from_a_Database[Import
+database tables].
+. link:Creating%20a%20Mapping%20(ELUG)#How_to_Create_Mappings_Automatically_During_Development_Using_Workbench[Automatically
+create mappings].
+. link:Configuring%20a%20Project%20(ELUG)[Configure project options].
+
+== Creating a Project from an Existing Object Model
+
+If you have an existing object model (Java classes for your domain
+objects), but you do not have a corresponding data model, use this
+procedure to create your EclipseLink project and automatically generate
+the corresponding data model.
+
+=== How to Create a Project from an Existing Object Model Using Workbench
+
+[arabic]
+. link:Creating%20a%20Project%20(ELUG)#How_to_Create_a_Project_Using_the_Workbench[Create
+the project].
+. link:Configuring%20a%20Project%20(ELUG)#Configuring_Project_Classpath[Configure
+the project classpath].
+. link:Using%20Workbench%20(ELUG)#How_to_Import_and_Update_Classes[Import
+classes].
+. Generate database tables. For more information, see the following:
+* link:Using%20Workbench%20(ELUG)#Creating_New_Tables[Creating New
+Tables]
+* link:Using%20Workbench%20(ELUG)#Generating_Tables_on_the_Database[Generating
+Tables on the Database]
+* link:Configuring%20a%20Relational%20Project%20(ELUG)[How to Configure
+Table Creator Java Source Options Using Workbench]
+* link:#How_to_Export_Table_Creator_Files_Using_Workbench[How to Export
+Table Creator Files Using Workbench]
+. link:Configuring%20a%20Project%20(ELUG)[Configure project options].
+
+== Creating a Project from an Existing Data Model
+
+If you have an existing data model (such as a database schema), but you
+do not have a corresponding data model (Java classes for domain
+objects), use this procedure to create your EclipseLink project and
+automatically generate the corresponding object model.
+
+=== How to Create a Project from an Existing Data Model Using Workbench
+
+[arabic]
+. link:Creating%20a%20Project%20(ELUG)#How_to_Create_a_Project_Using_the_Workbench[Create
+the project].
+. link:Using%20Workbench%20(ELUG)#Importing_Tables_from_a_Database[Import
+database tables].
+. link:Using%20Workbench%20(ELUG)#Generating_Classes_and_Descriptors_from_Database_Tables[Generate
+classes].
+. link:Configuring%20a%20Project%20(ELUG)#Configuring_a_Project[Configure
+project options].
+
+== Exporting Project Information
+
+Workbench generates and exports the following project information:
+
+* link:#How_to_Export_Project_Java_Source_Using_Workbench[Project Java
+source]
+* link:#How_to_Export_Table_Creator_Files_Using_Workbench[Table creator
+files]
+
+=== How to Export Project Java Source Using Workbench
+
+For relational projects only, you can convert the project to Java source
+code. Generally, the generated code executes faster and deploys easier
+than XML files. See
+link:Creating%20a%20Descriptor%20(ELUG)#Generating_Java_Code_for_Descriptors[Generating
+Java Code for Descriptors] to export the model source for a _specific
+descriptor_ in a project. To convert your relational project to Java
+source, use this procedure:
+
+[arabic]
+. Right-click the project in the *Navigator* and choose *Export* >
+*Project Java Source* from the context menu.image:expjava.gif[Export to
+Java Source button,title="Export to Java Source button"] You can also
+choose *Workbench* > *Export* > *Export Java Source* or *Selected* >
+*Export* > *Project Java Source* from the menu. If you have not defined
+deployment and source code generation defaults (see
+link:Configuring%20a%20Project%20(ELUG)[Configuring a Project]),
+Workbench prompts for a project class name and directory.
+
+[width="100%",cols="<100%",]
+|===
+|*_Note:_* If your Workbench project uses the UTF-8 character set, you
+must use a compatible JDK when compiling the exported Java source. If
+your project contains errors, the `+project.xml+` file may not be valid.
+See
+link:Troubleshooting_an_EclipseLink_Application_(ELUG)[Troubleshooting
+an EclipseLink Application] for information on each reported error.
+|===
+
+=== How to Export Table Creator Files Using Workbench
+
+For relational projects only, you can create Java source code to
+generate database tables defined in the project using this procedure:
+
+[arabic]
+. Right-click the project in the *Navigator* and choose *Export* >
+*Table Creator Java Source* from the context menu.You can also choose
+*Workbench* > *Export* > *Table Creator Java Source* or *Selected* >
+*Export* > *Table Creator Java Source* from the menu.
+
+If you have not defined deployment and source code generation defaults
+(see link:Configuring%20a%20Project%20(ELUG)[Configuring a Project])
+Workbench prompts for a class name and root directory.
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Release_1[Category: Release 1] Category:_Task[Category: Task]
+Category:_ORM[Category: ORM]

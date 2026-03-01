@@ -22,7 +22,6 @@ import java.util.TreeMap;
 
 import jakarta.persistence.criteria.CompoundSelection;
 import jakarta.persistence.criteria.Selection;
-
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 
 /**
@@ -32,31 +31,31 @@ import org.eclipse.persistence.internal.localization.ExceptionLocalization;
  * <p>
  * <b>Description</b>: The Selection is the expression describing what should be returned by the query.
  *
+ * @param <X> the type of the selection item
  * @see jakarta.persistence.criteria Join
  *
  * @author gyorke
  * @since EclipseLink 1.2
  *
  */
-
-public class CompoundSelectionImpl extends SelectionImpl implements CompoundSelection{
+public class CompoundSelectionImpl<X> extends SelectionImpl<X> implements CompoundSelection<X> {
 
     protected ArrayList<Selection<?>> subSelections;
     //bug 366386 - track items using duplicate alias names
     protected ArrayList<String> duplicateAliasNames;
 
-    public CompoundSelectionImpl(Class<?> javaType, Selection[] subSelections) {
+    public CompoundSelectionImpl(Class<? extends X> javaType, Selection<?>[] subSelections) {
         this(javaType, subSelections, false);
     }
 
-    public CompoundSelectionImpl(Class<?> javaType, Selection[] subSelections, boolean validate) {
+    public CompoundSelectionImpl(Class<? extends X> javaType, Selection<?>[] subSelections, boolean validate) {
         super(javaType, null);
         this.subSelections = new ArrayList<>();
         //used to validate that an alias is only used once
-        Map<String, Selection> tempMap = new TreeMap<>();
-        for (Selection sel : subSelections) {
+        Map<String, Selection<?>> tempMap = new TreeMap<>();
+        for (Selection<?> sel : subSelections) {
             if (validate) {
-                if (sel.isCompoundSelection() && !((SelectionImpl)sel).isConstructor()) {
+                if (sel.isCompoundSelection() && !((SelectionImpl<?>)sel).isConstructor()) {
                     throw new IllegalArgumentException(ExceptionLocalization.buildMessage("jpa_criteriaapi_illegal_tuple_or_array_value", new Object[] { sel }));
                 }
             }
@@ -64,7 +63,7 @@ public class CompoundSelectionImpl extends SelectionImpl implements CompoundSele
             if (alias != null) {
                 if (tempMap.containsKey(alias)) {
                     if (duplicateAliasNames == null) {
-                        duplicateAliasNames=new ArrayList<String>();
+                        duplicateAliasNames=new ArrayList<>();
                     }
                     duplicateAliasNames.add(alias);
                 } else {
@@ -104,8 +103,8 @@ public class CompoundSelectionImpl extends SelectionImpl implements CompoundSele
     }
 
     @Override
-    public void findRootAndParameters(CommonAbstractCriteriaImpl criteriaQuery){
-        for (Selection selection: getCompoundSelectionItems()){
+    public void findRootAndParameters(CommonAbstractCriteriaImpl<?> criteriaQuery){
+        for (Selection<?> selection: getCompoundSelectionItems()){
             ((InternalSelection)selection).findRootAndParameters(criteriaQuery);
         }
     }

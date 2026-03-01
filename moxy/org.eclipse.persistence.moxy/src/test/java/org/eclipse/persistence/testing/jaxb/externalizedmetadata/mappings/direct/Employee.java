@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,12 +14,7 @@
 // dmccann - January 28/2010 - 2.1 - Initial implementation
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.direct;
 
-import java.util.List;
-
-import jakarta.xml.bind.annotation.XmlAttribute;
-
 import org.eclipse.persistence.oxm.annotations.XmlAccessMethods;
-import org.eclipse.persistence.oxm.annotations.XmlPath;
 
 public class Employee {
     public int empId;

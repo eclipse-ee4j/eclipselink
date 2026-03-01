@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,13 +14,13 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.eis.interactions;
 
-import java.util.*;
-import java.io.*;
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.databaseaccess.QueryStringCall;
-import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+
+import java.io.StringWriter;
+import java.util.Iterator;
 
 /**
  * Defines the specification for a call to a JCA interaction that uses a query string.
@@ -97,13 +97,13 @@ public class QueryStringInteraction extends MappedInteraction implements QuerySt
         StringWriter writer = new StringWriter();
         writer.write("Executing ");
         writer.write(toString());
-        writer.write(Helper.cr());
+        writer.write(System.lineSeparator());
         writer.write("\tspec => ");
         writer.write(String.valueOf(getInteractionSpec()));
-        writer.write(Helper.cr());
+        writer.write(System.lineSeparator());
         writer.write("\tquery => ");
         writer.write(getQueryString());
-        writer.write(Helper.cr());
+        writer.write(System.lineSeparator());
         writer.write("\tparameters => [");
         if (hasParameters()) {
             for (Iterator<?> iterator = getParameters().iterator(); iterator.hasNext();) {

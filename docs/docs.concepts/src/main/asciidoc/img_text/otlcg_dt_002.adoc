@@ -1,0 +1,5 @@
+:nofooter:
+This illustration shows an example of a nonrelational mapping that uses
+a serialized object converter. The attribute jobDescription contains a
+formatted text document that EclipseLink stores in the JOB DESCRIPTION
+element of an XML schema.

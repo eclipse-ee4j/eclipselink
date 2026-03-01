@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,20 +14,18 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.oxm.mappings.keybased.multipletargets.singlekey.nonstringkeytype;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-
 import org.eclipse.persistence.testing.oxm.mappings.keybased.singletarget.singlekey.nonstringkeytype.Address;
+
+import java.util.ArrayList;
 
 public class Employee extends org.eclipse.persistence.testing.oxm.mappings.keybased.Employee {
     public ArrayList addresses;
 
     public boolean equals(Object obj) {
-        if (obj == null || !(obj instanceof Employee)) {
+        if (obj == null || !(obj instanceof Employee tgtEmp)) {
             return false;
         }
 
-        Employee tgtEmp = ((Employee) obj);
         ArrayList tgtAddresses = tgtEmp.addresses;
 
         if (this.addresses == null) {
@@ -38,8 +36,8 @@ public class Employee extends org.eclipse.persistence.testing.oxm.mappings.keyba
             return false;
         }
 
-        for (Iterator addIt = this.addresses.iterator(); addIt.hasNext(); ) {
-            Address address = (Address) addIt.next();
+        for (Object o : this.addresses) {
+            Address address = (Address) o;
             if (!(tgtAddresses.contains(address))) {
                 return false;
             }

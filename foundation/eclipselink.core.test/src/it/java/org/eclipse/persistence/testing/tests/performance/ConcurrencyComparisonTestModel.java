@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,14 +15,29 @@
 package org.eclipse.persistence.testing.tests.performance;
 
 import org.eclipse.persistence.Version;
-import org.eclipse.persistence.sessions.*;
-import org.eclipse.persistence.sessions.server.*;
 import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.sessions.Session;
+import org.eclipse.persistence.sessions.server.Server;
+import org.eclipse.persistence.testing.framework.TestModel;
 import org.eclipse.persistence.testing.models.performance.Address;
 import org.eclipse.persistence.testing.models.performance.EmploymentPeriod;
-import org.eclipse.persistence.testing.models.performance.toplink.*;
-import org.eclipse.persistence.testing.framework.*;
-import org.eclipse.persistence.testing.tests.performance.concurrent.*;
+import org.eclipse.persistence.testing.models.performance.toplink.Employee;
+import org.eclipse.persistence.testing.models.performance.toplink.EmployeeSystem;
+import org.eclipse.persistence.testing.models.performance.toplink.PhoneNumber;
+import org.eclipse.persistence.testing.tests.performance.concurrent.AddPhoneCachedConcurrentTest;
+import org.eclipse.persistence.testing.tests.performance.concurrent.AddPhoneIsolatedConcurrentTest;
+import org.eclipse.persistence.testing.tests.performance.concurrent.BasicMathConcurrentTest;
+import org.eclipse.persistence.testing.tests.performance.concurrent.ReadAllObjectsConcurrentTest;
+import org.eclipse.persistence.testing.tests.performance.concurrent.ReadAllObjectsDatabaseSessionConcurrentTest;
+import org.eclipse.persistence.testing.tests.performance.concurrent.ReadAllObjectsIsolatedConcurrentTest;
+import org.eclipse.persistence.testing.tests.performance.concurrent.ReadAllObjectsSharedDatabaseSessionConcurrentTest;
+import org.eclipse.persistence.testing.tests.performance.concurrent.ReadAllUOWConcurrentTest;
+import org.eclipse.persistence.testing.tests.performance.concurrent.ReadAnyObjectCachedConcurrentTest;
+import org.eclipse.persistence.testing.tests.performance.concurrent.ReadAnyObjectIsolatedConcurrentTest;
+import org.eclipse.persistence.testing.tests.performance.concurrent.ReadObjectCachedConcurrentTest;
+import org.eclipse.persistence.testing.tests.performance.concurrent.ReadObjectCachedUOWConcurrentTest;
+import org.eclipse.persistence.testing.tests.performance.concurrent.UpdateAnyObjectCachedConcurrentTest;
+import org.eclipse.persistence.testing.tests.performance.concurrent.UpdateAnyObjectIsolatedConcurrentTest;
 
 /**
  * Concurrency tests the compare the multi-CPU concurrency of various tasks.
@@ -63,7 +78,7 @@ public class ConcurrencyComparisonTestModel extends TestModel {
             Employee empInsert = new Employee();
             empInsert.setFirstName("Brendan");
             empInsert.setMale();
-            empInsert.setLastName("" + j + "");
+            empInsert.setLastName("" + j);
             empInsert.setSalary(100000);
             EmploymentPeriod employmentPeriod = new EmploymentPeriod();
             java.sql.Date startDate = Helper.dateFromString("1901-12-31");
@@ -88,7 +103,7 @@ public class ConcurrencyComparisonTestModel extends TestModel {
         serverSession.useExclusiveReadConnectionPool(32, 32);
 
         // Enable binding for 10.1.3 runs.
-        if (Version.getVersion().indexOf("10.1.3") != -1) {
+        if (Version.getVersion().contains("10.1.3")) {
             serverSession.getLogin().setShouldBindAllParameters(true);
         }
         serverSession.getLogin().setShouldCacheAllStatements(true);

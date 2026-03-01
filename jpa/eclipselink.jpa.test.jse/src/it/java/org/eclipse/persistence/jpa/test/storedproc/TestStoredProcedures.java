@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -30,6 +30,7 @@ import org.eclipse.persistence.jpa.test.framework.EmfRunner;
 import org.eclipse.persistence.jpa.test.framework.Property;
 import org.eclipse.persistence.platform.database.DatabasePlatform;
 import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
 import org.eclipse.persistence.tools.schemaframework.SchemaManager;
 import org.eclipse.persistence.tools.schemaframework.StoredProcedureDefinition;
 
@@ -121,6 +122,8 @@ public class TestStoredProcedures {
      */
     @Test
     public void testStoredProcedure_SetOrdered_NamedParameters() {
+        Assume.assumeFalse("pgjdbc does not support named parameters", getPlatform(storedProcedureEmf).isPostgreSQL());
+
         EntityManager em = storedProcedureEmf.createEntityManager();
         try {
             StoredProcedureQuery storedProcedure = em.createStoredProcedureQuery("simple_order_procedure");
@@ -152,6 +155,8 @@ public class TestStoredProcedures {
      */
     @Test
     public void testStoredProcedure_SetUnordered_NamedParameters() {
+        Assume.assumeFalse("pgjdbc does not support named parameters", getPlatform(storedProcedureEmf).isPostgreSQL());
+
         EntityManager em = storedProcedureEmf.createEntityManager();
         try {
             StoredProcedureQuery storedProcedure = em.createStoredProcedureQuery("simple_order_procedure");
@@ -186,22 +191,27 @@ public class TestStoredProcedures {
         //Setup a stored procedure
         EntityManager em = emf.createEntityManager();
         try {
+            DatabaseSession dbs = ((EntityManagerImpl)em).getDatabaseSession();
+            SchemaManager manager = new SchemaManager(dbs);
+            Platform platform = dbs.getDatasourcePlatform();
+
             StoredProcedureDefinition proc = new StoredProcedureDefinition();
             proc.setName("simple_order_procedure");
 
             proc.addArgument("in_param_one", String.class, 10);
             proc.addArgument("in_param_two", String.class, 10);
             proc.addArgument("in_param_three", String.class, 10);
-            proc.addOutputArgument("out_param_one", String.class, 30);
-
-            DatabaseSession dbs = ((EntityManagerImpl)em).getDatabaseSession();
-            SchemaManager manager = new SchemaManager(dbs);
-            Platform platform = dbs.getDatasourcePlatform();
+            if (platform.isPostgreSQL()) {
+                // PG only supports OUT in 14+
+                proc.addInOutputArgument(new FieldDefinition("out_param_one", String.class, 30));
+            } else {
+                proc.addOutputArgument("out_param_one", String.class, 30);
+            }
 
             //Add more platform specific diction to support more platforms
             if(platform.isMySQL()) {
                 proc.addStatement("SET out_param_one = CONCAT('One: ',in_param_one,' Two: ',in_param_two,' Three: ',in_param_three)");
-            } else if(platform.isOracle()) {
+            } else if(platform.isOracle() || platform.isPostgreSQL()) {
                 proc.addStatement("out_param_one := 'One: ' || in_param_one || ' Two: ' || in_param_two || ' Three: ' || in_param_three");
             } else if (platform.isDB2() || platform.isDB2Z()) {
                 proc.addStatement("SET out_param_one = 'One: ' || in_param_one || ' Two: ' || in_param_two || ' Three: ' || in_param_three");

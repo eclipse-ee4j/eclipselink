@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,16 +37,6 @@ import org.eclipse.persistence.internal.jpa.config.sequencing.SequenceGeneratorI
 import org.eclipse.persistence.internal.jpa.config.sequencing.TableGeneratorImpl;
 import org.eclipse.persistence.internal.jpa.config.sequencing.UuidGeneratorImpl;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.MappedSuperclassAccessor;
-import org.eclipse.persistence.internal.jpa.metadata.cache.CacheIndexMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.listeners.EntityListenerMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.queries.FetchGroupMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.queries.NamedNativeQueryMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.queries.NamedPLSQLStoredFunctionQueryMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.queries.NamedPLSQLStoredProcedureQueryMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.queries.NamedQueryMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.queries.NamedStoredFunctionQueryMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.queries.NamedStoredProcedureQueryMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.queries.SQLResultSetMappingMetadata;
 import org.eclipse.persistence.jpa.config.AdditionalCriteria;
 import org.eclipse.persistence.jpa.config.Cache;
 import org.eclipse.persistence.jpa.config.CacheIndex;
@@ -80,16 +70,16 @@ public abstract class AbstractMappedClassImpl<T extends MappedSuperclassAccessor
     public AbstractMappedClassImpl(T t) {
         super(t);
 
-        getMetadata().setCacheIndexes(new ArrayList<CacheIndexMetadata>());
-        getMetadata().setEntityListeners(new ArrayList<EntityListenerMetadata>());
-        getMetadata().setFetchGroups(new ArrayList<FetchGroupMetadata>());
-        getMetadata().setNamedNativeQueries(new ArrayList<NamedNativeQueryMetadata>());
-        getMetadata().setNamedQueries(new ArrayList<NamedQueryMetadata>());
-        getMetadata().setNamedStoredFunctionQueries(new ArrayList<NamedStoredFunctionQueryMetadata>());
-        getMetadata().setNamedStoredProcedureQueries(new ArrayList<NamedStoredProcedureQueryMetadata>());
-        getMetadata().setNamedPLSQLStoredFunctionQueries(new ArrayList<NamedPLSQLStoredFunctionQueryMetadata>());
-        getMetadata().setNamedPLSQLStoredProcedureQueries(new ArrayList<NamedPLSQLStoredProcedureQueryMetadata>());
-        getMetadata().setSqlResultSetMappings(new ArrayList<SQLResultSetMappingMetadata>());
+        getMetadata().setCacheIndexes(new ArrayList<>());
+        getMetadata().setEntityListeners(new ArrayList<>());
+        getMetadata().setFetchGroups(new ArrayList<>());
+        getMetadata().setNamedNativeQueries(new ArrayList<>());
+        getMetadata().setNamedQueries(new ArrayList<>());
+        getMetadata().setNamedStoredFunctionQueries(new ArrayList<>());
+        getMetadata().setNamedStoredProcedureQueries(new ArrayList<>());
+        getMetadata().setNamedPLSQLStoredFunctionQueries(new ArrayList<>());
+        getMetadata().setNamedPLSQLStoredProcedureQueries(new ArrayList<>());
+        getMetadata().setSqlResultSetMappings(new ArrayList<>());
     }
 
     public CacheIndex addCacheIndex() {

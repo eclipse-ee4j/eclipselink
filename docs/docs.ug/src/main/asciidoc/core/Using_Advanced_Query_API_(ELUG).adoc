@@ -1,0 +1,744 @@
+image:Elug_draft_icon.png[Image:Elug draft
+icon.png,title="Image:Elug draft icon.png"] *For the latest EclipseLink
+documentation, please see
+http://www.eclipse.org/eclipselink/documentation/*
+
+'''''
+
+*TOC* Special:Whatlinkshere_Using_Advanced_Query_API_(ELUG)[Related
+Topics]
+
+For more information about the available query API, see _EclipseLink API
+Reference_.
+
+== Using Redirect Queries
+
+A redirect query is a named query that delegates query execution control
+to your application. redirect queried allow you to define the query
+implementation in code as a static method.
+
+To perform complex operations, you can combine query redirectors with
+the EclipseLink query framework.
+
+=== How to Create a Redirect Query
+
+To perform complex operations, you can combine query redirectors with
+the EclipseLink query framework. To create a redirector, implement the
+`+org.eclipse.persistence.queries.QueryRedirector+` interface. The query
+mechanism executes the
+`+Object invokeQuery(DatabaseQuery query, Record arguments, Session session)+`
+method and waits for the results.
+
+EclipseLink provides one preimplemented redirector, the
+`+MethodBasedQueryRedirector+` method. To use this redirector, create a
+static invoke method on a class, and use the `+setMethodName(String)+`
+call to specify the method to invoke.
+
+[#Example 107-1]## *_Redirect Query_*
+
+`+ReadObjectQuery query = new ReadObjectQuery(Employee.class);+`
+`+query.setName("findEmployeeByAnEmployee");+`
+`+query.addArgument("employee");+`
+
+`+MethodBaseQueryRedirector redirector = new+`
+`+     MethodBaseQueryRedirector(QueryRedirectorTest.class, "findEmployeeByAnEmployee");+`
+`+query.setRedirector(redirector);+`
+`+Descriptor descriptor = getSession().getDescriptor(query.getReferenceClass());+`
+`+descriptor.getQueryManager().addQuery(query.getName(), query);+`
+
+`+List args = new ArrayList();+` `+args.addElement(employee);+`
+`+objectFromDatabase = +`
+`+    getSession().executeQuery("findEmployeeByAnEmployee", Employee.class, args);+`
+
+`+public class QueryRedirectorTest {+`
+
+`+    public static Object findEmployeeByAnEmployee(+`
+`+                                 DatabaseQuery query,+`
+`+                                 org.eclipse.peristence.sessions.Record arguments,+`
+`+                                 org.eclipse.peristence.sessions.Session+`
+`+                                 session) {+`
+`+        ((ReadObjectQuery) query).setSelectionObject(arguments.get("employee"));+`
+`+        return session.executeQuery(query);+` `+    }+` `+}+`
+
+== Using Historical Queries
+
+To make a query time-aware, you specify an `+AsOfClause+` that
+EclipseLink appends to the query. Use the `+AsOfClause+` class if your
+historical schema is based on time stamps or the `+AsOfSCNClause+` class
+if your historical schema is based on database system change numbers.
+You can specify an `+AsOfClause+` at the time you acquire a historical
+session so that EclipseLink appends the same clause to all queries, or
+you can specify an `+AsOfClause+` on a query-by-query basis.
+
+The following example shows how to create a query that uses a particular
+`+AsOfClause+`. This query will read all `+Employee+` objects as of the
+time specified by `+timestamp+` using the appropriate history tables
+described by the `+HistoryPolicy+` set on the `+Employee+` descriptor.
+
+[#Example 107-2]## *_Using a Historical Session_*
+
+`+ReadAllQuery historicalQuery = new ReadAllQuery(Employee.class);+`
+`+AsOfClause asOfClause = new AsOfClause(timestamp);+`
+`+historicalQuery.setAsOfClause(asOfClause);+`
+`+historicalQuery.dontMaintainCache();+`
+`+List pastEmployees = (List)historicalSession.executeQuery(historicalQuery);+`
+
+== Using Queries with Fetch Groups
+
+You can use a fetch group with a `+ReadObjectQuery+` or
+`+ReadAllQuery+`. When you execute the query, EclipseLink retrieves only
+the attributes in the fetch group. EclipseLink automatically executes a
+query to fetch all the attributes excluded from this subset when and if
+you call a getter method on any one of the excluded attributes.
+
+[width="100%",cols="<100%",]
+|===
+|*Note:* When you use fetch groups outside of CMP, use weaving (see
+link:Introduction%20to%20EclipseLink%20Application%20Development%20(ELUG)[Using
+Weaving]).
+|===
+
+This section describes the following:
+
+* link:#How_to_Configure_Default_Fetch_Group_Behavior[How to Configure
+Default Fetch Group Behavior]
+* link:#How_to_Query_with_a_Static_Fetch_Group[How to Query with a
+Static Fetch Group]
+* link:#How_to_Query_with_a_Dynamic_Fetch_Group[How to Query with a
+Dynamic Fetch Group]
+
+For more information about fetch groups, see
+link:Introduction%20to%20EclipseLink%20Queries%20(ELUG)#Fetch_Groups_and_Object-Level_Read_Queries[Fetch
+Groups and Object-Level Read Queries].
+
+=== How to Configure Default Fetch Group Behavior
+
+You can optionally designate at most one fetch group as the default
+fetch group for a descriptor’s reference class.
+
+If you execute a `+ReadObjectQuery+` or `+ReadAllQuery+` without
+specifying a fetch group, EclipseLink will use the default fetch group
+unless you configure the query otherwise, as this example shows.
+
+[#Example 107-3]## *_Configuring Default Fetch Group Behavior_*
+
+*`+//\'\' \'\'at\'\' \'\'the\'\' \'\'descriptor\'\' \'\'level+`*
+`+FetchGroup group = new FetchGroup("nameOnly");+`
+`+group.addAttribute("firstName");+` `+group.addAttribute("lastName");+`
+`+employeeDescriptor.getFetchGroupManager().addFetchGroup(group);+`
+*`+//\'\' \'\'set\'\' \'\'the\'\' \'\'default\'\' \'\'fetch\'\' \'\'group+`*
+`+employeeDescriptor.getFetchGroupManager().setDefaultFetchGroup(group);+`
+
+*`+//\'\' \'\'when\'\' \'\'query1\'\' \'\'is\'\' \'\'executed,\'\' \'\'the\'\' \'\'default\'\' \'\'fetch\'\' \'\'group\'\' \'\'applies+`*
+`+ReadAllQuery query1 = new ReadAllQuery(Employee.class);+`
+
+*`+//\'\' \'\'when\'\' \'\'query2\'\' \'\'is\'\' \'\'executed,\'\' \'\'the\'\' \'\'default\'\' \'\'fetch\'\' \'\'group\'\' \'\'does\'\' \'\'not\'\' \'\'apply+`*
+`+ReadAllQuery query2 = new ReadAllQuery(Employee.class);+`
+`+query2.setShouldUsedefaultFetchGroup(false);+`
+
+=== How to Query with a Static Fetch Group
+
+link:#Example_107-4[Configuring a Query with a FetchGroup Using the
+FetchGroupManager] shows how to configure a `+ReadObjectQuery+` for the
+`+Employee+` class with a `+FetchGroup+` named `+nameOnly+` previously
+stored in the `+FetchGroupManager+` owned by the `+Employee+` class’s
+descriptor.
+
+[#'Example 107-4]## *’ Configuring a Query with a FetchGroup Using the
+FetchGroupManager*’’
+
+In this example, only the `+Employee+` attributes `+firstName+` and
+`+lastName+` are fetched. If you call the `+Employee+` method `+get+`
+for any other attribute, EclipseLink executes another query to retrieve
+all unfetched attribute values. Thereafter, calling that `+get+` method
+will return the value directly from the object.
+
+*`+//\'\' \'\'create\'\' \'\'static\'\' \'\'fetch\'\' \'\'group\'\' \'\'at\'\' \'\'the\'\' \'\'descriptor\'\' \'\'level+`*
+`+FetchGroup group = new FetchGroup("nameOnly");+`
+`+group.addAttribute("firstName");+` `+group.addAttribute("lastName");+`
+`+descriptor.getFetchGroupManager().addFetchGroup(group);+`
+
+*`+//\'\' \'\'use\'\' \'\'static\'\' \'\'fetch\'\' \'\'group\'\' \'\'at\'\' \'\'query\'\' \'\'level+`*
+`+ReadAllQuery query = new ReadAllQuery(Employee.class);+`
+`+query.setFetchGroupName("nameOnly");+`
+
+=== How to Query with a Dynamic Fetch Group
+
+link:#Example_107-5[Configuring a Query with a FetchGroup Dynamically]
+shows how to create a `+FetchGroup+` instance dynamically, at the time
+you create and execute a query, and configure the query with that
+`+FetchGroup+` directly.
+
+In this example, only the `+firstName+`, `+lastName+`, and `+salary+`
+attributes are fetched. If you call the `+Employee+` method `+get+` for
+any other attribute, EclipseLink executes another query to retrieve all
+unfetched attribute values. Thereafter, calling that `+get+` method will
+return the value directly from the object.
+
+[#Example 107-5]## *_Configuring a Query with a FetchGroup Dynamically_*
+
+*`+//\'\' \'\'dynamic\'\' \'\'fetch\'\' \'\'group\'\' \'\'query+`*
+`+ReadAllQuery query = new ReadAllQuery(Employee.class);+`
+`+FetchGroup group = new FetchGroup("nameAndSalary");+`
+`+group.addAttribute("firstName");+` `+group.addAttribute("lastName");+`
+`+group.addAttribute("salary");+` `+query. setFetchGroup(group);+`
+
+== Using Read-Only Queries
+
+This example shows how to create an object-level read query to return
+data that you know is read-only. Using such a query for read-only data
+can improve performance.
+
+[#Example 107-6]## *_Configuring an ObjectLevelReadQuery as Read-Only_*
+
+`+ReadAllQuery query = new ReadAllQuery(Employee.class);+`
+`+query.setIsReadOnly(true);+`
+
+For more information, see the following:
+
+* link:Introduction%20to%20EclipseLink%20Queries%20(ELUG)[Read-Only
+Query]
+* link:Optimizing%20the%20EclipseLink%20Application%20(ELUG)[How to Use
+Read-Only Queries for Optimization]
+
+== Querying on Interfaces
+
+When you define descriptors for an interface to enable querying,
+EclipseLink supports querying on an interface, as follows:
+
+* If there is only a single implementor of the interface, the query
+returns an instance of the concrete class.
+* If there are multiple implementors of the interfaces, the query
+returns instances of all implementing classes.
+
+== Querying on an Inheritance Hierarchy
+
+When you query on a class that is part of an inheritance hierarchy, the
+session checks the descriptor to determine the type of the class, as
+follows:
+
+* If you configure the descriptor to read subclasses (the default
+configuration), the query returns instances of the class and its
+subclasses.
+* If you configure the descriptor not to read subclasses, the query
+returns only instances of the queried class, but no instances of the
+subclasses.
+* If you configure the descriptor to outer-join subclasses, the query
+returns instances of the class and its subclasses.
+* If neither of these conditions applies, the class is a leaf class and
+does not have any subclasses. The query returns instances of the queried
+class.
+
+== Appending Additional Join Expressions
+
+You can set the query manager to automatically append an expression to
+every query it performs on a class. For example, you can add an
+expression that filters the database for the valid instances of a given
+class.
+
+Use this to do the following:
+
+* Filter logically deleted objects
+* Enable two independent classes to share a single table without
+inheritance
+* Filter historical versions of objects
+
+=== How to Append Additional Join Expressions Using Java
+
+Using Java, configure a descriptor with additional join expressions by
+creating an amendment method (see
+link:Configuring%20a%20Descriptor%20(ELUG)[Configuring Amendment
+Methods]), and then using the `+DescriptorQueryManager+` methods
+`+setAdditionalJoinExpression+` or `+setMultipleTableJoinExpression+`,
+as this example shows.
+
+[#Example 107-7]## *_Registering a Query That Includes a Join
+Expression_*
+
+In this exmaple, the `+join+` expression filters invalid instances of
+`+employee+` from the query.
+
+`+public static void addToDescriptor(Descriptor descriptor) {+`
+`+    ExpressionBuilder builder = new ExpressionBuilder();+`
+`+    descriptor.getQueryManager().setAdditionalJoinExpression(+`
+`+        (builder.getField("EMP.STATUS").notEqual("DELETED")).and(+`
+`+             builder.getField("EMP.STATUS").notEqual("HISTORICAL"))+`
+`+    );+` `+}+`
+
+== Using Queries on Variable One-to-One Mappings
+
+EclipseLink does not provide a method to directly query against variable
+one-to-one mappings. To query against this type of mapping, combine
+EclipseLink `+DirectQueryKeys+` and EclipseLink `+ReportQueries+` to
+create query selection criteria for classes that implement the
+interface, as follows:
+
+[arabic]
+. Create two `+DirectQueryKeys+` to query for the possible implementors
+of the interface:
+* The first `+DirectQueryKey+` is for the class indicator field for the
+variable one-to-one mapping.
+* The second `+DirectQueryKey+` is for the foreign key to the class or
+table that implements the interface.
+. Create a `+subSelect+` statement for each concrete class that
+implements the interface included in the query selection criteria.
+. Implement a `+ReportQuery+`.
+
+[#Example 107-8]## *_Creating DirectQueryKeys_*
+
+*`+//\'\' \'\'The\'\' \'\'DirectQueryKeys\'\' \'\'as\'\' \'\'generated\'\' \'\'in\'\' \'\'the\'\' \'\'EclipseLink\'\' \'\'project\'\' \'\'Java+`*
+`+// source code from Workbench +` `+…+`
+`+descriptor.addDirectQueryKey("locationTypeCode","DEALLOCATION.DEALLOCATIONOBJECTTYPE");+`
+`+descriptor.addDirectQueryKey("locationTypeId","DEALLOCATION.DEALLOCATIONOBJECTID");     +`
+
+== Using Oracle Database Features
+
+If you are using Oracle Database, you can take advantage of EclipseLink
+support for the following Oracle Database features:
+
+* Oracle Hints (see link:#How_to_Use_Oracle_Hints[How to Use Oracle
+Hints])
+* Hierarchical Queries (see link:#How_to_Use_Hierarchical_Queries[How to
+Use Hierarchical Queries])
+
+=== How to Use Oracle Hints
+
+Oracle Hints is an Oracle Database feature through which you can make
+decisions usually reserved for the optimizer. You use hints to specify
+things such as join order for a join statement, or the optimization
+approach of an SQL call.
+
+The EclipseLink query framework supports Oracle Hints with the following
+API:
+
+`+setHintString("/*+`_`+[hints\'\' \'\'or\'\' \'\'comments]+`_`+*/");+`
+`+ +`
+
+EclipseLink adds the hint to the SQL string as a comment immediately
+following a `+SELECT+`, `+UPDATE+`, `+INSERT+`, or `+DELETE+` statement.
+
+Add hints to a read query as follows:
+
+[arabic]
+. Create a `+ReadObjectQuery+` or a `+ReadAllQuery+`
+. Set the selection criteria.
+. Add hints as needed.
+
+For example, the following code uses the `+FULL+` hint (which explicitly
+chooses a full table scan for the specified table):
+
+*`+//\'\' \'\'Create\'\' \'\'the\'\' \'\'query\'\' \'\'and\'\' \'\'set\'\' \'\'Employee\'\' \'\'as\'\' \'\'its\'\' \'\'reference\'\' \'\'class+`*
+`+ReadObjectQuery query = new ReadObjectQuery(Employee.class);+`
+*`+//\'\' \'\'Retrieve\'\' \'\'ExpressionBuilder\'\' \'\'from\'\' \'\'the\'\' \'\'query+`*
+`+ExpressionBuilder builder = query.getExpressionBuilder();+`
+`+query.setSelectionCritera(builder.get("id").equal(new Integer(1));+`
+*`+//\'\' \'\'Add\'\' \'\'the\'\' \'\'hint+`*
+`+query.setHintString("/*+ FULL */" ); +`
+
+This code generates the following SQL:
+
+`+SELECT /*+ FULL */ FROM EMPLOYEE WHERE ID=1+`
+
+To add hints to `+WRITE+`, `+INSERT+`, `+UPDATE+`, and `+DELETE+`,
+create custom queries for these operations in the EclipseLink query
+framework, then specify hints as required. For more information, see the
+following:
+
+* link:Configuring%20a%20Relational%20Descriptor%20(ELUG)[Configuring
+Custom SQL Queries for Basic Persistence Operations]
+* link:Configuring%20an%20EIS%20Descriptor%20(ELUG)[Configuring Custom
+EIS Interactions for Basic Persistence Operations]
+
+For more information about the available hints, see the Oracle Database
+documentation.
+
+=== How to Use Hierarchical Queries
+
+Hierarchical Queries is an Oracle Database mechanism that lets you
+select database rows based on hierarchical order. For example, you can
+design a query that reads the row of a given employee, followed by the
+rows of people this employee manages, followed by their managed
+employees, and so on.
+
+To create a hierarchical query, use the `+setHierarchicalQueryClause+`
+method. This method takes three parameters, as follows:
+
+`+setHierarchicalQueryClause(startWith, connectBy, orderSibling)+`
+
+This expression requires all three parameters, as described in the
+subsequent text.
+
+==== Using startWith Parameter
+
+The `+startWith+` parameter in the expression specifies the first object
+in the hierarchy. This parameter mirrors the Oracle Database
+`+START WITH+` clause.
+
+To include a `+startWith+` parameter, build an expression to specify the
+appropriate object, and pass it as a parameter in the
+`+setHierarchicalQueryClause+` method. If you do not specify the root
+object for the hierarchy, set this value to `+null+`.
+
+==== Using connectBy Parameter
+
+The `+connectBy+` parameter specifies the relationship that creates the
+hierarchy. This parameter mirrors the Oracle Database `+CONNECT BY+`
+clause.
+
+Build an expression to specify the `+connectBy+` parameter, and pass it
+as a parameter in the `+setHierarchicalQueryClause+` method. Because
+this parameter defines the nature of the hierarchy, it is required for
+the `+setHierarchicalQueryClause+` implementation.
+
+==== Using orderSibling Parameter
+
+The `+orderSibling+` parameter in the expression specifies the order in
+which the query returns sibling objects in the hierarchy. This parameter
+mirrors the Oracle Database `+ORDER SIBLINGS+` clause.
+
+To include an `+orderSibling+` parameter, define a vector, and to
+include the order criteria, use the `+addElement+` method. Pass the
+vector as the third parameter in the `+setHierarchicalQueryClause+`
+method. If you do not specify an order, set this value to `+null+`.
+
+[#Example 107-9]## *_Hierarchical Query_*
+
+`+ReadAllQuery raq = new ReadAllQuery(Employee.class);+`
+*`+//\'\' \'\'Specifies\'\' \'\'a\'\' \'\'START\'\' \'\'WITH\'\' \'\'expression+`*
+`+Expression startExpr = expressionBuilder.get("id").equal(new Integer(1));+`
+*`+//\'\' \'\'Specifies\'\' \'\'a\'\' \'\'CONNECT\'\' \'\'BY\'\' \'\'expression+`*
+`+Expression connectBy = expressionBuilder.get("managedEmployees");+`
+*`+//\'\' \'\'Specifies\'\' \'\'an\'\' \'\'ORDER\'\' \'\'SIBLINGS\'\' \'\'BY\'\' \'\'vector+`*
+`+Vector order = new Vector();+`
+`+order.addElement(expressionBuilder.get("lastName"));+`
+`+order.addElement(expressionBuilder.get("firstName"));+`
+`+raq.setHierarchicalQueryClause(startExpr, connectBy, order);+`
+`+Vector employees = uow.executeQuery(raq);+`
+
+This code generates the following SQL:
+
+`+SELECT * FROM EMPLOYEE START WITH ID=1 CONNECT BY PRIOR ID=MANAGER_ID ORDER SIBLINGS BY LAST_NAME, FIRST_NAME+`
+
+== Handling Cursor and Stream Query Results
+
+Cursors and streams are related mechanisms that let you work with large
+result sets efficiently. See
+link:Introduction%20to%20EclipseLink%20Queries%20(ELUG)#Stream_and_Cursor_Query_Results[Stream
+and Cursor Query Results] for more information.
+
+link:#Table_107-1[Stream and Cursor Query Result Options] table lists
+the methods that EclipseLink provides for all subclasses of
+`+DataReadQuery+` and `+ReadAllQuery+` that you can use to make your
+query return its results as a cursor or stream.
+
+[#Table 107-1]## *_Stream and Cursor Query Result Options_*
+
+[width="100%",cols="<14%,<11%,<75%",options="header",]
+|===
+|*Method* |*Query Returns* |*Description*
+|`+useScrollableCursor+` |`+ScrollableCursor+` |Allows you access a
+database result set cursor, allowing you to move forward and backward
+through the result set.
+
+|`+useCursoredStream+` |`+CursoredStream+` |Allows you to access results
+one at a time in sequence, as results become available to the underlying
+database result set cursor.
+|===
+
+Using a `+ScrollableCursor+` or `+CursoredStream+` combines the features
+of an EclipseLink with the ability of the database to cursor data, and
+breaks up the result set into smaller, more manageable pieces.
+
+The behavior of a query that uses a `+ScrollableCursor+` or
+`+CursoredStream+` differs from other queries in that the elements
+requested by the client are sent to the client.
+
+This section describes the following:
+
+* link:#How_to_Handle_Cursors_and_Java_Iterators[How to Handle Cursors
+and Java Iterators]
+* link:#How_to_Handle_Java_Streams[How to Handle Java Streams]
+* link:#How_to_Optimize_Streams[How to Optimize Streams]
+
+=== How to Handle Cursors and Java Iterators
+
+The EclipseLink scrollable cursor lets you scroll through a result set
+from the database without reading the whole result set in a single
+database read operation. The `+ScrollableCursor+` class implements the
+Java `+ListIterator+` interface to allow for direct and relative access
+within the stream. Scrollable cursors also let you scroll forward and
+backward through the stream.
+
+==== Traversing Data with Scrollable Cursors
+
+The following methods let you navigate data with a scrollable cursor:
+
+* `+relative(int i)+`: advances the row number in relation to the
+current row by one row
+* `+absolute(int i)+`: places the cursor at an absolute row position, 1
+being the first row
+
+Several strategies are available for traversing data with cursors. For
+example, to start at the end of the data set and work toward the first
+record, do the following:
+
+[arabic]
+. Call the `+afterLast+` method to place the cursor after the last row
+in the result set.
+. Use the `+hasPrevious+` method to determine whether there is a record
+above the current record. This method returns `+false+` when you reach
+the final record in the data set.
+. If the `+hasPrevious+` method returns `+true+`, call the `+previous+`
+method to move the cursor to the row prior to the current row and read
+that object.
+
+These are common methods for data traversal, but they are not the only
+available methods. For more information about the available methods, see
+_EclipseLink API Reference_.
+
+To use the `+ScrollableCursor+` object, the JDBC driver must be
+compatible with the JDBC 2.0 specifications.
+
+[#107-10]## *_Example Traversing with a Scrollable Cursor_*
+
+`+ReadAllQuery query = new ReadAllQuery(Employee.class);+`
+`+query.useScrollableCursor();+`
+`+ScrollableCursor cursor = (ScrollableCursor) session.executeQuery(query);+`
+
+`+while (cursor.hasNext()) {+`
+`+    System.out.println(cursor.next().toString());+` `+}+`
+`+cursor.close();+`
+
+=== How to Handle Java Streams
+
+Java streams let you retrieve query results as individual records or
+groups of records, which can result in a performance increase. You can
+use streams to build efficient EclipseLink queries, especially when the
+queries are likely to generate large result sets.
+
+==== Using Cursored Stream Support
+
+Cursored streams provide the ability to read back a query result set
+from the database in manageable subsets, and to scroll through the
+result set stream.
+
+The `+useCursoredStream+` method of the `+ReadAllQuery+` class provides
+cursored stream support.
+
+[#Example 107-11]## *_Cursored Streams_*
+
+`+CursoredStream stream;+`
+`+ReadAllQuery query = new ReadAllQuery(Employee.class);+`
+`+query.useCursoredStream();+`
+`+stream = (CursoredStream) session.executeQuery(query);+`
+
+The query returns an instance of `+CursoredStream+` rather than a
+`+List+`, which can be a more efficient approach. For example, consider
+the following two code examples. The link:#Example_107-12[Using a List]
+example returns a `+List+` that contains all employee objects. If ACME
+has 10,000 employees, the `+List+` contains references to 10,000
+`+Employee+` objects.
+
+[#Example 107-12]## *_Using a List_*
+
+`+ReadAllQuery query = new ReadAllQuery(Employee.class);+`
+`+Enumeration employeeEnumeration;+`
+
+`+List employees = (List) session.executeQuery(query);+`
+`+employeeEnumeration = employee.elements();+`
+
+`+while (employeeEnumeration.hasMoreElements()) {+`
+`+    Employee employee = (Employee) employeeEnumeration.nextElement();+`
+`+    employee.doSomeWork();+` `+}+`
+
+The following example returns a `+CursoredStream+` instance rather than
+a `+List+`. The `+CursoredStream+` collection appears to contain all
+10,000 objects, but initially contains a reference to only the first 10
+`+Employee+` objects. It retrieves the remaining objects in the
+collection as they are needed. In many cases, the application never
+needs to read all the objects:
+
+`+ReadAllQuery query = new ReadAllQuery(Employee.class);+`
+`+query.useCursoredStream();+`
+
+`+CursoredStream stream = (CursoredStream) session.executeQuery(query);+`
+`+while (! stream.atEnd()) {+`
+`+    Employee employee = (Employee) stream.read();+`
+`+    employee.doSomeWork();+` `+    stream.releasePrevious();+` `+}+`
+`+stream.close();+`
+
+[width="100%",cols="<100%",]
+|===
+|*Note*: The `+releasePrevious+` message is optional. This releases any
+previously read objects and frees system memory. Even though released
+objects are removed from the cursored stream storage, they may remain in
+the identity map.
+|===
+
+=== How to Optimize Streams
+
+To optimize `+CursoredStream+` performance, provide a _threshold_ and
+_page size_ to the `+useCursoredStream(Threshold, PageSize)+` method, as
+follows:
+
+* The threshold specifies the number of objects to read into the stream
+initially. The default threshold is 10.
+* The page size specifies the number of objects to read into the stream
+after the initial group of objects. This occurs after the threshold
+number of objects is read. Although larger page sizes result in faster
+overall performance, they introduce delays into the application when
+EclipseLink loads each page. The default page size is 5.
+
+When you execute a batch-type operation, use the `+dontMaintainCache+`
+method with a cursored stream. A batch operation performs simple
+operations on large numbers of objects and then discards the objects.
+Cursored streams create the required objects only as needed, and the
+`+dontMaintainCache+` ensures that these transient objects are not
+cached.
+
+== Handling Query Results Using Pagination
+
+You can configure a query to retrieve a result set in pages, that is, a
+partial result as a List of pageSize (or less) results. The following
+example demonstrates paging through the result set of a query using
+`+ReadQuery+` methods `+setMaxRows+` and `+setFirstResult+`.
+
+For more information, see the following:
+
+* link:Optimizing%20the%20EclipseLink%20Application%20(ELUG)#How_to_Use_Result_Set_Pagination_for_Optimization[How
+to Use Result Set Pagination for Optimization]
+* link:Optimizing_the_EclipseLink_Application_%28ELUG%29#How_to_Use_JDBC_Fetch_Size_for_Optimization[How
+to Use JDBC Fetch Size for Optimization]
+
+[#Example 107-13]## *_Using setMaxRows and setFirstResult to Page
+Through a Result Set_*
+
+`+...+` `+int pageSize = 100;+` `+int firstResult = 0;+`
+`+int maxRows = pageSize;+` `+boolean hasNext = true;+`
+`+List page = null;+`
+
+`+while (hasNext) {+` `+    query.setFirstResult(firstResult);+`
+`+    query.setMaxRows(maxRows);+`
+`+    page = (List)sesssion.executeQuery(query);+`
+`+    +`*`+//\'\' \'\'process\'\' \'\'this\'\' \'\'page\'\' \'\'of\'\' \'\'results+`*
+`+    if (page.size() == 0) {+` `+        hasNext = false;+`
+`+    } else {+` `+        firstResult = firstResult + pageSize;+`
+`+        maxRows = maxRows + pageSize;+` `+    }+` `+}+` `+...+`
+
+== Using Queries and the Cache
+
+This section describes how to use caching options in EclipseLink
+queries, including the following:
+
+* link:#How_to_Cache_Results_in_a_ReadQuery[How to Cache Results in a
+ReadQuery]
+* link:#How_to_Configure_Cache_Expiration_at_the_Query_Level[How to
+Configure Cache Expiration at the Query Level]
+
+=== How to Cache Results in a ReadQuery
+
+By default, each time you execute a `+ReadQuery+`, EclipseLink applies
+the current query configuration to the read operation. In doing so,
+EclipseLink will access the session cache, the data source, or both.
+
+Some queries are known to return the same result set (for example, the
+number of units sold last year by the current sales person). After the
+first query execution, there is no need to actually execute the query if
+it is invoked again.
+
+For these types of queries, you can use any EclipseLink `+ReadQuery+`
+and configure it to store its query results in an internal query cache.
+
+After its first execution for a set of query parameters, the query will
+return its cached result set each time it is invoked with the same query
+parameters. This improves query performance for frequently executed
+queries. By default a query will cache the results sets for the last 100
+queries of specific parameters. You can configure this query cache as
+part of the `+QueryResultsCachePolicy+`.
+
+Enable this feature using `+ReadQuery+` method `+cacheQueryResults+` or
+by calling the `+ReadQuery+` method `+setQueryResultsCachePolicy+` with
+an instance of `+QueryResultsCachePolicy+`, and disable it using
+`+ReadQuery+` method `+doNotCacheQueryResults+`.
+
+Before using this feature, consider the restrictions in
+link:Introduction%20to%20EclipseLink%20Queries%20(ELUG)[Internal Query
+Cache Restrictions]. For more information, see
+link:Introduction%20to%20EclipseLink%20Queries%20(ELUG)[How to Cache
+Query Results in the Query Cache].
+
+You can apply a cache invalidation policy to the query’s internal cache
+(see link:#How_to_Configure_Cache_Expiration_at_the_Query_Level[How to
+Configure Cache Expiration at the Query Level]). For more information,
+see link:Introduction%20to%20Cache%20(ELUG)#Cache_Invalidation[Cache
+Invalidation].
+
+This example shows how to configure a `+ReadQuery+` to cache its
+results.
+
+[#Example 107-14]## *_Configuring a ReadQuery to Cache Its Query
+Results_*
+
+`+ReadObjectQuery query = new ReadObjectQuery(Employee.class);+`
+
+*`+//\'\' \'\'Instruct\'\' \'\'the\'\' \'\'ReadQuery\'\' \'\'to\'\' \'\'cache\'\' \'\'its\'\' \'\'query\'\' \'\'results+`*
+`+query.cacheQueryResults();+`
+
+*`+//\'\' \'\'The\'\' \'\'first\'\' \'\'time\'\' \'\'you\'\' \'\'invoke\'\' \'\'it,\'\' \'\'the\'\' \'\'ReadQuery\'\' \'\'reads\'\' \'\'from\'\' \'\'the\'\' \'\'database,\'\' \'\'session+`*
+*`+//\'\' \'\'cache,\'\' \'\'or\'\' \'\'both\'\' \'\'and\'\' \'\'stores\'\' \'\'the\'\' \'\'result\'\' \'\'set\'\' \'\'in\'\' \'\'its\'\' \'\'internal\'\' \'\'query\'\' \'\'cache+`*
+`+Employee employeeFirst = (Employee) session.executeQuery(query);+`
+
+The following example shows how to configure the `+ReadQuery+` to stop
+caching its results. The next time the query is executed, EclipseLink
+does not use the query cache. Instead, the query accesses the data
+source.
+
+[#Example 107-15]## *_Configuring a ReadQuery to Stop Caching Its Query
+Results_*
+
+*`+//\'\' \'\'Disable\'\' \'\'query\'\' \'\'caching+`*
+`+query.doNotCacheQueryResults();+`
+
+*`+//\'\' \'\'The\'\' \'\'ReadQuery\'\' \'\'does\'\' \'\'not\'\' \'\'use\'\' \'\'the\'\' \'\'query\'\' \'\'cahce\'\' \'\'and\'\' \'\'instead\'\' \'\'accesses\'\' \'\'the\'\' \'\'database+`*
+`+Employee employee = (Employee) session.executeQuery(query);+`
+
+Alternatively, you can clear the query’s internal cache using
+`+ReadQuery+` method `+clearQueryResults+` passing in your session. This
+clears the currently cached results and ensures that the next query
+execution reads from the database.
+
+=== How to Configure Cache Expiration at the Query Level
+
+You can configure a `+ReadQuery+` with a `+CacheInvalidationPolicy+`.
+
+If you configure a query to cache results in its own internal cache (see
+link:#How_to_Cache_Results_in_a_ReadQuery[How to Cache Results in a
+ReadQuery]), the cache invalidation policy allows the cached query
+result set to expire, based on a time-to-live or daily-expiry. This
+invalidation time is calculated from the time of the query execution
+that cached the query result set for the specific set of query
+parameters.
+
+The following example shows how to configure a `+ReadQuery+` so that a
+`+TimeToLiveCacheInvalidationPolicy+` is applied to all the objects
+returned by the query and cached in the query’s internal cache.
+
+[#Example 107-16]## *_Configuring a CacheInvalidationPolicy on a
+ReadQuery for the Query’s Internal Cache_*
+
+*`+//\'\' \'\'The\'\' \'\'TimeToLiveCacheInvalidationPolicy\'\' \'\'applies\'\' \'\'to\'\' \'\'all\'\' \'\'objects\'\' \'\'returned\'\' \'\'by\'\' \'\'the\'\' \'\'query\'\' \'\'and+`*
+*`+//\'\' \'\'cached\'\' \'\'in\'\' \'\'the\'\' \'\'query's\'\' \'\'internal\'\' \'\'cache+`*`+ +`
+
+`+readQuery.setQueryResultsCachePolicy(+`
+`+    new QueryResultsCachePolicy(new TimeToLiveCacheInvalidationPolicy(1000))+`
+`+);+`
+
+For more information, see link:Introduction%20to%20Cache%20(ELUG)[Cache
+Invalidation].
+
+'''''
+
+_link:EclipseLink_User's_Guide_Copyright_Statement[Copyright Statement]_
+
+Category:_EclipseLink_User's_Guide[Category: EclipseLink User’s Guide]
+Category:_Release_1[Category: Release 1] Category:_Task[Category: Task]

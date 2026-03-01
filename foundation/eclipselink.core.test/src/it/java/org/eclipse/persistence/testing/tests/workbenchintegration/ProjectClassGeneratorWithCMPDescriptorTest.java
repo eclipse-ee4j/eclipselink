@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,15 +14,15 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.workbenchintegration;
 
-import java.io.File;
-
 import org.eclipse.persistence.descriptors.CMPPolicy;
 import org.eclipse.persistence.descriptors.PessimisticLockingPolicy;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.sessions.Project;
+import org.eclipse.persistence.sessions.factories.ProjectClassGenerator;
 import org.eclipse.persistence.testing.framework.AutoVerifyTestCase;
 import org.eclipse.persistence.testing.framework.TestErrorException;
-import org.eclipse.persistence.sessions.factories.ProjectClassGenerator;
+
+import java.io.File;
 
 
 public class ProjectClassGeneratorWithCMPDescriptorTest extends AutoVerifyTestCase {
@@ -88,7 +88,7 @@ public class ProjectClassGeneratorWithCMPDescriptorTest extends AutoVerifyTestCa
                 throw new TestErrorException("Failed to compiled the generated project file " + fileName + ". This could either be a legitimate compile " +
                          "failure, or could result if you do not have the tools.jar from your JDK on the classpath.");
             }
-            //Class projectClass = (Class) getSession().getPlatform().getConversionManager().convertObject(projectShortClassName, ClassConstants.CLASS);
+            //Class projectClass = (Class) getSession().getPlatform().getConversionManager().convertObject(projectShortClassName, CoreClassConstants.CLASS);
             Class<?> projectClass = Class.forName(projectShortClassName);
             generatedProject = (org.eclipse.persistence.sessions.Project)projectClass.getConstructor().newInstance();
         } catch (Exception exception) {
@@ -105,7 +105,7 @@ public class ProjectClassGeneratorWithCMPDescriptorTest extends AutoVerifyTestCa
             project.getDescriptor(org.eclipse.persistence.testing.models.employee.domain.Address.class).getCMPPolicy();
         CMPPolicy generatedCMPPolicy =
             generatedProject.getDescriptor(org.eclipse.persistence.testing.models.employee.domain.Address.class).getCMPPolicy();
-        String errors = new String();
+        String errors = "";
 
         if (generatedCMPPolicy == null) {
             errors += "CMPPolicy is null.\n";
@@ -131,7 +131,7 @@ public class ProjectClassGeneratorWithCMPDescriptorTest extends AutoVerifyTestCa
             }
         }
 
-        if (errors.length() > 0) {
+        if (!errors.isEmpty()) {
             throw new TestErrorException("The following settings of the generated project instance does not have the expected value:\n" +
                                          errors);
         }

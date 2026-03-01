@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,23 +16,23 @@
 //       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
 package org.eclipse.persistence.queries;
 
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.mappings.DatabaseMapping;
-import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.mappings.OneToOneMapping;
 import org.eclipse.persistence.sessions.DatabaseRecord;
+
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * <p><b>Purpose</b>:
@@ -185,7 +185,7 @@ public class EntityResult extends SQLResult {
             FieldResult fieldResult = (FieldResult)this.getFieldResults().get(mapping.getAttributeName());
             if (fieldResult != null){
                 if (mapping.getFields().size() == 1 ) {
-                    entityRecord.put(mapping.getFields().firstElement(), record.get(fieldResult.getColumn()));
+                    entityRecord.put(mapping.getFields().get(0), record.get(fieldResult.getColumn()));
                 } else if (mapping.getFields().size() >1){
                     getValueFromRecordForMapping(entityRecord,mapping,fieldResult,record);
                 }
@@ -213,17 +213,17 @@ public class EntityResult extends SQLResult {
      */
     public void getValueFromRecordForMapping(DatabaseRecord entityRecord,DatabaseMapping mapping, FieldResult fieldResult, DatabaseRecord databaseRecord){
         ClassDescriptor currentDescriptor = mapping.getReferenceDescriptor();
-        /** check if this FieldResult contains any other FieldResults, process it if it doesn't */
+        /* check if this FieldResult contains any other FieldResults, process it if it doesn't */
         if (fieldResult.getFieldResults()==null){
             DatabaseField dbfield = processValueFromRecordForMapping(currentDescriptor,fieldResult.getMultipleFieldIdentifiers(),1);
-            /** If it is a 1:1 mapping we need to do the target to source field conversion.  If it is an aggregate, it is fine as it is*/
+            /* If it is a 1:1 mapping we need to do the target to source field conversion.  If it is an aggregate, it is fine as it is*/
             if (mapping.isOneToOneMapping()){
                 dbfield = (((OneToOneMapping)mapping).getTargetToSourceKeyFields().get(dbfield));
             }
             entityRecord.put(dbfield, databaseRecord.get(fieldResult.getColumn()));
             return;
         }
-        /** This processes each FieldResult stored in the collection of FieldResults individually */
+        /* This processes each FieldResult stored in the collection of FieldResults individually */
         Iterator<FieldResult> fieldResults = fieldResult.getFieldResults().iterator();
         while (fieldResults.hasNext()){
             FieldResult tempFieldResult = fieldResults.next();
@@ -252,7 +252,7 @@ public class EntityResult extends SQLResult {
             return df;
         }else{
             //this is it.. return this mapping's field
-            return mapping.getFields().firstElement();
+            return mapping.getFields().get(0);
         }
     }
 

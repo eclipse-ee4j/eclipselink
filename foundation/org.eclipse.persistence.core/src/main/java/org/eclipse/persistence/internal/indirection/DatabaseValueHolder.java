@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,16 +14,15 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.indirection;
 
-import java.io.Serializable;
-
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.indirection.ValueHolderInterface;
 import org.eclipse.persistence.indirection.WeavedAttributeValueHolderInterface;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.localization.ToStringLocalization;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
+
+import java.io.Serializable;
 
 /**
  * DatabaseValueHolder wraps a database-stored object and implements
@@ -151,7 +150,7 @@ public abstract class DatabaseValueHolder<T> implements WeavedAttributeValueHold
 
     /**
      * This method is used as part of the implementation of WeavedAttributeValueHolderInterface.
-     *
+     * <p>
      * A DatabaseValueHolder is set up by TopLink and will never be a newly weaved valueholder.
      * As a result, this method is stubbed out.
      */
@@ -265,7 +264,7 @@ public abstract class DatabaseValueHolder<T> implements WeavedAttributeValueHold
 
     /**
      * This method is used as part of the implementation of WeavedAttributeValueHolderInterface
-     *
+     * <p>
      * A DatabaseValueHolder is set up by EclipseLink and will never be a newly weaved valueholder
      * As a result, this method is stubbed out.
      */
@@ -325,7 +324,7 @@ public abstract class DatabaseValueHolder<T> implements WeavedAttributeValueHold
         if (isInstantiated()) {
             return "{" + getValue() + "}";
         } else {
-            return "{" + Helper.getShortClassName(getClass()) + ": " + ToStringLocalization.buildMessage("not_instantiated", null) + "}";
+            return "{" + getClass().getSimpleName() + ": " + ToStringLocalization.buildMessage("not_instantiated", null) + "}";
         }
     }
 }

@@ -1,0 +1,120 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[DATA_ACCESS004]]
+=== About Authentication
+
+*Authentication* is the means by which a data source validates a user's
+identity and determines whether the user has sufficient privileges to
+perform a given action. Authentication plays a central role in data
+security and user accountability and auditing.
+
+For two-tier applications, simple JDBC authentication is usually
+sufficient.
+
+The following sections describe the different authentication strategies:
+
+* link:#CHDEIDHF[Simple JDBC Authentication]
+* link:#CHDFACHD[Oracle Database Proxy Authentication]
+* link:#CHDFCJDB[Auditing]
+
+[[CHDEIDHF]][[OTLCG93606]]
+
+==== Simple JDBC Authentication
+
+When you configure an EclipseLink database login with a user name and
+password, EclipseLink provides these credentials to the JDBC driver that
+you configure your application to use.
+
+By default, EclipseLink reads passwords from the `persistence.xml` file.
+
+[[CHDFACHD]][[OTLCG93607]]
+
+==== Oracle Database Proxy Authentication
+
+EclipseLink supports proxy authentication with Oracle Database in Java
+SE applications and Jakarta EE applications with the Oracle JDBC driver
+and external connection pools only.
+
+NOTE: EclipseLink does not support Oracle Database proxy authentication with JTA.
+
+Oracle Database proxy authentication delivers the following security
+benefits:
+
+* A limited trust model, by controlling the users on whose behalf middle
+tiers can connect, and the roles the middle tiers can assume for the
+user.
+* Scalability, by supporting user sessions through Oracle Call Interface
+(OCI) and thick JDBC, and eliminating the overhead of reauthenticating
+clients.
+* Accountability, by preserving the identity of the real user through to
+the database, and enabling auditing of actions taken on behalf of the
+real user.
+* Flexibility, by supporting environments in which users are known to
+the database, and in which users are merely "application users" of which
+the database has no awareness.
+
+NOTE: Oracle Database supports proxy authentication in three-tiers only; it
+does not support it across multiple middle tiers.
+
+For more information about authentication in Oracle Database, see
+"Preserving User Identity in Multitiered Environments" in the _Oracle
+Database Security Guide_.
+
+Configure your EclipseLink database login to use proxy authentication to
+do the following:
+
+* address the complexities of authentication in a three-tier
+architecture (such as client-to-middle-tier and middle-tier-to-database
+authentication, and client reauthentication through the middle -tier to
+the database)
+* enhance database audit information (for even triggers and stored
+procedures) by using a specific user for database operations, rather
+than the generic pool user
+* simplify VPD/OLS configuration by using a proxy user, rather than
+setting user information directly in the session context with stored
+procedures
+
+[[CHDFCJDB]][[OTLCG93608]]
+
+==== Auditing
+
+Regardless of what type of authentication you choose, EclipseLink logs
+the name of the user associated with all database operations.
+link:#CHDHDDGJ[Example 7-1] shows the `CONFIG` level EclipseLink logs
+when a `ServerSession` connects through the main connection for the
+sample user "scott", and a `ClientSession` uses proxy connection "jeff"
+
+[[CHDHDDGJ]][[OTLCG93609]]
+
+*_Example 7-1 Logs with Oracle Database Proxy Authentication_*
+
+[source,oac_no_warn]
+----
+[EclipseLink Config]--ServerSession(13)--Connection(14)--Thread(Thread[main,5,main])--connecting(DatabaseLogin( platform=>Oracle9Platform   user name=> "scott" connector=>OracleJDBC10_1_0_2ProxyConnector datasource name=>DS))
+[EclipseLink Config]--ServerSession(13)--Connection(34)--Thread(Thread[main,5,main])--Connected: jdbc:oracle:thin:@localhost:1521:orcl
+User: SCOTT
+[EclipseLink Config]--ClientSession(53)--Connection(54)--Thread(Thread[main,5,main])--connecting(DatabaseLogin(platform=>Oracle9Platform user name=> "scott" connector=>OracleJDBC10_1_0_2ProxyConnector datasource name=>DS))
+[EclipseLink Config]--ClientSession(53)--Connection(56)--Thread(Thread[main,5,main])--Connected: jdbc:oracle:thin:@localhost:1521:orcl
+User: jeff
+----
+
+Your database server likely provides additional user auditing options.
+Consult your database server documentation for details.
+
+Alternatively, you may consider using the EclipseLink persistence unit
+in conjunction with your database schema for auditing purposes.

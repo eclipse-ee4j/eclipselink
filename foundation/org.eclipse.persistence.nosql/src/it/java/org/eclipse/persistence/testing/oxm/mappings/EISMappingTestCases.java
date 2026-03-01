@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -94,7 +94,7 @@ public abstract class EISMappingTestCases extends OXTestCase {
             String directorySetting = (String) project.getDatasourceLogin().getProperty("directory");
             StringWriter stringWriter = new StringWriter();
             XMLProjectWriter.write(project, stringWriter);
-            log("DEPLOYMENT XML: " + stringWriter.toString());
+            log("DEPLOYMENT XML: " + stringWriter);
 
             Project newProject = XMLProjectReader.read(new StringReader(stringWriter.toString()));
             Map<Class<?>, ClassDescriptor> descriptors = project.getDescriptors();
@@ -200,7 +200,7 @@ public abstract class EISMappingTestCases extends OXTestCase {
         log("****Expected:");
         log(getControlObject().toString());
         log("***Actual:");
-        assertTrue(objects.size() > 0);
+        assertTrue(!objects.isEmpty());
         if (objects.size() > 1) {
             log(objects.toString());
             assertTrue(((java.util.ArrayList)getControlObject()).size() == objects.size());

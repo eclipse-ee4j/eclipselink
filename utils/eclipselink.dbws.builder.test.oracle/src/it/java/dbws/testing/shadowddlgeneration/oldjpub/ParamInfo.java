@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 //EclipseLink imports
-import dbws.testing.shadowddlgeneration.oldjpub.SqlReflector;
+
 
 public class ParamInfo {
 
@@ -123,7 +123,7 @@ public class ParamInfo {
     }
 
     public static ParamInfo[] getParamInfo(Iterator<ViewRow> iter) throws SQLException {
-        ArrayList<ViewRow> a = new ArrayList<ViewRow>();
+        ArrayList<ViewRow> a = new ArrayList<>();
         while (iter.hasNext()) {
             a.add(iter.next());
         }
@@ -131,16 +131,14 @@ public class ParamInfo {
     }
 
     public static ParamInfo[] getParamInfo(ArrayList<ViewRow> v) throws SQLException {
-        ArrayList<ParamInfo> a = new ArrayList<ParamInfo>();
-        for (int i = 0; i < v.size(); i++) {
-            ViewRow vr = v.get(i);
+        ArrayList<ParamInfo> a = new ArrayList<>();
+        for (ViewRow vr : v) {
             if (vr.isAllMethodParams()) {
-                a.add(new ParamInfo((AllMethodParams)vr));
-            }
-            else if (vr.isUserArguments() || vr.isAllArguments()) {
-                a.add(new ParamInfo((UserArguments)vr));
+                a.add(new ParamInfo((AllMethodParams) vr));
+            } else if (vr.isUserArguments() || vr.isAllArguments()) {
+                a.add(new ParamInfo((UserArguments) vr));
             }
         }
-        return a.toArray(new ParamInfo[a.size()]);
+        return a.toArray(new ParamInfo[0]);
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,14 +20,6 @@
 //       - 397772: JPA 2.1 Entity Graph Support
 package org.eclipse.persistence.internal.sessions;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.IdentityHashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.VersionLockingPolicy;
 import org.eclipse.persistence.exceptions.OptimisticLockException;
@@ -46,6 +38,14 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.queries.DoesExistQuery;
 import org.eclipse.persistence.sessions.SessionProfiler;
 import org.eclipse.persistence.sessions.remote.DistributedSession;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.IdentityHashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * <p><b>Purpose</b>:
@@ -75,7 +75,7 @@ public class MergeManager {
     protected Object writeLockQueued;
 
     /** Stores the node that holds this mergemanager within the WriteLocksManager queue */
-    protected LinkedNode queueNode;
+    protected LinkedNode<MergeManager> queueNode;
 
     /** Policy that determines merge type (i.e. merge is used for several usages). */
     protected int mergePolicy;
@@ -178,7 +178,7 @@ public class MergeManager {
      * INTENRAL:
      * Used to get the node that this merge manager is stored in, within the WriteLocksManager write lockers queue
      */
-    public LinkedNode getQueueNode() {
+    public LinkedNode<MergeManager> getQueueNode() {
         return this.queueNode;
     }
 
@@ -744,7 +744,7 @@ public class MergeManager {
      * This is used to merge objects from the unit of work into the shared (or isolated) cache.
      */
     protected CacheKey mergeChangesOfWorkingCopyIntoOriginal(Object clone, ObjectChangeSet objectChangeSet, ClassDescriptor descriptor, AbstractSession targetSession, UnitOfWorkImpl unitOfWork) {
-        /** This is the merge used by the unit of work on commit.
+        /* This is the merge used by the unit of work on commit.
             *** This is a very complex method that handles several different use cases of the unit of work. ***
             These include:
             #1 - normal merge of new and changed objects with pre-acquired merge locks
@@ -1170,7 +1170,7 @@ public class MergeManager {
      * INTENRAL:
      * Used to set the node that this merge manager is stored in, within the WriteLocksManager write lockers queue
      */
-    public void setQueueNode(LinkedNode node) {
+    public void setQueueNode(LinkedNode<MergeManager> node) {
         this.queueNode = node;
     }
 

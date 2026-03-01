@@ -18,7 +18,7 @@ package org.eclipse.persistence.json;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.lang.reflect.Type;
-import java.util.Hashtable;
+import java.util.Map;
 
 import jakarta.json.Json;
 import jakarta.json.JsonReader;
@@ -26,7 +26,7 @@ import jakarta.json.JsonValue;
 import jakarta.json.JsonWriter;
 
 import org.eclipse.persistence.internal.databaseaccess.DatabaseJsonPlatform;
-import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
+import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
 
 /**
  * Default JSON database platform.
@@ -43,14 +43,10 @@ public class JsonPlatform implements DatabaseJsonPlatform {
      * @return value of {@code true} when provided value is JSON type or {@code false} otherwise
      */
     public boolean isJsonType(final Type type) {
-        switch (type.getTypeName()) {
-            case "jakarta.json.JsonValue":
-            case "jakarta.json.JsonArray":
-            case "jakarta.json.JsonObject":
-                return true;
-            default:
-                return false;
-        }
+        return switch (type.getTypeName()) {
+            case "jakarta.json.JsonValue", "jakarta.json.JsonArray", "jakarta.json.JsonObject" -> true;
+            default -> false;
+        };
     }
 
     /**
@@ -59,10 +55,10 @@ public class JsonPlatform implements DatabaseJsonPlatform {
      * @param fieldTypeMapping {@code Map} with mappings to be updated.
      */
     @Override
-    public void updateFieldTypes(final Hashtable<Class<?>, FieldTypeDefinition> fieldTypeMapping) {
-        fieldTypeMapping.put(jakarta.json.JsonObject.class, new FieldTypeDefinition("VARCHAR", JSON_VARCHAR_SIZE));
-        fieldTypeMapping.put(jakarta.json.JsonArray.class, new FieldTypeDefinition("VARCHAR", JSON_VARCHAR_SIZE));
-        fieldTypeMapping.put(jakarta.json.JsonValue.class, new FieldTypeDefinition("VARCHAR", JSON_VARCHAR_SIZE));
+    public void updateFieldTypes(final Map<Class<?>, FieldDefinition.DatabaseType> fieldTypeMapping) {
+        fieldTypeMapping.put(jakarta.json.JsonObject.class, new FieldDefinition.DatabaseType("VARCHAR", JSON_VARCHAR_SIZE));
+        fieldTypeMapping.put(jakarta.json.JsonArray.class, new FieldDefinition.DatabaseType("VARCHAR", JSON_VARCHAR_SIZE));
+        fieldTypeMapping.put(jakarta.json.JsonValue.class, new FieldDefinition.DatabaseType("VARCHAR", JSON_VARCHAR_SIZE));
     }
 
     // Common JSON types support:

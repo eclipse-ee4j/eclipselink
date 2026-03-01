@@ -1,0 +1,5 @@
+:nofooter:
+This illustration shows a typical Java inheritance hierarchy. The *root
+class* (`Vehicle`) contains *two branch* classes: `FueledVehicle` and
+`NonFueledVehicle`. Each branch class contains a *leaf class*: `Car` and
+`Bicycle`, respectively.

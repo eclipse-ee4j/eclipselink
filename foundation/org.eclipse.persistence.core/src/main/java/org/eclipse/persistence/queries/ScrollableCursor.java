@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,13 +14,17 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.queries;
 
-import java.util.*;
-import java.sql.*;
-import org.eclipse.persistence.exceptions.*;
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.helper.InvalidObject;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
-import org.eclipse.persistence.internal.databaseaccess.*;
+
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.ListIterator;
 
 public class ScrollableCursor extends Cursor implements ListIterator {
     protected transient Object nextObject;
@@ -160,7 +164,7 @@ public class ScrollableCursor extends Cursor implements ListIterator {
     public boolean first() throws DatabaseException {
         clearNextAndPrevious();
         try {
-            if (this.objectCollection.size() > 0) {
+            if (!this.objectCollection.isEmpty()) {
                 setPosition(1);
                 this.resultSet.beforeFirst();
                 return true;
@@ -316,7 +320,7 @@ public class ScrollableCursor extends Cursor implements ListIterator {
             if (this.nextObject != null) {
                 return false;
             }
-            if ((this.objectCollection.size() > 0) && (getPosition() <= this.objectCollection.size())) {
+            if ((!this.objectCollection.isEmpty()) && (getPosition() <= this.objectCollection.size())) {
                 return false;
             }
             return this.resultSet.isAfterLast();
@@ -347,7 +351,7 @@ public class ScrollableCursor extends Cursor implements ListIterator {
             return false;
         }
         try {
-            if (this.objectCollection.size() > 0) {
+            if (!this.objectCollection.isEmpty()) {
                 return getPosition() == 1;
             }
             return this.resultSet.isFirst();
@@ -395,7 +399,7 @@ public class ScrollableCursor extends Cursor implements ListIterator {
             boolean isLast = this.resultSet.last();
             if (!isLast) {
                 // cursor must be empty.
-                if (this.objectCollection.size() > 0) {
+                if (!this.objectCollection.isEmpty()) {
                     setPosition(this.objectCollection.size());
                     isLast = true;
                 }
@@ -436,7 +440,7 @@ public class ScrollableCursor extends Cursor implements ListIterator {
      * This method differs slightly from conventional read() operation on a Java stream.  This
      * method return the next object in the collection rather than specifying the number of
      * bytes to be read in.
-     *
+     * <p>
      * Return the next object from the collection, if beyond the read limit read from the cursor
      * @return - next object in stream
      * @throws DatabaseException if read pass end of stream
@@ -456,7 +460,7 @@ public class ScrollableCursor extends Cursor implements ListIterator {
      * PUBLIC:
      * This method differs slightly from conventional read() operation on a Java stream.  This
      * method returns the next number of objects in the collection in a vector.
-     *
+     * <p>
      * Return the next specified number of objects from the collection, if beyond the read limit read from the cursor
      * @param number - number of objects to be returned
      * @return - vector containing next number of objects

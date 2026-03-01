@@ -1,0 +1,908 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[ORACLEDB002]]
+=== Implementing the Solution
+
+The solution in this section is organized according to technology. The
+organization allows developers to easily understand the different parts
+of the solution and choose specific parts to implement.
+
+This section includes the following topics:
+
+* link:#CHDIBDGJ[Using Oracle Platform-Specific APIs]
+* link:#CHDDCIEC[Using Oracle PL/SQL With EclipseLink]
+* link:#CHDEFIBH[Using Oracle Virtual Private Database]
+* link:#CHDGDDJF[Using Oracle Proxy Authentication]
+* link:#CHDIEBBB[Using EclipseLink with Oracle RAC]
+* link:#CHDJBFIJ[Using Oracle Spatial and Graph]
+
+[[CHDIBDGJ]]
+
+==== Using Oracle Platform-Specific APIs
+
+Oracle Database platform support is provided in the
+`org.eclipse.persistence.platform.database.OraclePlatform` class, the
+`org.eclipse.persistence.platform.database.oracle*` packages, and the
+`org.eclipse.persistence.mappings.xdb` package for Oracle XML Database
+support. For details on the API, see _Java API Reference for
+EclipseLink_. For details on specific Oracle SQL types, see _Oracle
+Database JDBC Java API Reference_.
+
+The following support is provided for the Oracle Database:
+
+* Batch writing with optimistic locking
+* Native SQL for `byte[]`, `Date`, `Time`, `Timestamp` and `Calendar`
+* Support for `BLOB` and `CLOB` database types using Oracle JDBC
+specific `LOBLocator` for large values
+
+NOTE: For non-Oracle thin JDBC drivers or applications environments where the
+thin driver is wrapped, it is possible to turn off `LOBLocator` usage
+using `setShouldUseLocatorForLOBWrite(boolean)` on the platform
+instance.
+
+* Native support for outer join syntax `(+) =`
+* Native Sequencing (`SELECT SEQ_NAME.NEXTVAL FROM DUAL`)
+* Native SQL/ROWNUM support for `MaxRows` and `FirstResult` filtering.
+* Hierarchical selects (connect by prior)
+* Returning clause
+* Custom expression functions (`REGEXP_LIKE`, `LOCATE`, `ATAN2`, `LOG`,
+`CONCAT`, `SYSDATE` (Date, Time, Today), `EXCEPT`)
+* PLSQL data types, stored functions, stored procedure syntax for
+invoking and parameter passing, output parameters and output cursors.
+See link:#CHDDCIEC[Using Oracle PL/SQL With EclipseLink.]
+* Timestamp query for use in optimistic locking using `SYSDATE` and
+`SYSTIMESTAMP`
+* Multi-byte support of `NCHAR`, `NSTRING`, and `NCLOB`
+* Support of `TIMESTAMP`, `TIMESTAMPTZ`, and `TIMESTAMPLTZ`
+* Oracle XML Database support of `XMLType` field and custom XSQL
+functions (`extract`, `extractValue`, `existsNode`, `isFragment`,
+`getStringVal`, and `getNumberVal`)
+* XDK XML parser
+* Flashback Querying in Historical Sessions
+* Object-relational Mappings (ReferenceMapping, StructureMapping,
+NestedTableMapping, ArrayMapping, ObjectArrayMapping)
+* Oracle AQ
+* Oracle Real Application Clusters. See link:#CHDIEBBB[Using EclipseLink
+with Oracle RAC.]
+* Virtual Private Database (VPD), including Oracle Label Security.
+link:#CHDEFIBH[Using Oracle Virtual Private Database.]
+* Proxy Authentication. See link:#CHDGDDJF[Using Oracle Proxy
+Authentication.]
+
+[[CHDDCIEC]]
+
+==== Using Oracle PL/SQL With EclipseLink
+
+EclipseLink includes APIs for use with Oracle PL/SQL. The APIs are
+located in the `org.eclipse.persistence.platform.database.oracle.plsql`
+package and the
+`org.eclipse.persistence.platform.database.oracle.annotations` package.
+
+This Section contains the following topics:
+
+* link:#CHDBBJIG[Executing an Oracle PL/SQL Stored Function]
+* link:#CHDDJJBI[Handling PL/SQL arguments for Oracle Stored Procedures]
+
+[[CHDBBJIG]]
+
+===== Executing an Oracle PL/SQL Stored Function
+
+Oracle PL/SQL stored functions can be used to return complex PL/SQL
+data-types such as `RECORD` types and `TABLE` types. PL/SQL types are
+not supported by Oracle JDBC, so these types must be translated to
+Oracle `OBJECT` types and `VARRAY` types. `OBJECT` types are returned as
+`java.sql.Struct` and `VARRAY` as `java.sql.Array` types in JDBC.
+
+Executing PL/SQL stored functions or procedures requires defining mirror
+`OBJECT` and `VARRAY` types for the `RECORD` and `TABLE` types. `OBJECT`
+types can be mapped to classes annotated with either `@Entity` or
+`@Embeddable` using the `@Struct` annotation. Typically, classes
+annotated with `@Embeddable` are used, unless the `OBJECT` type defines
+an `Id` and can be stored in a table. Nested `OBJECT` and `VARRAY` types
+are mapped using the `@Structure` and `@Array` annotations.
+
+Use the `PLSQLStoredFunctionCall` class or the
+`@NamedPLSQLStoredFunctionQuery` annotation to call a stored function
+using PL/SQL types. The `PLSQLStoredProcedureCall` class and the
+`@NamedPLSQLStoredProcedureQuery` annotation also exist for stored
+procedures. Use the `StoredFunctionCall` class, the
+`@NamedStoredFunctionQuery` annotation, the `StoredProcedureCall` class,
+and the `@NamedStoredProcedureQuery` annotation for stored functions and
+procedure that do not return complex PL/SQL types.
+
+====== Main Tasks
+
+To execute an Oracle PL/SQL stored function:
+
+* link:#CHDJBJEF[Task 1: Create an Oracle Stored Function That Returns a
+PL/SQL Record Type]
+* link:#CHDIGHDG[Task 2: Define an Object Type Mirror]
+* link:#CHDEIABJ[Task 3: Define a Java Class Mapping The OBJECT Type]
+* link:#CHDFACEG[Task 4: Execute a PL/SQL Stored Function Using
+JpaEntityManager]
+* link:#CHDHDIAF[Task 5: Define a Stored Function Using
+@NamedPLSQLStoredFunctionQuery]
+* link:#CHDHEIFJ[Task 6: Use the Stored Function in a Query]
+
+[[CHDJBJEF]]
+
+====== Task 1: Create an Oracle Stored Function That Returns a PL/SQL Record Type
+
+[source,oac_no_warn]
+----
+CREATE OR REPLACE PACKAGE EMP_PKG AS
+TYPE EMP_REC IS RECORD (F_NAME VARCHAR2(30), L_NAME VARCHAR2(30), 
+   SALARY NUMBER(10,2));
+FUNCTION GET_EMP RETURN EMP_REC;
+END EMP_PKG;
+
+CREATE OR REPLACE PACKAGE BODY EMP_PKG AS
+FUNCTION GET_EMP RETURN EMP_REC AS
+   P_EMP EMP_REC;
+   BEGIN P_EMP.F_NAME := 'Bob'; P_EMP.F_NAME := 'Smith'; P_EMP.SALARY := 30000;
+   RETURN P_EMP;
+END;
+END EMP_PKG;
+----
+
+[[CHDIGHDG]]
+
+====== Task 2: Define an Object Type Mirror
+
+[source,oac_no_warn]
+----
+CREATE OR REPLACE TYPE EMP_TYPE AS OBJECT (F_NAME VARCHAR2(30), 
+   L_NAME VARCHAR2(30), SALARY NUMBER(10,2))
+----
+
+[[CHDEIABJ]]
+
+====== Task 3: Define a Java Class Mapping The OBJECT Type
+
+[source,oac_no_warn]
+----
+@Embeddable
+@Struct(name="EMP_TYPE", fields={"F_NAME", "L_NAME", "SALARY"})
+public class Employee {
+   @Column(name="F_NAME")
+   private String firstName;
+   @Column(name="L_NAME")
+   private String lastName;
+   @Column(name="SALARY")
+   private BigDecimal salary;
+   ...
+}
+----
+
+[[CHDFACEG]]
+
+====== Task 4: Execute a PL/SQL Stored Function Using JpaEntityManager
+
+[source,oac_no_warn]
+----
+import jakarta.persistence.Query;
+import org.eclipse.persistence.platform.database.orcle.plsql.
+   PLSQLStoredFunctionCall;
+import org.eclipse.persistence.queries.ReadAllQuery;
+
+DataReadQuery databaseQuery = new DataReadQuery();
+databaseQuery.setResultType(DataReadQuery.VALUE);
+PLSQLrecord record = new PLSQLrecord();
+record.setTypeName("EMP_PKG.EMP_REC");
+record.setCompatibleType("EMP_TYPE");
+record.setJavaType(Employee.class);
+record.addField("F_NAME", JDBCTypes.VARCHAR_TYPE, 30);
+record.addField("L_NAME", JDBCTypes.VARCHAR_TYPE, 30);
+record.addField("SALARY", JDBCTypes.NUMERIC_TYPE, 10, 2);
+PLSQLStoredFunctionCall call = new PLSQLStoredFunctionCall(record);
+call.setProcedureName("EMP_PKG.GET_EMP");
+databaseQuery.setCall(call);
+
+Query query = ((JpaEntityManager)entityManager.getDelegate()).
+   createQuery(databaseQuery);
+Employee result = (Employee)query.getSingleResult();
+----
+
+[[CHDHDIAF]]
+
+====== Task 5: Define a Stored Function Using @NamedPLSQLStoredFunctionQuery
+
+[source,oac_no_warn]
+----
+@NamedPLSQLStoredFunctionQuery(name="getEmployee", functionName="EMP_PKG.GET_EMP",
+   returnParameter=@PLSQLParameter(name="RESULT", databaseType="EMP_PKG.EMP_REC"))
+@Embeddable
+@Struct(name="EMP_TYPE", fields={"F_NAME", "L_NAME", "SALARY"})
+@PLSQLRecord(name="EMP_PKG.EMP_REC", compatibleType="EMP_TYPE",
+   javaType=Employee.class,fields={@PLSQLParameter(name="F_NAME"), 
+@PLSQLParameter(name="L_NAME"), @PLSQLParameter(name="SALARY",
+   databaseType="NUMERIC_TYPE")})
+
+public class Employee {
+ ...
+}
+----
+
+[[CHDHEIFJ]]
+
+====== Task 6: Use the Stored Function in a Query
+
+[source,oac_no_warn]
+----
+Query query = entityManager.createNamedQuery("getEmployee");
+Employee result = (Employee)query.getSingleResult();
+----
+
+[[CHDDJJBI]]
+
+===== Handling PL/SQL arguments for Oracle Stored Procedures
+
+The standard way of handling a stored procedure is to build an instance
+of the `StoredProcedureCall` class. However, the arguments must be
+compatible with the JDBC specification. To handle Oracle PL/SQL
+arguments (for example, `BOOLEAN`, `PLS_INTEGER`, PL/SQL record, and so
+on), use the `PLSQLStoredProcedureCall` class.
+
+NOTE: the `PLSQLStoredProcedureCall` class is only supported on Oracle8 or
+higher.
+
+===== Using the PLSQLStoredProcedureCall Class
+
+The following example demonstrates handling PL/SQL arguments using the
+`PLSQLStoredProcedureCall` class. The example is based on the following
+target procedure:
+
+[source,oac_no_warn]
+----
+PROCEDURE bool_in_test(x IN BOOLEAN)
+----
+
+*Example of Using the PLSQLStoredProcedureCall Class*
+
+[source,oac_no_warn]
+----
+import java.util.List;
+import java.util.ArrayList;
+import org.eclipse.persistence.logging.SessionLog;
+import org.eclipse.persistence.platform.database.jdbc.JDBCTypes;
+import org.eclipse.persistence.platform.database.oracle.Oracle10Platform;
+import org.eclipse.persistence.platform.database.oracle.OraclePLSQLTypes;
+import org.eclipse.persistence.platform.database.oracle.PLSQLStoredProcedureCall;
+import org.eclipse.persistence.queries.DataModifyQuery;
+import org.eclipse.persistence.sessions.DatabaseLogin;
+import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.sessions.Project;
+import org.eclipse.persistence.sessions.Session;
+
+public class TestClass {
+ 
+   public static String DATABASE_USERNAME = "username";
+   public static String DATABASE_PASSWORD = "password";
+   public static String DATABASE_URL = "jdbc:oracle:thin:@localhost:1521:ORCL";
+   public static String DATABASE_DRIVER = "oracle.jdbc.driver.OracleDriver";
+ 
+   public static void main(String[] args) {
+      Project project = new Project();
+      DatabaseLogin login = new DatabaseLogin();
+      login.setUserName(DATABASE_USERNAME);
+      login.setPassword(DATABASE_PASSWORD);
+      login.setConnectionString(DATABASE_URL);
+      login.setDriverClassName(DATABASE_DRIVER);
+      login.setDatasourcePlatform(new Oracle10Platform());
+      project.setDatasourceLogin(login);
+      Session s = project.createDatabaseSession();
+      s.setLogLevel(SessionLog.FINE);
+      ((DatabaseSession)s).login();
+
+      PLSQLStoredProcedureCall call = new PLSQLStoredProcedureCall();
+      call.setProcedureName("bool_in_test");
+      call.addNamedArgument("X", OraclePLSQLTypes.PLSQLBoolean);
+      DataModifyQuery query = new DataModifyQuery();
+      query.addArgument("X");
+      query.setCall(call);
+      List queryArgs = new ArrayList();
+      queryArgs.add(Integer.valueOf(1));
+      s.executeQuery(query, queryArgs);
+    }
+}
+----
+
+The following log excerpt shows the target procedure being invoked from
+an anonymous PL/SQL block:
+
+[source,oac_no_warn]
+----
+...[EclipseLink Info]: 2007.11.23 01:03:23.890--DatabaseSessionImpl(15674464)--
+   Thread(Thread[main,5,main])-- login successful
+[EclipseLink Fine]: 2007.11.23 01:03:23.968--DatabaseSessionImpl(15674464)--
+   Connection(5807702)--Thread(Thread[main,5,main])--
+DECLARE
+   X_TARGET BOOLEAN := SYS.SQLJUTL.INT2BOOL(:1);
+BEGIN
+   bool_in_test(X=>X_TARGET);
+END;
+   bind => [:1 => 1]
+----
+
+NOTE: Notice the conversion of the Integer to a PL/SQL `BOOLEAN` type in the
+`DECLARE` stanza (as a similar conversion is used for OUT `BOOLEAN`
+arguments).
+
+====== Mixing JDBC Arguments With Non JDBC Arguments
+
+A Stored Procedure may have a mix of regular and non JDBC arguments. Use
+the `PLSQLStoredProcedureCall` class when at least one argument is a non
+JDBC type. In addition, some additional information may be required for
+the JDBC type (length, scale or precision) because the target procedure
+is invoked from an anonymous PL/SQL block. The example is based on the
+following target procedure:
+
+[source,oac_no_warn]
+----
+PROCEDURE two_arg_test(x IN BOOLEAN, y IN VARCHAR)
+----
+
+*Example of Mixing JDBC Arguments With NonJDBC Arguments*
+
+[source,oac_no_warn]
+----
+import org.eclipse.persistence.platform.database.jdbc.JDBCTypes;
+...
+   PLSQLStoredProcedureCall call = new PLSQLStoredProcedureCall();
+   call.setProcedureName("two_arg_test");
+   call.addNamedArgument("X", OraclePLSQLTypes.PLSQLBoolean);
+   call.addNamedArgument("Y", JDBCTypes.VARCHAR_TYPE, 40);
+   DataModifyQuery query = new DataModifyQuery();
+   query.addArgument("X");
+   query.addArgument("Y");
+   query.setCall(call);
+   List queryArgs = new ArrayList();
+   queryArgs.add(Integer.valueOf(0));
+   queryArgs.add("test");
+   boolean worked = false;
+   String msg = null;
+   s.executeQuery(query, queryArgs);
+----
+
+The following log excerpt shows the target procedure being invoked from
+an anonymous PL/SQL block:
+
+[source,oac_no_warn]
+----
+[EclipseLink Fine]: 2007.11.23 02:54:46.109--DatabaseSessionImpl(15674464)--
+   Connection(5807702)--Thread(Thread[main,5,main])--
+DECLARE
+   X_TARGET BOOLEAN := SYS.SQLJUTL.INT2BOOL(:1);
+   Y_TARGET VARCHAR(40) := :2;
+BEGIN
+   two_arg_test(X=>X_TARGET, Y=>Y_TARGET);
+END;
+   bind => [:1 => 0, :2 => test]
+----
+
+====== Handling IN and OUT Arguments
+
+The following example demonstrates a stored procedure that contain both
+`IN` and `OUT` arguments and is based on the following target procedure:
+
+[source,oac_no_warn]
+----
+PROCEDURE two_arg_in_out(x OUT BINARY_INTEGER, y IN VARCHAR) AS
+BEGIN
+   x := 33;
+END;
+----
+
+*Example of Handling IN and OUT Arguments*
+
+[source,oac_no_warn]
+----
+import static org.eclipse.persistence.platform.database.oracle.OraclePLSQLTypes.
+   BinaryInteger;
+...
+   PLSQLStoredProcedureCall call = new PLSQLStoredProcedureCall();
+   call.setProcedureName("two_arg_in_out");
+   call.addNamedOutputArgument("X", OraclePLSQLTypes.BinaryInteger);
+   call.addNamedArgument("Y", JDBCTypes.VARCHAR_TYPE, 40);
+   DataReadQuery query = new DataReadQuery();
+   query.setCall(call);
+   query.addArgument("Y");
+   List queryArgs = new ArrayList();
+   queryArgs.add("testsdfsdfasdfsdfsdfsdfsdfsdfdfsdfsdffds");
+   boolean worked = false;
+   String msg = null;
+   List results = (List)s.executeQuery(query, queryArgs);
+   DatabaseRecord record = (DatabaseRecord)results.get(0);
+   BigDecimal x = (BigDecimal)record.get("X");
+   if (x.intValue() != 33) {
+      System.out.println("wrong x value");
+   }
+----
+
+The following log excerpt shows the target procedure being invoked from
+an anonymous PL/SQL block:
+
+[source,oac_no_warn]
+----
+[EclipseLink Fine]: 2007.11.23 03:15:25.234--DatabaseSessionImpl(15674464)--
+   Connection(5807702)--Thread(Thread[main,5,main])--
+DECLARE
+   Y_TARGET VARCHAR(40) := :1;
+   X_TARGET BINARY_INTEGER;
+BEGIN
+   two_arg_in_out(X=>X_TARGET, Y=>Y_TARGET);
+   :2 := X_TARGET;
+END;
+   bind => [:1 => testsdfsdfasdfsdfsdfsdfsdfsdfdfsdfsdffds, X => :2]
+----
+
+NOTE: The order in which arguments are bound at runtime must be altered.
+Anonymous PL/SQL blocks must process the ordinal markers (`:1`,`:2`) for
+all the IN arguments first, then the OUT arguments. Inside the block,
+the arguments are passed in the correct order for the target procedure,
+but the bind order is managed in the `DECLARE` stanza and after the
+target procedure has been invoked.
+
+====== Handling IN OUT Arguments
+
+Anonymous PL/SQL blocks cannot natively handle `IN OUT` arguments. The
+arguments must be split into two parts: an IN-half and an OUT-half. The
+following example demonstrates a stored procedure that handles IN OUT
+arguments and is based on the following target procedure:
+
+[source,oac_no_warn]
+----
+PROCEDURE two_args_inout(x VARCHAR, y IN OUT BOOLEAN) AS
+BEGIN
+   y := FALSE;
+END;
+----
+
+*Example of Handling IN OUT Arguments*
+
+[source,oac_no_warn]
+----
+...
+   PLSQLStoredProcedureCall call = new PLSQLStoredProcedureCall();
+   call.setProcedureName("two_args_inout");
+   call.addNamedArgument("X", JDBCTypes.VARCHAR_TYPE, 20);
+   call.addNamedInOutputArgument("Y", OraclePLSQLTypes.PLSQLBoolean);
+   DataReadQuery query = new DataReadQuery();
+   query.addArgument("X");
+   query.addArgument("Y");
+   query.setCall(call);
+   List queryArgs = new ArrayList();
+   queryArgs.add("test");
+   queryArgs.add(Integer.valueOf(1));
+   List results = (List)s.executeQuery(query, queryArgs);
+   DatabaseRecord record = (DatabaseRecord)results.get(0);
+   Integer bool2int = (Integer)record.get("Y");
+   if (bool2int.intValue() != 0) {
+      System.out.println("wrong bool2int value");
+   }
+----
+
+The following log excerpt shows the target procedure being invoked from
+an anonymous PL/SQL block:
+
+[source,oac_no_warn]
+----
+[EclipseLink Fine]: 2007.11.23 03:39:55.000--DatabaseSessionImpl(25921812)--
+   Connection(33078541)--Thread(Thread[main,5,main])--
+DECLARE
+   X_TARGET VARCHAR(20) := :1;
+   Y_TARGET BOOLEAN := SYS.SQLJUTL.INT2BOOL(:2);
+BEGIN
+   two_args_inout(X=>X_TARGET, Y=>Y_TARGET);
+   :3 := SYS.SQLJUTL.BOOL2INT(Y_TARGET);
+END;
+   bind => [:1 => test, :2 => 1, Y => :3]
+----
+
+NOTE: The `Y` argument is split in two using the `:2` and `:3` ordinal
+markers.
+
+
+[[CHDEFIBH]]
+
+==== Using Oracle Virtual Private Database
+
+EclipseLink supports Oracle Virtual Private Database (VPD). Oracle VPD
+is a server-enforced, fine-grained access control mechanism. Oracle VPD
+ties a security policy to a table by dynamically appending SQL
+statements with a predicate to limit data access at the row level. You
+can create your own security policies, or use Oracle's custom
+implementation called Oracle Label Security (OLS). For details about
+Oracle VPD, see _Oracle Database Security Guide_. For details about
+Oracle Label Security, see _Oracle Label Security Administrator's
+Guide_.
+
+For details about using Oracle VPD with Multitenancy, see
+xref:{relativedir}/multitenancy004.adoc#MULTITENANCY004[Using VPD Multi-Tenancy.]
+
+To use the Oracle Database VPD feature in an EclipseLink application, an
+isolated cache should be used. Any entity that maps to a table that uses
+Oracle VPD should have the descriptor configured as isolated. In
+addition, you typically use exclusive connections.
+
+To support Oracle VPD, you must implement session event handlers that
+the are invoked during the persistence context's life cycle. The session
+event handler you must implement depends on whether or not you are using
+Oracle Database proxy authentication.
+
+*Oracle VPD with Oracle Database Proxy Authentication*
+
+By using Oracle Database proxy authentication, you can set up Oracle VPD
+support entirely in the database. That is, rather than session event
+handlers to execute SQL, the database performs the required setup in an
+after login trigger using the proxy session_user.
+
+For details on using Oracle proxy authentication, see
+link:#CHDGDDJF[Using Oracle Proxy Authentication.]
+
+*Oracle VPD Without Oracle Database Proxy Authentication*
+
+If you are not using Oracle Database proxy authentication, implement
+session event handlers for the following session events:
+
+* `postAcquireExclusiveConnection`: used to perform Oracle VPD setup at
+the time a dedicated connection is allocated to an isolated session and
+before the isolated session user uses the connection to interact with
+the database.
+* `preReleaseExclusiveConnection`: used to perform Oracle VPD cleanup at
+the time the isolated session is released and after the user is finished
+interacting with the database.
+
+In the implementation of these handlers, you can obtain the required
+user credentials from the associated session's properties.
+
+[[CHDGDDJF]]
+
+==== Using Oracle Proxy Authentication
+
+JPA and EclipseLink are typically used in a middle tier/server
+environment with a shared connection pool. A connection pool allows
+database connections to be shared to avoid the cost of reconnecting to
+the database. Typically, the user logs into the application but does not
+have their own database login as a shared login is used for the
+connection pool. The provides a mechanism to set a proxy user on an
+existing database connection. This allows for a shared connection pool
+to be used, but to also gives the database a user context.
+
+Oracle proxy authentication is configured using the following
+persistence unit properties on an `EntityManager` object:
+
+* `"eclipselink.oracle.proxy-type" : oracle.jdbc.OracleConnection.PROXYTYPE_USER_NAME, PROXYTYPE_CERTIFICATE, PROXYTYPE_DISTINGUISHED_NAME`
+* `oracle.jdbc.OracleConnection.PROXY_USER_NAME :` _`user_name`_
+* `oracle.jdbc.OracleConnection.PROXY_USER_PASSWORD :` _`password`_
+* `oracle.jdbc.OracleConnection.PROXY_DISTINGUISHED_NAME`
+* `oracle.jdbc.OracleConnection.PROXY_CERTIFICATE`
+* `oracle.jdbc.OracleConnection.PROXY_ROLES`
+
+NOTE: This connection is only used for writing by default; reads still use the
+shared connection pool. To force reads to also use the connection, the
+`eclipselink.jdbc.exclusive-connection.mode` property should be set to
+`Always`, but this depends on if the application wishes to audit writes
+or reads as well. The `eclipselink.jdbc.exclusive-connection.is-lazy`
+property configures whether the connection should be connected up front,
+or only when first required. If only writes are audited, then lazy
+connections allow for the cost of creating a new database connection to
+be avoided unless a write occurs.
+
+===== Main Tasks:
+
+To setup proxy authentication, create an `EntityManager` object and set
+the persistence unit properties. Three examples are provided:
+
+*Task: Audit Only Writes*
+
+To configure proxy authentication when auditing only writes:
+
+[source,oac_no_warn]
+----
+Map properties = new HashMap();
+properties.put("eclipselink.oracle.proxy-type",
+ oracle.jdbc.OracleConnection.PROXYTYPE_USER_NAME);
+properties.put(oracle.jdbc.OracleConnection.PROXY_USER_NAME, user);
+properties.put(oracle.jdbc.OracleConnection.PROXY_USER_PASSWORD, password);
+properties.put("eclipselink.jdbc.exclusive-connection.mode", "Transactional");
+properties.put("eclipselink.jdbc.exclusive-connection.is-lazy", "true");
+EntityManager em = factory.createEntityManager(properties);
+----
+
+*Task: Audit Reads and Writes*
+
+To configure proxy authentication when auditing reads and writes:
+
+[source,oac_no_warn]
+----
+Map properties = new HashMap();
+properties.put("eclipselink.oracle.proxy-type",
+ oracle.jdbc.OracleConnection.PROXYTYPE_USER_NAME);
+properties.put(oracle.jdbc.OracleConnection.PROXY_USER_NAME, user);
+properties.put(oracle.jdbc.OracleConnection.PROXY_USER_PASSWORD, password);
+properties.put("eclipselink.jdbc.exclusive-connection.mode", "Always");
+properties.put("eclipselink.jdbc.exclusive-connection.is-lazy", "false");
+EntityManager em = factory.createEntityManager(properties);
+----
+
+*Task: Configure Proxy Authentication in Jakarta EE Applications*
+
+If a JEE and JTA managed entity manager is used, specifying a proxy user
+and password can be more difficult, as the entity manager and JDBC
+connection is not under the applications control. The persistence unit
+properties can still be specified on an `EntityManager` object as long
+as this is done before establishing a database connection.
+
+If using JPA 2._`n`_, the `setProperty` API can be used:
+
+[source,oac_no_warn]
+----
+em.setProperty("eclipselink.oracle.proxy-type",
+   oracle.jdbc.OracleConnection.PROXYTYPE_USER_NAME);
+em.setProperty(oracle.jdbc.OracleConnection.PROXY_USER_NAME, user);
+em.setProperty(oracle.jdbc.OracleConnection.PROXY_USER_PASSWORD, password);
+em.setProperty("eclipselink.jdbc.exclusive-connection.mode", "Always");
+em.setProperty("eclipselink.jdbc.exclusive-connection.is-lazy", "false");
+----
+
+Otherwise, the `getDelegate` API can be used:
+
+[source,oac_no_warn]
+----
+Map properties = new HashMap();
+properties.put("eclipselink.oracle.proxy-type",
+   oracle.jdbc.OracleConnection.PROXYTYPE_USER_NAME);
+properties.put(oracle.jdbc.OracleConnection.PROXY_USER_NAME, user);
+properties.put(oracle.jdbc.OracleConnection.PROXY_USER_PASSWORD, password);
+properties.put("eclipselink.jdbc.exclusive-connection.mode", "Always");
+properties.put("eclipselink.jdbc.exclusive-connection.is-lazy", "false");
+((org.eclipse.persistence.internal.jpa.EntityManagerImpl)em.getDelegate()).
+   setProperties(properties);
+----
+
+===== Caching and security
+
+By default, EclipseLink maintains a shared (L2) object cache. This is
+fine for auditing, but if Oracle VPD or user based security is used to
+prevent the reading of certain tables/classes, then the cache may need
+to be disabled for these secure classes. To disable the shared cache,
+see xref:{relativedir}/scaling002.adoc#CEGEDHAB["Disabling Entity Caching"].
+
+If the database user is used to check security for reads, then set the
+`eclipselink.jdbc.exclusive-connection.mode` property to `Isolated` to
+only use the user connection for reads for the classes whose shared
+cache has been disabled (isolated).
+
+===== Using Oracle Virtual Private Database for Row-Level Security
+
+The Oracle Virtual Private Database (VPD) feature allows for row level
+security within the Oracle database. Typically, database security only
+allows access privileges to be assigned per table. Row level security
+allows different users to have access to different rows within each
+table.
+
+The Oracle proxy authentication features in EclipseLink can be used to
+support Oracle VPD. The proxy user allows for the row level security to
+be checked. When using Oracle VPD, it is also important to disable
+shared caching for the secured objects as these objects should not be
+shared. To disable the shared cache, see
+xref:{relativedir}/scaling002.adoc#CEGEDHAB["Disabling Entity Caching"].
+
+[[CHDIEBBB]]
+
+==== Using EclipseLink with Oracle RAC
+
+Oracle Real Application Clusters (RAC) extends the Oracle Database so
+that you can store, update, and efficiently retrieve data using multiple
+database instances on different servers at the same time. Oracle RAC
+provides the software that manages multiple servers and instances as a
+single group. Applications use Oracle RAC features to maximize
+connection performance and availability and to mitigate down-time due to
+connection problems. Applications have different availability and
+performance requirements and implement Oracle RAC features accordingly.
+For details on Oracle RAC, see the _Oracle Real Application Clusters
+Administration and Deployment Guide_.
+
+The Oracle Database and the Oracle WebLogic Server both provide
+connection pool implementations that can create connections to a RAC
+database and take advantage of various Oracle RAC features. The features
+include Fast Connection Failover (FCF), Run-Time Connection Load
+Balancing (RCLB), and connection affinity. In WebLogic Server,
+applications create JDBC data sources (Multi Data Source or GridLink
+Data Source) to connect to a RAC-enabled database. Standalone
+applications use the Universal Connection Pool (UCP) JDBC connection
+pool API (`ucp.jar`) to create data sources. Both connection pool
+implementations require the Oracle Notification Service library
+(`ons.jar`). This library is the primary means by which the connection
+pools register for, and listen to, RAC events. For those new to these
+technologies, refer to the _Oracle Universal Connection Pool for JDBC
+Developer's Guide_ and the Oracle Fusion Middleware Configuring and
+Managing JDBC Data Sources for Oracle WebLogic Server.
+
+This sections assumes that you have an Oracle JDBC driver and Oracle
+RAC-enabled database. Make sure that the RAC-enabled database is
+operational and that you know the connection URL. In addition, download
+the database Oracle Client software that contains the `ons.jar` file.
+The `ucp.jar` file is included with the Oracle Database.
+
+===== Accessing a RAC-Enabled database from Jakarta EE Applications
+
+The tasks in this section are used to connect to a RAC-enabled database
+from a persistence application implemented in Oracle WebLogic Server.
+
+====== Task 1: Configure a Multi Data Source or GridLink Data Source
+
+Refer to xref:{relativedir}/:tlandwls.htm#ELWLS[Chapter 3, "Using EclipseLink with
+WebLogic Server,"] and _Oracle Fusion Middleware Configuring and
+Managing JDBC Data Sources for Oracle WebLogic Server_ for details about
+configuring a data source in WebLogic Server for Oracle RAC.
+
+====== Task 2: Configure the Persistence Unit
+
+Edit the `persistence.xml` file and include the name of the data source
+within a persistence unit configuration. For example:
+
+[source,oac_no_warn]
+----
+<persistence-unit name="OrderManagement">
+   <jta-data-source>jdbc/MyOrderDB</jta-data-source>
+   ...
+</persistence-unit>
+----
+
+====== Task 3: Include the Required JARs
+
+Ensure that the `ons.jar` is in the WebLogic Server classpath.
+
+===== Accessing a RAC-Enabled Database from Standalone Applications
+
+The tasks in this section are used to connect to a RAC database from a
+standalone persistence application. The tasks demonstrate how to use UCP
+data sources which are required for advanced RAC features.
+
+====== Task 1: Create a UCP Data Source
+
+A UCP data source is used to connect to a RAC database. The data source
+can specify advanced RAC configuration. For details on using advanced
+RAC features with UCP, see _Oracle Universal Connection Pool for JDBC
+Developer's Guide_. The following example creates a data source and
+enables FCF and configures ONS.
+
+[source,oac_no_warn]
+----
+PoolDataSource datasource = PoolDataSourceFactory.getPoolDataSource();
+datasource.setONSConfiguration(”nodes=host1:4200,host2:4200”);
+datasource.setFastConnectionFailoverEnabled(true);
+datasource.setConnectionFactoryClassName(”oracle.jdbc.pool.OracleDataSource”);
+datasource.setURL(”jdbc:oracle:thin:@DESCRIPTION=
+    (LOAD_BALANCE=on)
+    (ADDRESS=(PROTOCOL=TCP)(HOST=host1)(PORT=1521))
+    (ADDRESS=(PROTOCOL=TCP)(HOST=host2)(PORT=1521))
+    (ADDRESS=(PROTOCOL=TCP)(HOST=host3)(PORT=1521))
+    (ADDRESS=(PROTOCOL=TCP)(HOST=host4)(PORT=1521))
+    (CONNECT_DATA=(SERVICE_NAME=service_name)))”);
+----
+
+Applications that do not require the advanced features provided by RAC
+and UCP can connect to a RAC-enabled database using the native
+connection pool in EclipseLink. In this case, edit the `persistence.xml`
+file for you applications and add the RAC URL connection string for a
+persistence unit. For example:
+
+[source,oac_no_warn]
+----
+<persistence xmlns="http://java.sun.com/xml/ns/persistence"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://java.sun.com/xml/ns/persistence
+   persistence_1_0.xsd" version="1.0">
+   <persistence-unit name="my-app" transaction-type="RESOURCE_LOCAL">
+      <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+      <exclude-unlisted-classes>false</exclude-unlisted-classes>
+      <properties>
+         <property name="jakarta.persistence.jdbc.driver"
+            value="oracle.jdbc.OracleDriver"/>
+         <property name="jakarta.persistence.jdbc.url" 
+            value="jdbc:oracle:thin@(DESCRIPTION= "+ "(LOAD_BALANCE=on)"+
+           "(ADDRESS=(PROTOCOL=TCP)(HOST=rac_node) (PORT=1521))"+
+           "(ADDRESS=(PROTOCOL=TCP)(HOST=racnode2) (PORT=1521))"+
+           "(CONNECT_DATA=(SERVICE_NAME=service_name))")"/>
+         <property name="jakarta.persistence.jdbc.user" value="user_name"/>
+         <property name="jakarta.persistence.jdbc.password" value="password"/>
+      </properties>
+   </persistence-unit>
+</persistence>
+----
+
+To use the persistence unit, instantiate an `EntityManagerFactory` as
+follows:
+
+[source,oac_no_warn]
+----
+Persistence.createEntityManagerFactory("my-app");
+----
+
+====== Task 2: Use the UCP Data Source
+
+To use the UCP data source, instantiate an `EntityManagerFactory` an
+pass in the data source as follows:
+
+[source,oac_no_warn]
+----
+Map properties = new HashMap();
+       properties.add("jakarta.persistence.nonJtaDataSource", datasource);
+       Persistence.createEntityManagerFactory(properties);
+----
+
+====== Task 3: Include the Required JARs
+
+Ensure that both `ucp.jar` and `ons.jar` are in the application
+classpath.
+
+[[CHDJBFIJ]]
+
+==== Using Oracle Spatial and Graph
+
+EclipseLink provides added support for querying Oracle Spatial and Graph
+data in the Oracle Database. Oracle Spacial and Graph is used to
+location-enable applications. It provides advanced features for spatial
+data and analysis and for physical, logical, network, and social and
+semantic graph applications. The spatial features provide a schema and
+functions that facilitate the storage, retrieval, update, and query of
+collections of spatial features in an Oracle database. For details about
+developing Oracle Spacial and Graph applications, see _Oracle Spatial
+and Graph Developer's Guide_. To use Oracle Spatial and Graph within
+WebLogic Server, see xref:{relativedir}/tlandwls002.adoc#BABHICHE[Chapter 3, "Task 7:
+Extend the Domain to Use Advanced Oracle Database Features,"]
+
+EclipseLink applications can construct expressions that use Oracle
+Spacial and Graph operators. See the
+`org.eclipse.persistence.expressions.spatial` API for details. For
+Example:
+
+[source,oac_no_warn]
+----
+ExpressionBuilder builder = new ExpressionBuilder();
+Expression withinDistance = SpatialExpressions.withinDistance(myJGeometry1,
+   myJGeometry2, "DISTANCE=10");
+session.readAllObjects(GeometryHolder.class, withinDistance);
+----
+
+The above expression requires a `oracle.spatial.geometry.JGeometry`
+object. Use the EclipseLink
+`org.eclipse.persistence.platform.database.oracle.converters.JGeometryConverter`
+converter to convert the `JGeometry` object as it is read and written
+from the Oracle database. The `JGeometryConverter` object must be added
+to the Oracle Database platform either with the
+`addStructConverter(StructConverter)` method or specified in the
+`sessions.xml` file. The `JGeometry` type must also be available on the
+classpath.
+
+The following example demonstrates how to use the `FUNCTION` JPA
+extension to perform Oracle Spatial queries. For details on the
+`FUNCTION` extension, see _Jakarta Persistence API (JPA) Extensions
+Reference for EclipseLink_:
+
+[source,oac_no_warn]
+----
+SELECT a FROM Asset a, Geography geo WHERE geo.id = :id AND a.id IN :id_list AND
+   FUNCTION('ST_INTERSECTS', a.geometry, geo.geometry) = 'TRUE'
+
+SELECT s FROM SimpleSpatial s WHERE FUNCTION('MDSYS.SDO_RELATE', s.jGeometry,
+   :otherGeometry, :params) = 'TRUE' ORDER BY s.id ASC
+----

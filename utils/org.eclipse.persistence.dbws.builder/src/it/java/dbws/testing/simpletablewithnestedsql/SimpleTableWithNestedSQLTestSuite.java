@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -59,12 +59,13 @@ import dbws.testing.DBWSTestSuite;
 public class SimpleTableWithNestedSQLTestSuite extends DBWSTestSuite  {
 
     static final String CREATE_SIMPLE2_TABLE =
-        "CREATE TABLE IF NOT EXISTS simpletable2 (" +
-            "\nID NUMERIC," +
-            "\nNAME varchar(25)," +
-            "\nSINCE date," +
-            "\nPRIMARY KEY (ID)" +
-        "\n)";
+            """
+                    CREATE TABLE IF NOT EXISTS simpletable2 (
+                    ID NUMERIC,
+                    NAME varchar(25),
+                    SINCE date,
+                    PRIMARY KEY (ID)
+                    )""";
     static String[] POPULATE_SIMPLE2_TABLE = new String[] {
         "INSERT INTO simpletable2 (ID, NAME, SINCE) VALUES (1, 'mike', '2001-12-25')",
         "INSERT INTO simpletable2 (ID, NAME, SINCE) VALUES (2, 'blaise','2001-12-25')",

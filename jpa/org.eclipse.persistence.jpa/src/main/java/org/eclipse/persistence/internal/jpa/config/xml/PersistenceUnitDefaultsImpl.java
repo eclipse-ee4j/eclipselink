@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,8 +20,6 @@ import org.eclipse.persistence.internal.jpa.config.MetadataImpl;
 import org.eclipse.persistence.internal.jpa.config.columns.TenantDiscriminatorColumnImpl;
 import org.eclipse.persistence.internal.jpa.config.listeners.EntityListenerImpl;
 import org.eclipse.persistence.internal.jpa.config.mappings.AccessMethodsImpl;
-import org.eclipse.persistence.internal.jpa.metadata.columns.TenantDiscriminatorColumnMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.listeners.EntityListenerMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLPersistenceUnitDefaults;
 import org.eclipse.persistence.jpa.config.AccessMethods;
 import org.eclipse.persistence.jpa.config.EntityListener;
@@ -39,8 +37,8 @@ public class PersistenceUnitDefaultsImpl extends MetadataImpl<XMLPersistenceUnit
     public PersistenceUnitDefaultsImpl() {
         super(new XMLPersistenceUnitDefaults());
 
-        getMetadata().setEntityListeners(new ArrayList<EntityListenerMetadata>());
-        getMetadata().setTenantDiscriminatorColumns(new ArrayList<TenantDiscriminatorColumnMetadata>());
+        getMetadata().setEntityListeners(new ArrayList<>());
+        getMetadata().setTenantDiscriminatorColumns(new ArrayList<>());
     }
 
     @Override

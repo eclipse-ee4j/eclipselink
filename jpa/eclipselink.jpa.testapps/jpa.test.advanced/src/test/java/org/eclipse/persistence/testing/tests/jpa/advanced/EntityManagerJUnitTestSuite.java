@@ -1,6 +1,7 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2022 IBM Corporation. All rights reserved.
+ * Copyright (c) 2025 Contributors to the Eclipse Foundation.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -48,6 +49,9 @@ import jakarta.persistence.spi.ProviderUtil;
 import junit.framework.AssertionFailedError;
 import junit.framework.Test;
 import junit.framework.TestSuite;
+
+import static org.eclipse.persistence.exceptions.QueryException.SOP_OBJECT_IS_NOT_FOUND;
+
 import org.eclipse.persistence.annotations.IdValidation;
 import org.eclipse.persistence.config.CacheUsage;
 import org.eclipse.persistence.config.CacheUsageIndirectionPolicy;
@@ -62,19 +66,20 @@ import org.eclipse.persistence.config.QueryType;
 import org.eclipse.persistence.config.ResultSetConcurrency;
 import org.eclipse.persistence.config.ResultSetType;
 import org.eclipse.persistence.config.ResultType;
-import org.eclipse.persistence.config.SessionCustomizer;
+import org.eclipse.persistence.sessions.SessionCustomizer;
 import org.eclipse.persistence.config.SystemProperties;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.DescriptorQueryManager;
 import org.eclipse.persistence.descriptors.InheritancePolicy;
 import org.eclipse.persistence.descriptors.changetracking.ChangeTracker;
-import org.eclipse.persistence.exceptions.PersistenceUnitLoadingException;
+import org.eclipse.persistence.jpa.exceptions.PersistenceUnitLoadingException;
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.indirection.IndirectList;
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
+import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.internal.descriptors.PersistenceEntity;
 import org.eclipse.persistence.internal.expressions.QueryKeyExpression;
 import org.eclipse.persistence.internal.helper.Helper;
@@ -337,6 +342,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         tests.add("testBeginTransactionClose");
         tests.add("testClose");
         tests.add("testPersistOnNonEntity");
+        tests.add("testPersistRemoveFind");
         tests.add("testWRITELock");
         tests.add("testOPTIMISTIC_FORCE_INCREMENTLock");
         tests.add("testReadOnlyTransactionalData");
@@ -516,6 +522,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         tests.add("testInheritanceFetchJoinSecondCall");
 
         tests.add("testDetachChildObjects");
+        tests.add("testDetachLazyLoadedCollection");
         tests.add("testAutoCloseable");
 
 
@@ -636,7 +643,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             errorMsg ="EMFClose: " + ex.getMessage() +";";
         }
 
-        if(errorMsg.length() > 0) {
+        if(!errorMsg.isEmpty()) {
             fail(errorMsg);
         }
     }
@@ -1383,16 +1390,16 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         }
 
         String errorMsg = "";
-        if(noException.length() > 0) {
+        if(!noException.isEmpty()) {
             errorMsg = "No exception thrown: " + noException;
         }
-        if(wrongException.length() > 0) {
-            if(errorMsg.length() > 0) {
+        if(!wrongException.isEmpty()) {
+            if(!errorMsg.isEmpty()) {
                 errorMsg = errorMsg + " ";
             }
             errorMsg = errorMsg + "Wrong exception thrown: " + wrongException;
         }
-        if(errorMsg.length() > 0) {
+        if(!errorMsg.isEmpty()) {
             fail(errorMsg);
         }
     }
@@ -1461,13 +1468,13 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             List<Employee> emps = empQuery.getResultList();
 
             List phones = phoneQuery.getResultList();
-            for (Iterator iterator = phones.iterator(); iterator.hasNext();){
-                em.remove(iterator.next());
+            for (Object o : phones) {
+                em.remove(o);
             }
             em.flush();
 
-            for (Iterator<Employee> iterator = emps.iterator(); iterator.hasNext();){
-                em.remove(iterator.next());
+            for (Employee employee : emps) {
+                em.remove(employee);
             }
         }catch (RuntimeException ex){
             rollbackTransaction(em);
@@ -1485,11 +1492,11 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                 empQuery = em.createQuery("Select e from Employee e where e.lastName like 'Dow%'");
                 List<Employee> emps =  empQuery.getResultList();
                 List phones = phoneQuery.getResultList();
-                for (Iterator iterator = phones.iterator(); iterator.hasNext();){
-                    em.remove(iterator.next());
+                for (Object phone : phones) {
+                    em.remove(phone);
                 }
-                for (Iterator<Employee> iterator = emps.iterator(); iterator.hasNext();){
-                    em.remove(iterator.next());
+                for (Employee emp : emps) {
+                    em.remove(emp);
                 }
                 commitTransaction(em);
             }catch (RuntimeException re){
@@ -1750,6 +1757,12 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             }
 
             assertNotNull("Proper exception not thrown when EntityManager.lock(object, OPTIMISTIC) is used.", optimisticLockException);
+            if (getDatabaseSession().getPlatform().usesBatchWriting()) {
+                Assert.assertTrue(optimisticLockException.getMessage(),
+                    optimisticLockException.getMessage().contains("One or more objects of the"));
+                Assert.assertTrue(optimisticLockException.getMessage(),
+                    optimisticLockException.getMessage().contains(Employee.class.getName()));
+            }
         }
     }
 
@@ -2314,7 +2327,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         // completes the locking transaction (em1) and therefore clears the way to em2 go ahead.
         long timeToWait = 1000;
 
-        String errorMsg = "";
+        StringBuilder errorMsg = new StringBuilder();
         LockModeType lockMode = LockModeType.PESSIMISTIC_WRITE;
 
         // create Employee with Projects and Responsibilities
@@ -2382,20 +2395,17 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         String[] testModeArray2 = {"find"};
 */
         // testMode1 loop
-        for(int i=0; i < testModeArray1.length; i++) {
-            String testMode1 = testModeArray1[i];
+        for (String testMode1 : testModeArray1) {
             // isObjectCached loop
-            for(int k=0; k < isObjectCached.length; k++) {
-                boolean isObjCached = isObjectCached[k];
+            for (boolean isObjCached : isObjectCached) {
                 // testMode2 loop
-                for(int j=0; j < testModeArray2.length; j++) {
-                    String testMode2 = testModeArray2[j];
+                for (String testMode2 : testModeArray2) {
                     boolean isExceptionExpected = !testMode2.equals("update_project");
 
                     // lock emp using em1
-                    EntityManager em1= createEntityManager();
+                    EntityManager em1 = createEntityManager();
                     // bring object into cache if required
-                    if(isObjCached) {
+                    if (isObjCached) {
                         ss.log(SessionLog.FINEST, SessionLog.QUERY, "testPESSIMISTIC_ExtendedScope: bring object into cache", null, null, false);
                         em1.find(Employee.class, id);
                     }
@@ -2405,20 +2415,20 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
 
                         ss.log(SessionLog.FINEST, SessionLog.QUERY, "testPESSIMISTIC_ExtendedScope: testMode1 = " + testMode1, null, null, false);
 
-                        if(testMode1.equals("query")) {
-                            Query query1 = em1.createQuery("SELECT emp FROM Employee emp WHERE emp.id = "+id).setLockMode(lockMode).
+                        if (testMode1.equals("query")) {
+                            Query query1 = em1.createQuery("SELECT emp FROM Employee emp WHERE emp.id = " + id).setLockMode(lockMode).
                                     setHint(QueryHints.PESSIMISTIC_LOCK_SCOPE, PessimisticLockScope.EXTENDED);
-                            if(isSelectForUpateNoWaitSupported()) {
+                            if (isSelectForUpateNoWaitSupported()) {
                                 query1.setHint(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, 0);
                             }
-                            emp1 = (Employee)query1.getSingleResult();
-                        } else if(testMode1.equals("find")) {
+                            emp1 = (Employee) query1.getSingleResult();
+                        } else if (testMode1.equals("find")) {
                             emp1 = em1.find(Employee.class, id, lockMode, properties);
                         } else {
                             emp1 = em1.find(Employee.class, id);
-                            if(testMode1.equals("lock")) {
+                            if (testMode1.equals("lock")) {
                                 em1.lock(emp1, lockMode, properties);
-                            } else if(testMode1.equals("refresh")) {
+                            } else if (testMode1.equals("refresh")) {
                                 em1.refresh(emp1, lockMode, properties);
                             } else {
                                 fail("Unknown testMode1 = " + testMode1);
@@ -2434,81 +2444,81 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
 
                             ss.log(SessionLog.FINEST, SessionLog.QUERY, "testPESSIMISTIC_ExtendedScope: testMode2 = " + testMode2, null, null, false);
 
-                            if(shouldSpawnThread) {
+                            if (shouldSpawnThread) {
                                 // after waiting TransactionKiller rollback em1 transaction unlocking way for em2 to proceed.
                                 // the test assumes that em2 waiting for timeToWait means em2 waiting on the lock acquired by em1.
                                 transactionKiller = new TransactionKiller(em1, timeToWait);
                                 transactionKiller.start();
                             }
 
-                            if(testMode2.equals("query")) {
-                                Query query2 = em2.createQuery("SELECT emp FROM Employee emp WHERE emp.id = "+id).setLockMode(lockMode).
-                                setHint(QueryHints.PESSIMISTIC_LOCK_SCOPE, PessimisticLockScope.EXTENDED);
-                                if(isSelectForUpateNoWaitSupported()) {
+                            if (testMode2.equals("query")) {
+                                Query query2 = em2.createQuery("SELECT emp FROM Employee emp WHERE emp.id = " + id).setLockMode(lockMode).
+                                        setHint(QueryHints.PESSIMISTIC_LOCK_SCOPE, PessimisticLockScope.EXTENDED);
+                                if (isSelectForUpateNoWaitSupported()) {
                                     query2.setHint(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, 0);
                                 }
-                                emp2 = (Employee)query2.getSingleResult();
-                            } else if(testMode2.equals("find")) {
+                                emp2 = (Employee) query2.getSingleResult();
+                            } else if (testMode2.equals("find")) {
                                 emp2 = em2.find(Employee.class, id, lockMode, properties);
-                            } else if(testMode2.equals("update_name")) {
-                                em2.createNativeQuery("SELECT L_NAME FROM CMP3_EMPLOYEE"+lockingClauseBeforeWhereClause+" WHERE EMP_ID = "+id+lockingClauseAfterWhereClause).getSingleResult();
+                            } else if (testMode2.equals("update_name")) {
+                                em2.createNativeQuery("SELECT L_NAME FROM CMP3_EMPLOYEE" + lockingClauseBeforeWhereClause + " WHERE EMP_ID = " + id + lockingClauseAfterWhereClause).getSingleResult();
 //                                em2.createNativeQuery("UPDATE CMP3_EMPLOYEE SET L_NAME = 'NEW' WHERE EMP_ID = "+id).executeUpdate();
-                            } else if(testMode2.equals("update_salary")) {
-                                em2.createNativeQuery("SELECT SALARY FROM CMP3_SALARY"+lockingClauseBeforeWhereClause+" WHERE EMP_ID = "+id+lockingClauseAfterWhereClause).getSingleResult();
+                            } else if (testMode2.equals("update_salary")) {
+                                em2.createNativeQuery("SELECT SALARY FROM CMP3_SALARY" + lockingClauseBeforeWhereClause + " WHERE EMP_ID = " + id + lockingClauseAfterWhereClause).getSingleResult();
 //                                em2.createNativeQuery("UPDATE CMP3_SALARY SET SALARY = 1000 WHERE EMP_ID = "+id).executeUpdate();
-                            } else if(testMode2.equals("remove_project")) {
-                                em2.createNativeQuery("SELECT PROJECTS_PROJ_ID FROM CMP3_EMP_PROJ"+lockingClauseBeforeWhereClause+" WHERE EMPLOYEES_EMP_ID = "+id+lockingClauseAfterWhereClause).getResultList();
+                            } else if (testMode2.equals("remove_project")) {
+                                em2.createNativeQuery("SELECT PROJECTS_PROJ_ID FROM CMP3_EMP_PROJ" + lockingClauseBeforeWhereClause + " WHERE EMPLOYEES_EMP_ID = " + id + lockingClauseAfterWhereClause).getResultList();
 //                                em2.createNativeQuery("DELETE FROM CMP3_EMP_PROJ WHERE EMPLOYEES_EMP_ID = "+id).executeUpdate();
-                            } else if(testMode2.equals("remove_respons")) {
-                                em2.createNativeQuery("SELECT EMP_ID FROM CMP3_RESPONS"+lockingClauseBeforeWhereClause+" WHERE EMP_ID = "+id+lockingClauseAfterWhereClause).getResultList();
+                            } else if (testMode2.equals("remove_respons")) {
+                                em2.createNativeQuery("SELECT EMP_ID FROM CMP3_RESPONS" + lockingClauseBeforeWhereClause + " WHERE EMP_ID = " + id + lockingClauseAfterWhereClause).getResultList();
 //                                em2.createNativeQuery("DELETE FROM CMP3_RESPONS WHERE EMP_ID = "+id).executeUpdate();
-                            } else if(testMode2.equals("update_project")) {
-                                em2.createNativeQuery("SELECT PROJ_NAME FROM CMP3_PROJECT"+lockingClauseBeforeWhereClause+" WHERE PROJ_ID = "+smallProjId+lockingClauseAfterWhereClause).getSingleResult();
+                            } else if (testMode2.equals("update_project")) {
+                                em2.createNativeQuery("SELECT PROJ_NAME FROM CMP3_PROJECT" + lockingClauseBeforeWhereClause + " WHERE PROJ_ID = " + smallProjId + lockingClauseAfterWhereClause).getSingleResult();
 //                                em2.createNativeQuery("UPDATE CMP3_PROJECT SET PROJ_NAME = 'NEW' WHERE PROJ_ID = "+smallProjId).executeUpdate();
-                            } else if(testMode2.equals("update_respons")) {
-                                em2.createNativeQuery("SELECT DESCRIPTION FROM CMP3_RESPONS"+lockingClauseBeforeWhereClause+" WHERE EMP_ID = "+id+lockingClauseAfterWhereClause).getResultList();
+                            } else if (testMode2.equals("update_respons")) {
+                                em2.createNativeQuery("SELECT DESCRIPTION FROM CMP3_RESPONS" + lockingClauseBeforeWhereClause + " WHERE EMP_ID = " + id + lockingClauseAfterWhereClause).getResultList();
 //                                em2.createNativeQuery("UPDATE CMP3_RESPONS SET DESCRIPTION = 'NEW' WHERE EMP_ID = "+id).executeUpdate();
                             } else {
                                 emp2 = em2.find(Employee.class, id);
-                                if(testMode2.equals("lock")) {
+                                if (testMode2.equals("lock")) {
                                     em2.lock(emp2, lockMode, properties);
-                                } else if(testMode2.equals("refresh")) {
+                                } else if (testMode2.equals("refresh")) {
                                     em2.refresh(emp2, lockMode, properties);
                                 } else {
                                     fail("Unknown testMode2 = " + testMode2);
                                 }
                             }
 
-            //                commitTransaction(em2);
+                            //                commitTransaction(em2);
                             boolean hasKilledTransaction = false;
-                            if(transactionKiller != null) {
+                            if (transactionKiller != null) {
                                 transactionKiller.shouldKillTransaction = false;
                                 try {
                                     transactionKiller.join();
-                                } catch(InterruptedException intEx) {
+                                } catch (InterruptedException intEx) {
                                     // Ignore
                                 }
                                 hasKilledTransaction = transactionKiller.hasKilledTransaction;
                             }
                             // transaction killed by TransactionKiller is treated as PessimisticLockException
-                            if(isExceptionExpected && !hasKilledTransaction) {
+                            if (isExceptionExpected && !hasKilledTransaction) {
                                 String localErrorMsg = testMode1 + (isObjCached ? " cached " : " ") + testMode2 + ": Exception was expected.";
                                 ss.log(SessionLog.FINEST, SessionLog.QUERY, localErrorMsg, null, null, false);
-                                errorMsg += '\n' + localErrorMsg;
+                                errorMsg.append('\n').append(localErrorMsg);
                             }
                         } catch (Exception ex) {
-                            if(transactionKiller != null) {
+                            if (transactionKiller != null) {
                                 transactionKiller.shouldKillTransaction = false;
                                 try {
                                     transactionKiller.join();
-                                } catch(InterruptedException intEx) {
+                                } catch (InterruptedException intEx) {
                                     // Ignore
                                 }
                             }
-                            if(!isExceptionExpected) {
+                            if (!isExceptionExpected) {
                                 String localErrorMsg = testMode1 + (isObjCached ? " cached " : " ") + testMode2 + ": Unexpected exception: " + ex.getMessage();
                                 ss.log(SessionLog.FINEST, SessionLog.QUERY, localErrorMsg, null, null, false);
-                                errorMsg += '\n' + localErrorMsg;
+                                errorMsg.append('\n').append(localErrorMsg);
                             }
                         } finally {
                             if (isTransactionActive(em2)) {
@@ -2517,7 +2527,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                             closeEntityManager(em2);
                         }
 
-            //            commitTransaction(em1);
+                        //            commitTransaction(em1);
                     } finally {
                         if (isTransactionActive(em1)) {
                             rollbackTransaction(em1);
@@ -2550,7 +2560,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         }
 
         if(errorMsg.length() > 0) {
-            fail(errorMsg);
+            fail(errorMsg.toString());
         }
     }
 
@@ -2586,7 +2596,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             throw ex;
         }
 
-        String errorMsg = "";
+        StringBuilder errorMsg = new StringBuilder();
         for (int i=0; i < 32; i++) {
             int j = i;
             boolean doRollback = j % 2 == 0;
@@ -2676,7 +2686,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                     }
 
                     List resultList = em.createQuery("SELECT OBJECT(e) FROM Employee e WHERE e.firstName = '"+firstName+"'").getResultList();
-                    employeeExists = resultList.size() > 0;
+                    employeeExists = !resultList.isEmpty();
 
                     if(employeeShouldExist) {
                         if(resultList.size() > 1) {
@@ -2686,7 +2696,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                             localErrorMsg = localErrorMsg + " employeeReadFromDB == null;";
                         }
                     } else {
-                        if(resultList.size() > 0) {
+                        if(!resultList.isEmpty()) {
                             localErrorMsg = localErrorMsg + " employeeReadFromDB != null;";
                         }
                     }
@@ -2715,11 +2725,11 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             }
 
             if(!msg.equals(localErrorMsg)) {
-                errorMsg = errorMsg + "i="+ i +": "+ localErrorMsg + " ";
+                errorMsg.append("i=").append(i).append(": ").append(localErrorMsg).append(" ");
             }
         }
         if(errorMsg.length() > 0) {
-            fail(errorMsg);
+            fail(errorMsg.toString());
         }
     }
 
@@ -3590,7 +3600,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             emp.setLastName("McRae");
             em.persist(emp);
             Query query = em.createQuery("Select e from Employee e where e.firstName = 'testFlushMode'");
-            if (query.getResultList().size() > 0) {
+            if (!query.getResultList().isEmpty()) {
                 fail("Query triggered flush.");
             }
             rollbackTransaction(em);
@@ -3829,86 +3839,86 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         }
 
         // verify
-        String errorMsg = "";
+        StringBuilder errorMsg = new StringBuilder();
         em = createEntityManager();
 
         // find and verify all objects created during setup and test
 
         Employee manager_NotInCache = em.find(Employee.class, manager_NotInCache_id);
         if(!manager_NotInCache.getLastName().endsWith("_Updated")) {
-            errorMsg = errorMsg + "manager_NotInCache lastName NOT updated; ";
+            errorMsg.append("manager_NotInCache lastName NOT updated; ");
         }
         Iterator<Employee> it = manager_NotInCache.getManagedEmployees().iterator();
         while(it.hasNext()) {
             Employee emp = it.next();
             if(emp.getId() == employee_1_NotInCache_id) {
                 if(!emp.getLastName().endsWith("_Updated")) {
-                    errorMsg = errorMsg + "employee_1_NotInCache lastName NOT updated; ";
+                    errorMsg.append("employee_1_NotInCache lastName NOT updated; ");
                 }
             } else if(emp.getId() == employee_1_New_id) {
                 if(!emp.getLastName().endsWith("_New")) {
-                    errorMsg = errorMsg + "employee_1_New lastName wrong; ";
+                    errorMsg.append("employee_1_New lastName wrong; ");
                 }
             } else {
-                errorMsg = errorMsg + "manager_NotInCache has unexpected employee: lastName = " + emp.getLastName();
+                errorMsg.append("manager_NotInCache has unexpected employee: lastName = ").append(emp.getLastName());
             }
         }
         if(manager_NotInCache.getManagedEmployees().size() != 2) {
-            errorMsg = errorMsg + "manager_NotInCache.getManagedEmployees().size() != 2; size = " + manager_NotInCache.getManagedEmployees().size();
+            errorMsg.append("manager_NotInCache.getManagedEmployees().size() != 2; size = ").append(manager_NotInCache.getManagedEmployees().size());
         }
 
         Employee manager_InCache = em.find(Employee.class, manager_InCache_id);
         if(!manager_InCache.getLastName().endsWith("_Updated")) {
-            errorMsg = errorMsg + "manager_InCache lastName NOT updated; ";
+            errorMsg.append("manager_InCache lastName NOT updated; ");
         }
         it = manager_InCache.getManagedEmployees().iterator();
         while(it.hasNext()) {
             Employee emp = it.next();
             if(emp.getId() == employee_1_InCache_id) {
                 if(!emp.getLastName().endsWith("_Updated")) {
-                    errorMsg = errorMsg + "employee_1_InCache lastName NOT updated; ";
+                    errorMsg.append("employee_1_InCache lastName NOT updated; ");
                 }
             } else if(emp.getId() == employee_2_New_id) {
                 if(!emp.getLastName().endsWith("_New")) {
-                    errorMsg = errorMsg + "employee_2_New lastName wrong; ";
+                    errorMsg.append("employee_2_New lastName wrong; ");
                 }
             } else {
-                errorMsg = errorMsg + "manager_InCache has unexpected employee: lastName = " + emp.getLastName();
+                errorMsg.append("manager_InCache has unexpected employee: lastName = ").append(emp.getLastName());
             }
         }
         if(manager_InCache.getManagedEmployees().size() != 2) {
-            errorMsg = errorMsg + "manager_InCache.getManagedEmployees().size() != 2; size = " + manager_InCache.getManagedEmployees().size();
+            errorMsg.append("manager_InCache.getManagedEmployees().size() != 2; size = ").append(manager_InCache.getManagedEmployees().size());
         }
 
         Employee manager_New = em.find(Employee.class, manager_New_id);
         if(!manager_New.getLastName().endsWith("_New")) {
-            errorMsg = errorMsg + "manager_New lastName wrong; ";
+            errorMsg.append("manager_New lastName wrong; ");
         }
         it = manager_New.getManagedEmployees().iterator();
         while(it.hasNext()) {
             Employee emp = it.next();
             if(emp.getId() == employee_2_NotInCache_id) {
                 if(!emp.getLastName().endsWith("_Updated")) {
-                    errorMsg = errorMsg + "employee_2_NotInCache_id lastName NOT updated; ";
+                    errorMsg.append("employee_2_NotInCache_id lastName NOT updated; ");
                 }
             } else if(emp.getId() == employee_2_InCache_id) {
                 if(!emp.getLastName().endsWith("_Updated")) {
-                    errorMsg = errorMsg + "employee_2_InCache_id lastName NOT updated; ";
+                    errorMsg.append("employee_2_InCache_id lastName NOT updated; ");
                 }
             } else if(emp.getId() == employee_3_New_id) {
                 if(!emp.getLastName().endsWith("_New")) {
-                    errorMsg = errorMsg + "employee_3_New lastName wrong; ";
+                    errorMsg.append("employee_3_New lastName wrong; ");
                 }
             } else {
-                errorMsg = errorMsg + "manager_New has unexpected employee: lastName = " + emp.getLastName();
+                errorMsg.append("manager_New has unexpected employee: lastName = ").append(emp.getLastName());
             }
         }
         if(manager_New.getManagedEmployees().size() != 3) {
-            errorMsg = errorMsg + "manager_InCache.getManagedEmployees().size() != 3; size = " + manager_InCache.getManagedEmployees().size();
+            errorMsg.append("manager_InCache.getManagedEmployees().size() != 3; size = ").append(manager_InCache.getManagedEmployees().size());
         }
         Employee employee_4_New = em.find(Employee.class, employee_4_New_id);
         if(!employee_4_New.getLastName().endsWith("_New")) {
-            errorMsg = errorMsg + "employee_4_New lastName wrong; ";
+            errorMsg.append("employee_4_New lastName wrong; ");
         }
         closeEntityManager(em);
 
@@ -3918,10 +3928,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         try {
             beginTransaction(em);
             List<Employee> list = em.createQuery("Select e from Employee e where e.firstName = '"+firstName+"'").getResultList();
-            Iterator<Employee> i = list.iterator();
-            while (i.hasNext()){
-                Employee e = i.next();
-                if (e.getManager() != null){
+            for (Employee e : list) {
+                if (e.getManager() != null) {
                     e.getManager().removeManagedEmployee(e);
                     e.setManager(null);
                 }
@@ -3940,7 +3948,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         clearCache();
 
         if(errorMsg.length() > 0) {
-            fail(errorMsg);
+            fail(errorMsg.toString());
         }
     }
 
@@ -4418,7 +4426,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         em.clear();
         assertNull("Uncommitted Data loaded into cache", em.find(Employee.class, emp.getId()));
     }
-    
+
     public void testReadOnlyCachedLazyAssociation() {
         EntityManager em = createEntityManager();
         Integer empId = null;
@@ -4972,6 +4980,43 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         Assert.assertTrue(testPass);
     }
 
+    /**
+     * Test for issue 1950 Duplicate objects in UnitOfWorkImpl.primaryKeyToNewObjects
+     *
+     * Objects may potentially be added to UnitOfWorkImpl.primaryKeyToNewObjects both during
+     * the call to UnitOfWorkImpl#assignSequenceNumber and then again in UnitOfWorkImpl#registerNewObjectClone.
+     * This can cause the EntityManager to return already removed entities, as only one of the saved
+     * references is removed.
+     */
+    public void testPersistRemoveFind()
+    {
+        EntityManager em = createEntityManager();
+        Employee employee = new Employee();
+        employee.setFirstName("Employee");
+        employee.setLastName("1");
+        Employee employee2 = new Employee();
+        employee2.setFirstName("Employee");
+        employee2.setLastName("2");
+        beginTransaction(em);
+        try {
+            em.persist(employee);
+           /* In order to hit the problematic code, we have to make sure there are still objects in the cache after
+            * we remove the first one, because otherwise the call to UnitOfWorkImpl#getObjectFromNewObjects
+            * will be skipped. Therefore, we register another employee object, which we won't remove. */
+            em.persist(employee2);
+            Employee clone = em.find(Employee.class, employee.getId());
+            // remove employee 1
+            em.remove(clone);
+            // a find call should not return employee 1, since we removed it earlier
+            clone = em.find(Employee.class, employee.getId());
+            assertNull("Removed employee was returned by em.find!", clone);
+        } catch (Exception e) {
+            fail("Unexpected exception thrown during test: " + e);
+        } finally {
+            rollbackTransaction(em);
+        }
+    }
+
     //detach(nonentity) throws illegalArgumentException
     public void testDetachNonEntity() {
         boolean testPass = false;
@@ -5226,24 +5271,24 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         }
 
         Class<?> defaultCacheType = ss.getDescriptor(Project.class).getIdentityMapClass();
-        if(! Helper.getShortClassName(defaultCacheType).equals("FullIdentityMap")) {
-            fail("defaultCacheType is wrong: "+Helper.getShortClassName(defaultCacheType));
+        if(! "FullIdentityMap".equals(defaultCacheType.getSimpleName())) {
+            fail("defaultCacheType is wrong: "+defaultCacheType.getSimpleName());
         }
 
         Class<?> employeeCacheType = ss.getDescriptor(Employee.class).getIdentityMapClass();
-        if(! Helper.getShortClassName(employeeCacheType).equals("WeakIdentityMap")) {
-            fail("employeeCacheType is wrong: "+Helper.getShortClassName(employeeCacheType));
+        if(! "WeakIdentityMap".equals(employeeCacheType.getSimpleName())) {
+            fail("employeeCacheType is wrong: "+employeeCacheType.getSimpleName());
         }
 
         Class<?> addressCacheType = ss.getDescriptor(Address.class).getIdentityMapClass();
-        if(! Helper.getShortClassName(addressCacheType).equals("HardCacheWeakIdentityMap")) {
-            fail("addressCacheType is wrong: "+Helper.getShortClassName(addressCacheType));
+        if(! "HardCacheWeakIdentityMap".equals(addressCacheType.getSimpleName())) {
+            fail("addressCacheType is wrong: "+addressCacheType.getSimpleName());
         }
 
         // Department cache type specified in @Cache annotation - that should override default property
         Class<?> departmentCacheType = ss.getDescriptor(Department.class).getIdentityMapClass();
-        if(! Helper.getShortClassName(departmentCacheType).equals("SoftCacheWeakIdentityMap")) {
-            fail("departmentCacheType is wrong: "+Helper.getShortClassName(departmentCacheType));
+        if(! "SoftCacheWeakIdentityMap".equals(departmentCacheType.getSimpleName())) {
+            fail("departmentCacheType is wrong: "+departmentCacheType.getSimpleName());
         }
 
         int numSessionCalls = Customizer.getNumberOfCallsForSession(ss.getName());
@@ -5499,7 +5544,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         } else {
             factory = (EntityManagerFactoryImpl) Persistence.createEntityManagerFactory("default");
         }
-        
+
         try {
             if (getDatabaseSession() != factory.getServerSession()) {
                 fail("Application managed persistence unit is not the same as the container managed session.  Deployment is broken."
@@ -6084,7 +6129,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             closeEntityManager(em);
         }
 
-        if (errorMsg.length() > 0) {
+        if (!errorMsg.isEmpty()) {
             fail(errorMsg);
         }
     }
@@ -6221,7 +6266,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             closeEntityManager(em);
             counter.remove();
         }
-        if (errorMsg.length() > 0) {
+        if (!errorMsg.isEmpty()) {
             fail(errorMsg);
         }
     }
@@ -6255,21 +6300,21 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             }
         }
 
-        String errorMsg = "";
-        if (counter.getSqlStatements().size() > 0) {
-            errorMsg = counter.getSqlStatements() + "\n";
+        StringBuilder errorMsg = new StringBuilder();
+        if (!counter.getSqlStatements().isEmpty()) {
+            errorMsg = new StringBuilder(counter.getSqlStatements() + "\n");
         }
 
         if (employees.size() != originalEmployees.size()) {
-            errorMsg += "employees.size() = " + employees.size() + "; originalEmployees.size() = " + originalEmployees.size() + "\n";
+            errorMsg.append("employees.size() = ").append(employees.size()).append("; originalEmployees.size() = ").append(originalEmployees.size()).append("\n");
         } else {
             // order of read employees should be the same bacause it's ordered by last name.
             for (int i = 0; i < employees.size(); i++) {
                 if (!session.compareObjects(originalEmployees.get(i), employees.get(i))) {
-                    errorMsg += "Original and read employee are not equal: original = " + originalEmployees.get(i).getLastName() + "; read = " + employees.get(i).getLastName() + "\n";
+                    errorMsg.append("Original and read employee are not equal: original = ").append(originalEmployees.get(i).getLastName()).append("; read = ").append(employees.get(i).getLastName()).append("\n");
                 }
                 if (!session.compareObjects(originalEmployees.get(i).getManager(), employees.get(i).getManager())) {
-                    errorMsg += "Original and read employee.getManager() are not equal: original = " + originalEmployees.get(i).getManager().getLastName() + "; read = " + employees.get(i).getManager().getLastName() + "\n";
+                    errorMsg.append("Original and read employee.getManager() are not equal: original = ").append(originalEmployees.get(i).getManager().getLastName()).append("; read = ").append(employees.get(i).getManager().getLastName()).append("\n");
                 }
                 Collection<Project> projects = employees.get(i).getManager().getProjects();
                 Collection<Project> originalProjects = originalEmployees.get(i).getManager().getProjects();
@@ -6279,22 +6324,22 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                         if (originalProj.getName().equals(proj.getName())) {
                             foundEqualName = true;
                             if (!session.compareObjects(originalProj, proj)) {
-                                errorMsg += "Original and read projects are not equal for name: " + originalProj.getName() + "\n";
+                                errorMsg.append("Original and read projects are not equal for name: ").append(originalProj.getName()).append("\n");
                             }
                             break;
                         }
                     }
                     if (!foundEqualName) {
-                        errorMsg += "No read project has name " + originalProj.getName() + "\n";
+                        errorMsg.append("No read project has name ").append(originalProj.getName()).append("\n");
                     }
                 }
             }
         }
 
         if (errorMsg.length() > 0) {
-            errorMsg = queryName + ":\n" + errorMsg;
+            errorMsg.insert(0, queryName + ":\n");
         }
-        return errorMsg;
+        return errorMsg.toString();
     }
 
     /**
@@ -6591,10 +6636,10 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             if (e.getErrorCode() == ValidationException.INSTANTIATING_VALUEHOLDER_WITH_NULL_SESSION){
                 exception = e;
             } else {
-                fail("An unexpected exception was thrown while testing serialization of ValueHolders: " + e.toString());
+                fail("An unexpected exception was thrown while testing serialization of ValueHolders: " + e);
             }
         } catch (Exception e){
-            fail("An unexpected exception was thrown while testing serialization of ValueHolders: " + e.toString());
+            fail("An unexpected exception was thrown while testing serialization of ValueHolders: " + e);
         }
 
         // Only throw error if weaving was used.
@@ -6632,7 +6677,9 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     protected void internalTestSequenceObjectDefinition(int preallocationSize, int startValue, String seqName, EntityManager em, ServerSession ss) {
         NativeSequence sequence = new NativeSequence(seqName, preallocationSize, startValue, false);
         sequence.onConnect(ss.getPlatform());
-        SequenceObjectDefinition def = new SequenceObjectDefinition(sequence);
+        SequenceObjectDefinition def = new SequenceObjectDefinition(sequence.getName());
+        def.setPreallocationSize(preallocationSize);
+        def.setInitialValue(startValue);
         try {
             // create sequence
             String createStr = def.buildCreationWriter(ss, new StringWriter()).toString();
@@ -7063,8 +7110,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                 // In the server this is always a rollback exception, need to get nested exception.
                 persistenceException = persistenceException.getCause();
             }
-            if (persistenceException instanceof ValidationException) {
-                ValidationException ve = (ValidationException) persistenceException;
+            if (persistenceException instanceof ValidationException ve) {
                 if (ve.getErrorCode() == ValidationException.PRIMARY_KEY_UPDATE_DISALLOWED) {
                     return;
                 } else {
@@ -7149,8 +7195,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                 // In the server this is always a rollback exception, need to get nested exception.
                 persistenceException = persistenceException.getCause();
             }
-            if (persistenceException instanceof ValidationException) {
-                ValidationException ve = (ValidationException) persistenceException;
+            if (persistenceException instanceof ValidationException ve) {
                 if (ve.getErrorCode() == ValidationException.PRIMARY_KEY_UPDATE_DISALLOWED) {
                     return;
                 } else {
@@ -7747,100 +7792,143 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     public void testUpdateUsingTempStorageWithParameter() {
         internalUpdateUsingTempStorage(true);
     }
+
     protected void internalUpdateUsingTempStorage(boolean useParameter) {
-        if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
-            getServerSession().logMessage("Test testUpdateUsingTempStorage* skipped for this platform, "
-                    + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
-            return;
-        } else if ((JUnitTestCase.getServerSession()).getPlatform().isPervasive()) {
-            getServerSession().logMessage("Test testUpdateUsingTempStorage* skipped for this platform. "
-                                          + "Pervasive does not support dynamic parameters in the Select list.");
+        DatabasePlatform platform = JUnitTestCase.getServerSession().getPlatform();
+
+        if (platform.isSymfoware()) {
+            getServerSession().logMessage(
+                "Test testUpdateUsingTempStorage* skipped for this platform, " +
+                "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
             return;
         }
 
-        String firstName = "testUpdateUsingTempStorage";
-        int n = 3;
+        if (platform.isPervasive()) {
+            getServerSession().logMessage(
+                "Test testUpdateUsingTempStorage* skipped for this platform. " +
+                "Pervasive does not support dynamic parameters in the Select list.");
+            return;
+        }
 
-        // setup
+        final String firstName = "testUpdateUsingTempStorage";
+        final int expectedNumberOfEmployees = 3;
+
+
+        // ### Setup
+
         EntityManager em = createEntityManager();
         try {
             beginTransaction(em);
-            // make sure there are no pre-existing objects with this name
-            em.createQuery("DELETE FROM Employee e WHERE e.firstName = '"+firstName+"'").executeUpdate();
-            em.createQuery("DELETE FROM Address a WHERE a.country = '"+firstName+"'").executeUpdate();
-            // populate Employees
-            for(int i=1; i<=n; i++) {
-                Employee emp = new Employee();
-                emp.setFirstName(firstName);
-                emp.setLastName(Integer.toString(i));
-                emp.setSalary(i*100);
-                emp.setRoomNumber(i);
+
+            // Make sure there are no pre-existing objects with this name
+            em.createQuery("DELETE FROM Employee e WHERE e.firstName = '" + firstName + "'").executeUpdate();
+            em.createQuery("DELETE FROM Address a WHERE a.country = '" + firstName + "'").executeUpdate();
+
+            // Populate Employees
+            for (int i = 1; i <= expectedNumberOfEmployees; i++) {
+                Employee employee = new Employee();
+                employee.setFirstName(firstName);
+                employee.setLastName(Integer.toString(i));
+                employee.setSalary(i * 100);
+                employee.setRoomNumber(i);
 
                 Address address = new Address();
                 address.setCountry(firstName);
                 address.setCity(Integer.toString(i));
 
-                emp.setAddress(address);
+                employee.setAddress(address);
 
-                em.persist(emp);
+                em.persist(employee);
             }
+
             commitTransaction(em);
-        } catch (RuntimeException ex){
-            if (isTransactionActive(em)){
-                 rollbackTransaction(em);
+        } catch (RuntimeException ex) {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
             }
             throw ex;
         } finally {
             closeEntityManager(em);
         }
 
-        // test
+
+        // ### Test
+        // ---> Swap the roomNumber and salary in bulk for the Employee entity
+
         em = createEntityManager();
         beginTransaction(em);
-        int nUpdated = 0;
+        int numberOfEmployeesUpdated = 0;
         try {
-            if(useParameter) {
-                nUpdated = em.createQuery("UPDATE Employee e set e.salary = e.roomNumber, e.roomNumber = e.salary, e.address = :address where e.firstName = '" + firstName + "'").setParameter("address", null).executeUpdate();
+            if (useParameter) {
+                numberOfEmployeesUpdated =
+                    em.createQuery(
+                        """
+                          UPDATE
+                              Employee e
+                          SET
+                              e.salary = e.roomNumber,
+                              e.roomNumber = e.salary,
+                              e.address = :address
+                          WHERE
+                              e.firstName = '""" + firstName + "'")
+                      .setParameter("address", null)
+                      .executeUpdate();
             } else {
-                nUpdated = em.createQuery("UPDATE Employee e set e.salary = e.roomNumber, e.roomNumber = e.salary, e.address = null where e.firstName = '" + firstName + "'").executeUpdate();
+                numberOfEmployeesUpdated =
+                    em.createQuery(
+                        """
+                        UPDATE
+                            Employee e
+                        SET
+                            e.salary = e.roomNumber,
+                            e.roomNumber = e.salary,
+                            e.address = null
+                        WHERE
+                            e.firstName = '""" + firstName + "'")
+                      .executeUpdate();
             }
+
             commitTransaction(em);
         } finally {
-            if (isTransactionActive(em)){
+            if (isTransactionActive(em)) {
                 rollbackTransaction(em);
             }
             closeEntityManager(em);
         }
 
-        // verify
+
+        // ### Verify
+
         String error = null;
         em = createEntityManager();
         try {
-            List result = em.createQuery("SELECT OBJECT(e) FROM Employee e WHERE e.firstName = '"+firstName+"'").getResultList();
-            int nReadBack = result.size();
-            if(n != nUpdated) {
-                error = "n = "+n+", but nUpdated ="+nUpdated+";";
+            List result = em.createQuery("SELECT OBJECT(e) FROM Employee e WHERE e.firstName = '" + firstName + "'").getResultList();
+
+            int numberOfEmployeesReadBack = result.size();
+            if (expectedNumberOfEmployees != numberOfEmployeesUpdated) {
+                error = "n = " + expectedNumberOfEmployees + ", but nUpdated =" + numberOfEmployeesUpdated + ";";
             }
-            if(n != nReadBack) {
-                error = " n = "+n+", but nReadBack ="+nReadBack+";";
+            if (expectedNumberOfEmployees != numberOfEmployeesReadBack) {
+                error = " n = " + expectedNumberOfEmployees + ", but nReadBack =" + numberOfEmployeesReadBack + ";";
             }
-            for(int i=0; i<nReadBack; i++) {
-                Employee emp = (Employee)result.get(i);
-                if(emp.getAddress() != null) {
-                    error = " Employee "+emp.getLastName()+" still has address;";
+
+            for (Object o : result) {
+                Employee employee = (Employee) o;
+                if (employee.getAddress() != null) {
+                    error = " Employee " + employee.getLastName() + " still has address;";
                 }
-                int ind = Integer.parseInt(emp.getLastName());
-                if(emp.getSalary() != ind) {
-                    error = " Employee "+emp.getLastName()+" has wrong salary "+emp.getSalary()+";";
+                int ind = Integer.parseInt(employee.getLastName());
+                if (employee.getSalary() != ind) {
+                    error = " Employee " + employee.getLastName() + " has wrong salary " + employee.getSalary() + ";";
                 }
-                if(emp.getRoomNumber() != ind*100) {
-                    error = " Employee "+emp.getLastName()+" has wrong roomNumber "+emp.getRoomNumber()+";";
+                if (employee.getRoomNumber() != ind * 100) {
+                    error = " Employee " + employee.getLastName() + " has wrong roomNumber " + employee.getRoomNumber() + ";";
                 }
             }
         } catch (RuntimeException ex) {
             if (usesSOP() && !isSOPRecoverable()) {
                 if (ex instanceof PersistenceException) {
-                    if (ex.getCause() instanceof QueryException && ((QueryException)ex.getCause()).getErrorCode() == QueryException.SOP_OBJECT_IS_NOT_FOUND) {
+                    if (ex.getCause() instanceof QueryException qex &&  qex.getErrorCode() == SOP_OBJECT_IS_NOT_FOUND) {
                         // getResultList is expected to fail because SOP field is set to null after bulk update
                     } else {
                         fail("Wrong cause of PersistenceException: " + ex.getCause());
@@ -7855,24 +7943,26 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             closeEntityManager(em);
         }
 
-        // clean up
+
+        // ### Clean up
+
         em = createEntityManager();
         try {
             beginTransaction(em);
-            // make sure there are no objects left with this name
-            em.createQuery("DELETE FROM Employee e WHERE e.firstName = '"+firstName+"'").executeUpdate();
-            em.createQuery("DELETE FROM Address a WHERE a.country = '"+firstName+"'").executeUpdate();
+            // Make sure there are no objects left with this name
+            em.createQuery("DELETE FROM Employee e WHERE e.firstName = '" + firstName + "'").executeUpdate();
+            em.createQuery("DELETE FROM Address a WHERE a.country = '" + firstName + "'").executeUpdate();
             commitTransaction(em);
-        } catch (RuntimeException ex){
-            if (isTransactionActive(em)){
-                 rollbackTransaction(em);
+        } catch (RuntimeException ex) {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
             }
             throw ex;
         } finally {
             closeEntityManager(em);
         }
 
-        if(error != null) {
+        if (error != null) {
             fail(error);
         }
     }
@@ -7959,7 +8049,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             return;
         }
 
-        String className = Helper.getShortClassName(cls);
+        String className = cls.getSimpleName();
         String name = "testUpdateAllProjects";
         String newName = "testUpdateAllProjectsNEW";
         HashMap map = null;
@@ -7973,8 +8063,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             EntityManager em = createEntityManager();
             List projects = em.createQuery("SELECT OBJECT(p) FROM Project p").getResultList();
             map = new HashMap(projects.size());
-            for(int i=0; i<projects.size(); i++) {
-                Project p = (Project)projects.get(i);
+            for (Object o : projects) {
+                Project p = (Project) o;
                 map.put(p.getId(), p.getName());
             }
 
@@ -7999,19 +8089,19 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
 
             // verify
             em = createEntityManager();
-            String errorMsg = "";
+            StringBuilder errorMsg = new StringBuilder();
             try {
                 projects = em.createQuery("SELECT OBJECT(p) FROM Project p").getResultList();
-                for(int i=0; i<projects.size(); i++) {
-                    Project p = (Project)projects.get(i);
+                for (Object project : projects) {
+                    Project p = (Project) project;
                     String readName = p.getName();
-                    if(cls.isInstance(p)) {
-                        if(!newName.equals(readName)) {
-                            errorMsg = errorMsg + "haven't updated name: " + p + "; ";
+                    if (cls.isInstance(p)) {
+                        if (!newName.equals(readName)) {
+                            errorMsg.append("haven't updated name: ").append(p).append("; ");
                         }
                     } else {
-                        if(newName.equals(readName)) {
-                            errorMsg = errorMsg + "have updated name: " + p + "; ";
+                        if (newName.equals(readName)) {
+                            errorMsg.append("have updated name: ").append(p).append("; ");
                         }
                     }
                 }
@@ -8034,7 +8124,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             }
 
             if(errorMsg.length() > 0) {
-                fail(errorMsg);
+                fail(errorMsg.toString());
             } else {
                 ok = true;
             }
@@ -8051,9 +8141,9 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                     }
                     List projects = query.getResultList();
                     try {
-                        for(int i=0; i<projects.size(); i++) {
-                            Project p = (Project)projects.get(i);
-                            String oldName = (String)map.get(((Project)projects.get(i)).getId());
+                        for (Object project : projects) {
+                            Project p = (Project) project;
+                            String oldName = (String) map.get(((Project) project).getId());
                             p.setName(oldName);
                         }
                         commitTransaction(em);
@@ -8094,7 +8184,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                     + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
             return;
         }
-        String className = Helper.getShortClassName(cls);
+        String className = cls.getSimpleName();
         String name = "testUpdateAllProjects";
         String newName = "testUpdateAllProjectsNEW";
         boolean ok = false;
@@ -8126,19 +8216,19 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
 
             // verify
             em = createEntityManager();
-            String errorMsg = "";
+            StringBuilder errorMsg = new StringBuilder();
             try {
                 List projects = em.createQuery("SELECT OBJECT(p) FROM Project p WHERE p.name = '"+newName+"' OR p.name = '"+name+"'").getResultList();
-                for(int i=0; i<projects.size(); i++) {
-                    Project p = (Project)projects.get(i);
+                for (Object project : projects) {
+                    Project p = (Project) project;
                     String readName = p.getName();
-                    if(cls.isInstance(p)) {
-                        if(!readName.equals(newName)) {
-                            errorMsg = errorMsg + "haven't updated name: " + p + "; ";
+                    if (cls.isInstance(p)) {
+                        if (!readName.equals(newName)) {
+                            errorMsg.append("haven't updated name: ").append(p).append("; ");
                         }
                     } else {
-                        if(readName.equals(newName)) {
-                            errorMsg = errorMsg + "have updated name: " + p + "; ";
+                        if (readName.equals(newName)) {
+                            errorMsg.append("have updated name: ").append(p).append("; ");
                         }
                     }
                 }
@@ -8161,7 +8251,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             }
 
             if(errorMsg.length() > 0) {
-                fail(errorMsg);
+                fail(errorMsg.toString());
             } else {
                 ok = true;
             }
@@ -8201,7 +8291,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             getServerSession().logMessage("Test testUpdateAll*ProjectsWithNullTeamLeader skipped for this platform." );
             return;
         }
-        String className = Helper.getShortClassName(cls);
+        String className = cls.getSimpleName();
         String name = "testUpdateAllProjects";
         String newName = "testUpdateAllProjectsNEW";
         Employee empTemp = null;
@@ -8215,7 +8305,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             EntityManager em = createEntityManager();
             Employee emp = null;
             List employees = em.createQuery("SELECT OBJECT(e) FROM Employee e").getResultList();
-            if(employees.size() > 0) {
+            if(!employees.isEmpty()) {
                 emp = (Employee)employees.get(0);
             } else {
                 beginTransaction(em);
@@ -8252,19 +8342,19 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
 
             // verify
             em = createEntityManager();
-            String errorMsg = "";
+            StringBuilder errorMsg = new StringBuilder();
             try {
                 List projects = em.createQuery("SELECT OBJECT(p) FROM Project p WHERE p.name = '"+newName+"' OR p.name = '"+name+"'").getResultList();
-                for(int i=0; i<projects.size(); i++) {
-                    Project p = (Project)projects.get(i);
+                for (Object project : projects) {
+                    Project p = (Project) project;
                     String readName = p.getName();
-                    if(cls.isInstance(p) && p.getTeamLeader()==null) {
-                        if(!readName.equals(newName)) {
-                            errorMsg = errorMsg + "haven't updated name: " + p + "; ";
+                    if (cls.isInstance(p) && p.getTeamLeader() == null) {
+                        if (!readName.equals(newName)) {
+                            errorMsg.append("haven't updated name: ").append(p).append("; ");
                         }
                     } else {
-                        if(readName.equals(newName)) {
-                            errorMsg = errorMsg + "have updated name: " + p + "; ";
+                        if (readName.equals(newName)) {
+                            errorMsg.append("have updated name: ").append(p).append("; ");
                         }
                     }
                 }
@@ -8287,7 +8377,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             }
 
             if(errorMsg.length() > 0) {
-                fail(errorMsg);
+                fail(errorMsg.toString());
             } else {
                 ok = true;
             }
@@ -8401,7 +8491,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             errorMsg = errorMsg + "; em.lock() threw wrong exception: " + ex.getMessage();
         }
 
-        if(errorMsg.length() > 0) {
+        if(!errorMsg.isEmpty()) {
             fail(errorMsg);
         }
     }
@@ -8860,7 +8950,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             closeEntityManager(em);
         }
 
-        if(errorMsg.length() > 0) {
+        if(!errorMsg.isEmpty()) {
             fail(errorMsg);
         }
     }
@@ -8942,7 +9032,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         }
         closeEntityManager(em);
 
-        if(errorMsg.length() > 0) {
+        if(!errorMsg.isEmpty()) {
             fail(errorMsg);
         }
     }
@@ -8968,7 +9058,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             errorMsg = errorMsg +"ADDRESS_SEQ: doesPlatformSupportSequenceObjects = " + doesPlatformSupportSequenceObjects +", but isSequenceObject = " + isSequenceObject;
         }
 
-        if(errorMsg.length() > 0) {
+        if(!errorMsg.isEmpty()) {
             fail(errorMsg);
         }
     }
@@ -9349,10 +9439,9 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             if(!password.equals("em_password")) {
                 errorMsg += "em_password was expected\n";
             }
-            if(! (((DatasourceLogin)policy.getLogin()).getConnector() instanceof JNDIConnector)) {
+            if(! (((DatasourceLogin) policy.getLogin()).getConnector() instanceof JNDIConnector jndiConnector)) {
                 errorMsg += "JNDIConnector was expected\n";
             } else {
-                JNDIConnector jndiConnector = (JNDIConnector)((DatasourceLogin)policy.getLogin()).getConnector();
                 String dataSourceName = jndiConnector.getName();
                 if(dataSourceName == null) {
                     errorMsg += "NON null dataSourceName was expected\n";
@@ -9378,7 +9467,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             }
         }
 
-        if(errorMsg.length() > 0) {
+        if(!errorMsg.isEmpty()) {
             fail(errorMsg);
         }
     }
@@ -9447,7 +9536,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         try {
             period.clone();
         } catch (Exception e){
-            fail("Exception thrown when trying to clone an Embeddable: " + e.toString());
+            fail("Exception thrown when trying to clone an Embeddable: " + e);
         }
     }
 
@@ -9612,7 +9701,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         }
         ss.login();
 
-        String errorMsg = "";
+        StringBuilder errorMsg = new StringBuilder();
         // test several configurations:
         // all exclusive connection modes
         String[] exclusiveConnectionModeArray = new String[]{ExclusiveConnectionMode.Transactional, ExclusiveConnectionMode.Isolated, ExclusiveConnectionMode.Always};
@@ -9667,7 +9756,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
 
                         // should never get here - all connections should be broken.
                         hasUnexpectedlyCommitted = true;
-                        errorMsg += "useSequencing = " + useSequencing + "; exclusiveConnectionMode = " + exclusiveConnectionMode + ": Commit has unexpectedly succeeded - should have failed because all connections broken. driver = " + ss.getLogin().getDriverClassName() + "; url = " + ss.getLogin().getConnectionString();
+                        errorMsg.append("useSequencing = ").append(useSequencing).append("; exclusiveConnectionMode = ").append(exclusiveConnectionMode).append(": Commit has unexpectedly succeeded - should have failed because all connections broken. driver = ").append(ss.getLogin().getDriverClassName()).append("; url = ").append(ss.getLogin().getConnectionString());
                     } catch (Exception e){
                         // expected exception - connection is invalid and cannot be reconnected.
                         if(em.getTransaction().isActive()) {
@@ -9684,9 +9773,9 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                     if(listener.nAcquredReadConnections() > 0) {
                         localErrorMsg += "readConnection not released; ";
                     }
-                    if(localErrorMsg.length() > 0) {
+                    if(!localErrorMsg.isEmpty()) {
                         localErrorMsg = exclusiveConnectionMode + " useSequencing="+useSequencing + ": " + localErrorMsg;
-                        errorMsg += localErrorMsg;
+                        errorMsg.append(localErrorMsg);
                         listener.clear();
                     }
 
@@ -9760,7 +9849,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             ss.login();
 
             if(errorMsg.length() > 0) {
-                fail(errorMsg);
+                fail(errorMsg.toString());
             }
         }
     }
@@ -9807,25 +9896,23 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             DriverWrapper.clear();
         }
 
-        String errorMsg = "";
+        StringBuilder errorMsg = new StringBuilder();
         //reconnect the session
         em = createEntityManager();
         //verify connections
-        Iterator<ConnectionPool> itPools = ((EntityManagerImpl)em).getServerSession().getConnectionPools().values().iterator();
-        while (itPools.hasNext()) {
-            ConnectionPool pool = itPools.next();
+        for (ConnectionPool pool : ((EntityManagerImpl) em).getServerSession().getConnectionPools().values()) {
             int disconnected = 0;
-            for (int i=0; i < pool.getConnectionsAvailable().size(); i++) {
+            for (int i = 0; i < pool.getConnectionsAvailable().size(); i++) {
                 if (!(pool.getConnectionsAvailable().get(i)).isConnected()) {
                     disconnected++;
                 }
             }
             if (disconnected > 0) {
-                errorMsg += pool.getName() + " has " + disconnected + " connections; ";
+                errorMsg.append(pool.getName()).append(" has ").append(disconnected).append(" connections; ");
             }
         }
         if (errorMsg.length() > 0) {
-            fail(errorMsg);
+            fail(errorMsg.toString());
         }
     }
 
@@ -9994,25 +10081,25 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                     pooled = "non pooled; ";
                     emProperties.put(EntityManagerProperties.CONNECTION_POLICY, connectionPolicy);
                 }
-                for(int i=0; i<exclusiveConnectionModeArray.length; i++) {
-                    exclusiveConnectionMode = exclusiveConnectionModeArray[i];
-                    for(int j=0; j<3; j++) {
+                for (String s : exclusiveConnectionModeArray) {
+                    exclusiveConnectionMode = s;
+                    for (int j = 0; j < 3; j++) {
                         // either beginning early transaction or not
-                        boolean shouldBeginEarlyTransaction = (j==2);
-                        boolean shouldReadBeforeTransaction = (j==1);
+                        boolean shouldBeginEarlyTransaction = (j == 2);
+                        boolean shouldReadBeforeTransaction = (j == 1);
                         mode = pooled + exclusiveConnectionMode + (shouldBeginEarlyTransaction ? "; beginEarlyTransaction" : "") + (shouldReadBeforeTransaction ? "; readBeforeTransaction" : "");
                         ss.log(SessionLog.FINEST, SessionLog.CONNECTION, "testPostAcquirePreReleaseEvents: " + mode, null, null, false);
                         emProperties.put(EntityManagerProperties.EXCLUSIVE_CONNECTION_MODE, exclusiveConnectionMode);
                         EntityManager em = createEntityManager(emProperties);
 
-                        if(shouldReadBeforeTransaction) {
+                        if (shouldReadBeforeTransaction) {
                             em.find(Employee.class, 1);
                         }
                         Employee emp = null;
-                        try{
+                        try {
                             em.getTransaction().begin();
 
-                            if(shouldBeginEarlyTransaction) {
+                            if (shouldBeginEarlyTransaction) {
                                 em.unwrap(UnitOfWorkImpl.class).beginEarlyTransaction();
                             }
 
@@ -10022,13 +10109,13 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                             em.getTransaction().commit();
                         } finally {
                             // expected exception - connection is invalid and cannot be reconnected.
-                            if(em.getTransaction().isActive()) {
+                            if (em.getTransaction().isActive()) {
                                 em.getTransaction().rollback();
                             }
                             closeEntityManager(em);
                         }
 
-                        if(listener.hasAcquiredConnections()) {
+                        if (listener.hasAcquiredConnections()) {
                             fail(mode + " connection was not passed to preReleaseConnection event");
                         }
                     }
@@ -10811,7 +10898,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                 if(! SessionNameCustomizer.ss.getLogin().shouldUseExternalTransactionController()) {
                     errorMsg += "2: externalTransactionController expected; ";
                 }
-                if(SessionNameCustomizer.ss.getLogin().getUserName().length() > 0) {
+                if(!SessionNameCustomizer.ss.getLogin().getUserName().isEmpty()) {
                     errorMsg += "2: empty string user expected; ";
                 }
                 Connector connector = SessionNameCustomizer.ss.getLogin().getConnector();
@@ -10829,7 +10916,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                 if(SessionNameCustomizer.ss.getReadConnectionPool().getLogin().shouldUseExternalTransactionController()) {
                     errorMsg += "2: reading no externalTransactionController expected; ";
                 }
-                if(SessionNameCustomizer.ss.getReadConnectionPool().getLogin().getUserName().length() > 0) {
+                if(!SessionNameCustomizer.ss.getReadConnectionPool().getLogin().getUserName().isEmpty()) {
                     errorMsg += "2: reading: empty string user expected; ";
                 }
                 Connector readConnector = ((DatasourceLogin)SessionNameCustomizer.ss.getReadConnectionPool().getLogin()).getConnector();
@@ -10845,7 +10932,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             SessionNameCustomizer.ss = null;
         }
 
-        if(errorMsg.length() > 0) {
+        if(!errorMsg.isEmpty()) {
             fail(errorMsg);
         }
     }
@@ -11320,7 +11407,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                 if (customer == null) {
                     fail("A null Customer was found in the collection of Customers.");
                 }
-                if (customer.getFirstName() == null || customer.getFirstName().equals("")) {
+                if (customer.getFirstName() == null || customer.getFirstName().isEmpty()) {
                     fail("Attributes not merged into collection");
                 }
                 if (dealer.getCustomers().lastIndexOf(customer) != dealer.getCustomers().indexOf(customer)) {
@@ -11648,17 +11735,15 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             Map backupMap = copyGroupBackup.getCopies();
 
             // verify that backup objects are identical to originals
-            Iterator<Map.Entry> it = backupMap.entrySet().iterator();
-            while(it.hasNext()) {
-                Map.Entry entry = it.next();
+            for (Map.Entry entry : (Iterable<Map.Entry>) backupMap.entrySet()) {
                 Object original = entry.getKey();
                 ClassDescriptor descriptor = ss.getDescriptor(original);
-                if(!descriptor.isAggregateDescriptor()) {
+                if (!descriptor.isAggregateDescriptor()) {
                     Object backup = entry.getValue();
-                    if(original == backup) {
+                    if (original == backup) {
                         fail("Test problem: backup failed: original == backup: " + original);
                     }
-                    if(!ss.compareObjects(original, backup)) {
+                    if (!ss.compareObjects(original, backup)) {
                         fail("Test problem: backup failed: compareObjects(original, backup) == false: " + original + "; " + backup);
                     }
                 }
@@ -11812,7 +11897,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                 }
             }
 
-            String errorMsgOldValues = "";
+            StringBuilder errorMsgOldValues = new StringBuilder();
             // now compare oldValue objects with corresponding backup objects
             itChangeSets = ((org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet)listener.uowChangeSet).getCloneToObjectChangeSet().entrySet().iterator();
             while(itChangeSets.hasNext()) {
@@ -11828,7 +11913,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                             Object backupObject = backupMap.get(object);
                             // compare oldValue with backup object
                             if(!ss.compareObjects(oldValueObject, backupObject)) {
-                                errorMsgOldValues += '\t' + object.toString() + '\n';
+                                errorMsgOldValues.append('\t').append(object.toString()).append('\n');
                             }
                         }
                     }
@@ -11845,7 +11930,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             }
 
             // verify that the objects were correctly written to the db
-            String errorMsgDb = "";
+            StringBuilder errorMsgDb = new StringBuilder();
             clearCache();
             Map updatedToReadBack = new HashMap();
             EntityManager em2 = createEntityManager();
@@ -11872,7 +11957,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                 Object object = entry.getKey();
                 Object readBack = entry.getValue();
                 if(!ss.compareObjects(object, readBack)) {
-                    errorMsgDb += '\t' + object.toString() + '\n';
+                    errorMsgDb.append('\t').append(object.toString()).append('\n');
                 }
             }
             rollbackTransaction(em2);
@@ -11904,14 +11989,14 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
 
             String errorMsg = "";
             if(errorMsgOldValues.length() > 0) {
-                errorMsgOldValues = "Some old values and back up objects are not equal:\n" + errorMsgOldValues;
+                errorMsgOldValues.insert(0, "Some old values and back up objects are not equal:\n");
                 errorMsg += errorMsgOldValues;
             }
             if(errorMsgDb.length() > 0) {
-                errorMsgDb = "\nSome values were incorrectly written into the db:\n" + errorMsgDb;
+                errorMsgDb.insert(0, "\nSome values were incorrectly written into the db:\n");
                 errorMsg += errorMsgDb;
             }
-            if(errorMsg.length() > 0) {
+            if(!errorMsg.isEmpty()) {
                 fail(errorMsg);
             }
         } finally {
@@ -12246,7 +12331,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             return;
         }
 
-        String errorMsg = "";
+        StringBuilder errorMsg = new StringBuilder();
         SmallProject sp = null;
         LargeProject lp = null;
         HugeProject hp = null;
@@ -12256,7 +12341,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         beginTransaction(em);
         String[] classesToDelete = {"Project", "SmallProject", "LargeProject", "HugeProject", "SpecialHugeProject"};
         try {
-            for (int i=0; i < classesToDelete.length; i++) {
+            for (String s : classesToDelete) {
                 if (sp == null) {
                     sp = new SmallProject();
                     em.persist(sp);
@@ -12275,8 +12360,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                 }
                 em.flush();
 
-                String classToDelete = classesToDelete[i];
-                em.createQuery("DELETE FROM "+classToDelete+" p").executeUpdate();
+                String classToDelete = s;
+                em.createQuery("DELETE FROM " + classToDelete + " p").executeUpdate();
 
                 em.clear();
 
@@ -12325,21 +12410,21 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                     }
                 }
                 String localErrorMsg = "";
-                if (unexpectedlyDeleted.length() > 0) {
+                if (!unexpectedlyDeleted.isEmpty()) {
                     localErrorMsg += "\n\t\tUnexpectedlyDeleted: " + unexpectedlyDeleted;
                 }
-                if (unexpectedlyNotDeleted.length() > 0) {
+                if (!unexpectedlyNotDeleted.isEmpty()) {
                     localErrorMsg += "\n\t\tUnexpectedlyNotDeleted: " + unexpectedlyNotDeleted;
                 }
-                if (localErrorMsg.length() > 0) {
-                    errorMsg += "\n\tDELETE FROM "+classToDelete+" p" + localErrorMsg ;
+                if (!localErrorMsg.isEmpty()) {
+                    errorMsg.append("\n\tDELETE FROM ").append(classToDelete).append(" p").append(localErrorMsg);
                 }
             }
         } finally {
             closeEntityManagerAndTransaction(em);
         }
         if (errorMsg.length() > 0) {
-            fail(errorMsg);
+            fail(errorMsg.toString());
         }
     }
 
@@ -12781,13 +12866,13 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         }
 
         if (exceptionInThread) {
-            String errorMsg = "";
+            StringBuilder errorMsg = new StringBuilder();
             for (int i=0; i < exceptions.length; i++) {
                 if (exceptions[i] != null) {
-                    errorMsg += i + ": " + exceptions[i] + "\n";
+                    errorMsg.append(i).append(": ").append(exceptions[i]).append("\n");
                 }
             }
-            fail(errorMsg);
+            fail(errorMsg.toString());
         }
     }
 
@@ -13041,21 +13126,14 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             //by an instance of DefaultSessionLog
             LogWrapper lw = new LogWrapper("detect_server_platform");
             AbstractSessionLog.setLog(lw);
-            AbstractSessionLog.getLog().setSession(null);
-            lw.setSession(null);
+            AbstractSessionLog.getLog().setSessionName(null);
+            lw.setSessionName(null);
             ServerPlatformUtils.detectServerPlatform(null);
             assertEquals("detect_server_platform should be printed at FINER level",
                     lw.getLevel() <= SessionLog.FINER, lw.expected());
 
             lw = new LogWrapper("detect_server_platform");
             AbstractSessionLog.setLog(lw);
-            Session ss = wr.getSession();
-            AbstractSessionLog.getLog().setSession(ss);
-            AbstractSessionLog.getLog().getSession().setSessionLog(lw);
-            lw.setSession(ss);
-            ServerPlatformUtils.detectServerPlatform((ServerSession) ss);
-            assertEquals("detect_server_platform should be printed at FINER level",
-                    lw.getLevel() <= SessionLog.FINER, lw.expected());
         } finally {
             AbstractSessionLog.setLog(original);
             closeEntityManagerFactory();
@@ -13063,30 +13141,57 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     }
 
     public void testDetachChildObjects() {
-    	EntityManager em = createEntityManager();
-    	beginTransaction(em);
-		InitTestDetachChildObjects(em);
-		UnitOfWorkImpl uow = (UnitOfWorkImpl) em.unwrap(JpaEntityManager.class).getActiveSession();
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        InitTestDetachChildObjects1(em);
+        UnitOfWorkImpl uow = (UnitOfWorkImpl) em.unwrap(JpaEntityManager.class).getActiveSession();
 
-		Material mat = em.find(Material.class, 1L);
-		mat.setWert("WERT3");
-		MaterialEreignis matEreignis1 = new MaterialEreignis();
-		matEreignis1.setChangedObject(mat);
-		matEreignis1.setBeforeChange(mat.getLastHist());
-		MaterialHist afterMat1 = makeHistCopy(mat);
-		matEreignis1.setAfterChange(afterMat1);
+        Material mat = em.find(Material.class, 1L);
+        mat.setWert("WERT3");
+        MaterialEreignis matEreignis1 = new MaterialEreignis();
+        matEreignis1.setChangedObject(mat);
+        matEreignis1.setBeforeChange(mat.getLastHist());
+        MaterialHist afterMat1 = makeHistCopy(mat);
+        matEreignis1.setAfterChange(afterMat1);
 
-		em.persist(matEreignis1);
-		em.flush();
-		em.detach(matEreignis1);
-		
-		List<PlanArbeitsgangHist> pagList = getInstancesFromPC(PlanArbeitsgangHist.class, uow);
-		assertTrue(pagList.isEmpty());
-		for (PlanArbeitsgangHist pag : pagList) {
-			assertTrue(em.contains(pag));
-		}
-		rollbackTransaction(em);
-		closeEntityManager(em);
+        em.persist(matEreignis1);
+        em.flush();
+        em.detach(matEreignis1);
+
+        List<PlanArbeitsgangHist> pagList = getInstancesFromPC(PlanArbeitsgangHist.class, uow);
+        assertTrue(pagList.isEmpty());
+        for (PlanArbeitsgangHist pag : pagList) {
+            assertTrue(em.contains(pag));
+        }
+        assertTrue(em.contains(matEreignis1.getChangedObject()));
+        assertFalse(em.contains(matEreignis1));
+        assertFalse(em.contains(matEreignis1.getBeforeChange()));
+        assertFalse(em.contains(matEreignis1.getAfterChange()));
+        for (PlanArbeitsgangHist planArbeitsgangHist: matEreignis1.getBeforeChange().getRestproduktionsweg()) {
+            assertFalse(em.contains(planArbeitsgangHist));
+        }
+        for (PlanArbeitsgangHist planArbeitsgangHist: matEreignis1.getAfterChange().getRestproduktionsweg()) {
+            assertFalse(em.contains(planArbeitsgangHist));
+        }
+
+        rollbackTransaction(em);
+        closeEntityManager(em);
+    }
+
+    public void testDetachLazyLoadedCollection() {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        InitTestDetachChildObjects2(em);
+        Material mat = em.find(Material.class, 2L);
+        IndirectList<PlanArbeitsgang> restproduktionsweg = (IndirectList<PlanArbeitsgang>)mat.getRestproduktionsweg();
+        IndirectList<PlanArbeitsgang> restproduktionswegNoCascadeDetach = (IndirectList<PlanArbeitsgang>)mat.getRestproduktionswegNoCascadeDetach();
+        assertFalse(restproduktionsweg.isInstantiated());
+        assertFalse(restproduktionswegNoCascadeDetach.isInstantiated());
+        em.detach(mat);
+        assertTrue(restproduktionsweg.isInstantiated());
+        assertFalse(restproduktionswegNoCascadeDetach.isInstantiated());
+        rollbackTransaction(em);
+        closeEntityManager(em);
     }
 
     public void testAutoCloseable() {
@@ -13106,54 +13211,66 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         }
     }
 
-    private void InitTestDetachChildObjects(EntityManager em) {
+    private void InitTestDetachChildObjects1(EntityManager em) {
         // test data - manual creation
         try {
             em.createNativeQuery("INSERT INTO MATERIAL (ID, VERSION, IDENT, WERT) VALUES (1, 1, 'MAT', 'WERT2')").executeUpdate();
-			em.createNativeQuery("INSERT INTO MATERIALHIST (ID, VERSION, IDENT, WERT, ORIGINAL_ID) VALUES (1, 1, 'MAT', 'WERT1', 1)").executeUpdate();
-			em.createNativeQuery("INSERT INTO MATERIALHIST (ID, VERSION, IDENT, WERT, ORIGINAL_ID) VALUES (2, 1, 'MAT', 'WERT2', 1)").executeUpdate();
-			em.createNativeQuery("INSERT INTO PLANARBEITSGANG (ID, VERSION, NAME, MATERIAL_ID) VALUES (1, 1, 'PAG1', 1)").executeUpdate();
-			em.createNativeQuery("INSERT INTO PLANARBEITSGANG (ID, VERSION, NAME, MATERIAL_ID) VALUES (2, 1, 'PAG2', 1)").executeUpdate();
-			em.createNativeQuery("INSERT INTO PLANARBEITSGANGHIST (ID, VERSION, NAME, MATERIAL_ID, ORIGINAL_ID) VALUES (1, 1, 'PAG1', 1, 1)").executeUpdate();
-			em.createNativeQuery("INSERT INTO PLANARBEITSGANGHIST (ID, VERSION, NAME, MATERIAL_ID, ORIGINAL_ID) VALUES (2, 1, 'PAG2', 1, 2)").executeUpdate();
-			em.createNativeQuery("INSERT INTO PLANARBEITSGANGHIST (ID, VERSION, NAME, MATERIAL_ID, ORIGINAL_ID) VALUES (3, 1, 'PAG1', 2, 1)").executeUpdate();
-			em.createNativeQuery("INSERT INTO PLANARBEITSGANGHIST (ID, VERSION, NAME, MATERIAL_ID, ORIGINAL_ID) VALUES (4, 1, 'PAG2', 2, 2)").executeUpdate();
-			em.createNativeQuery("UPDATE MATERIAL SET LASTHIST_ID = 2 WHERE ID = 1").executeUpdate();
-			em.createNativeQuery("UPDATE PLANARBEITSGANG SET LASTHIST_ID = 3 WHERE ID = 1").executeUpdate();
-			em.createNativeQuery("UPDATE PLANARBEITSGANG SET LASTHIST_ID = 4 WHERE ID = 2").executeUpdate();
-			em.createNativeQuery("INSERT INTO MATERIALEREIGNIS (ID, VERSION, AFTERCHANGE_ID, BEFORECHANGE_ID, CHANGEDOBJECT_ID) VALUES (1, 1, 2, 1, 1)").executeUpdate();
+            em.createNativeQuery("INSERT INTO MATERIALHIST (ID, VERSION, IDENT, WERT, ORIGINAL_ID) VALUES (1, 1, 'MAT', 'WERT1', 1)").executeUpdate();
+            em.createNativeQuery("INSERT INTO MATERIALHIST (ID, VERSION, IDENT, WERT, ORIGINAL_ID) VALUES (2, 1, 'MAT', 'WERT2', 1)").executeUpdate();
+            em.createNativeQuery("INSERT INTO PLANARBEITSGANG (ID, VERSION, NAME, MATERIAL_ID) VALUES (1, 1, 'PAG1', 1)").executeUpdate();
+            em.createNativeQuery("INSERT INTO PLANARBEITSGANG (ID, VERSION, NAME, MATERIAL_ID) VALUES (2, 1, 'PAG2', 1)").executeUpdate();
+            em.createNativeQuery("INSERT INTO PLANARBEITSGANGHIST (ID, VERSION, NAME, MATERIAL_ID, ORIGINAL_ID) VALUES (1, 1, 'PAG1', 1, 1)").executeUpdate();
+            em.createNativeQuery("INSERT INTO PLANARBEITSGANGHIST (ID, VERSION, NAME, MATERIAL_ID, ORIGINAL_ID) VALUES (2, 1, 'PAG2', 1, 2)").executeUpdate();
+            em.createNativeQuery("INSERT INTO PLANARBEITSGANGHIST (ID, VERSION, NAME, MATERIAL_ID, ORIGINAL_ID) VALUES (3, 1, 'PAG1', 2, 1)").executeUpdate();
+            em.createNativeQuery("INSERT INTO PLANARBEITSGANGHIST (ID, VERSION, NAME, MATERIAL_ID, ORIGINAL_ID) VALUES (4, 1, 'PAG2', 2, 2)").executeUpdate();
+            em.createNativeQuery("UPDATE MATERIAL SET LASTHIST_ID = 2 WHERE ID = 1").executeUpdate();
+            em.createNativeQuery("UPDATE PLANARBEITSGANG SET LASTHIST_ID = 3 WHERE ID = 1").executeUpdate();
+            em.createNativeQuery("UPDATE PLANARBEITSGANG SET LASTHIST_ID = 4 WHERE ID = 2").executeUpdate();
+            em.createNativeQuery("INSERT INTO MATERIALEREIGNIS (ID, VERSION, AFTERCHANGE_ID, BEFORECHANGE_ID, CHANGEDOBJECT_ID) VALUES (1, 1, 2, 1, 1)").executeUpdate();
         } catch (Exception e) {
             fail("Error creating test data: " + e.getMessage());
-        } 
+        }
     }
-    private MaterialHist makeHistCopy(Material mat) {
-		MaterialHist histCopy = new MaterialHist();
-		mat.setLastHist(histCopy);
-		histCopy.setOriginal(mat);
-		histCopy.setIdent(mat.getIdent());
-		histCopy.setWert(mat.getWert());
-		for (PlanArbeitsgang pag : mat.getRestproduktionsweg()) {
-			PlanArbeitsgangHist pagHistCopy = new PlanArbeitsgangHist();
-			pagHistCopy.setName(pag.getName());
-			pagHistCopy.setOriginal(pag);
-			pag.setLastHist(pagHistCopy);
-			histCopy.getRestproduktionsweg().add(pagHistCopy);
-			pagHistCopy.setMaterial(histCopy);
-		}
-		return histCopy;
-	}
 
-	@SuppressWarnings("unchecked")
-	private <T> List<T> getInstancesFromPC(Class<T> type, UnitOfWorkImpl uow) {
-		Set<Object> pc = uow.getCloneMapping().keySet();
-		List<T> result = new ArrayList<>();
-		for (Object o : pc) {
-			if (type.isInstance(o)) {
-				result.add((T) o);
-			}
-		}
-		return result;
-	}
+    private void InitTestDetachChildObjects2(EntityManager em) {
+        // test data - manual creation
+        try {
+            em.createNativeQuery("INSERT INTO MATERIAL (ID, VERSION, IDENT, WERT) VALUES (2, 2, 'MAT', 'WERT22')").executeUpdate();
+            em.createNativeQuery("INSERT INTO PLANARBEITSGANG (ID, VERSION, NAME, MATERIAL_ID) VALUES (11, 11, 'PAG1', 2)").executeUpdate();
+            em.createNativeQuery("INSERT INTO PLANARBEITSGANG (ID, VERSION, NAME, MATERIAL_ID) VALUES (22, 11, 'PAG2', 2)").executeUpdate();
+        } catch (Exception e) {
+            fail("Error creating test data: " + e.getMessage());
+        }
+    }
+
+    private MaterialHist makeHistCopy(Material mat) {
+        MaterialHist histCopy = new MaterialHist();
+        mat.setLastHist(histCopy);
+        histCopy.setOriginal(mat);
+        histCopy.setIdent(mat.getIdent());
+        histCopy.setWert(mat.getWert());
+        for (PlanArbeitsgang pag : mat.getRestproduktionsweg()) {
+            PlanArbeitsgangHist pagHistCopy = new PlanArbeitsgangHist();
+            pagHistCopy.setName(pag.getName());
+            pagHistCopy.setOriginal(pag);
+            pag.setLastHist(pagHistCopy);
+            histCopy.getRestproduktionsweg().add(pagHistCopy);
+            pagHistCopy.setMaterial(histCopy);
+        }
+        return histCopy;
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T> List<T> getInstancesFromPC(Class<T> type, UnitOfWorkImpl uow) {
+        Set<Object> pc = uow.getCloneMapping().keySet();
+        List<T> result = new ArrayList<>();
+        for (Object o : pc) {
+            if (type.isInstance(o)) {
+                result.add((T) o);
+            }
+        }
+        return result;
+    }
 
     public static final class Platform extends ServerPlatformBase {
 

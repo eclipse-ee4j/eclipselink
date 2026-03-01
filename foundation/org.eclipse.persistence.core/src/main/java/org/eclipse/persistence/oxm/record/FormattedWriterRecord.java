@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,7 +14,7 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.oxm.record;
 
-import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.oxm.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.NamespaceResolver;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
@@ -51,7 +51,7 @@ public class FormattedWriterRecord extends WriterRecord {
     private int numberOfTabs;
     private boolean complexType;
     private boolean isLastEventText;
-    private final String cr = Constants.cr();
+    private final String cr = System.lineSeparator();
 
     private static final String DEFAULT_TAB = "   ".intern();
 
@@ -139,7 +139,7 @@ public class FormattedWriterRecord extends WriterRecord {
                 builder.append('>');
                 isStartElementOpen = false;
             }
-            builder.append(Constants.cr());
+            builder.append(System.lineSeparator());
             for (int x = 0; x < numberOfTabs; x++) {
                 builder.append(tab());
             }
@@ -296,7 +296,7 @@ public class FormattedWriterRecord extends WriterRecord {
                 cdata(new String (ch, start, length));
                 return;
             }
-            if (new String(ch).trim().length() == 0) {
+            if (new String(ch).trim().isEmpty()) {
                 return;
             }
             super.characters(ch, start, length);

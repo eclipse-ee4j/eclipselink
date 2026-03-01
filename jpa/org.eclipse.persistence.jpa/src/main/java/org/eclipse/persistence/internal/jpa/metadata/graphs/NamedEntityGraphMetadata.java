@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,7 +32,7 @@ import org.eclipse.persistence.queries.AttributeGroup;
 
 /**
  * Object to hold onto named entity graph metadata.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -50,9 +50,9 @@ public class NamedEntityGraphMetadata extends ORMetadata {
     protected String m_name;
     protected Boolean m_includeAllAttributes;
 
-    protected List<NamedAttributeNodeMetadata> m_namedAttributeNodes = new ArrayList<NamedAttributeNodeMetadata>();
-    protected List<NamedSubgraphMetadata> m_subgraphs = new ArrayList<NamedSubgraphMetadata>();
-    protected List<NamedSubgraphMetadata> m_subclassSubgraphs = new ArrayList<NamedSubgraphMetadata>();
+    protected List<NamedAttributeNodeMetadata> m_namedAttributeNodes = new ArrayList<>();
+    protected List<NamedSubgraphMetadata> m_subgraphs = new ArrayList<>();
+    protected List<NamedSubgraphMetadata> m_subclassSubgraphs = new ArrayList<>();
 
     /**
      * INTERNAL:
@@ -91,8 +91,7 @@ public class NamedEntityGraphMetadata extends ORMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (objectToCompare instanceof NamedEntityGraphMetadata) {
-            NamedEntityGraphMetadata entityGraph = (NamedEntityGraphMetadata) objectToCompare;
+        if (objectToCompare instanceof NamedEntityGraphMetadata entityGraph) {
 
             if (! valuesMatch(m_name, entityGraph.getName())) {
                 return false;
@@ -118,7 +117,8 @@ public class NamedEntityGraphMetadata extends ORMetadata {
 
     @Override
     public int hashCode() {
-        int result = m_name != null ? m_name.hashCode() : 0;
+        int result = super.hashCode();
+        result = 31 * result + (m_name != null ? m_name.hashCode() : 0);
         result = 31 * result + (m_includeAllAttributes != null ? m_includeAllAttributes.hashCode() : 0);
         result = 31 * result + (m_namedAttributeNodes != null ? m_namedAttributeNodes.hashCode() : 0);
         result = 31 * result + (m_subgraphs != null ? m_subgraphs.hashCode() : 0);
@@ -191,7 +191,7 @@ public class NamedEntityGraphMetadata extends ORMetadata {
      * Return true is a name was provided through metadata.
      */
     protected boolean hasName() {
-       return getName() != null && ! getName().equals("");
+       return getName() != null && !getName().isEmpty();
     }
 
     /**
@@ -213,7 +213,7 @@ public class NamedEntityGraphMetadata extends ORMetadata {
             throw new IllegalStateException(ExceptionLocalization.buildMessage("named_entity_graph_exists", new Object[]{ entityGraphName, entityAccessor.getJavaClassName()}));
         } else {
             AttributeGroup entityGraph = new AttributeGroup(entityGraphName, entityAccessor.getJavaClassName(), true);
-            Map<String, Map<String, AttributeGroup>> attributeGraphs = new HashMap<String, Map<String, AttributeGroup>>();
+            Map<String, Map<String, AttributeGroup>> attributeGraphs = new HashMap<>();
 
             // Process the subgraph metadata (build attribute graphs for each).
             for (NamedSubgraphMetadata subgraph : getSubgraphs()) {
@@ -245,6 +245,7 @@ public class NamedEntityGraphMetadata extends ORMetadata {
 
             // Finally, add the entity graph to the project.
             getProject().addEntityGraph(entityGraph);
+            getProject().addNamedEntityGraph(entityGraphName, this);
         }
     }
 

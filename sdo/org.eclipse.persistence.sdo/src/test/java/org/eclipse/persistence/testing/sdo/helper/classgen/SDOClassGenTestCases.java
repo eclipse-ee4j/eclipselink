@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -109,7 +109,7 @@ public abstract class SDOClassGenTestCases extends SDOXMLHelperTestCases {
 
     // Override package generation based on the JAXB 2.0 algorithm in SDOUtil.java
     protected List<String> getPackages() {
-        if(null != packageNames && packageNames.size() > 0) {
+        if(null != packageNames && !packageNames.isEmpty()) {
             return packageNames;
         } else {
             packageNames = new ArrayList<String>();

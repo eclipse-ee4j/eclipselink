@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -44,55 +44,63 @@ import dbws.testing.DBWSTestSuite;
 public class TopLevelSimplePLSQLSPTestSuite extends DBWSTestSuite {
 
     static final String CREATE_BOOL_PROC =
-        "CREATE OR REPLACE PROCEDURE TOPLEVEL_BOOL_TEST(X IN BOOLEAN, Y OUT VARCHAR2) AS" +
-        "\nBEGIN" +
-            "\nIF X = TRUE THEN" +
-                "\nY := 'true';" +
-            "\nELSE" +
-                "\nY := 'false';" +
-            "\nEND IF;"+
-        "\nEND TOPLEVEL_BOOL_TEST;";
+            """
+                    CREATE OR REPLACE PROCEDURE TOPLEVEL_BOOL_TEST(X IN BOOLEAN, Y OUT VARCHAR2) AS
+                    BEGIN
+                    IF X = TRUE THEN
+                    Y := 'true';
+                    ELSE
+                    Y := 'false';
+                    END IF;
+                    END TOPLEVEL_BOOL_TEST;""";
     static final String CREATE_BOOL_IN_PROC =
-        "CREATE OR REPLACE PROCEDURE TOPLEVEL_BOOL_IN_TEST(X IN BOOLEAN) AS" +
-        "\nBEGIN" +
-            "\nNULL;"+
-        "\nEND TOPLEVEL_BOOL_IN_TEST;";
+            """
+                    CREATE OR REPLACE PROCEDURE TOPLEVEL_BOOL_IN_TEST(X IN BOOLEAN) AS
+                    BEGIN
+                    NULL;
+                    END TOPLEVEL_BOOL_IN_TEST;""";
     static final String CREATE_BINARY_INT_PROC =
-        "CREATE OR REPLACE PROCEDURE TOPLEVEL_BINARY_INT_TEST(X IN BINARY_INTEGER, Y OUT BINARY_INTEGER) AS" +
-        "\nBEGIN" +
-            "\nY := X;" +
-        "\nEND TOPLEVEL_BINARY_INT_TEST;";
+            """
+                    CREATE OR REPLACE PROCEDURE TOPLEVEL_BINARY_INT_TEST(X IN BINARY_INTEGER, Y OUT BINARY_INTEGER) AS
+                    BEGIN
+                    Y := X;
+                    END TOPLEVEL_BINARY_INT_TEST;""";
     static final String CREATE_PLS_INT_PROC =
-        "CREATE OR REPLACE PROCEDURE TOPLEVEL_PLS_INT_TEST(X IN PLS_INTEGER, Y OUT PLS_INTEGER) AS" +
-        "\nBEGIN" +
-            "\nY := X;" +
-        "\nEND TOPLEVEL_PLS_INT_TEST;";
+            """
+                    CREATE OR REPLACE PROCEDURE TOPLEVEL_PLS_INT_TEST(X IN PLS_INTEGER, Y OUT PLS_INTEGER) AS
+                    BEGIN
+                    Y := X;
+                    END TOPLEVEL_PLS_INT_TEST;""";
     static final String CREATE_NATURAL_PROC =
-        "CREATE OR REPLACE PROCEDURE TOPLEVEL_NATURAL_TEST(X IN NATURAL, Y OUT NATURAL) AS" +
-        "\nBEGIN" +
-            "\nY := X;" +
-        "\nEND TOPLEVEL_NATURAL_TEST;";
+            """
+                    CREATE OR REPLACE PROCEDURE TOPLEVEL_NATURAL_TEST(X IN NATURAL, Y OUT NATURAL) AS
+                    BEGIN
+                    Y := X;
+                    END TOPLEVEL_NATURAL_TEST;""";
     static final String CREATE_POSITIVE_PROC =
-        "CREATE OR REPLACE PROCEDURE TOPLEVEL_POSITIVE_TEST(X IN POSITIVE, Y OUT POSITIVE) AS" +
-        "\nBEGIN" +
-            "\nY := X;" +
-        "\nEND TOPLEVEL_POSITIVE_TEST;";
+            """
+                    CREATE OR REPLACE PROCEDURE TOPLEVEL_POSITIVE_TEST(X IN POSITIVE, Y OUT POSITIVE) AS
+                    BEGIN
+                    Y := X;
+                    END TOPLEVEL_POSITIVE_TEST;""";
     static final String CREATE_SIGNTYPE_PROC =
-        "CREATE OR REPLACE PROCEDURE TOPLEVEL_SIGNTYPE_TEST(X IN SIGNTYPE, Y OUT VARCHAR2) AS" +
-        "\nBEGIN" +
-            "\nIF X = -1 THEN" +
-                "\nY := 'negative';" +
-            "\nELSIF X = 1 THEN" +
-                "\nY := 'positive';" +
-            "\nELSE" +
-                "\nY := 'zero';" +
-            "\nEND IF;"+
-        "\nEND TOPLEVEL_SIGNTYPE_TEST;";
+            """
+                    CREATE OR REPLACE PROCEDURE TOPLEVEL_SIGNTYPE_TEST(X IN SIGNTYPE, Y OUT VARCHAR2) AS
+                    BEGIN
+                    IF X = -1 THEN
+                    Y := 'negative';
+                    ELSIF X = 1 THEN
+                    Y := 'positive';
+                    ELSE
+                    Y := 'zero';
+                    END IF;
+                    END TOPLEVEL_SIGNTYPE_TEST;""";
     static final String CREATE_ECHOTEST_PROC =
-        "CREATE OR REPLACE PROCEDURE TOPLEVEL_ECHO_TEST(T IN VARCHAR2, U OUT VARCHAR2) AS" +
-        "\nBEGIN" +
-            "\nU := CONCAT('test-' , T);"+
-        "\nEND TOPLEVEL_ECHO_TEST;";
+            """
+                    CREATE OR REPLACE PROCEDURE TOPLEVEL_ECHO_TEST(T IN VARCHAR2, U OUT VARCHAR2) AS
+                    BEGIN
+                    U := CONCAT('test-' , T);
+                    END TOPLEVEL_ECHO_TEST;""";
     static final String DROP_BOOL_PROC =
         "DROP PROCEDURE TOPLEVEL_BOOL_TEST";
     static final String DROP_BOOL_IN_PROC =

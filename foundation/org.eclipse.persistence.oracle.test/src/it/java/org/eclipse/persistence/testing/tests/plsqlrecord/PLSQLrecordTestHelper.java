@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -144,7 +144,7 @@ public class PLSQLrecordTestHelper {
             workbenchXMLProject = new ObjectPersistenceWorkbenchXMLProject();
             XMLTransformationMapping versionMapping =
                 (XMLTransformationMapping)workbenchXMLProject.getDescriptor(Project.class).
-                    getMappings().firstElement();
+                    getMappings().get(0);
             TransformerBasedFieldTransformation  versionTransformer =
                 (TransformerBasedFieldTransformation)versionMapping.getFieldTransformations().get(0);
             Field transformerField =

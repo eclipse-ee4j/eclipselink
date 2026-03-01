@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,8 +17,6 @@ package org.eclipse.persistence.testing.oxm.mappings.keybased.singletarget.singl
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.eclipse.persistence.testing.oxm.mappings.keybased.Employee;
-
 public class MultipleSourceRoot {
     public Collection employees;
     public Collection addresses;
@@ -33,11 +31,9 @@ public class MultipleSourceRoot {
      * be checked to verify correctness.
      */
     public boolean equals(Object obj) {
-        if (!(obj instanceof MultipleSourceRoot)) {
+        if (!(obj instanceof MultipleSourceRoot tgtRoot)) {
             return false;
         }
-
-        MultipleSourceRoot tgtRoot = (MultipleSourceRoot) obj;
 
         if(tgtRoot.employees.size() != this.employees.size()) {
             return false;

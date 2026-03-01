@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -48,14 +48,14 @@ public class RootWithCompositeCollection {
     }
 
     public String toString() {
-        String string = "RootWithCompositeCollection(";
+        StringBuilder string = new StringBuilder("RootWithCompositeCollection(");
         for (int x = 0; x < employees.size(); x++) {
             if (x > 0) {
-                string += ", ";
+                string.append(", ");
             }
-            string += employees.get(x).toString();
+            string.append(employees.get(x).toString());
         }
-        string += ")";
-        return string;
+        string.append(")");
+        return string.toString();
     }
 }

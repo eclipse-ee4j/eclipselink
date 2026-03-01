@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,9 +14,21 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.interfaces;
 
-import org.eclipse.persistence.testing.framework.*;
-import org.eclipse.persistence.tools.schemaframework.*;
-import org.eclipse.persistence.testing.models.interfaces.*;
+import org.eclipse.persistence.testing.framework.DeleteObjectTest;
+import org.eclipse.persistence.testing.framework.InsertObjectTest;
+import org.eclipse.persistence.testing.framework.ReadAllTest;
+import org.eclipse.persistence.testing.framework.ReadObjectTest;
+import org.eclipse.persistence.testing.framework.TestModel;
+import org.eclipse.persistence.testing.framework.TestSuite;
+import org.eclipse.persistence.testing.framework.UnitOfWorkBasicUpdateObjectTest;
+import org.eclipse.persistence.testing.framework.WriteObjectTest;
+import org.eclipse.persistence.testing.models.interfaces.Commercial;
+import org.eclipse.persistence.testing.models.interfaces.InterfaceWithTablesSystem;
+import org.eclipse.persistence.testing.models.interfaces.Network;
+import org.eclipse.persistence.testing.models.interfaces.Program;
+import org.eclipse.persistence.testing.models.interfaces.Show;
+import org.eclipse.persistence.testing.models.interfaces.TVSchedule;
+import org.eclipse.persistence.tools.schemaframework.PopulationManager;
 
 /**
  * This model tests interface support, where the interfaces have tables in the database

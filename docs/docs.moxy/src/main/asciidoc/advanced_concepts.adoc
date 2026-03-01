@@ -1,0 +1,58 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[ADVANCEDCONCEPTS]]
+== Advanced Concepts
+
+This chapter includes the following sections:
+
+* xref:{relativedir}/advanced_concepts001.adoc#ADVANCEDCONCEPTS001[Refreshing Metadata]
+* xref:{relativedir}/advanced_concepts002.adoc#ADVANCEDCONCEPTS002[Customizing XML Name Conversions]
+* xref:{relativedir}/advanced_concepts003.adoc#ADVANCEDCONCEPTS003[Using Virtual Access Methods]
+* xref:{relativedir}/advanced_concepts004.adoc#ADVANCEDCONCEPTS004[Using Extensible MOXy]
+* xref:{relativedir}/advanced_concepts005.adoc#ADVANCEDCONCEPTS005[Mapping Using XPath Predicates]
+* xref:{relativedir}/advanced_concepts006.adoc#ADVANCEDCONCEPTS006[Using an XmlAdapter]
+* xref:{relativedir}/advanced_concepts007.adoc#ADVANCEDCONCEPTS007[Using XML Transformations]
+* xref:{relativedir}/advanced_concepts008.adoc#ADVANCEDCONCEPTS008[Generating Java Classes from an XML Schema]
+* xref:{relativedir}/advanced_concepts009.adoc#ADVANCEDCONCEPTS009[Customizing Generated Mappings]
+
+//Refreshing Metadata
+include::{rootdir}/advanced_concepts001.adoc[]
+
+//Customizing XML Name Conversions
+include::{rootdir}/advanced_concepts002.adoc[]
+
+//Using Virtual Access Methods
+include::{rootdir}/advanced_concepts003.adoc[]
+
+//Using Extensible MOXy
+include::{rootdir}/advanced_concepts004.adoc[]
+
+//Mapping Using XPath Predicates
+include::{rootdir}/advanced_concepts005.adoc[]
+
+//Using an XmlAdapter
+include::{rootdir}/advanced_concepts006.adoc[]
+
+//Using XML Transformations
+include::{rootdir}/advanced_concepts007.adoc[]
+
+//Generating Java Classes from an XML Schema
+include::{rootdir}/advanced_concepts008.adoc[]
+
+//Customizing Generated Mappings
+include::{rootdir}/advanced_concepts009.adoc[]

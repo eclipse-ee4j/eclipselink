@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,13 +14,10 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.oxm.mappings;
 
-import java.util.Enumeration;
-import java.util.Vector;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.DescriptorException;
-import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
@@ -47,6 +44,10 @@ import org.eclipse.persistence.oxm.record.DOMRecord;
 import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.eclipse.persistence.sessions.Session;
+
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
 
 /**
  * <p>Composite direct collection XML mappings map a collection of simple types (String, Number, Date,
@@ -110,7 +111,6 @@ import org.eclipse.persistence.sessions.Session;
  * to it's own node.  It is possible, however, to mapping a collection to a single node;  here the contents of
  * the node is treated as a space-separated list.  This behavior is set on the mapping using the <code>
  * setUsesSingleNode </code> method, with 'true' as the parameter.
- *
  * <!--
  * <?xml version="1.0" encoding="UTF-8"?><br>
  * <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"><br>
@@ -153,7 +153,6 @@ import org.eclipse.persistence.sessions.Session;
  * <p><b>Specifying the Content Type of a Collection</b>: By default, TopLink will treat the node values
  * read in by a composite direct collection XML mapping as objects of type String. You can override this behavior
  * by specifying the type of the collection's contents.
- *
  * <!--
  * <?xml version="1.0" encoding="UTF-8"?><br>
  * <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"><br>
@@ -188,7 +187,6 @@ import org.eclipse.persistence.sessions.Session;
  * </code>
  *
  * <p><b>Mapping to a List of Unions</b>:
- *
  * <!--
  * <?xml version="1.0" encoding="UTF-8"?>
  * <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
@@ -224,7 +222,7 @@ import org.eclipse.persistence.sessions.Session;
  * mapping.setAttributeName("myattribute");<br>
  * XMLUnionField field = new XMLUnionField("listOfUnions/text()");<br>
  * mapping.addSchemaType(new QName(url,XMLConstants.INT));<br>
- * mapping.addSchemaType(new QName(url,XMLConstants.DATE));<br>
+ * mapping.addSchemaType(new QName(url,Constants.DATE));<br>
  * mapping.setField(field);<br>
  * mapping.useSingleElement(false);<br>
  * </code>
@@ -270,8 +268,7 @@ public class XMLCompositeDirectCollectionMapping extends AbstractCompositeDirect
     public void initialize(AbstractSession session) throws DescriptorException {
         super.initialize(session);
         if (this.getField() instanceof XMLField) {
-            if (valueConverter instanceof TypeConversionConverter) {
-                TypeConversionConverter converter = (TypeConversionConverter) valueConverter;
+            if (valueConverter instanceof TypeConversionConverter converter) {
                 this.getField().setType(converter.getObjectClass());
             }
             String xpathString = ((XMLField) getField()).getXPath();
@@ -336,7 +333,7 @@ public class XMLCompositeDirectCollectionMapping extends AbstractCompositeDirect
             }
         }
 
-        Vector fieldValues = this.getDescriptor().buildDirectValuesFromFieldValue(fieldValue);
+        List<Object> fieldValues = this.getDescriptor().buildDirectValuesFromFieldValue(fieldValue);
         if (fieldValues == null) {
             if (reuseContainer) {
                 Object currentObject = ((XMLRecord) row).getCurrentObject();
@@ -356,10 +353,10 @@ public class XMLCompositeDirectCollectionMapping extends AbstractCompositeDirect
             result = cp.containerInstance(fieldValues.size());
         }
 
-        for (Enumeration stream = fieldValues.elements(); stream.hasMoreElements();) {
-            Object element = stream.nextElement();
+        for (Iterator<Object> iterator = fieldValues.iterator(); iterator.hasNext();) {
+            Object element = iterator.next();
             element = convertDataValueToObjectValue(element, executionSession, ((XMLRecord) row).getUnmarshaller());
-            if (element != null && element.getClass() == ClassConstants.STRING) {
+            if (element != null && element.getClass() == CoreClassConstants.STRING) {
                 if (isCollapsingStringValues) {
                     element = XMLConversionManager.getDefaultXMLManager().collapseStringValue((String)element);
                 } else if(isNormalizingStringValues) {
@@ -396,18 +393,18 @@ public class XMLCompositeDirectCollectionMapping extends AbstractCompositeDirect
                 element = convertObjectValueToDataValue(element, session, ((XMLRecord) row).getMarshaller());
 
                 if (element != null) {
-                    elements.addElement(element);
+                    elements.add(element);
                 } else if(!usesSingleNode()){
                     AbstractNullPolicy nullPolicy = getNullPolicy();
                     if (nullPolicy == null) {
-                        elements.addElement(null);
+                        elements.add(null);
                     } else {
                         if (nullPolicy.getMarshalNullRepresentation() == XMLNullRepresentationType.XSI_NIL) {
-                            elements.addElement(XMLRecord.NIL);
+                            elements.add(XMLRecord.NIL);
                         } else if (nullPolicy.getMarshalNullRepresentation() == XMLNullRepresentationType.ABSENT_NODE) {
                             // Do nothing
                         } else {
-                            elements.addElement(XMLConstants.EMPTY_STRING);
+                            elements.add(XMLConstants.EMPTY_STRING);
                         }
                     }
                 }

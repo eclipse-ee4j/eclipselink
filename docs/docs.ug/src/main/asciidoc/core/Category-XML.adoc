@@ -1,0 +1,19 @@
+’’’image:Elug_draft_icon.png[Warning,title="Warning"] This page is
+obsolete.
+
+Please see the
+_http://www.eclipse.org/eclipselink/documentation/latest/moxy/toc.htm[Developing
+JAXB Applications Using EclipseLink MOXy]_ for current information.’’’
+
+'''''
+
+[width="100%",cols="30%,70%",]
+|===
+|image:Eclipselink_moxy.png‎[Image:Eclipselink
+moxy.png‎,title="Image:Eclipselink moxy.png‎"] |This page lists all
+sections in the _link:EclipseLink_UserGuide[EclipseLink User’s Guide]_
+for *MOXy* (Mapping Objects to XML), with support for Java Architecture
+for XML Binding (JAXB).
+|===
+
+Category:EclipseLink_User's_Guide[Category:EclipseLink User’s Guide]

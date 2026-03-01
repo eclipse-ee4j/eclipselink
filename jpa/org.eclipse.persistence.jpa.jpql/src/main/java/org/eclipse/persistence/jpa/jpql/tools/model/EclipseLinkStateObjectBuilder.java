@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,9 +18,7 @@ package org.eclipse.persistence.jpa.jpql.tools.model;
 import org.eclipse.persistence.jpa.jpql.EclipseLinkLiteralVisitor;
 import org.eclipse.persistence.jpa.jpql.LiteralVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.AsOfClause;
-import org.eclipse.persistence.jpa.jpql.parser.CastExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ConnectByClause;
-import org.eclipse.persistence.jpa.jpql.parser.DatabaseType;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkExpressionVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.ExtractExpression;
 import org.eclipse.persistence.jpa.jpql.parser.HierarchicalQueryClause;
@@ -29,7 +27,6 @@ import org.eclipse.persistence.jpa.jpql.parser.RegexpExpression;
 import org.eclipse.persistence.jpa.jpql.parser.StartWithClause;
 import org.eclipse.persistence.jpa.jpql.parser.TableExpression;
 import org.eclipse.persistence.jpa.jpql.parser.TableVariableDeclaration;
-import org.eclipse.persistence.jpa.jpql.parser.UnionClause;
 
 /**
  * The default implementation of {@link BasicStateObjectBuilder}, which provides support based on
@@ -65,17 +62,7 @@ public class EclipseLinkStateObjectBuilder extends BasicStateObjectBuilder
     }
 
     @Override
-    public void visit(CastExpression expression) {
-        // TODO
-    }
-
-    @Override
     public void visit(ConnectByClause expression) {
-        // TODO
-    }
-
-    @Override
-    public void visit(DatabaseType expression) {
         // TODO
     }
 
@@ -110,11 +97,6 @@ public class EclipseLinkStateObjectBuilder extends BasicStateObjectBuilder
 
     @Override
     public void visit(TableVariableDeclaration expression) {
-        // TODO
-    }
-
-    @Override
-    public void visit(UnionClause expression) {
         // TODO
     }
 }

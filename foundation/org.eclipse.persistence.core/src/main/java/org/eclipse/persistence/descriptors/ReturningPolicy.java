@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2020 Payara Services Ltd.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,18 +15,28 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.descriptors;
 
-import java.io.Serializable;
-import java.util.*;
+import org.eclipse.persistence.exceptions.DescriptorException;
+import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
-import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.logging.SessionLog;
-import org.eclipse.persistence.mappings.*;
-import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
-import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
-import org.eclipse.persistence.queries.*;
+import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.queries.StoredProcedureCall;
+import org.eclipse.persistence.queries.WriteObjectQuery;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p><b>Purpose</b>:
@@ -206,9 +217,7 @@ public class ReturningPolicy implements Serializable, Cloneable {
         if (fieldsForGeneration == null) {
             // the method is called for the first time for this operation and this table
             fieldsForGeneration = new ArrayList<>();
-            Iterator<DatabaseField> it = this.main[operation][ALL].iterator();
-            while (it.hasNext()) {
-                DatabaseField field = it.next();
+            for (DatabaseField field : this.main[operation][ALL]) {
                 if (field.getTable().equals(table)) {
                     fieldsForGeneration.add(field);
                 }
@@ -672,9 +681,7 @@ public class ReturningPolicy implements Serializable, Cloneable {
         if (!infos.isEmpty()) {
             Hashtable<DatabaseField, Info> infoHashtable = removeDuplicateAndValidateInfos(session);
             Hashtable<DatabaseField, Info> infoHashtableUnmapped = (Hashtable<DatabaseField, Info>)infoHashtable.clone();
-            for (Enumeration<DatabaseField> fields = getDescriptor().getFields().elements();
-                 fields.hasMoreElements();) {
-                DatabaseField field = fields.nextElement();
+            for (DatabaseField field: getDescriptor().getFields()) {
                 Info info = infoHashtableUnmapped.get(field);
                 if (info != null) {
                     infoHashtableUnmapped.remove(field);
@@ -690,9 +697,9 @@ public class ReturningPolicy implements Serializable, Cloneable {
             }
 
             if (!infoHashtableUnmapped.isEmpty()) {
-                Enumeration<DatabaseField> fields = infoHashtableUnmapped.keys();
-                while (fields.hasMoreElements()) {
-                    DatabaseField field = fields.nextElement();
+                Iterator<DatabaseField> iterator = infoHashtableUnmapped.keySet().iterator();
+                while (iterator.hasNext()) {
+                    DatabaseField field = iterator.next();
                     Info info = infoHashtableUnmapped.get(field);
                     if (verifyField(session, field, getDescriptor())) {
                         if (field.getType() != null) {
@@ -748,9 +755,7 @@ public class ReturningPolicy implements Serializable, Cloneable {
         Hashtable<DatabaseField, DatabaseField> allFields = new Hashtable<>();
         for (int operation = INSERT; operation <= UPDATE; operation++) {
             if (main[operation][ALL] != null) {
-                Iterator<DatabaseField> it = main[operation][ALL].iterator();
-                while (it.hasNext()) {
-                    DatabaseField field = it.next();
+                for (DatabaseField field : main[operation][ALL]) {
                     allFields.put(field, field);
                 }
             }
@@ -846,7 +851,7 @@ public class ReturningPolicy implements Serializable, Cloneable {
             verifyFieldAndMapping(session, field, referenceDescriptor, mapping);
         }
         if (!mapping.isDirectToFieldMapping() && !mapping.isTransformationMapping()) {
-            String mappingTypeName = Helper.getShortClassName(mapping);
+            String mappingTypeName = mapping.getClass().getSimpleName();
             session.getIntegrityChecker().handleError(DescriptorException.returningPolicyMappingNotSupported(field.getName(), mappingTypeName, mapping));
             return false;
         } else {
@@ -864,8 +869,7 @@ public class ReturningPolicy implements Serializable, Cloneable {
             session.getIntegrityChecker().handleError(DescriptorException.returningPolicyFieldNotSupported(field.getName(), descriptor));
         } else if (descriptor.usesOptimisticLocking()) {
             OptimisticLockingPolicy optimisticLockingPolicy = descriptor.getOptimisticLockingPolicy();
-            if (optimisticLockingPolicy instanceof VersionLockingPolicy) {
-                VersionLockingPolicy versionLockingPolicy = (VersionLockingPolicy)optimisticLockingPolicy;
+            if (optimisticLockingPolicy instanceof VersionLockingPolicy versionLockingPolicy) {
                 if (field.equals(versionLockingPolicy.getWriteLockField())) {
                     ok = false;
                     session.getIntegrityChecker().handleError(DescriptorException.returningPolicyFieldNotSupported(field.getName(), descriptor));
@@ -882,17 +886,13 @@ public class ReturningPolicy implements Serializable, Cloneable {
         Hashtable<DatabaseField, DatabaseField> mapped = new Hashtable<>();
         for (int operation = INSERT; operation <= UPDATE; operation++) {
             if ((main[operation][MAPPED] != null) && !main[operation][MAPPED].isEmpty()) {
-                Iterator<DatabaseField> it = main[operation][MAPPED].iterator();
-                while (it.hasNext()) {
-                    DatabaseField field = it.next();
+                for (DatabaseField field : main[operation][MAPPED]) {
                     mapped.put(field, field);
                 }
             }
         }
         if (!mapped.isEmpty()) {
-            for (Enumeration<DatabaseField> fields = getDescriptor().getFields().elements();
-                 fields.hasMoreElements();) {
-                DatabaseField fieldInDescriptor = fields.nextElement();
+            for (DatabaseField fieldInDescriptor: getDescriptor().getFields()) {
                 DatabaseField fieldInMain = mapped.get(fieldInDescriptor);
                 if (fieldInMain != null) {
                     if (fieldInMain.getType() == null) {
@@ -916,17 +916,17 @@ public class ReturningPolicy implements Serializable, Cloneable {
                 // this operation requires some fields to be returned
                 if ((query[operation] == null) || (query[operation].getDatasourceCall() == null)) {
                     if (!session.getPlatform().canBuildCallWithReturning()) {
-                        session.getIntegrityChecker().handleError(DescriptorException.noCustomQueryForReturningPolicy(queryTypeName[operation], Helper.getShortClassName(session.getPlatform()), getDescriptor()));
+                        session.getIntegrityChecker().handleError(DescriptorException.noCustomQueryForReturningPolicy(queryTypeName[operation], session.getPlatform().getClass().getSimpleName(), getDescriptor()));
                     }
                 } else if (query[operation].getDatasourceCall() instanceof StoredProcedureCall) {
                     // SQLCall with custom SQL calculates its outputRowFields later (in prepare() method) -
                     // that's why SQLCall can't be verified here.
                     DatabaseCall customCall = (DatabaseCall)query[operation].getDatasourceCall();
-                    Enumeration outputRowFields = customCall.getOutputRowFields().elements();
+                    Iterator iterator = customCall.getOutputRowFields().iterator();
                     Collection<DatabaseField> notFoundInOutputRow = createCollection();
                     notFoundInOutputRow.addAll(main[operation][ALL]);
-                    while (outputRowFields.hasMoreElements()) {
-                        notFoundInOutputRow.remove(outputRowFields.nextElement());
+                    while (iterator.hasNext()) {
+                        notFoundInOutputRow.remove(iterator.next());
                     }
                     if (!notFoundInOutputRow.isEmpty()) {
                         Iterator<DatabaseField> it = notFoundInOutputRow.iterator();

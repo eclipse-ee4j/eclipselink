@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,9 +17,6 @@
 //       - 526957 : Split the logging and trace messages
 package org.eclipse.persistence.sessions.coordination;
 
-import java.net.InetAddress;
-
-import org.eclipse.persistence.exceptions.RemoteCommandManagerException;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.localization.LoggingLocalization;
 import org.eclipse.persistence.internal.localization.TraceLocalization;
@@ -35,6 +32,8 @@ import org.eclipse.persistence.sessions.SessionProfiler;
 import org.eclipse.persistence.sessions.coordination.rmi.RMITransportManager;
 import org.eclipse.persistence.sessions.serializers.JavaSerializer;
 import org.eclipse.persistence.sessions.serializers.Serializer;
+
+import java.net.InetAddress;
 
 /**
  * <p>
@@ -144,7 +143,7 @@ public class RemoteCommandManager implements org.eclipse.persistence.sessions.co
         logDebug("starting_rcm", args);
 
         // replace the $HOST substring of the URL with the discovered ipAddress
-        if ((getUrl() != null) && (getUrl().indexOf(ServiceId.HOST_TOKEN) >= 0)) {
+        if ((getUrl() != null) && (getUrl().contains(ServiceId.HOST_TOKEN))) {
             try {
                 // discover local IP address
                 String ipAddress = InetAddress.getLocalHost().getHostAddress();

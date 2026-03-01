@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,15 +14,14 @@
 //      Oracle - initial impl
 package org.eclipse.persistence.sessions.serializers;
 
-import java.io.StringReader;
-import java.io.StringWriter;
-
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Marshaller;
 import jakarta.xml.bind.Unmarshaller;
-
 import org.eclipse.persistence.sessions.Session;
+
+import java.io.StringReader;
+import java.io.StringWriter;
 
 /**
  * Uses EclipseLink Moxy to convert an object to JSON.

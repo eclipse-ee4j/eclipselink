@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2022, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,5 +21,5 @@ package org.eclipse.persistence.internal.nosql.adapters.sdk;
  * @since EclipseLink 4.0
  */
 public enum OracleNoSQLOperation {
-    GET, PUT, PUT_IF_ABSENT, PUT_IF_PRESENT, PUT_IF_VERSION, DELETE, DELETE_IF_VERSION, ITERATOR, ITERATOR_QUERY
+    GET, PUT, PUT_IF_ABSENT, PUT_IF_PRESENT, PUT_IF_VERSION, DELETE, DELETE_IF_VERSION, ITERATOR, ITERATOR_QUERY, NATIVE_QUERY
 }

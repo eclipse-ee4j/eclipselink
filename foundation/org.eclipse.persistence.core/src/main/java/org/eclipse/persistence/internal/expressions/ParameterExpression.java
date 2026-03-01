@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -17,12 +17,6 @@
 //       - 345962: Join fetch query when using tenant discriminator column fails.
 package org.eclipse.persistence.internal.expressions;
 
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.expressions.Expression;
@@ -33,6 +27,12 @@ import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.queries.DatabaseQuery;
+
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Used for parameterized expressions, such as expression defined in mapping queries.
@@ -239,10 +239,30 @@ public class ParameterExpression extends BaseExpression {
             ClassDescriptor descriptor = session.getDescriptor(value);
             //Bug4924639  Aggregate descriptors have to be acquired from their mapping as they are cloned and initialized by each mapping
             if (descriptor != null && descriptor.isAggregateDescriptor() && ((ParameterExpression)getBaseExpression()).getLocalBase().isObjectExpression()) {
-                descriptor = ((ObjectExpression)((ParameterExpression)getBaseExpression()).getLocalBase()).getDescriptor();
+                if (getLocalBase() != null && getLocalBase().isQueryKeyExpression()) {
+                    descriptor = ((QueryKeyExpression)getLocalBase()).getMapping().getDescriptor();
+                } else {
+                    descriptor = ((ObjectExpression) ((ParameterExpression) getBaseExpression()).getLocalBase()).getDescriptor();
+                }
             }
 
             if (descriptor == null) {
+                // Handle @IdClass composite key objects
+                // When descriptor is null, the value might be an @IdClass object (not an entity)
+                // We need to extract the field value using reflection
+                if (getLocalBase() != null && getLocalBase().isQueryKeyExpression()) {
+                    // Try to extract the field value from the @IdClass object using reflection
+                    try {
+                        // Get the field value using the field name
+                        java.lang.reflect.Field field = value.getClass().getDeclaredField(this.field.getName());
+                        field.setAccessible(true);
+                        value = field.get(value);
+                        return value;
+                    } catch (Exception e) {
+                        // If reflection fails, fall through to validation
+                    }
+                }
+
                 // Bug 245268 validate parameter type against mapping
                 validateParameterValueAgainstMapping(value, true);
             } else {
@@ -264,7 +284,13 @@ public class ParameterExpression extends BaseExpression {
                 } else {
                     mapping = descriptor.getObjectBuilder().getMappingForAttributeName(this.field.getName());
                     if (mapping != null) {
-                        value = mapping.getRealAttributeValueFromObject(value, session);
+                        //Nested attribute
+                        if (value.getClass() != descriptor.getJavaClass() && this.getLocalBase().isQueryKeyExpression() && ((QueryKeyExpression)this.getLocalBase()).getBaseExpression().isQueryKeyExpression()) {
+                            value = getParentNodeValue(descriptor.getJavaClass(), (QueryKeyExpression)this.getLocalBase(), value);
+                        }
+                        if (value != null) {
+                            value = mapping.getRealAttributeValueFromObject(value, session);
+                        }
                     } else {
                         DatabaseField queryKeyField = descriptor.getObjectBuilder().getFieldForQueryKeyName(this.field.getName());
                         if (queryKeyField != null) {
@@ -323,6 +349,34 @@ public class ParameterExpression extends BaseExpression {
         return value;
     }
 
+    private boolean directionUp = true;
+
+    private Object getParentNodeValue(Class<?> parentNodeClass, QueryKeyExpression queryKeyExpression, Object inputValue) {
+        Object value = null;
+        QueryKeyExpression baseExpression = queryKeyExpression;
+        DatabaseMapping mapping = baseExpression.getMapping();
+        if (directionUp) {
+            baseExpression = (QueryKeyExpression) queryKeyExpression.getBaseExpression();
+            mapping = baseExpression.getMapping();
+        }
+        if (mapping.getReferenceDescriptor().getJavaClass() == parentNodeClass &&
+                mapping.getDescriptor().getJavaClass() == inputValue.getClass()) {
+            value = mapping.getAttributeValueFromObject(inputValue);
+        } else {
+            Object tmpValue = inputValue;
+            if (mapping.getDescriptor().getJavaClass() == inputValue.getClass()) {
+                tmpValue = mapping.getAttributeValueFromObject(inputValue);
+            }
+            if (tmpValue != inputValue) {
+                directionUp = false;
+                return tmpValue;
+            }
+            tmpValue = getParentNodeValue(parentNodeClass, baseExpression, tmpValue);
+            value = mapping.getAttributeValueFromObject(tmpValue);
+        }
+        return value;
+    }
+
     @Override
     public boolean isParameterExpression() {
         return true;
@@ -359,7 +413,7 @@ public class ParameterExpression extends BaseExpression {
      * Used for cloning.
      */
     @Override
-    protected void postCopyIn(Map alreadyDone) {
+    protected void postCopyIn(Map<Expression, Expression> alreadyDone) {
         super.postCopyIn(alreadyDone);
         if (getLocalBase() != null) {
             setLocalBase(getLocalBase().copiedVersionFrom(alreadyDone));
@@ -374,8 +428,8 @@ public class ParameterExpression extends BaseExpression {
     public void printSQL(ExpressionSQLPrinter printer) {
         if (printer.shouldPrintParameterValues()) {
             Object value = getValue(printer.getTranslationRow(), printer.getSession());
-            if (value instanceof Collection) {
-                printer.printValuelist((Collection<Object>)value, this.canBind);
+            if (value instanceof Collection<?> collection) {
+                printer.printValuelist(collection, this.canBind);
             } else {
                 if(getField() == null) {
                     printer.printPrimitive(value, this.canBind);
@@ -491,7 +545,7 @@ public class ParameterExpression extends BaseExpression {
                     // this is a map key expression, operate on the key
                     ContainerPolicy cp = mapping.getContainerPolicy();
                     Object keyType = cp.getKeyType();
-                    Class<?> keyTypeClass = keyType instanceof Class<?> ? (Class)keyType: ((ClassDescriptor)keyType).getJavaClass();
+                    Class<?> keyTypeClass = keyType instanceof Class<?> c ? c: ((ClassDescriptor)keyType).getJavaClass();
                     if (!keyTypeClass.isInstance(value)){
                         throw QueryException.incorrectClassForObjectComparison(baseExpression, value, mapping);
                     }
@@ -541,7 +595,7 @@ public class ParameterExpression extends BaseExpression {
     public void writeFields(ExpressionSQLPrinter printer, List<DatabaseField> newFields, SQLSelectStatement statement) {
         /*
          * If the platform doesn't support binding for functions, then disable binding for the whole query
-         * 
+         *
          * DatabasePlatform classes should instead override DatasourcePlatform.initializePlatformOperators()
          *      @see ExpressionOperator.setIsBindingSupported(boolean isBindingSupported)
          * In this way, platforms can define their own supported binding behaviors for individual functions
@@ -551,8 +605,8 @@ public class ParameterExpression extends BaseExpression {
         }
 
         /*
-         *  Allow the platform to indicate if they support parameter expressions in the SELECT clause 
-         *  as a whole, regardless if individual functions allow binding. We make that decision here 
+         *  Allow the platform to indicate if they support parameter expressions in the SELECT clause
+         *  as a whole, regardless if individual functions allow binding. We make that decision here
          *  before we continue parsing into generic API calls
          */
         if (!printer.getPlatform().allowBindingForSelectClause()) {

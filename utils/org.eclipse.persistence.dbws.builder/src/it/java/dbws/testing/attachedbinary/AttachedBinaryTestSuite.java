@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -48,25 +48,26 @@ import dbws.testing.DBWSTestSuite;
 public class AttachedBinaryTestSuite extends DBWSTestSuite {
 
     static final String CREATE_ATTACHEDBINARY_TABLE =
-        "CREATE TABLE IF NOT EXISTS attachedbinary (" +
-            "\nID DECIMAL(7,0) NOT NULL," +
-            "\nNAME VARCHAR(80)," +
-            "\nB BLOB," +
-            "\nPRIMARY KEY (ID)" +
-        "\n)";
+            """
+                    CREATE TABLE IF NOT EXISTS attachedbinary (
+                    ID DECIMAL(7,0) NOT NULL,
+                    NAME VARCHAR(80),
+                    B BLOB,
+                    PRIMARY KEY (ID)
+                    )""";
     static final String[] POPULATE_ATTACHEDBINARY_TABLE = new String[] {
         "insert into attachedbinary(ID, NAME, B) values (1, 'one', 0x010101010101010101010101010101)",
         "insert into attachedbinary(ID, NAME, B) values (2, 'two', 0x020202020202020202020202020202)",
         "insert into attachedbinary(ID, NAME, B) values (3, 'three', 0x030303030303030303030303030303)"
     };
     static final String CREATE_GETBLOBBYID_FUNCTION =
-        "CREATE FUNCTION getBLOBById(pk numeric(7)) RETURNS BLOB" +
-            "\nREADS SQL DATA" +
-        "\nBEGIN" +
-            "\nDECLARE blb BLOB;" +
-            "\nSELECT B into blb FROM attachedbinary WHERE ID=PK;" +
-            "\nreturn(blb);" +
-        "END";
+            """
+                    CREATE FUNCTION getBLOBById(pk numeric(7)) RETURNS BLOB
+                    READS SQL DATA
+                    BEGIN
+                    DECLARE blb BLOB;
+                    SELECT B into blb FROM attachedbinary WHERE ID=PK;
+                    return(blb);END""";
     static final String DROP_ATTACHEDBINARY_TABLE =
         "DROP TABLE attachedbinary";
     static final String DROP_GETBLOBBYID_FUNCTION =

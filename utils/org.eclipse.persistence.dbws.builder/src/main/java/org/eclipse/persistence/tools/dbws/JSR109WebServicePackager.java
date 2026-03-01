@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -44,28 +44,30 @@ import static org.eclipse.persistence.tools.dbws.Util.WEB_XML_FILENAME;
 public class JSR109WebServicePackager extends ProviderPackager {
 
     public static final String WEB_XML_PREAMBLE =
-        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-        "<web-app\n" +
-        "  xmlns=\"https://jakarta.ee/xml/ns/jakartaee\"\n" +
-        "  xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
-        "  xsi:schemaLocation=\"https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_5_0.xsd\"\n" +
-        "  version=\"5.0\"\n" +
-        "  >\n" +
-        "  <listener>\n" +
-        "    <listener-class>_dbws.ProviderListener</listener-class>\n" +
-        "  </listener>\n" +
-        "  <servlet>\n" +
-        "    <servlet-name>_dbws.DBWSProvider</servlet-name>\n" +
-        "    <servlet-class>_dbws.DBWSProvider</servlet-class>\n" +
-        "    <load-on-startup>0</load-on-startup>\n" +
-        "  </servlet>\n" +
-        "  <servlet-mapping>\n" +
-        "    <servlet-name>_dbws.DBWSProvider</servlet-name>\n" +
-        "    <url-pattern>";
+            """
+                    <?xml version="1.0" encoding="UTF-8"?>
+                    <web-app
+                      xmlns="https://jakarta.ee/xml/ns/jakartaee"
+                      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                      xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_5_0.xsd"
+                      version="5.0"
+                      >
+                      <listener>
+                        <listener-class>_dbws.ProviderListener</listener-class>
+                      </listener>
+                      <servlet>
+                        <servlet-name>_dbws.DBWSProvider</servlet-name>
+                        <servlet-class>_dbws.DBWSProvider</servlet-class>
+                        <load-on-startup>0</load-on-startup>
+                      </servlet>
+                      <servlet-mapping>
+                        <servlet-name>_dbws.DBWSProvider</servlet-name>
+                        <url-pattern>""";
     public static final String WEB_XML_URL_PATTERN =
-                               "</url-pattern>\n" +
-        "  </servlet-mapping>\n" +
-        "</web-app>";
+            """
+                    </url-pattern>
+                      </servlet-mapping>
+                    </web-app>""";
 
     public JSR109WebServicePackager() {
         this(new WarArchiver(), "wse", noArchive);

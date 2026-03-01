@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,19 +24,24 @@
 //       - 382503: Use of @ConstructorResult with createNativeQuery(sqlString, resultSetMapping) results in NullPointerException
 package org.eclipse.persistence.exceptions;
 
-import java.util.List;
-
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.internal.queries.*;
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.exceptions.i18n.ExceptionMessageGenerator;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.internal.helper.DatabaseType;
+import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.mappings.*;
+import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.querykeys.ManyToManyQueryKey;
-import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.exceptions.i18n.ExceptionMessageGenerator;
+import org.eclipse.persistence.queries.Call;
+import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.ReadQuery;
+import org.eclipse.persistence.queries.ReportQueryResult;
 import org.eclipse.persistence.sessions.DataRecord;
+
+import java.util.List;
 
 /**
  * <p><b>Purpose</b>: This exception is used for any problem that is detected with a query.
@@ -164,6 +169,7 @@ public class QueryException extends ValidationException {
     public final static int UPDATE_ALL_QUERY_ADD_UPDATE_DEFINES_WRONG_FIELD = 6135;
     public final static int POLYMORPHIC_REPORT_ITEM_NOT_SUPPORTED = 6136;
     public final static int EXCEPTION_WHILE_USING_CONSTRUCTOR_EXPRESSION = 6137;
+    public final static int EXCEPTION_WHILE_USING_CONSTRUCTOR_EXPRESSION_WRONG_TYPE = 6184;
     public final static int TEMP_TABLES_NOT_SUPPORTED = 6138;
     public final static int MAPPING_FOR_FIELDRESULT_NOT_FOUND = 6139;
     public final static int JOIN_EXPRESSIONS_NOT_APPLICABLE_ON_NON_OBJECT_REPORT_ITEM = 6140;
@@ -278,8 +284,8 @@ public class QueryException extends ValidationException {
         return queryException;
     }
 
-    public static QueryException nativeSQLQueriesAreDisabled(DatabaseQuery query) {
-        Object[] args = {};
+    public static QueryException nativeSQLQueriesAreDisabled(DatabaseQuery query, String prop, String nativeProp) {
+        Object[] args = { prop, nativeProp };
         QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, NATIVE_SQL_QUERIES_ARE_DISABLED, args), query);
         queryException.setErrorCode(NATIVE_SQL_QUERIES_ARE_DISABLED);
         return queryException;
@@ -532,6 +538,18 @@ public class QueryException extends ValidationException {
         QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, EXCEPTION_WHILE_USING_CONSTRUCTOR_EXPRESSION, args));
         queryException.setErrorCode(EXCEPTION_WHILE_USING_CONSTRUCTOR_EXPRESSION);
         queryException.setInternalException(thrownException);
+        queryException.setQuery(query);
+        return queryException;
+    }
+
+    /**
+     * An exception was throwing while using a ReportQuery with a constructor expression and wrong type is passed to the constructor.
+     */
+    public static QueryException exceptionWhileUsingConstructorWrongTypeExpression(Class<?> argumentType, DatabaseQuery query) {
+        Object[] args = { argumentType.getName() };
+
+        QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, EXCEPTION_WHILE_USING_CONSTRUCTOR_EXPRESSION_WRONG_TYPE, args));
+        queryException.setErrorCode(EXCEPTION_WHILE_USING_CONSTRUCTOR_EXPRESSION_WRONG_TYPE);
         queryException.setQuery(query);
         return queryException;
     }

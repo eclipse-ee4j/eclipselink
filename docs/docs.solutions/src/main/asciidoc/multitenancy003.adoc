@@ -1,0 +1,269 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[MULTITENANCY003]]
+=== Using Table-Per-Tenant Multi-Tenancy
+
+Table-per-tenant multi-tenancy allows multiple tenants of an application
+to isolate their data in one or more tenant-specific tables. Multiple
+tenants' tables can be in a shared schema, identified using a prefix or
+suffix naming pattern; or they can be in separate, tenant-specific
+schemas. Table-per-tenant entities can be mixed with other multi-tenant
+type entities within the same persistence unit.
+
+The table-per-tenant multi-tenant type is used in conjunction with:
+
+* A tenant table discriminator that specifies the type of discriminator
+(schema or name with prefix or suffix)
+* A tenant ID to identify the user (configured per entity manager or at
+the entity manager factory, if isolating the table-per-tenant per
+persistence unit.)
+
+A single application instance with a shared `EntityManagerFactory` for a
+persistence unit can be responsible for handling requests from multiple
+tenants.
+
+Alternatively, separate `EntityManagerFactory` instances can be used for
+each tenant. (This is required when using extensions per tenant.) In
+this case, tenant-specific schema and table names are defined in an
+`eclipselink-orm.xml` configuration file. A `MetadataSource` must be
+registered with a persistence unit. The `MetadataSource` is used to
+support additional persistence unit metadata provided from outside the
+application.
+
+For information about `MetadataSource`, see
+xref:{relativedir}/metadatasource.htm#METADATASOURCE[Chapter 13, "Using an External MetaData
+Source."] See also `metadata-source` in _Jakarta Persistence API (JPA)
+Extensions Reference for EclipseLink_.
+
+The table-per-tenant multi-tenant type enables individual tenant
+table(s) to be used at the entity level. A tenant context property must
+be provided on each entity manager after a transaction has started.
+
+* The table(s) (`Table` and `SecondaryTable`) for the entity are
+individual tenant tables based on the tenant context. Relationships
+within an entity that uses a join or a collection table are also assumed
+to exist within the table-per-tenant context.
+* Multi-tenant metadata can only be applied at the root level of the
+inheritance hierarchy when using a `SINGLE_TABLE` or `JOINED`
+inheritance strategy. Multi-tenant metadata can be specified in a
+`TABLE_PER_CLASS` inheritance hierarchy
+
+==== Main Tasks for Using Table-Per-Tenant Multi-Tenancy
+
+The following tasks provide instructions for using table-per-tenant
+multi-tenancy:
+
+* link:#CHDIGFFI[Task 1: Prerequisites]
+* link:#CHDGCIGF[Task 2: Enable Table-Per-Tenant Multi-Tenancy]
+* link:#CHDGBJBE[Task 3: Specify Tenant Table Discriminator]
+* link:#CHDDCDHI[Task 4: Specify a Context Property at Runtime]
+
+[[CHDIGFFI]]
+
+===== Task 1: Prerequisites
+
+To implement and use table-per-tenant multi-tenancy, you need:
+
+* EclipseLink 2.4 or later.
++
+Download EclipseLink from
+`http://www.eclipse.org/eclipselink/downloads/`.
+* Any compliant Java Database Connectivity (JDBC) database, including
+Oracle Database, Oracle Database Express Edition (Oracle Database XE),
+or MySQL. These instructions are based on Oracle Database XE 11g Release
+2.
++
+For the certification matrix, see
+
+[[CHDGCIGF]]
+
+===== Task 2: Enable Table-Per-Tenant Multi-Tenancy
+
+Table-per-tenant multi-tenancy can be enabled declaratively using the
+`@Multitenant` annotation; or in an Object Relational Mapping (ORM) XML
+file using the `<multitenant>` element, or using annotations and XML
+together.
+
+====== Using the @Multitenant and @TenantTableDiscriminator Annotations
+
+To use the `@Multitenant` annotation, include the annotation with an
+`@Entity` or `@MappedSuperclass` annotation and include the
+`TABLE_PER_TENANT` attribute.
+
+For example:
+
+[source,oac_no_warn]
+----
+@Entity
+@Multitenant(TABLE_PER_TENANT
+...)
+public class Employee {
+}
+----
+
+The `TABLE_PER_TENANT` attribute states that clients have a dedicated
+table or tables (`Table` and `SecondaryTable`) associated with the
+entity.
+
+====== Using the <multitenant> Element
+
+To use the `<multitenant>` element, include the element within an
+`<entity>` element. For example:
+
+[source,oac_no_warn]
+----
+<entity class="model.Employee">
+   <multitenant type="TABLE_PER_TENANT">
+   ...
+   </multitenant>
+   ...
+</entity>
+----
+
+[[CHDGBJBE]]
+
+===== Task 3: Specify Tenant Table Discriminator
+
+The tenant table discriminator describes the type of table discriminator
+to use in a table-per-tenant multi-tenancy strategy. The tenant table
+discriminator is identified by a property. You can define your own
+identifier or use the default property:
+`org.eclipse.persistence.config.PersistenceUnitProperties.MULTITENANT_PROPERTY_DEFAULT = "eclipselink.tenant-id"`
+
+The tenant table discriminator can be specified at the entity or mapped
+superclass level, and it must always be accompanied with a
+`Multitenant(TABLE_PER_TENANT)` specification. It is not sufficient to
+specify only a tenant table discriminator.
+
+The tenant table discriminator is used together with an associated
+application context to indicate which table or tables an application
+tenant can access.
+
+====== Using the @TenantTableDiscriminator Annotation
+
+Use the `@TenantTableDiscriminator` annotation to specify which tables
+are associated with which tenants. The tenant table discriminator must
+include a type and a context property:
+
+* Use the `type` attribute to identify what type of discriminator to
+use:
+** Use `PREFIX` to apply the tenant table discriminator as a prefix to
+all multi-tenant tables.
+** Use `SUFFIX` to apply the tenant table discriminator as a suffix to
+all multi-tenant tables.
+** Use `SCHEMA` to apply the tenant table discriminator as a schema to
+all multi-tenant tables. This strategy requires appropriate database
+provisioning.
+* Use the `contextProperty` attributes to identify the user. The value
+of the context property is a tenant ID that identifies the user. This
+can be configured for an entity manager or, if you want to isolate the
+table-per-tenant per persistence unit, an entity manager factory.
+
+For example:
+
+[source,oac_no_warn]
+----
+@Entity
+@Table(name=”EMP”)
+@Multitenant(TABLE_PER_TENANT)
+@TenantTableDiscriminator(type=SCHEMA, contextProperty="eclipselink-tenant.id")
+public class Employee {
+    ...
+}
+----
+
+====== Using the <tenant-table-discriminator> Element
+
+To use the `<tenant-table-discriminator>` element, include the element
+within a `<multitenant>` element and include the `name` and
+`context-property` attributes. For example:
+
+[source,oac_no_warn]
+----
+<entity class="Employee">
+  <multitenant type="TABLE_PER_TENANT">
+    <tenant-table-discriminator type="SCHEMA"  
+        context-property="eclipselink-tenant.id"/>
+  </multitenant>
+  <table name="EMP">
+  ...
+</entity>
+----
+
+[[CHDDCDHI]]
+
+===== Task 4: Specify a Context Property at Runtime
+
+At runtime, specify the context property using a persistence unit
+definition passed to an entity manager factory or set on an individual
+entity manager. For example:
+
+[source,oac_no_warn]
+----
+<persistence-unit name="multitenant">
+   ...
+   <properties>
+      <property name="tenant.id" value="707"/>
+      ...
+   </properties>
+</persistence-unit>
+----
+
+To specify a context property at runtime programmatically:
+
+[source,oac_no_warn]
+----
+HashMap properties = new HashMap();
+properties.put(PersistenceUnitProperties.MULTITENANT_PROPERTY_DEFAULT, "707");
+EntityManager em = Persistence.createEntityManagerFactory("multitenant-pu",
+   properties).createEntityManager();
+----
+
+An entity manager property definition follows:
+
+[source,oac_no_warn]
+----
+EntityManager em =
+  Persistence.createEntityManagerFactory("multitenant-pu").createEntityManager();
+em.beginTransaction();
+em.setProperty("other.tenant.id.property", "707");
+em.setProperty(EntityManagerProperties.MULTITENANT_PROPERTY_DEFAULT, "707");
+...
+----
+
+===== Task 5: Perform Operations and Queries
+
+The tenant discriminator column is used at runtime through entity
+manager operations and querying. The tenant discriminator column and
+value are supported through the following entity manager operations:
+
+* `persist()`
+* `find()`
+* `refresh()`
+
+The tenant discriminator column and value are supported through the
+following queries:
+
+* Named queries
+* Update all
+* Delete all
+
+NOTE: Multi-tenancy is not supported through named native queries. To use
+named native queries in a multi-tenant environment, manually handle any
+multi-tenancy issues directly in the query. In general, it is best to
+avoid named native queries in a multi-tenant environment.

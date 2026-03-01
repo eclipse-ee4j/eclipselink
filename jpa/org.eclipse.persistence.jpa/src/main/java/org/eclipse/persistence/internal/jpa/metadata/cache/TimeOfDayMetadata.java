@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,7 +26,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
 
 /**
  * Object to hold onto time of day metadata.
- *
+ * <p>
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
@@ -70,8 +70,7 @@ public class TimeOfDayMetadata extends ORMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (objectToCompare instanceof TimeOfDayMetadata) {
-            TimeOfDayMetadata timeOfDay = (TimeOfDayMetadata) objectToCompare;
+        if (objectToCompare instanceof TimeOfDayMetadata timeOfDay) {
 
             if (! valuesMatch(m_hour, timeOfDay.getHour())) {
                 return false;
@@ -93,7 +92,8 @@ public class TimeOfDayMetadata extends ORMetadata {
 
     @Override
     public int hashCode() {
-        int result = m_hour != null ? m_hour.hashCode() : 0;
+        int result = super.hashCode();
+        result = 31 * result + (m_hour != null ? m_hour.hashCode() : 0);
         result = 31 * result + (m_millisecond != null ? m_millisecond.hashCode() : 0);
         result = 31 * result + (m_minute != null ? m_minute.hashCode() : 0);
         result = 31 * result + (m_second != null ? m_second.hashCode() : 0);

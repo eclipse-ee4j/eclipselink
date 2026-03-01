@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,6 +23,7 @@ import java.lang.reflect.Method;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.OffsetTime;
+import java.time.Year;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.Calendar;
@@ -121,11 +122,13 @@ public class DateTimePopulator {
         dateTime.setTimestamp(new Timestamp(time));
         dateTime.setUtilDate(new Date(time));
         dateTime.setCalendar(cal);
+        dateTime.setInstant(cal.getTime().toInstant());
         dateTime.setLocalDate(cal.getTime().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
         dateTime.setLocalTime(cal.getTime().toInstant().atZone(ZoneId.systemDefault()).toLocalTime());
         dateTime.setLocalDateTime(dateTime.getLocalDate().atTime(dateTime.getLocalTime()));
         dateTime.setOffsetTime(OffsetTime.of(dateTime.getLocalTime(), ZoneOffset.UTC));
         dateTime.setOffsetDateTime(dateTime.getOffsetTime().atDate(dateTime.getLocalDate()));
+        dateTime.setYear(Year.of(cal.get(Calendar.YEAR)));
 
         return dateTime;
     }

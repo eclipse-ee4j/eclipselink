@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -13,18 +13,6 @@
 // Contributors:
 //     Praba Vijayaratnam - 2.4 - initial implementation
 package org.eclipse.persistence.testing.jaxb.javadoc.xmlrootelement;
-
-import junit.framework.TestCase;
-import jakarta.xml.bind.JAXBContext;
-import jakarta.xml.bind.Marshaller;
-import jakarta.xml.bind.Unmarshaller;
-import java.math.BigDecimal;
-
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileInputStream;
-
-import java.io.IOException;
 
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 

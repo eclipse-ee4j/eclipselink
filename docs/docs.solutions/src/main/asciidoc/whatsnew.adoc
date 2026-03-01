@@ -1,0 +1,127 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+
+[[TLADG611]] [[sthref5]]
+
+== What's New in This Guide
+
+The following topics introduce the new and changed features of
+EclipseLink and other significant changes that are described in this
+guide, and provides pointers to additional information.
+
+=== New and Changed Features for Release {release-version}
+
+* Serialized object policy, for storing a serialized version of an
+entity into a single column in the database. See
+xref:{relativedir}/performance001.adoc#BBAJBHBI["Serialized Object Policy"].
+* Automated tuning, for a dynamic single tuning option. See "Automated
+Tuning" on page 18-8.
+
+=== Other Significant Changes in this Document for Release {release-version}
+
+=== New and Changed Features for 12c (12.1.2)
+
+EclipseLink 2.4.2 includes the following new and changed features that
+are documented in this book. This list does not necessarily include all
+new or changed features in this release. It only includes the new
+features that are documented in this book.
+
+* Client isolation, where multiple application tenants may share
+database tables and schemas. This allows applications to manage entities
+for multiple tenants in the same application. See
+xref:{relativedir}/multitenancy.adoc#MULTITENANCY[Chapter 14, "Tenant Isolation Using
+EclipseLink."]
+* JSON bindings, for converting objects directly to and from JavaScript
+Object Notation (JSON). This can be useful when creating RESTful
+services, using JSON messages with Java API for RESTful Web Services
+(JAX-RS) services. See xref:{relativedir}/json.adoc#JSON[Chapter 16, "Converting
+Objects to and from JSON Documents,"]
+* RESTful persistence, where Jakarta Persistence API (JPA) entities can
+be exposed through standards-based RESTful services such as JAX-RS,
+using either JSON or XML media. See
+xref:{relativedir}/restful_jpa.adoc#RESTJPA[Chapter 19, "Exposing JPA Entities Through
+RESTful Data Services."]
+* Support for TopLink Database Change Notification (DCN), which allows
+the database to notify TopLink of database changes so that cached
+objects can be invalidated in the shared cache. See
+xref:{relativedir}/qcn.adoc#QCN[Chapter 20, "Using Database Events to Invalidate
+the Cache."]
+* NoSQL database support, allowing objects to be mapped to
+non-relational (NoSQL) data sources. See
+xref:{relativedir}/nonrelational_db.adoc#NOSQL[Chapter 21, "Using EclipseLink with
+NoSQL Databases,"].
+
+For a complete list of the changes in this release, see
+`http://www.eclipse.org/eclipselink/releases/2.5.php`.
+
+=== Other Significant Changes in this Document for 12c (12.1.2)
+
+For this release of EclipseLink, this guide has been updated in several
+ways. Following are the sections that have been added or changed.
+
+* Moved installation information from appendix to
+xref:{relativedir}/install.adoc#INSTALL[Chapter 2, "Installing EclipseLink,"].
+* Added new chapter, xref:{relativedir}/jboss.adoc#ELJBOSS[Chapter 5, "Using
+EclipseLink with JBoss 7 Application Server,"] to describe how
+EclipseLink can be used with applications deployed to JBoss Application
+Server 7.1.
+* Added new chapter, xref:{relativedir}/websphere.adoc#ELWS[Chapter 6, "Using
+EclipseLink with IBM WebSphere Application Server,"] to describe how
+EclipseLink can be used with applications deployed to IBM WebSphere
+Application Server
+* Added new chapter, xref:{relativedir}/migrnativetoplink.adoc#MIGRATETOPLINK[Chapter 7,
+"Migrating from Native TopLink,"] to describe migrate applications using
+"native" TopLink object-relational mapping (ORM) APIs to the current
+EclipseLink APIs.
+* Added information about data partitioning in
+xref:{relativedir}/scaling.adoc#SCALING[Chapter 10, "Scaling Applications in
+Clusters."]
+* Split xref:{relativedir}/saas.adoc#SAAS[Chapter 11, "Providing Software as a
+Service."] into four chapters:
+** xref:{relativedir}/saas.adoc#SAAS[Chapter 11, "Providing Software as a
+Service."] This is now just an overview of the following three chapters.
+** xref:{relativedir}/extensible.adoc#EXTENSIBLE[Chapter 12, "Making JPA Entities and
+JAXB Beans Extensible"]
+** xref:{relativedir}/metadatasource.adoc#METADATASOURCE[Chapter 13, "Using an External
+MetaData Source"]
+** xref:{relativedir}/multitenancy.adoc#MULTITENANCY[Chapter 14, "Tenant Isolation Using
+EclipseLink"] and also updated this chapter with information about
+Virtual Private Database (VPD) multi-tenancy and table-per-tenant
+multi-tenancy
+* Added new chapter, xref:{relativedir}/json.adoc#JSON[Chapter 16, "Converting
+Objects to and from JSON Documents,"] to describe how to convert objects
+directly to and from JSON
+* Added information about weaving to
+xref:{relativedir}/testingjpa.adoc#TESTINGJPA[Chapter 17, "Testing JPA Outside a
+Container,"] to describe how to use the persistence unit JAR file to
+test an application outside the container (for instance, in applications
+for the Java Platform, Standard Edition (Java SE platform)).
+* Added new chapter, xref:{relativedir}/restful_jpa.adoc#RESTJPA[Chapter 19, "Exposing
+JPA Entities Through RESTful Data Services,"] to describe how to expose
+JPA entities through Jakarta Persistence API-RESTful Services (JPA-RS),
+using either JSON or XML media.
+* Added new chapter, xref:{relativedir}/qcn.adoc#QCN[Chapter 20, "Using Database
+Events to Invalidate the Cache,"] to describe how to use EclipseLink
+Database Change Notification (DCN) for shared caching in a JPA
+environment. DCN allows the database to notify EclipseLink of database
+changes. The changed objects are invalidated in the EclipseLink shared
+cache. Stale data can be discarded, even if other applications access
+the same data in the database.
+* Added new chapter, xref:{relativedir}/oracledb.adoc#ORACLEDB[Chapter 22, "Using
+EclipseLink with the Oracle Database,"] to describe how to use the
+Oracle Database features that are supported by EclipseLink.

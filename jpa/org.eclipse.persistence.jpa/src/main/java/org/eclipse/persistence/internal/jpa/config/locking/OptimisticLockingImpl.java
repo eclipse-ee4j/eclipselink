@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,7 +18,6 @@ import java.util.ArrayList;
 
 import org.eclipse.persistence.internal.jpa.config.MetadataImpl;
 import org.eclipse.persistence.internal.jpa.config.columns.ColumnImpl;
-import org.eclipse.persistence.internal.jpa.metadata.columns.ColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.locking.OptimisticLockingMetadata;
 import org.eclipse.persistence.jpa.config.Column;
 import org.eclipse.persistence.jpa.config.OptimisticLocking;
@@ -34,7 +33,7 @@ public class OptimisticLockingImpl extends MetadataImpl<OptimisticLockingMetadat
     public OptimisticLockingImpl() {
         super(new OptimisticLockingMetadata());
 
-        getMetadata().setSelectedColumns(new ArrayList<ColumnMetadata>());
+        getMetadata().setSelectedColumns(new ArrayList<>());
     }
 
     @Override

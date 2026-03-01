@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2021 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,17 +30,6 @@
 //     IBM - Bug 537795: CASE THEN and ELSE scalar expression Constants should not be casted to CASE operand type
 package org.eclipse.persistence.descriptors;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
-import java.util.concurrent.TimeUnit;
-
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.expressions.Expression;
@@ -52,9 +41,9 @@ import org.eclipse.persistence.internal.expressions.FunctionExpression;
 import org.eclipse.persistence.internal.expressions.ParameterExpression;
 import org.eclipse.persistence.internal.expressions.SubSelectExpression;
 import org.eclipse.persistence.internal.helper.ConcurrentFixedCache;
+import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.queries.ReportItem;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.ChangeRecord;
@@ -74,6 +63,16 @@ import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.queries.ReportQuery;
 import org.eclipse.persistence.queries.UpdateObjectQuery;
 import org.eclipse.persistence.queries.WriteObjectQuery;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p><b>Purpose</b>: The query manager allows for the database operations that EclipseLink
@@ -111,18 +110,18 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
     protected Map<String, List<DatabaseQuery>> queries;
     protected transient Map<DatabaseTable, Expression> tablesJoinExpressions;
     /** PERF: Update call cache for avoiding regenerated update SQL. */
-    protected transient ConcurrentFixedCache cachedUpdateCalls;
+    protected transient ConcurrentFixedCache<List<DatabaseField>, List<DatasourceCall>> cachedUpdateCalls;
     /** PERF: Expression query call cache for avoiding regenerated dynamic query SQL. */
-    protected transient ConcurrentFixedCache cachedExpressionQueries;
+    protected transient ConcurrentFixedCache<DatabaseQuery, DatabaseQuery> cachedExpressionQueries;
 
     /**
      * queryTimeout has three possible settings: DefaultTimeout, NoTimeout, and 1..N
      * This applies to both DatabaseQuery.queryTimeout and DescriptorQueryManager.queryTimeout
-     *
+     * <p>
      * DatabaseQuery.queryTimeout:
      * - DefaultTimeout: get queryTimeout from DescriptorQueryManager
      * - NoTimeout, 1..N: overrides queryTimeout in DescriptorQueryManager
-     *
+     * <p>
      * DescriptorQueryManager.queryTimeout:
      * - DefaultTimeout: get queryTimeout from parent DescriptorQueryManager. If there is no
      * parent, default to NoTimeout
@@ -151,7 +150,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
      * Set the max size of the expression query cache for avoiding regenerated dynamic query SQL.
      */
     public void setExpressionQueryCacheMaxSize(int maxSize) {
-        this.cachedExpressionQueries = new ConcurrentFixedCache(maxSize);
+        this.cachedExpressionQueries = new ConcurrentFixedCache<>(maxSize);
     }
 
     /**
@@ -183,7 +182,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
      * it will be replaced.
      */
     public synchronized void addQuery(DatabaseQuery query) {
-        if (query instanceof ObjectLevelReadQuery && (query.getReferenceClassName() == null)) {
+        if (query.isObjectLevelReadQuery() && (query.getReferenceClassName() == null)) {
             ((ObjectLevelReadQuery)query).setReferenceClassName(getDescriptor().getJavaClassName());
 
             // try to set the reference ClassNotFoundException since it should only happen on the MW in which
@@ -202,7 +201,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
         List<DatabaseQuery> queriesByName = getQueries().get(query.getName());
         if (queriesByName == null) {
             // lazily create Vector in Hashtable.
-            queriesByName = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+            queriesByName = new ArrayList<>();
             getQueries().put(query.getName(), queriesByName);
         } else {
             int argumentTypesSize = 0;
@@ -273,43 +272,42 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
      */
     @Override
     public Object clone() {
-        DescriptorQueryManager manager = null;
         try {
-            manager = (DescriptorQueryManager)super.clone();
-        } catch (Exception exception) {
+            DescriptorQueryManager manager = (DescriptorQueryManager) super.clone();
+
+            // Bug 3037701 - clone the queries
+            manager.setQueries(new LinkedHashMap<>(getQueries().size()));//bug5677655
+            Iterator<List<DatabaseQuery>> iterator = queries.values().iterator();
+            while (iterator.hasNext()) {
+                Iterator<DatabaseQuery> queriesForKey = iterator.next().iterator();
+                while (queriesForKey.hasNext()) {
+                    DatabaseQuery initialQuery = queriesForKey.next();
+                    DatabaseQuery clonedQuery = (DatabaseQuery)initialQuery.clone();
+                    clonedQuery.setDescriptor(manager.getDescriptor());
+                    manager.addQuery(clonedQuery);
+                }
+            }
+            manager.setDoesExistQuery((DoesExistQuery)getDoesExistQuery().clone());
+            if (getReadAllQuery() != null) {
+                manager.setReadAllQuery((ReadAllQuery)getReadAllQuery().clone());
+            }
+            if (getReadObjectQuery() != null) {
+                manager.setReadObjectQuery((ReadObjectQuery)getReadObjectQuery().clone());
+            }
+            if (getUpdateQuery() != null) {
+                manager.setUpdateQuery((UpdateObjectQuery)getUpdateQuery().clone());
+            }
+            if (getInsertQuery() != null) {
+                manager.setInsertQuery((InsertObjectQuery)getInsertQuery().clone());
+            }
+            if (getDeleteQuery() != null) {
+                manager.setDeleteQuery((DeleteObjectQuery)getDeleteQuery().clone());
+            }
+
+            return manager;
+        } catch (CloneNotSupportedException exception) {
             throw new AssertionError(exception);
         }
-
-        // Bug 3037701 - clone the queries
-        manager.setQueries(new LinkedHashMap<>(getQueries().size()));//bug5677655
-        Iterator<List<DatabaseQuery>> iterator = queries.values().iterator();
-        while (iterator.hasNext()) {
-            Iterator<DatabaseQuery> queriesForKey = iterator.next().iterator();
-            while (queriesForKey.hasNext()) {
-                DatabaseQuery initialQuery = queriesForKey.next();
-                DatabaseQuery clonedQuery = (DatabaseQuery)initialQuery.clone();
-                clonedQuery.setDescriptor(manager.getDescriptor());
-                manager.addQuery(clonedQuery);
-            }
-        }
-        manager.setDoesExistQuery((DoesExistQuery)getDoesExistQuery().clone());
-        if (getReadAllQuery() != null) {
-            manager.setReadAllQuery((ReadAllQuery)getReadAllQuery().clone());
-        }
-        if (getReadObjectQuery() != null) {
-            manager.setReadObjectQuery((ReadObjectQuery)getReadObjectQuery().clone());
-        }
-        if (getUpdateQuery() != null) {
-            manager.setUpdateQuery((UpdateObjectQuery)getUpdateQuery().clone());
-        }
-        if (getInsertQuery() != null) {
-            manager.setInsertQuery((InsertObjectQuery)getInsertQuery().clone());
-        }
-        if (getDeleteQuery() != null) {
-            manager.setDeleteQuery((DeleteObjectQuery)getDeleteQuery().clone());
-        }
-
-        return manager;
     }
 
     /**
@@ -404,7 +402,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
 
      * ADVANCED:
      * Return the receiver's does exist SQL string.
-     * This allows the user to override the SQL generated by EclipseLink, with there own SQL or procedure call.
+     * This allows the user to override the SQL generated by EclipseLink, with their own SQL or procedure call.
      * The arguments are translated from the fields of the source row, through replacing the field names marked by '#'
      * with the values for those fields.
      * This must return null if the object does not exist, otherwise return a database row.
@@ -496,8 +494,8 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
      *
      * @see #getQueries()
      */
-    public Vector getAllQueries() {
-        Vector<DatabaseQuery> allQueries = new Vector<>();
+    public List<DatabaseQuery> getAllQueries() {
+        List<DatabaseQuery> allQueries = new Vector<>();
         for (Iterator<List<DatabaseQuery>> vectors = getQueries().values().iterator(); vectors.hasNext();) {
             allQueries.addAll(vectors.next());
         }
@@ -508,9 +506,9 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
      * INTERNAL:
      * Set pre-defined queries for the descriptor.  Converts the Vector to a hashtable
      */
-    public void setAllQueries(Vector vector) {
-        for (Enumeration enumtr = vector.elements(); enumtr.hasMoreElements();) {
-            addQuery((DatabaseQuery)enumtr.nextElement());
+    public void setAllQueries(List<DatabaseQuery> vector) {
+        for (Iterator<DatabaseQuery> iterator = vector.iterator(); iterator.hasNext();) {
+            addQuery(iterator.next());
         }
     }
 
@@ -518,7 +516,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
      * PUBLIC:
      * set the pre-defined queries for the descriptor.  Used to write out deployment XML
      */
-    public void setQueries(Map map) {
+    public void setQueries(Map<String, List<DatabaseQuery>> map) {
         queries = map;
     }
 
@@ -597,9 +595,9 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
         if (arguments != null) {
             argumentTypesSize = arguments.size();
         }
-        Vector argumentTypes = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(argumentTypesSize);
+        List<Class<?>> argumentTypes = new ArrayList<>(argumentTypesSize);
         for (int i = 0; i < argumentTypesSize; i++) {
-            argumentTypes.addElement(arguments.elementAt(i).getClass());
+            argumentTypes.add(arguments.get(i).getClass());
         }
         return getLocalQueryByArgumentTypes(name, argumentTypes);
 
@@ -645,7 +643,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
      * CR#3711: Check if the class for this descriptor has a parent class.
      * Then search this parent's descriptor for a query with the same name
      * and arguments.  If nothing found, return null.
-     *
+     * <p>
      * This method should only be used recursively by getQuery().
      */
     protected DatabaseQuery getQueryFromParent(String name, Vector arguments) {
@@ -736,7 +734,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
     /**
      * ADVANCED:
      * Return the receiver's update SQL string.
-     * This allows the user to override the SQL generated by EclipseLink, with there own SQL or procedure call.
+     * This allows the user to override the SQL generated by EclipseLink, with their own SQL or procedure call.
      * The arguments are translated from the fields of the source row,
      * through replacing the field names marked by '#' with the values for those fields.
      * This must check the optimistic lock field and raise an error on optimistic lock failure.
@@ -844,8 +842,8 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
             getReadAllQuery().setReferenceClass(getDescriptor().getJavaClass());
             getReadAllQuery().setDescriptor(descriptor);
         }
-        for (Iterator it = getAllQueries().iterator(); it.hasNext();) {
-            ((DatabaseQuery)it.next()).setDescriptor(descriptor);
+        for (Iterator<DatabaseQuery> it = getAllQueries().iterator(); it.hasNext();) {
+            it.next().setDescriptor(descriptor);
         }
     }
 
@@ -890,7 +888,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
     /**
      * INTERNAL:
      * Initialize the queryTimeout to:
-     *
+     * <p>
      * NoTimeout: If queryTimeout is DefaultTimeout, either directly or via inheritance.
      * Parent's Timeout: If queryTimeout is something other than DefaultTimeout via my parent.
      */
@@ -1280,7 +1278,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
     /**
      * ADVANCED:
      * Set the receiver's does exist SQL string.
-     * This allows the user to override the SQL generated by EclipseLink, with there own SQL or procedure call.
+     * This allows the user to override the SQL generated by EclipseLink, with their own SQL or procedure call.
      * The arguments are translated from the fields of the source row, through replacing the field names marked by '#'
      * with the values for those fields.
      * This must return null if the object does not exist, otherwise return a database row.
@@ -1314,16 +1312,12 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
      * This method is explicitly used by the Builder only.
      */
     public void setExistenceCheck(String token) throws DescriptorException {
-        if (token.equals("Check cache")) {
-            checkCacheForDoesExist();
-        } else if (token.equals("Check database")) {
-            checkDatabaseForDoesExist();
-        } else if (token.equals("Assume existence")) {
-            assumeExistenceForDoesExist();
-        } else if (token.equals("Assume non-existence")) {
-            assumeNonExistenceForDoesExist();
-        } else {
-            throw DescriptorException.setExistenceCheckingNotUnderstood(token, getDescriptor());
+        switch (token) {
+            case "Check cache" -> checkCacheForDoesExist();
+            case "Check database" -> checkDatabaseForDoesExist();
+            case "Assume existence" -> assumeExistenceForDoesExist();
+            case "Assume non-existence" -> assumeNonExistenceForDoesExist();
+            default -> throw DescriptorException.setExistenceCheckingNotUnderstood(token, getDescriptor());
         }
     }
 
@@ -1656,7 +1650,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
     /**
      * ADVANCED:
      * Set the receiver's update SQL string.
-     * This allows the user to override the SQL generated by EclipseLink, with there own SQL or procedure call.
+     * This allows the user to override the SQL generated by EclipseLink, with their own SQL or procedure call.
      * The arguments are translated from the fields of the source row,
      * through replacing the field names marked by '#' with the values for those fields.
      * This must check the optimistic lock field and raise an error on optimistic lock failure.
@@ -1692,7 +1686,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
     /**
      * PUBLIC:
      * Return the number of seconds queries will wait for their Statement to execute.
-     *
+     * <p>
      * - DefaultTimeout: get queryTimeout from parent DescriptorQueryManager. If there is no
      * parent, default to NoTimeout
      * - NoTimeout, 1..N: overrides parent queryTimeout
@@ -1709,7 +1703,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
      * PUBLIC:
      * Set the number of seconds that queries will wait for their Statement to execute.
      * If the limit is exceeded, a DatabaseException is thrown.
-     *
+     * <p>
      * - DefaultTimeout: get queryTimeout from parent DescriptorQueryManager. If there is no
      * parent, default to NoTimeout
      * - NoTimeout, 1..N: overrides parent queryTimeout
@@ -1726,9 +1720,9 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
      * INTERNAL:
      * Returns the collection of cached Update calls.
      */
-    private ConcurrentFixedCache getCachedUpdateCalls() {
+    private ConcurrentFixedCache<List<DatabaseField>, List<DatasourceCall>> getCachedUpdateCalls() {
         if (cachedUpdateCalls == null) {
-            this.cachedUpdateCalls = new ConcurrentFixedCache(10);
+            this.cachedUpdateCalls = new ConcurrentFixedCache<>(10);
         }
         return this.cachedUpdateCalls;
     }
@@ -1737,9 +1731,9 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
      * INTERNAL:
      * Returns the collection of cached expression queries.
      */
-    private ConcurrentFixedCache getCachedExpressionQueries() {
+    private ConcurrentFixedCache<DatabaseQuery, DatabaseQuery> getCachedExpressionQueries() {
         if (cachedExpressionQueries == null) {
-            this.cachedExpressionQueries = new ConcurrentFixedCache(20);
+            this.cachedExpressionQueries = new ConcurrentFixedCache<>(20);
         }
         return this.cachedExpressionQueries;
     }
@@ -1773,8 +1767,8 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
      * Return the cached update SQL call based on the updated fields.
      * PERF: Allow caching of the update SQL call to avoid regeneration.
      */
-    public Vector getCachedUpdateCalls(Vector updateFields) {
-        return (Vector) getCachedUpdateCalls().get(updateFields);
+    public List<DatasourceCall> getCachedUpdateCalls(List<DatabaseField> updateFields) {
+        return getCachedUpdateCalls().get(updateFields);
     }
 
     /**
@@ -1784,15 +1778,15 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
      * The call's query must be dereferenced in order to allow the GC of a related session.
      * PERF: Allow caching of the update SQL call to avoid regeneration.
      */
-    public void putCachedUpdateCalls(Vector updateFields, Vector updateCalls) {
-        Vector vectorToCache = updateCalls;
+    public void putCachedUpdateCalls(List<DatabaseField> updateFields, List<DatasourceCall> updateCalls) {
+        List<DatasourceCall> vectorToCache = updateCalls;
         if (!updateCalls.isEmpty()) {
             int updateCallsSize = updateCalls.size();
-            vectorToCache = new NonSynchronizedVector(updateCallsSize);
+            vectorToCache = new ArrayList<>(updateCallsSize);
             for (int i = 0; i < updateCallsSize; i++) {
-                DatasourceCall updateCall = (DatasourceCall)updateCalls.get(i);
+                DatasourceCall updateCall = updateCalls.get(i);
                 // clone call and dereference query for DatasourceCall and EJBQLCall
-                DatasourceCall clonedUpdateCall = (DatasourceCall) updateCall.clone();
+                DatasourceCall clonedUpdateCall = updateCall.clone();
                 clonedUpdateCall.setQuery(null);
                 vectorToCache.add(clonedUpdateCall);
             }
@@ -1806,7 +1800,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
      * PERF: Allow caching of expression query SQL call to avoid regeneration.
      */
     public DatabaseQuery getCachedExpressionQuery(DatabaseQuery query) {
-        return (DatabaseQuery) getCachedExpressionQueries().get(query);
+        return getCachedExpressionQueries().get(query);
     }
 
     /**

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,14 +14,14 @@
 //     Blaise Doughan - 2.5 - initial implementation
 package org.eclipse.persistence.internal.core.sessions;
 
-import java.util.Map;
-
 import org.eclipse.persistence.core.descriptors.CoreDescriptor;
 import org.eclipse.persistence.core.sessions.CoreLogin;
 import org.eclipse.persistence.core.sessions.CoreProject;
 import org.eclipse.persistence.core.sessions.CoreSession;
 import org.eclipse.persistence.core.sessions.CoreSessionEventManager;
 import org.eclipse.persistence.internal.core.databaseaccess.CorePlatform;
+
+import java.util.Map;
 
 public abstract class CoreAbstractSession<
     DESCRIPTOR extends CoreDescriptor,

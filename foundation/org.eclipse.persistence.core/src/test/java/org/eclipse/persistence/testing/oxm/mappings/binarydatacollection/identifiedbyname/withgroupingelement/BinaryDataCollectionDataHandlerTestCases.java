@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,10 +14,7 @@
 //     Denise Smith - January 6th, 2010 - 2.0.1
 package org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.identifiedbyname.withgroupingelement;
 
-import java.util.Vector;
-
 import jakarta.activation.DataHandler;
-
 import org.eclipse.persistence.internal.oxm.Namespace;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLMarshaller;
@@ -25,6 +22,8 @@ import org.eclipse.persistence.testing.oxm.mappings.XMLWithJSONMappingTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.EmployeeWithByteArrayObject;
 import org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.MyAttachmentMarshallerDataHandler;
 import org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.MyAttachmentUnmarshaller;
+
+import java.util.Vector;
 
 public class BinaryDataCollectionDataHandlerTestCases extends XMLWithJSONMappingTestCases{
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/binarydatacollection/identifiedbyname/withgroupingelement/BinaryDataCollectionDataHandler.xml";

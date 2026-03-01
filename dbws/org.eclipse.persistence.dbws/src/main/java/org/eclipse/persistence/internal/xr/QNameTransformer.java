@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -62,8 +62,6 @@ import static org.eclipse.persistence.internal.oxm.Constants.UNSIGNED_INT_QNAME;
 import static org.eclipse.persistence.internal.oxm.Constants.UNSIGNED_SHORT;
 import static org.eclipse.persistence.internal.oxm.Constants.UNSIGNED_SHORT_QNAME;
 
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 
 //java eXtension imports
@@ -83,32 +81,29 @@ public class QNameTransformer implements AttributeTransformer, FieldTransformer 
 
   public static final Map<String, QName> SCHEMA_QNAMES;
   static {
-      SCHEMA_QNAMES = Collections.unmodifiableMap(new HashMap<>() {
-          {
-              put(ANY, ANY_QNAME);
-              put(ANY_SIMPLE_TYPE, ANY_SIMPLE_TYPE_QNAME);
-              put(BASE_64_BINARY, BASE_64_BINARY_QNAME);
-              put(BOOLEAN, BOOLEAN_QNAME);
-              put(BYTE, BYTE_QNAME);
-              put(DATE, DATE_QNAME);
-              put(DATE_TIME, DATE_TIME_QNAME);
-              put(DECIMAL, DECIMAL_QNAME);
-              put(DOUBLE, DOUBLE_QNAME);
-              put(FLOAT, FLOAT_QNAME);
-              put(HEX_BINARY, HEX_BINARY_QNAME);
-              put(INT, INT_QNAME);
-              put(INTEGER, INTEGER_QNAME);
-              put(LONG, LONG_QNAME);
-              put(QNAME, QNAME_QNAME);
-              put(SHORT, SHORT_QNAME);
-              put(STRING, STRING_QNAME);
-              put(TIME, TIME_QNAME);
-              put(UNSIGNED_BYTE, UNSIGNED_BYTE_QNAME);
-              put(UNSIGNED_INT, UNSIGNED_INT_QNAME);
-              put(UNSIGNED_SHORT, UNSIGNED_SHORT_QNAME);
-              put(SWA_REF, SWA_REF_QNAME);
-          }
-      });
+      SCHEMA_QNAMES = Map.ofEntries(
+              Map.entry(ANY, ANY_QNAME),
+              Map.entry(ANY_SIMPLE_TYPE, ANY_SIMPLE_TYPE_QNAME),
+              Map.entry(BASE_64_BINARY, BASE_64_BINARY_QNAME),
+              Map.entry(BOOLEAN, BOOLEAN_QNAME),
+              Map.entry(BYTE, BYTE_QNAME),
+              Map.entry(DATE, DATE_QNAME),
+              Map.entry(DATE_TIME, DATE_TIME_QNAME),
+              Map.entry(DECIMAL, DECIMAL_QNAME),
+              Map.entry(DOUBLE, DOUBLE_QNAME),
+              Map.entry(FLOAT, FLOAT_QNAME),
+              Map.entry(HEX_BINARY, HEX_BINARY_QNAME),
+              Map.entry(INT, INT_QNAME),
+              Map.entry(INTEGER, INTEGER_QNAME),
+              Map.entry(LONG, LONG_QNAME),
+              Map.entry(QNAME, QNAME_QNAME),
+              Map.entry(SHORT, SHORT_QNAME),
+              Map.entry(STRING, STRING_QNAME),
+              Map.entry(TIME, TIME_QNAME),
+              Map.entry(UNSIGNED_BYTE, UNSIGNED_BYTE_QNAME),
+              Map.entry(UNSIGNED_INT, UNSIGNED_INT_QNAME),
+              Map.entry(UNSIGNED_SHORT, UNSIGNED_SHORT_QNAME),
+              Map.entry(SWA_REF, SWA_REF_QNAME));
   }
   private static final char COLON = ':';
   private static final String DEFAULT_NAMESPACE_PREFIX = "";

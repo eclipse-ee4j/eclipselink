@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,16 +16,18 @@ package org.eclipse.persistence.config;
 
 /**
  * Query type hint values.
- *
+ * <p>
  * The class contains all the valid values for QueryHints.QUERY_TYPE query hint.
  * A fully qualified class name of a valid subclass of DatabaseQuery can also be used.
  * <p>i.e. "org.acme.persistence.CustomQuery"
- *
- * JPA Query Hint Usage:
- *
- * <p><code>query.setHint(QueryHints.QUERY_TYPE, QueryType.ReadObject);</code>
+ * <p>JPA Query Hint usage:
+ * {@snippet :
+ *  query.setHint(QueryHints.QUERY_TYPE, QueryType.ReadObject);
+ * }
  * <p>or
- * <p><code>@QueryHint(name=QueryHints.QUERY_TYPE, value=QueryType.ReadObject)</code>
+ * {@snippet :
+ *  @QueryHint(name=QueryHints.QUERY_TYPE, value=QueryType.ReadObject)
+ * }
  *
  * <p>Hint values are case-insensitive.
  * "" could be used instead of default value CacheUsage.DEFAULT.
@@ -33,7 +35,7 @@ package org.eclipse.persistence.config;
  * @see QueryHints#QUERY_TYPE
  * @see org.eclipse.persistence.queries.DatabaseQuery
  */
-public class QueryType {
+public final class QueryType {
     public static final String  Auto = "Auto";
     public static final String  ReadObject = "ReadObject";
     public static final String  ReadAll = "ReadAll";
@@ -49,4 +51,8 @@ public class QueryType {
     public static final String  DirectRead = "DirectRead";
 
     public static final String DEFAULT = Auto;
+
+    private QueryType() {
+        // no instance please
+    }
 }

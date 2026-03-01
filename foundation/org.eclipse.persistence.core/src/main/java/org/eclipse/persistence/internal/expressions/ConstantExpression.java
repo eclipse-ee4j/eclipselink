@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,17 +15,17 @@
 //     IBM - Bug 537795: CASE THEN and ELSE scalar expression Constants should not be casted to CASE operand type
 package org.eclipse.persistence.internal.expressions;
 
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Used for wrapping constant values.
@@ -155,18 +155,18 @@ public class ConstantExpression extends Expression {
         if (this.value == null)
             return this;
 
-        if (this.value instanceof Collection) {
-            normalizeValueList(normalizer, (Collection)this.value);
+        if (this.value instanceof Collection<?> collection) {
+            normalizeValueList(normalizer, collection);
         }
         return this;
     }
 
-    private void normalizeValueList(ExpressionNormalizer normalizer, Collection valueCollection) {
+    private void normalizeValueList(ExpressionNormalizer normalizer, Collection<?> valueCollection) {
         for (Object obj : valueCollection) {
-            if (obj instanceof Collection) {
-                normalizeValueList(normalizer, (Collection)obj);
-            } else if (obj instanceof Expression) {
-                ((Expression)obj).normalize(normalizer);
+            if (obj instanceof Collection<?> collection) {
+                normalizeValueList(normalizer, collection);
+            } else if (obj instanceof Expression expression) {
+                expression.normalize(normalizer);
             }
         }
     }
@@ -176,7 +176,7 @@ public class ConstantExpression extends Expression {
      * Used for cloning.
      */
     @Override
-    protected void postCopyIn(Map alreadyDone) {
+    protected void postCopyIn(Map<Expression, Expression> alreadyDone) {
         super.postCopyIn(alreadyDone);
         if(this.localBase != null) {
             this.localBase = this.localBase.copiedVersionFrom(alreadyDone);
@@ -216,7 +216,7 @@ public class ConstantExpression extends Expression {
      */
     @Override
     public Expression rebuildOn(Expression newBase) {
-        Expression result = (ConstantExpression)clone();
+        Expression result = clone();
 
         Expression localBase = null;
         if(this.localBase != null) {
@@ -286,7 +286,7 @@ public class ConstantExpression extends Expression {
     public void writeFields(ExpressionSQLPrinter printer, List<DatabaseField> newFields, SQLSelectStatement statement) {
         /*
          * If the platform doesn't support binding for functions, then disable binding for the whole query
-         * 
+         *
          * DatabasePlatform classes should instead override DatasourcePlatform.initializePlatformOperators()
          *      @see ExpressionOperator.setIsBindingSupported(boolean isBindingSupported)
          * In this way, platforms can define their own supported binding behaviors for individual functions
@@ -296,8 +296,8 @@ public class ConstantExpression extends Expression {
         }
 
         /*
-         *  Allow the platform to indicate if they support parameter expressions in the SELECT clause 
-         *  as a whole, regardless if individual functions allow binding. We make that decision here 
+         *  Allow the platform to indicate if they support parameter expressions in the SELECT clause
+         *  as a whole, regardless if individual functions allow binding. We make that decision here
          *  before we continue parsing into generic API calls
          */
         if (!printer.getPlatform().allowBindingForSelectClause()) {

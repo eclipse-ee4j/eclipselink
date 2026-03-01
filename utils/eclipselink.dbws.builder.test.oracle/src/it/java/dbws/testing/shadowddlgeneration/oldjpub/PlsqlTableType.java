@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,6 +23,7 @@ import static dbws.testing.shadowddlgeneration.oldjpub.Util.PACKAGE_NAME;
 //javase imports
 import java.sql.SQLException;
 import java.util.Iterator;
+import java.util.Objects;
 
 /**
  * Describe PL/SQL table type, including index-by tables
@@ -56,7 +57,7 @@ public class PlsqlTableType extends SqlCollectionType {
         }
 
         Iterator<ViewRow> iter;
-        if (packageName != null && packageName.length() > 0) {
+        if (packageName != null && !packageName.isEmpty()) {
             iter = viewCache.getRows(ALL_ARGUMENTS, new String[0], new String[]{OWNER, PACKAGE_NAME,
                 OBJECT_NAME, OVERLOAD}, new Object[]{schema, packageName, methodName, methodNo},
             // new String[0]);
@@ -77,16 +78,14 @@ public class PlsqlTableType extends SqlCollectionType {
                 if (info[i0 - 1].sequence == (info[i0].sequence + 1)
                     && info[i0 - 1].dataLevel == (info[i0].dataLevel + 1)
                     && info[i0 - 1].objectName.equals(info[i0].objectName)
-                    && (info[i0 - 1].overload == info[i0].overload || (info[i0 - 1].overload != null && info[i0 - 1].overload
-                        .equals(info[i0].overload)))) {
+                    && (Objects.equals(info[i0 - 1].overload, info[i0].overload))) {
                     i1 = i0 - 1;
                     break;
                 }
                 else if (info[i0 + 1].sequence == (info[i0].sequence + 1)
                     && info[i0 + 1].dataLevel == (info[i0].dataLevel + 1)
                     && info[i0 + 1].objectName.equals(info[i0].objectName)
-                    && (info[i0 - 1].overload == info[i0].overload || (info[i0 - 1].overload != null && info[i0 - 1].overload
-                        .equals(info[i0].overload)))) {
+                    && (Objects.equals(info[i0 - 1].overload, info[i0].overload))) {
                     i1 = i0 + 1;
                     break;
                 }

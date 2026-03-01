@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -51,10 +51,9 @@ public class TypeStringConverter implements XMLConverter {
 
     @Override
     public Object convertObjectValueToDataValue(Object object, Session session) {
-        if(!(object instanceof SDOType)) {
+        if(!(object instanceof SDOType type)) {
             return null;
         }
-        SDOType type = (SDOType)object;
         String typeString = type.getURI() + "#" + type.getName();
 
         return typeString;
@@ -62,11 +61,10 @@ public class TypeStringConverter implements XMLConverter {
 
     @Override
     public Object convertDataValueToObjectValue(Object value, Session session) {
-        if(!(value instanceof String)) {
+        if(!(value instanceof String typeString)) {
             return null;
         }
 
-        String typeString = (String)value;
         int poundIndex = typeString.indexOf('#');
         String URI = typeString.substring(0, poundIndex);
         String name = typeString.substring(poundIndex + 1);

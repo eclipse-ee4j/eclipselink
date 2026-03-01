@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -289,8 +289,8 @@ public class XmlExtendedComplexAggregateTest extends JUnitTestCase {
     private void checkTeam(HockeyTeamId id) {
         EntityManager em = createEntityManager();
         HockeyTeam team = em.find(HockeyTeam.class, id);
-        assertFalse("Hockey team with ID: " + id + ", was not created.", team == null);
-        assertTrue("Hockey team with ID: " + id + ", did not have 2 players added.", team.getPlayers().size() == 2);
+        assertNotNull("Hockey team with ID: " + id + ", was not created.", team);
+        assertEquals("Hockey team with ID: " + id + ", did not have 2 players added.", 2, team.getPlayers().size());
     }
 
 

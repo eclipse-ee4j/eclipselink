@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,8 +29,10 @@ import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 
 import org.eclipse.persistence.sessions.Project;
 
+import java.util.ArrayList;
+
 /**
- * A mapping project used to read JPA 2.0 metadata (persistence.xml and its
+ * A mapping project used to read JPA metadata (persistence.xml and its
  * persistence units) through OX mappings.
  *
  * @author Guy Pelletier, Doug Clarke
@@ -81,11 +83,13 @@ public class PersistenceXMLMappings {
         XMLCompositeDirectCollectionMapping classesMapping = new XMLCompositeDirectCollectionMapping();
         classesMapping.setAttributeName("managedClassNames");
         classesMapping.setXPath("class/text()");
+        classesMapping.useCollectionClass(ArrayList.class);
         descriptor.addMapping(classesMapping);
 
         XMLCompositeDirectCollectionMapping mappingFilesMapping = new XMLCompositeDirectCollectionMapping();
         mappingFilesMapping.setAttributeName("mappingFiles");
         mappingFilesMapping.setXPath("mapping-file/text()");
+        mappingFilesMapping.useCollectionClass(ArrayList.class);
         descriptor.addMapping(mappingFilesMapping);
 
         XMLCompositeCollectionMapping persistenceUnitPropertiesMapping = new XMLCompositeCollectionMapping();
@@ -94,6 +98,7 @@ public class PersistenceXMLMappings {
         persistenceUnitPropertiesMapping.setSetMethodName("setPersistenceUnitProperties");
         persistenceUnitPropertiesMapping.setReferenceClass(SEPersistenceUnitProperty.class);
         persistenceUnitPropertiesMapping.setXPath("properties/property");
+        persistenceUnitPropertiesMapping.useCollectionClass(ArrayList.class);
         descriptor.addMapping(persistenceUnitPropertiesMapping);
 
         return descriptor;

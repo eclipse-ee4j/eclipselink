@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,19 +14,19 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.unitofwork;
 
-import java.util.Vector;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.IsolatedClientSession;
 import org.eclipse.persistence.queries.DataModifyQuery;
-import org.eclipse.persistence.sessions.remote.RemoteSession;
 import org.eclipse.persistence.sessions.SessionEvent;
 import org.eclipse.persistence.sessions.SessionEventAdapter;
+import org.eclipse.persistence.sessions.remote.RemoteSession;
 import org.eclipse.persistence.testing.framework.TestErrorException;
 import org.eclipse.persistence.testing.framework.TestProblemException;
 import org.eclipse.persistence.testing.framework.TestWarningException;
 import org.eclipse.persistence.testing.models.employee.domain.Employee;
+
+import java.util.Vector;
 
 
 /*
@@ -80,9 +80,9 @@ public class CommitAfterExecuteModifyQueryDuringTransTest extends org.eclipse.pe
     @Override
     public void reset() {
         Vector myV = new Vector();
-        myV.addElement(originalEmployee.firstName);
-        myV.addElement(initialVersionField);
-        myV.addElement(originalEmployee.lastName);
+        myV.add(originalEmployee.firstName);
+        myV.add(initialVersionField);
+        myV.add(originalEmployee.lastName);
 
         try {
             getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
@@ -100,9 +100,9 @@ public class CommitAfterExecuteModifyQueryDuringTransTest extends org.eclipse.pe
                     @Override
                     public void prepareUnitOfWork(SessionEvent event) {
                         Vector myV = new Vector();
-                        myV.addElement(employeesNewFirstName);
-                        myV.addElement(initialVersionField);
-                        myV.addElement(originalEmployee.lastName);
+                        myV.add(employeesNewFirstName);
+                        myV.add(initialVersionField);
+                        myV.add(originalEmployee.lastName);
                         uow.executeQuery(dataModifyQuery, myV);
                     }
                 });

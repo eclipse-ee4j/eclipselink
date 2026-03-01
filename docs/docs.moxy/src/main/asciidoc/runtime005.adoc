@@ -1,0 +1,52 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[RUNTIME005]]
+=== Generating an XML Schema
+
+To generate an XML schema from a Java object model:
+
+. Create a class that extends `jakarta.xml.bind.SchemaOutputResolver`.
++
+[source,oac_no_warn]
+----
+      private class MySchemaOutputResolver extends SchemaOutputResolver {
+       
+         public Result createOutput(String uri, String suggestedFileName) throws IOException {
+            File file = new File(suggestedFileName);
+            StreamResult result = new StreamResult(file);
+            result.setSystemId(file.toURI().toURL().toString());
+            return result;
+         }
+       
+      }
+----
+. Use an instance of this class with `JAXBContext` to capture the
+generated XML Schema.
++
+[source,oac_no_warn]
+----
+      Class[] classes = new Class[4]; 
+      classes[0] = org.example.customer_example.AddressType.class; 
+      classes[1] = org.example.customer_example.ContactInfo.class; 
+      classes[2] = org.example.customer_example.CustomerType.class; 
+      classes[3] = org.example.customer_example.PhoneNumber.class; 
+      JAXBContext jaxbContext = JAXBContext.newInstance(classes);
+       
+      SchemaOutputResolver sor = new MySchemaOutputResolver();
+      jaxbContext.generateSchema(sor);
+----

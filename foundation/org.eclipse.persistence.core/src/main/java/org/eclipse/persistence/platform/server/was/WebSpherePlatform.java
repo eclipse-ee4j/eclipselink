@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,10 +20,6 @@
 //       455690: Move JNDIConnector lookup type to ServerPlatform.
 package org.eclipse.persistence.platform.server.was;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.sql.Connection;
-
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.platform.server.JMXServerPlatformBase;
@@ -32,11 +28,15 @@ import org.eclipse.persistence.sessions.ExternalTransactionController;
 import org.eclipse.persistence.sessions.JNDIConnector;
 import org.eclipse.persistence.transaction.was.WebSphereTransactionController;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.sql.Connection;
+
 /**
  * PUBLIC:
- *
+ * <p>
  * This is the concrete subclass responsible for representing WebSphere-specific server behavior.
- *
+ * <p>
  * This platform has:
  * <ul>
  * <li> WebSphereTransactionController (JTA integration).
@@ -145,9 +145,7 @@ public class WebSpherePlatform extends JMXServerPlatformBase {
         if (getWebsphereConnectionClass().isInstance(connection) && getVendorConnectionMethod() != null) {
             try {
                 return PrivilegedAccessHelper.invokeMethod(getVendorConnectionMethod(), null, new Object[]{connection});
-            } catch (IllegalAccessException exception) {
-                getDatabaseSession().getSessionLog().logThrowable(SessionLog.WARNING, SessionLog.SERVER, exception);
-            } catch (InvocationTargetException exception) {
+            } catch (IllegalAccessException | InvocationTargetException exception) {
                 getDatabaseSession().getSessionLog().logThrowable(SessionLog.WARNING, SessionLog.SERVER, exception);
             }
         }

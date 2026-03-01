@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,12 +14,6 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.oxm;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import javax.xml.namespace.QName;
-
 import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
 import org.eclipse.persistence.internal.core.queries.CoreMappedKeyMapContainerPolicy;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
@@ -27,6 +21,11 @@ import org.eclipse.persistence.internal.oxm.mappings.AnyAttributeMapping;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.MarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
+
+import javax.xml.namespace.QName;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * INTERNAL:
@@ -73,20 +72,19 @@ public class XMLAnyAttributeMappingNodeValue extends MappingNodeValue implements
         while (cp.hasNext(iter)) {
             Map.Entry entry = (Map.Entry)cp.nextEntry(iter, session);
             Object key = entry.getKey();
-            if (key instanceof QName) {
-                QName name = (QName) key;
+            if (key instanceof QName name) {
                 String value = entry.getValue().toString();
 
                 String qualifiedName = name.getLocalPart();
                 if (nr != null) {
                     String prefix = nr.resolveNamespaceURI(name.getNamespaceURI());
-                    if ((prefix != null) && prefix.length() > 0) {
+                    if ((prefix != null) && !prefix.isEmpty()) {
                         qualifiedName = prefix + Constants.COLON+ qualifiedName;
-                    } else if (name.getNamespaceURI() != null && name.getNamespaceURI().length() > 0) {
+                    } else if (name.getNamespaceURI() != null && !name.getNamespaceURI().isEmpty()) {
                         String generatedPrefix = nr.generatePrefix();
                         if(marshalRecord.hasCustomNamespaceMapper()) {
                             String customPrefix = marshalRecord.getMarshaller().getNamespacePrefixMapper().getPreferredPrefix(name.getNamespaceURI(), generatedPrefix, true);
-                            if(customPrefix != null && customPrefix.length() > 0) {
+                            if(customPrefix != null && !customPrefix.isEmpty()) {
                                 generatedPrefix = customPrefix;
                             }
                         }

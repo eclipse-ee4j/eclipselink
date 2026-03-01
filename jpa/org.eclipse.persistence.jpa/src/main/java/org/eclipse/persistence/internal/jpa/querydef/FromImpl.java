@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,7 +18,7 @@ package org.eclipse.persistence.internal.jpa.querydef;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -38,6 +38,7 @@ import jakarta.persistence.metamodel.Attribute;
 import jakarta.persistence.metamodel.Attribute.PersistentAttributeType;
 import jakarta.persistence.metamodel.Bindable;
 import jakarta.persistence.metamodel.CollectionAttribute;
+import jakarta.persistence.metamodel.EntityType;
 import jakarta.persistence.metamodel.ListAttribute;
 import jakarta.persistence.metamodel.ManagedType;
 import jakarta.persistence.metamodel.MapAttribute;
@@ -46,9 +47,8 @@ import jakarta.persistence.metamodel.PluralAttribute;
 import jakarta.persistence.metamodel.PluralAttribute.CollectionType;
 import jakarta.persistence.metamodel.SingularAttribute;
 import jakarta.persistence.metamodel.Type.PersistenceType;
-
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.expressions.ObjectExpression;
-import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 
 /**
@@ -77,8 +77,8 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements jakarta.persistence.
     public <T> FromImpl(Path<Z> parentPath, ManagedType managedType, Metamodel metamodel, Class<X> javaClass, org.eclipse.persistence.expressions.Expression expressionNode, Bindable<T> modelArtifact) {
         super(parentPath, metamodel, javaClass, expressionNode, modelArtifact);
         this.managedType = managedType;
-        this.joins = new HashSet<Join<X, ?>>();
-        this.fetches = new HashSet<Fetch<X, ?>>();
+        this.joins = new LinkedHashSet<>();
+        this.fetches = new LinkedHashSet<>();
     }
 
     public <T> FromImpl(Path<Z> parentPath, ManagedType managedType, Metamodel metamodel, Class<X> javaClass, org.eclipse.persistence.expressions.Expression expressionNode, Bindable<T> modelArtifact, FromImpl correlatedParent) {
@@ -123,7 +123,6 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements jakarta.persistence.
         return this.correlatedParent;
     }
 
-
     /**
      * Fetch join to the specified attribute using an inner join.
      *
@@ -160,7 +159,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements jakarta.persistence.
         }else{
             exp.doNotUseOuterJoin();
         }
-        join = new JoinImpl<X, Y>(this, this.metamodel.managedType(clazz), this.metamodel, clazz, exp, assoc, jt);
+        join = new JoinImpl<>(this, this.metamodel.managedType(clazz), this.metamodel, clazz, exp, assoc, jt);
         this.fetches.add(join);
         ((FromImpl)join).isFetch = true;
         return join;
@@ -275,7 +274,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements jakarta.persistence.
     @Override
     public <Y> Path<Y> get(SingularAttribute<? super X, Y> att){
         if (att.getPersistentAttributeType().equals(PersistentAttributeType.BASIC)){
-            return new PathImpl<Y>(this, this.metamodel, att.getBindableJavaType(),this.currentNode.get(att.getName()), att);
+            return new PathImpl<>(this, this.metamodel, att.getBindableJavaType(), this.currentNode.get(att.getName()), att);
         }else{
             Class<Y> clazz = att.getBindableJavaType();
             Join<X, Y> join = new JoinImpl<>(this, this.metamodel.managedType(clazz), this.metamodel, clazz,this.currentNode.get(att.getName()), att);
@@ -284,31 +283,16 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements jakarta.persistence.
         }
     }
 
-    /**
-     * Return the path corresponding to the referenced collection-valued
-     * attribute.
-     *
-     * @param collection
-     *            collection-valued attribute
-     * @return expression corresponding to the referenced attribute
-     */
     @Override
-    public <E, C extends java.util.Collection<E>> Expression<C> get(PluralAttribute<X, C, E> collection){
+    public <E, C extends Collection<E>> Expression<C> get(PluralAttribute<? super X, C, E> collection) {
 
         // This is a special Expression that represents just the collection for member of etc...
-        return new ExpressionImpl<C>(this.metamodel, (Class<C>) ((Class<E>) Class.class) ,this.currentNode.anyOf(collection.getName()));
+        return new ExpressionImpl<>(this.metamodel, (Class<C>) ((Class<E>) Class.class), this.currentNode.anyOf(collection.getName()));
     }
 
-    /**
-     * Return the path corresponding to the referenced map-valued attribute.
-     *
-     * @param map
-     *            map-valued attribute
-     * @return expression corresponding to the referenced attribute
-     */
     @Override
-    public <K, V, M extends java.util.Map<K, V>> Expression<M> get(MapAttribute<X, K, V> map){
-        return new ExpressionImpl<M>(this.metamodel, (Class<M>) ((Class<?>) Class.class) ,this.currentNode.anyOf(map.getName()));
+    public <K, V, M extends Map<K, V>> Expression<M> get(MapAttribute<? super X, K, V> map) {
+        return new ExpressionImpl<>(this.metamodel, (Class<M>) ((Class<?>) Class.class), this.currentNode.anyOf(map.getName()));
     }
 
     /**
@@ -318,7 +302,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements jakarta.persistence.
      */
     @Override
     public Expression<Class<? extends X>> type(){
-        return new ExpressionImpl(this.metamodel, ClassConstants.CLASS,this.currentNode.type());
+        return new ExpressionImpl(this.metamodel, CoreClassConstants.CLASS,this.currentNode.type());
     }
 
     @Override
@@ -350,7 +334,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements jakarta.persistence.
         }else{
             Class<Y> clazz = ((SingularAttribute)attribute).getBindableJavaType();
             if (((SingularAttribute)attribute).getType().getPersistenceType().equals(PersistenceType.BASIC)){
-                return new PathImpl<Y>(this, this.metamodel, clazz, this.currentNode.get(attribute.getName()), (Bindable)attribute);
+                return new PathImpl<>(this, this.metamodel, clazz, this.currentNode.get(attribute.getName()), (Bindable) attribute);
             }else{
                 join = new JoinImpl(this, this.metamodel.managedType(clazz), this.metamodel, clazz, this.currentNode.get(attribute.getName()), (Bindable)attribute);
             }
@@ -379,7 +363,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements jakarta.persistence.
         }else{
             exp.doNotUseOuterJoin();
         }
-        join = new JoinImpl<X, Y>(this, this.metamodel.managedType(clazz), this.metamodel, clazz, exp, attribute, jt);
+        join = new JoinImpl<>(this, this.metamodel.managedType(clazz), this.metamodel, clazz, exp, attribute, jt);
         this.joins.add(join);
         ((FromImpl)join).isJoin = true;
         return join;
@@ -541,6 +525,60 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements jakarta.persistence.
     }
 
     @Override
+    public <Y> Join<X, Y> join(Class<Y> entityClass) {
+        return join(entityClass, JoinType.INNER);
+    }
+
+    // Adds join for specified class.
+    @Override
+    @SuppressWarnings("unchecked")
+    public <Y> Join<X, Y> join(Class<Y> entityClass, JoinType joinType) {
+        // Search target class (this) for SingularAttributes matching source class (entityClass)
+        JoinImpl<X, Y> join = null;
+        for (Attribute<? super X, ?> attribute : ((ManagedType<X>) managedType).getAttributes()) {
+            if ((attribute instanceof SingularAttribute)
+                    && ((SingularAttribute<?, ?>) attribute).getBindableJavaType().isAssignableFrom(entityClass)) {
+                SingularAttribute<? super X, Y> singularAttribute = (SingularAttribute<? super X, Y>) attribute;
+                // Create Join instance if not exists
+                if (join == null) {
+                    ObjectExpression exp =
+                            ((ObjectExpression) this.currentNode).newDerivedExpressionNamed(singularAttribute.getName());
+                    switch (joinType) {
+                        case LEFT:
+                            exp.doUseOuterJoin();
+                            break;
+                        case RIGHT:
+                            throw new UnsupportedOperationException(ExceptionLocalization.buildMessage("RIGHT_JOIN_NOT_SUPPORTED"));
+                        case INNER:
+                            exp.doNotUseOuterJoin();
+                    }
+                    join = new JoinImpl<>(this, managedType, this.metamodel, entityClass, exp, singularAttribute, joinType);
+                    this.joins.add(join);
+                    join.isJoin = true;
+                }
+            }
+        }
+        if (join == null) {
+            throw new IllegalStateException(
+                    ExceptionLocalization.buildMessage("no_key_in_entity",
+                                                       new String[] {
+                                                               entityClass.getName(),
+                                                               this.managedType.getJavaType().getName()}));
+        }
+        return join;
+    }
+
+    @Override
+    public <Y> Join<X, Y> join(EntityType<Y> entity) {
+        return join(entity, JoinType.INNER);
+    }
+
+    @Override
+    public <Y> Join<X, Y> join(EntityType<Y> entity, JoinType joinType) {
+        return join(entity.getJavaType(), joinType);
+    }
+
+    @Override
     public <T, Y> CollectionJoin<T, Y> joinCollection(String attributeName) {
         return joinCollection(attributeName, JoinType.INNER);
     }
@@ -609,7 +647,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements jakarta.persistence.
     }
 
     public List<org.eclipse.persistence.expressions.Expression> findJoinFetches(){
-        List<org.eclipse.persistence.expressions.Expression> fetches = new ArrayList<org.eclipse.persistence.expressions.Expression>();
+        List<org.eclipse.persistence.expressions.Expression> fetches = new ArrayList<>();
         Stack stack = new Stack();
         stack.push(this);
         while(!stack.isEmpty()){

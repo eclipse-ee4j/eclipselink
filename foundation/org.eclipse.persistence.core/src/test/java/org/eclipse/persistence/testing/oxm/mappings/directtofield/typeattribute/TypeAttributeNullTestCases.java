@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -42,7 +42,7 @@ public class TypeAttributeNullTestCases extends XMLMappingTestCases {
     @Override
     public Object getReadControlObject() {
         Employee employee = new Employee();
-        String id = new String("123#AAA");
+        String id = "123#AAA";
         employee.setIdentifier(id);
         employee.setFirstName(CONTROL_FIRST_NAME);
         employee.setLastName(CONTROL_LAST_NAME);

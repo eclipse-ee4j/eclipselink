@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,13 +14,12 @@
 //     Blaise Doughan - 2.5 - initial implementation
 package org.eclipse.persistence.internal.oxm;
 
-import java.util.Properties;
-import java.util.Map.Entry;
-
-import org.eclipse.persistence.internal.oxm.CharacterEscapeHandler;
 import org.eclipse.persistence.oxm.attachment.XMLAttachmentMarshaller;
 import org.eclipse.persistence.platform.xml.XMLTransformer;
 import org.xml.sax.ErrorHandler;
+
+import java.util.Map.Entry;
+import java.util.Properties;
 
 /**
  *

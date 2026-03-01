@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2019, 2022 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -13,34 +13,26 @@
 
 // Contributors:
 //     Oracle - initial API and implementation from Oracle TopLink
-//     09/29/2016-2.7 Tomas Kraus
-//       - 426852: @GeneratedValue(strategy=GenerationType.IDENTITY) support in Oracle 12c
 //     09/14/2017-2.6 Will Dazey
 //       - 522312: Add the eclipselink.sequencing.start-sequence-at-nextval property
 //     02/20/2018-2.7 Will Dazey
 //       - 529602: Added support for CLOBs in DELETE statements for Oracle
 //     02/01/2022: Tomas Kraus
 //       - Issue 1442: Implement New Jakarta Persistence 3.1 Features
+//     06/02/2023: Radek Felcman
+//       - Issue 1885: Implement new JPQLGrammar for upcoming Jakarta Persistence 3.2
 package org.eclipse.persistence.internal.databaseaccess;
 
-import java.io.IOException;
-import java.io.Writer;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
+import org.eclipse.persistence.core.sessions.CoreSession;
 import org.eclipse.persistence.descriptors.DescriptorQueryManager;
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionOperator;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.queries.Call;
 import org.eclipse.persistence.queries.DataModifyQuery;
@@ -50,7 +42,13 @@ import org.eclipse.persistence.queries.ValueReadQuery;
 import org.eclipse.persistence.sequencing.DefaultSequence;
 import org.eclipse.persistence.sequencing.QuerySequence;
 import org.eclipse.persistence.sequencing.Sequence;
-import org.eclipse.persistence.sessions.Session;
+
+import java.io.IOException;
+import java.io.Writer;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * DatasourcePlatform is private to TopLink. It encapsulates behavior specific to a datasource platform
@@ -79,10 +77,10 @@ public class DatasourcePlatform implements Platform {
     protected transient Map<Integer, ExpressionOperator> platformOperators;
 
     /** Store the list of Classes that can be converted to from the key. */
-    protected Hashtable<Class<?>, List<Class<?>>> dataTypesConvertedFromAClass;
+    protected Map<Class<?>, List<Class<?>>> dataTypesConvertedFromAClass;
 
     /** Store the list of Classes that can be converted from to the key. */
-    protected Hashtable<Class<?>, List<Class<?>>> dataTypesConvertedToAClass;
+    protected Map<Class<?>, List<Class<?>>> dataTypesConvertedToAClass;
 
     /** Store default sequence */
     protected Sequence defaultSequence;
@@ -165,7 +163,7 @@ public class DatasourcePlatform implements Platform {
      */
     @Override
     public void appendParameter(Call call, Writer writer, Object parameter) {
-        String parameterValue = getConversionManager().convertObject(parameter, ClassConstants.STRING);
+        String parameterValue = getConversionManager().convertObject(parameter, CoreClassConstants.STRING);
         if (parameterValue == null) {
             parameterValue = "";
         }
@@ -252,14 +250,27 @@ public class DatasourcePlatform implements Platform {
     }
 
     /**
+     * Convert the object to the appropriate type by invoking the appropriate
+     * ConversionManager method.
+     * @param sourceObject the object that must be converted
+     * @param javaClass the class that the object must be converted to
+     * @param session current database session
+     * @exception ConversionException all exceptions will be thrown as this type.
+     * @return the newly converted object
+     */
+    @Override
+    public <T> T convertObject(Object sourceObject, Class<T> javaClass, CoreSession<?, ?, ? ,?, ?> session) throws ConversionException {
+        return convertObject(sourceObject, javaClass);
+    }
+
+    /**
      * Copy the state into the new platform.
      */
     @Override
     public void copyInto(Platform platform) {
-        if (!(platform instanceof DatasourcePlatform)) {
+        if (!(platform instanceof DatasourcePlatform datasourcePlatform)) {
             return;
         }
-        DatasourcePlatform datasourcePlatform = (DatasourcePlatform)platform;
         datasourcePlatform.setTableQualifier(getTableQualifier());
         datasourcePlatform.setTimestampQuery(this.timestampQuery);
         datasourcePlatform.setUUIDQuery(this.uuidQuery);
@@ -295,8 +306,15 @@ public class DatasourcePlatform implements Platform {
     }
 
     /**
+     * Return the driver version.
+     */
+    public String getDriverVersion() {
+        return "";
+    }
+
+    /**
      * Delimiter to use for fields and tables using spaces or other special values.
-     *
+     * <p>
      * Some databases use different delimiters for the beginning and end of the value.
      * This delimiter indicates the end of the value.
      */
@@ -307,7 +325,7 @@ public class DatasourcePlatform implements Platform {
 
     /**
      * Delimiter to use for fields and tables using spaces or other special values.
-     *
+     * <p>
      * Some databases use different delimiters for the beginning and end of the value.
      * This delimiter indicates the end of the value.
      */
@@ -345,7 +363,7 @@ public class DatasourcePlatform implements Platform {
         if (getDefaultSequence() instanceof QuerySequence) {
             return ((QuerySequence)getDefaultSequence()).getSelectQuery();
         } else {
-            throw ValidationException.wrongSequenceType(Helper.getShortClassName(getDefaultSequence()), "getSelectQuery");
+            throw ValidationException.wrongSequenceType(getDefaultSequence().getClass().getSimpleName(), "getSelectQuery");
         }
     }
 
@@ -356,7 +374,7 @@ public class DatasourcePlatform implements Platform {
 
     /**
      * Delimiter to use for fields and tables using spaces or other special values.
-     *
+     * <p>
      * Some databases use different delimiters for the beginning and end of the value.
      * This delimiter indicates the start of the value.
      */
@@ -367,7 +385,7 @@ public class DatasourcePlatform implements Platform {
 
     /**
      * Delimiter to use for fields and tables using spaces or other special values.
-     *
+     * <p>
      * Some databases use different delimiters for the beginning and end of the value.
      * This delimiter indicates the start of the value.
      */
@@ -413,7 +431,6 @@ public class DatasourcePlatform implements Platform {
      * query that will return the UUID from the server.
      * return null if UUID can't be generated by platform.
      */
-    @Override
     public ValueReadQuery getUUIDQuery() {
         return uuidQuery;
     }
@@ -427,7 +444,7 @@ public class DatasourcePlatform implements Platform {
         if (getDefaultSequence() instanceof QuerySequence) {
             return ((QuerySequence)getDefaultSequence()).getUpdateQuery();
         } else {
-            throw ValidationException.wrongSequenceType(Helper.getShortClassName(getDefaultSequence()), "getUpdateQuery");
+            throw ValidationException.wrongSequenceType(getDefaultSequence().getClass().getSimpleName(), "getUpdateQuery");
         }
     }
 
@@ -445,14 +462,17 @@ public class DatasourcePlatform implements Platform {
         addOperator(ExpressionOperator.toLowerCase());
         addOperator(ExpressionOperator.chr());
         addOperator(ExpressionOperator.concat());
+        addOperator(ExpressionOperator.concatPipes());
         addOperator(ExpressionOperator.hexToRaw());
         addOperator(ExpressionOperator.initcap());
         addOperator(ExpressionOperator.instring());
         addOperator(ExpressionOperator.soundex());
+        addOperator(ExpressionOperator.left());
         addOperator(ExpressionOperator.leftPad());
         addOperator(ExpressionOperator.leftTrim());
         addOperator(ExpressionOperator.leftTrim2());
         addOperator(ExpressionOperator.replace());
+        addOperator(ExpressionOperator.right());
         addOperator(ExpressionOperator.rightPad());
         addOperator(ExpressionOperator.rightTrim());
         addOperator(ExpressionOperator.rightTrim2());
@@ -676,6 +696,11 @@ public class DatasourcePlatform implements Platform {
         return false;
     }
 
+    @Override
+    public boolean isOracle23() {
+        return false;
+    }
+
     public boolean isPervasive(){
         return false;
     }
@@ -747,7 +772,7 @@ public class DatasourcePlatform implements Platform {
         if (getDefaultSequence() instanceof QuerySequence) {
             ((QuerySequence)getDefaultSequence()).setSelectQuery(seqQuery);
         } else {
-            throw ValidationException.wrongSequenceType(Helper.getShortClassName(getDefaultSequence()), "setSelectQuery");
+            throw ValidationException.wrongSequenceType(getDefaultSequence().getClass().getSimpleName(), "setSelectQuery");
         }
     }
 
@@ -780,7 +805,6 @@ public class DatasourcePlatform implements Platform {
     /**
      * Can override the default query for returning a UUID from the server.
      */
-    @Override
     public void setUUIDQuery(ValueReadQuery uuidQuery) {
         this.uuidQuery = uuidQuery;
     }
@@ -793,13 +817,13 @@ public class DatasourcePlatform implements Platform {
         if (getDefaultSequence() instanceof QuerySequence) {
             ((QuerySequence)getDefaultSequence()).setUpdateQuery(updateSequenceNumberQuery);
         } else {
-            throw ValidationException.wrongSequenceType(Helper.getShortClassName(getDefaultSequence()), "setUpdateQuery");
+            throw ValidationException.wrongSequenceType(getDefaultSequence().getClass().getSimpleName(), "setUpdateQuery");
         }
     }
 
     @Override
     public String toString() {
-        return Helper.getShortClassName(this.getClass());
+        return getClass().getSimpleName();
     }
 
     /**
@@ -929,7 +953,7 @@ public class DatasourcePlatform implements Platform {
      * Create platform-default Sequence
      */
     protected Sequence createPlatformDefaultSequence() {
-        throw ValidationException.createPlatformDefaultSequenceUndefined(Helper.getShortClassName(this));
+        throw ValidationException.createPlatformDefaultSequenceUndefined(getClass().getSimpleName());
     }
 
     /**
@@ -1151,30 +1175,6 @@ public class DatasourcePlatform implements Platform {
 
     /**
      * INTERNAL:
-     * Initialize platform specific identity sequences.
-     * @param session Active database session (in connected state).
-     * @param defaultIdentityGenerator Default identity generator sequence name.
-     * @since 2.7
-     */
-    @Override
-    public void initIdentitySequences(final Session session, final String defaultIdentityGenerator) {
-    }
-
-    /**
-     * INTERNAL:
-     * Remove platform specific identity sequences for specified tables. Default identity sequences are restored.
-     * @param session Active database session (in connected state).
-     * @param defaultIdentityGenerator Default identity generator sequence name.
-     * @param tableNames Set of table names to check for identity sequence removal.
-     * @since 2.7
-     */
-    @Override
-    public void removeIdentitySequences(
-            final Session session, final String defaultIdentityGenerator, final Set<String> tableNames) {
-    }
-
-    /**
-     * INTERNAL:
      * Override this method if the platform needs to use a custom function based on the DatabaseField
      * @return An expression for the given field set equal to a parameter matching the field
      */
@@ -1191,4 +1191,5 @@ public class DatasourcePlatform implements Platform {
     public int getINClauseLimit() {
         return 0;
     }
+
 }

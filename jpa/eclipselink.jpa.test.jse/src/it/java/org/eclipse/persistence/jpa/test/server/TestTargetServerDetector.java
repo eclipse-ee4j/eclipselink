@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2015 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -20,7 +20,7 @@ package org.eclipse.persistence.jpa.test.server;
 
 import jakarta.persistence.EntityManagerFactory;
 
-import org.eclipse.persistence.exceptions.ServerPlatformException;
+import org.eclipse.persistence.platform.server.ServerPlatformException;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
 import org.eclipse.persistence.jpa.test.basic.model.Employee;
 import org.eclipse.persistence.jpa.test.framework.DDLGen;

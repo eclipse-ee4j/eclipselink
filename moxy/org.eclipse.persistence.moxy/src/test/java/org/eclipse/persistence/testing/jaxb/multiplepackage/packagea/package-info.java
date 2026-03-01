@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -12,4 +12,3 @@
 
 @jakarta.xml.bind.annotation.XmlSchema(namespace = "namespaceA", elementFormDefault = jakarta.xml.bind.annotation.XmlNsForm.QUALIFIED)
 package org.eclipse.persistence.testing.jaxb.multiplepackage.packagea;
-import jakarta.xml.bind.annotation.XmlNsForm;

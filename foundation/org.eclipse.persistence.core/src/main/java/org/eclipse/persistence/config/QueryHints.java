@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2021 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,20 +25,19 @@ package org.eclipse.persistence.config;
 
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.persistence.annotations.BatchFetch;
-import org.eclipse.persistence.annotations.BatchFetchType;
-import org.eclipse.persistence.sessions.DataRecord;
-
 /**
  * The class defines EclipseLink query hints.
  * These query hints allow a JPA Query to be customized or optimized beyond
  * what is available in the JPA specification.
  *
- * <p>JPA Query Hint Usage:
- *
- * <p><code>query.setHint(QueryHints.CACHE_USAGE, CacheUsage.CheckCacheOnly);</code>
+ * <p>JPA Query Hint usage:
+ * {@snippet :
+ *  query.setHint(QueryHints.CACHE_USAGE, CacheUsage.CheckCacheOnly);
+ * }
  * <p>or
- * <p><code>@QueryHint(name=QueryHints.CACHE_USAGE, value=CacheUsage.CheckCacheOnly)</code>
+ * {@snippet :
+ *  @QueryHint(name=QueryHints.CACHE_USAGE, value=CacheUsage.CheckCacheOnly)
+ * }
  *
  * <p>Hint values are case-insensitive; "" could be used instead of default value.
  *
@@ -47,7 +46,7 @@ import org.eclipse.persistence.sessions.DataRecord;
  * @see PessimisticLock
  * @see QueryType
  */
-public class QueryHints {
+public final class QueryHints {
     /**
      * "eclipselink.jdbc.bind-parameters"
      * <p>Configures parameter binding to be disabled or enabled just for this query (overrides persistent unit setting, which default to true).
@@ -69,7 +68,7 @@ public class QueryHints {
     public static final String PARAMETER_DELIMITER = "eclipselink.jdbc.parameter-delimiter";
 
     /**
-     * "jakarta.persistence.cache.retrieveMode"
+     * {@code jakarta.persistence.cache.retrieveMode}
      * <p>Configures the behavior when data is retrieved by the find methods and
      * by the execution of queries. The cache retrieve mode is ignored for the
      * refresh method, which always causes data to be retrieved from the
@@ -80,7 +79,7 @@ public class QueryHints {
     public static final String CACHE_RETRIEVE_MODE = "jakarta.persistence.cache.retrieveMode";
 
     /**
-     * "jakarta.persistence.cache.storeMode"
+     * {@code jakarta.persistence.cache.storeMode}
      * <p>Configures the behavior when data is read from the database and when
      * data is committed into the database.</p>
      * @see org.eclipse.persistence.queries.DatabaseQuery#dontMaintainCache()
@@ -104,11 +103,11 @@ public class QueryHints {
     /**
      * "eclipselink.query-results-cache"
      * <p>Configures the query to use a results cache.
-     * By default the query will cache 100 query results, such that the same named query with the same arguments
+     * By default, the query will cache 100 query results, such that the same named query with the same arguments
      * is re-executed it will skip the database and just return the cached results.
      * Valid values are:  HintValues.PERSISTENCE_UNIT_DEFAULT, HintValues.TRUE, HintValues.FALSE,
      * "" could be used instead of default value HintValues.PERSISTENCE_UNIT_DEFAULT.
-     * By default query results are not cached.
+     * By default, query results are not cached.
      * This is not, and is independent from the object cache.
      * @see org.eclipse.persistence.queries.QueryResultsCachePolicy
      * @see org.eclipse.persistence.queries.ReadQuery#setQueryResultsCachePolicy(org.eclipse.persistence.queries.QueryResultsCachePolicy)
@@ -118,7 +117,7 @@ public class QueryHints {
     /**
      * "eclipselink.query-results-cache.size"
      * <p>Configures the size of the query's results cache.
-     * By default the query will cache 100 query results, such that the same named query with the same arguments
+     * By default, the query will cache 100 query results, such that the same named query with the same arguments
      * is re-executed it will skip the database and just return the cached results.
      * If the query has no arguments a size of 1 should be used (as there is only a single result).
      * Valid values are Integer or Strings that can be parsed to int values.
@@ -129,7 +128,7 @@ public class QueryHints {
     /**
      * "eclipselink.query-results-cache.expiry"
      * <p>Configures the time to live, or expiry time of the query's results cache.
-     * By default the query results cache will not expiry results.
+     * By default, the query results cache will not expiry results.
      * Valid values are number of milliseconds, Integer or Strings that can be parsed to int values.
      * @see org.eclipse.persistence.descriptors.invalidation.CacheInvalidationPolicy
      * @see org.eclipse.persistence.queries.QueryResultsCachePolicy#setCacheInvalidationPolicy(org.eclipse.persistence.descriptors.invalidation.CacheInvalidationPolicy)
@@ -140,7 +139,7 @@ public class QueryHints {
      * "eclipselink.query-results-cache.randomize-expiry"
      * <p>Configures a randomization on the expiry invalidation time.
      * This can be used to avoid bottlenecks from the cached values expiring at the same time.
-     * By default expiry is not randomized.
+     * By default, expiry is not randomized.
      * Valid values are "true" and "false", false is the default.
      * @see org.eclipse.persistence.descriptors.invalidation.TimeToLiveCacheInvalidationPolicy#setIsInvalidationRandomized(boolean)
      */
@@ -150,7 +149,7 @@ public class QueryHints {
      * "eclipselink.query-results-cache.ignore-null"
      * <p>Configures null results to not be cached.
      * This can be used to use the query cache as a secondary key index, and allow inserts of new objects.
-     * By default null results are cached.
+     * By default, null results are cached.
      * Valid values are "true" and "false", false is the default.
      * @see org.eclipse.persistence.queries.QueryResultsCachePolicy#setIsNullIgnored(boolean)
      */
@@ -159,7 +158,7 @@ public class QueryHints {
     /**
      * "eclipselink.query-results-cache.invalidate-on-change"
      * <p>Configures if the query cache results should be invalidated if any object of any class used in the query if modified.
-     *
+     * <p>
      * Valid values are "true" and "false", true is the default.
      * @see org.eclipse.persistence.queries.QueryResultsCachePolicy#setInvalidateOnChange(boolean)
      */
@@ -168,7 +167,7 @@ public class QueryHints {
     /**
      * "eclipselink.query-results-cache.type"
      * <p>Configures the cache type of the query's results cache.
-     * By default the a fixed sized LRU cache is used (CACHE).
+     * By default, the fixed sized LRU cache is used (CACHE).
      * Valid values are defined in the CacheType enum (as Strings).
      * @see org.eclipse.persistence.annotations.CacheType
      * @see org.eclipse.persistence.queries.QueryResultsCachePolicy#setCacheType(java.lang.Class)
@@ -178,12 +177,28 @@ public class QueryHints {
     /**
      * "eclipselink.query-results-cache.expiry-time-of-day"
      * <p>Configures the time of day expiry time of the query's results cache.
-     * By default the query results cache will not expiry results.
+     * By default, the query results cache will not expiry results.
      * Valid values are String Time format, "HH:MM:SS".
      * @see org.eclipse.persistence.descriptors.invalidation.CacheInvalidationPolicy
      * @see org.eclipse.persistence.queries.QueryResultsCachePolicy#setCacheInvalidationPolicy(org.eclipse.persistence.descriptors.invalidation.CacheInvalidationPolicy)
      */
     public static final String QUERY_RESULTS_CACHE_EXPIRY_TIME_OF_DAY = "eclipselink.query-results-cache.expiry-time-of-day";
+
+    /**
+     * <p>
+     * This property control (enable/disable) query result cache validation in {@link org.eclipse.persistence.internal.sessions.UnitOfWorkImpl#internalExecuteQuery}
+     * </p>
+     * This can be used to help debugging an object identity problem. An object identity problem is when an managed/active entity in the cache references an entity not in managed state.
+     * This method will validate that objects in query results are in a correct state. As a result there are new log messages in the log.
+     * It's related with "read" queries like {@code em.find(...);} or JPQL queries like {@code SELECT e FROM Entity e}.
+     * It should be controlled at persistence unit level too by persistence unit property {@link org.eclipse.persistence.config.PersistenceUnitProperties#QUERY_RESULTS_CACHE_VALIDATION}
+     * <ul>
+     * <li>"{@code true}" - validate query result object tree and if content is not valid print diagnostic messages. In this case there should be negative impact to the performance.
+     * <li>"{@code false}" (DEFAULT) - don't validate and print any diagnostic messages
+     * </ul>
+     */
+    public static final String QUERY_RESULTS_CACHE_VALIDATION = "eclipselink.query-results-cache.validation";
+
 
     /**
      * "eclipselink.query.redirector"
@@ -211,7 +226,7 @@ public class QueryHints {
     /**
      * "eclipselink.query-type"
      * <p>Configures the EclipseLink query type to use for the query.
-     * By default EclipseLink ReportQuery or ReadAllQuery are used for most JPQL queries, this allows other query types to be used,
+     * By default, EclipseLink ReportQuery or ReadAllQuery are used for most JPQL queries, this allows other query types to be used,
      * such as ReadObjectQuery which can be used for queries that are know to return a single object, and has different caching semantics.
      * Valid values are all declared in QueryType class.
      * A fully qualified class name of a valid subclass of DatabaseQuery can also be used.
@@ -225,18 +240,19 @@ public class QueryHints {
      * <p>Configures  the query to acquire a pessimistic lock (write-lock) on the resulting rows in the database.
      * Valid values are all declared in PessimisticLock class.
      * Pessimistic locking support and behavior may differ on difference database platforms.
+     * <p>
+     * <B>Note:</B> As of JPA 2.0 there is a standard way to configure pessimistic locking.
+     *
+     * @see jakarta.persistence.LockModeType
+     * @see jakarta.persistence.EntityManager
+     * @see jakarta.persistence.Query
      * @see PessimisticLock
      * @see org.eclipse.persistence.queries.ObjectLevelReadQuery#setLockMode(short)
-     *
-     * <B>Note:</B> As of JPA 2.0 there is a standard way to configure pessimistic locking.
-     * @see jakarta.persistence.LockModeType
-     * @see jakarta.persistence.EntityManager (find(), refresh(), lock())
-     * @see jakarta.persistence.Query (setLockMode())
      */
     public static final String PESSIMISTIC_LOCK = "eclipselink.pessimistic-lock";
 
     /**
-     * "jakarta.persistence.lock.timeout"
+     * {@code jakarta.persistence.lock.timeout}
      * <p>Configures the WAIT timeout used in pessimistic locking, if the database
      * query exceeds the timeout the database will terminate the query and
      * return an exception. Valid values are Integer or Strings that can be
@@ -253,9 +269,9 @@ public class QueryHints {
      * <p>Configures the pessimistic lock timeout unit value. Allows users more refinement.
      * <b>Valid Values:</b>
      * <ul>
-     * <li>"<code>java.util.concurrent.TimeUnit.MILLISECONDS</code>" (DEFAULT), 
-     * <li>"<code>java.util.concurrent.TimeUnit.SECONDS</code>", 
-     * <li>"<code>java.util.concurrent.TimeUnit.MINUTES</code>".
+     * <li>"{@code java.util.concurrent.TimeUnit.MILLISECONDS}" (DEFAULT),
+     * <li>"{@code java.util.concurrent.TimeUnit.SECONDS}",
+     * <li>"{@code java.util.concurrent.TimeUnit.MINUTES}".
      * </ul>
      * @see org.eclipse.persistence.queries.ObjectLevelReadQuery#setWaitTimeoutUnit(TimeUnit)
      */
@@ -287,9 +303,9 @@ public class QueryHints {
      *  If changes are made to data referenced in the 'where clause' after the first SQL results are returned but before the
      *  second query executes then these attributes may not be returned by the second query. To prevent this reference these
      *  attributes before changing data associated with the query."
-     * @see BatchFetch
      * @see #BATCH_TYPE
-     * @see BatchFetchType
+     * @see org.eclipse.persistence.annotations.BatchFetch
+     * @see org.eclipse.persistence.annotations.BatchFetchType
      * @see org.eclipse.persistence.queries.ReadAllQuery#addBatchReadAttribute(String)
      */
     public static final String BATCH = "eclipselink.batch";
@@ -299,9 +315,9 @@ public class QueryHints {
      * <p>Configures the type of batch fetching to use for any batch fetched relationships on the query.
      * Valid values are defined in BatchFetchType ("JOIN", "EXISTS", "IN").
      * @see #BATCH
-     * @see BatchFetchType
-     * @see BatchFetch
-     * @see org.eclipse.persistence.queries.ObjectLevelReadQuery#setBatchFetchType(BatchFetchType)
+     * @see org.eclipse.persistence.annotations.BatchFetch
+     * @see org.eclipse.persistence.annotations.BatchFetchType
+     * @see org.eclipse.persistence.queries.ObjectLevelReadQuery#setBatchFetchType(org.eclipse.persistence.annotations.BatchFetchType)
      */
     public static final String BATCH_TYPE = "eclipselink.batch.type";
 
@@ -312,8 +328,8 @@ public class QueryHints {
      * The default size is 256, or the cursor pageSize.
      * @see #BATCH
      * @see #BATCH_TYPE
-     * @see BatchFetchType
-     * @see BatchFetch
+     * @see org.eclipse.persistence.annotations.BatchFetch
+     * @see org.eclipse.persistence.annotations.BatchFetchType
      * @see org.eclipse.persistence.queries.ObjectLevelReadQuery#setBatchFetchSize(int)
      */
     public static final String BATCH_SIZE = "eclipselink.batch.size";
@@ -322,7 +338,7 @@ public class QueryHints {
      * "eclipselink.join-fetch"
      * <p>Configures the query to optimize the retrieval of the related objects,
      * the related objects will be joined into the query instead of being queried independently.
-     * This allow for nested join fetching which is not supported in JPQL.
+     * This allows for nested join fetching which is not supported in JPQL.
      * It also allows for join fetching with native queries.
      * This uses an INNER join and will filter null or empty values, see LEFT_FETCH for outer joins.
      * Valid values are strings that represent JPQL style navigations to a relationship.
@@ -337,7 +353,7 @@ public class QueryHints {
      * "eclipselink.left-join-fetch"
      * <p>Configures the query to optimize the retrieval of the related objects,
      * the related objects will be joined into the query instead of being queried independently.
-     * This allow for nested join fetching which is not supported in JPQL.
+     * This allows for nested join fetching which is not supported in JPQL.
      * It also allows for join fetching with native queries.
      * This uses an OUTER join to allow null or empty values.
      * Valid values are strings that represent JPQL style navigations to a relationship.
@@ -369,10 +385,10 @@ public class QueryHints {
     public static final String JDBC_TIMEOUT = "eclipselink.jdbc.timeout";
 
     /**
-     * "jakarta.persistence.query.timeout"
+     * {@code jakarta.persistence.query.timeout}
      * <p>Configures the default query timeout value per the JPA specification.
      * Valid values are strings containing a zero or greater integer value
-     * Defaults to use seconds as the unit of time.
+     * Defaults to use milliseconds as the unit of time.
      * @see org.eclipse.persistence.queries.DatabaseQuery#setQueryTimeout(int)
      */
     public static final String QUERY_TIMEOUT = "jakarta.persistence.query.timeout";
@@ -382,9 +398,9 @@ public class QueryHints {
      * <p>Configures the query timeout unit value. Allows users more refinement.
      * <b>Valid Values:</b>
      * <ul>
-     * <li>"<code>java.util.concurrent.TimeUnit.MILLISECONDS</code>" (DEFAULT), 
-     * <li>"<code>java.util.concurrent.TimeUnit.SECONDS</code>", 
-     * <li>"<code>java.util.concurrent.TimeUnit.MINUTES</code>".
+     * <li>"{@code java.util.concurrent.TimeUnit.MILLISECONDS}" (DEFAULT),
+     * <li>"{@code java.util.concurrent.TimeUnit.SECONDS}",
+     * <li>"{@code java.util.concurrent.TimeUnit.MINUTES}".
      * </ul>
      * @see org.eclipse.persistence.queries.DatabaseQuery#setQueryTimeoutUnit(TimeUnit)
      */
@@ -405,6 +421,7 @@ public class QueryHints {
      * the trailing rows will not be returned by the database.
      * This is the same as JPA Query setMaxResults(), but can be set in meta-data for NamedQuerys.
      * Valid values are Integer or Strings that can be parsed to int values.
+     *
      * @see jakarta.persistence.Query#setMaxResults(int)
      * @see org.eclipse.persistence.queries.ReadQuery#setMaxRows(int)
      */
@@ -415,6 +432,7 @@ public class QueryHints {
      * <p>Configures the query to skip the firstResult number of rows.
      * This is the same as JPA Query setFirstResults(), but can be set in meta-data for NamedQuerys.
      * Valid values are Integer or Strings that can be parsed to int values.
+     *
      * @see jakarta.persistence.Query#setFirstResult(int)
      * @see org.eclipse.persistence.queries.ReadQuery#setFirstResult(int)
      */
@@ -451,7 +469,7 @@ public class QueryHints {
      * Resulting objects will be read and built directly from the database, and not registered in the persistence context.
      * Changes made to the objects will not be updated unless merged, object identity will not be maintained.
      * This can be used to read the current state of the database, without affecting the current persistence context.
-     * By default the cache is always maintained.
+     * By default, the cache is always maintained.
      * Valid values are:  HintValues.FALSE, HintValues.TRUE,
      * "" could be used instead of default value HintValues.FALSE
      * @see org.eclipse.persistence.queries.DatabaseQuery#setShouldMaintainCache(boolean)
@@ -461,7 +479,7 @@ public class QueryHints {
     /**
      * "eclipselink.prepare"
      * <p>Configures the query to not prepare its SQL.
-     * By default queries generate their SQL the first time they are executed,
+     * By default, queries generate their SQL the first time they are executed,
      * and avoid the cost of generating the SQL on subsequent executions.
      * This can be used to generate the SQL on every execution if the
      * query requires usage of dynamic SQL, such as to handle null parameters (use IS NULL instead of = null).
@@ -496,11 +514,12 @@ public class QueryHints {
      * trigger a flush is required for the query to see these changes.
      * If the query does not require seeing the changes, then avoid the flush can improve performance.
      * The default flush-mode can be set on the EntityManager or configured as a persistence unit property.
-     * By default the flush-mode is AUTO, which requires a flush before any query execution.
+     * By default, the flush-mode is AUTO, which requires a flush before any query execution.
      * Conforming can also be used to query changes without requiring a flush,
      * refer to the CACHE_USAGE query hint for conforming.
      * Valid values are:  HintValues.FALSE, HintValues.TRUE,
      * "" could be used instead of default value HintValues.FALSE
+     *
      * @see jakarta.persistence.EntityManager#setFlushMode(jakarta.persistence.FlushModeType)
      * @see PersistenceUnitProperties#PERSISTENCE_CONTEXT_FLUSH_MODE
      * @see org.eclipse.persistence.queries.DatabaseQuery#setFlushOnExecute(Boolean)
@@ -541,7 +560,7 @@ public class QueryHints {
      * "eclipselink.cursor"
      * <p>Configures the query to return a CursoredStream.
      * A cursor is a stream of the JDBC ResultSet.
-     * Cursor implements Enumeration, when the each next() will fetch the next from the JDBC ResultSet,
+     * Cursor implements Enumeration, when each next() will fetch the next from the JDBC ResultSet,
      * and build the resulting Object or value.
      * A Cursor requires and will keep a live JDBC connection, close() must be called
      * to free the Cursor's resources.
@@ -593,7 +612,7 @@ public class QueryHints {
      * "eclipselink.cursor.scrollable"
      * <p>Configures the query to return a ScrollableCursor.
      * A cursor is a stream of the JDBC ResultSet.
-     * ScrollableCursor implements ListIterator, when the each next() will fetch the next from the JDBC ResultSet,
+     * ScrollableCursor implements ListIterator, when each next() will fetch the next from the JDBC ResultSet,
      * and build the resulting Object or value.
      * ScrollableCursor can scroll forwards and backwards and position into the ResultSet.
      * A Cursor requires and will keep a live JDBC connection, close() must be called
@@ -653,7 +672,7 @@ public class QueryHints {
      * "eclipselink.fetch-group.name"
      * <p>Configures the query to use a named fetch group defined for the result class.
      * This is the name of the fetch group, as defined on the ClassDescriptor.
-     * Currently FetchGroups can only be defined on the ClassDescriptor using a DescriptorCustomizer.
+     * Currently, FetchGroups can only be defined on the ClassDescriptor using a DescriptorCustomizer.
      * The query will only fetch the attributes defined in the fetch group, if any other attribute is accessed
      * it will cause the object to be refreshed.
      * To load all FetchGroup's relationship attributes set the FetchGroup's boolean flag "load" to true.
@@ -703,7 +722,7 @@ public class QueryHints {
     public static final String FETCH_GROUP_LOAD = "eclipselink.fetch-group.load";
 
     /**
-     * "jakarta.persistence.fetchgraph"
+     * {@code jakarta.persistence.fetchgraph}
      * <p> Configures a jpa entity graph to be used as a fetch graph template.
      * Those attributes included in the entity graph will have their values fetched and populated.
      * Attributes of the represented entity that are not present in the entity graph will be treated
@@ -732,7 +751,7 @@ public class QueryHints {
      * "eclipselink.load-group"
      * <p>Configures the query to use the load group object.
      * This is an instance of LoadGroup.
-     * Ensures that all relational attributes an the group are loaded.
+     * Ensures that all relational attributes a the group are loaded.
      * LoadGroups are only supported for queries returning objects (only a single alias can be the select clause).
      * @see #LOAD_GROUP_ATTRIBUTE
      * @see org.eclipse.persistence.queries.LoadGroup
@@ -741,7 +760,7 @@ public class QueryHints {
     public static final String LOAD_GROUP = "eclipselink.load-group";
 
     /**
-     * "jakarta.persistence.loadgraph"
+     * {@code jakarta.persistence.loadgraph}
      * <p> Configures a jpa entity graph to be used as a load graph template.
      * Those attributes included in the entity graph will have their values fetched and populated.
      * Attributes of the represented entity that are not present in the entity graph will be loaded based
@@ -783,7 +802,7 @@ public class QueryHints {
      * "eclipselink.inheritance.outer-join"
      * <p>Configures the query to outer-join all subclasses.
      * This is only relevant for queries to root or branch inherited classes.
-     * By default a separate query is executed for each subclass.
+     * By default, a separate query is executed for each subclass.
      * This can also be configured for the class using a DescriptorCustomizer.
      * This is required for correct ordering, firstResult, maxResult, and cursors.
      * Valid values are:  HintValues.FALSE, HintValues.TRUE.
@@ -793,11 +812,11 @@ public class QueryHints {
     public static final String INHERITANCE_OUTER_JOIN = "eclipselink.inheritance.outer-join";
 
     /**
-     * The <code>"eclipselink.jdbc.allow-native-sql-query"</code> property
+     * The {@code "eclipselink.jdbc.allow-native-sql-query"} property
      * specifies whether a single native SQL query should override a persistence
      * unit level setting (eclipselink.jdbc.allow-native-sql-queries). The PU
      * level flag is of particular importance within a multitenant to minimize
-     * the potential impact of revealing multitenant. However in some cases the
+     * the potential impact of revealing multitenant. However, in some cases the
      * application may need to allow certain native SQL queries through.
      * <p>
      * Allowed Values (String):
@@ -832,7 +851,7 @@ public class QueryHints {
 
     /**
      * "eclipselink.result-type"
-     * <p> By default in JPA for non-single select queries an Array of values is returned.
+     * <p> By default, in JPA for non-single select queries an Array of values is returned.
      * If getSingleResult() is called the first array is returned, for getResultList() a List of arrays is returned.
      * <p>i.e. "Select e.firstName, e.lastName from Employee e" returns {@literal List<Object[]>}
      * <p>or the native query, "SELECT * FROM EMPLOYEE" returns {@literal List<Object[]>}
@@ -840,7 +859,7 @@ public class QueryHints {
      * <p>It can also be used to return a single column, or single value.
      * Valid values are defined in ResultType.
      * @see ResultType
-     * @see DataRecord
+     * @see org.eclipse.persistence.sessions.DataRecord
      * @see org.eclipse.persistence.sessions.DatabaseRecord
      * @see org.eclipse.persistence.queries.ReportQueryResult
      * @see org.eclipse.persistence.queries.ReportQuery#setReturnType(int)
@@ -861,11 +880,12 @@ public class QueryHints {
     public static final String INDIRECTION_POLICY = "eclipselink.cache-usage.indirection-policy";
 
     /**
-     * "jakarta.persistence.lock.scope"
-     * <p> By default pessimistic lock applied to only the tables mapped to the object being locked.
+     * {@code jakarta.persistence.lock.scope}
+     * <p> By default, pessimistic lock applied to only the tables mapped to the object being locked.
      * <p> It could be extended to apply also to relation (join) tables (ManyToMany and OneToOne case),
      * and CollectionTables (ElementCollection case).
      * Valid values are defined in PessimisticLockScope.
+     *
      * @see jakarta.persistence.PessimisticLockScope
      * @see jakarta.persistence.LockModeType
      */
@@ -881,7 +901,7 @@ public class QueryHints {
 
     /**
      * "eclipselink.jdbc.batch-writing"
-     * <p>Configures if this modify query can be batched through batch writing.
+     * <p>Configures if this modifies query can be batched through batch writing.
      * Some types of queries cannot be batched, such as DDL on some databases.
      * Disabling batch writing will also allow the row count to be returned.
      * Valid values are:  HintValues.PERSISTENCE_UNIT_DEFAULT, HintValues.TRUE, HintValues.FALSE,

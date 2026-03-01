@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -48,18 +48,18 @@ public class BatchTestRunner {
         if (args.length < 2) {
             this.printUsageAndExit();
         }
-        for (int i = 0; i < args.length; i++) {
-            processArguments(args[i]);
+        for (String arg : args) {
+            processArguments(arg);
         }
 
         long startTime = System.currentTimeMillis();
         log("*** Beginning of running " + batchName + ", model by model. ***");
         PromptTestRunner ptr = new PromptTestRunner();
         for (int index = 0; index < testList.size(); ++index) {
-            String arg1 = "testmodel=" + testList.elementAt(index);
+            String arg1 = "testmodel=" + testList.get(index);
             String arg2 = "pfile=" + pFileName;
             String[] a = { arg1, arg2 };
-            log("*** Running " + testList.elementAt(index));
+            log("*** Running " + testList.get(index));
             ptr.run(a);
         }
         long endTime = System.currentTimeMillis();
@@ -77,9 +77,15 @@ public class BatchTestRunner {
         log("\n\t\t\t" + "# properties for DatabseSession");
         log("\n\t\t\t" + "session.log=c:\\temp.txt");
         log("\n\t\t\t" + "session.logMessages=false");
-        log("\n\n\t\t\t" + "# properties for TestExecutor");
+        log("""
+
+
+                \t\t\t# properties for TestExecutor""");
         log("\n\t\t\t" + "executor.handleErrors=true");
-        log("\n\n\t\t\t" + "# properties for DatabaseLogin");
+        log("""
+
+
+                \t\t\t# properties for DatabaseLogin""");
         log("\n\t\t\t" + "login.databaseplatform=ORACLE");
         log("\n\t\t\t" + "login.driverClass=oracle.jdbc.OracleDriver");
         log("\n\t\t\t" + "login.databaseURL=jdbc:oracle:thin:@localhost:1521:ORCL");

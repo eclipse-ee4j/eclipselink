@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,8 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 //EclipseLink imports
-import dbws.testing.shadowddlgeneration.oldjpub.PublisherException;
-import dbws.testing.shadowddlgeneration.oldjpub.FieldInfo;
+
 
 public class DefaultArgsHolderType extends SqlTypeWithFields {
 
@@ -34,7 +33,7 @@ public class DefaultArgsHolderType extends SqlTypeWithFields {
         m_valueType = valueType;
         AttributeField field = new AttributeField("value", m_valueType, 0/* dataLength */,
             0/* precision */, 0/* scale */, ncharFormOfUse, reflector);
-        m_fields = new ArrayList<AttributeField>();
+        m_fields = new ArrayList<>();
         m_fields.add(field);
     }
 

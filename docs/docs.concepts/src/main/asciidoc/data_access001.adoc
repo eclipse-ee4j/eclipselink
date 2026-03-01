@@ -1,0 +1,44 @@
+///////////////////////////////////////////////////////////////////////////////
+
+    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+///////////////////////////////////////////////////////////////////////////////
+[[DATA_ACCESS001]]
+=== About Externally Managed Transactional Data Sources
+
+EclipseLink transactional data sources are _externally managed_ if the
+connection pool is managed by a transaction service (such as an
+application server controlled transaction or a JTA transaction). A JTA
+managed data source or connection pool is commonly used in Jakarta EE
+applications and normally required in EJB applications. Use an
+externally-managed connection pool as follows:
+
+* Configure the session to use an `ExternalTransactionController` to
+integrate EclipseLink's persistence unit with the external transaction
+service. Use the `eclipselink.target-server persistence` unit property
+to configure the name of the class that implements the
+`ExternalTransactionController` interface.
+* Use the boolean `external-transaction-controller` option on the
+persistence unit to indicate that the transaction is managed by a
+transaction manager and should not be managed by EclipseLink. This can
+also be used if the datasource does not support transactions to specify
+the connection's login and inform EclipseLink that the connection is
+maintained by the external controller.
+* You may need to configure the EclipseLink read connection pool or
+sequence connection pool to use a non-JTA connection pool in order to
+avoid transactional overhead. For more information, see
+xref:data_access006.adoc#CHDJGAJE["Default (Write) and Read Connection
+Pools"] and xref:data_access006.adoc#CHDEFJHH["Sequence Connection
+Pools"].

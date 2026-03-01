@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,16 +14,16 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.helper;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
-
 import java.util.Date;
-import java.util.HashSet;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-
-import org.eclipse.persistence.descriptors.ClassDescriptor;
 
 /**
  * INTERNAL
@@ -33,19 +33,19 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 public class BasicTypeHelperImpl {
 
     /** Set of numeric types and its wrapper classes. */
-    private static Set numericTypes = new HashSet();
+    private static final Set<Class<?>> numericTypes = new HashSet<>();
     /** Set of integral types and its wrapper classes. */
-    private static Set integralTypes = new HashSet();
+    private static final Set<Class<?>> integralTypes = new HashSet<>();
     /** Set of floating point types and its wrapper classes. */
-    private static Set floatingPointTypes = new HashSet();
+    private static final Set<Class<? extends Number>> floatingPointTypes = new HashSet<>();
     /** Set of date classes. */
-    private static Set dateClasses = new HashSet();
+    private static final Set<Class<?>> dateClasses = new HashSet<>();
     /** Set of time classes. */
-    private static Set timeClasses = new HashSet();
+    private static final Set<Class<?>> timeClasses = new HashSet<>();
     /** Maps primtives types to their wrapper classes. */
-    private static Map<Class<?>, Class<?>> primitiveToWrapper = new HashMap<>();
+    private static final Map<Class<?>, Class<?>> primitiveToWrapper = new HashMap<>();
     /** Maps wrapper classes to their primitive types. */
-    private static Map<Class<?>, Class<?>> wrapperToPrimitive = new HashMap<>();
+    private static final Map<Class<?>, Class<?>> wrapperToPrimitive = new HashMap<>();
 
     static {
         // Initialize set of integral types plus their wrapper classes
@@ -124,7 +124,7 @@ public class BasicTypeHelperImpl {
     public Class<?> getJavaClass(Object type) {
         Class<?> clazz = null;
         if (type instanceof Class) {
-            clazz = (Class)type;
+            clazz = (Class<?>)type;
         } else if (type instanceof ClassDescriptor) {
             clazz = ((ClassDescriptor)type).getJavaClass();
         }
@@ -132,127 +132,127 @@ public class BasicTypeHelperImpl {
     }
 
     /** Returns the Object type representation.*/
-    public Object getObjectType() {
+    public Class<?> getObjectType() {
         return Object.class;
     }
 
     /** Returns the boolean type representation.*/
-    public Object getBooleanType() {
+    public Class<?> getBooleanType() {
         return boolean.class;
     }
 
     /** Returns the Boolean class representation.*/
-    public Object getBooleanClassType() {
+    public Class<?> getBooleanClassType() {
         return Boolean.class;
     }
 
     /** Returns the char type representation.*/
-    public Object getCharType() {
+    public Class<?> getCharType() {
         return char.class;
     }
 
     /** Returns the Date type representation.*/
-    public Object getSQLDateType() {
+    public Class<?> getSQLDateType() {
         return java.sql.Date.class;
     }
 
     /** Returns the Time type representation.*/
-    public Object getTimeType() {
+    public Class<?> getTimeType() {
         return java.sql.Time.class;
     }
 
     /** Returns the timestamp type representation.*/
-    public Object getTimestampType() {
+    public Class<?> getTimestampType() {
         return java.sql.Timestamp.class;
     }
 
     /** Returns the Character class representation.*/
-    public Object getCharacterClassType() {
+    public Class<?> getCharacterClassType() {
         return Character.class;
     }
 
     /** Returns the byte type representation.*/
-    public Object getByteType() {
+    public Class<?> getByteType() {
         return byte.class;
     }
 
     /** Returns the Byte class representation.*/
-    public Object getByteClassType() {
+    public Class<?> getByteClassType() {
         return Byte.class;
     }
 
     /** Returns the short type representation.*/
-    public Object getShortType() {
+    public Class<?> getShortType() {
         return short.class;
     }
 
     /** Returns the Short class representation.*/
-    public Object getShortClassType() {
+    public Class<?> getShortClassType() {
         return Short.class;
     }
 
     /** Returns the int type representation.*/
-    public Object getIntType() {
+    public Class<?> getIntType() {
         return int.class;
     }
 
     /** Returns the Inter class representation.*/
-    public Object getIntegerClassType() {
+    public Class<?> getIntegerClassType() {
         return Integer.class;
     }
 
     /** Returns the long type representation.*/
-    public Object getLongType() {
+    public Class<?> getLongType() {
         return long.class;
     }
 
     /** Returns the type representation of class Long.*/
-    public Object getLongClassType()  {
+    public Class<?> getLongClassType()  {
         return Long.class;
     }
 
     /** Returns the type representation of class Map.Entry.*/
-    public Object getMapEntryType(){
+    public Class<?> getMapEntryType(){
         return Map.Entry.class;
     }
 
     /** Returns the float type representation.*/
-    public Object getFloatType() {
+    public Class<?> getFloatType() {
         return float.class;
     }
 
     /** Returns the type representation of class Float.*/
-    public Object getFloatClassType()  {
+    public Class<?> getFloatClassType()  {
         return Float.class;
     }
 
     /** Returns the double type representation.*/
-    public Object getDoubleType() {
+    public Class<?> getDoubleType() {
         return double.class;
     }
 
     /** Returns the type representation of class Double.*/
-    public Object getDoubleClassType()  {
+    public Class<?> getDoubleClassType()  {
         return Double.class;
     }
 
     /** Returns the String type representation.*/
-    public Object getStringType() {
+    public Class<?> getStringType() {
         return String.class;
     }
 
     /** Returns the BigInteger type representation.*/
-    public Object getBigIntegerType() {
+    public Class<?> getBigIntegerType() {
         return BigInteger.class;
     }
 
     /** Returns the BigDecimal type representation.*/
-    public Object getBigDecimalType() {
+    public Class<?> getBigDecimalType() {
         return BigDecimal.class;
     }
 
     /** Returns the java.util.Date type representation.*/
-    public Object getDateType() {
+    public Class<?> getDateType() {
         return Date.class;
     }
 
@@ -328,7 +328,7 @@ public class BasicTypeHelperImpl {
     /**
      * Returns true if type is the int primitive type or the Integer wrapper class
      */
-    public boolean isIntegerType(Object type) {
+    public boolean isIntegerType(Class<?> type) {
         return isIntType(type);
     }
 
@@ -391,7 +391,7 @@ public class BasicTypeHelperImpl {
         if (left == right) {
             return true;
         }
-        if ((left == ClassConstants.OBJECT) || (right == ClassConstants.OBJECT)) {
+        if ((left == CoreClassConstants.OBJECT) || (right == CoreClassConstants.OBJECT)) {
             return true;
         }
         // numeric types are compatible
@@ -422,7 +422,7 @@ public class BasicTypeHelperImpl {
         if (left == right) {
             return true;
         }
-        if (left == ClassConstants.OBJECT) {
+        if (left == CoreClassConstants.OBJECT) {
             return true;
         }
 
@@ -478,6 +478,12 @@ public class BasicTypeHelperImpl {
         return promoted;
     }
 
+    // extendedBinaryNumericPromotion with class cast, shortcut for CriteriaBuilderImpl
+    @SuppressWarnings("unchecked")
+    public <T> Class<T> extendedBinaryNumericPromotionClass(Class<?> left, Class<?> right) {
+        return (Class<T>) extendedBinaryNumericPromotion(left, right);
+    }
+
     // Helper methods
 
     /** Returns the primitive for the specified wrapper class. */
@@ -495,7 +501,7 @@ public class BasicTypeHelperImpl {
         if ((left == null) || (right == null)) {
             return null;
         }
-        Object type = null;
+        Class<?> type = null;
 
         if (left == getDoubleType() || right == getDoubleType()) {
             type = getDoubleType();
@@ -508,5 +514,6 @@ public class BasicTypeHelperImpl {
         }
         return type;
     }
+
 }
 

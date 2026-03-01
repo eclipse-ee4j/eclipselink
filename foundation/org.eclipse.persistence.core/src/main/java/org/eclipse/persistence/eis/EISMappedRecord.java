@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,11 +14,17 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.eis;
 
-import java.io.*;
-import java.util.*;
-
-import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
+
+import java.io.StringWriter;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Vector;
 
 /**
  * <p>An <code>EISMappedRecord</code> acts as a <code>Record</code>
@@ -125,8 +131,7 @@ public class EISMappedRecord extends AbstractRecord {
             Vector<EISMappedRecord> nestedRows = new Vector<>(1);
             nestedRows.add(new EISMappedRecord((Map)value, getAccessor()));
             value = nestedRows;
-        } else if (value instanceof List) {
-            List<?> values = (List<?>)value;
+        } else if (value instanceof List<?> values) {
             Vector<Object> nestedValues = new Vector<>(values.size());
             for (int index = 0; index < values.size(); index++) {
                 Object nestedValue = values.get(index);
@@ -191,12 +196,12 @@ public class EISMappedRecord extends AbstractRecord {
     @Override
     public String toString() {
         StringWriter writer = new StringWriter();
-        writer.write(Helper.getShortClassName(getClass()));
+        writer.write(getClass().getSimpleName());
         writer.write("(");
 
         for (Iterator<?> keysIterator = keySet().iterator(); keysIterator.hasNext();) {
             Object key = keysIterator.next();
-            writer.write(Helper.cr());
+            writer.write(System.lineSeparator());
             writer.write("\t");
             writer.write(String.valueOf(key));
             writer.write(" => ");

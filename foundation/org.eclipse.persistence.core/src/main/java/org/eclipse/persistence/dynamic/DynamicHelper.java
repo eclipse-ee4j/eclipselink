@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,14 +19,7 @@
 package org.eclipse.persistence.dynamic;
 
 //javase imports
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 
-//EclipseLink imports
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.dynamic.DynamicEntityImpl;
@@ -39,6 +32,13 @@ import org.eclipse.persistence.queries.ReportQuery;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.tools.schemaframework.DynamicSchemaManager;
+
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * A DynamicHelper provides some utility methods to simplify application
@@ -73,7 +73,7 @@ public class DynamicHelper {
     /**
      * Lookup the dynamic type for an alias. This is required to get the type
      * for factory creation but can also be used to provide the application with
-     * access to the meta model (type and properties) allowing for dynamic use
+     * access to the metamodel (type and properties) allowing for dynamic use
      * as well as optimized data value retrieval from an entity.
      */
     public DynamicType getType(String typeName) {
@@ -104,7 +104,7 @@ public class DynamicHelper {
 
     /**
      * Remove a dynamic type from the system.
-     *
+     * <p>
      * This implementation assumes that the dynamic type has no relationships to
      * it and that it is not involved in an inheritance relationship. If there
      * are concurrent processes using this type when it is removed some
@@ -236,7 +236,7 @@ public class DynamicHelper {
      * A SessionCustomizer which configures all descriptors as dynamic entity
      * types.
      */
-    public static class SessionCustomizer implements org.eclipse.persistence.config.SessionCustomizer {
+    public static class SessionCustomizer implements org.eclipse.persistence.sessions.SessionCustomizer {
 
         /**
          * Default constructor.

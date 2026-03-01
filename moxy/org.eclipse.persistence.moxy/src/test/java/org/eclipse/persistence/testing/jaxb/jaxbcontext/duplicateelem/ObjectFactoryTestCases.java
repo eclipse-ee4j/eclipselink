@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,8 +25,8 @@ public class ObjectFactoryTestCases extends TestCase {
            JAXBContextFactory.createContext("org.eclipse.persistence.testing.jaxb.jaxbcontext.duplicateelem", this.getClass().getClassLoader());
         }catch(JAXBException e){
             Throwable nested = e.getLinkedException();
-            if(nested instanceof org.eclipse.persistence.exceptions.JAXBException){
-                assertEquals(org.eclipse.persistence.exceptions.JAXBException.DUPLICATE_ELEMENT_NAME, ((org.eclipse.persistence.exceptions.JAXBException)nested).getErrorCode());
+            if(nested instanceof org.eclipse.persistence.jaxb.JAXBException){
+                assertEquals(org.eclipse.persistence.jaxb.JAXBException.DUPLICATE_ELEMENT_NAME, ((org.eclipse.persistence.jaxb.JAXBException)nested).getErrorCode());
                 return;
             }
         }

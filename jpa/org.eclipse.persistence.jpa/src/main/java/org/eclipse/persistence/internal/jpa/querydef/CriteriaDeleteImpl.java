@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,6 +25,8 @@ import jakarta.persistence.metamodel.Metamodel;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.queries.DatabaseQuery;
 
+import java.io.Serial;
+
 /**
  * <p>
  * <b>Purpose</b>: Contains the implementation of the CriteriaDelete interface of
@@ -40,6 +42,7 @@ import org.eclipse.persistence.queries.DatabaseQuery;
  */
 public class CriteriaDeleteImpl<T> extends CommonAbstractCriteriaImpl<T> implements CriteriaDelete<T> {
 
+    @Serial
     private static final long serialVersionUID = -3858349449764066901L;
 
     protected Root<T> root;
