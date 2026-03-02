@@ -1,4 +1,5 @@
 //
+//  Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
 //  Copyright (c) 2021, 2025 Oracle and/or its affiliates. All rights reserved.
 //
 //  This program and the accompanying materials are made available under the
@@ -144,7 +145,7 @@ spec:
                     steps {
                         container('el-build') {
                             sh """
-                                mvn -B -V verify -pl :org.eclipse.persistence.core -P staging,test-core-lrg
+                                mvn -B -V verify -pl :org.eclipse.persistence.oxm.test -P staging,test-core-lrg
                             """
                         }
                     }
