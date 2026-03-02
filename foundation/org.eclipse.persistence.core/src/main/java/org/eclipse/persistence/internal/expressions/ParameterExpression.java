@@ -250,13 +250,15 @@ public class ParameterExpression extends BaseExpression {
             if (descriptor == null) {
                 // Handle @IdClass composite key objects
                 // When descriptor is null, the value might be an @IdClass object (not an entity)
-                // We need to extract the field value using the proper privileged access
                 if (getLocalBase() != null && getLocalBase().isQueryKeyExpression()) {
-        
                     try {
                         java.lang.reflect.Field field = Helper.getField(value.getClass(), this.field.getName());
-                        value = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getValueFromField(field, value);
-                        return value;
+                        Object rawValue = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getValueFromField(field, value);
+                        DatabaseMapping localMapping = ((QueryKeyExpression) getLocalBase()).getMapping();
+                        if (localMapping instanceof org.eclipse.persistence.mappings.foundation.AbstractDirectMapping directMapping && rawValue != null) {
+                            return directMapping.getFieldValue(rawValue, session);
+                        }
+                        return rawValue;
                     } catch (NoSuchFieldException | IllegalAccessException e) {
                         session.logThrowable(org.eclipse.persistence.logging.SessionLog.FINER,
                                            org.eclipse.persistence.logging.SessionLog.QUERY, e);
