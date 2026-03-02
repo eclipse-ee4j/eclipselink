@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
  * Copyright (c) 2016, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -41,9 +42,6 @@ import org.osgi.framework.FrameworkUtil;
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerClass.class)
 public class OSGiBundleTest {
-    // ASM bundle symbolic name
-    private static final String ASM_BUNDLE_NAME = "org.eclipse.persistence.asm";
-
     // CORE bundle symbolic name
     private static final String CORE_BUNDLE_NAME = "org.eclipse.persistence.core";
 
@@ -62,12 +60,6 @@ public class OSGiBundleTest {
     @Configuration
     public static Option[] config() {
         return OSGITestHelper.getDefaultOptions();
-    }
-
-    @Test
-    public void testAsmELVersion() {
-        Class<?> c = loadClass(CORE_BUNDLE_NAME, "org.eclipse.persistence.internal.libraries.asm.AnnotationVisitor");
-        assertClassLoadedByBundle(c, ASM_BUNDLE_NAME);
     }
 
     @Test

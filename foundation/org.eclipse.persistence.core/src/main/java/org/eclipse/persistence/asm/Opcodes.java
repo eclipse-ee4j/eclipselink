@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
  * Copyright (c) 2023, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -22,14 +23,12 @@ import java.util.Map;
 
 public class Opcodes {
 
-    //This block must be first - begin
-    private final static String ASM_OPCCODES_ECLIPSELINK = "org.eclipse.persistence.internal.libraries.asm.Opcodes";
     private final static String ASM_OPCCODES_OW2 = "org.objectweb.asm.Opcodes";
+
     private final static Map<String, String> ASM_OPCCODES_MAP = new HashMap<>();
 
     static {
         ASM_OPCCODES_MAP.put(ASMFactory.ASM_SERVICE_OW2, ASM_OPCCODES_OW2);
-        ASM_OPCCODES_MAP.put(ASMFactory.ASM_SERVICE_ECLIPSELINK, ASM_OPCCODES_ECLIPSELINK);
     }
     //This block must be first - end
 
@@ -95,11 +94,15 @@ public class Opcodes {
     public final static int ASM_API_SELECTED = ASM9;
     public final static int JAVA_CLASS_VERSION = V1_8;
 
-    private static int valueInt(String fieldName) {
+    public static int valueInt(String fieldName) {
         return ((int) Util.getFieldValue(ASM_OPCCODES_MAP, fieldName, Integer.TYPE));
     }
 
-    public static Class<?> getOpcodesClass() {
+    public static Integer valueInteger(String fieldName) {
+        return ((Integer) Util.getFieldValue(ASM_OPCCODES_MAP, fieldName, Integer.class));
+    }
+
+    public static Class getOpcodesClass() {
         String asmService = ASMFactory.getAsmService();
         Class<?> clazz;
         try {

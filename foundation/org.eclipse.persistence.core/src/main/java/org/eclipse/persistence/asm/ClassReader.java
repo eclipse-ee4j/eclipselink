@@ -21,15 +21,12 @@ import java.util.Map;
 
 public abstract class ClassReader {
 
-    //This block must be first - begin
-    private final static String ASM_CLASSREADER_ECLIPSELINK = "org.eclipse.persistence.internal.libraries.asm.ClassReader";
     private final static String ASM_CLASSREADER_OW2 = "org.objectweb.asm.ClassReader";
 
     private final static Map<String, String> ASM_CLASSREADER_MAP = new HashMap<>();
 
     static {
         ASM_CLASSREADER_MAP.put(ASMFactory.ASM_SERVICE_OW2, ASM_CLASSREADER_OW2);
-        ASM_CLASSREADER_MAP.put(ASMFactory.ASM_SERVICE_ECLIPSELINK, ASM_CLASSREADER_ECLIPSELINK);
     }
     //This block must be first - end
 

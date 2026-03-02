@@ -1,5 +1,6 @@
 @REM
-@REM Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
+@REM Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
+@REM Copyright (c) 2018, 2023 Oracle and/or its affiliates. All rights reserved.
 @REM
 @REM This program and the accompanying materials are made available under the
 @REM terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,10 +29,15 @@ set THIS=%_FIXPATH:~1%
 set MODULEPATH=%THIS%..\jlib\moxy
 set MODULEPATH=%MODULEPATH%;%THIS%..\jlib\eclipselink.jar
 set MODULEPATH=%MODULEPATH%;%THIS%..\jlib\jpa\jakarta.persistence-api.jar
+set MODULEPATH=%MODULEPATH%;%THIS%..\jlib\asm\asm.jar
+set MODULEPATH=%MODULEPATH%;%THIS%..\jlib\asm\asm-commons.jar
+set MODULEPATH=%MODULEPATH%;%THIS%..\jlib\asm\asm-tree.jar
+set MODULEPATH=%MODULEPATH%;%THIS%..\jlib\asm\asm-util.jar
+
 set MAIN_CLASS=org.eclipse.persistence.sdo.helper.SDOClassGenerator
 set JAVA_ARGS=%*
 
-%JAVA_HOME%\bin\java.exe %JVM_ARGS% -p %MODULEPATH% -m eclipselink/%MAIN_CLASS% %JAVA_ARGS%
+%JAVA_HOME%\bin\java.exe %JVM_ARGS% --add-modules eclipselink,org.objectweb.asm -p %MODULEPATH% -m eclipselink/%MAIN_CLASS% %JAVA_ARGS%
 
 @endlocal
 goto :EOF

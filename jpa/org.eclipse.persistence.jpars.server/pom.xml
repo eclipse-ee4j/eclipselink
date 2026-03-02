@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
+    Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
     Copyright (c) 2021, 2025 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
@@ -92,10 +93,6 @@
                                     !org.eclipse.persistence.jpa.rs.util.xmladapters,
                                     *
                                 </Export-Package>
-                                <Import-Package>
-                                    org.eclipse.persistence.internal.libraries.asm*;version="${version;==;${@}}",
-                                    *
-                                </Import-Package>
                             </instructions>
                         </configuration>
                     </execution>

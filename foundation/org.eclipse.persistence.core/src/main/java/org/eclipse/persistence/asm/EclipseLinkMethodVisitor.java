@@ -236,8 +236,6 @@ public class EclipseLinkMethodVisitor extends MethodVisitor {
     public <T> T unwrap() {
         if (this.methodVisitor instanceof org.eclipse.persistence.asm.internal.platform.ow2.MethodVisitorImpl) {
             return (T)((org.eclipse.persistence.asm.internal.platform.ow2.MethodVisitorImpl)this.methodVisitor).getInternal(this.customMethodVisitor);
-        } else if (this.methodVisitor instanceof org.eclipse.persistence.asm.internal.platform.eclipselink.MethodVisitorImpl) {
-            return (T)((org.eclipse.persistence.asm.internal.platform.eclipselink.MethodVisitorImpl)this.methodVisitor).getInternal(this.customMethodVisitor);
         } else {
             return null;
         }

@@ -87,12 +87,6 @@
             <artifactId>junit</artifactId>
             <scope>test</scope>
         </dependency>
-        <!--EclipseLink ASM Implementation-->
-        <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>org.eclipse.persistence.asm</artifactId>
-            <scope>test</scope>
-        </dependency>
         <!--JDBC driver (test dependency)-->
         <dependency>
             <groupId>${db.driver.groupId}</groupId>
@@ -121,10 +115,6 @@
                                     org.eclipse.persistence.internal.xr.sxf,
                                     *
                                 </Export-Package>
-                                <Import-Package>
-                                    org.eclipse.persistence.internal.libraries.asm*;version="${version;==;${@}}",
-                                    *
-                                </Import-Package>
                             </instructions>
                         </configuration>
                     </execution>

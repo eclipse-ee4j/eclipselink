@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
+    Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
     Copyright (c) 2019, 2025 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
@@ -111,12 +112,6 @@
                             <artifactItems>
                                 <artifactItem>
                                     <groupId>org.eclipse.persistence</groupId>
-                                    <artifactId>org.eclipse.persistence.asm</artifactId>
-                                    <version>${project.version}</version>
-                                    <destFileName>org.eclipse.persistence.asm_DEV.jar</destFileName>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>org.eclipse.persistence</groupId>
                                     <artifactId>org.eclipse.persistence.core</artifactId>
                                     <version>${project.version}</version>
                                     <destFileName>org.eclipse.persistence.core_DEV.jar</destFileName>
@@ -186,10 +181,6 @@
                             <dependency>
                                 <groupId>${db.driver.groupId}</groupId>
                                 <artifactId>${db.driver.artifactId}</artifactId>
-                            </dependency>
-                            <dependency>
-                                <groupId>org.eclipse.persistence</groupId>
-                                <artifactId>org.eclipse.persistence.asm</artifactId>
                             </dependency>
                             <dependency>
                                 <groupId>org.eclipse.persistence</groupId>

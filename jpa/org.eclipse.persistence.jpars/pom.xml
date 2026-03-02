@@ -91,12 +91,6 @@
             <artifactId>jersey-common</artifactId>
             <scope>test</scope>
         </dependency>
-        <!--EclipseLink ASM Implementation-->
-        <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>org.eclipse.persistence.asm</artifactId>
-            <scope>test</scope>
-        </dependency>
         <!--JDBC driver (test dependency)-->
         <dependency>
             <groupId>${db.driver.groupId}</groupId>
@@ -145,11 +139,6 @@
                         <groupId>junit</groupId>
                         <artifactId>junit</artifactId>
                         <version>${junit.version}</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.eclipse.persistence</groupId>
-                        <artifactId>org.eclipse.persistence.asm</artifactId>
-                        <version>${eclipselink.asm.version}</version>
                     </dependency>
                     <dependency>
                         <groupId>org.ow2.asm</groupId>

@@ -1,6 +1,7 @@
 #!/bin/sh
 #
-# Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
+# Copyright (c) 2018, 2023 Oracle and/or its affiliates. All rights reserved.
 #
 # This program and the accompanying materials are made available under the
 # terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,8 +23,12 @@ JVM_ARGS=-Xmx256m
 # Please do not change any of the following lines:
 MODULEPATH=`dirname $0`/../jlib/moxy:\
 `dirname $0`/../jlib/eclipselink.jar:\
-`dirname $0`/../jlib/jpa/jakarta.persistence-api.jar
+`dirname $0`/../jlib/jpa/jakarta.persistence-api.jar:\
+`dirname $0`/../jlib/asm/asm.jar:\
+`dirname $0`/../jlib/asm/asm-commons.jar:\
+`dirname $0`/../jlib/asm/asm-tree.jar:\
+`dirname $0`/../jlib/asm/asm-util.jar
 MAIN_CLASS=org.eclipse.persistence.sdo.helper.SDOClassGenerator
 JAVA_ARGS="$@"
 
-${JAVA_HOME}/bin/java ${JVM_ARGS} -p "${MODULEPATH}" -m eclipselink/${MAIN_CLASS} ${JAVA_ARGS}
+${JAVA_HOME}/bin/java ${JVM_ARGS} --add-modules eclipselink,org.objectweb.asm -p "${MODULEPATH}" -m eclipselink/${MAIN_CLASS} ${JAVA_ARGS}

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
+    Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
     Copyright (c) 2025 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
@@ -34,7 +35,6 @@ https://stackoverflow.com/questions/22541301/jarsigner-doesnt-sign-plugin-depend
 
     <properties>
         <eclipselink.version>${project.version}</eclipselink.version>
-        <eclipselink.asm.version>9.8.0</eclipselink.asm.version>
         <oracle.ddlparser.version>3.0.2-SNAPSHOT</oracle.ddlparser.version>
 
         <asm.version>9.8</asm.version>
@@ -48,17 +48,6 @@ https://stackoverflow.com/questions/22541301/jarsigner-doesnt-sign-plugin-depend
     </properties>
 
     <dependencies>
-        <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>org.eclipse.persistence.asm</artifactId>
-            <version>${eclipselink.asm.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>org.eclipse.persistence.asm</artifactId>
-            <version>${eclipselink.asm.version}</version>
-            <classifier>sources</classifier>
-        </dependency>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.oracleddlparser</artifactId>

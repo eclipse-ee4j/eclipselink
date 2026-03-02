@@ -56,8 +56,6 @@ public abstract class EclipseLinkAnnotationVisitor extends AnnotationVisitor {
     public <T> T unwrap() {
         if (this.annotationVisitor instanceof org.eclipse.persistence.asm.internal.platform.ow2.AnnotationVisitorImpl) {
             return (T)((org.eclipse.persistence.asm.internal.platform.ow2.AnnotationVisitorImpl)this.annotationVisitor).getInternal(this.customAnnotationVisitor);
-        } else if (this.annotationVisitor instanceof org.eclipse.persistence.asm.internal.platform.eclipselink.AnnotationVisitorImpl) {
-            return (T)((org.eclipse.persistence.asm.internal.platform.eclipselink.AnnotationVisitorImpl)this.annotationVisitor).getInternal(this.customAnnotationVisitor);
         } else {
             return null;
         }

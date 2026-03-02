@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
  * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2023 IBM Corporation and/or its affiliates. All rights reserved.
  *
@@ -267,7 +268,7 @@ public class ExceptionLocalizationResource extends ListResourceBundle {
                                            { "wrap_convert_exception", "An exception occurred while calling {0} on converter class {1} with value {2}"},
                                            { "ora_pessimistic_locking_with_rownum", "Pessimistic locking with query row limits is not supported."},
                                            { "bean_validation_constraint_violated", "One or more Bean Validation constraints were violated while executing Automatic Bean Validation on callback event: {0} for class: {1}. Please refer to the embedded constraint violations for details."},
-                                           { "unsupported_classfile_version", "The {0} class was compiled with an unsupported JDK. Report this error to the EclipseLink open source project."},
+                                           { "unsupported_classfile_version", "The {0} class was compiled with an unsupported JDK and can not be read. Current ASM supports JDK {1} at most. Please upgrade OW2 ASM dependencies."},
                                            { "json_pgsql_missing_class_on_classpath", "Missing {0} on classpath."},
                                            { "json_pgsql_jsonvalue_to_database_type", "JSON value to database type conversion failed."},
                                            { "json_pgsql_pgobject_conversion", "Database PGobject conversion failed."},

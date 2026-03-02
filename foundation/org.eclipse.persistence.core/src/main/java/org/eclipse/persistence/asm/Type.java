@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
  * Copyright (c) 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -23,14 +24,12 @@ import java.util.Map;
 public abstract class Type {
 
     //This block must be first - begin
-    private final static String ASM_TYPE_ECLIPSELINK = "org.eclipse.persistence.internal.libraries.asm.Type";
     private final static String ASM_TYPE_OW2 = "org.objectweb.asm.Type";
 
     private final static Map<String, String> ASM_TYPE_MAP = new HashMap<>();
 
     static {
         ASM_TYPE_MAP.put(ASMFactory.ASM_SERVICE_OW2, ASM_TYPE_OW2);
-        ASM_TYPE_MAP.put(ASMFactory.ASM_SERVICE_ECLIPSELINK, ASM_TYPE_ECLIPSELINK);
     }
     //This block must be first - end
 
@@ -66,9 +65,7 @@ public abstract class Type {
 
     public static String getDescriptor(final Class<?> clazz) {
         Type type = ASMFactory.createType(clazz);
-        if (type instanceof org.eclipse.persistence.asm.internal.platform.eclipselink.TypeImpl) {
-            return ((org.eclipse.persistence.internal.libraries.asm.Type)ASMFactory.createType(clazz).unwrap()).getDescriptor(clazz);
-        } else if (type instanceof org.eclipse.persistence.asm.internal.platform.ow2.TypeImpl) {
+        if (type instanceof org.eclipse.persistence.asm.internal.platform.ow2.TypeImpl) {
             return ((org.objectweb.asm.Type)ASMFactory.createType(clazz).unwrap()).getDescriptor(clazz);
         } else {
             return null;
@@ -77,9 +74,7 @@ public abstract class Type {
 
     public static String getInternalName(final Class<?> clazz) {
         Type type = ASMFactory.createType(clazz);
-        if (type instanceof org.eclipse.persistence.asm.internal.platform.eclipselink.TypeImpl) {
-            return ((org.eclipse.persistence.internal.libraries.asm.Type)ASMFactory.createType(clazz).unwrap()).getInternalName(clazz);
-        } else if (type instanceof org.eclipse.persistence.asm.internal.platform.ow2.TypeImpl) {
+        if (type instanceof org.eclipse.persistence.asm.internal.platform.ow2.TypeImpl) {
             return ((org.objectweb.asm.Type)ASMFactory.createType(clazz).unwrap()).getInternalName(clazz);
         } else {
             return null;
@@ -88,9 +83,7 @@ public abstract class Type {
 
     public static Object getTypeClassName(Object value) {
         try {
-            if (Class.forName(ASM_TYPE_ECLIPSELINK).isInstance(value)) {
-                return ((org.eclipse.persistence.internal.libraries.asm.Type) value).getClassName();
-            } else if (Class.forName(ASM_TYPE_OW2).isInstance(value)) {
+            if (Class.forName(ASM_TYPE_OW2).isInstance(value)) {
                 return ((org.objectweb.asm.Type) value).getClassName();
             } else {
                 return null;

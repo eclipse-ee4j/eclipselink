@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
+    Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
     Copyright (c) 2019, 2025 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
@@ -141,26 +142,18 @@
         <dependency>
             <groupId>org.ow2.asm</groupId>
             <artifactId>asm</artifactId>
-            <scope>provided</scope>
-            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.ow2.asm</groupId>
             <artifactId>asm-commons</artifactId>
-            <scope>provided</scope>
-            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.ow2.asm</groupId>
             <artifactId>asm-tree</artifactId>
-            <scope>provided</scope>
-            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.ow2.asm</groupId>
             <artifactId>asm-util</artifactId>
-            <scope>provided</scope>
-            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.apache.ant</groupId>
@@ -219,11 +212,6 @@
             <version>${project.version}</version>
             <type>zip</type>
             <classifier>common-license</classifier>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>org.eclipse.persistence.asm</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -394,7 +382,6 @@
                             <includeScope>provided</includeScope>
                             <classifier>sources</classifier>
                             <includeArtifactIds>
-                                org.eclipse.persistence.asm,
                                 org.eclipse.persistence.core,
                                 org.eclipse.persistence.corba,
                                 org.eclipse.persistence.dbws,
@@ -435,7 +422,6 @@
                             <includeGroupIds>${project.groupId}</includeGroupIds>
                             <includeScope>provided</includeScope>
                             <includeArtifactIds>
-                                org.eclipse.persistence.asm,
                                 org.eclipse.persistence.core,
                                 org.eclipse.persistence.corba,
                                 org.eclipse.persistence.dbws,

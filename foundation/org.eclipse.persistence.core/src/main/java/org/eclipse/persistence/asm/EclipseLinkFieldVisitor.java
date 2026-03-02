@@ -40,8 +40,6 @@ public class EclipseLinkFieldVisitor extends FieldVisitor {
     public <T> T unwrap() {
         if (this.fieldVisitor instanceof org.eclipse.persistence.asm.internal.platform.ow2.FieldVisitorImpl) {
             return (T)((org.eclipse.persistence.asm.internal.platform.ow2.FieldVisitorImpl)this.fieldVisitor).getInternal(this.customFieldVisitor);
-        } else if (this.fieldVisitor instanceof org.eclipse.persistence.asm.internal.platform.eclipselink.FieldVisitorImpl) {
-            return (T)((org.eclipse.persistence.asm.internal.platform.eclipselink.FieldVisitorImpl)this.fieldVisitor).getInternal(this.customFieldVisitor);
         } else {
             return null;
         }

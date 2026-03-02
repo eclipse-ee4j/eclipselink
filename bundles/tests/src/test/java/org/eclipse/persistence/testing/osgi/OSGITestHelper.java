@@ -1,5 +1,5 @@
 /*
-*  Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
  * Copyright (c) 2016, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -39,7 +39,6 @@ public class OSGITestHelper {
     private static final String JAXB_API_JAR = System.getProperty("jaxb-api.jar", "jakarta.xml.bind-api.jar");
     private static final String JAXB_OSGI = System.getProperty("jaxb-osgi.jar", "jaxb-xjc.jar");
     private static final String JAXRS_JAR = System.getProperty("jaxrs.jar", "jakarta.ws.rs-api.jar");
-    private static final String ASM_JAR = System.getProperty("asm.jar", "org.eclipse.persistence.asm.jar");
 
     public static Option[] getDefaultOptions() {
 
@@ -61,7 +60,6 @@ public class OSGITestHelper {
                 // EclipseLink bundles
                 bundle(pathToUrl(PLUGINS_DIR + "org.eclipse.persistence.moxy.jar")),
                 bundle(pathToUrl(PLUGINS_DIR + "org.eclipse.persistence.core.jar")),
-                bundle(pathToUrl(PLUGINS_DIR + ASM_JAR)),
 
                 cleanCaches(),
                 junitBundles());
@@ -79,7 +77,6 @@ public class OSGITestHelper {
                 // EclipseLink bundles
                 bundle(pathToUrl(PLUGINS_DIR + "org.eclipse.persistence.moxy.jar")),
                 bundle(pathToUrl(PLUGINS_DIR + "org.eclipse.persistence.core.jar")),
-                bundle(pathToUrl(PLUGINS_DIR + ASM_JAR)),
 
                 bundle(pathToUrl(PLUGINS_DIR + "jboss-logging.jar")),
                 bundle(pathToUrl(PLUGINS_DIR + "jakarta.validation-api.jar")),

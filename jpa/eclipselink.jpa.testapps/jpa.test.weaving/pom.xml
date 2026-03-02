@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
+    Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
     Copyright (c) 2023, 2024 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
@@ -95,21 +96,8 @@
                 <executions>
                     <execution>
                         <id>default-test</id>
-                    </execution>
-                    <execution>
-                        <id>asm-eclipselink-test</id>
-                        <goals>
-                            <goal>test</goal>
-                        </goals>
                         <configuration>
-                            <classpathDependencyExcludes>
-                                <classpathDependencyExclude>org.ow2.asm:asm</classpathDependencyExclude>
-                                <classpathDependencyExclude>org.ow2.asm:asm-commons</classpathDependencyExclude>
-                                <classpathDependencyExclude>org.ow2.asm:asm-tree</classpathDependencyExclude>
-                                <classpathDependencyExclude>org.ow2.asm:asm-util</classpathDependencyExclude>
-                            </classpathDependencyExcludes>
                             <systemPropertyVariables>
-                                <eclipselink.asm.service>eclipselink</eclipselink.asm.service>
                                 <!--Following system properties must be initialized again as systemPropertyVariables reset environment.-->
                                 <db.driver>${db.driver}</db.driver>
                                 <db.url>${db.url}</db.url>
@@ -117,26 +105,6 @@
                                 <db.pwd>${db.pwd}</db.pwd>
                                 <db.platform>${db.platform}</db.platform>
                             </systemPropertyVariables>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>asm-ow2-test</id>
-                        <goals>
-                            <goal>test</goal>
-                        </goals>
-                        <configuration>
-                            <systemPropertyVariables>
-                                <eclipselink.asm.service>ow2</eclipselink.asm.service>
-                                <!--Following system properties must be initialized again as systemPropertyVariables reset environment.-->
-                                <db.driver>${db.driver}</db.driver>
-                                <db.url>${db.url}</db.url>
-                                <db.user>${db.user}</db.user>
-                                <db.pwd>${db.pwd}</db.pwd>
-                                <db.platform>${db.platform}</db.platform>
-                            </systemPropertyVariables>
-                            <classpathDependencyExcludes>
-                                <classpathDependencyExclude>org.eclipse.persistence.asm</classpathDependencyExclude>
-                            </classpathDependencyExcludes>
                         </configuration>
                     </execution>
                 </executions>

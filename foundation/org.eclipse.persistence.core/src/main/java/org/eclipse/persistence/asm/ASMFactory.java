@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
  * Copyright (c) 2023, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -14,7 +15,6 @@
 //     Oracle - initial API and implementation
 package org.eclipse.persistence.asm;
 
-import org.eclipse.persistence.config.SystemProperties;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.logging.AbstractSessionLog;
@@ -33,22 +33,20 @@ import java.util.regex.Pattern;
 
 public class ASMFactory {
 
-    // This block must be first - begin
-    public final static String ASM_SERVICE_ECLIPSELINK = "eclipselink";
+    private final static SessionLog LOG = AbstractSessionLog.getLog();
+
     public final static String ASM_SERVICE_OW2 = "ow2";
     private final static String ASM_OW2_CLASS_VISITOR = "org.objectweb.asm.ClassVisitor";
-    private final static String ASM_ECLIPSELINK_CLASS_VISITOR = "org.eclipse.persistence.internal.libraries.asm.ClassVisitor";
-    private final static SessionLog LOG = AbstractSessionLog.getLog();
-    // This block must be first - end
+    private final static ArrayList<String> JAVA_VERSIONS = new ArrayList<>(getVersionMap().keySet());
 
     // Should be changed in case of ASM upgrade
+    public final static int ASM_API_SELECTED = Opcodes.valueInt("ASM9");
     public final static int JAVA_CLASS_LATEST_VERSION = ASMFactory.getLatestOPCodeVersion();
+    public final static String JAVA_LATEST_VERSION = JAVA_VERSIONS.get(JAVA_VERSIONS.size() - 1);
 
     public static AnnotationVisitor createAnnotationVisitor(final int api) {
         String asmService = ASMFactory.getAsmService();
-        if (ASM_SERVICE_ECLIPSELINK.equals(asmService)) {
-            return new org.eclipse.persistence.asm.internal.platform.eclipselink.AnnotationVisitorImpl(api);
-        } else if (ASM_SERVICE_OW2.equals(asmService)) {
+        if (ASM_SERVICE_OW2.equals(asmService)) {
             return new org.eclipse.persistence.asm.internal.platform.ow2.AnnotationVisitorImpl(api);
         } else {
             throw ValidationException.notAvailableASMService();
@@ -57,9 +55,7 @@ public class ASMFactory {
 
     public static AnnotationVisitor createAnnotationVisitor(final int api, final AnnotationVisitor annotationVisitor) {
         String asmService = ASMFactory.getAsmService();
-        if (ASM_SERVICE_ECLIPSELINK.equals(asmService)) {
-            return new org.eclipse.persistence.asm.internal.platform.eclipselink.AnnotationVisitorImpl(api, annotationVisitor);
-        } else if (ASM_SERVICE_OW2.equals(asmService)) {
+        if (ASM_SERVICE_OW2.equals(asmService)) {
             return new org.eclipse.persistence.asm.internal.platform.ow2.AnnotationVisitorImpl(api, annotationVisitor);
         } else {
             throw ValidationException.notAvailableASMService();
@@ -68,9 +64,7 @@ public class ASMFactory {
 
     public static FieldVisitor createFieldVisitor(final int api) {
         String asmService = ASMFactory.getAsmService();
-        if (ASM_SERVICE_ECLIPSELINK.equals(asmService)) {
-            return new org.eclipse.persistence.asm.internal.platform.eclipselink.FieldVisitorImpl(api);
-        } else if (ASM_SERVICE_OW2.equals(asmService)) {
+        if (ASM_SERVICE_OW2.equals(asmService)) {
             return new org.eclipse.persistence.asm.internal.platform.ow2.FieldVisitorImpl(api);
         } else {
             throw ValidationException.notAvailableASMService();
@@ -79,9 +73,7 @@ public class ASMFactory {
 
     public static FieldVisitor createFieldVisitor(final int api, final FieldVisitor fieldVisitor) {
         String asmService = ASMFactory.getAsmService();
-        if (ASM_SERVICE_ECLIPSELINK.equals(asmService)) {
-            return new org.eclipse.persistence.asm.internal.platform.eclipselink.FieldVisitorImpl(api, fieldVisitor);
-        } else if (ASM_SERVICE_OW2.equals(asmService)) {
+        if (ASM_SERVICE_OW2.equals(asmService)) {
             return new org.eclipse.persistence.asm.internal.platform.ow2.FieldVisitorImpl(api, fieldVisitor);
         } else {
             throw ValidationException.notAvailableASMService();
@@ -90,9 +82,7 @@ public class ASMFactory {
 
     public static MethodVisitor createMethodVisitor(final int api) {
         String asmService = ASMFactory.getAsmService();
-        if (ASM_SERVICE_ECLIPSELINK.equals(asmService)) {
-            return new org.eclipse.persistence.asm.internal.platform.eclipselink.MethodVisitorImpl(api);
-        } else if (ASM_SERVICE_OW2.equals(asmService)) {
+        if (ASM_SERVICE_OW2.equals(asmService)) {
             return new org.eclipse.persistence.asm.internal.platform.ow2.MethodVisitorImpl(api);
         } else {
             throw ValidationException.notAvailableASMService();
@@ -101,9 +91,7 @@ public class ASMFactory {
 
     public static MethodVisitor createMethodVisitor(final int api, final MethodVisitor methodVisitor) {
         String asmService = ASMFactory.getAsmService();
-        if (ASM_SERVICE_ECLIPSELINK.equals(asmService)) {
-            return new org.eclipse.persistence.asm.internal.platform.eclipselink.MethodVisitorImpl(api, methodVisitor);
-        } else if (ASM_SERVICE_OW2.equals(asmService)) {
+        if (ASM_SERVICE_OW2.equals(asmService)) {
             return new org.eclipse.persistence.asm.internal.platform.ow2.MethodVisitorImpl(api, methodVisitor);
         } else {
             throw ValidationException.notAvailableASMService();
@@ -112,9 +100,7 @@ public class ASMFactory {
 
     public static ClassReader createClassReader(final InputStream inputStream) throws IOException {
         String asmService = ASMFactory.getAsmService();
-        if (ASM_SERVICE_ECLIPSELINK.equals(asmService)) {
-            return new org.eclipse.persistence.asm.internal.platform.eclipselink.ClassReaderImpl(inputStream);
-        } else if (ASM_SERVICE_OW2.equals(asmService)) {
+        if (ASM_SERVICE_OW2.equals(asmService)) {
             return new org.eclipse.persistence.asm.internal.platform.ow2.ClassReaderImpl(inputStream);
         } else {
             throw ValidationException.notAvailableASMService();
@@ -123,9 +109,7 @@ public class ASMFactory {
 
     public static ClassReader createClassReader(final byte[] classFileBuffer) throws IOException {
         String asmService = ASMFactory.getAsmService();
-        if (ASM_SERVICE_ECLIPSELINK.equals(asmService)) {
-            return new org.eclipse.persistence.asm.internal.platform.eclipselink.ClassReaderImpl(classFileBuffer);
-        } else if (ASM_SERVICE_OW2.equals(asmService)) {
+        if (ASM_SERVICE_OW2.equals(asmService)) {
             return new org.eclipse.persistence.asm.internal.platform.ow2.ClassReaderImpl(classFileBuffer);
         } else {
             throw ValidationException.notAvailableASMService();
@@ -134,9 +118,7 @@ public class ASMFactory {
 
     public static ClassReader createClassReader(final byte[] classFileBuffer, final int classFileOffset, final int classFileLength) throws IOException {
         String asmService = ASMFactory.getAsmService();
-        if (ASM_SERVICE_ECLIPSELINK.equals(asmService)) {
-            return new org.eclipse.persistence.asm.internal.platform.eclipselink.ClassReaderImpl(classFileBuffer, classFileOffset, classFileLength);
-        } else if (ASM_SERVICE_OW2.equals(asmService)) {
+        if (ASM_SERVICE_OW2.equals(asmService)) {
             return new org.eclipse.persistence.asm.internal.platform.ow2.ClassReaderImpl(classFileBuffer, classFileOffset, classFileLength);
         } else {
             throw ValidationException.notAvailableASMService();
@@ -145,9 +127,7 @@ public class ASMFactory {
 
     public static ClassReader createClassReader(final InputStream inputStream, final boolean checkClassVersion) throws IOException {
         String asmService = ASMFactory.getAsmService();
-        if (!checkClassVersion || ASM_SERVICE_ECLIPSELINK.equals(asmService)) {
-            return new org.eclipse.persistence.asm.internal.platform.eclipselink.ClassReaderImpl(inputStream, checkClassVersion);
-        } else if (ASM_SERVICE_OW2.equals(asmService)) {
+        if (ASM_SERVICE_OW2.equals(asmService)) {
             return new org.eclipse.persistence.asm.internal.platform.ow2.ClassReaderImpl(inputStream);
         } else {
             throw ValidationException.notAvailableASMService();
@@ -156,9 +136,7 @@ public class ASMFactory {
 
     public static ClassWriter createClassWriter() {
         String asmService = ASMFactory.getAsmService();
-        if (ASM_SERVICE_ECLIPSELINK.equals(asmService)) {
-            return new org.eclipse.persistence.asm.internal.platform.eclipselink.ClassWriterImpl();
-        } else if (ASM_SERVICE_OW2.equals(asmService)) {
+        if (ASM_SERVICE_OW2.equals(asmService)) {
             return new org.eclipse.persistence.asm.internal.platform.ow2.ClassWriterImpl();
         } else {
             throw ValidationException.notAvailableASMService();
@@ -167,9 +145,7 @@ public class ASMFactory {
 
     public static ClassWriter createClassWriter(final int flags) {
         String asmService = ASMFactory.getAsmService();
-        if (ASM_SERVICE_ECLIPSELINK.equals(asmService)) {
-            return new org.eclipse.persistence.asm.internal.platform.eclipselink.ClassWriterImpl(flags);
-        } else if (ASM_SERVICE_OW2.equals(asmService)) {
+        if (ASM_SERVICE_OW2.equals(asmService)) {
             return new org.eclipse.persistence.asm.internal.platform.ow2.ClassWriterImpl(flags);
         } else {
             throw ValidationException.notAvailableASMService();
@@ -178,9 +154,7 @@ public class ASMFactory {
 
     public static ClassWriter createClassWriter(final ClassReader classReader, final int flags) {
         String asmService = ASMFactory.getAsmService();
-        if (ASM_SERVICE_ECLIPSELINK.equals(asmService)) {
-            return new org.eclipse.persistence.asm.internal.platform.eclipselink.ClassWriterImpl(classReader, flags);
-        } else if (ASM_SERVICE_OW2.equals(asmService)) {
+        if (ASM_SERVICE_OW2.equals(asmService)) {
             return new org.eclipse.persistence.asm.internal.platform.ow2.ClassWriterImpl(classReader, flags);
         } else {
             throw ValidationException.notAvailableASMService();
@@ -189,9 +163,7 @@ public class ASMFactory {
 
     public static ClassVisitor createClassVisitor(final int api) {
         String asmService = ASMFactory.getAsmService();
-        if (ASM_SERVICE_ECLIPSELINK.equals(asmService)) {
-            return new org.eclipse.persistence.asm.internal.platform.eclipselink.ClassVisitorImpl(api);
-        } else if (ASM_SERVICE_OW2.equals(asmService)) {
+        if (ASM_SERVICE_OW2.equals(asmService)) {
             return new org.eclipse.persistence.asm.internal.platform.ow2.ClassVisitorImpl(api);
         } else {
             throw ValidationException.notAvailableASMService();
@@ -200,9 +172,7 @@ public class ASMFactory {
 
     public static ClassVisitor createClassVisitor(final int api, final ClassVisitor classVisitor) {
         String asmService = ASMFactory.getAsmService();
-        if (ASM_SERVICE_ECLIPSELINK.equals(asmService)) {
-            return new org.eclipse.persistence.asm.internal.platform.eclipselink.ClassVisitorImpl(api, classVisitor);
-        } else if (ASM_SERVICE_OW2.equals(asmService)) {
+        if (ASM_SERVICE_OW2.equals(asmService)) {
             return new org.eclipse.persistence.asm.internal.platform.ow2.ClassVisitorImpl(api, classVisitor);
         } else {
             throw ValidationException.notAvailableASMService();
@@ -211,9 +181,7 @@ public class ASMFactory {
 
     public static Type createType(final Class<?> clazz) {
         String asmService = ASMFactory.getAsmService();
-        if (ASM_SERVICE_ECLIPSELINK.equals(asmService)) {
-            return new org.eclipse.persistence.asm.internal.platform.eclipselink.TypeImpl(clazz);
-        } else if (ASM_SERVICE_OW2.equals(asmService)) {
+        if (ASM_SERVICE_OW2.equals(asmService)) {
             return new org.eclipse.persistence.asm.internal.platform.ow2.TypeImpl(clazz);
         } else {
             throw ValidationException.notAvailableASMService();
@@ -222,9 +190,7 @@ public class ASMFactory {
 
     public static Type createType(final String typeDescriptor) {
         String asmService = ASMFactory.getAsmService();
-        if (ASM_SERVICE_ECLIPSELINK.equals(asmService)) {
-            return new org.eclipse.persistence.asm.internal.platform.eclipselink.TypeImpl(typeDescriptor);
-        } else if (ASM_SERVICE_OW2.equals(asmService)) {
+        if (ASM_SERVICE_OW2.equals(asmService)) {
             return new org.eclipse.persistence.asm.internal.platform.ow2.TypeImpl(typeDescriptor);
         } else {
             throw ValidationException.notAvailableASMService();
@@ -233,9 +199,7 @@ public class ASMFactory {
 
     public static Type createVoidType() {
         String asmService = ASMFactory.getAsmService();
-        if (ASM_SERVICE_ECLIPSELINK.equals(asmService)) {
-            return new org.eclipse.persistence.asm.internal.platform.eclipselink.TypeImpl((Class<?>)null);
-        } else if (ASM_SERVICE_OW2.equals(asmService)) {
+        if (ASM_SERVICE_OW2.equals(asmService)) {
             return new org.eclipse.persistence.asm.internal.platform.ow2.TypeImpl((Class<?>)null);
         } else {
             throw ValidationException.notAvailableASMService();
@@ -244,9 +208,7 @@ public class ASMFactory {
 
     public static Label createLabel() {
         String asmService = ASMFactory.getAsmService();
-        if (ASM_SERVICE_ECLIPSELINK.equals(asmService)) {
-            return new org.eclipse.persistence.asm.internal.platform.eclipselink.LabelImpl();
-        } else if (ASM_SERVICE_OW2.equals(asmService)) {
+        if (ASM_SERVICE_OW2.equals(asmService)) {
             return new org.eclipse.persistence.asm.internal.platform.ow2.LabelImpl();
         } else {
             throw ValidationException.notAvailableASMService();
@@ -255,9 +217,7 @@ public class ASMFactory {
 
     public static SerialVersionUIDAdder createSerialVersionUIDAdder(final ClassVisitor classVisitor) {
         String asmService = ASMFactory.getAsmService();
-        if (ASM_SERVICE_ECLIPSELINK.equals(asmService)) {
-            return new org.eclipse.persistence.asm.internal.platform.eclipselink.SerialVersionUIDAdderImpl(classVisitor);
-        } else if (ASM_SERVICE_OW2.equals(asmService)) {
+        if (ASM_SERVICE_OW2.equals(asmService)) {
             return new org.eclipse.persistence.asm.internal.platform.ow2.SerialVersionUIDAdderImpl(classVisitor);
         } else {
             throw ValidationException.notAvailableASMService();
@@ -265,23 +225,8 @@ public class ASMFactory {
     }
 
     public static String getAsmService() {
-        String asmService = PrivilegedAccessHelper.getSystemProperty(SystemProperties.ASM_SERVICE);
-        if (asmService != null) {
-            if (ASM_SERVICE_ECLIPSELINK.equals(asmService) && isASMImplementationAvailable(ASM_ECLIPSELINK_CLASS_VISITOR)) {
-                LOG.finest("EclipseLink ASM implementation is used.");
-                return asmService;
-            } else if (ASM_SERVICE_OW2.equals(asmService) && isASMImplementationAvailable(ASM_OW2_CLASS_VISITOR)) {
-                LOG.finest("OW2 ASM implementation is used.");
-                return asmService;
-            } else {
-                throw ValidationException.incorrectASMServiceProvided();
-            }
-        }
-        //Fallback to default if ASM service is not specified
-        if (isASMImplementationAvailable(ASM_ECLIPSELINK_CLASS_VISITOR)) {
-            LOG.finest("EclipseLink ASM implementation is used.");
-            return ASM_SERVICE_ECLIPSELINK;
-        } else if (isASMImplementationAvailable(ASM_OW2_CLASS_VISITOR)) {
+        //Default if ASM service is not specified
+        if (isASMImplementationAvailable(ASM_OW2_CLASS_VISITOR)) {
             LOG.finest("OW2 ASM implementation is used.");
             return ASM_SERVICE_OW2;
         } else {
@@ -299,20 +244,8 @@ public class ASMFactory {
     }
 
     static int getLatestOPCodeVersion() {
-        final Map<String, Integer> versionMap = new LinkedHashMap<>();
-        Pattern searchPattern = Pattern.compile("^V\\d((_\\d)?|\\d*)");
-        try {
-            Class<?> opcodesClazz = Opcodes.getOpcodesClass();
-            for (Field f : opcodesClazz.getDeclaredFields()) {
-                if (searchPattern.matcher(f.getName()).matches()) {
-                    versionMap.put(f.getName().replace("V","").replace('_', '.'), f.getInt(opcodesClazz));
-                }
-            }
-        } catch (IllegalAccessException ex) {
-            LOG.log(SessionLog.SEVERE, "Error Java versions map from Opcodes.class fields.", ex);
-            throw new RuntimeException(ex);
-        }
-        final List<String> versions = new ArrayList<>(versionMap.keySet());
+        final Map<String, Integer> versionMap = getVersionMap();
+        final List<String> versions = new ArrayList<String>(versionMap.keySet());
         final String oldest = versions.get(0);
         final String latest = versions.get(versions.size() - 1);
 
@@ -356,5 +289,22 @@ public class ASMFactory {
             }
         }
         return version;
+    }
+
+    static Map<String, Integer> getVersionMap() {
+        final Map<String, Integer> versionMap = new LinkedHashMap<>();
+        Pattern searchPattern = Pattern.compile("^V\\d((_\\d)?|\\d*)");
+        try {
+            Class opcodesClazz = Opcodes.getOpcodesClass();
+            for (Field f : opcodesClazz.getDeclaredFields()) {
+                if (searchPattern.matcher(f.getName()).matches()) {
+                    versionMap.put(f.getName().replace("V", "").replace('_', '.'), f.getInt(opcodesClazz));
+                }
+            }
+        } catch (IllegalAccessException ex) {
+            LOG.log(SessionLog.SEVERE, "Error Java versions map from Opcodes.class fields.", ex);
+            throw new RuntimeException(ex);
+        }
+        return versionMap;
     }
 }

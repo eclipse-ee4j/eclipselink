@@ -27,7 +27,6 @@ module org.eclipse.persistence.core {
     requires static jakarta.persistence;
     requires static jakarta.xml.bind;
 
-    requires org.eclipse.persistence.asm;
     requires static org.eclipse.persistence.jpa.jpql;
 
     requires static jakarta.cdi;

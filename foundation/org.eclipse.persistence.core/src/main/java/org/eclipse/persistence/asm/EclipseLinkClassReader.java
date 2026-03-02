@@ -76,8 +76,6 @@ public class EclipseLinkClassReader extends ClassReader {
     public <T> T unwrap() {
         if (this.classReader instanceof org.eclipse.persistence.asm.internal.platform.ow2.ClassReaderImpl) {
             return (T)((org.eclipse.persistence.asm.internal.platform.ow2.ClassReaderImpl)this.classReader).getInternal();
-        } else if (this.classReader instanceof org.eclipse.persistence.asm.internal.platform.eclipselink.ClassReaderImpl) {
-            return (T)((org.eclipse.persistence.asm.internal.platform.eclipselink.ClassReaderImpl)this.classReader).getInternal();
         } else {
             return null;
         }

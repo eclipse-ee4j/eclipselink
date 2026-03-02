@@ -35,13 +35,13 @@ public class EclipseLinkASMClassWriter extends ClassWriter {
    * Visits the header of the class with {@code version} set
    * equal to currently running Java SE version.
    *
-   * @param access the class's access flags (see {@link org.eclipse.persistence.internal.libraries.asm.Opcodes}). This parameter also indicates if
-   *     the class is deprecated {@link org.eclipse.persistence.internal.libraries.asm.Opcodes#ACC_DEPRECATED} or a record {@link
-   *     org.eclipse.persistence.internal.libraries.asm.Opcodes#ACC_RECORD}.
-   * @param name the internal name of the class (see {@link org.eclipse.persistence.internal.libraries.asm.Type#getInternalName()}).
+   * @param access the class's access flags (see {@link org.objectweb.asm.Opcodes}). This parameter also indicates if
+   *     the class is deprecated {@link org.objectweb.asm.Opcodes#ACC_DEPRECATED} or a record {@link
+   *     org.objectweb.asm.Opcodes#ACC_RECORD}.
+   * @param name the internal name of the class (see {@link org.objectweb.asm.Type#getInternalName()}).
    * @param signature the signature of this class. May be {@literal null} if the class is not a
    *     generic one, and does not extend or implement generic classes or interfaces.
-   * @param superName the internal of name of the super class (see {@link org.eclipse.persistence.internal.libraries.asm.Type#getInternalName()}).
+   * @param superName the internal of name of the super class (see {@link org.objectweb.asm.Type#getInternalName()}).
    *     For interfaces, the super class is {@link Object}. May be {@literal null}, but only for the
    *     {@link Object} class.
    * @param interfaces the internal names of the class's interfaces (see {@link
@@ -93,8 +93,6 @@ public class EclipseLinkASMClassWriter extends ClassWriter {
     public <T> T unwrap() {
         if (this.classWriter instanceof org.eclipse.persistence.asm.internal.platform.ow2.ClassWriterImpl) {
             return (T)((org.eclipse.persistence.asm.internal.platform.ow2.ClassWriterImpl)this.classWriter).getInternal(this.customClassWriter);
-        } else if (this.classWriter instanceof org.eclipse.persistence.asm.internal.platform.eclipselink.ClassWriterImpl) {
-            return (T)((org.eclipse.persistence.asm.internal.platform.eclipselink.ClassWriterImpl)this.classWriter).getInternal(this.customClassWriter);
         } else {
             return null;
         }

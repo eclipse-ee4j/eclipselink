@@ -117,12 +117,6 @@
             <optional>true</optional>
             <scope>test</scope>
         </dependency>
-        <!--EclipseLink ASM Implementation-->
-        <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>org.eclipse.persistence.asm</artifactId>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
 
     <build>
@@ -187,10 +181,6 @@
                                     org.eclipse.persistence.internal.jaxb.many,
                                     *
                                 </Export-Package>
-                                <Import-Package>
-                                    org.eclipse.persistence.internal.libraries.asm*;version="${version;==;${@}}",
-                                    *
-                                </Import-Package>
                             </instructions>
                         </configuration>
                     </execution>
@@ -330,7 +320,6 @@
 
                                     <pathelement path="${org.glassfish:jakarta.json:jar}"/>
 
-                                    <pathelement path="${org.eclipse.persistence:org.eclipse.persistence.asm:jar}"/>
                                     <pathelement path="${org.eclipse.persistence:org.eclipse.persistence.core:jar}"/>
 
                                     <pathelement path="${jakarta.annotation:jakarta.annotation-api:jar}"/>
