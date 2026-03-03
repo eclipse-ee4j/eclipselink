@@ -102,6 +102,7 @@ public class JUnitJPQLFunctionsTest extends JUnitTestCase {
         suite.addTest(new JUnitJPQLFunctionsTest("queryID08CompositePKTestWithIdClass"));
         suite.addTest(new JUnitJPQLFunctionsTest("queryID09CompositePKTestWithIdClass"));
         suite.addTest(new JUnitJPQLFunctionsTest("queryID10CompositePKTestWithIdClassRecord"));
+        suite.addTest(new JUnitJPQLFunctionsTest("queryID11CompositePKTestWithIdClassRecordWhereClause"));
         suite.addTest(new JUnitJPQLFunctionsTest("queryVERSION1Test"));
         suite.addTest(new JUnitJPQLFunctionsTest("queryVERSION2Test"));
         suite.addTest(new JUnitJPQLFunctionsTest("queryVERSION3Test"));
@@ -276,6 +277,17 @@ public class JUnitJPQLFunctionsTest extends JUnitTestCase {
         query.setParameter("nameParam", VEGETABLE_NAME);
         query.setParameter("colorParam", VEGETABLE_COLOR);
         query.setParameter("sizeParam", VEGETABLE_SIZE);
+        VegetablePKRecord result = query.getSingleResult();
+        assertNotNull(result);
+        assertEquals(VEGETABLE_RECORD_ID, result);
+    }
+
+    public void queryID11CompositePKTestWithIdClassRecordWhereClause(){
+        EntityManager em = createEntityManager();
+        // Test WHERE ID(e) = :param with @IdClass parameter containing enum field
+        TypedQuery<VegetablePKRecord> query = em.createQuery(
+                "SELECT ID(this) FROM VegetableRecord WHERE ID(this) = :idParam", VegetablePKRecord.class);
+        query.setParameter("idParam", VEGETABLE_RECORD_ID);
         VegetablePKRecord result = query.getSingleResult();
         assertNotNull(result);
         assertEquals(VEGETABLE_RECORD_ID, result);
