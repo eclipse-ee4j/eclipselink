@@ -24,12 +24,10 @@ import org.eclipse.persistence.jpa.test.framework.EmfRunner;
 import org.eclipse.persistence.jpa.test.query.model.QuerySyntaxEntity;
 import org.eclipse.persistence.platform.database.DatabasePlatform;
 import org.junit.Assume;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(EmfRunner.class)
-@Ignore()
 public class TestNullParameterTypeInference {
 
     @Emf(name = "defaultEMF",
