@@ -81,11 +81,6 @@
         <url>https://github.com/eclipse-ee4j/eclipselink/issues</url>
     </issueManagement>
 
-    <properties>
-        <!-- see https://github.com/eclipse-ee4j/ee4j/issues/116 -->
-        <cyclonedx.skipNotDeployed>false</cyclonedx.skipNotDeployed>
-    </properties>
-
     <build>
         <pluginManagement>
             <plugins>
