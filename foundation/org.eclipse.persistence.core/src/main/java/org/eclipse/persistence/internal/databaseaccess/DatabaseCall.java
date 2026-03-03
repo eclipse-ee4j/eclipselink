@@ -1161,7 +1161,8 @@ public abstract class DatabaseCall extends DatasourceCall {
                         // If the value is null, the field is passed as the value so the type can be obtained from the field.
                         if ((translatedValue == null) && (field != null)) {
                             if (!this.query.hasNullableArguments() || !this.query.getNullableArguments().contains(field)) {
-                                translatedValue = translationRow.getField(field);
+                                DatabaseField fieldFromRow = translationRow.getField(field);
+                                translatedValue = chooseMostSpecificFieldForNullBinding(field, fieldFromRow);
                                 // The field from the row is used, as the calls field may not have the type,
                                 // but if the field is missing the calls field may also have the type.
                                 if (translatedValue == null) {
@@ -1205,6 +1206,35 @@ public abstract class DatabaseCall extends DatasourceCall {
         } else {
             translateQueryString(translationRow, modifyRow, session);
         }
+    }
+
+    /**
+     * For null bind values, prefer the field instance that carries more specific SQL/Java type metadata.
+     * This avoids order-dependent type loss when equivalent fields collapse in translation rows.
+     */
+    private static DatabaseField chooseMostSpecificFieldForNullBinding(DatabaseField parameterField, DatabaseField rowField) {
+        if (parameterField == null) {
+            return rowField;
+        }
+        if (rowField == null) {
+            return parameterField;
+        }
+        if (nullBindingTypeScore(parameterField) > nullBindingTypeScore(rowField)) {
+            return parameterField;
+        }
+        return rowField;
+    }
+
+    private static int nullBindingTypeScore(DatabaseField field) {
+        int score = 0;
+        if (field.getSqlType() != DatabaseField.NULL_SQL_TYPE) {
+            score += 2;
+        }
+        Class<?> type = field.getType();
+        if ((type != null) && (type != Object.class)) {
+            score += 2;
+        }
+        return score;
     }
 
     /**
