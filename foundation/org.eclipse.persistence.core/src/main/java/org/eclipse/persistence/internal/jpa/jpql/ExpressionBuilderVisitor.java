@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2006, 2025 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2006, 2024 IBM Corporation. All rights reserved.
+ * Copyright (c) 2006, 2026 IBM Corporation. All rights reserved.
  * Copyright (c) 2024 Contributors to the Eclipse Foundation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
