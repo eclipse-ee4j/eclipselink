@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2022 IBM Corporation. All rights reserved.
+ * Copyright (c) 2022,2026 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,6 +22,7 @@ import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -249,17 +250,18 @@ public class ParameterExpression extends BaseExpression {
             if (descriptor == null) {
                 // Handle @IdClass composite key objects
                 // When descriptor is null, the value might be an @IdClass object (not an entity)
-                // We need to extract the field value using reflection
                 if (getLocalBase() != null && getLocalBase().isQueryKeyExpression()) {
-                    // Try to extract the field value from the @IdClass object using reflection
                     try {
-                        // Get the field value using the field name
-                        java.lang.reflect.Field field = value.getClass().getDeclaredField(this.field.getName());
-                        field.setAccessible(true);
-                        value = field.get(value);
-                        return value;
-                    } catch (Exception e) {
-                        // If reflection fails, fall through to validation
+                        java.lang.reflect.Field field = Helper.getField(value.getClass(), this.field.getName());
+                        Object rawValue = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getValueFromField(field, value);
+                        DatabaseMapping localMapping = ((QueryKeyExpression) getLocalBase()).getMapping();
+                        if (localMapping instanceof org.eclipse.persistence.mappings.foundation.AbstractDirectMapping directMapping && rawValue != null) {
+                            return directMapping.getFieldValue(rawValue, session);
+                        }
+                        return rawValue;
+                    } catch (NoSuchFieldException | IllegalAccessException e) {
+                        session.logThrowable(org.eclipse.persistence.logging.SessionLog.FINER,
+                                           org.eclipse.persistence.logging.SessionLog.QUERY, e);
                     }
                 }
 

@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2026 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,6 +17,8 @@ package org.eclipse.persistence.testing.models.jpa.advanced;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.EnumType;
 import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
 import jakarta.persistence.Table;
@@ -28,6 +31,7 @@ import java.io.Serializable;
 public class VegetableRecord implements Serializable {
     private String name;
     private String color;
+    private VegetableRecordSize size;
     private double cost;
     private String[] tags;
     private char type = '0';
@@ -46,6 +50,13 @@ public class VegetableRecord implements Serializable {
         return color;
     }
 
+    @Id
+    @Column(name="VEGETABLE_SIZE")
+    @Enumerated(EnumType.STRING)
+    public VegetableRecordSize getSize() {
+        return size;
+    }
+
     public double getCost() {
         return cost;
     }
@@ -61,6 +72,10 @@ public class VegetableRecord implements Serializable {
 
     public void setColor(String color) {
         this.color = color;
+    }
+
+    public void setSize(VegetableRecordSize size) {
+        this.size = size;
     }
 
     public void setType(char aType) {

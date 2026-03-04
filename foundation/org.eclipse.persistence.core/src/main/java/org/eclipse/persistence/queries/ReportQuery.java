@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2026 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,6 +23,7 @@ import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
 import org.eclipse.persistence.internal.expressions.ConstantExpression;
 import org.eclipse.persistence.internal.expressions.FunctionExpression;
+import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.queries.ExpressionQueryMechanism;
@@ -664,6 +666,25 @@ public class ReportQuery extends ReadAllQuery {
             }
         }
         //end GF_ISSUE_395
+
+        
+        // Auto-detect composite keys for ID() function queries
+        // This handles both TypedQuery and regular Query cases for composite keys:
+        // TypedQuery<IdClassPK> query = em.createQuery("SELECT ID(e) FROM Entity e...", IdClassPK.class);
+        // Query query = em.createQuery("SELECT ID(e) FROM Entity e..."); // Returns IdClass for composite keys
+        if (!shouldReturnPKClassInstance() && hasIDFunctionSelectItemOnly) {
+            if (getReferenceClass() != null && getDescriptor() != null &&
+                getDescriptor().getCMPPolicy() != null) {
+                List<DatabaseField> pkFields = getDescriptor().getPrimaryKeyFields();
+                // If composite key (multiple PK fields) and result size matches PK field count
+                // Switch to PK class instance mode for ID() function queries with composite keys
+                if (pkFields != null && pkFields.size() > 1 &&
+                    reportQueryResult.getResults().size() == pkFields.size()) {
+                    // Composite key detected - switch to PK class instance mode
+                    setReturnPKClassInstance();
+                }
+            }
+        }
 
         //handle case of TypedQuery like
         //TypedQuery<IdClassPK> query = em.createQuery("SELECT ID(THIS) FROM IdClassEntity WHERE (name = :nameParam) ORDER BY population DESC", IdClassPK.class);
