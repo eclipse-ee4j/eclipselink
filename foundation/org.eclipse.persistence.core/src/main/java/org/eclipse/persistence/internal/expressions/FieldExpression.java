@@ -292,7 +292,11 @@ public class FieldExpression extends DataExpression {
             }
             if ((descriptor != null) && descriptor.hasTablePerClassPolicy()) {
                 field = field.clone();
-                field.setTable(descriptor.getDefaultTable());
+                DatabaseTable table = descriptor.getDefaultTable();
+                if((field.getTableName().length() != 0) && descriptor.getTableNames().contains(field.getTableName())) {
+                    table = descriptor.getTable(field.getTableName());
+                }
+                field.setTable(table);
             }
         }
         FieldExpression expression = new FieldExpression(field, getBaseExpression().rebuildOn(newBase));
@@ -329,7 +333,11 @@ public class FieldExpression extends DataExpression {
             }
             if ((descriptor != null) && descriptor.hasTablePerClassPolicy()) {
                 field = field.clone();
-                field.setTable(descriptor.getDefaultTable());
+                DatabaseTable table = descriptor.getDefaultTable();
+                if((field.getTableName().length() != 0) && descriptor.getTableNames().contains(field.getTableName())) {
+                    table = descriptor.getTable(field.getTableName());
+                }
+                field.setTable(table);
             }
         }
         return twistedBase.getField(field);
