@@ -31,7 +31,7 @@
     <version>5.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-    <name>EclipseLink Project</name>
+    <name>EclipseLink Project Parent</name>
     <description>Comprehensive and universal persistence framework for Java.</description>
     <url>http://www.eclipse.org/eclipselink</url>
     <inceptionYear>2007</inceptionYear>
