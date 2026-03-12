@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
  * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -16,12 +17,14 @@ package org.eclipse.persistence.testing.tests.expressions;
 
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.expressions.Expression;
-import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
+import org.eclipse.persistence.platform.database.DatabasePlatform;
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.testing.framework.TestErrorException;
 import org.eclipse.persistence.testing.framework.TestWarningException;
 import org.eclipse.persistence.testing.models.employee.domain.Employee;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
 /**
@@ -31,8 +34,8 @@ public class ReadAllExpressionTest extends org.eclipse.persistence.testing.frame
     protected Expression expression;
     protected boolean testBatchAttributesOnEmployee;
     protected boolean supportedInMemory = true;
-    protected Vector supportedPlatforms;
-    protected Vector unsupportedPlatforms;
+    protected List<Class<? extends DatabasePlatform>> supportedPlatforms;
+    protected List<Class<? extends DatabasePlatform>> unsupportedPlatforms;
     protected Object hardReferenceToInMemoryObjects;
 
     /**
@@ -86,8 +89,8 @@ public class ReadAllExpressionTest extends org.eclipse.persistence.testing.frame
             return true;
         }
         if (supportedPlatforms != null) {
-            for (Object supportedPlatform : supportedPlatforms) {
-                Class<?> platformClass = (Class) supportedPlatform;
+            for (Class<? extends DatabasePlatform> supportedPlatform : supportedPlatforms) {
+                Class<? extends DatabasePlatform> platformClass = supportedPlatform;
                 if (platformClass.isInstance(platform)) {
                     supported = true;
                 }
@@ -96,8 +99,8 @@ public class ReadAllExpressionTest extends org.eclipse.persistence.testing.frame
             supported = true;
         }
         if (unsupportedPlatforms != null) {
-            for (Object unsupportedPlatform : unsupportedPlatforms) {
-                Class<?> platformClass = (Class) unsupportedPlatform;
+            for (Class<? extends DatabasePlatform> unsupportedPlatform : unsupportedPlatforms) {
+                Class<? extends DatabasePlatform> platformClass = unsupportedPlatform;
                 if (platformClass.isInstance(platform)) {
                     notSupported = true;
                 }
@@ -117,7 +120,7 @@ public class ReadAllExpressionTest extends org.eclipse.persistence.testing.frame
     @Override
     protected void setup() {
         if (!isPlatformSupported(getSession().getLogin().getPlatform())) {
-            throw new TestWarningException("This expression is not supported on this platform.");
+            throw new TestWarningException("(" + getName() + ") This expression is not supported on this platform.");
         }
 
         // Setup the query if not given.
@@ -168,16 +171,16 @@ public class ReadAllExpressionTest extends org.eclipse.persistence.testing.frame
         }
     }
 
-    public void addSupportedPlatform(Class<?> platform) {
+    public void addSupportedPlatform(Class<? extends DatabasePlatform> platform) {
         if (supportedPlatforms == null) {
-            supportedPlatforms = new Vector();
+            supportedPlatforms = new ArrayList<>();
         }
         supportedPlatforms.add(platform);
     }
 
-    public void addUnsupportedPlatform(Class<?> platform) {
+    public void addUnsupportedPlatform(Class<? extends DatabasePlatform> platform) {
         if (unsupportedPlatforms == null) {
-            unsupportedPlatforms = new Vector();
+            unsupportedPlatforms = new ArrayList<>();
         }
         unsupportedPlatforms.add(platform);
     }
