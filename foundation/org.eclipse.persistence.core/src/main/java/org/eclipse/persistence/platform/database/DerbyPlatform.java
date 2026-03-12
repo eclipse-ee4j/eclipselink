@@ -90,18 +90,6 @@ public class DerbyPlatform extends DB2Platform {
     }
 
     /**
-     * Derby error the data type, length or value of arguments 'TIMESTAMP' and 'DATE' is incompatible.
-     * Instead, use a java.sql.Date type for property {d } casting
-     */
-    @Override
-    public Object convertToDatabaseType(Object value) {
-        if (value != null && value.getClass() == CoreClassConstants.UTILDATE) {
-            return Helper.sqlDateFromUtilDate((java.util.Date)value);
-        }
-        return super.convertToDatabaseType(value);
-    }
-
-    /**
      * INTERNAL:
      * This method returns the query to select the timestamp from the server
      * for Derby.

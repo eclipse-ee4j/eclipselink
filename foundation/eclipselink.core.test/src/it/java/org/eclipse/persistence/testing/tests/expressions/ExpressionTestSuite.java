@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
  * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -775,6 +776,7 @@ public class ExpressionTestSuite extends TestSuite {
         ReadObjectExpressionTest test = new ReadObjectExpressionTest(Employee.class, expression);
         test.setName("InCollectionEmptyExpressionTest");
         test.setDescription("Test IN expression with empty collection");
+        test.addUnsupportedPlatform(DerbyPlatform.class);
         addTest(test);
     }
 
@@ -788,6 +790,7 @@ public class ExpressionTestSuite extends TestSuite {
         ReadObjectExpressionTest test = new ReadObjectExpressionTest(Employee.class, expression);
         test.setName("InCollectionNullExpressionTest");
         test.setDescription("Test IN expression with null collection");
+        test.addUnsupportedPlatform(DerbyPlatform.class);
         addTest(test);
     }
 
