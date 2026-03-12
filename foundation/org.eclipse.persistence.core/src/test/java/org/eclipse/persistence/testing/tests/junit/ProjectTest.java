@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
  * Copyright (c) 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -20,9 +21,9 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.JPAQueryBuilder;
 import org.eclipse.persistence.sessions.Project;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ProjectTest {
 
@@ -31,8 +32,8 @@ public class ProjectTest {
     public void testDefaultQueryBuilder() {
         Project project = new Project();
         JPAQueryBuilder builder = project.getQueryBuilder();
-        assertTrue("builder is not an instance of HermesParser class",
-                   HermesParser.class.isAssignableFrom(builder.getClass()));
+        assertTrue(HermesParser.class.isAssignableFrom(builder.getClass()),
+                "builder is not an instance of HermesParser class");
     }
 
     // Verify that JPAQueryBuilder returned by Project instance matches CustomQueryBuilder
@@ -62,8 +63,8 @@ public class ProjectTest {
         Project project = new Project();
         project.setQueryBuilderSupplier(CustomQueryBuilder::new);
         JPAQueryBuilder builder = project.getQueryBuilder();
-        assertTrue("builder is not an instance of CustomQueryBuilder class",
-                   CustomQueryBuilder.class.isAssignableFrom(builder.getClass()));
+        assertTrue(CustomQueryBuilder.class.isAssignableFrom(builder.getClass()),
+                "builder is not an instance of CustomQueryBuilder class");
     }
 
 }

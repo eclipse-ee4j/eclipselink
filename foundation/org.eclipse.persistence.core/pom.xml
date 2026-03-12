@@ -112,8 +112,8 @@
         </dependency>
         <!--Test dependencies-->
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -174,16 +174,6 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <compilerArgs combine.children="append">
-                        <arg>--add-exports</arg>
-                        <arg>org.eclipse.persistence.core/org.eclipse.persistence.internal.jpa.jpql=org.eclipse.persistence.core.test</arg>
-                    </compilerArgs>
-                </configuration>
             </plugin>
             <!--Generate OSGi bundle/manifest-->
             <plugin>

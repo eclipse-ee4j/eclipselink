@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
  * Copyright (c) 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -22,10 +23,10 @@ import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.JPAQueryBuilder;
 import org.eclipse.persistence.sessions.Project;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class SessionTest {
 
@@ -39,8 +40,8 @@ public class SessionTest {
         // Set Project used to initialize JPAQueryBuilder instance
         session.setProject(new Project());
         JPAQueryBuilder builder = session.getQueryBuilder();
-        assertTrue("builder is not an instance of HermesParser class",
-                   HermesParser.class.isAssignableFrom(builder.getClass()));
+        assertTrue(HermesParser.class.isAssignableFrom(builder.getClass()),
+                   "builder is not an instance of HermesParser class");
     }
 
     // AbstractSession test. Using DatabaseSessionImpl which does not override tested code.
@@ -76,8 +77,8 @@ public class SessionTest {
         // Set Project used to initialize JPAQueryBuilder instance
         session.setProject(project);
         JPAQueryBuilder builder = session.getQueryBuilder();
-        assertTrue("builder is not an instance of CustomQueryBuilder class",
-                   CustomQueryBuilder.class.isAssignableFrom(builder.getClass()));
+        assertTrue(CustomQueryBuilder.class.isAssignableFrom(builder.getClass()),
+                "builder is not an instance of CustomQueryBuilder class");
     }
 
 }
