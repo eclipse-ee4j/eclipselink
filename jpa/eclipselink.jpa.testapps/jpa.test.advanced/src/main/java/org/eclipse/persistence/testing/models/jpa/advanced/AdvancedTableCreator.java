@@ -42,6 +42,8 @@ import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
 import org.eclipse.persistence.tools.schemaframework.ForeignKeyConstraint;
 import org.eclipse.persistence.tools.schemaframework.TableDefinition;
 
+import java.util.Map;
+
 public class AdvancedTableCreator extends TogglingFastTableCreator {
     public AdvancedTableCreator() {
         setName("EJB3EmployeeProject");
@@ -109,7 +111,9 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         addTableDefinition(buildRABBITFOOTTable());
         addTableDefinition(buildCMP3_HINGETable());//Bug#457480
         addTableDefinition(buildCMP3_ROOMTable());
+        addTableDefinition(buildCMP3_ROOM_HISTTable());
         addTableDefinition(buildCMP3_DOORTable());
+        addTableDefinition(buildCMP3_DOOR_HISTTable());
         addTableDefinition(buildCMP3_PRODUCTTable());
         addTableDefinition(buildCMP3_CANOETable());
         addTableDefinition(buildCMP3_LAKETable());
@@ -2718,6 +2722,15 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         return table;
     }
 
+    public TableDefinition buildCMP3_ROOM_HISTTable() {
+        TableDefinition table = buildCMP3_ROOMTable();
+        table.setName(table.getName() + "_HIST");
+        table.addField(buildHistoryField("START_DATE", true, false));
+        table.addField(buildHistoryField("END_DATE", false, true));
+        table.setUserDefinedForeignKeyConstraints(Map.of());
+        return table;
+    }
+
     public TableDefinition buildCMP3_PRODUCTTable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_PRODUCT");
@@ -2874,6 +2887,15 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         return table;
     }
 
+    public TableDefinition buildCMP3_DOOR_HISTTable() {
+        TableDefinition table = buildCMP3_DOORTable();
+        table.setName(table.getName() + "_HIST");
+        table.addField(buildHistoryField("START_DATE", true, false));
+        table.addField(buildHistoryField("END_DATE", false, true));
+        table.setUserDefinedForeignKeyConstraints(Map.of());
+        return table;
+    }
+
     public TableDefinition buildCMP3_CANOETable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_CANOE");
@@ -3012,26 +3034,20 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
     public TableDefinition buildCMP3_PEARL_HISTTable() {
         TableDefinition table = buildCMP3_PEARLTable();
         table.setName(table.getName() + "_HIST");
-        
-        FieldDefinition fieldSTART = new FieldDefinition();
-        fieldSTART.setName("START_DATE");
-        fieldSTART.setTypeName("TIMESTAMP");
-        fieldSTART.setIsPrimaryKey(true);
-        fieldSTART.setIsIdentity(false);
-        fieldSTART.setUnique(false);
-        fieldSTART.setShouldAllowNull(false);
-        table.addField(fieldSTART);
-        
-        FieldDefinition fieldEND = new FieldDefinition();
-        fieldEND.setName("END_DATE");
-        fieldEND.setTypeName("TIMESTAMP");
-        fieldEND.setIsPrimaryKey(false);
-        fieldEND.setIsIdentity(false);
-        fieldEND.setUnique(false);
-        fieldEND.setShouldAllowNull(true);
-        table.addField(fieldEND);
-        
+        table.addField(buildHistoryField("START_DATE", true, false));
+        table.addField(buildHistoryField("END_DATE", false, true));
         return table;
+    }
+
+    private static FieldDefinition buildHistoryField(String name, boolean isPrimaryKey, boolean allowNull) {
+        FieldDefinition field = new FieldDefinition();
+        field.setName(name);
+        field.setTypeName("TIMESTAMP");
+        field.setIsPrimaryKey(isPrimaryKey);
+        field.setIsIdentity(false);
+        field.setUnique(false);
+        field.setShouldAllowNull(allowNull);
+        return field;
     }
 
     public TableDefinition buildJobTable() {
