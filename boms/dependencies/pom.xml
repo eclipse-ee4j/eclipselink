@@ -58,7 +58,7 @@
         <asm.version>9.9.1</asm.version>
         <angus-activation.version>2.0.3</angus-activation.version>
         <angus-mail.version>2.0.5</angus-mail.version>
-        <jaxb.version>4.0.6</jaxb.version>
+        <jaxb.version>4.0.7</jaxb.version>
         <jaxwsrt.version>4.0.3</jaxwsrt.version>
         <ant.version>1.10.15</ant.version>
         <apache.felix.framework.version>7.0.5</apache.felix.framework.version>
@@ -82,9 +82,9 @@
         <weld-se.version>6.0.4.Final</weld-se.version>
         <expressly.version>6.0.0</expressly.version>
         <jersey.version>4.0.2</jersey.version>
-        <glassfish.version>8.0.0-JDK17-M12</glassfish.version>
+        <glassfish.version>9.0.0-M1</glassfish.version>
         <jmh.version>1.37</jmh.version>
-        <springframework.version>7.0.5</springframework.version>
+        <springframework.version>7.0.6</springframework.version>
         <hibernate.version>9.1.0.Final</hibernate.version>
         <aspectj.version>1.9.25.1</aspectj.version>
         <exam.version>4.14.0</exam.version>
@@ -97,7 +97,7 @@
         <mariadb.version>3.5.7</mariadb.version>
         <derby.version>10.17.1.0</derby.version>
         <db2.version>12.1.4.0</db2.version>
-        <mssql.version>13.2.1.jre11</mssql.version>
+        <mssql.version>13.4.0.jre11</mssql.version>
         <pgsql.version>42.7.10</pgsql.version>
     </properties>
 
