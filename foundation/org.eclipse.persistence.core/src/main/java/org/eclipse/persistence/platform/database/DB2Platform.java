@@ -1972,7 +1972,7 @@ public class DB2Platform extends DatabasePlatform {
     public void printFieldTypeSize(Writer writer, FieldDefinition field, FieldDefinition.DatabaseType ftd) throws IOException {
         super.printFieldTypeSize(writer, field, ftd);
         String suffix = ftd.suffix();
-        if (suffix != null) {
+        if (suffix != null && !suffix.isEmpty()) {
             writer.append(" ").append(suffix);
         }
     }
