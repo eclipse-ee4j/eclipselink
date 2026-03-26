@@ -2074,10 +2074,48 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
         int argumentsSize = argumentFields.size();
         AbstractRecord row = new DatabaseRecord(argumentsSize);
         for (int index = 0; index < argumentsSize; index++) {
-            row.put(argumentFields.get(index), argumentValues.get(index));
+            DatabaseField argumentField = argumentFields.get(index);
+            row.put(argumentField, argumentValues.get(index));
+            promoteArgumentFieldMetadata(row, argumentField);
         }
 
         return row;
+    }
+
+    /**
+     * When the same JPQL parameter appears multiple times, the translation row collapses them to a
+     * single field by name. Keep the most specific type metadata on that surviving field so null
+     * binding does not degrade to Object/VARCHAR based only on expression order.
+     */
+    private static void promoteArgumentFieldMetadata(AbstractRecord row, DatabaseField argumentField) {
+        DatabaseField rowField = row.getField(argumentField);
+        if ((rowField == null) || (rowField == argumentField)) {
+            return;
+        }
+
+        if (fieldMetadataScore(argumentField) <= fieldMetadataScore(rowField)) {
+            return;
+        }
+
+        int fieldIndex = row.getFields().indexOf(rowField);
+        if (fieldIndex >= 0) {
+            row.getFields().set(fieldIndex, argumentField);
+        }
+    }
+
+    private static int fieldMetadataScore(DatabaseField field) {
+        int score = 0;
+        if (field.getSqlType() != DatabaseField.NULL_SQL_TYPE) {
+            score += 2;
+        }
+        Class<?> type = field.getType();
+        if ((type != null) && (type != Object.class)) {
+            score += 2;
+        }
+        if ((type == null) && (field.getTypeName() != null)) {
+            score += 1;
+        }
+        return score;
     }
 
     /**
