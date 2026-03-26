@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation.
  * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -114,6 +115,7 @@ public class H2Platform extends DatabasePlatform {
         fieldTypeMapping.put(java.sql.Time.class, new FieldDefinition.DatabaseType("TIME", false));
         fieldTypeMapping.put(java.util.Calendar.class, new FieldDefinition.DatabaseType("TIMESTAMP", false));
         fieldTypeMapping.put(java.util.Date.class, new FieldDefinition.DatabaseType("TIMESTAMP", false));
+        fieldTypeMapping.put(java.util.UUID.class, new FieldDefinition.DatabaseType("BINARY", 16));
 
         return fieldTypeMapping;
     }
