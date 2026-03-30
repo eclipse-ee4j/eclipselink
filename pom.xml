@@ -129,7 +129,7 @@
         <javadoc.prefixTitle>EclipseLink ${release.version}</javadoc.prefixTitle>
         <javadoc.postfixTitle>API Reference</javadoc.postfixTitle>
 
-        <checkstyle.version>13.3.0</checkstyle.version>
+        <checkstyle.version>13.4.0</checkstyle.version>
         <spotbugs.version>4.9.8</spotbugs.version>
         <findsecbugs.version>1.14.0</findsecbugs.version>
 
