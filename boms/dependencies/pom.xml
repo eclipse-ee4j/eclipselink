@@ -59,7 +59,7 @@
         <angus-activation.version>2.0.3</angus-activation.version>
         <angus-mail.version>2.0.5</angus-mail.version>
         <jaxb.version>4.0.7</jaxb.version>
-        <jaxwsrt.version>4.0.3</jaxwsrt.version>
+        <jaxwsrt.version>4.0.4</jaxwsrt.version>
         <ant.version>1.10.15</ant.version>
         <apache.felix.framework.version>7.0.5</apache.felix.framework.version>
         <parsson.version>1.1.7</parsson.version>
