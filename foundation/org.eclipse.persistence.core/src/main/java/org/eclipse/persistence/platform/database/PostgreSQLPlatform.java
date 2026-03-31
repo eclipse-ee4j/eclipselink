@@ -798,6 +798,13 @@ public class PostgreSQLPlatform extends DatabasePlatform {
     }
 
     @Override
+    public void printFieldTypeSize(Writer writer, FieldDefinition field, FieldDefinition.DatabaseType databaseType, boolean shouldPrintFieldIdentityClause) throws IOException {
+        if (!shouldPrintFieldIdentityClause) {
+            super.printFieldTypeSize(writer, field, databaseType, shouldPrintFieldIdentityClause);
+        }
+    }
+
+    @Override
     public void printFieldIdentityClause(Writer writer) throws ValidationException {
         try {
             writer.write(" SERIAL");
