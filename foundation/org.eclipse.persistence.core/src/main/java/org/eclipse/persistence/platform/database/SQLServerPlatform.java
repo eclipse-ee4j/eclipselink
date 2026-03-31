@@ -278,6 +278,8 @@ public class SQLServerPlatform extends DatabasePlatform {
         fieldTypeMapping.put(java.time.OffsetDateTime.class, new FieldDefinition.DatabaseType("DATETIME2"));
         fieldTypeMapping.put(java.time.Instant.class, new FieldDefinition.DatabaseType("DATETIME2"));
 
+        fieldTypeMapping.put(java.util.UUID.class, new FieldDefinition.DatabaseType("BINARY", 16));
+
         return fieldTypeMapping;
     }
 
