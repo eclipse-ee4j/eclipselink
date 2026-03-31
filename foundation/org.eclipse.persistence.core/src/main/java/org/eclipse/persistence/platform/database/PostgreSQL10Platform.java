@@ -15,19 +15,19 @@
 //     13/01/2022-4.0.0 Tomas Kraus - 1391: JSON support in JPA
 package org.eclipse.persistence.platform.database;
 
-import java.io.IOException;
-import java.io.Writer;
-import java.sql.CallableStatement;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.Map;
-
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.localization.LoggingLocalization;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.DefaultSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
+
+import java.io.IOException;
+import java.io.Writer;
+import java.sql.CallableStatement;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.Map;
 
 /**
  * Postgres 10 database platform extension.
