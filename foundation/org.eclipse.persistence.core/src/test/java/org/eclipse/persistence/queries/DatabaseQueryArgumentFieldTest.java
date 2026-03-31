@@ -10,22 +10,20 @@
  * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
  */
 
-package org.eclipse.persistence.testing.tests.junit.query;
+package org.eclipse.persistence.queries;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Arrays;
 
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
-import org.eclipse.persistence.queries.DataReadQuery;
-import org.eclipse.persistence.queries.DatabaseQuery;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class DatabaseQueryArgumentFieldTest {
+class DatabaseQueryArgumentFieldTest {
 
     @Test
-    public void rowFromArgumentsKeepsMoreSpecificFieldMetadataForDuplicateArgumentNames() {
+    void rowFromArgumentsKeepsMoreSpecificFieldMetadataForDuplicateArgumentNames() {
         DatabaseQuery query = new DataReadQuery();
         query.addArgument("value", Object.class);
         query.addArgument("value", Long.class);
@@ -36,7 +34,7 @@ public class DatabaseQueryArgumentFieldTest {
     }
 
     @Test
-    public void rowFromArgumentsDoesNotDowngradeExistingSpecificFieldMetadata() {
+    void rowFromArgumentsDoesNotDowngradeExistingSpecificFieldMetadata() {
         DatabaseQuery query = new DataReadQuery();
         query.addArgument("value", Long.class);
         query.addArgument("value", Object.class);
