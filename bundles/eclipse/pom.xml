@@ -37,7 +37,7 @@ https://stackoverflow.com/questions/22541301/jarsigner-doesnt-sign-plugin-depend
         <eclipselink.version>${project.version}</eclipselink.version>
         <oracle.ddlparser.version>3.0.2-SNAPSHOT</oracle.ddlparser.version>
 
-        <asm.version>9.8</asm.version>
+        <asm.version>9.9.1</asm.version>
         <cdi.version>4.1.0</cdi.version>
         <pgsql.version>42.7.4</pgsql.version>
         <resource.version>2.1.0</resource.version>
