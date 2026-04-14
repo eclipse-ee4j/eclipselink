@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2019, 2020 IBM Corporation. All rights reserved.
+ * Copyright (c) 2019, 2026 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,6 +38,7 @@ import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.internal.expressions.FunctionExpression;
 import org.eclipse.persistence.internal.expressions.MapEntryExpression;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.NonSynchronizedSubVector;
@@ -143,6 +144,9 @@ public class ReportQueryResult implements Serializable, Map {
         int numberOfArguments = constructorItem.getReportItems().size();
         Object[] constructorArgs = new Object[numberOfArguments];
 
+        Constructor itemConstructor = constructorItem.getConstructor();
+        Class<?>[] actualParamTypes = itemConstructor != null ? itemConstructor.getParameterTypes() : null;
+
         for (int argumentIndex = 0; argumentIndex < numberOfArguments; argumentIndex++) {
             ReportItem argumentItem = constructorItem.getReportItems().get(argumentIndex);
             Object result = null;
@@ -151,7 +155,14 @@ public class ReportQueryResult implements Serializable, Map {
             } else {
                 result = processItem(query, row, toManyData, argumentItem);
             }
-            constructorArgs[argumentIndex] = ConversionManager.getDefaultManager().convertObject(result, constructorArgTypes[argumentIndex]);
+
+            // Use actual constructor parameter type if constructorArgTypes is Object.class
+            Class<?> targetType = constructorArgTypes[argumentIndex];
+            if (targetType == CoreClassConstants.OBJECT && actualParamTypes != null && argumentIndex < actualParamTypes.length) {
+                targetType = actualParamTypes[argumentIndex];
+            }
+
+            constructorArgs[argumentIndex] = ConversionManager.getDefaultManager().convertObject(result, targetType);
         }
         try {
             Constructor constructor = constructorItem.getConstructor();
