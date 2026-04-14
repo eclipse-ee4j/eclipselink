@@ -2198,18 +2198,14 @@ public class JUnitJPQLComplexTest extends JUnitTestCase
 
     public void complexConstructorCasePrimitiveLongTest() {
         EntityManager em = createEntityManager();
-        Long empId = null;
 
         try {
             beginTransaction(em);
 
             SimpleEmployee emp = new SimpleEmployee("ABCD", 35000L);
             emp.setId(1L);
-            em.merge(emp);
+            em.persist(emp);
             em.flush();
-            empId = emp.getId();
-
-            commitTransaction(em);
 
             // Constructor query using CASE statement with primitive long parameter
             String jpqlString = "SELECT NEW org.eclipse.persistence.testing.models.jpa.advanced.holders.EmployeeSalaryDTO(" +
@@ -2217,7 +2213,7 @@ public class JUnitJPQLComplexTest extends JUnitTestCase
                                "CASE WHEN e.salary > 50000 THEN e.salary ELSE 0 END" +
                                ") FROM SimpleEmployee e WHERE e.id = :id";
             Query query = em.createQuery(jpqlString);
-            query.setParameter("id", empId);
+            query.setParameter("id", emp.getId());
 
             EmployeeSalaryDTO result = (EmployeeSalaryDTO)query.getSingleResult();
 
