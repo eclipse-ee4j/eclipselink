@@ -77,14 +77,14 @@
         <!--Test framework-->
         <junit5.version>6.0.3</junit5.version>
         <junit.version>4.13.2</junit.version>
-        <archunit.version>1.4.1</archunit.version>
+        <archunit.version>1.4.2</archunit.version>
         <el-api.version>6.0.1</el-api.version>
         <weld-se.version>6.0.4.Final</weld-se.version>
         <expressly.version>6.0.0</expressly.version>
         <jersey.version>4.0.2</jersey.version>
         <glassfish.version>9.0.0-M1</glassfish.version>
         <jmh.version>1.37</jmh.version>
-        <springframework.version>7.0.6</springframework.version>
+        <springframework.version>7.0.7</springframework.version>
         <hibernate.version>9.1.0.Final</hibernate.version>
         <aspectj.version>1.9.25.1</aspectj.version>
         <exam.version>4.14.0</exam.version>
