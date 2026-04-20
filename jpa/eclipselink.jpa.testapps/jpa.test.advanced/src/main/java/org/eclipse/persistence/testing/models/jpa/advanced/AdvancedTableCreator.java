@@ -133,6 +133,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         addTableDefinition(buildPlanarbeitsgangHistTable());
         addTableDefinition(buildMaterialReignisTable());
         addTableDefinition(buildEntityFloatTable());
+        addTableDefinition(buildSIMPLE_EMPLOYEETable());
     }
 
     public TableDefinition buildADDRESSTable() {
@@ -3708,6 +3709,46 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         table.addField(createFloatColumn("LENGTH", false));
         table.addField(createFloatColumn("WIDTH", false));
         table.addField(createStringColumn("DESCRIPTION", 255,false));
+        return table;
+    }
+
+    public TableDefinition buildSIMPLE_EMPLOYEETable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("SIMPLE_EMPLOYEE");
+
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMERIC");
+        fieldID.setSize(15);
+        fieldID.setSubSize(0);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(true);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+
+        FieldDefinition fieldNAME = new FieldDefinition();
+        fieldNAME.setName("NAME");
+        fieldNAME.setTypeName("VARCHAR");
+        fieldNAME.setSize(255);
+        fieldNAME.setSubSize(0);
+        fieldNAME.setIsPrimaryKey(false);
+        fieldNAME.setIsIdentity(false);
+        fieldNAME.setUnique(false);
+        fieldNAME.setShouldAllowNull(true);
+        table.addField(fieldNAME);
+
+        FieldDefinition fieldSALARY = new FieldDefinition();
+        fieldSALARY.setName("SALARY");
+        fieldSALARY.setTypeName("NUMERIC");
+        fieldSALARY.setSize(19);
+        fieldSALARY.setSubSize(0);
+        fieldSALARY.setIsPrimaryKey(false);
+        fieldSALARY.setIsIdentity(false);
+        fieldSALARY.setUnique(false);
+        fieldSALARY.setShouldAllowNull(true);
+        table.addField(fieldSALARY);
+
         return table;
     }
 

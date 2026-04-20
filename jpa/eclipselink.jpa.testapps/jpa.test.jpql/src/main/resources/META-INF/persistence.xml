@@ -52,6 +52,7 @@
         <class>org.eclipse.persistence.testing.models.jpa.advanced.entities.EntyE</class>
         <class>org.eclipse.persistence.testing.models.jpa.advanced.entities.EntityFloat</class>
         <class>org.eclipse.persistence.testing.models.jpa.advanced.order.select.where.Order</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.SimpleEmployee</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <properties>
             <property name="eclipselink.descriptor.customizer.Employee" value="org.eclipse.persistence.testing.models.jpa.advanced.Customizer"/>
@@ -101,6 +102,7 @@
         <class>org.eclipse.persistence.testing.models.jpa.advanced.entities.EntyE</class>
         <class>org.eclipse.persistence.testing.models.jpa.advanced.entities.EntityFloat</class>
         <class>org.eclipse.persistence.testing.models.jpa.advanced.order.select.where.Order</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.SimpleEmployee</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <properties>
             <property name="eclipselink.descriptor.customizer.Employee" value="org.eclipse.persistence.testing.models.jpa.advanced.Customizer"/>

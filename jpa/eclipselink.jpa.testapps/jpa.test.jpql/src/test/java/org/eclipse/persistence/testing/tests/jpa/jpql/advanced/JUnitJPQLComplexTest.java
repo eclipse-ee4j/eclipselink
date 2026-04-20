@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2026 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,6 +25,7 @@ import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
 import junit.framework.Test;
 import junit.framework.TestSuite;
+
 import org.eclipse.persistence.config.PessimisticLock;
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.expressions.Expression;
@@ -60,9 +62,11 @@ import org.eclipse.persistence.testing.models.jpa.advanced.Man;
 import org.eclipse.persistence.testing.models.jpa.advanced.PartnerLinkPopulator;
 import org.eclipse.persistence.testing.models.jpa.advanced.PhoneNumber;
 import org.eclipse.persistence.testing.models.jpa.advanced.Project;
+import org.eclipse.persistence.testing.models.jpa.advanced.SimpleEmployee;
 import org.eclipse.persistence.testing.models.jpa.advanced.SmallProject;
 import org.eclipse.persistence.testing.models.jpa.advanced.Woman;
 import org.eclipse.persistence.testing.models.jpa.advanced.holders.EmployeeDetail;
+import org.eclipse.persistence.testing.models.jpa.advanced.holders.EmployeeSalaryDTO;
 import org.eclipse.persistence.testing.models.jpa.advanced.holders.LongHolder;
 import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitDomainObjectComparer;
 import org.eclipse.persistence.tools.schemaframework.SchemaManager;
@@ -175,6 +179,7 @@ public class JUnitJPQLComplexTest extends JUnitTestCase
         tests.add("complexConstructorCountOnJoinedVariableTest");
         tests.add("complexConstructorConstantTest");
         tests.add("complexConstructorCaseTest");
+        tests.add("complexConstructorCasePrimitiveLongTest");
         tests.add("complexResultPropertiesTest");
         tests.add("complexInSubqueryTest");
         tests.add("complexExistsTest");
@@ -2269,6 +2274,39 @@ public class JUnitJPQLComplexTest extends JUnitTestCase
             assertEquals("complexConditionCaseInUpdateTest wrong last name for - " + e.getFirstName(), "Jones", e.getLastName());
         }
 
+    }
+
+    public void complexConstructorCasePrimitiveLongTest() {
+        EntityManager em = createEntityManager();
+
+        try {
+            beginTransaction(em);
+
+            SimpleEmployee emp = new SimpleEmployee("ABCD", 35000L);
+            emp.setId(1L);
+            em.persist(emp);
+            em.flush();
+
+            // Constructor query using CASE statement with primitive long parameter
+            String jpqlString = "SELECT NEW org.eclipse.persistence.testing.models.jpa.advanced.holders.EmployeeSalaryDTO(" +
+                               "e.salary, " +
+                               "CASE WHEN e.salary > 50000 THEN e.salary ELSE 0 END" +
+                               ") FROM SimpleEmployee e WHERE e.id = :id";
+            Query query = em.createQuery(jpqlString);
+            query.setParameter("id", emp.getId());
+
+            EmployeeSalaryDTO result = (EmployeeSalaryDTO)query.getSingleResult();
+
+            Assert.assertNotNull("complexConstructorCasePrimitiveLongTest returned null", result);
+            Assert.assertEquals("Salary mismatch", 35000L, result.getSalary());
+            Assert.assertEquals("Adjusted salary mismatch", 0L, result.getAdjustedSalary());
+
+        } finally {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+        }
     }
 
     public void absInSelectTest(){
