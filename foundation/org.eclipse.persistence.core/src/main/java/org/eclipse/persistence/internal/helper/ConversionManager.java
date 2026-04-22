@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2024 IBM Corporation and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -1124,8 +1124,11 @@ public class ConversionManager extends CoreConversionManager implements Serializ
         } else if (sourceObject instanceof Long) {
             //Not 100% safe, but JDBC should return Long, but java.time.Year keeps value internally in int variable.
             year = Year.of(((Long)sourceObject).intValue());
+        } else if (sourceObject instanceof Number) {
+            // Handle BigDecimal and other Number types
+            year = Year.of(((Number)sourceObject).intValue());
         } else {
-            throw ConversionException.couldNotBeConverted(sourceObject, ClassConstants.TIME_OTIME);
+            throw ConversionException.couldNotBeConverted(sourceObject, ClassConstants.TIME_YEAR);
         }
 
         return year;
