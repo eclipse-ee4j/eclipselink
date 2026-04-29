@@ -93,12 +93,12 @@
 
         <!--JDBC Drivers-->
         <h2.version>2.4.240</h2.version>
-        <mysql.version>9.6.0</mysql.version>
+        <mysql.version>9.7.0</mysql.version>
         <mariadb.version>3.5.8</mariadb.version>
         <derby.version>10.17.1.0</derby.version>
         <db2.version>12.1.4.0</db2.version>
         <mssql.version>13.4.0.jre11</mssql.version>
-        <pgsql.version>42.7.10</pgsql.version>
+        <pgsql.version>42.7.11</pgsql.version>
     </properties>
 
     <dependencyManagement>
