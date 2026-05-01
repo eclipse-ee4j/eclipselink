@@ -67,7 +67,7 @@
         <jgroups.version>5.3.11.Final</jgroups.version>
         <slf4j.version>2.0.17</slf4j.version>
         <wsdl4j.version>1.6.3</wsdl4j.version>
-        <mongodb.version>5.6.5</mongodb.version>
+        <mongodb.version>5.7.0</mongodb.version>
         <oracle.nosql.version>18.3.10</oracle.nosql.version>
         <oracle.nosql.sdk.version>5.4.20</oracle.nosql.sdk.version>
         <oracle.jdbc.version>23.3.0.23.09</oracle.jdbc.version>
@@ -93,12 +93,12 @@
 
         <!--JDBC Drivers-->
         <h2.version>2.4.240</h2.version>
-        <mysql.version>9.6.0</mysql.version>
+        <mysql.version>9.7.0</mysql.version>
         <mariadb.version>3.5.8</mariadb.version>
         <derby.version>10.17.1.0</derby.version>
         <db2.version>12.1.4.0</db2.version>
         <mssql.version>13.4.0.jre11</mssql.version>
-        <pgsql.version>42.7.10</pgsql.version>
+        <pgsql.version>42.7.11</pgsql.version>
     </properties>
 
     <dependencyManagement>
