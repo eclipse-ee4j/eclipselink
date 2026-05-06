@@ -39,7 +39,7 @@ https://stackoverflow.com/questions/22541301/jarsigner-doesnt-sign-plugin-depend
 
         <asm.version>9.8</asm.version>
         <cdi.version>4.1.0</cdi.version>
-        <pgsql.version>42.7.4</pgsql.version>
+        <pgsql.version>42.7.11</pgsql.version>
         <resource.version>2.1.0</resource.version>
         <wsdl4j.version>1.6.3</wsdl4j.version>
 
