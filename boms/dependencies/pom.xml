@@ -58,18 +58,18 @@
         <asm.version>9.9.1</asm.version>
         <angus-activation.version>2.0.3</angus-activation.version>
         <angus-mail.version>2.0.5</angus-mail.version>
-        <jaxb.version>4.0.7</jaxb.version>
+        <jaxb.version>4.0.8</jaxb.version>
         <jaxwsrt.version>4.0.4</jaxwsrt.version>
         <ant.version>1.10.17</ant.version>
         <apache.felix.framework.version>7.0.5</apache.felix.framework.version>
         <parsson.version>1.1.7</parsson.version>
-        <org.glassfish.corba.version>5.0.0</org.glassfish.corba.version>
+        <org.glassfish.corba.version>5.0.2</org.glassfish.corba.version>
         <jgroups.version>5.3.11.Final</jgroups.version>
         <slf4j.version>2.0.17</slf4j.version>
         <wsdl4j.version>1.6.3</wsdl4j.version>
-        <mongodb.version>5.6.5</mongodb.version>
+        <mongodb.version>5.7.0</mongodb.version>
         <oracle.nosql.version>18.3.10</oracle.nosql.version>
-        <oracle.nosql.sdk.version>5.4.20</oracle.nosql.sdk.version>
+        <oracle.nosql.sdk.version>5.4.21</oracle.nosql.sdk.version>
         <oracle.jdbc.version>23.3.0.23.09</oracle.jdbc.version>
         <oracle.aqapi.version>23.9.0.0</oracle.aqapi.version>
 
@@ -82,7 +82,7 @@
         <weld-se.version>6.0.4.Final</weld-se.version>
         <expressly.version>6.0.0</expressly.version>
         <jersey.version>4.0.2</jersey.version>
-        <glassfish.version>9.0.0-M1</glassfish.version>
+        <glassfish.version>9.0.0-M2</glassfish.version>
         <jmh.version>1.37</jmh.version>
         <springframework.version>7.0.7</springframework.version>
         <hibernate.version>9.1.0.Final</hibernate.version>
@@ -93,12 +93,12 @@
 
         <!--JDBC Drivers-->
         <h2.version>2.4.240</h2.version>
-        <mysql.version>9.6.0</mysql.version>
+        <mysql.version>9.7.0</mysql.version>
         <mariadb.version>3.5.8</mariadb.version>
         <derby.version>10.17.1.0</derby.version>
         <db2.version>12.1.4.0</db2.version>
         <mssql.version>13.4.0.jre11</mssql.version>
-        <pgsql.version>42.7.10</pgsql.version>
+        <pgsql.version>42.7.11</pgsql.version>
     </properties>
 
     <dependencyManagement>
