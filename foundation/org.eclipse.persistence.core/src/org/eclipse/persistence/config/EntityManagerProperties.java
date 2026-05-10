@@ -323,7 +323,7 @@ public class EntityManagerProperties {
     /**
      * Overrides the Bean Validation Group(s) that will execute during a prePersist event. This should be a class or class[].
      */
-    public static final String VALIDATION_GROUP_PRE_UPDATET = "eclipselink.beanvalidation.group.pre-persist";
+    public static final String VALIDATION_GROUP_PRE_PERSIST = "eclipselink.beanvalidation.group.pre-persist";
     
     /**
      * Overrides the Bean Validation Group(s) that will execute during a preUpdate event. This should be a class or class[].
