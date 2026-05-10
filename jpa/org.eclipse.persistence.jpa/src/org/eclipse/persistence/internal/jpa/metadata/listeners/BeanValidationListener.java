@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,16 +36,19 @@ import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import javax.validation.groups.Default;
 
+import org.eclipse.persistence.config.EntityManagerProperties;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.DescriptorEvent;
 import org.eclipse.persistence.descriptors.DescriptorEventAdapter;
 import org.eclipse.persistence.descriptors.FetchGroupManager;
+import org.eclipse.persistence.exceptions.BeanValidationException;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
+
 
 /**
  * Responsible for performing automatic bean validation on call back events.
@@ -72,7 +75,7 @@ public class BeanValidationListener extends DescriptorEventAdapter {
 
     @Override
     public void prePersist (DescriptorEvent event) {
-        //  since we are using prePersist to perform validation, invlid data may get inserted into database as shown by
+        //  since we are using prePersist to perform validation, invalid data may get inserted into database as shown by
         // following example
         //    tx.begin()
         //    e = new MyEntity(...);
@@ -81,19 +84,38 @@ public class BeanValidationListener extends DescriptorEventAdapter {
         //    tx.commit();
         //  "invalid data" would get inserted into database.
         //
-        //  preInsert can be used to work around above issue. Howerver, the JPA spec does not itent it.
+        //  preInsert can be used to work around above issue. However, the JPA spec does not itent it.
         //  This might be corrected in next iteration of spec
-        validateOnCallbackEvent(event, "prePersist", groupPrePersit);
+        Object overrideGroups = event.getSession().getParent().getProperties().get(EntityManagerProperties.VALIDATION_GROUP_PRE_PERSIST);
+        if (overrideGroups != null) {
+            if (overrideGroups instanceof Class) {
+                overrideGroups = new Class[] { (Class) overrideGroups };
+            } else if (!(overrideGroups instanceof Class[])) {
+                throw new BeanValidationException("prePersist validation group must be a Class or Class Array:" + overrideGroups);
+            }
+            validateOnCallbackEvent(event, "prePersist", (Class[]) overrideGroups);
+        } else {
+            validateOnCallbackEvent(event, "prePersist", groupPrePersit);
+        }
     }
 
-    @Override
     public void aboutToUpdate(DescriptorEvent event) {
         Object source = event.getSource();
         UnitOfWorkImpl unitOfWork = (UnitOfWorkImpl )event.getSession();
         // preUpdate is also generated for deleted objects that were modified in this UOW.
         // Do not perform preUpdate validation for such objects as preRemove would have already been called.
-        if(!unitOfWork.isObjectDeleted(source)) {
-            validateOnCallbackEvent(event, "preUpdate", groupPreUpdate);
+        if (!unitOfWork.isObjectDeleted(source)) {
+          Object overrideGroups = event.getSession().getParent().getProperties().get(EntityManagerProperties.VALIDATION_GROUP_PRE_UPDATE);
+          if (overrideGroups != null) {
+              if (overrideGroups instanceof Class) {
+                  overrideGroups = new Class[] { (Class) overrideGroups };
+              } else if (!(overrideGroups instanceof Class[])) {
+                  throw new BeanValidationException("preUpdate validation group must be a Class or Class Array:" + overrideGroups);
+              }
+              validateOnCallbackEvent(event, "preUpdate", (Class[]) overrideGroups);
+          } else {
+              validateOnCallbackEvent(event, "preUpdate", groupPreUpdate);
+          }
         }
     }
 
@@ -104,9 +126,17 @@ public class BeanValidationListener extends DescriptorEventAdapter {
 
     @Override
     public void preRemove (DescriptorEvent event) {
-        if(groupPreRemove != null) { //No validation performed on preRemove if user has not explicitly specified a validation group
-           validateOnCallbackEvent(event, "preRemove", groupPreRemove);
-        }
+      Object overrideGroups = event.getSession().getParent().getProperties().get(EntityManagerProperties.VALIDATION_GROUP_PRE_REMOVE);
+      if (overrideGroups != null) {
+          if (overrideGroups instanceof Class) {
+              overrideGroups = new Class[] { (Class) overrideGroups };
+          } else if (!(overrideGroups instanceof Class[])) {
+              throw new BeanValidationException("preRemove validation group must be a Class or Class Array:" + overrideGroups);
+          }
+          validateOnCallbackEvent(event, "preRemove", (Class[]) overrideGroups);
+      } else if (groupPreRemove != null) { // No validation performed on preRemove if user has not explicitly specified a validation group
+          validateOnCallbackEvent(event, "preRemove", groupPreRemove);
+      }
     }
 
     private void validateOnCallbackEvent(DescriptorEvent event, String callbackEventName, Class[] validationGroup) {
