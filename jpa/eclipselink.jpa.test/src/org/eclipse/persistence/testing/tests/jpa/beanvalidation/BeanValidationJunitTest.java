@@ -633,9 +633,17 @@ public class BeanValidationJunitTest extends JUnitTestCase {
           Employee e = em.find(Employee.class, PK);
           e.setPhone(new Phone("123-456-7890"));
           commitTransaction(em);
-      } catch (ConstraintViolationException e) {
-          assertTrue("Transaction not marked for roll back when ConstraintViolation is thrown", getRollbackOnly(em));
-          gotConstraintViolations = true;
+      } catch (RuntimeException e) {
+          assertFalse("Transaction not marked for roll back when ConstraintViolation is thrown", isTransactionActive(em));
+          Object cause = e.getCause();
+          while (cause != null) {
+              if (cause instanceof ConstraintViolationException) {
+                  gotConstraintViolations = true;
+                  break;
+              } else {
+                  cause = ((Throwable) cause).getCause();
+              }
+          }
       } finally {
           if (isTransactionActive(em)) rollbackTransaction(em);
           closeEntityManager(em);
