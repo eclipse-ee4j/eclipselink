@@ -1596,6 +1596,16 @@ public class DatabasePlatform extends DatasourcePlatform {
     }
 
     /**
+     * Returns the string used for shared (read) locking.
+     * Defaults to {@link #getSelectForUpdateString()} for backward compatibility.
+     * Platforms that support shared locks (e.g. MySQL, PostgreSQL) should override
+     * this to return their native shared lock syntax (e.g. " FOR SHARE").
+     */
+    public String getSelectForShareString() {
+        return getSelectForUpdateString();
+    }
+
+    /**
      * Platforms that support the WAIT option should override this method.
      * By default the wait timeout is ignored.
      * 
