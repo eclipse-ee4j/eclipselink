@@ -55,7 +55,7 @@
         <ws-rs.version>4.0.0</ws-rs.version>
 
         <!--Implementations-->
-        <asm.version>9.9.1</asm.version>
+        <asm.version>9.10</asm.version>
         <angus-activation.version>2.0.3</angus-activation.version>
         <angus-mail.version>2.0.5</angus-mail.version>
         <jaxb.version>4.0.8</jaxb.version>
@@ -65,7 +65,7 @@
         <parsson.version>1.1.7</parsson.version>
         <org.glassfish.corba.version>5.0.2</org.glassfish.corba.version>
         <jgroups.version>5.3.11.Final</jgroups.version>
-        <slf4j.version>2.0.17</slf4j.version>
+        <slf4j.version>2.0.18</slf4j.version>
         <wsdl4j.version>1.6.3</wsdl4j.version>
         <mongodb.version>5.7.0</mongodb.version>
         <oracle.nosql.version>18.3.10</oracle.nosql.version>
