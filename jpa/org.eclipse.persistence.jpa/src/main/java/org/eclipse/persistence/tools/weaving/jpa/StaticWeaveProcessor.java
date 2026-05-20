@@ -12,6 +12,7 @@
 
 // Contributors:
 //     Oracle - initial API and implementation from Oracle TopLink
+//     Billforward - added fileNeedsProcessingPredicate for incremental build support
 package org.eclipse.persistence.tools.weaving.jpa;
 
 import java.io.ByteArrayOutputStream;
@@ -26,6 +27,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Iterator;
+import java.util.function.Predicate;
 import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
 
@@ -56,6 +58,7 @@ public class StaticWeaveProcessor {
     private Writer logWriter;
     private ClassLoader classLoader;
     private int logLevel = SessionLog.OFF;
+    private Predicate<String> fileNeedsProcessingPredicate;
 
     private static final int NUMBER_OF_BYTES = 1024;
 
@@ -255,6 +258,12 @@ public class StaticWeaveProcessor {
                 Iterator<String> entries = sourceArchive.getEntries();
                 while (entries.hasNext()){
                     String entryName = entries.next();
+
+                    if (fileNeedsProcessingPredicate != null &&
+                            !fileNeedsProcessingPredicate.test(entryName)) {
+                        continue;
+                    }
+                    
                     InputStream entryInputStream = sourceArchive.getEntry(entryName);
 
                     // Add a directory entry
@@ -370,5 +379,9 @@ public class StaticWeaveProcessor {
             return new URL[]{this.persistenceInfo};
         }
         return new URL[]{};
+    }
+
+    public void setFileNeedsProcessingPredicate(Predicate<String> fileNeedsProcessingPredicate) {
+        this.fileNeedsProcessingPredicate = fileNeedsProcessingPredicate;
     }
 }
