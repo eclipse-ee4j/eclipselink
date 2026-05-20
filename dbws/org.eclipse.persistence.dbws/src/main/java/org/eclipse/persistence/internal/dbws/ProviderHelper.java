@@ -54,7 +54,7 @@ import jakarta.xml.soap.SOAPFault;
 import jakarta.xml.soap.SOAPMessage;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
+import org.eclipse.persistence.internal.helper.XMLHelper;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import jakarta.xml.ws.Provider;
@@ -259,7 +259,7 @@ public class ProviderHelper extends XRServiceFactory {
         try (InputStream wsdlInputStream = initWSDLInputStream(parentClassLoader, sc)) {
             StringWriter sw = new StringWriter();
             StreamSource wsdlStreamSource = new StreamSource(wsdlInputStream);
-            Transformer t = TransformerFactory.newInstance().newTransformer(new StreamSource(
+            Transformer t = XMLHelper.createTransformerFactory(false).newTransformer(new StreamSource(
                 new StringReader(MATCH_SCHEMA)));
             StreamResult streamResult = new StreamResult(sw);
             t.transform(wsdlStreamSource, streamResult);
