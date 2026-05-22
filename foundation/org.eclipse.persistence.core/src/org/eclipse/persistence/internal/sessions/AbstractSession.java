@@ -1920,7 +1920,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
     public Object retryQuery(DatabaseQuery query, AbstractRecord row, DatabaseException databaseException, int retryCount, AbstractSession executionSession) {
         DatabaseException exception = databaseException;
         //retry
-        if (retryCount <= getLogin().getQueryRetryAttemptCount()) {
+        if (retryCount < getLogin().getQueryRetryAttemptCount()) {
             try {
                 // attempt to reconnect for a certain number of times.
                 // servers may take some time to recover.
