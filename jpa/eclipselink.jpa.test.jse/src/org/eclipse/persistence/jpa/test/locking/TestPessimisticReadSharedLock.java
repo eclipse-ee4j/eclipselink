@@ -41,7 +41,7 @@ import org.junit.runner.RunWith;
 @RunWith(EmfRunner.class)
 public class TestPessimisticReadSharedLock {
     @Emf(createTables = DDLGen.DROP_CREATE, classes = { LockingDog.class }, properties = {
-            @Property(name = "eclipselink.cache.shared.default", value = "false"))
+            @Property(name = "eclipselink.cache.shared.default", value = "false")})
     private EntityManagerFactory emf;
 
     @SQLCallListener
