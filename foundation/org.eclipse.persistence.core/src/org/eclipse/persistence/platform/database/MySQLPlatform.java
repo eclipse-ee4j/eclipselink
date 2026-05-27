@@ -352,6 +352,16 @@ public class MySQLPlatform extends DatabasePlatform {
         return " FOR UPDATE";
     }
 
+    /**
+     * MySQL and MariaDB use LOCK IN SHARE MODE for shared/read locks.
+     * MySQL 8.0+ also supports FOR SHARE, but LOCK IN SHARE MODE
+     * is compatible with both MySQL and MariaDB.
+     */
+    @Override
+    public String getSelectForShareString() {
+        return " LOCK IN SHARE MODE";
+    }
+
     @Override
     public boolean isForUpdateCompatibleWithDistinct() {
         return false;

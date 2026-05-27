@@ -65,3 +65,6 @@ plugins/sun-misc*.jar
 plugins/weld*.jar
 plugins/jboss*.jar
 plugins/org.eclipse.persistence.asm*.jar
+build-deps/
+foundation/extension.lib.external/
+jpa/eclipselink.jpa.test/local.build.properties
