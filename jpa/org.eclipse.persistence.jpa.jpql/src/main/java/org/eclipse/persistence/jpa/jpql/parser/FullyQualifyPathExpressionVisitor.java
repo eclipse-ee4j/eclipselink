@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2006, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -147,7 +148,38 @@ public final class FullyQualifyPathExpressionVisitor extends AbstractTraverseChi
         }
     }
 
+    @Override
+    public void visit(UpdateItem expression) {
+
+        // The update target (left side) is always qualified with the virtual identification
+        // variable, even when it navigates through a relationship or an embeddable (for example
+        // "address.city"), so that it can be resolved and validated against the entity.
+        Expression stateFieldExpression = expression.getStateFieldPathExpression();
+        if (stateFieldExpression instanceof AbstractPathExpression) {
+            qualify((AbstractPathExpression) stateFieldExpression);
+        }
+
+        // The new value (right side) is only qualified when it is a single, unqualified attribute.
+        // A multi-segment path is a fully qualified enum constant (e.g.
+        // "com.example.Status.PENDING") and must be left as-is so it gets resolved as an enum
+        // literal rather than as a state field of the entity (see issue #2758).
+        expression.getNewValue().accept(this);
+    }
+
     private void visitAbstractPathExpression(AbstractPathExpression expression) {
+
+        // Only a single, unqualified attribute (e.g. "status") is qualified with the virtual
+        // identification variable. A multi-segment path is left untouched: it is either a fully
+        // qualified enum constant ("com.example.Status.PENDING", see issue #2758) or a navigation
+        // that is resolved later, and prepending the virtual identification variable would wrongly
+        // replace its leading segment. This is consistent with the way an unqualified SELECT query
+        // leaves such paths as-is. The update target is handled separately by visit(UpdateItem).
+        if (expression.pathSize() == 1) {
+            qualify(expression);
+        }
+    }
+
+    private void qualify(AbstractPathExpression expression) {
 
         if (!expression.startsWithDot()) {
 
