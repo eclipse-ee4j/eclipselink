@@ -55,27 +55,27 @@
         <ws-rs.version>4.0.0</ws-rs.version>
 
         <!--Implementations-->
-        <asm.version>9.10</asm.version>
+        <asm.version>9.10.1</asm.version>
         <angus-activation.version>2.0.3</angus-activation.version>
         <angus-mail.version>2.0.5</angus-mail.version>
-        <jaxb.version>4.0.8</jaxb.version>
-        <jaxwsrt.version>4.0.4</jaxwsrt.version>
+        <jaxb.version>4.0.9</jaxb.version>
+        <jaxwsrt.version>4.0.5</jaxwsrt.version>
         <ant.version>1.10.17</ant.version>
         <apache.felix.framework.version>7.0.5</apache.felix.framework.version>
-        <parsson.version>1.1.7</parsson.version>
+        <parsson.version>1.1.9</parsson.version>
         <org.glassfish.corba.version>5.0.2</org.glassfish.corba.version>
         <jgroups.version>5.3.11.Final</jgroups.version>
         <slf4j.version>2.0.18</slf4j.version>
         <wsdl4j.version>1.6.3</wsdl4j.version>
-        <mongodb.version>5.7.0</mongodb.version>
+        <mongodb.version>5.8.0</mongodb.version>
         <oracle.nosql.version>18.3.10</oracle.nosql.version>
-        <oracle.nosql.sdk.version>5.4.21</oracle.nosql.sdk.version>
+        <oracle.nosql.sdk.version>5.4.22</oracle.nosql.sdk.version>
         <oracle.jdbc.version>23.3.0.23.09</oracle.jdbc.version>
         <oracle.aqapi.version>23.9.0.0</oracle.aqapi.version>
 
         <!--Test dependencies-->
         <!--Test framework-->
-        <junit5.version>6.1.0</junit5.version>
+        <junit5.version>6.1.1</junit5.version>
         <junit.version>4.13.2</junit.version>
         <archunit.version>1.4.2</archunit.version>
         <el-api.version>6.0.1</el-api.version>
@@ -84,19 +84,19 @@
         <jersey.version>4.0.2</jersey.version>
         <glassfish.version>9.0.0-M2</glassfish.version>
         <jmh.version>1.37</jmh.version>
-        <springframework.version>7.0.7</springframework.version>
-        <hibernate.version>9.1.0.Final</hibernate.version>
+        <springframework.version>7.0.8</springframework.version>
+        <hibernate.version>9.1.1.Final</hibernate.version>
         <aspectj.version>1.9.25.1</aspectj.version>
         <exam.version>4.14.0</exam.version>
-        <logback.version>1.5.32</logback.version>
+        <logback.version>1.5.37</logback.version>
         <osgi.version>6.0.0</osgi.version>
 
         <!--JDBC Drivers-->
         <h2.version>2.4.240</h2.version>
         <mysql.version>9.7.0</mysql.version>
-        <mariadb.version>3.5.8</mariadb.version>
+        <mariadb.version>3.5.9</mariadb.version>
         <derby.version>10.17.1.0</derby.version>
-        <db2.version>12.1.4.0</db2.version>
+        <db2.version>12.1.5.0</db2.version>
         <mssql.version>13.4.0.jre11</mssql.version>
         <pgsql.version>42.7.11</pgsql.version>
     </properties>
