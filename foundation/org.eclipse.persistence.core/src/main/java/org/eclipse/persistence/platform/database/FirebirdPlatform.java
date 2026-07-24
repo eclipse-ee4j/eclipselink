@@ -59,11 +59,11 @@ public class FirebirdPlatform extends DatabasePlatform {
         fieldTypeMapping.put(Character.class, new FieldDefinition.DatabaseType("VARCHAR", 1));
 
         fieldTypeMapping.put(Byte[].class, TYPE_BLOB);
-        fieldTypeMapping.put(Character[].class, new FieldDefinition.DatabaseType("VARCHAR", 32000));
+        fieldTypeMapping.put(Character[].class, new FieldDefinition.DatabaseType("BLOB SUB_TYPE TEXT", false));
         fieldTypeMapping.put(byte[].class, TYPE_BLOB);
-        fieldTypeMapping.put(char[].class, new FieldDefinition.DatabaseType("VARCHAR", 32000));
+        fieldTypeMapping.put(char[].class, new FieldDefinition.DatabaseType("BLOB SUB_TYPE TEXT", false));
         fieldTypeMapping.put(java.sql.Blob.class, TYPE_BLOB);
-        fieldTypeMapping.put(java.sql.Clob.class, new FieldDefinition.DatabaseType("VARCHAR", 32000));
+        fieldTypeMapping.put(java.sql.Clob.class, new FieldDefinition.DatabaseType("BLOB SUB_TYPE TEXT", false));
 
         fieldTypeMapping.put(java.sql.Date.class, new FieldDefinition.DatabaseType("DATE", false));
         fieldTypeMapping.put(java.sql.Timestamp.class, new FieldDefinition.DatabaseType("TIMESTAMP", false));
