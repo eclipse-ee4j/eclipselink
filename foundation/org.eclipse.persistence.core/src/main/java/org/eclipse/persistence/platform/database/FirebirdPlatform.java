@@ -70,6 +70,8 @@ public class FirebirdPlatform extends DatabasePlatform {
         fieldTypeMapping.put(java.sql.Time.class, new FieldDefinition.DatabaseType("TIME", false));
         fieldTypeMapping.put(java.util.Calendar.class, new FieldDefinition.DatabaseType("TIMESTAMP", false));
         fieldTypeMapping.put(java.util.Date.class, new FieldDefinition.DatabaseType("TIMESTAMP", false));
+        fieldTypeMapping.put(java.time.OffsetDateTime.class, new FieldDefinition.DatabaseType("TIMESTAMP WITH TIME ZONE", false));
+        fieldTypeMapping.put(java.time.OffsetTime.class, new FieldDefinition.DatabaseType("TIME WITH TIME ZONE", false));
 
         return fieldTypeMapping;
     }
