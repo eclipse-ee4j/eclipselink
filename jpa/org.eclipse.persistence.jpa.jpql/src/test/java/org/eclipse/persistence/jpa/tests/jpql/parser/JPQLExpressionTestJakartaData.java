@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2024 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2024 Contributors to the Eclipse Foundation. All rights reserved.
+ * Copyright (c) 2024, 2026 Contributors to the Eclipse Foundation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,10 +16,14 @@
 //
 package org.eclipse.persistence.jpa.tests.jpql.parser;
 
+import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.abstractSchemaName;
 import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.and;
 import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.avg;
+import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.delete;
+import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.deleteStatement;
 import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.division;
 import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.equal;
+import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.rangeVariableDeclaration;
 import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.id;
 import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.from;
 import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.inputParameter;
@@ -331,6 +335,62 @@ public final class JPQLExpressionTestJakartaData extends JPQLParserTest {
         );
 
         testJakartaDataQuery(inputJPQLQuery, selectStatement);
+    }
+
+    // Reproducer for https://github.com/eclipse-ee4j/eclipselink/issues/2758
+    @Test
+    public void testUpdateWithImplicitThisAliasAndEnumInSet() {
+
+        String inputJPQLQuery = "UPDATE Todo SET status = com.example.domain.Status.PENDING WHERE id = :id";
+
+        UpdateStatementTester updateStatement = updateStatement(
+                update("Todo", "this",
+                        set(path("{this}.status"),
+                                path("com.example.domain.Status.PENDING")),
+                        false),
+                where(equal(virtualVariable("this", "id"), inputParameter(":id")))
+        );
+
+        testJakartaDataQuery(inputJPQLQuery, updateStatement);
+    }
+
+    // Reproducer for https://github.com/eclipse-ee4j/eclipselink/issues/2758
+    // A fully qualified enum literal must be kept as a non-virtual path both in the SET clause
+    // and in the WHERE clause of an UPDATE query that does not define an identification variable.
+    @Test
+    public void testUpdateWithImplicitThisAliasAndEnumInSetAndWhere() {
+
+        String inputJPQLQuery = "UPDATE Todo SET status = com.example.domain.Status.DONE WHERE status = com.example.domain.Status.PENDING";
+
+        UpdateStatementTester updateStatement = updateStatement(
+                update("Todo", "this",
+                        set(path("{this}.status"),
+                                path("com.example.domain.Status.DONE")),
+                        false),
+                where(equal(virtualVariable("this", "status"),
+                        path("com.example.domain.Status.PENDING")))
+        );
+
+        testJakartaDataQuery(inputJPQLQuery, updateStatement);
+    }
+
+    // Reproducer for https://github.com/eclipse-ee4j/eclipselink/issues/2758
+    // A fully qualified enum literal must be kept as a non-virtual path in the WHERE clause of a
+    // DELETE query that does not define an identification variable.
+    @Test
+    public void testDeleteWithImplicitThisAliasAndEnumInWhere() {
+
+        String inputJPQLQuery = "DELETE FROM Todo WHERE status = com.example.domain.Status.PENDING";
+
+        DeleteStatementTester deleteStatement = deleteStatement(
+                delete(rangeVariableDeclaration(abstractSchemaName("Todo"), virtualVariable("this"))),
+                where(equal(virtualVariable("this", "status"),
+                        path("com.example.domain.Status.PENDING")))
+        );
+        // The trailing space is already provided by the (empty) virtual identification variable.
+        deleteStatement.hasSpaceAfterDeleteClause = false;
+
+        testJakartaDataQuery(inputJPQLQuery, deleteStatement);
     }
 
     private void checkAliasFrom(JPQLExpression jpqlExpression, String expectedAlias) {
