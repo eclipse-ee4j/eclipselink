@@ -292,7 +292,7 @@ public class OutputStreamRecord extends MarshalRecord<XMLMarshaller> {
                     CharArrayWriter out = new CharArrayWriter();
                     escapeHandler.escape(value.toCharArray(), 0, value.length(), isAttribute, out);
                     byte[] bytes = out.toString().getBytes();
-                    outputStreamWrite(bytes);
+                    outputStreamWrite(bytes, os);
                     out.close();
                 } catch (IOException e) {
                     throw XMLMarshalException.marshalException(e);
