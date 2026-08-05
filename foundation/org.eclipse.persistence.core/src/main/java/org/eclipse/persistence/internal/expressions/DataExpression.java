@@ -38,7 +38,7 @@ public abstract class DataExpression extends BaseExpression {
     protected List<Expression> derivedFields;
     protected boolean hasBeenNormalized;
     protected TableAliasLookup tableAliases;
-    protected AsOfClause asOfClause;
+    protected AsOfClause asOfClause = AsOfClause.NO_CLAUSE;
 
     /**
      * DataExpression constructor comment.
