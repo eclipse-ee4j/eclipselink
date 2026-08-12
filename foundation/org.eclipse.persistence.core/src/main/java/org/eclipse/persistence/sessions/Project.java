@@ -111,7 +111,7 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
     protected Map<String, SQLResultSetMapping> sqlResultSetMappings;
 
     /** PERF: Provide an JPQL parse cache to optimize dynamic JPQL. */
-    protected transient ConcurrentFixedCache<String, DatabaseQuery> jpqlParseCache;
+    protected transient volatile ConcurrentFixedCache<String, DatabaseQuery> jpqlParseCache;
 
     /** Define the default setting for configuring if dates and calendars are mutable. */
     protected boolean defaultTemporalMutable = false;
@@ -336,10 +336,12 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
      * This is used to optimize dynamic JPQL.
      */
     public ConcurrentFixedCache<String, DatabaseQuery> getJPQLParseCache() {
-        if (jpqlParseCache==null) {
-            jpqlParseCache = new ConcurrentFixedCache<>(200);
+        ConcurrentFixedCache<String, DatabaseQuery> cache = this.jpqlParseCache;
+        if (cache == null) {
+            cache = new ConcurrentFixedCache<>(200);
+            this.jpqlParseCache = cache;
         }
-        return jpqlParseCache;
+        return cache;
     }
 
     /**
