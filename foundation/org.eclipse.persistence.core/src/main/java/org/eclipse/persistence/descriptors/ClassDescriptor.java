@@ -3967,38 +3967,41 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         // PERF: Check if the class "itself" was weaved.
         // If weaved avoid reflection, use clone copy and empty new.
         if (Arrays.asList(getJavaClass().getInterfaces()).contains(PersistenceObject.class)) {
-            // Cloning is only auto set for field access, as method access
-            // may not have simple fields, same with empty new and reflection get/set.
-            boolean isMethodAccess = false;
-            for (DatabaseMapping mapping: getMappings()) {
-                if (mapping.isUsingMethodAccess()) {
-                    // Ok for lazy 1-1s
-                    if (!mapping.isOneToOneMapping() || !((ForeignReferenceMapping)mapping).usesIndirection()) {
-                        isMethodAccess = true;
-                    }
-                } else if (!mapping.isWriteOnly()) {
-                    // Avoid reflection.
-                    mapping.setAttributeAccessor(new PersistenceObjectAttributeAccessor(mapping.getAttributeName()));
-                }
-            }
-            if (!isMethodAccess) {
+            // Records are immutable and cannot be woven, so they always need
+            // record-aware copy and instantiation policies, regardless of access type.
+            if (javaClass != null && javaClass.isRecord()) {
                 if (this.copyPolicy == null) {
-                    if (javaClass != null && javaClass.isRecord()) {
-                        setCopyPolicy(new RecordCopyPolicy());
-                    } else {
+                    setCopyPolicy(new RecordCopyPolicy());
+                }
+                if (!isAbstract() && this.instantiationPolicy == null) {
+                    setInstantiationPolicy(new RecordInstantiationPolicy(javaClass));
+                }
+            } else {
+                // Cloning is only auto set for field access, as method access
+                // may not have simple fields, same with empty new and reflection get/set.
+                boolean isMethodAccess = false;
+                for (DatabaseMapping mapping: getMappings()) {
+                    if (mapping.isUsingMethodAccess()) {
+                        // Ok for lazy 1-1s
+                        if (!mapping.isOneToOneMapping() || !((ForeignReferenceMapping)mapping).usesIndirection()) {
+                            isMethodAccess = true;
+                        }
+                    } else if (!mapping.isWriteOnly()) {
+                        // Avoid reflection.
+                        mapping.setAttributeAccessor(new PersistenceObjectAttributeAccessor(mapping.getAttributeName()));
+                    }
+                }
+                if (!isMethodAccess) {
+                    if (this.copyPolicy == null) {
                         setCopyPolicy(new PersistenceEntityCopyPolicy());
                     }
-                }
-                if (!isAbstract()) {
-                    try {
-                        if (this.instantiationPolicy == null) {
-                            if (javaClass != null && javaClass.isRecord()) {
-                                setInstantiationPolicy(new RecordInstantiationPolicy(javaClass));
-                            } else {
-                                setInstantiationPolicy(new PersistenceObjectInstantiationPolicy((PersistenceObject)getJavaClass().getConstructor().newInstance()));
-                            }
+                    if (!isAbstract() && this.instantiationPolicy == null) {
+                        try {
+                            setInstantiationPolicy(new PersistenceObjectInstantiationPolicy((PersistenceObject)getJavaClass().getConstructor().newInstance()));
+                        } catch (Exception ignore) {
+                            // No-arg constructor may not exist.
                         }
-                    } catch (Exception ignore) { }
+                    }
                 }
             }
         }
