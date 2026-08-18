@@ -1515,7 +1515,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             getAbstractSession().log(SessionLog.WARNING, SessionLog.CONNECTION, "entity_manager_has_multiple_connections");
         }
         @SuppressWarnings("unchecked")
-        C connection = (C) getAbstractSession().getAccessor().getDatasourceConnection();
+        C connection = (C) getDatasourceConnection();
         try {
             action.accept(connection);
         } catch (Exception e) {
@@ -1532,7 +1532,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             getAbstractSession().log(SessionLog.WARNING, SessionLog.CONNECTION, "entity_manager_has_multiple_connections");
         }
         @SuppressWarnings("unchecked")
-        C connection = (C) getAbstractSession().getAccessor().getDatasourceConnection();
+        C connection = (C) getDatasourceConnection();
         try {
             return function.apply(connection);
         } catch (Exception e) {
@@ -1541,6 +1541,45 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
                     ExceptionLocalization.buildMessage(
                             "entity_manager_with_connection_failed", new String[] {e.getLocalizedMessage()}), e);
         }
+    }
+
+    /**
+     * Returns the datasource connection associated with the active persistence context, acquiring it if necessary.
+     * This mirrors the connection resolution used by {@link #unwrap(Class)} for {@code java.sql.Connection}, which
+     * resolves the connection through the transactional {@link UnitOfWork}/{@code ClientSession} accessor rather than
+     * the deployment session accessor. On a server session the deployment session's own accessor is never connected
+     * (connections are pooled and handed out per client session), so reading it directly would return {@code null}.
+     */
+    private Object getDatasourceConnection() {
+        final UnitOfWorkImpl unitOfWork = (UnitOfWorkImpl) getUnitOfWork();
+        Accessor accessor = unitOfWork.getAccessor();
+        if (unitOfWork.getParent().isExclusiveIsolatedClientSession()) {
+            Object conn = accessor.getDatasourceConnection();
+            if (conn == null) {
+                final boolean uowInTran = unitOfWork.isInTransaction();
+                final boolean activeTran = checkForTransaction(false) != null;
+                if (uowInTran || activeTran) {
+                    if (activeTran) {
+                        unitOfWork.beginEarlyTransaction();
+                    }
+                    accessor.incrementCallCount(unitOfWork.getParent());
+                    accessor.decrementCallCount();
+                    conn = accessor.getDatasourceConnection();
+                }
+            }
+            return conn;
+        } else if (unitOfWork.isInTransaction()) {
+            return unitOfWork.getAccessor().getDatasourceConnection();
+        }
+        if (checkForTransaction(false) != null) {
+            unitOfWork.beginEarlyTransaction();
+            accessor = unitOfWork.getAccessor();
+            // Ensure external connection is acquired.
+            accessor.incrementCallCount(unitOfWork.getParent());
+            accessor.decrementCallCount();
+            return accessor.getDatasourceConnection();
+        }
+        return null;
     }
 
     /**
