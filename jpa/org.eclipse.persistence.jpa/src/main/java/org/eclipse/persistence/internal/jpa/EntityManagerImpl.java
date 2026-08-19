@@ -1545,7 +1545,8 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
 
     /**
      * Returns the datasource connection associated with the active persistence context, acquiring it if necessary.
-     * This mirrors the connection resolution used by {@link #unwrap(Class)} for {@code java.sql.Connection}, which
+     * This is the shared implementation for {@link #runWithConnection(ConnectionConsumer)},
+     * {@link #callWithConnection(ConnectionFunction)} and {@link #unwrap(Class)} for {@code java.sql.Connection}. It
      * resolves the connection through the transactional {@link UnitOfWork}/{@code ClientSession} accessor rather than
      * the deployment session accessor. On a server session the deployment session's own accessor is never connected
      * (connections are pooled and handed out per client session), so reading it directly would return {@code null}.
@@ -3124,40 +3125,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             } else if (cls.equals(SessionBroker.class)) {
                 return (T) this.getSessionBroker();
             } else if (cls.equals(java.sql.Connection.class)) {
-                final UnitOfWorkImpl unitOfWork = (UnitOfWorkImpl) this.getUnitOfWork();
-                Accessor accessor = unitOfWork.getAccessor();
-                if (unitOfWork.getParent().isExclusiveIsolatedClientSession()) {
-                    // If the ExclusiveIsolatedClientSession hasn't serviced a query prior to the unwrap,
-                    // there will be no available Connection.
-                    java.sql.Connection conn = accessor.getConnection();
-                    if (conn == null) {
-                        final boolean uowInTran = unitOfWork.isInTransaction();
-                        final boolean activeTran = checkForTransaction(false) != null;
-                        if (uowInTran || activeTran) {
-                            if (activeTran) {
-                                unitOfWork.beginEarlyTransaction();
-                            }
-                            accessor.incrementCallCount(unitOfWork.getParent());
-                            accessor.decrementCallCount();
-                            conn = accessor.getConnection();
-                        } 
-                        // if not in a tx, still return null
-                    }
-                    
-                    return (T) conn;
-                } else if (unitOfWork.isInTransaction()) {
-                    return (T) unitOfWork.getAccessor().getConnection();
-                }
-                
-                if (checkForTransaction(false) != null) {
-                    unitOfWork.beginEarlyTransaction();
-                    accessor = unitOfWork.getAccessor();
-                    // Ensure external connection is acquired.
-                    accessor.incrementCallCount(unitOfWork.getParent());
-                    accessor.decrementCallCount();
-                    return (T) accessor.getConnection();
-                }
-                return null;
+                return (T) getDatasourceConnection();
             } else if (cls.getName().equals("jakarta.resource.cci.Connection")) {
                 UnitOfWorkImpl unitOfWork = (UnitOfWorkImpl) this.getUnitOfWork();
                 if(unitOfWork.isInTransaction() || unitOfWork.getParent().isExclusiveIsolatedClientSession()) {
