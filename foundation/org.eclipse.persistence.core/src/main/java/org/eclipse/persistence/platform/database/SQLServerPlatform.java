@@ -32,6 +32,7 @@ import org.eclipse.persistence.internal.expressions.FunctionExpression;
 import org.eclipse.persistence.internal.expressions.RelationExpression;
 import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
 import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.Helper;
@@ -234,6 +235,23 @@ public class SQLServerPlatform extends DatabasePlatform {
         Map<String, Class<?>> classTypeMapping = super.buildJavaTypes();
         classTypeMapping.put("DATETIME2", java.sql.Timestamp.class);
         return classTypeMapping;
+    }
+
+    /**
+     * Return the JDBC type for the given database field to be passed to Statement.setNull.
+     * Use TIMESTAMP for offset temporal types when native driver support is unavailable.
+     */
+    @Override
+    public int getJDBCTypeForSetNull(DatabaseField field) {
+        Class<?> javaType = field == null ? null : ConversionManager.getObjectClass(field.getType());
+
+        if (field != null && field.getSqlType() == DatabaseField.NULL_SQL_TYPE
+                && Boolean.FALSE.equals(driverSupportsOffsetDateTime)
+                && (javaType == OffsetDateTime.class || javaType == OffsetTime.class)) {
+            return java.sql.Types.TIMESTAMP;
+        }
+
+        return super.getJDBCTypeForSetNull(field);
     }
 
     @Override
