@@ -199,7 +199,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
         } else if ((javaClass == CoreClassConstants.FILE) && (sourceObject instanceof String)) {
             return (T) convertStringToFile((String) sourceObject);
         } else if ((javaClass == Constants.UUID) && (sourceObject instanceof String)) {
-            return (T) UUID.fromString((String) sourceObject);
+            return (T) convertStringToUuid((String) sourceObject);
         } else {
             try {
                 return super.convertObject(sourceObject, javaClass);
@@ -1664,6 +1664,14 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
             return null;
         }
         return new File(path);
+    }
+
+    protected UUID convertStringToUuid(String sourceObject) {
+        try {
+            return UUID.fromString(sourceObject);
+        } catch (IllegalArgumentException ex) {
+            throw ConversionException.couldNotBeConverted(sourceObject, CoreClassConstants.UUID, ex);
+        }
     }
 
     /**
