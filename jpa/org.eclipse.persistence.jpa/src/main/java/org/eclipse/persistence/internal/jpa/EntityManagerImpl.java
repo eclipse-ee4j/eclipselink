@@ -1573,14 +1573,22 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             return unitOfWork.getAccessor().getDatasourceConnection();
         }
         if (checkForTransaction(false) != null) {
-            unitOfWork.beginEarlyTransaction();
-            accessor = unitOfWork.getAccessor();
-            // Ensure external connection is acquired.
-            accessor.incrementCallCount(unitOfWork.getParent());
-            accessor.decrementCallCount();
-            return accessor.getDatasourceConnection();
+            return acquireDatasourceConnection(unitOfWork);
         }
         return null;
+    }
+
+    /**
+     * Acquires the datasource connection by beginning an early transaction on the given unit of work and forcing
+     * the external connection to be acquired.
+     */
+    private Object acquireDatasourceConnection(UnitOfWorkImpl unitOfWork) {
+        unitOfWork.beginEarlyTransaction();
+        Accessor accessor = unitOfWork.getAccessor();
+        // Ensure external connection is acquired.
+        accessor.incrementCallCount(unitOfWork.getParent());
+        accessor.decrementCallCount();
+        return accessor.getDatasourceConnection();
     }
 
     /**
@@ -3132,12 +3140,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
                     return (T) unitOfWork.getAccessor().getConnection();
                 }
                 if (checkForTransaction(false) != null) {
-                    unitOfWork.beginEarlyTransaction();
-                    Accessor accessor = unitOfWork.getAccessor();
-                    // Ensure external connection is acquired.
-                    accessor.incrementCallCount(unitOfWork.getParent());
-                    accessor.decrementCallCount();
-                    return (T) accessor.getDatasourceConnection();
+                    return (T) acquireDatasourceConnection(unitOfWork);
                 }
                 return null;
             }
