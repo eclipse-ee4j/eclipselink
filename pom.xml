@@ -129,7 +129,7 @@
         <javadoc.prefixTitle>EclipseLink ${release.version}</javadoc.prefixTitle>
         <javadoc.postfixTitle>API Reference</javadoc.postfixTitle>
 
-        <checkstyle.version>13.9.0</checkstyle.version>
+        <checkstyle.version>13.11.0</checkstyle.version>
         <spotbugs.version>4.10.3</spotbugs.version>
         <findsecbugs.version>1.14.0</findsecbugs.version>
 
@@ -454,7 +454,7 @@
                 <plugin>
                     <groupId>org.owasp</groupId>
                     <artifactId>dependency-check-maven</artifactId>
-                    <version>12.2.2</version>
+                    <version>13.0.0</version>
                     <configuration>
 <!--                        <failBuildOnCVSS>7</failBuildOnCVSS>-->
                         <assemblyAnalyzerEnabled>false</assemblyAnalyzerEnabled>
