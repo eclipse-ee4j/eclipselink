@@ -719,6 +719,18 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
 
             ClassDescriptor descriptor = getDescriptor(object);
 
+            // Aggregates (embeddables) have no identity of their own and must never be change-tracked as
+            // roots: their changes are calculated by the owning AggregateObjectMapping /
+            // AggregateCollectionMapping, which uses its own initialized *clone* of the aggregate
+            // descriptor. The descriptor returned here is the prototype registered on the session; its
+            // mappings are never initialized, so the attribute accessors have no reflective Method/Field
+            // and comparing the object throws a NullPointerException wrapped in DescriptorException.
+            // Aggregates can reach the clone mapping through ObjectBuilder.buildWorkingCopyCloneFromRow,
+            // which bypasses the cannotRegisterAggregateObjectInUnitOfWork guards of the register methods.
+            if (descriptor.isDescriptorTypeAggregate()) {
+                continue;
+            }
+
             // Update any derived id's.
             updateDerivedIds(object, descriptor);
 
