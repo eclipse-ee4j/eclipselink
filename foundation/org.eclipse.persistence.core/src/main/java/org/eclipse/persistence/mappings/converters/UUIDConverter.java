@@ -54,10 +54,13 @@ public class UUIDConverter implements Converter {
      *
      * @param jdbcValue source String from JDBC VARCHAR
      * @param session current database session
-     * @return target UUID field value
+     * @return target UUID field value, or {@code null} when the source value is {@code null}
      */
     @Override
     public Object convertDataValueToObjectValue(Object jdbcValue, Session session) {
+        if (jdbcValue == null) {
+            return null;
+        }
         return UUID.fromString(jdbcValue.toString());
     }
 
