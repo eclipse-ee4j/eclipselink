@@ -940,6 +940,14 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
         if ((objectReferenced == null)) {
             return;
         }
+        // A record aggregate's collections are eager (the final record components
+        // cannot hold a lazy IndirectList), so its referenced entities are not
+        // registered in the UoW clone mapping. When the owner is not new, those
+        // entities are already persisted, and re-cascading would re-register them
+        // (e.g. an @OneToMany collection held by a record embeddable).
+        if (getAttributeValueFromObject && !uow.isCloneNewObject(object) && this.getReferenceClass().isRecord()) {
+            return;
+        }
         if (!visitedObjects.containsKey(objectReferenced)) {
             visitedObjects.put(objectReferenced, objectReferenced);
             ObjectBuilder builder = getReferenceDescriptor(objectReferenced.getClass(), uow).getObjectBuilder();
