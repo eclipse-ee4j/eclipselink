@@ -117,7 +117,8 @@ public abstract class AggregateMapping extends DatabaseMapping {
         // from a back up clone since a map key mapping does not map a field
         // on the source queries backup clone.
         if (sourceQuery.getSession().isUnitOfWork() && ! isMapKeyMapping()) {
-            Object backupAttributeValue = getAttributeValueFromBackupClone(sourceQuery.getBackupClone());
+            Object backupClone = sourceQuery.getBackupClone();
+            Object backupAttributeValue = backupClone == null ? null : getAttributeValueFromBackupClone(backupClone);
             if (backupAttributeValue == null) {
                 backupAttributeValue = getObjectBuilder(sourceAttributeValue, sourceQuery.getSession()).buildNewInstance();
             }
@@ -670,6 +671,12 @@ public abstract class AggregateMapping extends DatabaseMapping {
         Object sourceAggregate = null;
         if (source != null) {
             sourceAggregate = getAttributeValueFromObject(source);
+        }
+        // Records are immutable, so the aggregate cannot be updated field-by-field.
+        // Replace it with a clone of the source aggregate instead.
+        if (sourceAggregate instanceof Record) {
+            setAttributeValueInObject(target, referenceDescriptor.getCopyPolicy().buildClone(sourceAggregate, targetSession));
+            return;
         }
         ObjectBuilder objectBuilder = getObjectBuilderForClass(aggregateChangeSet.getClassType(mergeManager.getSession()), mergeManager.getSession());
         //Bug#4719341  Always obtain aggregate attribute value from the target object regardless of new or not
