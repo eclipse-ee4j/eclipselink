@@ -110,9 +110,9 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
     protected Map<String, List<DatabaseQuery>> queries;
     protected transient Map<DatabaseTable, Expression> tablesJoinExpressions;
     /** PERF: Update call cache for avoiding regenerated update SQL. */
-    protected transient ConcurrentFixedCache<List<DatabaseField>, List<DatasourceCall>> cachedUpdateCalls;
+    protected transient volatile ConcurrentFixedCache<List<DatabaseField>, List<DatasourceCall>> cachedUpdateCalls;
     /** PERF: Expression query call cache for avoiding regenerated dynamic query SQL. */
-    protected transient ConcurrentFixedCache<DatabaseQuery, DatabaseQuery> cachedExpressionQueries;
+    protected transient volatile ConcurrentFixedCache<DatabaseQuery, DatabaseQuery> cachedExpressionQueries;
 
     /**
      * queryTimeout has three possible settings: DefaultTimeout, NoTimeout, and 1..N
@@ -140,6 +140,8 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
      */
     public DescriptorQueryManager() {
         this.queries = new LinkedHashMap<>(5);
+        this.cachedUpdateCalls = new ConcurrentFixedCache<>(10);
+        this.cachedExpressionQueries = new ConcurrentFixedCache<>(20);
         setDoesExistQuery(new DoesExistQuery());// Always has a does exist.
         this.setQueryTimeout(DefaultTimeout);
         this.setQueryTimeoutUnit(DefaultTimeoutUnit);
@@ -1721,10 +1723,12 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
      * Returns the collection of cached Update calls.
      */
     private ConcurrentFixedCache<List<DatabaseField>, List<DatasourceCall>> getCachedUpdateCalls() {
-        if (cachedUpdateCalls == null) {
-            this.cachedUpdateCalls = new ConcurrentFixedCache<>(10);
+        ConcurrentFixedCache<List<DatabaseField>, List<DatasourceCall>> cache = this.cachedUpdateCalls;
+        if (cache == null) {
+            cache = new ConcurrentFixedCache<>(10);
+            this.cachedUpdateCalls = cache;
         }
-        return this.cachedUpdateCalls;
+        return cache;
     }
 
     /**
@@ -1732,10 +1736,12 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
      * Returns the collection of cached expression queries.
      */
     private ConcurrentFixedCache<DatabaseQuery, DatabaseQuery> getCachedExpressionQueries() {
-        if (cachedExpressionQueries == null) {
-            this.cachedExpressionQueries = new ConcurrentFixedCache<>(20);
+        ConcurrentFixedCache<DatabaseQuery, DatabaseQuery> cache = this.cachedExpressionQueries;
+        if (cache == null) {
+            cache = new ConcurrentFixedCache<>(20);
+            this.cachedExpressionQueries = cache;
         }
-        return this.cachedExpressionQueries;
+        return cache;
     }
 
     /**

@@ -1515,7 +1515,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             getAbstractSession().log(SessionLog.WARNING, SessionLog.CONNECTION, "entity_manager_has_multiple_connections");
         }
         @SuppressWarnings("unchecked")
-        C connection = (C) getAbstractSession().getAccessor().getDatasourceConnection();
+        C connection = (C) getDatasourceConnection();
         try {
             action.accept(connection);
         } catch (Exception e) {
@@ -1532,7 +1532,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             getAbstractSession().log(SessionLog.WARNING, SessionLog.CONNECTION, "entity_manager_has_multiple_connections");
         }
         @SuppressWarnings("unchecked")
-        C connection = (C) getAbstractSession().getAccessor().getDatasourceConnection();
+        C connection = (C) getDatasourceConnection();
         try {
             return function.apply(connection);
         } catch (Exception e) {
@@ -1541,6 +1541,63 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
                     ExceptionLocalization.buildMessage(
                             "entity_manager_with_connection_failed", new String[] {e.getLocalizedMessage()}), e);
         }
+    }
+
+    /**
+     * Returns the datasource connection associated with the active persistence context, acquiring it if necessary.
+     * This is the shared implementation for {@link #runWithConnection(ConnectionConsumer)},
+     * {@link #callWithConnection(ConnectionFunction)} and {@link #unwrap(Class)} for {@code java.sql.Connection}. It
+     * resolves the connection through the transactional {@link UnitOfWork}/{@code ClientSession} accessor rather than
+     * the deployment session accessor. On a server session the deployment session's own accessor is never connected
+     * (connections are pooled and handed out per client session), so reading it directly would return {@code null}.
+     */
+    private Object getDatasourceConnection() {
+        final UnitOfWorkImpl unitOfWork = (UnitOfWorkImpl) getUnitOfWork();
+        if (unitOfWork.getParent().isExclusiveIsolatedClientSession()) {
+            return getExclusiveIsolatedDatasourceConnection(unitOfWork);
+        } else if (unitOfWork.isInTransaction()) {
+            return unitOfWork.getAccessor().getDatasourceConnection();
+        }
+        return acquireDatasourceConnection(unitOfWork);
+    }
+
+    /**
+     * Returns the datasource connection for an exclusive isolated client session, forcing its acquisition when a
+     * transaction is active. The exclusive isolated client session may not have serviced a query yet, in which case
+     * no connection is available until it is acquired within an active transaction.
+     */
+    private Object getExclusiveIsolatedDatasourceConnection(UnitOfWorkImpl unitOfWork) {
+        Accessor accessor = unitOfWork.getAccessor();
+        Object conn = accessor.getDatasourceConnection();
+        if (conn == null) {
+            final boolean uowInTran = unitOfWork.isInTransaction();
+            final boolean activeTran = checkForTransaction(false) != null;
+            if (uowInTran || activeTran) {
+                if (activeTran) {
+                    unitOfWork.beginEarlyTransaction();
+                }
+                accessor.incrementCallCount(unitOfWork.getParent());
+                accessor.decrementCallCount();
+                conn = accessor.getDatasourceConnection();
+            }
+        }
+        return conn;
+    }
+
+    /**
+     * Acquires the datasource connection by beginning an early transaction on the given unit of work and forcing
+     * the external connection to be acquired, or returns {@code null} when no transaction is active.
+     */
+    private Object acquireDatasourceConnection(UnitOfWorkImpl unitOfWork) {
+        if (checkForTransaction(false) != null) {
+            unitOfWork.beginEarlyTransaction();
+            Accessor accessor = unitOfWork.getAccessor();
+            // Ensure external connection is acquired.
+            accessor.incrementCallCount(unitOfWork.getParent());
+            accessor.decrementCallCount();
+            return accessor.getDatasourceConnection();
+        }
+        return null;
     }
 
     /**
@@ -3085,54 +3142,13 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             } else if (cls.equals(SessionBroker.class)) {
                 return (T) this.getSessionBroker();
             } else if (cls.equals(java.sql.Connection.class)) {
-                final UnitOfWorkImpl unitOfWork = (UnitOfWorkImpl) this.getUnitOfWork();
-                Accessor accessor = unitOfWork.getAccessor();
-                if (unitOfWork.getParent().isExclusiveIsolatedClientSession()) {
-                    // If the ExclusiveIsolatedClientSession hasn't serviced a query prior to the unwrap,
-                    // there will be no available Connection.
-                    java.sql.Connection conn = accessor.getConnection();
-                    if (conn == null) {
-                        final boolean uowInTran = unitOfWork.isInTransaction();
-                        final boolean activeTran = checkForTransaction(false) != null;
-                        if (uowInTran || activeTran) {
-                            if (activeTran) {
-                                unitOfWork.beginEarlyTransaction();
-                            }
-                            accessor.incrementCallCount(unitOfWork.getParent());
-                            accessor.decrementCallCount();
-                            conn = accessor.getConnection();
-                        } 
-                        // if not in a tx, still return null
-                    }
-                    
-                    return (T) conn;
-                } else if (unitOfWork.isInTransaction()) {
-                    return (T) unitOfWork.getAccessor().getConnection();
-                }
-                
-                if (checkForTransaction(false) != null) {
-                    unitOfWork.beginEarlyTransaction();
-                    accessor = unitOfWork.getAccessor();
-                    // Ensure external connection is acquired.
-                    accessor.incrementCallCount(unitOfWork.getParent());
-                    accessor.decrementCallCount();
-                    return (T) accessor.getConnection();
-                }
-                return null;
+                return (T) getDatasourceConnection();
             } else if (cls.getName().equals("jakarta.resource.cci.Connection")) {
                 UnitOfWorkImpl unitOfWork = (UnitOfWorkImpl) this.getUnitOfWork();
                 if(unitOfWork.isInTransaction() || unitOfWork.getParent().isExclusiveIsolatedClientSession()) {
                     return (T) unitOfWork.getAccessor().getConnection();
                 }
-                if (checkForTransaction(false) != null) {
-                    unitOfWork.beginEarlyTransaction();
-                    Accessor accessor = unitOfWork.getAccessor();
-                    // Ensure external connection is acquired.
-                    accessor.incrementCallCount(unitOfWork.getParent());
-                    accessor.decrementCallCount();
-                    return (T) accessor.getDatasourceConnection();
-                }
-                return null;
+                return (T) acquireDatasourceConnection(unitOfWork);
             }
             throw new PersistenceException(ExceptionLocalization.buildMessage("unable_to_unwrap_jpa", new String[]{EntityManager.class.getName(), cls.getName()}));
 

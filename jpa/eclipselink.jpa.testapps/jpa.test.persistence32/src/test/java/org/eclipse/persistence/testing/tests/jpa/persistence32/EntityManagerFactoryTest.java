@@ -59,6 +59,8 @@ public class EntityManagerFactoryTest extends AbstractPokemonSuite {
                 new EntityManagerFactoryTest("testRunInTransaction"),
                 new EntityManagerFactoryTest("testRunWithConnection"),
                 new EntityManagerFactoryTest("testCallWithConnection"),
+                new EntityManagerFactoryTest("testRunWithConnectionInRunInTransaction"),
+                new EntityManagerFactoryTest("testCallWithConnectionInRunInTransaction"),
                 new EntityManagerFactoryTest("testCreateCustomEntityManagerFactory"),
                 new EntityManagerFactoryTest("testCreateConflictingCustomEntityManagerFactory"),
                 new EntityManagerFactoryTest("testCreateConflictingConfiguredEntityManagerFactory"),
@@ -188,6 +190,20 @@ public class EntityManagerFactoryTest extends AbstractPokemonSuite {
             Pokemon dbPokemon = em.find(Pokemon.class, 4);
             assertEquals(pokemon, dbPokemon);
         }
+    }
+
+    public void testRunWithConnectionInRunInTransaction() {
+        emf.runInTransaction(em ->
+                em.<Connection>runWithConnection(connection ->
+                        assertNotNull("Connection should be non-null inside runInTransaction", connection)));
+    }
+
+    public void testCallWithConnectionInRunInTransaction() {
+        emf.callInTransaction(em ->
+                em.<Connection, Connection>callWithConnection(connection -> {
+                    assertNotNull("Connection should be non-null inside runInTransaction", connection);
+                    return connection;
+                }));
     }
 
     // Test Persistence.createEntityManagerFactory(PersistenceConfiguration)
