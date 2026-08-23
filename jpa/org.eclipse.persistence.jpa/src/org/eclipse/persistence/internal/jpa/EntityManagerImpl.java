@@ -99,7 +99,6 @@ import org.eclipse.persistence.internal.identitymaps.CacheId;
 import org.eclipse.persistence.internal.jpa.querydef.CriteriaDeleteImpl;
 import org.eclipse.persistence.internal.jpa.querydef.CriteriaQueryImpl;
 import org.eclipse.persistence.internal.jpa.querydef.CriteriaUpdateImpl;
-import org.eclipse.persistence.internal.jpa.transaction.EntityTransactionImpl;
 import org.eclipse.persistence.internal.jpa.transaction.EntityTransactionWrapper;
 import org.eclipse.persistence.internal.jpa.transaction.JTATransactionWrapper;
 import org.eclipse.persistence.internal.jpa.transaction.TransactionWrapper;
@@ -214,7 +213,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     /**
      * Keep a list of openQueries that are executed in this entity manager.
      */
-    protected WeakHashMap<QueryImpl, QueryImpl> openQueriesMap;
+    protected Set<QueryImpl> openQueriesSet;
 
     /**
      * Property to avoid resuming unit of work if going to be closed on commit
@@ -409,24 +408,6 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     }
 
     /**
-     * Return the weak reference to the open queries.
-     */
-    protected Map<QueryImpl, QueryImpl> getOpenQueriesMap() {
-        if (openQueriesMap == null) {
-            openQueriesMap = new WeakHashMap<QueryImpl, QueryImpl>();
-        }
-
-        return openQueriesMap;
-    }
-
-    /**
-     * Return the weak reference to the open queries.
-     */
-    protected Set<QueryImpl> getOpenQueriesSet() {
-        return getOpenQueriesMap().keySet();
-    }
-
-    /**
      * Queries that leave the connection and are executed against this entity
      * manager will be added here. On rollback or commit any left over open
      * queries should be closed.
@@ -434,14 +415,10 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * @param query
      */
     public void addOpenQuery(QueryImpl query) {
-        getOpenQueriesMap().put(query, query);
-
-        // If there is an open entity transaction, tag the query to it to be closed
-        // on commit or rollback.
-        Object transaction = checkForTransaction(false);
-        if (transaction != null && transaction instanceof EntityTransactionImpl) {
-            ((EntityTransactionImpl) transaction).addOpenQuery(query);
+        if (openQueriesSet == null) {
+            openQueriesSet = Collections.newSetFromMap(new WeakHashMap<>());
         }
+        openQueriesSet.add(query);
     }
 
     /**
@@ -1943,11 +1920,14 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     }
 
     /**
-     * Close any open queries executed against this entity manager.0
+     * Close any open queries executed against this entity manager.
      */
-    protected void closeOpenQueries() {
-        for (QueryImpl openQuery : getOpenQueriesSet()) {
-            openQuery.close();
+    public void closeOpenQueries() {
+        if (openQueriesSet != null) {
+            for (QueryImpl openQuery : openQueriesSet) {
+                openQuery.close();
+            }
+            openQueriesSet.clear();
         }
     }
 

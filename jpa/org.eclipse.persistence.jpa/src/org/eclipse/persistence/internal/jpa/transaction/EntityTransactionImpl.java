@@ -20,13 +20,9 @@
 //       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
 package org.eclipse.persistence.internal.jpa.transaction;
 
-import java.util.Map;
-import java.util.WeakHashMap;
-
 import javax.persistence.RollbackException;
 
 import org.eclipse.persistence.exceptions.TransactionException;
-import org.eclipse.persistence.internal.jpa.QueryImpl;
 import org.eclipse.persistence.internal.jpa.transaction.EntityTransactionWrapper;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 
@@ -37,11 +33,6 @@ import org.eclipse.persistence.internal.localization.ExceptionLocalization;
  * @see org.eclipse.persistence.internal.jpa.transaction.EntityTransactionImpl
  */
 public class EntityTransactionImpl implements javax.persistence.EntityTransaction {
-    /**
-     * Keep a weak reference to the open queries that are executed in this entity manager.
-     */
-    protected WeakHashMap<QueryImpl, QueryImpl> openQueriesMap;
-
     protected EntityTransactionWrapper wrapper;
 
     protected boolean active = false;
@@ -58,25 +49,6 @@ public class EntityTransactionImpl implements javax.persistence.EntityTransactio
         if (isFinalizedRequired) {
             this.finalizer = new TransactionFinalizer();
         }
-    }
-
-    /**
-     * Within a transaction track any open queries that will need to be closed
-     * on commit or rollback.
-     */
-    /**
-     * Queries that leave the connection and are executed against this entity
-     * manager will be added here. On rollback or commit any left over open
-     * queries should be closed.
-     *
-     * @param query
-     */
-    public void addOpenQuery(QueryImpl query) {
-        if (openQueriesMap == null) {
-            openQueriesMap = new WeakHashMap<QueryImpl, QueryImpl>();
-        }
-
-        openQueriesMap.put(query, query);
     }
 
     /**
@@ -101,18 +73,6 @@ public class EntityTransactionImpl implements javax.persistence.EntityTransactio
     }
 
     /**
-     * Open queries within a transaction will be closed on commit or rollback
-     * if they haven't already been closed.
-     */
-    protected void closeOpenQueries() {
-        if (openQueriesMap != null) {
-            for (QueryImpl openQuery : openQueriesMap.keySet()) {
-                openQuery.close();
-            }
-        }
-    }
-
-    /**
      * Commit the current transaction, writing any un-flushed changes to the
      * database. This can only be invoked if {@link #isActive()} returns
      * <code>true</code>.
@@ -126,7 +86,7 @@ public class EntityTransactionImpl implements javax.persistence.EntityTransactio
         }
 
         // Make sure any open queries are closed.
-        closeOpenQueries();
+        this.wrapper.entityManager.closeOpenQueries();
 
         try {
             if (this.wrapper.localUOW != null) {
@@ -181,7 +141,7 @@ public class EntityTransactionImpl implements javax.persistence.EntityTransactio
         }
 
         // Make sure any open queries are closed.
-        closeOpenQueries();
+        this.wrapper.entityManager.closeOpenQueries();
 
         try {
             if (wrapper.getLocalUnitOfWork() != null) {
@@ -210,17 +170,6 @@ public class EntityTransactionImpl implements javax.persistence.EntityTransactio
         }
 
         this.rollbackOnly = true;
-    }
-
-    /**
-     * Return the weak reference to the open queries.
-     */
-    protected Map<QueryImpl, QueryImpl> getOpenQueriesMap() {
-        if (openQueriesMap == null) {
-            openQueriesMap = new WeakHashMap<QueryImpl, QueryImpl>();
-        }
-
-        return openQueriesMap;
     }
 
     /**
