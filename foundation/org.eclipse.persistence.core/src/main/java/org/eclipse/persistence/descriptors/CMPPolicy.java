@@ -27,6 +27,7 @@ import org.eclipse.persistence.annotations.CacheKeyType;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
+import org.eclipse.persistence.internal.descriptors.RecordInstantiationPolicy;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.identitymaps.CacheId;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
@@ -38,8 +39,12 @@ import org.eclipse.persistence.mappings.foundation.AbstractColumnMapping;
 import org.eclipse.persistence.queries.UpdateObjectQuery;
 
 import java.io.Serializable;
+import java.lang.reflect.RecordComponent;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -462,7 +467,10 @@ public class CMPPolicy implements java.io.Serializable, Cloneable {
             return  fieldValue;
         }
 
-        Object keyInstance = getPKClassInstance();
+        Class<?> pkClass = getPKClass();
+        boolean isRecord = pkClass != null && pkClass.isRecord();
+        Object keyInstance = isRecord ? null : getPKClassInstance();
+        Map<String, Object> recordValues = isRecord ? new LinkedHashMap<>() : null;
         Set<ObjectReferenceMapping> usedObjectReferenceMappings = new HashSet<>();
         for (int index = 0; index < pkElementArray.length; index++) {
             Object keyObj = object;
@@ -492,11 +500,35 @@ public class CMPPolicy implements java.io.Serializable, Cloneable {
                     fieldValue = mapping.getReferenceDescriptor().getCMPPolicy().createPrimaryKeyInstance(fieldValue, session);
                     usedObjectReferenceMappings.add((ObjectReferenceMapping)mapping);
                 }
-                accessor.setValue(nestedKeyInstance, fieldValue);
+                if (isRecord) {
+                    recordValues.put(accessor.getAttributeName(), fieldValue);
+                } else {
+                    accessor.setValue(nestedKeyInstance, fieldValue);
+                }
             }
         }
 
-        return keyInstance;
+        return isRecord ? createRecordInstance(pkClass, recordValues) : keyInstance;
+    }
+
+    /**
+     * Build a record primary key class instance from its component values using
+     * its canonical constructor. Records are immutable, so the default
+     * no-arg-constructor + field-reflection approach used for bean id classes
+     * cannot be applied.
+     *
+     * Values are looked up by record component name so that the field order in
+     * the descriptor does not have to match the record component declaration
+     * order.
+     */
+    private Object createRecordInstance(Class<?> recordClass, Map<String, Object> valuesByName) {
+        List<Object> values = new ArrayList<>(valuesByName.size());
+        for (RecordComponent component : recordClass.getRecordComponents()) {
+            values.add(valuesByName.get(component.getName()));
+        }
+        RecordInstantiationPolicy policy = new RecordInstantiationPolicy(recordClass);
+        policy.setValues(values);
+        return policy.buildNewInstance();
     }
 
     /**
