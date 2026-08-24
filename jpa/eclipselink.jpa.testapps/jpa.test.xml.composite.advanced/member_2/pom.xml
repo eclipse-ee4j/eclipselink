@@ -13,19 +13,24 @@
 
 -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
     <parent>
-        <artifactId>org.eclipse.persistence.jpa.testapps</artifactId>
         <groupId>org.eclipse.persistence</groupId>
+        <artifactId>org.eclipse.persistence.jpa.testapps</artifactId>
         <version>6.0.0-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
-    <modelVersion>4.0.0</modelVersion>
 
     <artifactId>org.eclipse.persistence.jpa.testapps.xml.composite.advanced.member_2</artifactId>
 
     <name>Test - xml.composite.advanced.member_2</name>
+
+    <properties>
+        <server.test.skip>true</server.test.skip>
+        <el.packager.mode>EJB</el.packager.mode>
+    </properties>
 
     <dependencies>
         <dependency>
@@ -36,11 +41,6 @@
             <scope>provided</scope>
         </dependency>
     </dependencies>
-
-    <properties>
-        <server.test.skip>true</server.test.skip>
-        <el.packager.mode>EJB</el.packager.mode>
-    </properties>
 
     <build>
         <plugins>

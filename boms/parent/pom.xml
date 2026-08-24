@@ -14,9 +14,7 @@
 
 -->
 
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd"
-         xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -35,12 +33,10 @@
     <description>Comprehensive and universal persistence framework for Java.</description>
     <url>http://www.eclipse.org/eclipselink</url>
     <inceptionYear>2007</inceptionYear>
-
     <organization>
         <name>Eclipse.org - EclipseLink Project</name>
         <url>http://www.eclipse.org/eclipselink</url>
     </organization>
-
     <licenses>
         <license>
             <name>Eclipse Public License - v 2.0</name>
@@ -75,7 +71,6 @@
         <connection>scm:git:https://github.com/eclipse-ee4j/eclipselink.git</connection>
         <url>https://github.com/eclipse-ee4j/eclipselink.git</url>
     </scm>
-
     <issueManagement>
         <system>github</system>
         <url>https://github.com/eclipse-ee4j/eclipselink/issues</url>
@@ -151,5 +146,4 @@
             </build>
         </profile>
     </profiles>
-
 </project>
