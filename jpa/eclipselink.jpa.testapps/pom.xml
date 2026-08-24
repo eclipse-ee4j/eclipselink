@@ -14,21 +14,109 @@
 
 -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
     <parent>
-        <artifactId>org.eclipse.persistence.project</artifactId>
         <groupId>org.eclipse.persistence</groupId>
-        <version>5.0.0-SNAPSHOT</version>
+        <artifactId>org.eclipse.persistence.project</artifactId>
+        <version>6.0.0-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <modelVersion>4.0.0</modelVersion>
+    <artifactId>org.eclipse.persistence.jpa.testapps</artifactId>
     <packaging>pom</packaging>
 
-    <artifactId>org.eclipse.persistence.jpa.testapps</artifactId>
-
     <name>Persistence TestApps</name>
+
+    <modules>
+        <module>jpa.test.advanced</module>
+        <module>jpa.test.advanced2</module>
+        <module>jpa.test.advanced.additionalcriteria</module>
+        <module>jpa.test.advanced.cacheimpl</module>
+        <module>jpa.test.advanced.cascadepersist</module>
+        <module>jpa.test.advanced.compositepk</module>
+        <module>jpa.test.advanced.derivedid</module>
+        <module>jpa.test.advanced.customer</module>
+        <module>jpa.test.advanced.embeddable</module>
+        <module>jpa.test.advanced.fetchgroup</module>
+        <module>jpa.test.advanced.multitenant</module>
+        <module>jpa.test.batchfetch</module>
+        <module>jpa.test.beanvalidation</module>
+        <module>jpa.test.beanvalidation.dynamic</module>
+        <module>jpa.test.cacheable</module>
+        <module>jpa.test.cascadedeletes</module>
+        <module>jpa.test.complexaggregate</module>
+        <module>jpa.test.composite.advanced</module>
+        <module>jpa.test.composite.advanced/common</module>
+        <module>jpa.test.composite.advanced/member_1</module>
+        <module>jpa.test.composite.advanced/member_2</module>
+        <module>jpa.test.composite.advanced/member_3</module>
+        <module>jpa.test.criteria</module>
+        <module>jpa.test.datatypes</module>
+        <module>jpa.test.datetime</module>
+        <module>jpa.test.ddlgeneration</module>
+        <module>jpa.test.delimited</module>
+        <module>jpa.test.diagnostic</module>
+        <module>jpa.test.diagnostic.deadlock</module>
+        <module>jpa.test.extensibility</module>
+        <module>jpa.test.fetchgroups</module>
+        <module>jpa.test.fieldaccess.advanced</module>
+        <module>jpa.test.fieldaccess.relationships</module>
+        <module>jpa.test.inheritance</module>
+        <module>jpa.test.inherited</module>
+        <module>jpa.test.jpaadvancedproperties</module>
+        <module>jpa.test.jpql</module>
+        <module>jpa.test.jta</module>
+        <module>jpa.test.lob</module>
+        <module>jpa.test.memory</module>
+        <module>jpa.test.metamodel</module>
+        <module>jpa.test.metamodel.apectj</module>
+        <module>jpa.test.orphanremoval</module>
+        <module>jpa.test.partitioned</module>
+        <module>jpa.test.performance</module>
+        <module>jpa.test.performance2</module>
+        <module>jpa.test.persistence32</module>
+        <module>jpa.test.persistence32.nofile</module>
+        <module>jpa.test.privateowned</module>
+        <module>jpa.test.pu with spaces</module>
+        <module>jpa.test.relationships</module>
+        <module>jpa.test.remote</module>
+        <module>jpa.test.sessionbean</module>
+        <module>jpa.test.sessionbean.ha</module>
+        <module>jpa.test.validation</module>
+        <module>jpa.test.weaving</module>
+        <module>jpa.test.xml.composite.advanced</module>
+        <module>jpa.test.xml.composite.advanced/common</module>
+        <module>jpa.test.xml.composite.advanced/member_1</module>
+        <module>jpa.test.xml.composite.advanced/member_2</module>
+        <module>jpa.test.xml.composite.advanced/member_3</module>
+        <module>jpa.test.xml.extended/jpa.test.xml.extended.advanced</module>
+        <module>jpa.test.xml.extended/jpa.test.xml.extended.advanced.additionalcriteria</module>
+        <module>jpa.test.xml.extended/jpa.test.xml.extended.advanced.fetchgroup</module>
+        <module>jpa.test.xml.extended/jpa.test.xml.extended.complexaggregate</module>
+        <module>jpa.test.xml.extended/jpa.test.xml.extended.inheritance</module>
+        <module>jpa.test.xml.extended/jpa.test.xml.extended.relationships</module>
+        <module>jpa.test.xml.extended.composite.advanced</module>
+        <module>jpa.test.xml.extended.composite.advanced/member_1</module>
+        <module>jpa.test.xml.extended.composite.advanced/member_2</module>
+        <module>jpa.test.xml.extended.composite.advanced/member_3</module>
+        <module>jpa.test.xml.merge/jpa.test.xml.merge.advanced</module>
+        <module>jpa.test.xml.merge/jpa.test.xml.merge.incompletemappings.nonowning</module>
+        <module>jpa.test.xml.merge/jpa.test.xml.merge.incompletemappings.owning</module>
+        <module>jpa.test.xml.merge/jpa.test.xml.merge.inherited</module>
+        <module>jpa.test.xml.merge/jpa.test.xml.merge.relationships</module>
+        <module>jpa.test.xml.only/jpa.test.xml.advanced</module>
+        <module>jpa.test.xml.only/jpa.test.xml.advanced.multitenant</module>
+        <module>jpa.test.xml.only/jpa.test.xml.cacheable</module>
+        <module>jpa.test.xml.only/jpa.test.xml.inheritance</module>
+        <module>jpa.test.xml.only/jpa.test.xml.inherited</module>
+        <module>jpa.test.xml.only/jpa.test.xml.metadatacomplete</module>
+        <module>jpa.test.xml.only/jpa.test.xml.relationships</module>
+        <module>jpa.test.xml.only/jpa.test.xml.relationships.unidirectional</module>
+        <module>jpa.test.xml.xmlmetadatacomplete</module>
+        <module>nativeapi</module>
+    </modules>
 
     <properties>
         <maven.deploy.skip>true</maven.deploy.skip>
@@ -214,7 +302,6 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
-
     <dependencies>
         <dependency>
             <groupId>jakarta.persistence</groupId>
@@ -255,95 +342,6 @@
             <scope>provided</scope>
         </dependency>
     </dependencies>
-
-    <modules>
-        <module>jpa.test.advanced</module>
-        <module>jpa.test.advanced2</module>
-        <module>jpa.test.advanced.additionalcriteria</module>
-        <module>jpa.test.advanced.cacheimpl</module>
-        <module>jpa.test.advanced.cascadepersist</module>
-        <module>jpa.test.advanced.compositepk</module>
-        <module>jpa.test.advanced.derivedid</module>
-        <module>jpa.test.advanced.customer</module>
-        <module>jpa.test.advanced.embeddable</module>
-        <module>jpa.test.advanced.fetchgroup</module>
-        <module>jpa.test.advanced.multitenant</module>
-        <module>jpa.test.batchfetch</module>
-        <module>jpa.test.beanvalidation</module>
-        <module>jpa.test.beanvalidation.dynamic</module>
-        <module>jpa.test.cacheable</module>
-        <module>jpa.test.cascadedeletes</module>
-        <module>jpa.test.complexaggregate</module>
-        <module>jpa.test.composite.advanced</module>
-        <module>jpa.test.composite.advanced/common</module>
-        <module>jpa.test.composite.advanced/member_1</module>
-        <module>jpa.test.composite.advanced/member_2</module>
-        <module>jpa.test.composite.advanced/member_3</module>
-        <module>jpa.test.criteria</module>
-        <module>jpa.test.datatypes</module>
-        <module>jpa.test.datetime</module>
-        <module>jpa.test.ddlgeneration</module>
-        <module>jpa.test.delimited</module>
-        <module>jpa.test.diagnostic</module>
-        <module>jpa.test.diagnostic.deadlock</module>
-        <module>jpa.test.extensibility</module>
-        <module>jpa.test.fetchgroups</module>
-        <module>jpa.test.fieldaccess.advanced</module>
-        <module>jpa.test.fieldaccess.relationships</module>
-        <module>jpa.test.inheritance</module>
-        <module>jpa.test.inherited</module>
-        <module>jpa.test.jpaadvancedproperties</module>
-        <module>jpa.test.jpql</module>
-        <module>jpa.test.jta</module>
-        <module>jpa.test.lob</module>
-        <module>jpa.test.memory</module>
-        <module>jpa.test.metamodel</module>
-        <module>jpa.test.metamodel.apectj</module>
-        <module>jpa.test.orphanremoval</module>
-        <module>jpa.test.partitioned</module>
-        <module>jpa.test.performance</module>
-        <module>jpa.test.performance2</module>
-        <module>jpa.test.persistence32</module>
-        <module>jpa.test.persistence32.nofile</module>
-        <module>jpa.test.privateowned</module>
-        <module>jpa.test.pu with spaces</module>
-        <module>jpa.test.relationships</module>
-        <module>jpa.test.remote</module>
-        <module>jpa.test.sessionbean</module>
-        <module>jpa.test.sessionbean.ha</module>
-        <module>jpa.test.validation</module>
-        <module>jpa.test.weaving</module>
-        <module>jpa.test.xml.composite.advanced</module>
-        <module>jpa.test.xml.composite.advanced/common</module>
-        <module>jpa.test.xml.composite.advanced/member_1</module>
-        <module>jpa.test.xml.composite.advanced/member_2</module>
-        <module>jpa.test.xml.composite.advanced/member_3</module>
-        <module>jpa.test.xml.extended/jpa.test.xml.extended.advanced</module>
-        <module>jpa.test.xml.extended/jpa.test.xml.extended.advanced.additionalcriteria</module>
-        <module>jpa.test.xml.extended/jpa.test.xml.extended.advanced.fetchgroup</module>
-        <module>jpa.test.xml.extended/jpa.test.xml.extended.complexaggregate</module>
-        <module>jpa.test.xml.extended/jpa.test.xml.extended.inheritance</module>
-        <module>jpa.test.xml.extended/jpa.test.xml.extended.relationships</module>
-        <module>jpa.test.xml.extended.composite.advanced</module>
-        <module>jpa.test.xml.extended.composite.advanced/member_1</module>
-        <module>jpa.test.xml.extended.composite.advanced/member_2</module>
-        <module>jpa.test.xml.extended.composite.advanced/member_3</module>
-        <module>jpa.test.xml.merge/jpa.test.xml.merge.advanced</module>
-        <module>jpa.test.xml.merge/jpa.test.xml.merge.incompletemappings.nonowning</module>
-        <module>jpa.test.xml.merge/jpa.test.xml.merge.incompletemappings.owning</module>
-        <module>jpa.test.xml.merge/jpa.test.xml.merge.inherited</module>
-        <module>jpa.test.xml.merge/jpa.test.xml.merge.relationships</module>
-        <module>jpa.test.xml.only/jpa.test.xml.advanced</module>
-        <module>jpa.test.xml.only/jpa.test.xml.advanced.multitenant</module>
-        <module>jpa.test.xml.only/jpa.test.xml.cacheable</module>
-        <module>jpa.test.xml.only/jpa.test.xml.inheritance</module>
-        <module>jpa.test.xml.only/jpa.test.xml.inherited</module>
-        <module>jpa.test.xml.only/jpa.test.xml.metadatacomplete</module>
-        <module>jpa.test.xml.only/jpa.test.xml.relationships</module>
-        <module>jpa.test.xml.only/jpa.test.xml.relationships.unidirectional</module>
-        <module>jpa.test.xml.xmlmetadatacomplete</module>
-        <module>nativeapi</module>
-    </modules>
 
     <build>
         <finalName>${project.artifactId}</finalName>
@@ -529,7 +527,7 @@
             <plugin>
                 <groupId>org.eclipse.persistence</groupId>
                 <artifactId>eclipselink-testbuild-plugin</artifactId>
-<!--                <extensions>true</extensions>-->
+                <!--                <extensions>true</extensions>-->
                 <executions>
                     <execution>
                         <id>package-server-tests</id>
