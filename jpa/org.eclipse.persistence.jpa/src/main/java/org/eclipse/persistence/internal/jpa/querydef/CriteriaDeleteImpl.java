@@ -25,8 +25,10 @@ import jakarta.persistence.metamodel.Metamodel;
 
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.DeleteAllQuery;
 
 import java.io.Serial;
+import java.util.List;
 
 /**
  * <p>
@@ -84,9 +86,19 @@ public class CriteriaDeleteImpl<T> extends CommonAbstractCriteriaImpl<T> impleme
     }
 
     @Override
+    public CriteriaDelete<T> where(BooleanExpression... restrictions) {
+        return where(restrictions != null ? List.of(restrictions) : null);
+    }
+
+    @Override
+    public CriteriaDelete<T> where(List<? extends Expression<Boolean>> restrictions) {
+        return (CriteriaDelete<T>)super.where(restrictions);
+    }
+
+    @Override
     protected void integrateRoot(RootImpl root) {
-        if (this.root !=root) {
-            this.root =root;
+        if (this.root != root) {
+            this.root = root;
         }
     }
 
@@ -101,13 +113,9 @@ public class CriteriaDeleteImpl<T> extends CommonAbstractCriteriaImpl<T> impleme
 
     @Override
     protected DatabaseQuery getDatabaseQuery() {
-        org.eclipse.persistence.queries.DeleteAllQuery query = new org.eclipse.persistence.queries.DeleteAllQuery(this.queryType, getBaseExpression());
+        DeleteAllQuery query = new DeleteAllQuery(queryType, getBaseExpression());
         query.setShouldDeferExecutionInUOW(false);
         return query;
     }
 
-    @Override
-    public CriteriaDelete<T> where(BooleanExpression... restrictions) {
-        throw new UnsupportedOperationException("Not yet implemented");
-    }
 }

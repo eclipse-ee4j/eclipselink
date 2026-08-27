@@ -15,7 +15,6 @@
 //
 package org.eclipse.persistence.internal.jpa.querydef;
 
-import jakarta.persistence.criteria.From;
 import jakarta.persistence.criteria.Root;
 import jakarta.persistence.metamodel.Bindable;
 import jakarta.persistence.metamodel.EntityType;

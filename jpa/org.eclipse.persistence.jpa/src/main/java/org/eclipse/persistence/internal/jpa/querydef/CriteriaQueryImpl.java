@@ -19,6 +19,18 @@
 //       - New Jakarta Persistence 3.2 Features
 package org.eclipse.persistence.internal.jpa.querydef;
 
+import jakarta.annotation.Nonnull;
+import jakarta.persistence.Tuple;
+import jakarta.persistence.criteria.BooleanExpression;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Selection;
+import jakarta.persistence.metamodel.Metamodel;
+import jakarta.persistence.metamodel.Type.PersistenceType;
+
+import java.io.Serial;
 import java.lang.reflect.Constructor;
 import java.security.AccessController;
 import java.util.ArrayList;
@@ -27,15 +39,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import jakarta.persistence.Tuple;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Expression;
-import jakarta.persistence.criteria.Order;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
-import jakarta.persistence.criteria.Selection;
-import jakarta.persistence.metamodel.Metamodel;
-import jakarta.persistence.metamodel.Type.PersistenceType;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.helper.BasicTypeHelperImpl;
@@ -65,10 +68,14 @@ import org.eclipse.persistence.queries.ReportQuery;
  */
 public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements CriteriaQuery<T> {
 
+    @Serial
+    private static final long serialVersionUID = 1L;
+
     protected SelectionImpl<? extends T> selection;
     protected List<Order> orderBy;
 
     protected Set<FromImpl> joins;
+
     // Mark this query as part of the UNION/EXCEPT/INTERSECT, default is false
     private boolean isUnion = false;
 
@@ -110,6 +117,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
                 this.queryResult = ResultType.OTHER;
             }
         }
+
         return this;
     }
 
@@ -158,9 +166,11 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
             this.selection = null;
             return this;
         }
+
         for (Selection select : selections) {
             ((SelectionImpl)select).findRootAndParameters(this);
         }
+
         if (this.queryResult == ResultType.CONSTRUCTOR) {
             populateAndSetConstructorSelection(null, this.queryType, selections);
         } else if (this.queryResult.equals(ResultType.ENTITY)) {
@@ -193,6 +203,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("jpa_criteriaapi_alias_reused",
                     new Object[] { ((CompoundSelectionImpl)this.selection).getDuplicateAliasNames() }));
         }
+
         return this;
     }
 
@@ -243,22 +254,23 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
             this.selection = null;
             return this;
         }
-        return this.multiselect(selectionList.toArray(new Selection[0]));
+
+        return multiselect(selectionList.toArray(new Selection[0]));
     }
 
     // override the return type only:
+    @Override
+    public CriteriaQuery<T> where(BooleanExpression... restrictions) {
+        return where(restrictions != null ? List.of(restrictions) : null);
+    }
+
     @Override
     public CriteriaQuery<T> where(Expression<Boolean> restriction) {
         return (CriteriaQuery<T>) super.where(restriction);
     }
 
     @Override
-    public CriteriaQuery<T> where(Predicate... restrictions) {
-        return (CriteriaQuery<T>) super.where(restrictions);
-    }
-
-    @Override
-    public CriteriaQuery<T> where(List<Predicate> restrictions) {
+    public CriteriaQuery<T> where(@Nonnull List<? extends Expression<Boolean>> restrictions) {
         return (CriteriaQuery<T>) super.where(restrictions);
     }
 
@@ -303,13 +315,12 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
     }
 
     @Override
-    public CriteriaQuery<T> having(Predicate... restrictions) {
-        super.having(restrictions);
-        return this;
+    public CriteriaQuery<T> having(BooleanExpression... restrictions) {
+        return having(restrictions != null ? List.of(restrictions) : null);
     }
 
     @Override
-    public CriteriaQuery<T> having(List<Predicate> restrictions) {
+    public CriteriaQuery<T> having(@Nonnull List<? extends Expression<Boolean>> restrictions) {
         super.having(restrictions);
         return this;
     }
@@ -379,6 +390,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
             }
             constructorArgs[count++] = select.getJavaType();
         }
+
         Constructor<? extends T> constructor = null;
         try {
             // TODO: Remove AccessController.doPrivileged
@@ -423,10 +435,11 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
 
     @Override
     public void addJoin(FromImpl from) {
-        if (this.joins == null) {
-            this.joins = new LinkedHashSet<>();
+        if (joins == null) {
+            joins = new LinkedHashSet<>();
         }
-        this.joins.add(from);
+
+        joins.add(from);
     }
 
     /**
@@ -445,6 +458,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
         } else {
             query = createCompoundQuery(toReportQuery);
         }
+
         return query;
     }
 
@@ -611,9 +625,9 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
                     this.selection = (SelectionImpl<? extends T>) this.roots.iterator().next();
                     if (toReportQuery) {
                         // TODO: Test and fix
-                        query = createReportQueryWithItem(((FromImpl) this.selection).getJavaType());
+                        query = createReportQueryWithItem(this.selection.getJavaType());
                     } else {
-                        query = new ReadAllQuery(((FromImpl) this.selection).getJavaType());
+                        query = new ReadAllQuery(this.selection.getJavaType());
                     }
                     List<org.eclipse.persistence.expressions.Expression> list = ((FromImpl) this.roots.iterator().next()).findJoinFetches();
                     for (org.eclipse.persistence.expressions.Expression fetch : list) {
@@ -639,13 +653,13 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
                     for (org.eclipse.persistence.expressions.Expression fetch : list) {
                         query.addJoinedAttribute(fetch);
                     }
-                    query.setExpressionBuilder(((InternalSelection)selection).getCurrentNode().getBuilder());
+                    query.setExpressionBuilder(selection.getCurrentNode().getBuilder());
                 } else {
                     query = createReportQueryWithSelection(this.selection.getCurrentNode().getBuilder().getQueryClass());
                 }
             }
         } else if (this.queryResult.equals(ResultType.ENTITY)) {
-            boolean nonRootSelection = this.selection != null && (!((InternalSelection) this.selection).isRoot());
+            boolean nonRootSelection = this.selection != null && (!this.selection.isRoot());
             if (nonRootSelection) {
                 query = createReportQueryWithItem(this.queryType);
                 ((ReportQuery) query).setShouldReturnSingleAttribute(true);
@@ -669,7 +683,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
                         query.setExpressionBuilder(list.get(0).getBuilder());
                         doSetExpressionBuilder = false;
                     }
-                    if (this.selection == null || ((InternalSelection) this.selection).isRoot()) {
+                    if (this.selection == null || this.selection.isRoot()) {
                         for (org.eclipse.persistence.expressions.Expression fetch : list) {
                             query.addJoinedAttribute(fetch);
                         }
@@ -703,13 +717,13 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
                     reportQuery.addAttribute(this.selection.getAlias(), this.selection.getCurrentNode(), this.selection.getJavaType());
 
                 }}else{
-                if (((InternalSelection) selection).isFrom()) {
+                if (selection.isFrom()) {
                     reportQuery.addItem(selection.getAlias(), selection.getCurrentNode(), ((FromImpl) selection).findJoinFetches());
                 } else {
                     reportQuery.addAttribute(selection.getAlias(), selection.getCurrentNode(), selection.getJavaType());
                 }}
-                reportQuery.setReferenceClass(((InternalSelection) this.selection).getCurrentNode().getBuilder().getQueryClass());
-                reportQuery.setExpressionBuilder(((InternalSelection) this.selection).getCurrentNode().getBuilder());
+                reportQuery.setReferenceClass(this.selection.getCurrentNode().getBuilder().getQueryClass());
+                reportQuery.setExpressionBuilder(this.selection.getCurrentNode().getBuilder());
             }
             query = reportQuery;
             if (this.groupBy != null && !this.groupBy.isEmpty()) {
@@ -757,7 +771,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
     private ReportQuery createReportQueryWithItem(Class<?> classToRead) {
         ReportQuery query = createReportQuery(classToRead);
         if (selection != null) {
-            if (((InternalSelection) selection).isFrom()) {
+            if (selection.isFrom()) {
                 query.addItem(selection.getAlias(), selection.getCurrentNode(), ((FromImpl<?, ?>) selection).findJoinFetches());
             } else {
                 query.addAttribute(selection.getAlias(), selection.getCurrentNode(), selection.getJavaType());
@@ -818,7 +832,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
 
         if (this.joins != null && !joins.isEmpty()) {
             for (FromImpl join : this.joins) {
-                query.addNonFetchJoinedAttribute(((InternalSelection) join).getCurrentNode());
+                query.addNonFetchJoinedAttribute(join.getCurrentNode());
             }
         }
         if (this.distinct) {
@@ -853,6 +867,11 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
      */
     void isUnion() {
         isUnion = true;
+    }
+
+    @Override
+    public List<Root<?>> getRootList() {
+        throw new UnsupportedOperationException("Not yet implemented");
     }
 
 }
