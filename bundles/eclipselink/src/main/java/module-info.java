@@ -37,7 +37,6 @@ module eclipselink {
     requires static jakarta.ws.rs;
 
     requires static jakarta.cdi;
-    requires static jakarta.el;
     requires static jakarta.inject;
     requires static jakarta.transaction;
     requires static jakarta.interceptor;

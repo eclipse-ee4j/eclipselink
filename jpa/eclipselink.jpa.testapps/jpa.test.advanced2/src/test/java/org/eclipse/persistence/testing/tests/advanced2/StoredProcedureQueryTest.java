@@ -357,7 +357,7 @@ public class StoredProcedureQueryTest extends JUnitTestCase {
 
                 // Do some negative tests ...
                 try {
-                    query.getOutputParameterValue(null);
+                    query.getOutputParameterValue((String) null);
                     fail("No IllegalArgumentException was caught with a null parameter name.");
                 } catch (IllegalArgumentException e) {
                     // Expected, swallow.
@@ -523,7 +523,7 @@ public class StoredProcedureQueryTest extends JUnitTestCase {
 
                 // Do some negative tests ...
                 try {
-                    query.getOutputParameterValue(null);
+                    query.getOutputParameterValue((String) null);
                     fail("No IllegalArgumentException was caught with a null parameter name.");
                 } catch (IllegalArgumentException e) {
                     // Expected, swallow.

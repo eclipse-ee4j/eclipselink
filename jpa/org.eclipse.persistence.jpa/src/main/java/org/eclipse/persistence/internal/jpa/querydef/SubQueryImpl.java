@@ -250,7 +250,7 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
     @Override
     public Subquery<T> having(Expression<Boolean> restriction){
         super.having(restriction);
-        setHavingClauseInternal(((InternalSelection)restriction).getCurrentNode());
+        setHavingClauseInternal();
         return this;
     }
 
@@ -262,16 +262,18 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
     @Override
     public Subquery<T> having(List<? extends Expression<Boolean>> restrictions) {
         super.having(restrictions);
-        setHavingClauseInternal(((InternalSelection) this.havingClause).getCurrentNode());
+        setHavingClauseInternal();
         return this;
     }
 
-    private void setHavingClauseInternal(org.eclipse.persistence.expressions.Expression currentNode) {
-        if (havingClause != null) {
-            subQuery.setHavingExpression(currentNode);
-        } else {
-            subQuery.setHavingExpression(null);
-        }
+    /**
+     * Pushes the current having clause down to the subquery. Always derived from
+     * {@code havingClause} rather than from the caller's expression, because
+     * {@link AbstractQueryImpl#having(Expression)} may wrap a non-predicate
+     * restriction in {@code isTrue(...)} before storing it.
+     */
+    private void setHavingClauseInternal() {
+        subQuery.setHavingExpression(((InternalSelection) havingClause).getCurrentNode());
     }
 
     /**

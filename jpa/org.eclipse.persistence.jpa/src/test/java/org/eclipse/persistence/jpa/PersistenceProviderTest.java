@@ -15,6 +15,7 @@ import java.util.Map;
 
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.PersistenceConfiguration;
+import jakarta.persistence.spi.ClassTransformer;
 import jakarta.persistence.spi.PersistenceUnitInfo;
 import jakarta.persistence.spi.ProviderUtil;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
@@ -253,7 +254,17 @@ public class PersistenceProviderTest {
         }
 
         @Override
+        public boolean generateSchema(PersistenceConfiguration configuration) {
+            return false;
+        }
+
+        @Override
         public ProviderUtil getProviderUtil() {
+            return null;
+        }
+
+        @Override
+        public ClassTransformer getClassTransformer(PersistenceUnitInfo info, Map<?, ?> properties) {
             return null;
         }
 

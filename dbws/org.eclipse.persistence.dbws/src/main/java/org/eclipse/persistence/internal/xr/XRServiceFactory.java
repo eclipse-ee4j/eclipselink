@@ -43,11 +43,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import jakarta.persistence.FetchType;
 import jakarta.persistence.SharedCacheMode;
 import jakarta.persistence.ValidationMode;
 import jakarta.persistence.spi.ClassTransformer;
 import jakarta.persistence.spi.PersistenceUnitInfo;
-import jakarta.persistence.spi.PersistenceUnitTransactionType;
+import jakarta.persistence.PersistenceUnitTransactionType;
 import javax.sql.DataSource;
 //java eXtension imports
 import jakarta.xml.bind.JAXBContext;
@@ -687,6 +688,10 @@ public class XRServiceFactory  {
         }
         @Override
         public PersistenceUnitTransactionType getTransactionType() { return null; }
+        @Override
+        public FetchType getDefaultToOneFetchType() { return FetchType.DEFAULT; }
+        @Override
+        public List<String> getAllClassNames() { return new ArrayList<>(); }
         @Override
         public Properties getProperties() { return new Properties(); }
         @Override
