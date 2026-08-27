@@ -36,6 +36,23 @@
 //       - New Jakarta Persistence 3.2 Features
 package org.eclipse.persistence.internal.jpa;
 
+import jakarta.persistence.AttributeConverter;
+import jakarta.persistence.CacheRetrieveMode;
+import jakarta.persistence.CacheStoreMode;
+import jakarta.persistence.FlushModeType;
+import jakarta.persistence.LockModeType;
+import jakarta.persistence.LockTimeoutException;
+import jakarta.persistence.Parameter;
+import jakarta.persistence.ParameterMode;
+import jakarta.persistence.PersistenceException;
+import jakarta.persistence.QueryFlushMode;
+import jakarta.persistence.QueryTimeoutException;
+import jakarta.persistence.StoredProcedureQuery;
+import jakarta.persistence.TemporalType;
+import jakarta.persistence.Timeout;
+import jakarta.persistence.metamodel.Type;
+import jakarta.persistence.sql.ResultSetMapping;
+
 import java.sql.CallableStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -46,24 +63,15 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Vector;
 
-import jakarta.persistence.CacheRetrieveMode;
-import jakarta.persistence.CacheStoreMode;
-import jakarta.persistence.FlushModeType;
-import jakarta.persistence.LockModeType;
-import jakarta.persistence.LockTimeoutException;
-import jakarta.persistence.Parameter;
-import jakarta.persistence.ParameterMode;
-import jakarta.persistence.PersistenceException;
-import jakarta.persistence.QueryTimeoutException;
-import jakarta.persistence.StoredProcedureQuery;
-import jakarta.persistence.TemporalType;
-
-import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.exceptions.DatabaseException;
-import org.eclipse.persistence.internal.databaseaccess.*;
+import org.eclipse.persistence.internal.databaseaccess.Accessor;
+import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
+import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.databaseaccess.DatasourceCall.ParameterType;
+import org.eclipse.persistence.internal.databaseaccess.OutputParameterForCallableStatement;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.jpa.querydef.ParameterExpressionImpl;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
@@ -77,8 +85,12 @@ import org.eclipse.persistence.queries.ResultSetMappingQuery;
 import org.eclipse.persistence.queries.SQLResultSetMapping;
 import org.eclipse.persistence.queries.StoredProcedureCall;
 
+import static org.eclipse.persistence.config.QueryHints.CACHE_RETRIEVE_MODE;
+import static org.eclipse.persistence.config.QueryHints.CACHE_STORE_MODE;
+import static org.eclipse.persistence.config.QueryHints.QUERY_TIMEOUT;
+
 /**
- * Concrete JPA query class. The JPA query wraps a StoredProcesureQuery which
+ * Concrete Jakarta Persistence query class. The JPA query wraps a StoredProcesureQuery which
  * is executed.
  */
 public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedureQuery {
@@ -316,7 +328,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
         try {
             entityManager.verifyOpen();
 
-            if (! getDatabaseQueryInternal().isResultSetMappingQuery()) {
+            if (!getDatabaseQueryInternal().isResultSetMappingQuery()) {
                 throw new IllegalStateException(ExceptionLocalization.buildMessage("incorrect_spq_query_for_execute"));
             }
 
@@ -481,12 +493,13 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
             try {
                 Object obj = executeCall.getOutputParameterValue((CallableStatement) executeStatement, position - 1, entityManager.getAbstractSession());
 
-                if (obj instanceof ResultSet) {
-                    // If a result set is returned we have to build the objects.
-                    return getResultSetMappingQuery().buildObjectsFromRecords(buildResultRecords((ResultSet) obj), ++executeResultSetIndex);
-                } else {
+                if (!(obj instanceof ResultSet resultSet)) {
                     return obj;
                 }
+
+                // If a result set is returned we have to build the objects.
+                return getResultSetMappingQuery().buildObjectsFromRecords(buildResultRecords(resultSet), ++executeResultSetIndex);
+
             } catch (Exception exception) {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("jpa21_invalid_parameter_position", new Object[] { position, exception.getMessage() }), exception);
             }
@@ -496,15 +509,13 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     }
 
     /**
-     * Used to retrieve the values passed back from the procedure through INOUT
-     * and OUT parameters. For portability, all results corresponding to result
-     * sets and update counts must be retrieved before the values of output
-     * parameters.
-     * @param parameterName name of the parameter as registered or specified in
-     *        metadata
+     * Used to retrieve the values passed back from the procedure through INOUT and OUT parameters. For portability, all
+     * results corresponding to result sets and update counts must be retrieved before the values of output parameters.
+     *
+     * @param parameterName name of the parameter as registered or specified in metadata
      * @return the result that is passed back through the parameter
-     * @throws IllegalArgumentException if the parameter name does not
-     * correspond to a parameter of the query or is not an INOUT or OUT parameter
+     * @throws IllegalArgumentException if the parameter name does not correspond to a parameter of the query or is not an
+     * INOUT or OUT parameter
      */
     @Override
     public Object getOutputParameterValue(String parameterName) {
@@ -514,11 +525,13 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
             try {
                 Object obj = executeCall.getOutputParameterValue((CallableStatement) executeStatement, parameterName, entityManager.getAbstractSession());
 
-                if (obj instanceof ResultSet) {
-                    // If a result set is returned we have to build the objects.
-                    return getResultSetMappingQuery().buildObjectsFromRecords(buildResultRecords((ResultSet) obj), ++executeResultSetIndex);
+                if (!(obj instanceof ResultSet resultSet)) {
+                    return obj;
                 }
-                return obj;
+
+                // If a result set is returned we have to build the objects.
+                return getResultSetMappingQuery().buildObjectsFromRecords(buildResultRecords(resultSet), ++executeResultSetIndex);
+
             } catch (Exception exception) {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("jpa21_invalid_parameter_name", new Object[] { parameterName, exception.getMessage() }), exception);
             }
@@ -527,12 +540,26 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
         return null;
     }
 
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> T getOutputParameterValue(Parameter<T> parameter) {
+        if (parameter == null) {
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("NULL_PARAMETER_PASSED_TO_SET_PARAMETER"));
+        }
+
+        Integer position = parameter.getPosition();
+        return (T) (position != null
+                ? getOutputParameterValue(position)
+                : getOutputParameterValue(parameter.getName()));
+    }
+
     private boolean hasPositionalParameters() {
-        for (Parameter parameter: this.getParameters()) {
+        for (Parameter<?> parameter: getParameters()) {
             if (parameter.getName() != null) {
                 return false;
             }
         }
+
         return true;
     }
 
@@ -549,47 +576,49 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
             // If there is no execute statement, the user has not called
             // execute and is simply calling getResultList directly on the query.
             if (executeStatement == null) {
-                // If it's not a result set mapping query (as of JPA 2.1 we
+
+                // If it's not a result set mapping query (as of Jakarta Persistence 2.1 we
                 // always create a result set mapping query to interact with a
                 // stored procedure) then throw an exception.
-                if (! getDatabaseQueryInternal().isResultSetMappingQuery()) {
+                if (!getDatabaseQueryInternal().isResultSetMappingQuery()) {
                     throw new IllegalStateException(ExceptionLocalization.buildMessage("incorrect_spq_query_for_get_result_list"));
                 }
 
                 // If the return value is false indicating no result set then throw an exception.
-                if (execute()) {
-                    return getResultList();
-                } else {
+                if (!execute()) {
                     throw new IllegalStateException(ExceptionLocalization.buildMessage("incorrect_spq_query_for_get_result_list"));
                 }
-            } else {
-                if (hasMoreResults()) {
-                    if (isOutputCursorResultSet) {
-                        // Return result set list for the current outputCursorIndex.
-                        List results = null;
-                        if (hasPositionalParameters()) {
-                            results = (List) getOutputParameterValue(getCall().getOutputCursors().get(outputCursorIndex++).getIndex() + 1);
-                        } else {
-                            results = (List) getOutputParameterValue(getCall().getOutputCursors().get(outputCursorIndex++).getName());
-                        }
 
-                        // Update the hasMoreResults flag.
-                        hasMoreResults = (outputCursorIndex < getCall().getOutputCursors().size());
-
-                        return results;
-                    } else {
-                        // Build the result records first.
-                        List result = buildResultRecords(executeStatement.getResultSet());
-
-                        // Move the result pointer.
-                        moveResultPointer();
-
-                        return getResultSetMappingQuery().buildObjectsFromRecords(result, ++executeResultSetIndex);
-                    }
-                } else {
-                    return null;
-                }
+                return getResultList();
             }
+
+            if (!hasMoreResults()) {
+                return null;
+            }
+
+            if (isOutputCursorResultSet) {
+                // Return result set list for the current outputCursorIndex.
+                List results = null;
+                if (hasPositionalParameters()) {
+                    results = (List) getOutputParameterValue(getCall().getOutputCursors().get(outputCursorIndex++).getIndex() + 1);
+                } else {
+                    results = (List) getOutputParameterValue(getCall().getOutputCursors().get(outputCursorIndex++).getName());
+                }
+
+                // Update the hasMoreResults flag.
+                hasMoreResults = (outputCursorIndex < getCall().getOutputCursors().size());
+
+                return results;
+            }
+
+            // Build the result records first.
+            List<?> result = buildResultRecords(executeStatement.getResultSet());
+
+            // Move the result pointer.
+            moveResultPointer();
+
+            return getResultSetMappingQuery().buildObjectsFromRecords(result, ++executeResultSetIndex);
+
         } catch (LockTimeoutException e) {
             throw e;
         } catch (PersistenceException | IllegalStateException e) {
@@ -608,9 +637,9 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     protected ResultSetMappingQuery getResultSetMappingQuery() {
         if (executeCall != null) {
             return (ResultSetMappingQuery) executeCall.getQuery();
-        } else {
-            return (ResultSetMappingQuery) getDatabaseQuery();
         }
+
+        return (ResultSetMappingQuery) getDatabaseQuery();
     }
 
     @Override
@@ -871,8 +900,24 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
      * @return the same query instance
      */
     @Override
+    @Deprecated(since = "6.0")
     public StoredProcedureQueryImpl setFlushMode(FlushModeType flushMode) {
-        return (StoredProcedureQueryImpl) super.setFlushMode(flushMode);
+        super.setFlushMode(flushMode);
+        return this;
+    }
+
+    /**
+     * Set the {@linkplain QueryFlushMode query flush mode} to be used for the
+     * query execution. This flush mode overrides the flush mode of the entity
+     * manager.
+     *
+     * @param queryFlushMode The new flush mode
+     * @return the same query instance
+     */
+    @Override
+    public StoredProcedureQueryImpl setQueryFlushMode(QueryFlushMode queryFlushMode) {
+        super.setQueryFlushMode(queryFlushMode);
+        return this;
     }
 
     @Override
@@ -883,7 +928,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     @Override
     public StoredProcedureQueryImpl setCacheRetrieveMode(CacheRetrieveMode cacheRetrieveMode) {
         FindOptionUtils.setCacheRetrieveMode(getDatabaseQuery().getProperties(), cacheRetrieveMode);
-        setHint(QueryHints.CACHE_RETRIEVE_MODE, cacheRetrieveMode);
+        setHint(CACHE_RETRIEVE_MODE, cacheRetrieveMode);
         return this;
     }
 
@@ -895,7 +940,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     @Override
     public StoredProcedureQueryImpl setCacheStoreMode(CacheStoreMode cacheStoreMode) {
         FindOptionUtils.setCacheStoreMode(getDatabaseQuery().getProperties(), cacheStoreMode);
-        setHint(QueryHints.CACHE_STORE_MODE, cacheStoreMode);
+        setHint(CACHE_STORE_MODE, cacheStoreMode);
         return this;
     }
 
@@ -907,7 +952,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     @Override
     public StoredProcedureQueryImpl setTimeout(Integer timeout) {
         FindOptionUtils.setTimeout(getDatabaseQuery().getProperties(), timeout);
-        setHint(QueryHints.QUERY_TIMEOUT, timeout);
+        setHint(QUERY_TIMEOUT, timeout);
         return this;
     }
 
@@ -925,18 +970,18 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
             return;
         }
 
-        Map<String, Object> emProperties = entityManager.properties;
+        Map<String, Object> entityManagerProperties = entityManager.properties;
 
         // CACHE_RETRIEVE_MODE only applies to ObjectLevelReadQuery (SELECT queries)
-        if (dbQuery.isObjectLevelReadQuery() && emProperties.containsKey(QueryHints.CACHE_RETRIEVE_MODE)) {
-            setHint(QueryHints.CACHE_RETRIEVE_MODE, emProperties.get(QueryHints.CACHE_RETRIEVE_MODE));
+        if (dbQuery.isObjectLevelReadQuery() && entityManagerProperties.containsKey(CACHE_RETRIEVE_MODE)) {
+            setHint(CACHE_RETRIEVE_MODE, entityManagerProperties.get(CACHE_RETRIEVE_MODE));
         }
 
         // CACHE_STORE_MODE applies to all query types:
         // - For ObjectLevelReadQuery: controls whether results are stored in cache after reading
         // - For ModifyQuery: controls whether cache is invalidated after UPDATE/DELETE
-        if (emProperties.containsKey(QueryHints.CACHE_STORE_MODE)) {
-            setHint(QueryHints.CACHE_STORE_MODE, emProperties.get(QueryHints.CACHE_STORE_MODE));
+        if (entityManagerProperties.containsKey(CACHE_STORE_MODE)) {
+            setHint(CACHE_STORE_MODE, entityManagerProperties.get(CACHE_STORE_MODE));
         }
     }
 
@@ -1179,6 +1224,110 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-incorrect-parameter-type", new Object[] { name, value.getClass(), parameter.getParameterType(), call.getProcedureName() }));
         }
         this.parameterValues.put(name, value);
+    }
+
+    @Override
+    public <P> StoredProcedureQuery setParameter(String name, P value, Class<P> type) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public <P> StoredProcedureQuery setParameter(String name, P value, Type<P> type) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public <P> StoredProcedureQuery setConvertedParameter(String name, P value, Class<? extends AttributeConverter<P, ?>> converter) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public <P> StoredProcedureQuery setParameter(int position, P value, Class<P> type) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public <P> StoredProcedureQuery setParameter(int position, P value, Type<P> type) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public <P> StoredProcedureQuery setConvertedParameter(int position, P value, Class<? extends AttributeConverter<P, ?>> converter) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public StoredProcedureQuery setParameters(Object... arguments) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public StoredProcedureQuery setTimeout(Timeout timeout) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public <T> Parameter<T> registerResultParameter(Class<T> resultType) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public <T> Parameter<T> registerParameter(int position, Class<T> type, ParameterMode mode) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public <T> Parameter<T> registerParameter(String parameterName, Class<T> type, ParameterMode mode) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public <T> Parameter<T> registerConvertedParameter(int position, Class<? extends AttributeConverter<T, ?>> converter, ParameterMode mode) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public <T> Parameter<T> registerConvertedParameter(String parameterName, Class<? extends AttributeConverter<T, ?>> converter, ParameterMode mode) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+    @Override
+    public <R> List<R> getResultList(Class<R> resultClass) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public <R> List<R> getResultList(ResultSetMapping<R> mapping) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public <R> R getSingleResult(Class<R> resultClass) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public <R> R getSingleResult(ResultSetMapping<R> mapping) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public <R> R getSingleResultOrNull(Class<R> resultClass) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public <R> R getSingleResultOrNull(ResultSetMapping<R> mapping) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public StoredProcedureQuery addOption(Option option) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public Set<Option> getOptions() {
+        throw new UnsupportedOperationException("Not yet implemented");
     }
 }
 

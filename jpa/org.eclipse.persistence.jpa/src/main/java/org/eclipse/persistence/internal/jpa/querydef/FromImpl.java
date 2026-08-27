@@ -16,14 +16,6 @@
 
 package org.eclipse.persistence.internal.jpa.querydef;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Stack;
-
 import jakarta.persistence.criteria.CollectionJoin;
 import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Fetch;
@@ -33,9 +25,9 @@ import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.ListJoin;
 import jakarta.persistence.criteria.MapJoin;
 import jakarta.persistence.criteria.Path;
+import jakarta.persistence.criteria.PluralExpression;
 import jakarta.persistence.criteria.SetJoin;
 import jakarta.persistence.metamodel.Attribute;
-import jakarta.persistence.metamodel.Attribute.PersistentAttributeType;
 import jakarta.persistence.metamodel.Bindable;
 import jakarta.persistence.metamodel.CollectionAttribute;
 import jakarta.persistence.metamodel.EntityType;
@@ -44,12 +36,29 @@ import jakarta.persistence.metamodel.ManagedType;
 import jakarta.persistence.metamodel.MapAttribute;
 import jakarta.persistence.metamodel.Metamodel;
 import jakarta.persistence.metamodel.PluralAttribute;
-import jakarta.persistence.metamodel.PluralAttribute.CollectionType;
+import jakarta.persistence.metamodel.SetAttribute;
 import jakarta.persistence.metamodel.SingularAttribute;
 import jakarta.persistence.metamodel.Type.PersistenceType;
+
+import java.io.Serial;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Stack;
+
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.expressions.ObjectExpression;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
+
+import static jakarta.persistence.criteria.JoinType.INNER;
+import static jakarta.persistence.criteria.JoinType.RIGHT;
+import static jakarta.persistence.metamodel.Attribute.PersistentAttributeType.BASIC;
+import static jakarta.persistence.metamodel.PluralAttribute.CollectionType.COLLECTION;
+import static jakarta.persistence.metamodel.PluralAttribute.CollectionType.LIST;
+import static jakarta.persistence.metamodel.PluralAttribute.CollectionType.SET;
 
 /**
  * <p>
@@ -65,7 +74,10 @@ import org.eclipse.persistence.internal.localization.ExceptionLocalization;
  * @since EclipseLink 1.2
  */
 
-public class FromImpl<Z, X>  extends PathImpl<X> implements jakarta.persistence.criteria.From<Z, X> {
+public class FromImpl<Z, X> extends PathImpl<X> implements jakarta.persistence.criteria.From<Z, X> {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     protected ManagedType managedType;
     protected Set<Join<X, ?>> joins;
@@ -84,8 +96,8 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements jakarta.persistence.
     public <T> FromImpl(Path<Z> parentPath, ManagedType managedType, Metamodel metamodel, Class<X> javaClass, org.eclipse.persistence.expressions.Expression expressionNode, Bindable<T> modelArtifact, FromImpl correlatedParent) {
         this(parentPath, managedType, metamodel, javaClass, expressionNode, modelArtifact);
         this.correlatedParent = correlatedParent;
-
     }
+
     /**
      * Return the fetch joins that have been made from this type.
      *
@@ -93,7 +105,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements jakarta.persistence.
      */
     @Override
     public java.util.Set<Fetch<X, ?>> getFetches(){
-        return this.fetches;
+        return fetches;
     }
     /**
      *  Whether the <code>From</code> object has been obtained as a result of
@@ -104,7 +116,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements jakarta.persistence.
      */
     @Override
     public boolean isCorrelated(){
-        return this.correlatedParent != null;
+        return correlatedParent != null;
     }
 
     /**
@@ -117,10 +129,11 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements jakarta.persistence.
      */
     @Override
     public From<Z, X> getCorrelationParent() {
-        if (this.correlatedParent == null){
+        if (correlatedParent == null){
             throw new IllegalStateException(ExceptionLocalization.buildMessage("cannot_get_from_non_correlated_query"));
         }
-        return this.correlatedParent;
+
+        return correlatedParent;
     }
 
     /**
@@ -132,38 +145,41 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements jakarta.persistence.
      */
     @Override
     public <Y> Fetch<X, Y> fetch(SingularAttribute<? super X, Y> assoc){
-        return this.fetch(assoc, JoinType.INNER);
+        return fetch(assoc, INNER);
     }
 
     /**
      * Fetch join to the specified attribute using the given join type.
      *
-     * @param assoc
-     *            target of the join
-     * @param jt
-     *            join type
+     * @param assoc target of the join
+     * @param jt join type
      * @return the resulting fetch join
      */
     @Override
-    public <Y> Fetch<X, Y> fetch(SingularAttribute<? super X, Y> assoc, JoinType jt){
-        if (((SingularAttribute)assoc).getType().getPersistenceType().equals(PersistenceType.BASIC)){
+    public <Y> Fetch<X, Y> fetch(SingularAttribute<? super X, Y> assoc, JoinType jt) {
+        if (assoc.getType().getPersistenceType().equals(PersistenceType.BASIC)) {
             throw new IllegalStateException(ExceptionLocalization.buildMessage("CAN_NOT_JOIN_TO_BASIC"));
         }
+
         Class<Y> clazz = assoc.getBindableJavaType();
         Fetch<X, Y> join = null;
-        ObjectExpression exp = ((ObjectExpression)this.currentNode).newDerivedExpressionNamed(assoc.getName());
-        if (jt.equals(JoinType.LEFT)){
+        ObjectExpression exp = ((ObjectExpression) this.currentNode).newDerivedExpressionNamed(assoc.getName());
+        if (jt.equals(JoinType.LEFT)) {
             exp.doUseOuterJoin();
-        }else if(jt.equals(JoinType.RIGHT)){
+        } else if (jt.equals(RIGHT)) {
             throw new UnsupportedOperationException(ExceptionLocalization.buildMessage("RIGHT_JOIN_NOT_SUPPORTED"));
-        }else{
+        } else {
             exp.doNotUseOuterJoin();
         }
+
         join = new JoinImpl<>(this, this.metamodel.managedType(clazz), this.metamodel, clazz, exp, assoc, jt);
+
         this.fetches.add(join);
-        ((FromImpl)join).isFetch = true;
+        ((FromImpl) join).isFetch = true;
+
         return join;
     }
+
     /**
      * Fetch join to the specified collection using an inner join.
      *
@@ -173,7 +189,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements jakarta.persistence.
      */
     @Override
     public <Y> Fetch<X, Y> fetch(PluralAttribute<? super X, ?, Y> assoc){
-        return fetch(assoc, JoinType.INNER);
+        return fetch(assoc, INNER);
     }
 
     /**
@@ -181,44 +197,39 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements jakarta.persistence.
      *
      * @param assoc
      *            target of the join
-     * @param jt
+     * @param joinType
      *            join type
      * @return the resulting join
      */
     @Override
-    public <Y> Fetch<X, Y> fetch(PluralAttribute<? super X, ?, Y> assoc, JoinType jt) {
-        org.eclipse.persistence.expressions.Expression node;
+    public <Y> Fetch<X, Y> fetch(PluralAttribute<? super X, ?, Y> assoc, JoinType joinType) {
+        org.eclipse.persistence.expressions.Expression joinExpression = createJoinExpression(assoc, joinType);
+
         Fetch fetch;
-        if (jt.equals(JoinType.LEFT)) {
-            node = this.currentNode.anyOfAllowingNone(assoc.getName());
-        } else if (jt.equals(JoinType.RIGHT)) {
-            throw new UnsupportedOperationException(ExceptionLocalization.buildMessage("RIGHT_JOIN_NOT_SUPPORTED"));
-        } else {
-            node = this.currentNode.anyOf(assoc.getName());
-        }
         if (assoc.getElementType().getPersistenceType().equals(PersistenceType.BASIC)) {
-            if (assoc.getCollectionType().equals(CollectionType.COLLECTION)) {
-                fetch = new BasicCollectionJoinImpl<X, Y>(this, this.metamodel, ((PluralAttribute) assoc).getBindableJavaType(), node, (Bindable) assoc, jt);
-            } else if (assoc.getCollectionType().equals(CollectionType.LIST)) {
-                fetch = new BasicListJoinImpl<X, Y>(this, this.metamodel, ((PluralAttribute) assoc).getBindableJavaType(), node, (Bindable) assoc, jt);
-            } else if (assoc.getCollectionType().equals(CollectionType.SET)) {
-                fetch = new BasicSetJoinImpl<X, Y>(this, this.metamodel, ((PluralAttribute) assoc).getBindableJavaType(), node, (Bindable) assoc, jt);
+            if (assoc.getCollectionType().equals(COLLECTION)) {
+                fetch = new BasicCollectionJoinImpl<X, Y>(this, this.metamodel, assoc.getBindableJavaType(), joinExpression, (Bindable) assoc, joinType);
+            } else if (assoc.getCollectionType().equals(LIST)) {
+                fetch = new BasicListJoinImpl<X, Y>(this, this.metamodel, assoc.getBindableJavaType(), joinExpression, (Bindable) assoc, joinType);
+            } else if (assoc.getCollectionType().equals(SET)) {
+                fetch = new BasicSetJoinImpl<X, Y>(this, this.metamodel, assoc.getBindableJavaType(), joinExpression, (Bindable) assoc, joinType);
             } else {
-                fetch = new BasicMapJoinImpl(this, this.metamodel, ((PluralAttribute) assoc).getBindableJavaType(), node, assoc, jt);
+                fetch = new BasicMapJoinImpl(this, this.metamodel, assoc.getBindableJavaType(), joinExpression, assoc, joinType);
             }
         } else {
-            if (assoc.getCollectionType().equals(CollectionType.COLLECTION)) {
-                fetch = new CollectionJoinImpl<X, Y>(this, metamodel.managedType(((PluralAttribute) assoc).getBindableJavaType()), this.metamodel, ((PluralAttribute) assoc).getBindableJavaType(), node, (Bindable) assoc, jt);
-            } else if (assoc.getCollectionType().equals(CollectionType.LIST)) {
-                fetch = new ListJoinImpl<X, Y>(this, metamodel.managedType(((PluralAttribute) assoc).getBindableJavaType()), this.metamodel, ((PluralAttribute) assoc).getBindableJavaType(), node, (Bindable) assoc, jt);
-            } else if (assoc.getCollectionType().equals(CollectionType.SET)) {
-                fetch = new SetJoinImpl<X, Y>(this, metamodel.managedType(((PluralAttribute) assoc).getBindableJavaType()), this.metamodel, ((PluralAttribute) assoc).getBindableJavaType(), node, (Bindable) assoc, jt);
+            if (assoc.getCollectionType().equals(COLLECTION)) {
+                fetch = new CollectionJoinImpl<X, Y>(this, metamodel.managedType(assoc.getBindableJavaType()), this.metamodel, assoc.getBindableJavaType(), joinExpression, (Bindable) assoc, joinType);
+            } else if (assoc.getCollectionType().equals(LIST)) {
+                fetch = new ListJoinImpl<X, Y>(this, metamodel.managedType(assoc.getBindableJavaType()), this.metamodel, assoc.getBindableJavaType(), joinExpression, (Bindable) assoc, joinType);
+            } else if (assoc.getCollectionType().equals(SET)) {
+                fetch = new SetJoinImpl<X, Y>(this, metamodel.managedType(assoc.getBindableJavaType()), this.metamodel, assoc.getBindableJavaType(), joinExpression, (Bindable) assoc, joinType);
             } else {
-                fetch = new MapJoinImpl(this, metamodel.managedType(((PluralAttribute) assoc).getBindableJavaType()), this.metamodel, ((PluralAttribute) assoc).getBindableJavaType(), node, assoc, jt);
+                fetch = new MapJoinImpl(this, metamodel.managedType(assoc.getBindableJavaType()), this.metamodel, assoc.getBindableJavaType(), joinExpression, assoc, joinType);
             }
         }
         this.fetches.add(fetch);
         ((FromImpl)fetch).isFetch = true;
+
         return fetch;
     }
 
@@ -232,8 +243,8 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements jakarta.persistence.
      * @return the resulting fetch join
      */
     @Override
-    public <T, Y> Fetch<T, Y> fetch(String assocName){
-        return fetch(assocName, JoinType.INNER);
+    public <Y> Fetch<X, Y> fetch(String assocName) {
+        return fetch(assocName, INNER);
     }
 
     /**
@@ -248,15 +259,14 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements jakarta.persistence.
      * @return the resulting fetch join
      */
     @Override
-    public <T, Y> Fetch<T, Y> fetch(String assocName, JoinType jt){
-        Attribute attribute = this.managedType.getAttribute(assocName);
+    public <Y> Fetch<X, Y> fetch(String assocName, JoinType jt) {
+        var attribute = managedType.getAttribute(assocName);
         if (attribute.isCollection()) {
-            return fetch(((PluralAttribute)attribute), jt);
-        }else{
-            return fetch(((SingularAttribute)attribute), jt);
+            return fetch((PluralAttribute) attribute, jt);
         }
-    }
 
+        return fetch((SingularAttribute) attribute, jt);
+    }
 
     @Override
     public Set<Join<X, ?>> getJoins() {
@@ -272,27 +282,48 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements jakarta.persistence.
      * @return path corresponding to the referenced attribute
      */
     @Override
-    public <Y> Path<Y> get(SingularAttribute<? super X, Y> att){
-        if (att.getPersistentAttributeType().equals(PersistentAttributeType.BASIC)){
-            return new PathImpl<>(this, this.metamodel, att.getBindableJavaType(), this.currentNode.get(att.getName()), att);
-        }else{
-            Class<Y> clazz = att.getBindableJavaType();
-            Join<X, Y> join = new JoinImpl<>(this, this.metamodel.managedType(clazz), this.metamodel, clazz,this.currentNode.get(att.getName()), att);
-            this.joins.add(join);
-            return join;
+    public <Y> Path<Y> get(SingularAttribute<? super X, Y> att) {
+        if (att.getPersistentAttributeType().equals(BASIC)) {
+            return new PathImpl<>(
+                    this,
+                    metamodel,
+                    att.getBindableJavaType(),
+                    currentNode.get(att.getName()),
+                    att);
         }
+
+        Class<Y> clazz = att.getBindableJavaType();
+
+        Join<X, Y> join =
+            new JoinImpl<>(
+                this,
+                metamodel.managedType(clazz),
+                metamodel,
+                clazz,
+                currentNode.get(att.getName()), att);
+
+        joins.add(join);
+        return join;
+
     }
 
     @Override
-    public <E, C extends Collection<E>> Expression<C> get(PluralAttribute<? super X, C, E> collection) {
-
+    public <E, C extends Collection<E>> PluralExpression<C, E> get(PluralAttribute<? super X, C, E> collection) {
         // This is a special Expression that represents just the collection for member of etc...
-        return new ExpressionImpl<>(this.metamodel, (Class<C>) ((Class<E>) Class.class), this.currentNode.anyOf(collection.getName()));
+        return new PluralExpressionImpl<>(
+                metamodel,
+                collection.getJavaType(),
+                currentNode.anyOf(collection.getName()));
     }
 
     @Override
-    public <K, V, M extends Map<K, V>> Expression<M> get(MapAttribute<? super X, K, V> map) {
-        return new ExpressionImpl<>(this.metamodel, (Class<M>) ((Class<?>) Class.class), this.currentNode.anyOf(map.getName()));
+    @SuppressWarnings("unchecked")
+    public <K, V, M extends Map<K, V>> PluralExpression<M, V> get(MapAttribute<? super X, K, V> map) {
+
+        return new PluralExpressionImpl<>(
+                metamodel,
+                (Class<M>) (Class<?>) map.getJavaType(),
+                currentNode.anyOf(map.getName()));
     }
 
     /**
@@ -301,42 +332,60 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements jakarta.persistence.
      * @return expression corresponding to the type of the path
      */
     @Override
-    public Expression<Class<? extends X>> type(){
-        return new ExpressionImpl(this.metamodel, CoreClassConstants.CLASS,this.currentNode.type());
+    @SuppressWarnings("unchecked")
+    public Expression<Class<? extends X>> type() {
+        return new ExpressionImpl<>(
+                metamodel,
+                (Class<Class<? extends X>>) (Class<?>) CoreClassConstants.CLASS,
+                currentNode.type());
     }
 
     @Override
     public <Y> Path<Y> get(String attName) {
-        Attribute attribute = this.managedType.getAttribute(attName);
+        Attribute attribute = managedType.getAttribute(attName);
+
         Join join;
         if (attribute.isCollection()) {
             if (!((PluralAttribute) attribute).getElementType().getPersistenceType().equals(PersistenceType.BASIC)) {
-                if (((PluralAttribute) attribute).getCollectionType().equals(CollectionType.COLLECTION)) {
-                    join = new CollectionJoinImpl<X, Y>(this, metamodel.managedType(((PluralAttribute) attribute).getBindableJavaType()), this.metamodel, ((PluralAttribute) attribute).getBindableJavaType(), this.currentNode.anyOf(attribute.getName()), (Bindable) attribute);
-                } else if (((PluralAttribute) attribute).getCollectionType().equals(CollectionType.LIST)) {
-                    join = new ListJoinImpl<X, Y>(this, metamodel.managedType(((PluralAttribute) attribute).getBindableJavaType()), this.metamodel, ((PluralAttribute) attribute).getBindableJavaType(), this.currentNode.anyOf(attribute.getName()), (Bindable) attribute);
-                } else if (((PluralAttribute) attribute).getCollectionType().equals(CollectionType.SET)) {
-                    join = new SetJoinImpl<X, Y>(this, metamodel.managedType(((PluralAttribute) attribute).getBindableJavaType()), this.metamodel, ((PluralAttribute) attribute).getBindableJavaType(), this.currentNode.anyOf(attribute.getName()), (Bindable) attribute);
+                if (((PluralAttribute) attribute).getCollectionType().equals(COLLECTION)) {
+                    join = new CollectionJoinImpl<X, Y>(this, metamodel.managedType(((PluralAttribute) attribute).getBindableJavaType()),
+                            this.metamodel, ((PluralAttribute) attribute).getBindableJavaType(),
+                            this.currentNode.anyOf(attribute.getName()), (Bindable) attribute);
+                } else if (((PluralAttribute) attribute).getCollectionType().equals(LIST)) {
+                    join = new ListJoinImpl<X, Y>(this, metamodel.managedType(((PluralAttribute) attribute).getBindableJavaType()),
+                            this.metamodel, ((PluralAttribute) attribute).getBindableJavaType(),
+                            this.currentNode.anyOf(attribute.getName()), (Bindable) attribute);
+                } else if (((PluralAttribute) attribute).getCollectionType().equals(SET)) {
+                    join = new SetJoinImpl<X, Y>(this, metamodel.managedType(((PluralAttribute) attribute).getBindableJavaType()),
+                            this.metamodel, ((PluralAttribute) attribute).getBindableJavaType(),
+                            this.currentNode.anyOf(attribute.getName()), (Bindable) attribute);
                 } else {
-                    join = new MapJoinImpl(this, metamodel.managedType(((PluralAttribute) attribute).getBindableJavaType()), this.metamodel, ((PluralAttribute) attribute).getBindableJavaType(), this.currentNode.anyOf(attribute.getName()), (Bindable) attribute);
+                    join = new MapJoinImpl(this, metamodel.managedType(((PluralAttribute) attribute).getBindableJavaType()), this.metamodel,
+                            ((PluralAttribute) attribute).getBindableJavaType(), this.currentNode.anyOf(attribute.getName()),
+                            (Bindable) attribute);
                 }
             } else {
-                if (((PluralAttribute) attribute).getCollectionType().equals(CollectionType.COLLECTION)) {
-                    join = new BasicCollectionJoinImpl<X, Y>(this, this.metamodel, ((PluralAttribute) attribute).getBindableJavaType(), this.currentNode.anyOf(attribute.getName()), (Bindable) attribute);
-                } else if (((PluralAttribute) attribute).getCollectionType().equals(CollectionType.LIST)) {
-                    join = new BasicListJoinImpl<X, Y>(this, this.metamodel, ((PluralAttribute) attribute).getBindableJavaType(), this.currentNode.anyOf(attribute.getName()), (Bindable) attribute);
-                } else if (((PluralAttribute) attribute).getCollectionType().equals(CollectionType.SET)) {
-                    join = new BasicSetJoinImpl<X, Y>(this, this.metamodel, ((PluralAttribute) attribute).getBindableJavaType(), this.currentNode.anyOf(attribute.getName()), (Bindable) attribute);
-                } else{
-                    join = new BasicMapJoinImpl(this, this.metamodel, ((PluralAttribute) attribute).getBindableJavaType(), this.currentNode.anyOf(attribute.getName()), (Bindable) attribute);
+                if (((PluralAttribute) attribute).getCollectionType().equals(COLLECTION)) {
+                    join = new BasicCollectionJoinImpl<X, Y>(this, this.metamodel, ((PluralAttribute) attribute).getBindableJavaType(),
+                            this.currentNode.anyOf(attribute.getName()), (Bindable) attribute);
+                } else if (((PluralAttribute) attribute).getCollectionType().equals(LIST)) {
+                    join = new BasicListJoinImpl<X, Y>(this, this.metamodel, ((PluralAttribute) attribute).getBindableJavaType(),
+                            this.currentNode.anyOf(attribute.getName()), (Bindable) attribute);
+                } else if (((PluralAttribute) attribute).getCollectionType().equals(SET)) {
+                    join = new BasicSetJoinImpl<X, Y>(this, this.metamodel, ((PluralAttribute) attribute).getBindableJavaType(),
+                            this.currentNode.anyOf(attribute.getName()), (Bindable) attribute);
+                } else {
+                    join = new BasicMapJoinImpl(this, this.metamodel, ((PluralAttribute) attribute).getBindableJavaType(),
+                            this.currentNode.anyOf(attribute.getName()), (Bindable) attribute);
                 }
             }
-        }else{
-            Class<Y> clazz = ((SingularAttribute)attribute).getBindableJavaType();
-            if (((SingularAttribute)attribute).getType().getPersistenceType().equals(PersistenceType.BASIC)){
+        } else {
+            Class<Y> clazz = ((SingularAttribute) attribute).getBindableJavaType();
+            if (((SingularAttribute) attribute).getType().getPersistenceType().equals(PersistenceType.BASIC)) {
                 return new PathImpl<>(this, this.metamodel, clazz, this.currentNode.get(attribute.getName()), (Bindable) attribute);
-            }else{
-                join = new JoinImpl(this, this.metamodel.managedType(clazz), this.metamodel, clazz, this.currentNode.get(attribute.getName()), (Bindable)attribute);
+            } else {
+                join = new JoinImpl(this, this.metamodel.managedType(clazz), this.metamodel, clazz,
+                        this.currentNode.get(attribute.getName()), (Bindable) attribute);
             }
         }
         this.joins.add(join);
@@ -345,188 +394,296 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements jakarta.persistence.
 
     @Override
     public <Y> Join<X, Y> join(SingularAttribute<? super X, Y> attribute) {
-        return this.join(attribute, JoinType.INNER);
+        return this.join(attribute, INNER);
     }
 
     @Override
-    public <Y> Join<X, Y> join(SingularAttribute<? super X, Y> attribute, JoinType jt) {
-        if (((SingularAttribute)attribute).getType().getPersistenceType().equals(PersistenceType.BASIC)){
+    public <Y> Join<X, Y> join(SingularAttribute<? super X, Y> attribute, JoinType joinType) {
+        if (attribute.getType().getPersistenceType().equals(PersistenceType.BASIC)) {
             throw new IllegalStateException(ExceptionLocalization.buildMessage("CAN_NOT_JOIN_TO_BASIC"));
         }
         Class<Y> clazz = attribute.getBindableJavaType();
+
         Join<X, Y> join = null;
-        ObjectExpression exp = ((ObjectExpression)this.currentNode).newDerivedExpressionNamed(attribute.getName());
-        if (jt.equals(JoinType.LEFT)){
-            exp.doUseOuterJoin();
-        }else if(jt.equals(JoinType.RIGHT)){
+        ObjectExpression joinExpression = ((ObjectExpression) this.currentNode).newDerivedExpressionNamed(attribute.getName());
+        if (joinType.equals(JoinType.LEFT)) {
+            joinExpression.doUseOuterJoin();
+        } else if (joinType.equals(RIGHT)) {
             throw new UnsupportedOperationException(ExceptionLocalization.buildMessage("RIGHT_JOIN_NOT_SUPPORTED"));
-        }else{
-            exp.doNotUseOuterJoin();
+        } else if (joinType.equals(JoinType.FULL)) {
+            throw new UnsupportedOperationException(
+                    ExceptionLocalization.buildMessage("FULL_JOIN_NOT_SUPPORTED"));
+        } else {
+            joinExpression.doNotUseOuterJoin();
         }
-        join = new JoinImpl<>(this, this.metamodel.managedType(clazz), this.metamodel, clazz, exp, attribute, jt);
+
+        join = new JoinImpl<>(
+                this,
+                metamodel.managedType(clazz),
+                metamodel,
+                clazz,
+                joinExpression,
+                attribute,
+                joinType);
+
         this.joins.add(join);
-        ((FromImpl)join).isJoin = true;
+        ((FromImpl) join).isJoin = true;
+
         return join;
     }
 
     @Override
     public <Y> CollectionJoin<X, Y> join(CollectionAttribute<? super X, Y> collection) {
-        return this.join(collection, JoinType.INNER);
+        return this.join(collection, INNER);
     }
 
     @Override
     public <Y> SetJoin<X, Y> join(jakarta.persistence.metamodel.SetAttribute<? super X, Y> set) {
-        return this.join(set, JoinType.INNER);
+        return this.join(set, INNER);
     }
 
     @Override
     public <Y> ListJoin<X, Y> join(ListAttribute<? super X, Y> list) {
-        return this.join(list, JoinType.INNER);
+        return this.join(list, INNER);
     }
 
     @Override
     public <K, V> MapJoin<X, K, V> join(MapAttribute<? super X, K, V> map) {
-        return this.join(map, JoinType.INNER);
+        return this.join(map, INNER);
     }
 
     @Override
-    public <Y> CollectionJoin<X, Y> join(CollectionAttribute<? super X, Y> collection, JoinType jt) {
-        org.eclipse.persistence.expressions.Expression node;
-        Class<Y> clazz = collection.getBindableJavaType();
+    public <Y> CollectionJoin<X, Y> join(CollectionAttribute<? super X, Y> collection, JoinType joinType) {
+        Class<Y> bindableJavaType = collection.getBindableJavaType();
         CollectionJoin<X, Y> join = null;
-        if (jt.equals(JoinType.INNER)) {
-            node = this.currentNode.anyOf(collection.getName());
-        } else if (jt.equals(JoinType.RIGHT)) {
-            throw new UnsupportedOperationException(ExceptionLocalization.buildMessage("RIGHT_JOIN_NOT_SUPPORTED"));
-        } else {
-            node = this.currentNode.anyOfAllowingNone(collection.getName());
-        }
+
+        org.eclipse.persistence.expressions.Expression joinExpression = createJoinExpression(collection, joinType);
+
         if (collection.getElementType().getPersistenceType().equals(PersistenceType.BASIC)) {
-            join = new BasicCollectionJoinImpl<X, Y>(this, this.metamodel, clazz, node, (Bindable) collection, jt);
+            join = new BasicCollectionJoinImpl<X, Y>(
+                    this,
+                    metamodel,
+                    bindableJavaType,
+                    joinExpression,
+                    collection,
+                    joinType);
         } else {
-            join = new CollectionJoinImpl<X, Y>(this, metamodel.managedType(clazz), this.metamodel, clazz, node, (Bindable) collection, jt);
+            join = new CollectionJoinImpl<X, Y>(
+                    this,
+                    metamodel.managedType(bindableJavaType),
+                    this.metamodel,
+                    bindableJavaType,
+                    joinExpression,
+                    collection,
+                    joinType);
         }
+
         this.joins.add(join);
         ((FromImpl)join).isJoin = true;
+
         return join;
     }
 
     @Override
-    public <Y> SetJoin<X, Y> join(jakarta.persistence.metamodel.SetAttribute<? super X, Y> set, JoinType jt) {
-        org.eclipse.persistence.expressions.Expression node;
-        Class<Y> clazz = set.getBindableJavaType();
+    public <Y> SetJoin<X, Y> join(SetAttribute<? super X, Y> set, JoinType joinType) {
+        Class<Y> bindableJavaType = set.getBindableJavaType();
         SetJoin<X, Y> join = null;
-        if (jt.equals(JoinType.INNER)) {
-            node = this.currentNode.anyOf(set.getName());
-        } else if (jt.equals(JoinType.RIGHT)) {
-            throw new UnsupportedOperationException(ExceptionLocalization.buildMessage("RIGHT_JOIN_NOT_SUPPORTED"));
-        } else {
-            node = this.currentNode.anyOfAllowingNone(set.getName());
-        }
+
+        org.eclipse.persistence.expressions.Expression joinExpression = createJoinExpression(set, joinType);
+
         if (set.getElementType().getPersistenceType().equals(PersistenceType.BASIC)) {
-            join = new BasicSetJoinImpl<X, Y>(this, this.metamodel, clazz, node, (Bindable) set, jt);
+            join = new BasicSetJoinImpl<X, Y>(
+                    this,
+                    metamodel,
+                    bindableJavaType,
+                    joinExpression,
+                    set,
+                    joinType);
         } else {
-            join = new SetJoinImpl<X, Y>(this, metamodel.managedType(clazz), this.metamodel, clazz, node, (Bindable) set, jt);
+            join = new SetJoinImpl<X, Y>(
+                    this,
+                    metamodel.managedType(bindableJavaType),
+                    metamodel,
+                    bindableJavaType,
+                    joinExpression,
+                    set,
+                    joinType);
         }
+
         this.joins.add(join);
         ((FromImpl)join).isJoin = true;
+
         return join;
     }
 
     @Override
-    public <Y> ListJoin<X, Y> join(ListAttribute<? super X, Y> list, JoinType jt) {
-        org.eclipse.persistence.expressions.Expression node;
-        Class<Y> clazz = list.getBindableJavaType();
+    public <Y> ListJoin<X, Y> join(ListAttribute<? super X, Y> list, JoinType joinType) {
+        Class<Y> bindableJavaType = list.getBindableJavaType();
         ListJoin<X, Y> join = null;
-        if (jt.equals(JoinType.INNER)) {
-            node = this.currentNode.anyOf(list.getName());
-        } else if (jt.equals(JoinType.RIGHT)) {
-            throw new UnsupportedOperationException(ExceptionLocalization.buildMessage("RIGHT_JOIN_NOT_SUPPORTED"));
-        } else {
-            node = this.currentNode.anyOfAllowingNone(list.getName());
-        }
+
+        org.eclipse.persistence.expressions.Expression joinExpression = createJoinExpression(list, joinType);
+
         if (list.getElementType().getPersistenceType().equals(PersistenceType.BASIC)) {
-            join = new BasicListJoinImpl<X, Y>(this, this.metamodel, clazz, node, (Bindable) list, jt);
+            join = new BasicListJoinImpl<X, Y>(
+                    this,
+                    metamodel,
+                    bindableJavaType,
+                    joinExpression,
+                    list,
+                    joinType);
         } else {
-            join = new ListJoinImpl<X, Y>(this, metamodel.managedType(clazz), this.metamodel, clazz, node, (Bindable) list, jt);
+            join = new ListJoinImpl<X, Y>(
+                    this,
+                    metamodel.managedType(bindableJavaType),
+                    metamodel,
+                    bindableJavaType,
+                    joinExpression,
+                    list,
+                    joinType);
         }
+
         this.joins.add(join);
         ((FromImpl)join).isJoin = true;
+
         return join;
     }
 
     @Override
-    public <K, V> MapJoin<X, K, V> join(MapAttribute<? super X, K, V> map, JoinType jt) {
-        org.eclipse.persistence.expressions.Expression node;
-        Class<V> clazz = map.getBindableJavaType();
+    public <K, V> MapJoin<X, K, V> join(MapAttribute<? super X, K, V> map, JoinType joinType) {
+        Class<V> bindableJavaType = map.getBindableJavaType();
         MapJoin<X, K, V> join = null;
-        if (jt.equals(JoinType.INNER)) {
-            node = this.currentNode.anyOf(map.getName());
-        } else if (jt.equals(JoinType.RIGHT)) {
-            throw new UnsupportedOperationException(ExceptionLocalization.buildMessage("RIGHT_JOIN_NOT_SUPPORTED"));
-        } else {
-            node = this.currentNode.anyOfAllowingNone(map.getName());
-        }
+
+        org.eclipse.persistence.expressions.Expression joinExpression = createJoinExpression(map, joinType);
+
         if (map.getElementType().getPersistenceType().equals(PersistenceType.BASIC)) {
-            join = new BasicMapJoinImpl(this, this.metamodel, clazz, node, map, jt);
+            join = new BasicMapJoinImpl(
+                    this,
+                    metamodel,
+                    bindableJavaType,
+                    joinExpression,
+                    map,
+                    joinType);
         } else {
-            join = new MapJoinImpl(this, metamodel.managedType(clazz), this.metamodel, clazz, node, map, jt);
+            join = new MapJoinImpl(
+                    this,
+                    metamodel.managedType(bindableJavaType),
+                    metamodel,
+                    bindableJavaType,
+                    joinExpression,
+                    map,
+                    joinType);
         }
-        this.joins.add(join);
+
+        joins.add(join);
         ((FromImpl)join).isJoin = true;
+
         return join;
     }
 
     @Override
-    public <T, Y> Join<T, Y> join(String attributeName) {
-        return join(attributeName, JoinType.INNER);
+    public <Y> Join<X, Y> join(String attributeName) {
+        return join(attributeName, INNER);
     }
 
     @Override
-    public <T, Y> Join<T, Y> join(String attributeName, JoinType jt) {
-        Attribute attribute = this.managedType.getAttribute(attributeName);
-        if (attribute.isCollection()) {
-            org.eclipse.persistence.expressions.Expression node;
-            if (jt.equals(JoinType.INNER)) {
-                node = this.currentNode.anyOf(attribute.getName());
-            } else if (jt.equals(JoinType.RIGHT)) {
-                throw new UnsupportedOperationException(ExceptionLocalization.buildMessage("RIGHT_JOIN_NOT_SUPPORTED"));
-            } else {
-                node = this.currentNode.anyOfAllowingNone(attribute.getName());
-            }
-            Join join;
-            if (((PluralAttribute) attribute).getElementType().getPersistenceType().equals(PersistenceType.BASIC)) {
-                if (((PluralAttribute) attribute).getCollectionType().equals(CollectionType.COLLECTION)) {
-                    join = new BasicCollectionJoinImpl(this, this.metamodel, ((PluralAttribute) attribute).getBindableJavaType(), node, (Bindable) attribute, jt);
-                } else if (((PluralAttribute) attribute).getCollectionType().equals(CollectionType.LIST)) {
-                    join = new BasicListJoinImpl(this, this.metamodel, ((PluralAttribute) attribute).getBindableJavaType(), node, (Bindable) attribute, jt);
-                } else if (((PluralAttribute) attribute).getCollectionType().equals(CollectionType.SET)) {
-                    join = new BasicSetJoinImpl(this, this.metamodel, ((PluralAttribute) attribute).getBindableJavaType(), node, (Bindable) attribute, jt);
-                } else{
-                    join = new BasicMapJoinImpl(this, this.metamodel, ((PluralAttribute) attribute).getBindableJavaType(), node, (Bindable) attribute, jt);
-                }
-            } else {
-                if (((PluralAttribute) attribute).getCollectionType().equals(CollectionType.COLLECTION)) {
-                    join = new CollectionJoinImpl(this, metamodel.managedType(((PluralAttribute) attribute).getBindableJavaType()), this.metamodel, ((PluralAttribute) attribute).getBindableJavaType(), node, (Bindable) attribute, jt);
-                } else if (((PluralAttribute) attribute).getCollectionType().equals(CollectionType.LIST)) {
-                    join = new ListJoinImpl(this, metamodel.managedType(((PluralAttribute) attribute).getBindableJavaType()), this.metamodel, ((PluralAttribute) attribute).getBindableJavaType(), node, (Bindable) attribute, jt);
-                } else if (((PluralAttribute) attribute).getCollectionType().equals(CollectionType.SET)) {
-                    join = new SetJoinImpl(this, metamodel.managedType(((PluralAttribute) attribute).getBindableJavaType()), this.metamodel, ((PluralAttribute) attribute).getBindableJavaType(), node, (Bindable) attribute, jt);
-                } else {
-                    join = new MapJoinImpl(this, metamodel.managedType(((PluralAttribute) attribute).getBindableJavaType()), this.metamodel, ((PluralAttribute) attribute).getBindableJavaType(), node, (Bindable) attribute, jt);
-                }
-            }
-            this.joins.add(join);
-            ((FromImpl)join).isJoin = true;
-            return join;
-        }else{
-            return join(((SingularAttribute)attribute), jt);
+    public <Y> Join<X, Y> join(String attributeName, JoinType joinType) {
+        Attribute attribute = managedType.getAttribute(attributeName);
+
+        if (!attribute.isCollection()) {
+            return join(((SingularAttribute) attribute), joinType);
         }
+
+        org.eclipse.persistence.expressions.Expression joinExpression = createJoinExpression(attribute, joinType);
+
+        Join join;
+        PluralAttribute pluralAttribute = (PluralAttribute) attribute;
+
+        if (pluralAttribute.getElementType().getPersistenceType().equals(PersistenceType.BASIC)) {
+
+            join = switch (pluralAttribute.getCollectionType()) {
+                case COLLECTION -> new BasicCollectionJoinImpl(
+                        this,
+                        metamodel,
+                        pluralAttribute.getBindableJavaType(),
+                        joinExpression,
+                        pluralAttribute,
+                        joinType);
+
+                case LIST -> new BasicListJoinImpl(
+                        this,
+                        metamodel,
+                        pluralAttribute.getBindableJavaType(),
+                        joinExpression,
+                        pluralAttribute,
+                        joinType);
+
+                case SET -> new BasicSetJoinImpl(
+                        this,
+                        metamodel,
+                        pluralAttribute.getBindableJavaType(),
+                        joinExpression,
+                        pluralAttribute,
+                        joinType);
+
+                default -> new BasicMapJoinImpl(
+                        this,
+                        metamodel,
+                        pluralAttribute.getBindableJavaType(),
+                        joinExpression,
+                        pluralAttribute,
+                        joinType);
+            };
+
+        } else {
+
+            join = switch (pluralAttribute.getCollectionType()) {
+                case COLLECTION -> new CollectionJoinImpl(
+                        this,
+                        metamodel.managedType(pluralAttribute.getBindableJavaType()),
+                        metamodel,
+                        pluralAttribute.getBindableJavaType(),
+                        joinExpression,
+                        pluralAttribute,
+                        joinType);
+
+                case LIST -> new ListJoinImpl(
+                        this,
+                        metamodel.managedType(pluralAttribute.getBindableJavaType()),
+                        metamodel,
+                        pluralAttribute.getBindableJavaType(),
+                        joinExpression,
+                        pluralAttribute,
+                        joinType);
+
+                case SET -> new SetJoinImpl(
+                        this,
+                        metamodel.managedType(pluralAttribute.getBindableJavaType()),
+                        metamodel,
+                        pluralAttribute.getBindableJavaType(),
+                        joinExpression,
+                        pluralAttribute,
+                        joinType);
+
+                default -> new MapJoinImpl(
+                        this,
+                        metamodel.managedType(pluralAttribute.getBindableJavaType()),
+                        metamodel,
+                        pluralAttribute.getBindableJavaType(),
+                        joinExpression,
+                        pluralAttribute,
+                        joinType);
+            };
+        }
+
+        joins.add(join);
+        ((FromImpl) join).isJoin = true;
+
+        return join;
     }
 
     @Override
     public <Y> Join<X, Y> join(Class<Y> entityClass) {
-        return join(entityClass, JoinType.INNER);
+        return join(entityClass, INNER);
     }
 
     // Adds join for specified class.
@@ -570,7 +727,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements jakarta.persistence.
 
     @Override
     public <Y> Join<X, Y> join(EntityType<Y> entity) {
-        return join(entity, JoinType.INNER);
+        return join(entity, INNER);
     }
 
     @Override
@@ -579,56 +736,60 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements jakarta.persistence.
     }
 
     @Override
-    public <T, Y> CollectionJoin<T, Y> joinCollection(String attributeName) {
-        return joinCollection(attributeName, JoinType.INNER);
+    public <Y> CollectionJoin<X, Y> joinCollection(String attributeName) {
+        return joinCollection(attributeName, INNER);
     }
 
     @Override
-    public <T, Y> CollectionJoin<T, Y> joinCollection(String attributeName, JoinType jt) {
+    public <Y> CollectionJoin<X, Y> joinCollection(String attributeName, JoinType joinType) {
         try {
-            return (CollectionJoin<T, Y>) join(attributeName, jt);
+            return (CollectionJoin<X, Y>) join(attributeName, joinType);
         } catch (ClassCastException ex) {
-            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("metamodel_attribute_not_collection", new Object[] { attributeName, this.managedType.getJavaType().getName() }), ex);
+            throw new IllegalArgumentException(
+                    ExceptionLocalization.buildMessage(
+                            "metamodel_attribute_not_collection",
+                            new Object[] { attributeName, managedType.getJavaType().getName() }),
+                    ex);
         }
     }
 
     @Override
-    public <T, Y> ListJoin<T, Y> joinList(String attributeName) {
-        return joinList(attributeName, JoinType.INNER);
+    public <Y> ListJoin<X, Y> joinList(String attributeName) {
+        return joinList(attributeName, INNER);
     }
 
     @Override
-    public <T, Y> ListJoin<T, Y> joinList(String attributeName, JoinType jt) {
+    public <Y> ListJoin<X, Y> joinList(String attributeName, JoinType jt) {
         try {
-            return (ListJoin<T, Y>) join(attributeName, jt);
+            return (ListJoin<X, Y>) join(attributeName, jt);
         } catch (ClassCastException ex) {
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("metamodel_attribute_not_list", new Object[] { attributeName, this.managedType.getJavaType().getName() }), ex);
         }
     }
 
     @Override
-    public <T, K, Y> MapJoin<T, K, Y> joinMap(String attributeName) {
-        return joinMap(attributeName, JoinType.INNER);
+    public <K, Y> MapJoin<X, K, Y> joinMap(String attributeName) {
+        return joinMap(attributeName, INNER);
     }
 
     @Override
-    public <T, K, Y> MapJoin<T, K, Y> joinMap(String attributeName, JoinType jt) {
+    public <K, Y> MapJoin<X, K, Y> joinMap(String attributeName, JoinType jt) {
         try {
-            return (MapJoin<T, K, Y>) join(attributeName, jt);
+            return (MapJoin<X, K, Y>) join(attributeName, jt);
         } catch (ClassCastException ex) {
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("metamodel_attribute_not_map", new Object[] { attributeName, this.managedType.getJavaType().getName() }), ex);
         }
     }
 
     @Override
-    public <T, Y> SetJoin<T, Y> joinSet(String attributeName) {
-        return joinSet(attributeName, JoinType.INNER);
+    public <Y> SetJoin<X, Y> joinSet(String attributeName) {
+        return joinSet(attributeName, INNER);
     }
 
     @Override
-    public <T, Y> SetJoin<T, Y> joinSet(String attributeName, JoinType jt) {
+    public <Y> SetJoin<X, Y> joinSet(String attributeName, JoinType jt) {
         try {
-            return (SetJoin<T, Y>) join(attributeName, jt);
+            return (SetJoin<X, Y>) join(attributeName, jt);
         } catch (ClassCastException ex) {
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("metamodel_attribute_not_set", new Object[] { attributeName, this.managedType.getJavaType().getName() }), ex);
         }
@@ -637,6 +798,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements jakarta.persistence.
     public void findJoins(AbstractQueryImpl query){
         Stack stack = new Stack();
         stack.push(this);
+
         while(!stack.isEmpty()){
             FromImpl currentJoin = (FromImpl) stack.pop();
             stack.addAll(currentJoin.getJoins());
@@ -650,6 +812,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements jakarta.persistence.
         List<org.eclipse.persistence.expressions.Expression> fetches = new ArrayList<>();
         Stack stack = new Stack();
         stack.push(this);
+
         while(!stack.isEmpty()){
             FromImpl currentFetch = (FromImpl) stack.pop();
             stack.addAll(currentFetch.getFetches());
@@ -657,11 +820,40 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements jakarta.persistence.
                 fetches.add(currentFetch.getCurrentNode());
             }
         }
+
         return fetches;
     }
 
     @Override
     public boolean isFrom(){
         return true;
+    }
+
+    @Override
+    public List<Join<X, ?>> getJoinList() {
+        return List.copyOf(joins);
+    }
+
+    @Override
+    public <T extends X> From<?, T> treat(Class<T> type) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    private org.eclipse.persistence.expressions.Expression createJoinExpression(Attribute<? super X, ?> attribute, JoinType joinType) {
+        return switch (joinType) {
+            case INNER ->
+                currentNode.anyOf(attribute.getName());
+
+            case LEFT ->
+                currentNode.anyOfAllowingNone(attribute.getName());
+
+            case RIGHT ->
+                throw new UnsupportedOperationException(
+                        ExceptionLocalization.buildMessage("RIGHT_JOIN_NOT_SUPPORTED"));
+
+            case FULL ->
+                throw new UnsupportedOperationException(
+                        ExceptionLocalization.buildMessage("FULL_JOIN_NOT_SUPPORTED"));
+        };
     }
 }

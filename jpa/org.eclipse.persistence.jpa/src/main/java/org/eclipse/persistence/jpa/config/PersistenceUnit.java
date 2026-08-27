@@ -15,7 +15,7 @@
 package org.eclipse.persistence.jpa.config;
 
 import jakarta.persistence.spi.PersistenceUnitInfo;
-import jakarta.persistence.spi.PersistenceUnitTransactionType;
+import jakarta.persistence.PersistenceUnitTransactionType;
 
 /**
  * JPA scripting API implementation.

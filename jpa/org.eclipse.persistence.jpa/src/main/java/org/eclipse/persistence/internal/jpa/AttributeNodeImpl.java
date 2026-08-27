@@ -15,26 +15,26 @@
 //       - 397772: JPA 2.1 Entity Graph Support
 package org.eclipse.persistence.internal.jpa;
 
+import jakarta.persistence.AttributeNode;
+import jakarta.persistence.FetchOption;
+import jakarta.persistence.Subgraph;
+import jakarta.persistence.metamodel.Attribute;
+
 import java.util.HashMap;
 import java.util.Map;
-
-import jakarta.persistence.AttributeNode;
-import jakarta.persistence.Subgraph;
+import java.util.Set;
 
 
 /**
- * Concrete JPA AttributeNode class. For this implementation the AttributeNode includes information from live
+ * Concrete Jakarta Persistence AttributeNode class. For this implementation the AttributeNode includes information from live
  * AttributeItems.
  */
 @SuppressWarnings({"rawtypes"})
 public class AttributeNodeImpl<X> implements AttributeNode<X>{
 
-
     protected String currentAttribute;
-
-    protected Map<Class, Subgraph> subgraphs;
-
-    protected Map<Class, Subgraph> keySubgraphs;
+    protected Map<Class<?>, Subgraph<?>> subgraphs;
+    protected Map<Class<?>, Subgraph<?>> keySubgraphs;
 
     protected AttributeNodeImpl(){
     }
@@ -49,32 +49,61 @@ public class AttributeNodeImpl<X> implements AttributeNode<X>{
     }
 
     @Override
-    public Map<Class, Subgraph> getSubgraphs() {
-        if (this.subgraphs == null){
-            this.subgraphs = new HashMap<>();
+    public Map<Class<?>, Subgraph<?>> getSubgraphs() {
+        if (subgraphs == null){
+            subgraphs = new HashMap<>();
         }
-        return this.subgraphs;
+
+        return subgraphs;
     }
 
     @Override
-    public Map<Class, Subgraph> getKeySubgraphs() {
+    public Map<Class<?>, Subgraph<?>> getKeySubgraphs() {
         if (this.keySubgraphs == null){
             this.keySubgraphs = new HashMap<>();
         }
+
         return this.keySubgraphs;
     }
 
     public void addSubgraph(EntityGraphImpl entityGraphImpl) {
-        if (this.subgraphs == null){
-            this.subgraphs = new HashMap<>();
+        if (subgraphs == null){
+            subgraphs = new HashMap<>();
         }
-        this.subgraphs.put(entityGraphImpl.getClassType(), entityGraphImpl);
+
+        subgraphs.put(entityGraphImpl.getClassType(), entityGraphImpl);
     }
 
     public void addKeySubgraph(EntityGraphImpl entityGraphImpl) {
-        if (this.keySubgraphs == null){
-            this.keySubgraphs = new HashMap<>();
+        if (keySubgraphs == null){
+            keySubgraphs = new HashMap<>();
         }
-        this.keySubgraphs.put(entityGraphImpl.getClassType(), entityGraphImpl);
+
+        keySubgraphs.put(entityGraphImpl.getClassType(), entityGraphImpl);
+    }
+
+    @Override
+    public Attribute<?, X> getAttribute() {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public Subgraph<X> addSubgraph() {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public <S extends X> Subgraph<S> addTreatedSubgraph(Class<S> type) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public AttributeNode<X> addOption(FetchOption option) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public Set<FetchOption> getOptions() {
+        throw new UnsupportedOperationException("Not yet implemented");
     }
 }

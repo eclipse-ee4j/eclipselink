@@ -35,17 +35,15 @@
 //       - New Jakarta Persistence 3.2 Features
 package org.eclipse.persistence.internal.jpa;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.Consumer;
-import java.util.function.Function;
-
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import jakarta.persistence.Cache;
+import jakarta.persistence.EntityAgent;
 import jakarta.persistence.EntityGraph;
+import jakarta.persistence.EntityHandler;
+import jakarta.persistence.EntityListenerRegistration;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManager.CreationOption;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.FlushModeType;
@@ -54,11 +52,25 @@ import jakarta.persistence.PersistenceUnitTransactionType;
 import jakarta.persistence.PersistenceUnitUtil;
 import jakarta.persistence.Query;
 import jakarta.persistence.SchemaManager;
+import jakarta.persistence.Statement;
+import jakarta.persistence.StatementReference;
 import jakarta.persistence.SynchronizationType;
+import jakarta.persistence.TypedQuery;
 import jakarta.persistence.TypedQueryReference;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.metamodel.Attribute;
 import jakarta.persistence.metamodel.Metamodel;
+import jakarta.persistence.sql.ResultSetMapping;
+
+import java.lang.annotation.Annotation;
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Consumer;
+import java.util.function.Function;
+
 import org.eclipse.persistence.config.EntityManagerProperties;
 import org.eclipse.persistence.config.FlushClearCache;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
@@ -81,6 +93,9 @@ import org.eclipse.persistence.sessions.broker.SessionBroker;
 import org.eclipse.persistence.sessions.server.Server;
 import org.eclipse.persistence.sessions.server.ServerSession;
 
+import static java.util.Collections.emptyMap;
+import static org.eclipse.persistence.internal.jpa.OptionUtils.parseCreateOptions;
+
 /**
  * <p>
  * <b>Purpose</b>: Provides the implementation for the EntityManager Factory.
@@ -100,16 +115,21 @@ import org.eclipse.persistence.sessions.server.ServerSession;
  *
  */
 public class EntityManagerFactoryDelegate implements EntityManagerFactory, PersistenceUnitUtil, JpaEntityManagerFactory {
+
     /** Reference to Cache Interface. */
     protected Cache myCache;
+
     /** Reference to the ServerSession for this deployment. */
     protected volatile AbstractSession session;
+
     /** EntityManagerSetupImpl that deployed this factory. */
     protected EntityManagerSetupImpl setupImpl;
+
     /** Stores if closed has been called. */
     protected boolean isOpen = true;
+
     /** Persistence unit properties from create factory. */
-    protected Map properties;
+    protected Map<String, Object> properties;
 
     /**
      * INTERNAL: The following properties passed to createEMF cached and
@@ -159,10 +179,10 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
     protected boolean commitWithoutPersistRules;
 
     /** Pointer to the EntityManagerFactoryImpl that created me */
-    protected JpaEntityManagerFactory owner = null;
+    protected JpaEntityManagerFactory owner;
 
     /** Persistence unit schema manager. */
-    private SchemaManagerImpl schemaManager = null;
+    private SchemaManagerImpl schemaManager;
 
     /**
      * Will return an instance of the Factory. Should only be called by
@@ -175,7 +195,7 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
         processProperties(databaseSession.getProperties());
     }
 
-    public EntityManagerFactoryDelegate(EntityManagerSetupImpl setupImpl, Map properties, JpaEntityManagerFactory owner) {
+    public EntityManagerFactoryDelegate(EntityManagerSetupImpl setupImpl, Map<String, Object> properties, JpaEntityManagerFactory owner) {
         this.setupImpl = setupImpl;
         this.owner = owner;
         this.properties = properties;
@@ -218,33 +238,38 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
      * construction
      */
     public AbstractSession getAbstractSession() {
-        if (this.session == null) {
+        if (session == null) {
             // PERF: Avoid synchronization.
             synchronized (this) {
                 // DCL ok as isLoggedIn is volatile boolean, set after login is
                 // complete.
-                if (this.session == null) {
+                if (session == null) {
                     ClassLoader realLoader = setupImpl.getPersistenceUnitInfo().getClassLoader();
                     // splitProperties[0] contains
                     // supportedNonServerSessionProperties; [1] - all the rest.
                     Map[] splitProperties = EntityManagerFactoryProvider.splitSpecifiedProperties(properties, supportedNonServerSessionProperties);
                     Map serverSessionProperties = splitProperties[1];
+
                     // the call to setupImpl.deploy() finishes the session creation
                     AbstractSession tempSession = setupImpl.deploy(realLoader, serverSessionProperties);
+
                     // discard all but non server session properties from server
                     // session properties.
                     Map<String, Object> tempProperties = EntityManagerFactoryProvider.keepSpecifiedProperties(tempSession.getProperties(), supportedNonServerSessionProperties);
+
                     // keep only non server session properties - the rest will
                     // be either cached in the server session or ignored
                     properties = splitProperties[0];
+
                     // properties override server session properties
                     Map propertiesToProcess = EntityManagerFactoryProvider.mergeMaps(properties, tempProperties);
                     processProperties(propertiesToProcess);
-                    this.session = tempSession;
+                    session = tempSession;
                 }
             }
         }
-        return this.session;
+
+        return session;
     }
 
     /**
@@ -309,10 +334,6 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
         return isOpen;
     }
 
-    /**
-     * PUBLIC: Returns an EntityManager for this deployment.
-     */
-    @Override
     public EntityManager createEntityManager() {
         return createEntityManagerImpl(null, null);
     }
@@ -321,22 +342,18 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
      * PUBLIC: Returns an EntityManager for this deployment.
      */
     @Override
-    public EntityManager createEntityManager(Map properties) {
+    public EntityManager createEntityManager(@Nullable Map<?, ?> properties) {
         return createEntityManagerImpl(properties, null);
     }
 
     @Override
-    public EntityManager createEntityManager(SynchronizationType synchronizationType, Map map) {
-        return createEntityManagerImpl(map, SynchronizationType.SYNCHRONIZED);
+    public EntityManager createEntityManager(@Nonnull SynchronizationType synchronizationType, @Nullable Map<?, ?> properties) {
+        return createEntityManagerImpl(properties, synchronizationType);
     }
 
-    @Override
-    public EntityManager createEntityManager(SynchronizationType synchronizationType) {
-        return createEntityManagerImpl(null, synchronizationType);
-    }
-
-    protected EntityManagerImpl createEntityManagerImpl(Map properties, SynchronizationType syncType) {
+    protected EntityManagerImpl createEntityManagerImpl(@Nullable Map<?, ?> properties, SynchronizationType syncType) {
         verifyOpen();
+
         AbstractSession session = getAbstractSession();
         if (session.isDatabaseSession()) {
             DatabaseSessionImpl databaseSession = (DatabaseSessionImpl)session;
@@ -351,10 +368,12 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
                 }
             }
         }
+
         if (syncType != null && !session.hasExternalTransactionController()){
             throw new IllegalStateException(ExceptionLocalization.buildMessage("pu_configured_for_resource_local"));
         }
-        return new EntityManagerImpl(this, properties, syncType);
+
+        return new EntityManagerImpl(this, (Map<String, Object>) properties, syncType);
     }
 
 
@@ -391,18 +410,20 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
         if (name == null) {
             return null;
         }
+
         if (properties != null) {
             Object value = properties.get(name);
             if (value != null) {
                 return value;
             }
         }
+
         AbstractSession tempSession = this.session;
-        if (tempSession != null) {
-            return tempSession.getProperty(name);
-        } else {
+        if (tempSession == null) {
             return null;
         }
+
+        return tempSession.getProperty(name);
     }
 
     /**
@@ -420,30 +441,37 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
         if (beginEarlyTransactionProperty != null) {
             this.beginEarlyTransaction = "true".equalsIgnoreCase(beginEarlyTransactionProperty);
         }
+
         String referenceMode = PropertiesHandler.getPropertyValueLogDebug(EntityManagerProperties.PERSISTENCE_CONTEXT_REFERENCE_MODE, properties, this.session, true);
         if (referenceMode != null) {
             this.referenceMode = ReferenceMode.valueOf(referenceMode);
         }
+
         String flushMode = PropertiesHandler.getPropertyValueLogDebug(EntityManagerProperties.PERSISTENCE_CONTEXT_FLUSH_MODE, properties, this.session, true);
         if (flushMode != null) {
             this.flushMode = FlushModeType.valueOf(flushMode);
         }
+
         String closeOnCommit = PropertiesHandler.getPropertyValueLogDebug(EntityManagerProperties.PERSISTENCE_CONTEXT_CLOSE_ON_COMMIT, properties, this.session, true);
         if (closeOnCommit != null) {
             this.closeOnCommit = "true".equalsIgnoreCase(closeOnCommit);
         }
+
         String persistOnCommit = PropertiesHandler.getPropertyValueLogDebug(EntityManagerProperties.PERSISTENCE_CONTEXT_PERSIST_ON_COMMIT, properties, this.session, true);
         if (persistOnCommit != null) {
             this.persistOnCommit = "true".equalsIgnoreCase(persistOnCommit);
         }
+
         String commitWithoutPersist = PropertiesHandler.getPropertyValueLogDebug(EntityManagerProperties.PERSISTENCE_CONTEXT_COMMIT_WITHOUT_PERSIST_RULES, properties, this.session, true);
         if (commitWithoutPersist != null) {
             this.commitWithoutPersistRules = "true".equalsIgnoreCase(commitWithoutPersist);
         }
+
         String shouldValidateExistence = PropertiesHandler.getPropertyValueLogDebug(EntityManagerProperties.VALIDATE_EXISTENCE, properties, this.session, true);
         if (shouldValidateExistence != null) {
             this.shouldValidateExistence = "true".equalsIgnoreCase(shouldValidateExistence);
         }
+
         String shouldOrderUpdates = PropertiesHandler.getPropertyValueLogDebug(EntityManagerProperties.ORDER_UPDATES, properties, this.session, true);
         if (shouldOrderUpdates != null) {
             if ("true".equalsIgnoreCase(shouldOrderUpdates)) {
@@ -452,10 +480,12 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
                 this.commitOrder = CommitOrderType.NONE;
             }
         }
+
         String commitOrder = PropertiesHandler.getPropertyValueLogDebug(EntityManagerProperties.PERSISTENCE_CONTEXT_COMMIT_ORDER, properties, this.session, true);
         if (commitOrder != null) {
             this.commitOrder = CommitOrderType.valueOf(commitOrder.toUpperCase(Locale.ROOT));
         }
+
         String flushClearCache = PropertiesHandler.getPropertyValueLogDebug(EntityManagerProperties.FLUSH_CLEAR_CACHE, properties, this.session, true);
         if (flushClearCache != null) {
             this.flushClearCache = flushClearCache;
@@ -920,6 +950,66 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
                             "Unknown transaction type " + setupImpl.getPersistenceUnitInfo().getTransactionType().name());
             }
         }
+    }
+
+    @Override
+    public EntityManager createEntityManager(CreationOption... options) {
+        var creationOptions = parseCreateOptions(options);
+
+        return createEntityManagerImpl(creationOptions.properties(), creationOptions.synchronizationType());
+    }
+
+    @Override
+    public EntityAgent createEntityAgent(jakarta.persistence.EntityAgent.CreationOption... options) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public EntityAgent createEntityAgent(Map<?, ?> properties) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public <R> TypedQueryReference<R> addNamedQuery(String name, TypedQuery<R> query) {
+        addNamedQuery(name, (Query) query);
+
+        DatabaseQuery databaseQuery = query.unwrap(DatabaseQuery.class);
+
+        Map<String, Object> hints = QueryHintsHandler.get(databaseQuery);
+
+        return new TypedQueryReferenceImpl<>(
+            name,
+            (Class<? extends R>) databaseQuery.getReferenceClass(), hints != null ? hints : emptyMap());
+    }
+
+    @Override
+    public StatementReference addNamedStatement(String name, Statement statement) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public Map<String, StatementReference> getNamedStatements() {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public <R> Map<String, ResultSetMapping<R>> getResultSetMappings(Class<R> resultType) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public <E> EntityListenerRegistration addListener(Class<E> entityType, Class<? extends Annotation> callbackType, Consumer<? super E> listener) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public <H extends EntityHandler> void runInTransaction(Class<H> handlerClass, Consumer<H> work) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public <R, H extends EntityHandler> R callInTransaction(Class<H> handlerClass, Function<H, R> work) {
+        throw new UnsupportedOperationException("Not yet implemented");
     }
 
 }

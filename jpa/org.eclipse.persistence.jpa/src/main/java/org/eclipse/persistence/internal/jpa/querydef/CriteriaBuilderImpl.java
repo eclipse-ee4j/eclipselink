@@ -21,29 +21,25 @@
 //       - New Jakarta Persistence 3.2 Features
 package org.eclipse.persistence.internal.jpa.querydef;
 
-import java.io.Serializable;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.time.temporal.Temporal;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
+import jakarta.persistence.AttributeConverter;
+import jakarta.persistence.StatementReference;
 import jakarta.persistence.Tuple;
+import jakarta.persistence.TypedQueryReference;
+import jakarta.persistence.criteria.BooleanExpression;
 import jakarta.persistence.criteria.CollectionJoin;
 import jakarta.persistence.criteria.CompoundSelection;
 import jakarta.persistence.criteria.CriteriaDelete;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.CriteriaSelect;
+import jakarta.persistence.criteria.CriteriaStatement;
 import jakarta.persistence.criteria.CriteriaUpdate;
 import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.From;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.ListJoin;
 import jakarta.persistence.criteria.MapJoin;
 import jakarta.persistence.criteria.Nulls;
+import jakarta.persistence.criteria.NumericExpression;
 import jakarta.persistence.criteria.Order;
 import jakarta.persistence.criteria.ParameterExpression;
 import jakarta.persistence.criteria.Path;
@@ -53,10 +49,24 @@ import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.Selection;
 import jakarta.persistence.criteria.SetJoin;
 import jakarta.persistence.criteria.Subquery;
+import jakarta.persistence.criteria.TemporalExpression;
 import jakarta.persistence.criteria.TemporalField;
+import jakarta.persistence.criteria.TextExpression;
 import jakarta.persistence.metamodel.EntityType;
 import jakarta.persistence.metamodel.Metamodel;
 import jakarta.persistence.metamodel.Type.PersistenceType;
+
+import java.io.Serial;
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.time.temporal.Temporal;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.function.Consumer;
+
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.expressions.ExpressionMath;
 import org.eclipse.persistence.expressions.ExpressionOperator;
@@ -75,9 +85,18 @@ import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.jpa.JpaCriteriaBuilder;
 import org.eclipse.persistence.queries.ReportQuery;
 
+import static org.eclipse.persistence.expressions.Expression.getOperator;
+import static org.eclipse.persistence.expressions.ExpressionOperator.Exists;
+import static org.eclipse.persistence.internal.jpa.querydef.AbstractQueryImpl.ResultType.CONSTRUCTOR;
+import static org.eclipse.persistence.internal.jpa.querydef.AbstractQueryImpl.ResultType.OBJECT_ARRAY;
+import static org.eclipse.persistence.internal.jpa.querydef.AbstractQueryImpl.ResultType.OTHER;
+import static org.eclipse.persistence.internal.jpa.querydef.AbstractQueryImpl.ResultType.TUPLE;
 import static org.eclipse.persistence.internal.jpa.querydef.ExpressionImpl.currentNode;
 
 public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     public static final String CONCAT = "concat";
     public static final String SIZE = "size";
@@ -107,29 +126,35 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
         if (resultClass == null) {
             return (CriteriaQuery<T>) this.createQuery();
         }
+
         if (resultClass.equals(Tuple.class)) {
-            return new CriteriaQueryImpl<>(this.metamodel, ResultType.TUPLE, resultClass, this);
-        } else if (resultClass.equals(ClassConstants.AOBJECT)) {
-            return new CriteriaQueryImpl<>(this.metamodel, ResultType.OBJECT_ARRAY, resultClass, this);
-        } else if (resultClass.isArray()) {
-            return new CriteriaQueryImpl<>(this.metamodel, ResultType.OBJECT_ARRAY, resultClass, this);
-        } else {
-            if (resultClass.equals(CoreClassConstants.OBJECT)) {
-                return (CriteriaQuery<T>) this.createQuery();
-            } else {
-                if (resultClass.isPrimitive() || resultClass.equals(CoreClassConstants.STRING)|| BasicTypeHelperImpl.getInstance().isWrapperClass(resultClass) || BasicTypeHelperImpl.getInstance().isDateClass(resultClass)) {
-                    return new CriteriaQueryImpl<>(metamodel, ResultType.OTHER, resultClass, this);
-                } else {
-                    TypeImpl<T> type = ((MetamodelImpl)this.metamodel).getType(resultClass);
-                    if (type != null && type.getPersistenceType().equals(PersistenceType.ENTITY)) {
-                        return new CriteriaQueryImpl<>(this.metamodel, ResultType.ENTITY, resultClass, this);
-                    } else {
-                        return new CriteriaQueryImpl<>(this.metamodel, ResultType.CONSTRUCTOR, resultClass, this);
-                    }
-                }
-            }
+            return new CriteriaQueryImpl<>(metamodel, TUPLE, resultClass, this);
         }
 
+        if (resultClass.equals(ClassConstants.AOBJECT)) {
+            return new CriteriaQueryImpl<>(metamodel, OBJECT_ARRAY, resultClass, this);
+        }
+
+        if (resultClass.isArray()) {
+            return new CriteriaQueryImpl<>(metamodel, OBJECT_ARRAY, resultClass, this);
+        }
+
+        if (resultClass.equals(CoreClassConstants.OBJECT)) {
+            return (CriteriaQuery<T>) this.createQuery();
+        }
+
+        if (resultClass.isPrimitive() || resultClass.equals(CoreClassConstants.STRING)
+                || BasicTypeHelperImpl.getInstance().isWrapperClass(resultClass)
+                || BasicTypeHelperImpl.getInstance().isDateClass(resultClass)) {
+            return new CriteriaQueryImpl<>(metamodel, OTHER, resultClass, this);
+        }
+
+        TypeImpl<T> type = ((MetamodelImpl) metamodel).getType(resultClass);
+        if (type != null && type.getPersistenceType().equals(PersistenceType.ENTITY)) {
+            return new CriteriaQueryImpl<>(metamodel, ResultType.ENTITY, resultClass, this);
+        }
+
+        return new CriteriaQueryImpl<>(this.metamodel, CONSTRUCTOR, resultClass, this);
     }
 
     /**
@@ -139,7 +164,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      */
     @Override
     public CriteriaQuery<Tuple> createTupleQuery(){
-        return new CriteriaQueryImpl<>(this.metamodel, ResultType.TUPLE, Tuple.class, this);
+        return new CriteriaQueryImpl<>(metamodel, TUPLE, Tuple.class, this);
     }
 
     /**
@@ -341,8 +366,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
         // Setting SubQuery's SubSelectExpression as a base for the expression created by operator allows setting a new ExpressionBuilder later in the SubSelectExpression (see integrateRoot method in SubQueryImpl).
         return new CompoundExpressionImpl(
                 metamodel,
-                org.eclipse.persistence.expressions.Expression.getOperator(ExpressionOperator.Exists)
-                        .expressionFor(((SubQueryImpl<?>)subquery).getCurrentNode()),
+                getOperator(Exists).expressionFor(((SubQueryImpl<?>)subquery).getCurrentNode()),
                 buildList(subquery),
                 "exists");
     }
@@ -355,7 +379,11 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      */
     @Override
     public <Y> Expression<Y> all(Subquery<Y> subquery){
-        return new FunctionExpressionImpl<>(metamodel, subquery.getJavaType(), new ExpressionBuilder().all(currentNode(subquery)), buildList(subquery), "all");
+        return new FunctionExpressionImpl<>(
+                metamodel,
+                subquery.getJavaType(), new ExpressionBuilder().all(currentNode(subquery)),
+                buildList(subquery),
+                "all");
     }
 
     /**
@@ -366,7 +394,11 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      */
     @Override
     public <Y> Expression<Y> some(Subquery<Y> subquery){
-        return new FunctionExpressionImpl<>(metamodel, subquery.getJavaType(), new ExpressionBuilder().some(currentNode(subquery)), buildList(subquery), "some");
+        return new FunctionExpressionImpl<>(
+                metamodel, subquery.getJavaType(),
+                new ExpressionBuilder().some(currentNode(subquery)),
+                buildList(subquery),
+                "some");
     }
 
     /**
@@ -377,7 +409,11 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      */
     @Override
     public <Y> Expression<Y> any(Subquery<Y> subquery){
-        return new FunctionExpressionImpl<>(metamodel, subquery.getJavaType(), new ExpressionBuilder().any(currentNode(subquery)), buildList(subquery), "any");
+        return new FunctionExpressionImpl<>(
+                metamodel, subquery.getJavaType(),
+                new ExpressionBuilder().any(currentNode(subquery)),
+                buildList(subquery),
+                "any");
    }
 
     // boolean functions:
@@ -391,84 +427,90 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      * @return and predicate
      */
     @Override
-    public Predicate and(Expression<Boolean> x, Expression<Boolean> y){
+    public Predicate and(Expression<Boolean> x, Expression<Boolean> y) {
         CompoundExpressionImpl xp = null;
         CompoundExpressionImpl yp = null;
 
-
-        if (((InternalExpression)x).isExpression()){
-            xp = (CompoundExpressionImpl)this.isTrue(x);
-        }else{
-            xp = (CompoundExpressionImpl)x;
+        if (((InternalExpression) x).isExpression()) {
+            xp = (CompoundExpressionImpl) isTrue(x);
+        } else {
+            xp = (CompoundExpressionImpl) x;
         }
-        if (((InternalExpression)y).isExpression()){
-            yp = (CompoundExpressionImpl)this.isTrue(y);
-        }else{
-            yp = (CompoundExpressionImpl)y;
+        if (((InternalExpression) y).isExpression()) {
+            yp = (CompoundExpressionImpl) isTrue(y);
+        } else {
+            yp = (CompoundExpressionImpl) y;
         }
 
-        //bug 413084
-        if (yp.isJunction()){
-            if ( ((PredicateImpl)yp).getJunctionValue()){
-                return xp;//yp is true and so can be ignored/extracted
-            }else{
-                return yp;//yp is false so the statement is false
+        // bug 413084
+        if (yp.isJunction()) {
+            if (((PredicateImpl) yp).getJunctionValue()) {
+                return xp;// yp is true and so can be ignored/extracted
             }
+
+            return yp;// yp is false so the statement is false
         }
-        if (xp.isJunction()){
-            if (((PredicateImpl)xp).getJunctionValue()){
+
+        if (xp.isJunction()) {
+            if (((PredicateImpl) xp).getJunctionValue()) {
                 return yp;
-            }else{
-                return xp;
             }
+
+            return xp;
         }
+
         org.eclipse.persistence.expressions.Expression currentNode = xp.getCurrentNode().and(yp.getCurrentNode());
         xp.setParentNode(currentNode);
         yp.setParentNode(currentNode);
-        return new PredicateImpl(this.metamodel, currentNode, buildList(xp,yp), BooleanOperator.AND);
+
+        return new PredicateImpl(metamodel, currentNode, buildList(xp, yp), BooleanOperator.AND);
     }
 
     /**
      * Create a disjunction of the given boolean expressions.
      *
-     * @param x
-     *            boolean expression
-     * @param y
-     *            boolean expression
+     * @param x boolean expression
+     * @param y boolean expression
      * @return or predicate
      */
     @Override
-    public Predicate or(Expression<Boolean> x, Expression<Boolean> y){
+    public Predicate or(Expression<Boolean> x, Expression<Boolean> y) {
         CompoundExpressionImpl xp = null;
         CompoundExpressionImpl yp = null;
 
-        if (((InternalExpression)x).isExpression()){
-            xp = (CompoundExpressionImpl)this.isTrue(x);
-        }else{
-            xp = (CompoundExpressionImpl)x;
+        if (((InternalExpression) x).isExpression()) {
+            xp = (CompoundExpressionImpl) this.isTrue(x);
+        } else {
+            xp = (CompoundExpressionImpl) x;
         }
-        if (((InternalExpression)y).isExpression()){
-            yp = (CompoundExpressionImpl)this.isTrue(y);
-        }else{
-            yp = (CompoundExpressionImpl)y;
+
+        if (((InternalExpression) y).isExpression()) {
+            yp = (CompoundExpressionImpl) this.isTrue(y);
+        } else {
+            yp = (CompoundExpressionImpl) y;
         }
-        //bug 413084
-        if (yp.isJunction()){
-            if (((PredicateImpl)yp).getJunctionValue()){
-                return yp;//yp is true so the statement is true
+
+        // bug 413084
+        if (yp.isJunction()) {
+            if (((PredicateImpl) yp).getJunctionValue()) {
+                return yp;// yp is true so the statement is true
             }
-            return xp;//yp is false so can be extracted.
+
+            return xp;// yp is false so can be extracted.
         }
-        if (xp.isJunction()){
-            if (((PredicateImpl)xp).getJunctionValue()){
+
+        if (xp.isJunction()) {
+            if (((PredicateImpl) xp).getJunctionValue()) {
                 return xp;
             }
+
             return yp;
         }
         org.eclipse.persistence.expressions.Expression parentNode = xp.getCurrentNode().or(yp.getCurrentNode());
         xp.setParentNode(parentNode);
         yp.setParentNode(parentNode);
-        return new PredicateImpl(this.metamodel, parentNode, buildList(xp,yp), BooleanOperator.OR);
+
+        return new PredicateImpl(metamodel, parentNode, buildList(xp, yp), BooleanOperator.OR);
     }
 
     /**
@@ -479,22 +521,22 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      * @return and predicate
      */
     @Override
-    public Predicate and(Predicate... restrictions) {
+    public Predicate and(BooleanExpression... restrictions) {
         return and(restrictions != null ?  List.of(restrictions) : null);
     }
 
     @Override
-    public Predicate and(List<Predicate> restrictions) {
+    public Predicate and(List<? extends Expression<Boolean>> restrictions) {
         // PERF: Build simple cases directly
         switch (restrictions != null ? restrictions.size() : 0) {
             case 0:
-                return this.conjunction();
+                return conjunction();
             case 1:
-                return restrictions.get(0);
+                return toPredicate(restrictions.get(0));
             case 2:
                 return and(restrictions.get(0), restrictions.get(1));
             default:
-                Predicate predicate = restrictions.get(0);
+                Predicate predicate = toPredicate(restrictions.get(0));
                 for (int i = 1; i < restrictions.size(); i++) {
                     predicate = and(predicate, restrictions.get(i));
                 }
@@ -510,22 +552,22 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      * @return and predicate
      */
     @Override
-    public Predicate or(Predicate... restrictions) {
+    public Predicate or(BooleanExpression... restrictions) {
         return or(restrictions != null ?  List.of(restrictions) : null);
     }
 
     @Override
-    public Predicate or(List<Predicate> restrictions) {
+    public Predicate or(List<? extends Expression<Boolean>> restrictions) {
         // PERF: Build simple cases directly
         switch (restrictions != null ? restrictions.size() : 0) {
             case 0:
-                return this.disjunction();
+                return disjunction();
             case 1:
-                return restrictions.get(0);
+                return toPredicate(restrictions.get(0));
             case 2:
                 return or(restrictions.get(0), restrictions.get(1));
             default:
-                Predicate predicate = restrictions.get(0);
+                Predicate predicate = toPredicate(restrictions.get(0));
                 for (int i = 1; i < restrictions.size(); i++) {
                     predicate = or(predicate, restrictions.get(i));
                 }
@@ -541,23 +583,25 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      * @return not predicate
      */
     @Override
-    public Predicate not(Expression<Boolean> restriction){
-        if (((InternalExpression)restriction).isPredicate()){
-            return ((Predicate)restriction).not();
+    public Predicate not(Expression<Boolean> restriction) {
+        if (((InternalExpression) restriction).isPredicate()) {
+            return ((Predicate) restriction).not();
         }
+
         org.eclipse.persistence.expressions.Expression parentNode = null;
         List<Expression<?>> compoundExpressions = null;
         String name = "not";
-        if (((InternalExpression)restriction).isCompoundExpression() && ((CompoundExpressionImpl)restriction).getOperation().equals("exists")){
+        if (((InternalExpression) restriction).isCompoundExpression() && ((CompoundExpressionImpl) restriction).getOperation().equals("exists")) {
             FunctionExpression exp = (FunctionExpression) currentNode(restriction);
             SubSelectExpression sub = (SubSelectExpression) exp.getChildren().get(0);
             parentNode = org.eclipse.persistence.expressions.Expression.getOperator(ExpressionOperator.NotExists).expressionFor(sub);
             name = "notExists";
-            compoundExpressions = ((CompoundExpressionImpl)restriction).getChildExpressions();
-        }else{
+            compoundExpressions = ((CompoundExpressionImpl) restriction).getChildExpressions();
+        } else {
             parentNode = currentNode(restriction).not();
             compoundExpressions = buildList(restriction);
         }
+
         CompoundExpressionImpl expr = new CompoundExpressionImpl(this.metamodel, parentNode, compoundExpressions, name);
         expr.setIsNegated(true);
         return expr;
@@ -595,38 +639,40 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      * @return predicate
      */
     @Override
-    public Predicate isTrue(Expression<Boolean> x){
-        if (((InternalExpression)x).isPredicate()){
-            if (currentNode(x) == null){
-                return (Predicate)x;
-            }else{
-                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("PREDICATE_PASSED_TO_EVALUATION"));
+    public Predicate isTrue(Expression<Boolean> x) {
+        if (((InternalExpression) x).isPredicate()) {
+            if (currentNode(x) == null) {
+                return (Predicate) x;
             }
+
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("PREDICATE_PASSED_TO_EVALUATION"));
         }
-        return new CompoundExpressionImpl(this.metamodel, currentNode(x).equal(true), buildList(x), "equals");
+
+        return new CompoundExpressionImpl(metamodel, currentNode(x).equal(true), buildList(x), "equals");
     }
 
     /**
      * Create a predicate testing for a false value.
      *
-     * @param x
-     *            expression to be tested if false
+     * @param x expression to be tested if false
      * @return predicate
      */
     @Override
-    public Predicate isFalse(Expression<Boolean> x){
-        if (((InternalExpression)x).isPredicate()){
-            if (currentNode(x) == null){
-                if (((Predicate)x).getOperator() == BooleanOperator.AND){
-                    return (Predicate)x;
-                }else{
-                    return this.conjunction();
+    public Predicate isFalse(Expression<Boolean> x) {
+        if (((InternalExpression) x).isPredicate()) {
+            if (currentNode(x) == null) {
+                if (((Predicate) x).getOperator() == BooleanOperator.AND) {
+                    return (Predicate) x;
                 }
-            }else{
-                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("PREDICATE_PASSED_TO_EVALUATION"));
+
+                return this.conjunction();
             }
+
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("PREDICATE_PASSED_TO_EVALUATION"));
+
         }
-        return new CompoundExpressionImpl(this.metamodel, currentNode(x).equal(false), buildList(x), "equals");
+
+        return new CompoundExpressionImpl(metamodel, currentNode(x).equal(false), buildList(x), "equals");
     }
 
     //null tests:
@@ -1738,28 +1784,6 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
         return new CompoundExpressionImpl(metamodel, currentNode(elem).notExists(subQuery), buildList(elem, collection), "isNotMemeber");
     }
 
-    // get the values and keys collections of the Map, which may then
-    // be passed to size(), isMember(), isEmpty(), etc
-    /**
-     * Create an expression that returns the values of a map.
-     *
-     * @return collection expression
-     */
-    @Override
-    public <V, M extends Map<?, V>> Expression<Collection<V>> values(M map){
-        return internalLiteral(map.values());
-    }
-
-    /**
-     * Create an expression that returns the keys of a map.
-     *
-     * @return set expression
-     */
-    @Override
-    public <K, M extends Map<K, ?>> Expression<Set<K>> keys(M map){
-        return internalLiteral(map.keySet());
-    }
-
     // string functions:
     /**
      * Create a predicate for testing whether the expression satisfies the given
@@ -2619,6 +2643,10 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
         return ((SelectionImpl)expression).getCurrentNode();
     }
 
+    private Predicate toPredicate(Expression<Boolean> expression) {
+        return expression instanceof Predicate predicate ? predicate : isTrue(expression);
+    }
+
     /**
      *  Interface used to build coalesce expressions.
      * <p>
@@ -3090,6 +3118,116 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     @Override
     public <T> CriteriaSelect<T> exceptAll(CriteriaSelect<T> first, CriteriaSelect<?> second) {
         return new CriteriaMultiSelectImpl<>(first, second, Union.EXCEPT_ALL);
+    }
+
+    @Override
+    public <T> CriteriaQuery<T> createQuery(Class<T> resultClass, String jpql) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public CriteriaQuery<?> createQuery(String jpql) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public <T> CriteriaUpdate<T> createCriteriaUpdate(Class<T> targetEntity, String jpql) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public CriteriaUpdate<?> createCriteriaUpdate(String jpql) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public <T> CriteriaDelete<T> createCriteriaDelete(Class<T> targetEntity, String jpql) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public CriteriaDelete<?> createCriteriaDelete(String jpql) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public <T> TypedQueryReference<T> augment(TypedQueryReference<T> reference, Consumer<CriteriaQuery<T>> augmentation) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public <T> TypedQueryReference<T> augment(TypedQueryReference<?> reference, Class<T> augmentedResultType, Consumer<CriteriaQuery<T>> augmentation) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public StatementReference augment(StatementReference reference, Consumer<CriteriaStatement<?>> augmentation) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public <Y extends Comparable<? super Y>> Predicate between(Y v, Expression<? extends Y> x, Expression<? extends Y> y) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public <N extends Number & Comparable<N>> NumericExpression<N> numericLiteral(N value) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public TextExpression stringLiteral(String value) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public <T extends Temporal & Comparable<? super T>> TemporalExpression<T> temporalLiteral(T value) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public BooleanExpression booleanLiteral(boolean value) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public <T> ParameterExpression<T> convertedParameter(Class<? extends AttributeConverter<T, ?>> converter) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public <C extends Comparable<? super C>> Expression<C> least(Expression<C> x, Expression<C> y) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public <C extends Comparable<? super C>> Expression<C> least(C x, Expression<C> y) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public <C extends Comparable<? super C>> Expression<C> greatest(Expression<C> x, Expression<C> y) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public <C extends Comparable<? super C>> Expression<C> greatest(C x, Expression<C> y) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public <C, R> SimpleCase<C, R> selectCase(Expression<? extends C> expression, Class<R> type) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public <R> Case<R> selectCase(Class<R> type) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public <X, Y, T extends Y> From<X, T> treat(From<X, Y> from, Class<T> type) {
+        throw new UnsupportedOperationException("Not yet implemented");
     }
 
 }

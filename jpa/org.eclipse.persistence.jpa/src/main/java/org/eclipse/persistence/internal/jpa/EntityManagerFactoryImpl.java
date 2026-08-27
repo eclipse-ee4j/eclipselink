@@ -24,16 +24,13 @@
 //       - New Jakarta Persistence 3.2 Features
 package org.eclipse.persistence.internal.jpa;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Consumer;
-import java.util.function.Function;
-
 import jakarta.persistence.Cache;
+import jakarta.persistence.EntityAgent;
 import jakarta.persistence.EntityGraph;
+import jakarta.persistence.EntityHandler;
+import jakarta.persistence.EntityListenerRegistration;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManager.CreationOption;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.FlushModeType;
 import jakarta.persistence.PersistenceException;
@@ -41,22 +38,36 @@ import jakarta.persistence.PersistenceUnitTransactionType;
 import jakarta.persistence.PersistenceUnitUtil;
 import jakarta.persistence.Query;
 import jakarta.persistence.SchemaManager;
+import jakarta.persistence.Statement;
+import jakarta.persistence.StatementReference;
 import jakarta.persistence.SynchronizationType;
+import jakarta.persistence.TypedQuery;
 import jakarta.persistence.TypedQueryReference;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.metamodel.Attribute;
 import jakarta.persistence.metamodel.Metamodel;
+import jakarta.persistence.sql.ResultSetMapping;
+
+import java.lang.annotation.Annotation;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
+import java.util.function.Function;
+
 import org.eclipse.persistence.config.ReferenceMode;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.VersionLockingPolicy;
-import org.eclipse.persistence.jpa.exceptions.PersistenceUnitLoadingException;
 import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
 import org.eclipse.persistence.internal.indirection.IndirectionPolicy;
+import org.eclipse.persistence.internal.jpa.OptionUtils.CreationOptions;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.internal.sessions.coordination.MetadataRefreshCommand;
 import org.eclipse.persistence.jpa.JpaEntityManagerFactory;
+import org.eclipse.persistence.jpa.exceptions.PersistenceUnitLoadingException;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.queries.AttributeGroup;
@@ -72,6 +83,9 @@ import org.eclipse.persistence.sessions.coordination.CommandManager;
 import org.eclipse.persistence.sessions.factories.SessionManager;
 import org.eclipse.persistence.sessions.server.Server;
 import org.eclipse.persistence.sessions.server.ServerSession;
+
+import static java.util.Collections.emptyMap;
+import static org.eclipse.persistence.internal.jpa.OptionUtils.parseCreateOptions;
 
 /**
  * Wraps our implementation of EntityManagerFactory
@@ -100,12 +114,13 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
                     "jpa_persistence_util_non_persistent_class", new Object[] { entity }));
         }
-        if (descriptor.getCMPPolicy() != null) {
-            return descriptor.getCMPPolicy().createPrimaryKeyInstance(entity, session);
-        } else {
-            // 308950: Alternatively, CacheImpl.getId(entity) handles a null CMPPolicy case for weaved and unweaved domain object
-            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("jpa_persistence_util_non_persistent_class", new Object[] { entity }));
+
+        if (descriptor.getCMPPolicy() == null) {
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
+                    "jpa_persistence_util_non_persistent_class", new Object[] { entity }));
         }
+
+        return descriptor.getCMPPolicy().createPrimaryKeyInstance(entity, session);
     }
 
     /**
@@ -122,12 +137,13 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
                     "jpa_persistence_util_get_version_non_persistent_class", new Object[] { entity }));
         }
-        OptimisticLockingPolicy lockingPolicy = descriptor.getOptimisticLockingPolicy();
-        if (lockingPolicy instanceof VersionLockingPolicy versionLockingPolicy) {
-            return versionLockingPolicy.getVersion(entity);
+
+        if (!(descriptor.getOptimisticLockingPolicy() instanceof VersionLockingPolicy versionLockingPolicy)) {
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
+                    "jpa_persistence_util_get_version_no_version_in_class", new Object[] { entity }));
         }
-        throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
-                "jpa_persistence_util_get_version_no_version_in_class", new Object[] { entity }));
+
+        return versionLockingPolicy.getVersion(entity);
     }
 
     /**
@@ -453,7 +469,6 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
     /**
      * PUBLIC: Returns an EntityManager for this deployment.
      */
-    @Override
     public EntityManager createEntityManager() {
         return createEntityManagerImpl(null, null);
     }
@@ -466,7 +481,6 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
         return createEntityManagerImpl(properties, null);
     }
 
-    @Override
     public EntityManager createEntityManager(SynchronizationType synchronizationType) {
         return createEntityManagerImpl(null, synchronizationType);
     }
@@ -934,6 +948,67 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
     @Override
     public <R> R callInTransaction(Function<EntityManager, R> work) {
         return delegate.callInTransaction(work);
+    }
+
+    @Override
+    public EntityManager createEntityManager(CreationOption... options) {
+        var creationOptions = parseCreateOptions(options);
+        return createEntityManagerImpl(creationOptions.properties(), creationOptions.synchronizationType());
+    }
+
+    @Override
+    public EntityAgent createEntityAgent(jakarta.persistence.EntityAgent.CreationOption... options) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public EntityAgent createEntityAgent(Map<?, ?> properties) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public <R> TypedQueryReference<R> addNamedQuery(String name, TypedQuery<R> query) {
+        addNamedQuery(name, (Query) query);
+
+        DatabaseQuery databaseQuery = query.unwrap(DatabaseQuery.class);
+
+        Map<String, Object> hints = QueryHintsHandler.get(databaseQuery);
+
+        return new TypedQueryReferenceImpl<>(
+            name,
+            (Class<? extends R>) databaseQuery.getReferenceClass(), hints != null ? hints : emptyMap());
+    }
+
+    @Override
+    public StatementReference addNamedStatement(String name, Statement statement) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public Map<String, StatementReference> getNamedStatements() {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public <R> Map<String, ResultSetMapping<R>> getResultSetMappings(Class<R> resultType) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public <E> EntityListenerRegistration addListener(Class<E> entityType, Class<? extends Annotation> callbackType, Consumer<? super E> listener) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public <H extends EntityHandler> void runInTransaction(Class<H> handlerClass, Consumer<H> work) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public <R, H extends EntityHandler> R callInTransaction(Class<H> handlerClass, Function<H, R> work) {
+        throw new UnsupportedOperationException("Not yet implemented");
     }
 
 }

@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
+import jakarta.annotation.Nonnull;
 import jakarta.persistence.criteria.CommonAbstractCriteria;
 import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Order;
@@ -52,8 +53,7 @@ import org.eclipse.persistence.queries.DatabaseQuery;
  * @author Chris Delahunt
  * @since EclipseLink 2.5
  */
-public abstract class CommonAbstractCriteriaImpl<T>
-        implements CommonAbstractCriteria, Serializable, CriteriaSelectInternal<T> {
+public abstract class CommonAbstractCriteriaImpl<T> implements CommonAbstractCriteria, Serializable, CriteriaSelectInternal<T> {
 
     @Serial
     private static final long serialVersionUID = -2729946665208116620L;
@@ -179,7 +179,8 @@ public abstract class CommonAbstractCriteriaImpl<T>
      * @return the modified query
      * @since 5.0
      */
-    public CommonAbstractCriteria where(List<Predicate> restrictions) {
+    @Nonnull
+    public CommonAbstractCriteria where(@Nonnull List<? extends Expression<Boolean>> restrictions) {
         Predicate predicate = queryBuilder.and(restrictions);
         findRootAndParameters(predicate);
         where = predicate;

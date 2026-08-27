@@ -15,6 +15,7 @@
 //       - 350469: JPA 2.1 Criteria Query framework Bulk Update/Delete support
 package org.eclipse.persistence.internal.jpa.querydef;
 
+import jakarta.persistence.criteria.BooleanExpression;
 import jakarta.persistence.criteria.CriteriaDelete;
 import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Predicate;
@@ -53,22 +54,23 @@ public class CriteriaDeleteImpl<T> extends CommonAbstractCriteriaImpl<T> impleme
 
     @Override
     public Root<T> from(Class<T> entityClass) {
-        return this.internalFrom(entityClass);
+        return internalFrom(entityClass);
     }
 
     @Override
     public Root<T> from(EntityType<T> entity) {
-        return this.internalFrom(entity);
+        return internalFrom(entity);
     }
 
     @Override
     public Root<T> getRoot() {
-        if (this.root == null) {
+        if (root == null) {
             if (getResultType() !=null) {
                 return this.from(getResultType());
             }
         }
-        return this.root;
+
+        return root;
     }
 
     @Override
@@ -90,11 +92,11 @@ public class CriteriaDeleteImpl<T> extends CommonAbstractCriteriaImpl<T> impleme
 
     @Override
     protected org.eclipse.persistence.expressions.Expression getBaseExpression() {
-        if (this.root == null) {
+        if (root == null) {
             return new ExpressionBuilder();
-        } else {
-            return ((RootImpl)this.root).getCurrentNode();
         }
+
+        return ((RootImpl) root).getCurrentNode();
     }
 
     @Override
@@ -102,5 +104,10 @@ public class CriteriaDeleteImpl<T> extends CommonAbstractCriteriaImpl<T> impleme
         org.eclipse.persistence.queries.DeleteAllQuery query = new org.eclipse.persistence.queries.DeleteAllQuery(this.queryType, getBaseExpression());
         query.setShouldDeferExecutionInUOW(false);
         return query;
+    }
+
+    @Override
+    public CriteriaDelete<T> where(BooleanExpression... restrictions) {
+        throw new UnsupportedOperationException("Not yet implemented");
     }
 }

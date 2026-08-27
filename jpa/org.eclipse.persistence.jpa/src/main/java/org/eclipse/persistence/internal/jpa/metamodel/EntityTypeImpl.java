@@ -24,18 +24,20 @@
 //         http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_47:_20090715:_Implement_IdentifiableType.getIdType.28.29_for_composite_keys
 package org.eclipse.persistence.internal.jpa.metamodel;
 
+import jakarta.persistence.EntityGraph;
 import jakarta.persistence.metamodel.Bindable;
 import jakarta.persistence.metamodel.EntityType;
 import jakarta.persistence.metamodel.Type;
 
-import org.eclipse.persistence.descriptors.ClassDescriptor;
-
 import java.io.Serial;
+import java.util.Map;
+
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 
 /**
  * <p>
  * <b>Purpose</b>: Provides the implementation for the EntityType interface
- *  of the JPA 2.0 Metamodel API (part of the JSR-317 EJB 3.1 Criteria API)
+ *  of the Jakarta Persistence Metamodel API.
  * <br>EntityTypeImpl implements the IdentifiableType interface via EntityType
  * <p>
  * <b>Description</b>:
@@ -115,6 +117,21 @@ public class EntityTypeImpl<X> extends IdentifiableTypeImpl<X> implements Entity
     @Override
     public boolean isMappedSuperclass() {
         return !isEntity();
+    }
+
+    @Override
+    public boolean hasId() {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public EntityGraph<X> createEntityGraph() {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public Map<String, EntityGraph<X>> getNamedEntityGraphs() {
+        throw new UnsupportedOperationException("Not yet implemented");
     }
 
 }

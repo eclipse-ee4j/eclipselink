@@ -15,20 +15,25 @@
 //
 package org.eclipse.persistence.internal.jpa.querydef;
 
+import jakarta.persistence.criteria.CriteriaBuilder.SimpleCase;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.NumericExpression;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Subquery;
+import jakarta.persistence.metamodel.Metamodel;
+
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import jakarta.persistence.criteria.Expression;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.metamodel.Metamodel;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.expressions.ConstantExpression;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 
 /**
  * <p>
- * <b>Purpose</b>: Represents an Expression in the Criteria API heirarchy.
+ * <b>Purpose</b>: Represents an Expression in the Criteria API hierarchy.
  * <p>
  * <b>Description</b>: Expressions are expression nodes that can not be joined from
  * and may or not be the result of a Path expression.
@@ -39,6 +44,10 @@ import org.eclipse.persistence.internal.localization.ExceptionLocalization;
  * @since EclipseLink 1.2
  */
 public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X>, InternalExpression{
+
+    @Serial
+    private static final long serialVersionUID = 1L;
+
     protected Metamodel metamodel;
     protected boolean isLiteral;
     protected Object literal;
@@ -88,8 +97,8 @@ public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X>
     @Override
     public Predicate equalTo(Expression<?> value) {
         return new CompoundExpressionImpl(
-                this.metamodel,
-                this.currentNode.equal(currentNode(value)),
+                metamodel,
+                currentNode.equal(currentNode(value)),
                 List.of(this, value),
                 "equals");
     }
@@ -97,8 +106,8 @@ public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X>
     @Override
     public Predicate equalTo(Object value) {
         return new CompoundExpressionImpl(
-                this.metamodel,
-                this.currentNode.equal(value),
+                metamodel,
+                currentNode.equal(value),
                 List.of(this, createLiteral(value, metamodel)),
                 "equals");
     }
@@ -106,8 +115,8 @@ public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X>
     @Override
     public Predicate notEqualTo(Expression<?> value) {
         return new CompoundExpressionImpl(
-                this.metamodel,
-                this.currentNode.notEqual(currentNode(value)),
+                metamodel,
+                currentNode.notEqual(currentNode(value)),
                 List.of(this, value),
                 "not equal");
     }
@@ -115,8 +124,8 @@ public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X>
     @Override
     public Predicate notEqualTo(Object value) {
         return new CompoundExpressionImpl(
-                this.metamodel,
-                this.currentNode.notEqual(value),
+                metamodel,
+                currentNode.notEqual(value),
                 List.of(this, createLiteral(value, metamodel)),
                 "not equal");
     }
@@ -125,7 +134,7 @@ public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X>
     public Predicate in(Object... values) {
         List<Expression<?>> list = new ArrayList<>();
         list.add(this);
-        return new CompoundExpressionImpl(this.metamodel, this.currentNode.in(values), list, "in");
+        return new CompoundExpressionImpl(metamodel, currentNode.in(values), list, "in");
     }
 
     /**
@@ -144,26 +153,28 @@ public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X>
                 // and route the execution to the right method
                 return in((Expression<Collection<?>>) values[0]);
             }
+
             List<Expression<?>> list = new ArrayList<>();
             list.add(this);
             if (values.length == 1 && ((InternalExpression) values[0]).isSubquery()) {
                 list.add(values[0]);
                 return new CompoundExpressionImpl(this.metamodel, this.currentNode.in(((SubQueryImpl<?>) values[0]).subQuery), list, "in");
-            } else {
-                List<Object> inValues = new ArrayList<>();
-                for (Expression<?> exp : values) {
-                    if (!((InternalExpression) exp).isLiteral() && !((InternalExpression) exp).isParameter()) {
-                        Object[] params = new Object[]{exp};
-                        throw new IllegalArgumentException(ExceptionLocalization.buildMessage("CRITERIA_NON_LITERAL_PASSED_TO_IN",params));
-                    } else {
-                        list.add(exp);
-                        inValues.add(((InternalSelection)exp).getCurrentNode());
-                    }
+            }
+
+            List<Object> inValues = new ArrayList<>();
+            for (Expression<?> exp : values) {
+                if (!((InternalExpression) exp).isLiteral() && !((InternalExpression) exp).isParameter()) {
+                    Object[] params = new Object[] { exp };
+                    throw new IllegalArgumentException(ExceptionLocalization.buildMessage("CRITERIA_NON_LITERAL_PASSED_TO_IN", params));
                 }
 
-                return new CompoundExpressionImpl(this.metamodel, this.currentNode.in(inValues), list, "in");
+                list.add(exp);
+                inValues.add(((InternalSelection) exp).getCurrentNode());
             }
+
+            return new CompoundExpressionImpl(this.metamodel, this.currentNode.in(inValues), list, "in");
         }
+
         throw new IllegalArgumentException(ExceptionLocalization.buildMessage("NULL_PASSED_TO_EXPRESSION_IN"));
     }
 
@@ -177,8 +188,9 @@ public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X>
     public Predicate in(Collection<?> values) {
         List<Expression<?>> list = new ArrayList<>();
         list.add(this);
-        return new InImpl<>(this.metamodel, this, values, list);
+        return new InImpl<>(metamodel, this, values, list);
     }
+
     /**
      * Apply a predicate to test whether the expression is a member
      * of the collection.
@@ -197,14 +209,14 @@ public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X>
     public Predicate isNotNull() {
         List<Expression<?>> list = new ArrayList<>();
         list.add(this);
-        return new CompoundExpressionImpl(this.metamodel, this.currentNode.notNull(), list, "not null");
+        return new CompoundExpressionImpl(metamodel, currentNode.notNull(), list, "not null");
     }
 
     @Override
     public Predicate isNull() {
         List<Expression<?>> list = new ArrayList<>();
         list.add(this);
-        return new CompoundExpressionImpl(this.metamodel, this.currentNode.isNull(), list, "is null");
+        return new CompoundExpressionImpl(metamodel, currentNode.isNull(), list, "is null");
     }
 
     @Override
@@ -239,6 +251,7 @@ public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X>
     public boolean isParameter(){
         return false;
     }
+
     @Override
     public void findRootAndParameters(CommonAbstractCriteriaImpl<?> criteriaQuery){
         //no-op because an expression will have no root
@@ -262,6 +275,56 @@ public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X>
     // Shortcut to return current expression node
     static org.eclipse.persistence.expressions.Expression currentNode(Expression<?> expression) {
         return ((InternalSelection)expression).getCurrentNode();
+    }
+
+    @Override
+    public Predicate in(Subquery<X> subquery) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public Expression<X> coalesce(Expression<? extends X> y) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public Expression<X> coalesce(X y) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public Expression<X> nullif(Expression<? extends X> y) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public Expression<X> nullif(X y) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public <R> SimpleCase<X, R> selectCase(Class<R> type) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public Predicate isMember(Expression<? extends Collection<? super X>> collection) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public Predicate isNotMember(Expression<? extends Collection<? super X>> collection) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public NumericExpression<Long> count() {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public NumericExpression<Long> countDistinct() {
+        throw new UnsupportedOperationException("Not yet implemented");
     }
 
 }

@@ -16,10 +16,13 @@
 
 package org.eclipse.persistence.internal.jpa.querydef;
 
+import java.util.List;
+
+import jakarta.annotation.Nonnull;
+import jakarta.persistence.criteria.BooleanExpression;
 import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Path;
-import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.SetJoin;
 import jakarta.persistence.metamodel.Bindable;
 import jakarta.persistence.metamodel.ManagedType;
@@ -68,7 +71,17 @@ public class SetJoinImpl<Z, X>  extends JoinImpl<Z, X> implements SetJoin<Z, X>{
     }
 
     @Override
-    public SetJoinImpl<Z, X> on(Predicate... restrictions) {
+    public SetJoinImpl<Z, X> on(BooleanExpression... restrictions) {
         return (SetJoinImpl<Z, X>)super.on(restrictions);
+    }
+
+    @Override
+    public SetJoinImpl<Z, X> on(List<? extends Expression<Boolean>> restrictions) {
+        return (SetJoinImpl<Z, X>)super.on(restrictions);
+    }
+
+    @Override
+    public <T extends X> SetJoin<Z, T> treat(@Nonnull Class<T> type) {
+        throw new UnsupportedOperationException("Not yet implemented");
     }
 }
