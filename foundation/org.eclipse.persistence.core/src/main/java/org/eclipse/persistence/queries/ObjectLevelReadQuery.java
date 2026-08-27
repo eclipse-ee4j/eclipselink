@@ -202,6 +202,16 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
     /** Allow concrete subclasses calls to be prepared and cached for inheritance queries. */
     protected Map<Class<?>, DatabaseCall> concreteSubclassCalls;
 
+    /**
+     * Allow the concrete subclasses call cache to be disabled for inheritance queries.
+     * Enabled (true) by default, matching the existing behavior. A cached call for a
+     * long-lived shared query (such as a named query) retains a reference to whichever
+     * unit of work first triggered its build, which can pin that unit of work in memory
+     * for as long as the query is cached; disabling the cache avoids this at the cost of
+     * rebuilding the call on every execution.
+     */
+    protected boolean shouldCacheConcreteSubclassCalls = true;
+
     /** Allow concrete subclasses queries to be prepared and cached for inheritance queries. */
     protected Map<Class<?>, DatabaseQuery> concreteSubclassQueries;
 
@@ -2167,6 +2177,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             this.shouldOuterJoinSubclasses = objectQuery.shouldOuterJoinSubclasses;
             this.shouldUseDefaultFetchGroup = objectQuery.shouldUseDefaultFetchGroup;
             this.concreteSubclassCalls = objectQuery.concreteSubclassCalls;
+            this.shouldCacheConcreteSubclassCalls = objectQuery.shouldCacheConcreteSubclassCalls;
             this.concreteSubclassQueries = objectQuery.concreteSubclassQueries;
             this.aggregateQueries = objectQuery.aggregateQueries;
             this.concreteSubclassJoinedMappingIndexes = objectQuery.concreteSubclassJoinedMappingIndexes;
@@ -3178,6 +3189,30 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         this.fetchGroupName = null;
         // Force prepare again so executeFetchGroup is calculated
         setIsPrePrepared(false);
+    }
+
+    /**
+     * PUBLIC:
+     * Return if the concrete subclasses calls cache is enabled for inheritance queries.
+     * Enabled by default. Disabling this avoids retaining a reference to whichever unit
+     * of work first triggers the cached call to be built, at the cost of rebuilding the
+     * call on every execution.
+     * @see #getConcreteSubclassCalls()
+     */
+    public boolean shouldCacheConcreteSubclassCalls() {
+        return shouldCacheConcreteSubclassCalls;
+    }
+
+    /**
+     * PUBLIC:
+     * Set if the concrete subclasses calls cache is enabled for inheritance queries.
+     * Enabled by default. Disabling this avoids retaining a reference to whichever unit
+     * of work first triggers the cached call to be built, at the cost of rebuilding the
+     * call on every execution.
+     * @see #getConcreteSubclassCalls()
+     */
+    public void setShouldCacheConcreteSubclassCalls(boolean shouldCacheConcreteSubclassCalls) {
+        this.shouldCacheConcreteSubclassCalls = shouldCacheConcreteSubclassCalls;
     }
 
     /**
