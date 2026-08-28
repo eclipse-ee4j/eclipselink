@@ -3226,8 +3226,12 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <X, Y, T extends Y> From<X, T> treat(From<X, Y> from, Class<T> type) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        // Added in Jakarta Persistence 4.0. Before that, a From argument bound to
+        // treat(Path, Class), which already handled it and returned the FromImpl
+        // clone; delegate so the behaviour is unchanged and only the static type differs.
+        return (From<X, T>) treat((Path<Y>) from, type);
     }
 
 }
