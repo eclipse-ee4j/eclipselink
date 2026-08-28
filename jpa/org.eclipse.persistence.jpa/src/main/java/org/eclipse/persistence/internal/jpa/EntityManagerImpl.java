@@ -112,6 +112,7 @@ import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
 import org.eclipse.persistence.internal.helper.BasicTypeHelperImpl;
 import org.eclipse.persistence.internal.identitymaps.CacheId;
+import org.eclipse.persistence.internal.jpa.querydef.CommonAbstractCriteriaImpl;
 import org.eclipse.persistence.internal.jpa.querydef.CriteriaSelectInternal;
 import org.eclipse.persistence.internal.jpa.transaction.EntityTransactionImpl;
 import org.eclipse.persistence.internal.jpa.transaction.EntityTransactionWrapper;
@@ -3273,7 +3274,7 @@ public class EntityManagerImpl implements JpaEntityManager {
 
     @Override
     public Statement createQuery(CriteriaStatement<?> statement) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        return createStatement(statement);
     }
 
     @Override
@@ -3328,7 +3329,13 @@ public class EntityManagerImpl implements JpaEntityManager {
 
     @Override
     public Statement createStatement(CriteriaStatement<?> statement) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        try {
+            verifyOpen();
+            return new StatementImpl(((CommonAbstractCriteriaImpl<?>) statement).translate(), this);
+        } catch (RuntimeException e) {
+            setRollbackOnly();
+            throw e;
+        }
     }
 
     @Override

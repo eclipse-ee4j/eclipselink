@@ -388,7 +388,8 @@ public class CriteriaQueryTest extends JUnitTestCase {
         Root<Employee> root = cq.from(Employee.class);
         cq.set(root.get("firstName"), "CHANGED");
         cq.where(qb.isNotNull(root.get("firstName")));
-        EJBQueryImpl<?> testQuery = (EJBQueryImpl<?>)jpaEM.createQuery(cq);
+        // createQuery(CriteriaStatement) returns a Statement in Jakarta Persistence 4.0.
+        EJBQueryImpl<?> testQuery = jpaEM.createQuery(cq).unwrap(EJBQueryImpl.class);
 
         String testSQL = testQuery.getDatabaseQuery().getTranslatedSQLString(this.getDatabaseSession(),
                 new org.eclipse.persistence.sessions.DatabaseRecord());
@@ -549,8 +550,9 @@ public class CriteriaQueryTest extends JUnitTestCase {
         CriteriaDelete<PhoneNumber> cq = qb.createCriteriaDelete(PhoneNumber.class);
         Root<PhoneNumber> root = cq.from(PhoneNumber.class);
         cq.where(qb.isNotNull(root.get("owner").get("firstName")));
+        // createQuery(CriteriaStatement) returns a Statement in Jakarta Persistence 4.0.
         @SuppressWarnings({"unchecked"})
-        EJBQueryImpl<PhoneNumber> testQuery = (EJBQueryImpl<PhoneNumber>) jpaEM.createQuery(cq);
+        EJBQueryImpl<PhoneNumber> testQuery = jpaEM.createQuery(cq).unwrap(EJBQueryImpl.class);
 
         String testSQL = testQuery.getDatabaseQuery().getTranslatedSQLString(this.getDatabaseSession(),
                 new org.eclipse.persistence.sessions.DatabaseRecord());

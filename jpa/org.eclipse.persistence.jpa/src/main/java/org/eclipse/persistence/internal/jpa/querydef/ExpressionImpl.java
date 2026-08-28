@@ -279,7 +279,14 @@ public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X>
 
     @Override
     public Predicate in(Subquery<X> subquery) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        List<Expression<?>> list = new ArrayList<>();
+        list.add(this);
+        list.add(subquery);
+        return new CompoundExpressionImpl(
+                metamodel,
+                currentNode.in(((SubQueryImpl<?>) subquery).subQuery),
+                list,
+                "in");
     }
 
     @Override
