@@ -19,22 +19,26 @@
 //       - New Jakarta Persistence 3.2 Features
 package org.eclipse.persistence.internal.jpa.querydef;
 
-import java.io.Serial;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-
+import jakarta.annotation.Nonnull;
 import jakarta.persistence.criteria.AbstractQuery;
+import jakarta.persistence.criteria.BooleanExpression;
 import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.ParameterExpression;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import jakarta.persistence.metamodel.EntityType;
 import jakarta.persistence.metamodel.Metamodel;
+
+import java.io.Serial;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import org.eclipse.persistence.expressions.ExpressionBuilder;
+
+import static java.util.Objects.requireNonNull;
 
 /**
  * <p>
@@ -103,7 +107,6 @@ public abstract class AbstractQueryImpl<T> extends CommonAbstractCriteriaImpl<T>
         return this;
     }
 
-
     /**
      * Specify the expressions that are used to form groups over the query
      * results. Replaces the previous specified grouping expressions, if any. If
@@ -116,8 +119,9 @@ public abstract class AbstractQueryImpl<T> extends CommonAbstractCriteriaImpl<T>
      */
     @Override
     public AbstractQuery<T> groupBy(Expression<?>... grouping){
-        this.groupBy = new ArrayList<>();
-        Collections.addAll(this.groupBy, grouping);
+        groupBy = new ArrayList<>();
+        Collections.addAll(groupBy, grouping);
+
         return this;
     }
 
@@ -131,13 +135,15 @@ public abstract class AbstractQueryImpl<T> extends CommonAbstractCriteriaImpl<T>
      */
     @Override
     public AbstractQuery<T> having(Expression<Boolean> restriction) {
-        Objects.requireNonNull(restriction, "Restriction expression is null");
+        requireNonNull(restriction, "Restriction expression is null");
+
         findRootAndParameters(restriction);
         if (((InternalExpression)restriction).isCompoundExpression() || ((InternalExpression)restriction).isPredicate()) {
-            this.havingClause = (Predicate) restriction;
+            havingClause = (Predicate) restriction;
         } else {
-            this.havingClause = queryBuilder.isTrue(restriction);
+            havingClause = queryBuilder.isTrue(restriction);
         }
+
         return this;
     }
 
@@ -151,12 +157,12 @@ public abstract class AbstractQueryImpl<T> extends CommonAbstractCriteriaImpl<T>
      * @return the modified query
      */
     @Override
-    public AbstractQuery<T> having(Predicate... restrictions) {
+    public AbstractQuery<T> having(BooleanExpression... restrictions) {
         return having(restrictions != null ? List.of(restrictions) : null);
     }
 
     @Override
-    public AbstractQuery<T> having(List<Predicate> restrictions) {
+    public AbstractQuery<T> having(List<? extends Expression<Boolean>> restrictions) {
         Predicate predicate = queryBuilder.and(restrictions);
         findRootAndParameters(predicate);
         this.havingClause = predicate;
@@ -188,7 +194,7 @@ public abstract class AbstractQueryImpl<T> extends CommonAbstractCriteriaImpl<T>
     protected org.eclipse.persistence.expressions.Expression getBaseExpression() {
         return getBaseExpression(null);
     }
-    
+
     protected org.eclipse.persistence.expressions.Expression getBaseExpression(Root<?> root) {
         if (this.roots.isEmpty()) {
             baseExpression = new ExpressionBuilder();
@@ -201,6 +207,7 @@ public abstract class AbstractQueryImpl<T> extends CommonAbstractCriteriaImpl<T>
                 }
             }
         }
+
         return baseExpression;
     }
 
@@ -210,10 +217,11 @@ public abstract class AbstractQueryImpl<T> extends CommonAbstractCriteriaImpl<T>
      */
     @Override
     public List<Expression<?>> getGroupList(){
-        if (this.groupBy == null){
-            this.groupBy = new ArrayList<>();
+        if (groupBy == null){
+            groupBy = new ArrayList<>();
         }
-        return this.groupBy;
+
+        return groupBy;
     }
 
     /**
@@ -267,7 +275,7 @@ public abstract class AbstractQueryImpl<T> extends CommonAbstractCriteriaImpl<T>
      */
     @Override
     public <X> Root<X> from(EntityType<X> entity) {
-        return this.internalFrom(entity);
+        return internalFrom(entity);
     }
 
     /**
@@ -280,7 +288,7 @@ public abstract class AbstractQueryImpl<T> extends CommonAbstractCriteriaImpl<T>
      */
     @Override
     public <X> Root<X> from(Class<X> entityClass) {
-        return this.internalFrom(entityClass);
+        return internalFrom(entityClass);
     }
 
     // override the return type only:
@@ -297,7 +305,7 @@ public abstract class AbstractQueryImpl<T> extends CommonAbstractCriteriaImpl<T>
     @Override
     @SuppressWarnings("unchecked")
     public AbstractQuery<T> where(Expression<Boolean> restriction){
-        return (AbstractQuery<T>)super.where(restriction);
+        return (AbstractQuery<T>) super.where(restriction);
     }
 
     /**
@@ -320,7 +328,8 @@ public abstract class AbstractQueryImpl<T> extends CommonAbstractCriteriaImpl<T>
 
     @Override
     @SuppressWarnings("unchecked")
-    public AbstractQuery<T> where(List<Predicate> restrictions) {
+    @Nonnull
+    public AbstractQuery<T> where(@Nonnull List<? extends Expression<Boolean>> restrictions) {
         return (AbstractQuery<T>) super.where(restrictions);
     }
 

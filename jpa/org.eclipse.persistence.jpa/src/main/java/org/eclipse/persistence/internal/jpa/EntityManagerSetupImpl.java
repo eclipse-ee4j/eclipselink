@@ -90,37 +90,22 @@
 //       - New Jakarta Persistence 3.2 Features
 package org.eclipse.persistence.internal.jpa;
 
-import static org.eclipse.persistence.config.PersistenceUnitProperties.DDL_GENERATION;
-import static org.eclipse.persistence.config.PersistenceUnitProperties.NONE;
-import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_CREATE_ACTION;
-import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_CREATE_DATABASE_SCHEMAS;
-import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_CREATE_SCRIPT_SOURCE;
-import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_CREATE_SOURCE;
-import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_DATABASE_ACTION;
-import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_DROP_ACTION;
-import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_DROP_AND_CREATE_ACTION;
-import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_DROP_SCRIPT_SOURCE;
-import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_DROP_SOURCE;
-import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_METADATA_SOURCE;
-import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_METADATA_THEN_SCRIPT_SOURCE;
-import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_NONE_ACTION;
-import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPTS_ACTION;
-import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPTS_CREATE_TARGET;
-import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPTS_DROP_TARGET;
-import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPT_SOURCE;
-import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPT_THEN_METADATA_SOURCE;
-import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_SQL_LOAD_SCRIPT_SOURCE;
-import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_VERIFY_ACTION;
-import static org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider.generateDefaultTables;
-import static org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider.getConfigProperty;
-import static org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider.getConfigPropertyAsString;
-import static org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug;
-import static org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider.getConfigPropertyLogDebug;
-import static org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider.hasConfigProperty;
-import static org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider.login;
-import static org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider.mergeMaps;
-import static org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider.translateOldProperties;
-import static org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider.warnOldProperties;
+import jakarta.persistence.OptimisticLockException;
+import jakarta.persistence.PersistenceException;
+import jakarta.persistence.PersistenceUnitTransactionType;
+import jakarta.persistence.SchemaValidationException;
+import jakarta.persistence.SharedCacheMode;
+import jakarta.persistence.ValidationMode;
+import jakarta.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.CollectionAttribute;
+import jakarta.persistence.metamodel.ListAttribute;
+import jakarta.persistence.metamodel.ManagedType;
+import jakarta.persistence.metamodel.MapAttribute;
+import jakarta.persistence.metamodel.Metamodel;
+import jakarta.persistence.metamodel.SetAttribute;
+import jakarta.persistence.metamodel.SingularAttribute;
+import jakarta.persistence.spi.ClassTransformer;
+import jakarta.persistence.spi.PersistenceUnitInfo;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -156,38 +141,19 @@ import java.util.StringTokenizer;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 
-import jakarta.persistence.OptimisticLockException;
-import jakarta.persistence.PersistenceException;
-import jakarta.persistence.SchemaValidationException;
-import jakarta.persistence.SharedCacheMode;
-import jakarta.persistence.ValidationMode;
-import jakarta.persistence.metamodel.Attribute;
-import jakarta.persistence.metamodel.CollectionAttribute;
-import jakarta.persistence.metamodel.ListAttribute;
-import jakarta.persistence.metamodel.ManagedType;
-import jakarta.persistence.metamodel.MapAttribute;
-import jakarta.persistence.metamodel.Metamodel;
-import jakarta.persistence.metamodel.SetAttribute;
-import jakarta.persistence.metamodel.SingularAttribute;
-import jakarta.persistence.spi.ClassTransformer;
-import jakarta.persistence.spi.PersistenceUnitInfo;
-import jakarta.persistence.spi.PersistenceUnitTransactionType;
-
+import org.eclipse.persistence.annotations.CacheIsolationType;
 import org.eclipse.persistence.annotations.IdValidation;
 import org.eclipse.persistence.config.BatchWriting;
 import org.eclipse.persistence.config.CacheCoordinationProtocol;
-import org.eclipse.persistence.annotations.CacheIsolationType;
-import org.eclipse.persistence.descriptors.DescriptorCustomizer;
 import org.eclipse.persistence.config.ExclusiveConnectionMode;
 import org.eclipse.persistence.config.LoggerType;
 import org.eclipse.persistence.config.ParserType;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.ProfilerType;
 import org.eclipse.persistence.config.RemoteProtocol;
-import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
-import org.eclipse.persistence.sessions.SessionCustomizer;
 import org.eclipse.persistence.config.SystemProperties;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.DescriptorCustomizer;
 import org.eclipse.persistence.descriptors.MultitenantPolicy;
 import org.eclipse.persistence.descriptors.SchemaPerMultitenantPolicy;
 import org.eclipse.persistence.descriptors.TimestampLockingPolicy;
@@ -200,11 +166,10 @@ import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.EclipseLinkException;
-import org.eclipse.persistence.jpa.exceptions.EntityManagerSetupException;
 import org.eclipse.persistence.exceptions.ExceptionHandler;
 import org.eclipse.persistence.exceptions.IntegrityException;
-import org.eclipse.persistence.jpa.exceptions.PersistenceUnitLoadingException;
 import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.databaseaccess.BatchWritingMechanism;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
 import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
@@ -250,6 +215,8 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.internal.sessions.PropertiesHandler;
 import org.eclipse.persistence.internal.sessions.remote.RemoteConnection;
+import org.eclipse.persistence.jpa.exceptions.EntityManagerSetupException;
+import org.eclipse.persistence.jpa.exceptions.PersistenceUnitLoadingException;
 import org.eclipse.persistence.jpa.metadata.FileBasedProjectCache;
 import org.eclipse.persistence.jpa.metadata.MetadataSource;
 import org.eclipse.persistence.jpa.metadata.ProjectCache;
@@ -273,6 +240,7 @@ import org.eclipse.persistence.sessions.ExternalTransactionController;
 import org.eclipse.persistence.sessions.JNDIConnector;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.Session;
+import org.eclipse.persistence.sessions.SessionCustomizer;
 import org.eclipse.persistence.sessions.SessionEventListener;
 import org.eclipse.persistence.sessions.SessionProfiler;
 import org.eclipse.persistence.sessions.broker.SessionBroker;
@@ -302,6 +270,42 @@ import org.eclipse.persistence.tools.schemaframework.TableValidationException;
 import org.eclipse.persistence.tools.tuning.SafeModeTuner;
 import org.eclipse.persistence.tools.tuning.SessionTuner;
 import org.eclipse.persistence.tools.tuning.StandardTuner;
+
+import static java.util.Locale.ROOT;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.DDL_GENERATION;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.NONE;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_CREATE_ACTION;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_CREATE_DATABASE_SCHEMAS;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_CREATE_SCRIPT_SOURCE;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_CREATE_SOURCE;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_DATABASE_ACTION;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_DROP_ACTION;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_DROP_AND_CREATE_ACTION;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_DROP_SCRIPT_SOURCE;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_DROP_SOURCE;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_METADATA_SOURCE;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_METADATA_THEN_SCRIPT_SOURCE;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_NONE_ACTION;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPTS_ACTION;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPTS_CREATE_TARGET;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPTS_DROP_TARGET;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPT_SOURCE;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPT_THEN_METADATA_SOURCE;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_SQL_LOAD_SCRIPT_SOURCE;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_VERIFY_ACTION;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_VALIDATION_MODE;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_VALIDATION_MODE_FULL;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_VALIDATION_MODE_SIMPLE;
+import static org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider.generateDefaultTables;
+import static org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider.getConfigProperty;
+import static org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider.getConfigPropertyAsString;
+import static org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug;
+import static org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider.getConfigPropertyLogDebug;
+import static org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider.hasConfigProperty;
+import static org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider.login;
+import static org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider.mergeMaps;
+import static org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider.translateOldProperties;
+import static org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider.warnOldProperties;
 
 /**
  * INTERNAL:
@@ -4847,23 +4851,23 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
      * Verify database schema against the persistence unit metadata.
      *
      * @param session current database session
-     * @param props persistence unit properties
+     * @param properties persistence unit properties
      * @throws PersistenceException when validation fails. {@link SchemaValidationException}
      *         with failures description is stored as a cause.
      */
-    private void verifySchema(DatabaseSessionImpl session, Map<String, ?> props) {
+    private void verifySchema(DatabaseSessionImpl session, Map<String, ?> properties) {
         SchemaManager schemaManager = new SchemaManager(session);
         ValidationFailure failures = new ValidationFailure();
-        String mode = getConfigPropertyAsString(PersistenceUnitProperties.SCHEMA_VALIDATION_MODE,
-                                                                    props,
-                                                                    PersistenceUnitProperties.SCHEMA_VALIDATION_MODE_SIMPLE)
-                .toLowerCase(Locale.ROOT);
-        boolean full = PersistenceUnitProperties.SCHEMA_VALIDATION_MODE_FULL.equals(mode);
+
+        String mode =
+            getConfigPropertyAsString(SCHEMA_VALIDATION_MODE, properties, SCHEMA_VALIDATION_MODE_SIMPLE)
+            .toLowerCase(ROOT);
+
+        boolean full = SCHEMA_VALIDATION_MODE_FULL.equals(mode);
+
         if (!schemaManager.validateDefaultTables(failures, true, full)) {
-            throw new PersistenceException(
-                    ExceptionLocalization.buildMessage("schema_validation"),
-                    new SchemaValidationException(
-                            ExceptionLocalization.buildMessage("schema_validation_failed"),
+            throw new PersistenceException(ExceptionLocalization.buildMessage("schema_validation"),
+                    new SchemaValidationException(ExceptionLocalization.buildMessage("schema_validation_failed"),
                             failures.result().toArray(new TableValidationException[0])));
         }
     }

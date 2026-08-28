@@ -104,7 +104,7 @@ public class EntityGraphTest extends JUnitTestCase {
     public void testsubclassSubgraphs(){
         EntityManager em = createEntityManager();
         EntityGraph<Project> employeeGraph = em.createEntityGraph(Project.class);
-        employeeGraph.addSubclassSubgraph(LargeProject.class).addAttributeNodes("budget");
+        employeeGraph.addTreatedSubgraph(LargeProject.class).addAttributeNodes("budget");
         employeeGraph.addAttributeNodes("description");
         List<Project> result = em.createQuery("Select p from Project p where type(p) = LargeProject", Project.class).setHint(QueryHints.JPA_FETCH_GRAPH, employeeGraph).getResultList();
         PersistenceUnitUtil util = em.getEntityManagerFactory().getPersistenceUnitUtil();

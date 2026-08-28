@@ -31,13 +31,6 @@
 //       - 393867: Named queries do not work when using EM level Table Per Tenant Multitenancy.
 package org.eclipse.persistence.internal.jpa;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import jakarta.persistence.FlushModeType;
 import jakarta.persistence.LockModeType;
 import jakarta.persistence.LockTimeoutException;
@@ -47,9 +40,17 @@ import jakarta.persistence.Parameter;
 import jakarta.persistence.PersistenceException;
 import jakarta.persistence.PessimisticLockException;
 import jakarta.persistence.Query;
+import jakarta.persistence.QueryFlushMode;
 import jakarta.persistence.QueryTimeoutException;
 import jakarta.persistence.TemporalType;
 import jakarta.persistence.TransactionRequiredException;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.QueryException;
@@ -78,6 +79,12 @@ import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.queries.StoredProcedureCall;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.sessions.Session;
+
+import static jakarta.persistence.QueryFlushMode.DEFAULT;
+import static jakarta.persistence.QueryFlushMode.FLUSH;
+import static jakarta.persistence.QueryFlushMode.NO_FLUSH;
+import static java.lang.Boolean.FALSE;
+import static java.lang.Boolean.TRUE;
 
 /**
  * Concrete JPA query class. The JPA query wraps a DatabaseQuery which is
@@ -660,24 +667,75 @@ public class QueryImpl {
         return this.firstResultIndex;
     }
 
-    /**
-     * Set the flush mode type to be used for the query execution.
-     *
-     */
-    public QueryImpl setFlushMode(FlushModeType flushMode) {
+    public QueryFlushMode getQueryFlushMode() {
         try {
             entityManager.verifyOpen();
-            if (flushMode == null) {
-                getDatabaseQueryInternal().setFlushOnExecute(null);
-            } else {
-                cloneSharedQuery();
-                getDatabaseQueryInternal().setFlushOnExecute(flushMode == FlushModeType.AUTO);
-            }
+            return flushOnExecuteToQueryFlushMode(getDatabaseQueryInternal().getFlushOnExecute());
+        } catch (RuntimeException e) {
+            setRollbackOnly();
+            throw e;
+        }
+    }
+
+    public QueryImpl setQueryFlushMode(QueryFlushMode queryFlushMode) {
+        try {
+            entityManager.verifyOpen();
+            cloneSharedQuery();
+            getDatabaseQueryInternal().setFlushOnExecute(queryFlushModeToFlushOnExecute(queryFlushMode));
             return this;
         } catch (RuntimeException e) {
             setRollbackOnly();
             throw e;
         }
+    }
+
+    /**
+     * @see Query#getFlushMode()
+     * @since Java Persistence 2.0
+     */
+    @Deprecated(since = "6.0")
+    public FlushModeType getFlushMode() {
+        try {
+            entityManager.verifyOpen();
+            Boolean flushOnExecute = getDatabaseQueryInternal().getFlushOnExecute();
+            if (flushOnExecute == null) {
+                return entityManager.getFlushMode();
+            }
+            return flushOnExecute ? FlushModeType.AUTO : FlushModeType.COMMIT;
+        } catch (RuntimeException e) {
+            setRollbackOnly();
+            throw e;
+        }
+    }
+
+    @Deprecated(since = "6.0")
+    public QueryImpl setFlushMode(FlushModeType flushMode) {
+        return setQueryFlushMode(flushModeTypeToQueryFlushMode(flushMode));
+    }
+
+    public static Boolean queryFlushModeToFlushOnExecute(QueryFlushMode queryFlushMode) {
+        return switch (queryFlushMode) {
+            case null -> null;
+            case DEFAULT -> null;
+            case FLUSH -> TRUE;
+            case NO_FLUSH -> FALSE;
+        };
+    }
+
+    public static QueryFlushMode flushOnExecuteToQueryFlushMode(Boolean flushOnExecute) {
+        if (flushOnExecute == null) {
+            return DEFAULT;
+        }
+
+        return flushOnExecute ? FLUSH : NO_FLUSH;
+    }
+
+    public static QueryFlushMode flushModeTypeToQueryFlushMode(FlushModeType flushModeType) {
+        return switch (flushModeType) {
+            case null -> DEFAULT;
+            case AUTO -> FLUSH;
+            case COMMIT, EXPLICIT -> NO_FLUSH;
+        };
     }
 
     /**
@@ -702,7 +760,7 @@ public class QueryImpl {
             for (int index = 0; index < plsqlCall.getArguments().size(); index++) {
                 PLSQLargument argument = plsqlCall.getArguments().get(index);
                 org.eclipse.persistence.internal.databaseaccess.DatasourceCall.ParameterType type = argument.direction;
-                if ((type == org.eclipse.persistence.internal.databaseaccess.DatasourceCall.ParameterType.IN) 
+                if ((type == org.eclipse.persistence.internal.databaseaccess.DatasourceCall.ParameterType.IN)
                         || (type == org.eclipse.persistence.internal.databaseaccess.DatasourceCall.ParameterType.INOUT)) {
                     if (call.hasOptionalArguments()) {
                         query.addArgument(argument.name, Object.class, call.getOptionalArguments().contains(new DatabaseField(argument.name)));
@@ -714,7 +772,7 @@ public class QueryImpl {
         } else {
             for (int index = 0; index < call.getParameters().size(); index++) {
                 org.eclipse.persistence.internal.databaseaccess.DatasourceCall.ParameterType type = call.getParameterTypes().get(index);
-                if ((type == org.eclipse.persistence.internal.databaseaccess.DatasourceCall.ParameterType.IN) 
+                if ((type == org.eclipse.persistence.internal.databaseaccess.DatasourceCall.ParameterType.IN)
                         || (type == org.eclipse.persistence.internal.databaseaccess.DatasourceCall.ParameterType.INOUT)) {
                     Object value = call.getParameters().get(index);
                     DatabaseField parameter = null;
@@ -773,8 +831,8 @@ public class QueryImpl {
     }
 
     /**
-     * Spec. 3.5.2: "FlushMode.AUTO is set on the Query object, or if the flush
-     * mode setting for the persistence context is AUTO (the default) and a
+     * Spec. 3.5.2: "QueryFlushMode.DEFAULT is set on the Query object, or if the flush
+     * mode setting for the persistence context is DEFAULT (the default) and a
      * flush mode setting has not been specified for the Query object, the
      * persistence provider is responsible for ensuring that all updates to the
      * state of all entities in the persistence context which could potentially
@@ -784,9 +842,9 @@ public class QueryImpl {
     protected boolean isFlushModeAUTO() {
         if (getDatabaseQueryInternal().getFlushOnExecute() != null) {
             return getDatabaseQueryInternal().getFlushOnExecute();
-        } else {
-            return entityManager.isFlushModeAUTO();
         }
+
+        return entityManager.isFlushModeAUTO();
     }
 
     /**
@@ -852,11 +910,16 @@ public class QueryImpl {
         ConversionManager conversionManager = getEntityManager().getActiveSession().getDatasourcePlatform().getConversionManager();
         if (type == TemporalType.TIME) {
             return conversionManager.convertObject(value, ClassConstants.TIME);
-        } else if (type == TemporalType.TIMESTAMP) {
+        }
+
+        if (type == TemporalType.TIMESTAMP) {
             return conversionManager.convertObject(value, ClassConstants.TIMESTAMP);
-        } else if (type == TemporalType.DATE) {
+        }
+
+        if (type == TemporalType.DATE) {
             return conversionManager.convertObject(value, ClassConstants.SQLDATE);
         }
+
         return value;
     }
 
@@ -882,10 +945,11 @@ public class QueryImpl {
      */
     public int getMaxResults() {
         entityManager.verifyOpenWithSetRollbackOnly();
-        if (this.maxResults == UNDEFINED) {
+        if (maxResults == UNDEFINED) {
             return Integer.MAX_VALUE;
         }
-        return this.maxResults;
+
+        return maxResults;
     }
 
     /**
@@ -893,7 +957,7 @@ public class QueryImpl {
      * @since Java Persistence API 2.0
      */
     public int getMaxResultsInternal() {
-        return this.maxResults;
+        return maxResults;
     }
 
     /**
@@ -1013,23 +1077,6 @@ public class QueryImpl {
 
     protected void throwNonUniqueResultException(String message) {
         throw new NonUniqueResultException(message);
-    }
-
-    /**
-     * @see Query#getFlushMode()
-     * @since Java Persistence 2.0
-     */
-    public FlushModeType getFlushMode() {
-        try {
-            entityManager.verifyOpen();
-            Boolean flushOnExecute = getDatabaseQueryInternal().getFlushOnExecute();
-            if ((flushOnExecute == null) || flushOnExecute)
-                return FlushModeType.AUTO;
-            return FlushModeType.COMMIT;
-        } catch (RuntimeException e) {
-            setRollbackOnly();
-            throw e;
-        }
     }
 
     /**
@@ -1162,7 +1209,7 @@ public class QueryImpl {
 
     /**
      * @see Query#getParameters()
-     * @since Java Persistence 2.0
+     * @since Jakarta Persistence 2.0
      */
     public Set<Parameter<?>> getParameters() {
         entityManager.verifyOpen();//don't rollback transaction
@@ -1170,24 +1217,25 @@ public class QueryImpl {
     }
 
     /**
-     * @since Java Persistence 2.0
+     * @since Jakarta Persistence 2.0
      */
     public Set<String> getSupportedHints() {
         return QueryHintsHandler.getSupportedHints();
     }
 
     /**
-     * Unwrap the query into the JPA implementation classes/interfaces or the
+     * Unwrap the query into the Jakarta Persistence implementation classes/interfaces or the
      * underlying native EclipseLink query.
      *
      * @see Query#unwrap(Class)
-     * @since Java Persistence 2.0
+     * @since Jakarta Persistence 2.0
      */
     public <T> T unwrap(Class<T> cls) {
         if (cls.isAssignableFrom(this.getClass())) {
             // unwraps any proxy to Query, JPAQuery or EJBQueryImpl
             return (T) this;
         }
+
         if (cls.isAssignableFrom(getDatabaseQueryInternal().getClass())) {
             return (T) getDatabaseQueryInternal();
         }

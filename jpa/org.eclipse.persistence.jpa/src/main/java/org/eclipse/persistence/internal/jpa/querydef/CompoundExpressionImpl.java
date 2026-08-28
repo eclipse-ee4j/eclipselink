@@ -15,12 +15,17 @@
 //
 package org.eclipse.persistence.internal.jpa.querydef;
 
+import jakarta.persistence.criteria.ComparableExpression;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Nulls;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.metamodel.Metamodel;
+
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.persistence.criteria.Expression;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.metamodel.Metamodel;
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 
 /**
@@ -36,7 +41,10 @@ import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
  * @author gyorke
  * @since EclipseLink 1.2
  */
-public class CompoundExpressionImpl extends FunctionExpressionImpl<Boolean> implements Predicate{
+public class CompoundExpressionImpl extends FunctionExpressionImpl<Boolean> implements Predicate {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     protected boolean isNegated = false;
 
@@ -98,16 +106,18 @@ public class CompoundExpressionImpl extends FunctionExpressionImpl<Boolean> impl
     public Predicate not(){
         List<Expression<?>> list = new ArrayList<>();
         list.add(this);
-        CompoundExpressionImpl expr = new CompoundExpressionImpl(this.metamodel, this.currentNode.not(), list, "not");
-        expr.setIsNegated(true);
-        return expr;
+
+        CompoundExpressionImpl expression = new CompoundExpressionImpl(metamodel, currentNode.not(), list, "not");
+        expression.setIsNegated(true);
+
+        return expression;
     }
-    
+
     @Override
     public boolean isPredicate(){
         return true;
     }
-    
+
     protected void setIsNegated(boolean isNegated){
         this.isNegated = isNegated;
     }
@@ -125,6 +135,116 @@ public class CompoundExpressionImpl extends FunctionExpressionImpl<Boolean> impl
      */
     public void setParentNode(org.eclipse.persistence.expressions.Expression parentNode){
         //no-op but can not be abstract as CompoundExpressionImpl is not abstract
+    }
+
+    @Override
+    public Predicate nullif(Boolean y) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public Predicate nullif(Expression<? extends Boolean> y) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public Predicate coalesce(Boolean y) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public Predicate coalesce(Expression<? extends Boolean> y) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public Predicate and(Expression<Boolean> y) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public Predicate or(Expression<Boolean> y) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public Predicate greaterThan(Expression<? extends Boolean> y) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public Predicate greaterThan(Boolean y) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public Predicate greaterThanOrEqualTo(Expression<? extends Boolean> y) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public Predicate greaterThanOrEqualTo(Boolean y) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public Predicate lessThan(Expression<? extends Boolean> y) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public Predicate lessThan(Boolean y) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public Predicate lessThanOrEqualTo(Expression<? extends Boolean> y) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public Predicate lessThanOrEqualTo(Boolean y) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public Predicate between(Expression<? extends Boolean> x, Expression<? extends Boolean> y) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public Predicate between(Boolean x, Boolean y) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public ComparableExpression<Boolean> max() {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public ComparableExpression<Boolean> min() {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public Order asc() {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public Order desc() {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public Order asc(Nulls nullPrecedence) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public Order desc(Nulls nullPrecedence) {
+        throw new UnsupportedOperationException("Not yet implemented");
     }
 
 }

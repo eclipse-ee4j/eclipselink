@@ -244,6 +244,9 @@ public class CoreAttributeGroup<
         clone.isValidated = this.isValidated;
         cloneMap.put(this,clone);
         if (this.allsubclasses != null){
+            // super.clone() is shallow, so the clone would otherwise share - and mutate
+            // while iterating - this group's own subclass map, as subClasses and items below.
+            clone.allsubclasses = new HashMap<>();
             for (CoreAttributeGroup group : this.allsubclasses.values()){
                 clone.getSubClassGroups().put(group.getType(), group.clone(cloneMap));
             }

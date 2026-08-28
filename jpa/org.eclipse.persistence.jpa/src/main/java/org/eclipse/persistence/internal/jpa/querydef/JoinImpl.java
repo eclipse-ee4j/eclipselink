@@ -16,9 +16,8 @@
 
 package org.eclipse.persistence.internal.jpa.querydef;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import jakarta.annotation.Nonnull;
+import jakarta.persistence.criteria.BooleanExpression;
 import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Fetch;
 import jakarta.persistence.criteria.From;
@@ -31,6 +30,11 @@ import jakarta.persistence.metamodel.Attribute;
 import jakarta.persistence.metamodel.Bindable;
 import jakarta.persistence.metamodel.ManagedType;
 import jakarta.persistence.metamodel.Metamodel;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.eclipse.persistence.internal.jpa.querydef.PredicateImpl.toPredicate;
 
 /**
  * <p>
@@ -106,51 +110,54 @@ public class JoinImpl<Z, X> extends FromImpl<Z, X> implements Join<Z, X>, Fetch<
 
     @Override
     public Predicate getOn() {
-        if (this.on == null) {
-            return null;
-        }
-        if (((ExpressionImpl)this.on).isPredicate()) return (Predicate)this.on;
-
-        //see queryBuilder.isTrue(this.on);
-        List<Expression<?>> list = new ArrayList<>();
-        list.add(this.on);
-        return new CompoundExpressionImpl(this.metamodel, ((InternalSelection)this.on).getCurrentNode().equal(true), list, "equals");
+        return toPredicate(metamodel, on);
     }
 
     @Override
     public JoinImpl<Z, X> on(Expression<Boolean> restriction) {
-        this.on = restriction;
-        org.eclipse.persistence.expressions.Expression onExp = restriction==null? null:((ExpressionImpl)restriction).getCurrentNode();
-        ((PathImpl)this.pathParent).getCurrentNode().join(this.currentNode, onExp);
+        on = restriction;
+        org.eclipse.persistence.expressions.Expression onExp = restriction == null ? null : ((ExpressionImpl) restriction).getCurrentNode();
+        ((PathImpl) pathParent).getCurrentNode().join(currentNode, onExp);
 
         return this;
     }
 
     @Override
-    public JoinImpl<Z, X> on(Predicate... restrictions) {
-        org.eclipse.persistence.expressions.Expression onExp;
-        if (restrictions == null || restrictions.length == 0){
-            this.on = null;
-            onExp = null;
-        } else {
-            //from criteriaQueryImpl.where(Predicate... restrictions)
-            Predicate a = restrictions[0];
-            for (int i = 1; i < restrictions.length; ++i){
-                org.eclipse.persistence.expressions.Expression currentNode = ((CompoundExpressionImpl)a).getCurrentNode().and(
-                        ((CompoundExpressionImpl)restrictions[i]).getCurrentNode());
-                ((CompoundExpressionImpl)a).setParentNode(currentNode);
-                ((CompoundExpressionImpl)restrictions[i]).setParentNode(currentNode);
-                List<Expression<?>> list = new ArrayList<>();
-                list.add(a);
-                list.add(restrictions[i]);
-                a = new PredicateImpl(this.metamodel, currentNode, list, BooleanOperator.AND);
-            }
-            this.on = a;
-            onExp = ((ExpressionImpl)a).getCurrentNode();
+    public JoinImpl<Z, X> on(BooleanExpression... restrictions) {
+        return on(restrictions != null ? List.of(restrictions) : null);
+    }
+
+    @Override
+    public JoinImpl<Z, X> on(List<? extends Expression<Boolean>> restrictions) {
+        if (restrictions == null || restrictions.isEmpty()) {
+            return on((Expression<Boolean>) null);
         }
 
-        ((PathImpl)this.pathParent).getCurrentNode().join(this.currentNode, onExp);
-        return this;
+        CompoundExpressionImpl conjunction = (CompoundExpressionImpl) toPredicate(metamodel, restrictions.get(0));
+
+        for (int i = 1; i < restrictions.size(); i++) {
+            CompoundExpressionImpl next = (CompoundExpressionImpl) toPredicate(metamodel, restrictions.get(i));
+
+            org.eclipse.persistence.expressions.Expression node =
+                conjunction.getCurrentNode()
+                           .and(next.getCurrentNode());
+
+            conjunction.setParentNode(node);
+            next.setParentNode(node);
+
+            List<Expression<?>> operands = new ArrayList<>();
+            operands.add(conjunction);
+            operands.add(next);
+
+            conjunction = new PredicateImpl(metamodel, node, operands, BooleanOperator.AND);
+        }
+
+        return on(conjunction);
+    }
+
+    @Override
+    public <T extends X> Join<Z, T> treat(@Nonnull Class<T> type) {
+        throw new UnsupportedOperationException("Not yet implemented");
     }
 
 }

@@ -30,7 +30,6 @@ module org.eclipse.persistence.core {
     requires static org.eclipse.persistence.jpa.jpql;
 
     requires static jakarta.cdi;
-    requires static jakarta.el;
     requires static jakarta.inject;
     requires static jakarta.transaction;
 

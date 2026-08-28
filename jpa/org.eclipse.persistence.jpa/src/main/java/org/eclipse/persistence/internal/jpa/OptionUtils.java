@@ -1,5 +1,3 @@
-package org.eclipse.persistence.internal.jpa;
-
 /*
  * Copyright (c) 2023 Oracle and/or its affiliates. All rights reserved.
  *
@@ -15,17 +13,26 @@ package org.eclipse.persistence.internal.jpa;
 // Contributors:
 //     12/14/2023: Tomas Kraus
 //       - New Jakarta Persistence 3.2 Features
+package org.eclipse.persistence.internal.jpa;
+
+import jakarta.persistence.CacheRetrieveMode;
+import jakarta.persistence.CacheStoreMode;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManager.CreationOption;
+import jakarta.persistence.FlushModeType;
+import jakarta.persistence.LockModeType;
+import jakarta.persistence.SynchronizationType;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import jakarta.persistence.CacheRetrieveMode;
-import jakarta.persistence.CacheStoreMode;
-import jakarta.persistence.LockModeType;
 import org.eclipse.persistence.config.QueryHints;
+import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.SessionLog;
+
+import static org.eclipse.persistence.config.EntityManagerProperties.PERSISTENCE_CONTEXT_FLUSH_MODE;
 
 /**
  * Common {@link jakarta.persistence.EntityManager} options processing tools.
@@ -33,9 +40,44 @@ import org.eclipse.persistence.logging.SessionLog;
 class OptionUtils {
 
     /**
+     * Parsed {@link jakarta.persistence.EntityManager.CreationOption} array.
+     */
+    record CreationOptions(SynchronizationType synchronizationType, Map<String, Object> properties) {
+
+    }
+
+    /**
      * Parsed {@link jakarta.persistence.FindOption} array.
      */
     record Options (LockModeType lockModeType, Map<String, Object> properties) {
+    }
+
+    public static CreationOptions parseCreateOptions(EntityManager.CreationOption... options) {
+        if (options == null) {
+            return new CreationOptions(null, null);
+        }
+
+        SynchronizationType synchronizationType = null;
+        Map<String, Object> properties = new HashMap<>();
+
+        for (CreationOption option : options) {
+            switch (option) {
+                case SynchronizationType type ->
+                    synchronizationType = type;
+                case FlushModeType flushModeType ->
+                    properties.put(PERSISTENCE_CONTEXT_FLUSH_MODE, flushModeType.name());
+                case CacheRetrieveMode retrieveMode ->
+                    setCacheRetrieveMode(properties, retrieveMode);
+                case CacheStoreMode storeMode ->
+                    setCacheStoreMode(properties, storeMode);
+                default ->
+                    throw new IllegalArgumentException(
+                        ExceptionLocalization.buildMessage("unknown_creation_option",
+                        new Object[] { option }));
+            }
+        }
+
+        return new CreationOptions(synchronizationType, properties.isEmpty()? null : properties);
     }
 
     static abstract class OptionsBuilder {
@@ -84,13 +126,16 @@ class OptionUtils {
         Object propertyValue = properties.get(QueryHints.CACHE_RETRIEVE_MODE);
         if (propertyValue instanceof CacheRetrieveMode) {
             return (CacheRetrieveMode) propertyValue;
-        } else if (propertyValue != null) {
+        }
+
+        if (propertyValue != null) {
             session.log(SessionLog.WARNING,
                         SessionLog.QUERY,
                         "unknown_property_type",
                         propertyValue.getClass().getName(),
                         QueryHints.CACHE_RETRIEVE_MODE);
         }
+
         // Default value according to JPA spec.
         return CacheRetrieveMode.USE;
     }
@@ -100,13 +145,16 @@ class OptionUtils {
         Object propertyValue = properties.get(QueryHints.CACHE_STORE_MODE);
         if (propertyValue instanceof CacheStoreMode) {
             return (CacheStoreMode) propertyValue;
-        } else if (propertyValue != null) {
+        }
+
+        if (propertyValue != null) {
             session.log(SessionLog.WARNING,
                         SessionLog.QUERY,
                         "unknown_property_type",
                         propertyValue.getClass().getName(),
                         QueryHints.CACHE_STORE_MODE);
         }
+
         // Default value according to JPA spec.
         return CacheStoreMode.USE;
     }

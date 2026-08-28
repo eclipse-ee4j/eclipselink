@@ -17,17 +17,19 @@
 //       - New Jakarta Persistence 3.2 Features
 package org.eclipse.persistence.internal.jpa;
 
+import jakarta.persistence.AttributeNode;
+import jakarta.persistence.EntityGraph;
+import jakarta.persistence.Subgraph;
+import jakarta.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.ManagedType;
+import jakarta.persistence.metamodel.MapAttribute;
+import jakarta.persistence.metamodel.PluralAttribute;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import jakarta.persistence.AttributeNode;
-import jakarta.persistence.EntityGraph;
-import jakarta.persistence.Subgraph;
-import jakarta.persistence.metamodel.Attribute;
-import jakarta.persistence.metamodel.MapAttribute;
-import jakarta.persistence.metamodel.PluralAttribute;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.jpa.metamodel.AttributeImpl;
@@ -38,7 +40,7 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.queries.AttributeGroup;
 
 /**
- * Concrete JPA EntityGraph class. For this implementation the EntityGraphImpl
+ * Concrete Jakarta Persistence EntityGraph class. For this implementation the EntityGraphImpl
  * wraps the EclipseLink AttributeGroup type.
  */
 public class EntityGraphImpl<X> extends AttributeNodeImpl<X> implements EntityGraph<X>, Subgraph<X> {
@@ -86,6 +88,7 @@ public class EntityGraphImpl<X> extends AttributeNodeImpl<X> implements EntityGr
         if (!isMutable) {
             throw new IllegalStateException(ExceptionLocalization.buildMessage("immutable_entitygraph"));
         }
+
         return addAttributeNodeImpl(attributeName);
     }
 
@@ -94,6 +97,7 @@ public class EntityGraphImpl<X> extends AttributeNodeImpl<X> implements EntityGr
         if (!isMutable) {
             throw new IllegalStateException(ExceptionLocalization.buildMessage("immutable_entitygraph"));
         }
+
         return addAttributeNodeImpl(attribute.getName());
     }
 
@@ -102,6 +106,7 @@ public class EntityGraphImpl<X> extends AttributeNodeImpl<X> implements EntityGr
         if (!isMutable) {
             throw new IllegalStateException(ExceptionLocalization.buildMessage("immutable_entitygraph"));
         }
+
         for (String attrName : attributeNames) {
             addAttributeNodeImpl(attrName);
         }
@@ -113,6 +118,7 @@ public class EntityGraphImpl<X> extends AttributeNodeImpl<X> implements EntityGr
         if (!isMutable) {
             throw new IllegalStateException(ExceptionLocalization.buildMessage("immutable_entitygraph"));
         }
+
         for (Attribute<? super X, ?> attribute : attributes) {
             addAttributeNodeImpl(attribute.getName());
         }
@@ -164,6 +170,7 @@ public class EntityGraphImpl<X> extends AttributeNodeImpl<X> implements EntityGr
         if (!isMutable) {
             throw new IllegalStateException(ExceptionLocalization.buildMessage("immutable_entitygraph"));
         }
+
         if (descriptor.getMappingForAttributeName(attributeName) == null) {
             throw new IllegalArgumentException(
                     ExceptionLocalization.buildMessage(
@@ -196,6 +203,7 @@ public class EntityGraphImpl<X> extends AttributeNodeImpl<X> implements EntityGr
         if (attribute.isCollection()) {
             type = ((PluralAttribute) attribute).getBindableJavaType();
         }
+
         return addSubgraph(attribute.getName(), type);
     }
 
@@ -204,6 +212,7 @@ public class EntityGraphImpl<X> extends AttributeNodeImpl<X> implements EntityGr
         if (!this.isMutable) {
             throw new IllegalStateException(ExceptionLocalization.buildMessage("immutable_entitygraph"));
         }
+
         ClassDescriptor targetDesc = this.descriptor;
         if (targetDesc.hasInheritance()) {
             targetDesc = targetDesc.getInheritancePolicy().getDescriptor(type);
@@ -211,6 +220,7 @@ public class EntityGraphImpl<X> extends AttributeNodeImpl<X> implements EntityGr
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("type_unkown_for_this_entity", new Object[] { type.getName(), this.descriptor.getJavaClassName() }));
             }
         }
+
         AttributeGroup subGroup = new AttributeGroup(this.attributeGroup.getName(), type, true);
         this.attributeGroup.getSubClassGroups().put(type, subGroup);
         subGroup.setAllSubclasses(this.attributeGroup.getSubClassGroups());
@@ -219,19 +229,7 @@ public class EntityGraphImpl<X> extends AttributeNodeImpl<X> implements EntityGr
     }
 
     @Override
-    @SuppressWarnings({"removal", "rawtypes", "unchecked"})
-    public <T> Subgraph<? extends T> addSubclassSubgraph(Class<? extends T> type) {
-        return addTreatedSubgraph((Class)type);
-    }
-
-    @Override
     public <Y> Subgraph<Y> addTreatedSubgraph(Attribute<? super X, ? super Y> attribute, Class<Y> type) {
-        return addSubgraph(attribute.getName(), type);
-    }
-
-    @Override
-    @SuppressWarnings("removal")
-    public <T> Subgraph<? extends T> addSubgraph(Attribute<? super X, T> attribute, Class<? extends T> type) {
         return addSubgraph(attribute.getName(), type);
     }
 
@@ -245,6 +243,7 @@ public class EntityGraphImpl<X> extends AttributeNodeImpl<X> implements EntityGr
         if (!this.isMutable) {
             throw new IllegalStateException(ExceptionLocalization.buildMessage("immutable_entitygraph"));
         }
+
         AttributeNodeImpl<?> node = null;
         if (this.attributeNodes  != null){
             node = this.attributeNodes.get(attributeName);
@@ -306,25 +305,6 @@ public class EntityGraphImpl<X> extends AttributeNodeImpl<X> implements EntityGr
     }
 
     @Override
-    @SuppressWarnings({"removal", "unchecked"})
-    public <T> Subgraph<T> addKeySubgraph(Attribute<? super X, T> attribute) {
-        if (!this.isMutable) {
-            throw new IllegalStateException(ExceptionLocalization.buildMessage("immutable_entitygraph"));
-        }
-        Class<T> type = attribute.getJavaType();
-        if (attribute.isCollection()) {
-            type = ((PluralAttribute<X, ?, T>) attribute).getBindableJavaType();
-        }
-        return addKeySubgraph(attribute.getName(), type);
-    }
-
-    @Override
-    @SuppressWarnings("removal")
-    public <T> Subgraph<? extends T> addKeySubgraph(Attribute<? super X, T> attribute, Class<? extends T> type) {
-        return addKeySubgraph(attribute.getName(), type);
-    }
-
-    @Override
     public <T> Subgraph<T> addKeySubgraph(String attributeName) {
         return this.addKeySubgraph(attributeName, null);
     }
@@ -334,6 +314,7 @@ public class EntityGraphImpl<X> extends AttributeNodeImpl<X> implements EntityGr
         if (!this.isMutable) {
             throw new IllegalStateException(ExceptionLocalization.buildMessage("immutable_entitygraph"));
         }
+
         AttributeNodeImpl<?> node = null;
         if (this.attributeNodes  != null){
             node = this.attributeNodes.get(attributeName);
@@ -438,6 +419,11 @@ public class EntityGraphImpl<X> extends AttributeNodeImpl<X> implements EntityGr
             this.attributeNodes.put(item.getAttributeName(), node);
         }
 
+    }
+
+    @Override
+    public ManagedType<X> getGraphedType() {
+        throw new UnsupportedOperationException("Not yet implemented");
     }
 
 }

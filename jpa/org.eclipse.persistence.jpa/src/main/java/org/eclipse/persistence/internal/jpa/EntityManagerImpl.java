@@ -48,20 +48,7 @@
 //       - New Jakarta Persistence 3.2 Features
 package org.eclipse.persistence.internal.jpa;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.IdentityHashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.WeakHashMap;
-
-import javax.sql.DataSource;
-
+import jakarta.annotation.Nonnull;
 import jakarta.persistence.CacheRetrieveMode;
 import jakarta.persistence.CacheStoreMode;
 import jakarta.persistence.ConnectionConsumer;
@@ -81,17 +68,34 @@ import jakarta.persistence.PersistenceException;
 import jakarta.persistence.PessimisticLockException;
 import jakarta.persistence.Query;
 import jakarta.persistence.RefreshOption;
+import jakarta.persistence.Statement;
+import jakarta.persistence.StatementOrTypedQuery;
+import jakarta.persistence.StatementReference;
 import jakarta.persistence.StoredProcedureQuery;
 import jakarta.persistence.SynchronizationType;
 import jakarta.persistence.TransactionRequiredException;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.TypedQueryReference;
 import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaDelete;
-import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.CriteriaSelect;
-import jakarta.persistence.criteria.CriteriaUpdate;
+import jakarta.persistence.criteria.CriteriaStatement;
 import jakarta.persistence.metamodel.Metamodel;
+import jakarta.persistence.sql.ResultSetMapping;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.IdentityHashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.WeakHashMap;
+
+import javax.sql.DataSource;
+
 import org.eclipse.persistence.annotations.CacheKeyType;
 import org.eclipse.persistence.config.EntityManagerProperties;
 import org.eclipse.persistence.config.QueryHints;
@@ -108,10 +112,8 @@ import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
 import org.eclipse.persistence.internal.helper.BasicTypeHelperImpl;
 import org.eclipse.persistence.internal.identitymaps.CacheId;
-import org.eclipse.persistence.internal.jpa.querydef.CriteriaDeleteImpl;
-import org.eclipse.persistence.internal.jpa.querydef.CriteriaQueryImpl;
+import org.eclipse.persistence.internal.jpa.querydef.CommonAbstractCriteriaImpl;
 import org.eclipse.persistence.internal.jpa.querydef.CriteriaSelectInternal;
-import org.eclipse.persistence.internal.jpa.querydef.CriteriaUpdateImpl;
 import org.eclipse.persistence.internal.jpa.transaction.EntityTransactionImpl;
 import org.eclipse.persistence.internal.jpa.transaction.EntityTransactionWrapper;
 import org.eclipse.persistence.internal.jpa.transaction.JTATransactionWrapper;
@@ -125,6 +127,7 @@ import org.eclipse.persistence.internal.sessions.PropertiesHandler;
 import org.eclipse.persistence.internal.sessions.RepeatableWriteUnitOfWork;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.jpa.JpaEntityManager;
+import org.eclipse.persistence.jpa.JpaQuery;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.queries.AttributeGroup;
 import org.eclipse.persistence.queries.Call;
@@ -166,7 +169,7 @@ import org.eclipse.persistence.sessions.server.ServerSession;
  * @author gyorke
  * @since TopLink Essentials - JPA 1.0
  */
-public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityManager {
+public class EntityManagerImpl implements JpaEntityManager {
     protected enum OperationType {FIND, REFRESH, LOCK}
 
     /** Allows transparent transactions across JTA and local transactions. */
@@ -491,7 +494,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      *            to be passed into this EntityManager, but there are currently
      *            no such properties implemented
      */
-    public EntityManagerImpl(EntityManagerFactoryDelegate factory, Map properties, SynchronizationType syncType) {
+    public EntityManagerImpl(EntityManagerFactoryDelegate factory, Map<String, Object> properties, SynchronizationType syncType) {
         this.factory = factory;
         this.databaseSession = factory.getAbstractSession();
         this.beginEarlyTransaction = factory.getBeginEarlyTransaction();
@@ -512,7 +515,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     /**
      * Initialize the state after construction.
      */
-    protected void initialize(Map properties) {
+    protected void initialize(Map<String, Object> properties) {
         detectTransactionWrapper();
         // Cache default ConnectionPolicy. If ConnectionPolicy property(ies) specified
         // then connectionPolicy will be set to null and re-created when when active persistence context is created.
@@ -760,7 +763,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * @throws PersistenceException
      *             if an unsupported lock call is made
      */
-    @Override
+    // TODO: should be override, but method is gone from interfaces. See https://github.com/jakartaee/persistence/issues/1166
     public <T> T find(Class<T> entityClass, Object primaryKey, LockModeType lockMode) {
         return find(entityClass, primaryKey, lockMode, getQueryHints(entityClass, OperationType.FIND));
     }
@@ -1130,7 +1133,8 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * @throws PersistenceException
      *             if an unsupported lock call is made
      */
-    @Override
+    // @Override
+    // TODO: should be override, but method is gone from interfaces. See https://github.com/jakartaee/persistence/issues/1166
     public void refresh(Object entity, LockModeType lockMode) {
         refresh(entity, lockMode, getQueryHints(entity, OperationType.REFRESH));
     }
@@ -1246,12 +1250,12 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     }
 
     @Override
-    public jakarta.persistence.Query createDescriptorNamedQuery(String queryName, Class<?> descriptorClass) {
+    public Query createDescriptorNamedQuery(String queryName, Class<?> descriptorClass) {
         return createDescriptorNamedQuery(queryName, descriptorClass, null);
     }
 
     @Override
-    public jakarta.persistence.Query createDescriptorNamedQuery(String queryName, Class<?> descriptorClass, List argumentTypes) {
+    public Query createDescriptorNamedQuery(String queryName, Class<?> descriptorClass, List argumentTypes) {
         try {
             verifyOpen();
             ClassDescriptor descriptor = this.databaseSession.getDescriptor(descriptorClass);
@@ -1277,7 +1281,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * @return the new query instance
      */
     @Override
-    public Query createNamedQuery(String name) {
+    public StatementOrTypedQuery createNamedQuery(String name) {
         return createNamedQueryInternal(name, null);
     }
 
@@ -1304,7 +1308,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     }
 
     /**
-     * Create an instance of {@link TypedQuery} for executing a named query written in the Jakarta Persistence query language
+     * Create an instance of {@link JpaQuery} for executing a named query written in the Jakarta Persistence query language
      * or in native SQL.
      *
      * @param name the name of the query
@@ -1312,7 +1316,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * @return the new {@link TypedQuery} instance
      * @param <T> the query result type
      */
-    private <T> TypedQuery<T> createNamedQueryInternal(String name, Map<String,Object> hints) {
+    private <T> JpaQuery<T> createNamedQueryInternal(String name, Map<String,Object> hints) {
         try {
             verifyOpen();
             EJBQueryImpl<T> query = new EJBQueryImpl<>(name, this, true);
@@ -1357,7 +1361,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * @return the new query instance
      */
     @Override
-    public Query createNativeQuery(String sqlString) {
+    public StatementOrTypedQuery createNativeQuery(String sqlString) {
         try {
             verifyOpen();
             return new EJBQueryImpl(EJBQueryImpl.buildSQLDatabaseQuery(sqlString, this.databaseSession.getLoader(), this.databaseSession), this);
@@ -1372,11 +1376,11 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * expected return type.
      */
     @Override
-    @SuppressWarnings({"rawtypes"})
-    public Query createNativeQuery(String sqlString, Class resultType) {
+    public <T> TypedQuery<T> createNativeQuery(@Nonnull String sqlString, @Nonnull Class<T> resultClass) {
         try {
             verifyOpen();
-            return new EJBQueryImpl(EJBQueryImpl.buildSQLDatabaseQuery(resultType, sqlString, this.databaseSession.getLoader(), this.databaseSession), this);
+            return new EJBQueryImpl<T>(
+                EJBQueryImpl.buildSQLDatabaseQuery(resultClass, sqlString, databaseSession.getLoader(), databaseSession), this);
         } catch (RuntimeException e) {
             setRollbackOnly();
             throw e;
@@ -1395,7 +1399,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      *             if query string is not valid
      */
     @Override
-    public Query createNativeQuery(String sqlString, String resultSetMapping) {
+    public StatementOrTypedQuery createNativeQuery(String sqlString, String resultSetMapping) {
         try {
             verifyOpen();
             ResultSetMappingQuery query = new ResultSetMappingQuery();
@@ -1837,17 +1841,6 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     }
 
     @Override
-    public <T> TypedQuery<T> createQuery(CriteriaQuery<T> criteriaQuery) {
-        try {
-            verifyOpen();
-            return new EJBQueryImpl<>(((CriteriaQueryImpl<T>) criteriaQuery).translate(), this);
-        } catch (RuntimeException e) {
-            setRollbackOnly();
-            throw e;
-        }
-    }
-
-    @Override
     public <T> TypedQuery<T> createQuery(CriteriaSelect<T> selectQuery) {
         try {
             verifyOpen();
@@ -1862,7 +1855,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * This method is used to create a query using a EclipseLink by example.
      */
     @Override
-    public jakarta.persistence.Query createQueryByExample(Object exampleObject) {
+    public Query createQueryByExample(Object exampleObject) {
         try {
             verifyOpen();
             ReadAllQuery query = new ReadAllQuery(exampleObject.getClass());
@@ -1912,7 +1905,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * @return the new query instance
      */
     @Override
-    public Query createQuery(String jpqlString) {
+    public StatementOrTypedQuery createQuery(String jpqlString) {
         try {
             verifyOpen();
             EJBQueryImpl ejbqImpl;
@@ -1943,13 +1936,14 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     public <T> TypedQuery<T> createQuery(String qlString, Class<T> resultClass){
         try {
             verifyOpen();
-            EJBQueryImpl ejbqImpl;
+            EJBQueryImpl<T> ejbqImpl;
             try {
-                ejbqImpl = new EJBQueryImpl(qlString, this, resultClass);
+                ejbqImpl = new EJBQueryImpl<T>(qlString, this, resultClass);
             } catch (JPQLException exception) {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("wrap_ejbql_exception") + ": " + exception.getLocalizedMessage(), exception);
             }
-            return (TypedQuery<T>)ejbqImpl;
+
+            return ejbqImpl;
         } catch (RuntimeException e) {
             setRollbackOnly();
             throw e;
@@ -2926,6 +2920,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             if (properties.containsKey(QueryHints.PESSIMISTIC_LOCK_TIMEOUT_UNIT)) {
                 queryHints.put(QueryHints.PESSIMISTIC_LOCK_TIMEOUT_UNIT, properties.get(QueryHints.PESSIMISTIC_LOCK_TIMEOUT_UNIT));
             }
+
             // Ignore the JPA cache settings if the eclipselink setting has
             // been specified.
             if (! properties.containsKey(QueryHints.CACHE_USAGE)) {
@@ -3023,6 +3018,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             if (!contains(entity, uowImpl)) {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("cant_getLockMode_of_not_managed_object", new Object[] { entity }));
             }
+
             Boolean optimistickLock = (Boolean) uowImpl.getOptimisticReadLockObjects().get(entity);
             if (optimistickLock != null) {
                 if (optimistickLock.equals(Boolean.FALSE)) {
@@ -3206,28 +3202,6 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     }
 
     @Override
-    public Query createQuery(CriteriaUpdate updateQuery) {
-        try{
-            verifyOpen();
-            return new EJBQueryImpl(((CriteriaUpdateImpl)updateQuery).translate(), this);
-        }catch (RuntimeException e){
-            setRollbackOnly();
-            throw e;
-        }
-    }
-
-    @Override
-    public Query createQuery(CriteriaDelete deleteQuery) {
-        try{
-            verifyOpen();
-            return new EJBQueryImpl(((CriteriaDeleteImpl)deleteQuery).translate(), this);
-        }catch (RuntimeException e){
-            setRollbackOnly();
-            throw e;
-        }
-    }
-
-    @Override
     public boolean isJoinedToTransaction() {
         verifyOpen();
         return transaction.isJoinedToTransaction(this.extendedPersistenceContext);
@@ -3239,6 +3213,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
         if (descriptor == null || descriptor.isAggregateDescriptor()){
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("unknown_bean_class", new Object[]{rootType.getName()}));
         }
+
         return new EntityGraphImpl<>(new AttributeGroup(null, rootType, true), descriptor);
     }
 
@@ -3248,6 +3223,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
         if (group == null){
             return null;
         }
+
         ClassDescriptor descriptor = this.getAbstractSession().getDescriptor(group.getType());
         return new EntityGraphImpl<>(group.clone(), descriptor);
     }
@@ -3258,7 +3234,9 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
         if (group == null){
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("no_entity_graph_of_name", new Object[]{graphName}));
         }
-        return new EntityGraphImpl<>(group);
+
+        ClassDescriptor descriptor = this.getAbstractSession().getDescriptor(group.getType());
+        return new EntityGraphImpl<>(group.clone(), descriptor);
     }
 
     @Override
@@ -3267,18 +3245,21 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
         if (descriptor == null || descriptor.isAggregateDescriptor()){
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("unknown_bean_class", new Object[]{entityClass.getName()}));
         }
+
         List<EntityGraph<? super T>> result = new ArrayList<>();
         for (AttributeGroup group : descriptor.getAttributeGroups().values()){
-            result.add(new EntityGraphImpl<>(group));
+            result.add(new EntityGraphImpl<>(group.clone(), descriptor));
         }
+
         if (descriptor.hasInheritance()){
             while(descriptor.getInheritancePolicy().getParentDescriptor() != null){
                 descriptor = descriptor.getInheritancePolicy().getParentDescriptor();
                 for (AttributeGroup group : descriptor.getAttributeGroups().values()){
-                    result.add(new EntityGraphImpl<>(group));
+                    result.add(new EntityGraphImpl<>(group.clone(), descriptor));
                 }
             }
         }
+
         return result;
     }
 
@@ -3289,5 +3270,101 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      */
     public SynchronizationType getSyncType() {
         return syncType;
+    }
+
+    @Override
+    public Statement createQuery(CriteriaStatement<?> statement) {
+        return createStatement(statement);
+    }
+
+    @Override
+    public void addOption(Option option) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public Set<Option> getOptions() {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public <T> T get(Class<T> entityClass, Object id) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public <T> T get(Class<T> entityClass, Object id, FindOption... options) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public <T> T get(EntityGraph<T> graph, Object id, FindOption... options) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public <T> List<T> getMultiple(Class<T> entityClass, List<?> ids, FindOption... options) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public <T> List<T> getMultiple(EntityGraph<T> graph, List<?> ids, FindOption... options) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public <T> List<T> findMultiple(Class<T> entityClass, List<?> ids, FindOption... options) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public <T> List<T> findMultiple(EntityGraph<T> graph, List<?> ids, FindOption... options) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public Statement createStatement(String qlString) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public Statement createStatement(CriteriaStatement<?> statement) {
+        try {
+            verifyOpen();
+            return new StatementImpl(((CommonAbstractCriteriaImpl<?>) statement).translate(), this);
+        } catch (RuntimeException e) {
+            setRollbackOnly();
+            throw e;
+        }
+    }
+
+    @Override
+    public <T> TypedQuery<T> createQuery(String qlString, EntityGraph<T> resultGraph) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public Statement createNamedStatement(String name) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public Statement createStatement(StatementReference reference) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public Statement createNativeStatement(String sqlString) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public <T> TypedQuery<T> createNativeQuery(String sqlString, ResultSetMapping<T> resultSetMapping) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public <T> EntityGraph<T> getEntityGraph(Class<T> rootType, String graphName) {
+        throw new UnsupportedOperationException("Not yet implemented");
     }
 }

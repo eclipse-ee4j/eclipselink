@@ -16,6 +16,14 @@
 //       - 277039: JPA 2.0 Cache Usage Settings
 package org.eclipse.persistence.internal.jpa.deployment;
 
+import jakarta.persistence.FetchType;
+import jakarta.persistence.PersistenceConfiguration;
+import jakarta.persistence.PersistenceUnitTransactionType;
+import jakarta.persistence.SharedCacheMode;
+import jakarta.persistence.ValidationMode;
+import jakarta.persistence.spi.ClassTransformer;
+import jakarta.persistence.spi.PersistenceUnitInfo;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -27,12 +35,6 @@ import java.util.Properties;
 
 import javax.sql.DataSource;
 
-import jakarta.persistence.PersistenceConfiguration;
-import jakarta.persistence.PersistenceUnitTransactionType;
-import jakarta.persistence.SharedCacheMode;
-import jakarta.persistence.ValidationMode;
-import jakarta.persistence.spi.ClassTransformer;
-import jakarta.persistence.spi.PersistenceUnitInfo;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.internal.jpa.jdbc.DataSourceImpl;
 
@@ -209,32 +211,15 @@ public class SEPersistenceUnitInfo implements jakarta.persistence.spi.Persistenc
      * @return The transaction type of the entity managers created
      *         by the EntityManagerFactory.
      * @deprecated Use {@link PersistenceUnitTransactionType}
-     *             instead of {@link jakarta.persistence.spi.PersistenceUnitTransactionType}
+     *             instead of {@link jakarta.persistence.PersistenceUnitTransactionType}
      */
     @Override
     @Deprecated
     @SuppressWarnings("removal")
-    public jakarta.persistence.spi.PersistenceUnitTransactionType getTransactionType() {
+    public jakarta.persistence.PersistenceUnitTransactionType getTransactionType() {
         return switch (persistenceUnitTransactionType) {
-            case JTA -> jakarta.persistence.spi.PersistenceUnitTransactionType.JTA;
-            case RESOURCE_LOCAL -> jakarta.persistence.spi.PersistenceUnitTransactionType.RESOURCE_LOCAL;
-        };
-    }
-
-    /**
-     * Specify the transaction type of the persistence unit.
-     *
-     * @param transactionType the transaction type of the entity managers
-     *                        created by the EntityManagerFactory.
-     * @deprecated Use {@link PersistenceUnitTransactionType}
-     *             instead of {@link jakarta.persistence.spi.PersistenceUnitTransactionType}
-     */
-    @Deprecated
-    @SuppressWarnings("removal")
-    public void setTransactionType(jakarta.persistence.spi.PersistenceUnitTransactionType transactionType) {
-        persistenceUnitTransactionType = switch (transactionType) {
-            case JTA -> PersistenceUnitTransactionType.JTA;
-            case RESOURCE_LOCAL -> PersistenceUnitTransactionType.RESOURCE_LOCAL;
+            case JTA -> jakarta.persistence.PersistenceUnitTransactionType.JTA;
+            case RESOURCE_LOCAL -> jakarta.persistence.PersistenceUnitTransactionType.RESOURCE_LOCAL;
         };
     }
 
@@ -499,5 +484,17 @@ public class SEPersistenceUnitInfo implements jakarta.persistence.spi.Persistenc
     @Override
     public ValidationMode getValidationMode() {
         return validationMode;
+    }
+
+    @Override
+    public List<String> getAllClassNames() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public FetchType getDefaultToOneFetchType() {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

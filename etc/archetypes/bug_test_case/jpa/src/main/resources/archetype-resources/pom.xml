@@ -30,7 +30,7 @@
         <maven.compiler.testRelease>17</maven.compiler.testRelease>
 
         <eclipselink.bug.version>${project.version}</eclipselink.bug.version>
-        <jpa.api.bug.version>${jpa.api.version}</jpa.api.bug.version>
+        <jpa.api.bug.version>${persistence.api.version}</jpa.api.bug.version>
         <asm.bug.version>${asm.version}</asm.bug.version>
         <junit.bug.version>${junit.version}</junit.bug.version>
 

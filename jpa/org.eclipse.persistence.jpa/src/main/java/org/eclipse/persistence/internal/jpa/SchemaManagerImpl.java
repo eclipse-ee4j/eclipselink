@@ -16,18 +16,21 @@
 //       - New Jakarta Persistence 3.2 Features
 package org.eclipse.persistence.internal.jpa;
 
-import java.util.Locale;
-import java.util.Map;
-
 import jakarta.persistence.PersistenceException;
 import jakarta.persistence.SchemaManager;
 import jakarta.persistence.SchemaValidationException;
-import org.eclipse.persistence.config.PersistenceUnitProperties;
+
+import java.util.Map;
+
 import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.tools.schemaframework.TableValidationException;
 
+import static java.util.Locale.ROOT;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_VALIDATION_MODE;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_VALIDATION_MODE_FULL;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_VALIDATION_MODE_SIMPLE;
 import static org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider.getConfigPropertyAsString;
 
 // Maps EclipseLink core API to jakarta.persistence.SchemaManager
@@ -38,12 +41,13 @@ class SchemaManagerImpl implements SchemaManager {
 
     // EclipseLink schema manager
     private final org.eclipse.persistence.tools.schemaframework.SchemaManager schemaManager;
+
     // Persistence unit properties
-    final Map<String, ?> props;
+    final Map<String, ?> properties;
 
     SchemaManagerImpl(DatabaseSessionImpl session, Map<String, ?> props) {
         this.schemaManager = new org.eclipse.persistence.tools.schemaframework.SchemaManager(session);
-        this.props = props;
+        this.properties = props;
     }
 
     @Override
@@ -63,14 +67,15 @@ class SchemaManagerImpl implements SchemaManager {
     @Override
     public void validate() throws SchemaValidationException {
         ValidationFailure failures = new ValidationFailure();
-        String mode = getConfigPropertyAsString(PersistenceUnitProperties.SCHEMA_VALIDATION_MODE,
-                                                props,
-                                                PersistenceUnitProperties.SCHEMA_VALIDATION_MODE_SIMPLE)
-                .toLowerCase(Locale.ROOT);
-        boolean full = PersistenceUnitProperties.SCHEMA_VALIDATION_MODE_FULL.equals(mode);
+        String mode =
+            getConfigPropertyAsString(SCHEMA_VALIDATION_MODE, properties, SCHEMA_VALIDATION_MODE_SIMPLE)
+            .toLowerCase(ROOT);
+
+
+        boolean full = SCHEMA_VALIDATION_MODE_FULL.equals(mode);
+
         if (!schemaManager.validateDefaultTables(failures, true, full)) {
-            throw new SchemaValidationException(
-                    ExceptionLocalization.buildMessage("schema_validation_failed"),
+            throw new SchemaValidationException(ExceptionLocalization.buildMessage("schema_validation_failed"),
                     failures.result().toArray(new TableValidationException[0]));
         }
     }
@@ -82,6 +87,12 @@ class SchemaManagerImpl implements SchemaManager {
         } catch (EclipseLinkException ex) {
             throw new PersistenceException(ex.getMessage(), ex);
         }
+    }
+
+    @Override
+    public void populate() {
+        throw new UnsupportedOperationException("Not yet implemented");
+
     }
 
 }

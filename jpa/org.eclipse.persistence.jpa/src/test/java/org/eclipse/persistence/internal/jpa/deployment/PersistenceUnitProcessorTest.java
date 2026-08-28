@@ -216,7 +216,7 @@ class PersistenceUnitProcessorTest {
         SEPersistenceUnitInfo info = persistenceUnits.get(0);
         Assertions.assertEquals("1.0", info.getPersistenceXMLSchemaVersion());
         Assertions.assertEquals("default", info.getPersistenceUnitName());
-        Assertions.assertEquals(jakarta.persistence.spi.PersistenceUnitTransactionType.RESOURCE_LOCAL, info.getTransactionType());
+        Assertions.assertEquals(jakarta.persistence.PersistenceUnitTransactionType.RESOURCE_LOCAL, info.getTransactionType());
         Assertions.assertEquals("org.eclipse.persistence.jpa.PersistenceProvider", info.getPersistenceProviderClassName());
         Assertions.assertEquals(1, info.getMappingFileNames().size());
         Assertions.assertEquals("META-INF/entity-mappings.xml", info.getMappingFileNames().get(0));
@@ -231,7 +231,7 @@ class PersistenceUnitProcessorTest {
         info = persistenceUnits.get(1);
         Assertions.assertEquals("1.0", info.getPersistenceXMLSchemaVersion());
         Assertions.assertEquals("euc_true", info.getPersistenceUnitName());
-        Assertions.assertEquals(jakarta.persistence.spi.PersistenceUnitTransactionType.RESOURCE_LOCAL, info.getTransactionType());
+        Assertions.assertEquals(jakarta.persistence.PersistenceUnitTransactionType.RESOURCE_LOCAL, info.getTransactionType());
         Assertions.assertEquals("org.eclipse.persistence.jpa.PersistenceProvider", info.getPersistenceProviderClassName());
         Assertions.assertEquals(0, info.getMappingFileNames().size());
         Assertions.assertEquals(0, info.getJarFiles().size());
@@ -245,7 +245,7 @@ class PersistenceUnitProcessorTest {
         info = persistenceUnits.get(2);
         Assertions.assertEquals("1.0", info.getPersistenceXMLSchemaVersion());
         Assertions.assertEquals("euc_empty", info.getPersistenceUnitName());
-        Assertions.assertEquals(jakarta.persistence.spi.PersistenceUnitTransactionType.JTA, info.getTransactionType());
+        Assertions.assertEquals(jakarta.persistence.PersistenceUnitTransactionType.JTA, info.getTransactionType());
         Assertions.assertEquals("org.eclipse.persistence.jpa.UnknownProvider", info.getPersistenceProviderClassName());
         Assertions.assertEquals("jdbc/EclipseLinkDS", ((DataSourceImpl) info.getJtaDataSource()).getName());
         Assertions.assertEquals("jdbc/EclipseLinkNonJTADS", ((DataSourceImpl) info.getNonJtaDataSource()).getName());

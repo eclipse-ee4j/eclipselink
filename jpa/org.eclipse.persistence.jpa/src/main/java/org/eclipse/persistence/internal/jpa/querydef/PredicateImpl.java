@@ -15,12 +15,13 @@
 //
 package org.eclipse.persistence.internal.jpa.querydef;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.metamodel.Metamodel;
+
+import java.io.Serial;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * <p>
@@ -37,11 +38,31 @@ import jakarta.persistence.metamodel.Metamodel;
  */
 public class PredicateImpl extends CompoundExpressionImpl implements Predicate {
 
+    @Serial
+    private static final long serialVersionUID = 1L;
+
     protected BooleanOperator booloperator;
 
     public PredicateImpl (Metamodel metamodel, org.eclipse.persistence.expressions.Expression expressionNode, List<Expression<?>> parentExpressions, BooleanOperator operator){
         super(metamodel, expressionNode, parentExpressions);
         this.booloperator = operator;
+    }
+
+    static Predicate toPredicate(Metamodel metamodel, Expression<Boolean> expression) {
+        if (expression == null) {
+            return null;
+        }
+
+        if (((InternalExpression) expression).isPredicate()) {
+            return (Predicate) expression;
+        }
+
+        org.eclipse.persistence.expressions.Expression node = ((InternalSelection) expression).getCurrentNode();
+
+        List<Expression<?>> operands = new ArrayList<>();
+        operands.add(expression);
+
+        return new CompoundExpressionImpl(metamodel, node.equal(true), operands, "equals");
     }
 
     /**
@@ -50,9 +71,10 @@ public class PredicateImpl extends CompoundExpressionImpl implements Predicate {
      * TRUE if this is a conjunction, FALSE for disjunction.
      */
     public Boolean getJunctionValue() {
-        if (this.currentNode != null) {
+        if (currentNode != null) {
             return null;
         }
+
         return this.getOperator() == BooleanOperator.AND;
     }
 
@@ -88,17 +110,20 @@ public class PredicateImpl extends CompoundExpressionImpl implements Predicate {
         PredicateImpl predicateImpl;
         if (isJunction()) {
             if (getJunctionValue()) {
-                predicateImpl = new PredicateImpl(this.metamodel, null, null, BooleanOperator.OR);
+                predicateImpl = new PredicateImpl(metamodel, null, null, BooleanOperator.OR);
             } else {
-                predicateImpl = new PredicateImpl(this.metamodel, null, null, BooleanOperator.AND);
+                predicateImpl = new PredicateImpl(metamodel, null, null, BooleanOperator.AND);
             }
             predicateImpl.setIsNegated(true);
             return predicateImpl;
         }
+
         List<Expression<?>> list = new ArrayList<>();
         list.add(this);
-        predicateImpl = new PredicateImpl(this.metamodel, this.currentNode.not(), list, this.booloperator);
+
+        predicateImpl = new PredicateImpl(metamodel, currentNode.not(), list, this.booloperator);
         predicateImpl.setIsNegated(true);
+
         return predicateImpl;
     }
 
@@ -118,5 +143,25 @@ public class PredicateImpl extends CompoundExpressionImpl implements Predicate {
     @Override
     public boolean isCompoundExpression(){
         return false;
+    }
+
+    @Override
+    public Predicate nullif(Expression<? extends Boolean> y) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public Predicate nullif(Boolean y) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public Predicate coalesce(Boolean y) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public Predicate coalesce(Expression<? extends Boolean> y) {
+        throw new UnsupportedOperationException("Not yet implemented");
     }
 }

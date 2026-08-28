@@ -18,20 +18,17 @@
 
 package org.eclipse.persistence.internal.jpa.querydef;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-
 import jakarta.persistence.criteria.AbstractQuery;
+import jakarta.persistence.criteria.BooleanExpression;
 import jakarta.persistence.criteria.CollectionJoin;
 import jakarta.persistence.criteria.CommonAbstractCriteria;
+import jakarta.persistence.criteria.CriteriaBuilder.SimpleCase;
 import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.From;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.ListJoin;
 import jakarta.persistence.criteria.MapJoin;
+import jakarta.persistence.criteria.NumericExpression;
 import jakarta.persistence.criteria.ParameterExpression;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
@@ -40,6 +37,15 @@ import jakarta.persistence.criteria.SetJoin;
 import jakarta.persistence.criteria.Subquery;
 import jakarta.persistence.metamodel.Metamodel;
 import jakarta.persistence.metamodel.Type.PersistenceType;
+
+import java.io.Serial;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.expressions.ConstantExpression;
@@ -67,6 +73,9 @@ import org.eclipse.persistence.queries.ReportQuery;
  */
 public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T> , InternalExpression, InternalSelection{
 
+    @Serial
+    private static final long serialVersionUID = 1L;
+
     protected SelectionImpl<?> selection;
     protected SubSelectExpression currentNode;
     protected String alias;
@@ -75,8 +84,6 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
     protected CommonAbstractCriteria parent;
     protected Set<FromImpl> processedJoins;
     protected Set<org.eclipse.persistence.expressions.Expression> correlations;
-
-
 
     public SubQueryImpl(Metamodel metamodel, Class<T> result, CriteriaBuilderImpl queryBuilder, CommonAbstractCriteria parent){
         super(metamodel, ResultType.OTHER, queryBuilder, result);
@@ -122,39 +129,40 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
     @Override
     public Subquery<T> select(Expression<T> selection) {
         findRootAndParameters(selection);
-        for (Iterator<Root<?>> iterator = this.getRoots().iterator(); iterator.hasNext();){
+        for (Iterator<Root<?>> iterator = getRoots().iterator(); iterator.hasNext();){
             findJoins((FromImpl)iterator.next());
         }
-        for (Iterator<Join<?, ?>> iterator = this.getCorrelatedJoins().iterator(); iterator.hasNext();){
+        for (Iterator<Join<?, ?>> iterator = getCorrelatedJoins().iterator(); iterator.hasNext();){
             findJoins((FromImpl)iterator.next());
         }
 
         this.selection = (SelectionImpl) selection;
-        this.queryType = (Class<T>) selection.getJavaType();
+        queryType = (Class<T>) selection.getJavaType();
 
-        this.subQuery.getItems().clear();
+        subQuery.getItems().clear();
 
         if (selection.isCompoundSelection()) {
             int count = 0;
             for (Selection select : selection.getCompoundSelectionItems()) {
-                this.subQuery.addItem(String.valueOf(count), ((InternalSelection) select).getCurrentNode());
+                subQuery.addItem(String.valueOf(count), ((InternalSelection) select).getCurrentNode());
                 ++count;
             }
-            this.subQuery.setExpressionBuilder(((InternalSelection)selection.getCompoundSelectionItems().get(0)).getCurrentNode().getBuilder());
+            subQuery.setExpressionBuilder(((InternalSelection)selection.getCompoundSelectionItems().get(0)).getCurrentNode().getBuilder());
         } else {
             TypeImpl<? extends T> type = ((MetamodelImpl)this.metamodel).getType(selection.getJavaType());
             if (type != null && type.getPersistenceType().equals(PersistenceType.ENTITY)) {
-                this.subQuery.addAttribute("", new ConstantExpression(1, ((InternalSelection)selection).getCurrentNode().getBuilder()));
-                this.subQuery.addNonFetchJoinedAttribute(((InternalSelection)selection).getCurrentNode());
+                subQuery.addAttribute("", new ConstantExpression(1, ((InternalSelection)selection).getCurrentNode().getBuilder()));
+                subQuery.addNonFetchJoinedAttribute(((InternalSelection)selection).getCurrentNode());
             } else {
                 String itemName = selection.getAlias();
                 if (itemName == null){
                     itemName = ((InternalSelection) selection).getCurrentNode().getName();
                 }
-                this.subQuery.addItem(itemName, ((InternalSelection) selection).getCurrentNode());
+                subQuery.addItem(itemName, ((InternalSelection) selection).getCurrentNode());
             }
-            this.subQuery.setExpressionBuilder(((InternalSelection)selection).getCurrentNode().getBuilder());
+            subQuery.setExpressionBuilder(((InternalSelection)selection).getCurrentNode().getBuilder());
         }
+
         return this;
     }
 
@@ -167,28 +175,33 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
     }
 
     @Override
+    public Subquery<T> where(BooleanExpression... restrictions) {
+        return where(restrictions != null ? List.of(restrictions) : null);
+    }
+
+    @Override
     public Subquery<T> where(Predicate... restrictions) {
         return where(restrictions != null ? List.of(restrictions) : null);
     }
 
     @Override
-    public Subquery<T> where(List<Predicate> restrictions) {
+    public Subquery<T> where(List<? extends Expression<Boolean>> restrictions) {
         super.where(restrictions);
         setWhereInternal();
         return this;
     }
 
     private void setWhereInternal() {
-        org.eclipse.persistence.expressions.Expression currentNode = ((InternalSelection)this.where).getCurrentNode();
-        for(org.eclipse.persistence.expressions.Expression exp: this.correlations){
+        org.eclipse.persistence.expressions.Expression currentNode = ((InternalSelection) where).getCurrentNode();
+        for (org.eclipse.persistence.expressions.Expression exp : correlations) {
             currentNode = currentNode.and(exp);
         }
         this.subQuery.setSelectionCriteria(currentNode);
-        for (Iterator<Root<?>> iterator = this.getRoots().iterator(); iterator.hasNext();){
-            findJoins((FromImpl)iterator.next());
+        for (Iterator<Root<?>> iterator = this.getRoots().iterator(); iterator.hasNext();) {
+            findJoins((FromImpl) iterator.next());
         }
-        for (Iterator<Join<?, ?>> iterator = this.getCorrelatedJoins().iterator(); iterator.hasNext();){
-            findJoins((FromImpl)iterator.next());
+        for (Iterator<Join<?, ?>> iterator = this.getCorrelatedJoins().iterator(); iterator.hasNext();) {
+            findJoins((FromImpl) iterator.next());
         }
     }
 
@@ -237,28 +250,30 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
     @Override
     public Subquery<T> having(Expression<Boolean> restriction){
         super.having(restriction);
-        setHavingClauseInternal(((InternalSelection)restriction).getCurrentNode());
+        setHavingClauseInternal();
         return this;
     }
 
     @Override
-    public Subquery<T> having(Predicate... restrictions) {
+    public Subquery<T> having(BooleanExpression... restrictions) {
         return having(restrictions != null ? List.of(restrictions) : null);
     }
 
     @Override
-    public Subquery<T> having(List<Predicate> restrictions) {
+    public Subquery<T> having(List<? extends Expression<Boolean>> restrictions) {
         super.having(restrictions);
-        setHavingClauseInternal(((InternalSelection) this.havingClause).getCurrentNode());
+        setHavingClauseInternal();
         return this;
     }
 
-    private void setHavingClauseInternal(org.eclipse.persistence.expressions.Expression currentNode) {
-        if (this.havingClause != null) {
-            this.subQuery.setHavingExpression(currentNode);
-        } else {
-            this.subQuery.setHavingExpression(null);
-        }
+    /**
+     * Pushes the current having clause down to the subquery. Always derived from
+     * {@code havingClause} rather than from the caller's expression, because
+     * {@link AbstractQueryImpl#having(Expression)} may wrap a non-predicate
+     * restriction in {@code isTrue(...)} before storing it.
+     */
+    private void setHavingClauseInternal() {
+        subQuery.setHavingExpression(((InternalSelection) havingClause).getCurrentNode());
     }
 
     /**
@@ -353,7 +368,7 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
     }
 
     protected org.eclipse.persistence.expressions.Expression internalCorrelate(FromImpl from){
-        org.eclipse.persistence.expressions.Expression expression = ((InternalSelection)from).getCurrentNode();
+        org.eclipse.persistence.expressions.Expression expression = from.getCurrentNode();
         ExpressionBuilder builder = new ExpressionBuilder(expression.getBuilder().getQueryClass());
         org.eclipse.persistence.expressions.Expression correlated = expression.rebuildOn(builder);
         expression = expression.equal(correlated);
@@ -652,9 +667,9 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
             this.queryType = root.getJavaType();
             this.currentNode.setBaseExpression(((CommonAbstractCriteriaImpl)this.parent).getBaseExpression());
         }
-        // If the parent of this SubQuery is a CriteriaQuery and the CriteriaQuery has multiple roots, 
+        // If the parent of this SubQuery is a CriteriaQuery and the CriteriaQuery has multiple roots,
         // assign the baseExpression based on the SubQuery's roots - Bug 509693
-        if (!this.roots.contains(root) && this.parent instanceof CriteriaQueryImpl && 
+        if (!this.roots.contains(root) && this.parent instanceof CriteriaQueryImpl &&
                 ((CriteriaQueryImpl) this.parent).getRoots().size() > 1) {
                 this.currentNode.setBaseExpression(((CriteriaQueryImpl) this.parent).getBaseExpression(root));
         }
@@ -700,6 +715,86 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
     @Override
     public DatabaseQuery getDatabaseQuery() {
         return this.subQuery;
+    }
+
+    @Override
+    public List<Root<?>> getRootList() {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public Predicate in(Subquery<T> subquery) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public Expression<T> coalesce(Expression<? extends T> y) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public Expression<T> coalesce(T y) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public Expression<T> nullif(Expression<? extends T> y) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public Expression<T> nullif(T y) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public <R> SimpleCase<T, R> selectCase(Class<R> type) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public Predicate isMember(Expression<? extends Collection<? super T>> collection) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public Predicate isNotMember(Expression<? extends Collection<? super T>> collection) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public NumericExpression<Long> count() {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public NumericExpression<Long> countDistinct() {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public <X, Y> From<X, Y> correlate(From<X, Y> parent) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public Predicate exists() {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public Expression<T> all() {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public Expression<T> some() {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public Expression<T> any() {
+        throw new UnsupportedOperationException("Not yet implemented");
     }
 
 }

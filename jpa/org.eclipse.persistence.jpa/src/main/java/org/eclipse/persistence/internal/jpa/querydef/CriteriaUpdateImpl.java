@@ -16,6 +16,7 @@
 //       - 350469: JPA 2.1 Criteria Query framework Bulk Update/Delete support
 package org.eclipse.persistence.internal.jpa.querydef;
 
+import jakarta.persistence.criteria.BooleanExpression;
 import jakarta.persistence.criteria.CriteriaUpdate;
 import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Path;
@@ -25,18 +26,17 @@ import jakarta.persistence.metamodel.EntityType;
 import jakarta.persistence.metamodel.Metamodel;
 import jakarta.persistence.metamodel.SingularAttribute;
 
+import java.io.Serial;
+import java.util.List;
+
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.UpdateAllQuery;
 
-import java.io.Serial;
-
 /**
  * <p>
- * <b>Purpose</b>: Contains the implementation of the CriteriaUpdate interface of
- * the JPA criteria API.
+ * <b>Purpose</b>: Contains the implementation of the CriteriaUpdate interface of the JPA criteria API.
  * <p>
- * <b>Description</b>: This is the container class for the components that
- * define an Update Query.
+ * <b>Description</b>: This is the container class for the components that define an Update Query.
  *
  * @see jakarta.persistence.criteria CriteriaUpdate
  *
@@ -51,10 +51,10 @@ public class CriteriaUpdateImpl<T> extends CommonAbstractCriteriaImpl<T> impleme
     protected Root<T> root;
     protected UpdateAllQuery query;
 
-    public CriteriaUpdateImpl(Metamodel metamodel, CriteriaBuilderImpl queryBuilder, Class<T> resultType){
+    public CriteriaUpdateImpl(Metamodel metamodel, CriteriaBuilderImpl queryBuilder, Class<T> resultType) {
         super(metamodel, queryBuilder, resultType);
-        //initialize the query.
-        query = new UpdateAllQuery(this.queryType);
+        // initialize the query.
+        query = new UpdateAllQuery(queryType);
         query.setShouldDeferExecutionInUOW(false);
     }
 
@@ -63,7 +63,6 @@ public class CriteriaUpdateImpl<T> extends CommonAbstractCriteriaImpl<T> impleme
         return getRoot();
     }
 
-
     @Override
     public Root<T> from(EntityType<T> entity) {
         return getRoot();
@@ -71,71 +70,80 @@ public class CriteriaUpdateImpl<T> extends CommonAbstractCriteriaImpl<T> impleme
 
     @Override
     public Root<T> getRoot() {
-        if (this.root == null) {
-            if (getResultType() !=null) {
-                EntityType entity = this.metamodel.entity(this.queryType);
-                RootImpl newRoot = new RootImpl(entity, this.metamodel, this.queryType, query.getExpressionBuilder(), entity);
-                this.root = newRoot;
+        if (root == null) {
+            if (getResultType() != null) {
+                EntityType<?> entity = metamodel.entity(queryType);
+                RootImpl newRoot = new RootImpl(entity, metamodel, queryType, query.getExpressionBuilder(), entity);
+                root = newRoot;
             }
         }
-        return this.root;
+
+        return root;
     }
 
     @Override
-    public <Y, X extends Y> CriteriaUpdate<T> set(
-            SingularAttribute<? super T, Y> attribute, X value) {
-        if(value instanceof Expression) {
-            findRootAndParameters((Expression)value);
+    public <Y, X extends Y> CriteriaUpdate<T> set(SingularAttribute<? super T, Y> attribute, X value) {
+        if (value instanceof Expression expression) {
+            findRootAndParameters(expression);
         }
+
         query.addUpdate(attribute.getName(), value);
         return this;
     }
 
     @Override
-    public <Y> CriteriaUpdate<T> set(SingularAttribute<? super T, Y> attribute,
-            Expression<? extends Y> value) {
+    public <Y> CriteriaUpdate<T> set(SingularAttribute<? super T, Y> attribute, Expression<? extends Y> value) {
         findRootAndParameters(value);
-        query.addUpdate(attribute.getName(), ((InternalSelection)value).getCurrentNode());
+        query.addUpdate(attribute.getName(), ((InternalSelection) value).getCurrentNode());
         return this;
     }
-
 
     @Override
     public <Y, X extends Y> CriteriaUpdate<T> set(Path<Y> attribute, X value) {
-        if(value instanceof Expression) {
-            findRootAndParameters((Expression)value);
+        if (value instanceof Expression) {
+            findRootAndParameters((Expression) value);
         }
-        query.addUpdate(((PathImpl)attribute).getCurrentNode(), value);
+
+        query.addUpdate(((PathImpl) attribute).getCurrentNode(), value);
         return this;
     }
 
     @Override
-    public <Y> CriteriaUpdate<T> set(Path<Y> attribute,
-            Expression<? extends Y> value) {
+    public <Y> CriteriaUpdate<T> set(Path<Y> attribute, Expression<? extends Y> value) {
         findRootAndParameters(value);
-        query.addUpdate(((PathImpl)attribute).getCurrentNode(), ((InternalSelection)value).getCurrentNode());
+        query.addUpdate(((PathImpl) attribute).getCurrentNode(), ((InternalSelection) value).getCurrentNode());
         return this;
     }
-
 
     @Override
     public CriteriaUpdate<T> set(String attributeName, Object value) {
-        if(value instanceof Expression) {
-            findRootAndParameters((Expression)value);
-            value = ((InternalSelection)value).getCurrentNode();
+        if (value instanceof Expression expression) {
+            findRootAndParameters(expression);
+            value = ((InternalSelection) value).getCurrentNode();
         }
+
         query.addUpdate(attributeName, value);
         return this;
     }
 
     @Override
+    public CriteriaUpdate<T> where(BooleanExpression... restrictions) {
+        return where(restrictions != null ? List.of(restrictions) : null);
+    }
+
+    @Override
     public CriteriaUpdate<T> where(Expression<Boolean> restriction) {
-        return (CriteriaUpdate<T>)super.where(restriction);
+        return (CriteriaUpdate<T>) super.where(restriction);
     }
 
     @Override
     public CriteriaUpdate<T> where(Predicate... restrictions) {
-        return (CriteriaUpdate<T>)super.where(restrictions);
+        return (CriteriaUpdate<T>) super.where(restrictions);
+    }
+
+    @Override
+    public CriteriaUpdate<T> where(List<? extends Expression<Boolean>> restrictions) {
+        return (CriteriaUpdate<T>) super.where(restrictions);
     }
 
     @Override
@@ -152,6 +160,7 @@ public class CriteriaUpdateImpl<T> extends CommonAbstractCriteriaImpl<T> impleme
 
     @Override
     protected DatabaseQuery getDatabaseQuery() {
-        return (DatabaseQuery)query.clone();
+        return (DatabaseQuery) query.clone();
     }
+
 }

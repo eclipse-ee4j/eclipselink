@@ -62,7 +62,7 @@ import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.weaving.PersistenceWeaved;
 
 /**
- * This is the EclipseLink EJB 3.0 provider
+ * This is the EclipseLink Jakarta Persistence provider
  * <p>
  * This provider should be used by JavaEE and JavaSE users.
  */
@@ -74,45 +74,45 @@ public class PersistenceProvider implements jakarta.persistence.spi.PersistenceP
     /**
      * Internal method to return the entity manager factory.
      */
-    protected EntityManagerFactoryImpl createEntityManagerFactoryImpl(PersistenceUnitInfo puInfo, Map properties, boolean requiresConnection){
-        if (puInfo != null) {
+    protected EntityManagerFactoryImpl createEntityManagerFactoryImpl(PersistenceUnitInfo persistenceUnitInfo, Map properties, boolean requiresConnection){
+        if (persistenceUnitInfo != null) {
             boolean isNew = false;
             String uniqueName = null; // the name that uniquely defines the pu
             String sessionName = null;
             EntityManagerSetupImpl emSetupImpl = null;
-            String puName = puInfo.getPersistenceUnitName();
-            JPAInitializer initializer = getInitializer(puInfo.getPersistenceUnitName(), properties);
+            String persistenceUnitName = persistenceUnitInfo.getPersistenceUnitName();
+            JPAInitializer initializer = getInitializer(persistenceUnitInfo.getPersistenceUnitName(), properties);
 
             try {
-                if (EntityManagerSetupImpl.mustBeCompositeMember(puInfo)) {
+                if (EntityManagerSetupImpl.mustBeCompositeMember(persistenceUnitInfo)) {
                     // Persistence unit cannot be used standalone (only as a composite member).
                     // Still the factory will be created but attempt to createEntityManager would cause an exception.
-                    emSetupImpl = new EntityManagerSetupImpl(puName, puName);
+                    emSetupImpl = new EntityManagerSetupImpl(persistenceUnitName, persistenceUnitName);
                     // Predeploy assigns puInfo and does not do anything else.
                     // The session is not created, no need to add emSetupImpl to the global map.
-                    emSetupImpl.predeploy(puInfo, properties);
+                    emSetupImpl.predeploy(persistenceUnitInfo, properties);
                     isNew = true;
                 } else {
                     if (initializer.isPersistenceUnitUniquelyDefinedByName()) {
-                        uniqueName = puName;
+                        uniqueName = persistenceUnitName;
                     } else {
-                        uniqueName = initializer.createUniquePersistenceUnitName(puInfo);
+                        uniqueName = initializer.createUniquePersistenceUnitName(persistenceUnitInfo);
                     }
 
-                    sessionName = EntityManagerSetupImpl.getOrBuildSessionName(properties, puInfo, uniqueName);
+                    sessionName = EntityManagerSetupImpl.getOrBuildSessionName(properties, persistenceUnitInfo, uniqueName);
                     synchronized (EntityManagerFactoryProvider.emSetupImpls) {
                         emSetupImpl = EntityManagerFactoryProvider.getEntityManagerSetupImpl(sessionName);
 
                         if (emSetupImpl == null) {
                             // there may be initial emSetupImpl cached in Initializer - remove it and use.
-                            emSetupImpl = initializer.extractInitialEmSetupImpl(puName);
+                            emSetupImpl = initializer.extractInitialEmSetupImpl(persistenceUnitName);
 
                             if (emSetupImpl != null) {
                                 // change the name
                                 emSetupImpl.changeSessionName(sessionName);
                             } else {
                                 // create and predeploy a new emSetupImpl
-                                emSetupImpl = initializer.callPredeploy((SEPersistenceUnitInfo) puInfo, properties, uniqueName, sessionName);
+                                emSetupImpl = initializer.callPredeploy((SEPersistenceUnitInfo) persistenceUnitInfo, properties, uniqueName, sessionName);
                             }
 
                             // emSetupImpl has been already predeployed, predeploy will just increment factoryCount.
@@ -126,8 +126,8 @@ public class PersistenceProvider implements jakarta.persistence.spi.PersistenceP
                 throw PersistenceUnitLoadingException.exceptionSearchingForPersistenceResources(initializer.getInitializationClassLoader(), e);
             }
 
-            if (! isNew) {
-                if (! uniqueName.equals(emSetupImpl.getPersistenceUnitUniqueName())) {
+            if (!isNew) {
+                if (!uniqueName.equals(emSetupImpl.getPersistenceUnitUniqueName())) {
                     throw PersistenceUnitLoadingException.sessionNameAlreadyInUse(sessionName, uniqueName, emSetupImpl.getPersistenceUnitUniqueName());
                 }
 
@@ -145,7 +145,7 @@ public class PersistenceProvider implements jakarta.persistence.spi.PersistenceP
                 if (undeployed) {
                     // after the emSetupImpl has been obtained from emSetupImpls
                     // it has been undeployed by factory.close() in another thread - start all over again.
-                    return (EntityManagerFactoryImpl) createEntityManagerFactory(puName, properties);
+                    return (EntityManagerFactoryImpl) createEntityManagerFactory(persistenceUnitName, properties);
                 }
             }
 
@@ -196,7 +196,9 @@ public class PersistenceProvider implements jakarta.persistence.spi.PersistenceP
         if (!isProviderEclipseLink(configuration)) {
             return null;
         }
+
         JPAInitializer initializer = getInitializer(configuration.name(), configuration.properties());
+
         // Root URL from method caller
         StackWalker stackWalker = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE);
         StackWalker.StackFrame frame = stackWalker.walk(stream -> stream
@@ -204,6 +206,7 @@ public class PersistenceProvider implements jakarta.persistence.spi.PersistenceP
                 .dropWhile(f -> f.getClassName().startsWith("jakarta.persistence"))
                 .findFirst()
                 .orElse(null));
+
         URL rootURL;
         if (frame != null) {
             // getProtectionDomain() may be restricted by SecurityManager
@@ -604,6 +607,18 @@ public class PersistenceProvider implements jakarta.persistence.spi.PersistenceP
                     ex);
         }
         return rootURL;
+    }
+
+    @Override
+    public boolean generateSchema(PersistenceConfiguration configuration) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public ClassTransformer getClassTransformer(PersistenceUnitInfo info, Map<?, ?> properties) {
+        // TODO Auto-generated method stub
+        return null;
     }
 }
 

@@ -26,6 +26,24 @@
 //       - New Jakarta Persistence 3.2 Features
 package org.eclipse.persistence.internal.jpa;
 
+import jakarta.persistence.AttributeConverter;
+import jakarta.persistence.CacheRetrieveMode;
+import jakarta.persistence.CacheStoreMode;
+import jakarta.persistence.EntityGraph;
+import jakarta.persistence.FlushModeType;
+import jakarta.persistence.LockModeType;
+import jakarta.persistence.LockTimeoutException;
+import jakarta.persistence.Parameter;
+import jakarta.persistence.PersistenceException;
+import jakarta.persistence.PessimisticLockScope;
+import jakarta.persistence.QueryFlushMode;
+import jakarta.persistence.Statement;
+import jakarta.persistence.TemporalType;
+import jakarta.persistence.Timeout;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.metamodel.Type;
+import jakarta.persistence.sql.ResultSetMapping;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -33,22 +51,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
-import jakarta.persistence.CacheRetrieveMode;
-import jakarta.persistence.CacheStoreMode;
-import jakarta.persistence.FlushModeType;
-import jakarta.persistence.LockModeType;
-import jakarta.persistence.LockTimeoutException;
-import jakarta.persistence.Parameter;
-import jakarta.persistence.PersistenceException;
-import jakarta.persistence.TemporalType;
-import jakarta.persistence.TypedQuery;
-import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.expressions.Expression;
-import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.jpa.querydef.ParameterExpressionImpl;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
@@ -69,11 +76,19 @@ import org.eclipse.persistence.queries.ResultSetMappingQuery;
 import org.eclipse.persistence.queries.SQLResultSetMapping;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 
+import static org.eclipse.persistence.config.QueryHints.CACHE_RETRIEVE_MODE;
+import static org.eclipse.persistence.config.QueryHints.CACHE_STORE_MODE;
+import static org.eclipse.persistence.config.QueryHints.QUERY_TIMEOUT;
+import static org.eclipse.persistence.internal.core.helper.CoreClassConstants.Collection_Class;
+import static org.eclipse.persistence.internal.helper.Helper.classImplementsInterface;
+import static org.eclipse.persistence.queries.ObjectLevelReadQuery.DONT_USE_DISTINCT;
+
 /**
  * Concrete JPA query class. The JPA query wraps a DatabaseQuery which is
  * executed.
  */
 public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
+
     /**
      * Base constructor for EJBQueryImpl. Initializes basic variables.
      */
@@ -129,6 +144,7 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
      */
     public EJBQueryImpl(String queryDescription, EntityManagerImpl entityManager, boolean isNamedQuery, Class<?> resultClass) {
         super(entityManager);
+
         if (isNamedQuery) {
             this.queryName = queryDescription;
         } else {
@@ -137,6 +153,7 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
                 databaseQuery = buildEJBQLDatabaseQuery(null, queryDescription, entityManager.getActiveSessionIfExists(), null, null, session.getDatasourcePlatform().getConversionManager().getLoader(), resultClass);
             }
         }
+
         // Inherit applicable hints from EntityManager
         inheritEntityManagerHints();
     }
@@ -188,6 +205,7 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
         if (isCacheable) {
             databaseQuery = session.getProject().getJPQLParseCache().get(jpqlQuery);
         }
+
         if ((databaseQuery == null) || (!databaseQuery.isPrepared())) {
             JPAQueryBuilder queryBuilder = session.getQueryBuilder();
             databaseQuery = queryBuilder.buildQuery(jpqlQuery, session);
@@ -196,7 +214,7 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
             // filtering duplicates.
             if (databaseQuery.isReadAllQuery()) {
                 ReadAllQuery readAllQuery = (ReadAllQuery) databaseQuery;
-                if (readAllQuery.hasJoining() && (readAllQuery.getDistinctState() == ReadAllQuery.DONT_USE_DISTINCT)) {
+                if (readAllQuery.hasJoining() && (readAllQuery.getDistinctState() == DONT_USE_DISTINCT)) {
                     readAllQuery.setShouldFilterDuplicates(false);
                 }
                 if (databaseQuery.isReportQuery()) {
@@ -351,7 +369,7 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
      *             if the second argument is not valid for the implementation
      */
     @Override
-    public TypedQuery<X> setHint(String hintName, Object value) {
+    public EJBQueryImpl<X> setHint(String hintName, Object value) {
         try {
             entityManager.verifyOpen();
             setHintInternal(hintName, value);
@@ -369,9 +387,9 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
      *             if not a Java Persistence query language SELECT query
      */
     @Override
-    @SuppressWarnings("unchecked")
     public EJBQueryImpl<X> setLockMode(LockModeType lockMode) {
-        return (EJBQueryImpl<X>) super.setLockMode(lockMode);
+        super.setLockMode(lockMode);
+        return this;
     }
 
 
@@ -382,9 +400,9 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
     }
 
     @Override
-    public TypedQuery<X> setCacheRetrieveMode(CacheRetrieveMode cacheRetrieveMode) {
+    public EJBQueryImpl<X> setCacheRetrieveMode(CacheRetrieveMode cacheRetrieveMode) {
         FindOptionUtils.setCacheRetrieveMode(getDatabaseQuery().getProperties(), cacheRetrieveMode);
-        setHint(QueryHints.CACHE_RETRIEVE_MODE, cacheRetrieveMode);
+        setHint(CACHE_RETRIEVE_MODE, cacheRetrieveMode);
         return this;
     }
 
@@ -394,9 +412,9 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
     }
 
     @Override
-    public TypedQuery<X> setCacheStoreMode(CacheStoreMode cacheStoreMode) {
+    public EJBQueryImpl<X> setCacheStoreMode(CacheStoreMode cacheStoreMode) {
         FindOptionUtils.setCacheStoreMode(getDatabaseQuery().getProperties(), cacheStoreMode);
-        setHint(QueryHints.CACHE_STORE_MODE, cacheStoreMode);
+        setHint(CACHE_STORE_MODE, cacheStoreMode);
         return this;
     }
 
@@ -406,9 +424,9 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
     }
 
     @Override
-    public TypedQuery<X> setTimeout(Integer timeout) {
+    public EJBQueryImpl<X> setTimeout(Integer timeout) {
         FindOptionUtils.setTimeout(getDatabaseQuery().getProperties(), timeout);
-        setHint(QueryHints.QUERY_TIMEOUT, timeout);
+        setHint(QUERY_TIMEOUT, timeout);
         return this;
     }
 
@@ -429,15 +447,15 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
         Map<String, Object> emProperties = entityManager.properties;
 
         // CACHE_RETRIEVE_MODE only applies to ObjectLevelReadQuery (SELECT queries)
-        if (dbQuery.isObjectLevelReadQuery() && emProperties.containsKey(QueryHints.CACHE_RETRIEVE_MODE)) {
-            setHint(QueryHints.CACHE_RETRIEVE_MODE, emProperties.get(QueryHints.CACHE_RETRIEVE_MODE));
+        if (dbQuery.isObjectLevelReadQuery() && emProperties.containsKey(CACHE_RETRIEVE_MODE)) {
+            setHint(CACHE_RETRIEVE_MODE, emProperties.get(CACHE_RETRIEVE_MODE));
         }
 
         // CACHE_STORE_MODE applies to all query types:
         // - For ObjectLevelReadQuery: controls whether results are stored in cache after reading
         // - For ModifyQuery: controls whether cache is invalidated after UPDATE/DELETE
-        if (emProperties.containsKey(QueryHints.CACHE_STORE_MODE)) {
-            setHint(QueryHints.CACHE_STORE_MODE, emProperties.get(QueryHints.CACHE_STORE_MODE));
+        if (emProperties.containsKey(CACHE_STORE_MODE)) {
+            setHint(CACHE_STORE_MODE, emProperties.get(CACHE_STORE_MODE));
         }
     }
 
@@ -460,14 +478,14 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
         try {
             if (query.isReadAllQuery()) {
                 Class<?> containerClass = ((ReadAllQuery) getDatabaseQueryInternal()).getContainerPolicy().getContainerClass();
-                if (!Helper.classImplementsInterface(containerClass, CoreClassConstants.Collection_Class)) {
-                    throw QueryException.invalidContainerClass(containerClass, CoreClassConstants.Collection_Class);
+                if (!classImplementsInterface(containerClass, Collection_Class)) {
+                    throw QueryException.invalidContainerClass(containerClass, Collection_Class);
                 }
             } else if (query.isReadObjectQuery()) {
                 List<Object> resultList = new ArrayList<>();
                 Object result = executeReadQuery();
                 if (result != null) {
-                    resultList.add(executeReadQuery());
+                    resultList.add(result);
                 }
                 return resultList;
             } else if (!query.isReadQuery()) {
@@ -498,6 +516,7 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
         try {
             setAsSQLReadQuery();
             propagateResultProperties();
+
             // bug:4297903, check container policy class and throw exception if its
             // not the right type
             if (getDatabaseQueryInternal() instanceof ReadAllQuery) {
@@ -512,8 +531,7 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
                 throw new IllegalStateException(ExceptionLocalization.buildMessage("incorrect_query_for_get_result_collection"));
             }
 
-            Object result = executeReadQuery();
-            return (Cursor) result;
+            return (Cursor) executeReadQuery();
         } catch (LockTimeoutException e) {
             throw e;
         } catch (PersistenceException | IllegalStateException exception) {
@@ -545,8 +563,15 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
      * @return the same query instance
      */
     @Override
-    public EJBQueryImpl setFirstResult(int startPosition) {
-        return (EJBQueryImpl) super.setFirstResult(startPosition);
+    public EJBQueryImpl<X> setFirstResult(int startPosition) {
+        super.setFirstResult(startPosition);
+        return this;
+    }
+
+    @Override
+    public EJBQueryImpl<X> setQueryFlushMode(QueryFlushMode flushMode) {
+        super.setQueryFlushMode(flushMode);
+        return this;
     }
 
     /**
@@ -554,8 +579,10 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
      *
      */
     @Override
-    public EJBQueryImpl setFlushMode(FlushModeType flushMode) {
-        return (EJBQueryImpl) super.setFlushMode(flushMode);
+    @Deprecated(since = "6.0")
+    public EJBQueryImpl<X> setFlushMode(FlushModeType flushMode) {
+        super.setFlushMode(flushMode);
+        return this;
     }
 
     /**
@@ -564,8 +591,9 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
      * @return the same query instance
      */
     @Override
-    public EJBQueryImpl setMaxResults(int maxResult) {
-        return (EJBQueryImpl) super.setMaxResults(maxResult);
+    public EJBQueryImpl<X> setMaxResults(int maxResult) {
+        super.setMaxResults(maxResult);
+        return this;
     }
 
     /**
@@ -574,7 +602,8 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
      * @return the same query instance
      */
     @Override
-    public TypedQuery setParameter(int position, Calendar value, TemporalType temporalType) {
+    @Deprecated(since = "3.2")
+    public EJBQueryImpl<X> setParameter(int position, Calendar value, TemporalType temporalType) {
         entityManager.verifyOpenWithSetRollbackOnly();
         return setParameter(position, convertTemporalType(value, temporalType));
     }
@@ -585,7 +614,8 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
      * @return the same query instance
      */
     @Override
-    public TypedQuery setParameter(int position, Date value, TemporalType temporalType) {
+    @Deprecated(since = "3.2")
+    public EJBQueryImpl<X> setParameter(int position, Date value, TemporalType temporalType) {
         entityManager.verifyOpenWithSetRollbackOnly();
         return setParameter(position, convertTemporalType(value, temporalType));
     }
@@ -596,7 +626,7 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
      * @return the same query instance
      */
     @Override
-    public TypedQuery setParameter(int position, Object value) {
+    public EJBQueryImpl<X> setParameter(int position, Object value) {
         try {
             entityManager.verifyOpen();
             setParameterInternal(position, value);
@@ -615,10 +645,13 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
      *             if position does not correspond to a parameter of the query
      */
     @Override
-    public TypedQuery setParameter(Parameter<Calendar> param, Calendar value, TemporalType temporalType) {
+    @Deprecated(since = "3.2")
+    public EJBQueryImpl<X> setParameter(Parameter<Calendar> param, Calendar value, TemporalType temporalType) {
         entityManager.verifyOpenWithSetRollbackOnly();
-        if (param == null)
+        if (param == null) {
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("NULL_PARAMETER_PASSED_TO_SET_PARAMETER"));
+        }
+
         //bug 402686: type validation
         String position = getParameterId(param);
         ParameterExpressionImpl parameter = (ParameterExpressionImpl) this.getInternalParameters().get(position);
@@ -628,7 +661,8 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
         if (!parameter.getParameterType().equals(param.getParameterType())) {
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("INCORRECT_PARAMETER_TYPE", new Object[] { position, param.getParameterType() }));
         }
-        return this.setParameter(position, value, temporalType);
+
+        return setParameter(position, value, temporalType);
     }
 
     /**
@@ -641,9 +675,12 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
      *             if position does not correspond to a parameter of the query
      */
     @Override
-    public TypedQuery setParameter(Parameter<Date> param, Date value, TemporalType temporalType) {
-        if (param == null)
+    @Deprecated(since = "3.2")
+    public EJBQueryImpl<X> setParameter(Parameter<Date> param, Date value, TemporalType temporalType) {
+        if (param == null) {
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("NULL_PARAMETER_PASSED_TO_SET_PARAMETER"));
+        }
+
         //bug 402686: type validation
         String position = getParameterId(param);
         ParameterExpressionImpl parameter = (ParameterExpressionImpl) this.getInternalParameters().get(position);
@@ -653,7 +690,8 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
         if (!parameter.getParameterType().equals(param.getParameterType())) {
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("INCORRECT_PARAMETER_TYPE", new Object[] { position, param.getParameterType() }));
         }
-        return this.setParameter(position, value, temporalType);
+
+        return setParameter(position, value, temporalType);
     }
 
     /**
@@ -668,10 +706,11 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
      *             if parameter does not correspond to a parameter of the query
      */
     @Override
-    public <T> TypedQuery setParameter(Parameter<T> param, T value) {
+    public <T> EJBQueryImpl<X> setParameter(Parameter<T> param, T value) {
         if (param == null) {
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("NULL_PARAMETER_PASSED_TO_SET_PARAMETER"));
         }
+
         //bug 402686: type validation
         String position = getParameterId(param);
         ParameterExpressionImpl parameter = (ParameterExpressionImpl) this.getInternalParameters().get(position);
@@ -681,7 +720,8 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
         if (!parameter.getParameterType().equals(param.getParameterType())) {
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("INCORRECT_PARAMETER_TYPE", new Object[] { position, param.getParameterType() }));
         }
-        return this.setParameter(position, value);
+
+        return setParameter(position, value);
     }
 
     /**
@@ -690,7 +730,8 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
      * @return the same query instance
      */
     @Override
-    public TypedQuery setParameter(String name, Calendar value, TemporalType temporalType) {
+    @Deprecated(since = "3.2")
+    public EJBQueryImpl<X> setParameter(String name, Calendar value, TemporalType temporalType) {
         entityManager.verifyOpenWithSetRollbackOnly();
         return setParameter(name, convertTemporalType(value, temporalType));
     }
@@ -701,7 +742,8 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
      * @return the same query instance
      */
     @Override
-    public TypedQuery setParameter(String name, Date value, TemporalType temporalType) {
+    @Deprecated(since = "3.2")
+    public EJBQueryImpl<X> setParameter(String name, Date value, TemporalType temporalType) {
         entityManager.verifyOpenWithSetRollbackOnly();
         return setParameter(name, convertTemporalType(value, temporalType));
     }
@@ -714,7 +756,7 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
      * @return the same query instance
      */
     @Override
-    public TypedQuery setParameter(String name, Object value) {
+    public EJBQueryImpl<X> setParameter(String name, Object value) {
         try {
             entityManager.verifyOpen();
             setParameterInternal(name, value, false);
@@ -728,5 +770,90 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
     @Override
     public String toString() {
         return getClass().getSimpleName() + "(" + this.databaseQuery + ")";
+    }
+
+    @Override
+    public long getResultCount() {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public EJBQueryImpl<X> setLockScope(PessimisticLockScope lockScope) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public PessimisticLockScope getLockScope() {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public EJBQueryImpl<X> addOption(Option option) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public Set<Option> getOptions() {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public Statement asStatement() {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public <R> TypedQuery<R> ofType(Class<R> resultType) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public <R> TypedQuery<R> withEntityGraph(EntityGraph<R> graph) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public <R> TypedQuery<R> withResultSetMapping(ResultSetMapping<R> mapping) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public <P> EJBQueryImpl<X> setParameter(String name, P value, Class<P> type) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public <P> EJBQueryImpl<X> setParameter(String name, P value, Type<P> type) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public <P> EJBQueryImpl<X> setConvertedParameter(String name, P value, Class<? extends AttributeConverter<P, ?>> converter) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public <P> EJBQueryImpl<X> setParameter(int position, P value, Class<P> type) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public <P> EJBQueryImpl<X> setParameter(int position, P value, Type<P> type) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public <P> EJBQueryImpl<X> setConvertedParameter(int position, P value, Class<? extends AttributeConverter<P, ?>> converter) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public EJBQueryImpl<X> setParameters(Object... arguments) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public EJBQueryImpl<X> setTimeout(Timeout timeout) {
+        throw new UnsupportedOperationException("Not yet implemented");
     }
 }

@@ -16,10 +16,14 @@
 //       - New Jakarta Persistence 3.2 Features
 package org.eclipse.persistence.internal.jpa;
 
-import java.util.Collections;
-import java.util.Map;
-
+import jakarta.persistence.TypedQuery.Option;
 import jakarta.persistence.TypedQueryReference;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import static java.util.Collections.emptyMap;
 
 /**
  * EclipseLink implementation of {@link TypedQueryReference} interface.
@@ -34,8 +38,7 @@ class TypedQueryReferenceImpl<R> implements TypedQueryReference<R> {
     TypedQueryReferenceImpl(String name, Class<? extends R> resultType, Map<String, Object> hints) {
         this.name = name;
         this.resultType = resultType;
-        // TypedQueryReference javadoc says nothing about null, but let's be safe
-        this.hints = hints != null ? hints : Collections.emptyMap();
+        this.hints = hints != null ? hints : emptyMap();
     }
 
     @Override
@@ -51,6 +54,31 @@ class TypedQueryReferenceImpl<R> implements TypedQueryReference<R> {
     @Override
     public Map<String, Object> getHints() {
         return hints;
+    }
+
+    @Override
+    public List<Class<?>> getParameterTypes() {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public List<String> getParameterNames() {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public List<Object> getArguments() {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public Set<Option> getOptions() {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public String getEntityGraphName() {
+        throw new UnsupportedOperationException("Not yet implemented");
     }
 
 }
