@@ -83,6 +83,8 @@ public class XMLEntityMappingsReader {
     public static final String ORM_3_1_NAMESPACE = "https://jakarta.ee/xml/ns/persistence/orm";
     public static final String ORM_3_2_XSD = "org/eclipse/persistence/jpa/orm_3_2.xsd";
     public static final String ORM_3_2_NAMESPACE = "https://jakarta.ee/xml/ns/persistence/orm";
+    public static final String ORM_4_0_XSD = "org/eclipse/persistence/jpa/orm_4_0.xsd";
+    public static final String ORM_4_0_NAMESPACE = "https://jakarta.ee/xml/ns/persistence/orm";
     public static final String ECLIPSELINK_ORM_XSD = "org/eclipse/persistence/jpa/eclipselink_orm_5_0.xsd";
     public static final String ECLIPSELINK_ORM_NAMESPACE = "http://www.eclipse.org/eclipselink/xsds/persistence/orm";
 
@@ -93,6 +95,7 @@ public class XMLEntityMappingsReader {
     private static XMLContext m_orm3_0Project;
     private static XMLContext m_orm3_1Project;
     private static XMLContext m_orm3_2Project;
+    private static XMLContext m_orm4_0Project;
     private static XMLContext m_eclipseLinkOrmProject;
 
     private static Schema m_orm1_0Schema;
@@ -102,6 +105,7 @@ public class XMLEntityMappingsReader {
     private static Schema m_orm3_0Schema;
     private static Schema m_orm3_1Schema;
     private static Schema m_orm3_2Schema;
+    private static Schema m_orm4_0Schema;
     private static Schema m_eclipseLinkOrmSchema;
 
     private XMLEntityMappingsReader() {
@@ -168,10 +172,15 @@ public class XMLEntityMappingsReader {
                 if (validateSchema) {
                     context[1] = getOrm3_1Schema();
                 }
-            } else {
+            } else if (contentHandler.getVersion().contains("3.2")) {
                 context[0] = getOrm3_2Project();
                 if (validateSchema) {
                     context[1] = getOrm3_2Schema();
+                }
+            } else {
+                context[0] = getOrm4_0Project();
+                if (validateSchema) {
+                    context[1] = getOrm4_0Schema();
                 }
             }
         }
@@ -366,6 +375,28 @@ public class XMLEntityMappingsReader {
     }
 
     /**
+     * @return the ORM 4.0 project.
+     */
+    public static XMLContext getOrm4_0Project() {
+        if (m_orm4_0Project == null) {
+            m_orm4_0Project = new XMLContext(new XMLEntityMappingsMappingProject(ORM_4_0_NAMESPACE, ORM_4_0_XSD));
+        }
+
+        return m_orm4_0Project;
+    }
+
+    /**
+     * @return the ORM 4.0 schema.
+     */
+    public static Schema getOrm4_0Schema() throws IOException, SAXException {
+        if (m_orm4_0Schema == null) {
+            m_orm4_0Schema = loadLocalSchema(ORM_4_0_XSD);
+        }
+
+        return m_orm4_0Schema;
+    }
+
+    /**
      * Free the project and schema objects to avoid holding onto the memory.
      * This can be done post-deployment to conserve memory.
      */
@@ -377,6 +408,7 @@ public class XMLEntityMappingsReader {
         m_orm3_0Project = null;
         m_orm3_1Project = null;
         m_orm3_2Project = null;
+        m_orm4_0Project = null;
         m_eclipseLinkOrmProject = null;
 
         m_orm1_0Schema = null;
@@ -386,6 +418,7 @@ public class XMLEntityMappingsReader {
         m_orm3_0Schema = null;
         m_orm3_1Schema = null;
         m_orm3_2Schema = null;
+        m_orm4_0Schema = null;
         m_eclipseLinkOrmSchema = null;
     }
 
