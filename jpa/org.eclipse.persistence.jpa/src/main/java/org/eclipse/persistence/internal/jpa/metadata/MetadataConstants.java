@@ -104,10 +104,12 @@ public final class MetadataConstants {
     public static final String JPA_ORDER_BY = "jakarta.persistence.OrderBy";
     public static final String JPA_ORDER_COLUMN = "jakarta.persistence.OrderColumn";
     public static final String JPA_PARAMETER = "jakarta.persistence.Parameter";
+    public static final String JPA_POST_INSERT = "jakarta.persistence.PostInsert";
     public static final String JPA_POST_LOAD = "jakarta.persistence.PostLoad";
     public static final String JPA_POST_PERSIST = "jakarta.persistence.PostPersist";
     public static final String JPA_POST_REMOVE = "jakarta.persistence.PostRemove";
     public static final String JPA_POST_UPDATE = "jakarta.persistence.PostUpdate";
+    public static final String JPA_PRE_INSERT = "jakarta.persistence.PreInsert";
     public static final String JPA_PRE_PERSIST = "jakarta.persistence.PrePersist";
     public static final String JPA_PRE_REMOVE = "jakarta.persistence.PreRemove";
     public static final String JPA_PRE_UPDATE = "jakarta.persistence.PreUpdate";

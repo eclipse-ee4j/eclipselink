@@ -83,7 +83,13 @@ class SchemaManagerImpl implements SchemaManager {
     @Override
     public void truncate() {
         try {
-            schemaManager.truncateDefaultTables(false);
+            // Foreign key constraints have to be generated here, even though truncate creates
+            // no schema: truncateDefaultTables drops the constraints, truncates and re-creates
+            // them, and the table definitions it works from only carry those constraints when
+            // asked for them. Passing false leaves the drop/create a no-op while the real tables
+            // still have their foreign keys, and databases that refuse TRUNCATE on a referenced
+            // table (Derby XCL48) then leave the parent table's rows behind.
+            schemaManager.truncateDefaultTables(true);
         } catch (EclipseLinkException ex) {
             throw new PersistenceException(ex.getMessage(), ex);
         }

@@ -38,10 +38,12 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ACCESS_PROPERTY;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_POST_INSERT;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_POST_LOAD;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_POST_PERSIST;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_POST_REMOVE;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_POST_UPDATE;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_PRE_INSERT;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_PRE_PERSIST;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_PRE_REMOVE;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_PRE_UPDATE;
@@ -196,10 +198,12 @@ public class MetadataMethod extends MetadataAnnotatedElement {
      * an associated set method.
      */
     public boolean isALifeCycleCallbackMethod() {
-        return isAnnotationPresent(JPA_POST_LOAD) ||
+        return isAnnotationPresent(JPA_POST_INSERT) ||
+               isAnnotationPresent(JPA_POST_LOAD) ||
                isAnnotationPresent(JPA_POST_PERSIST) ||
                isAnnotationPresent(JPA_POST_REMOVE) ||
                isAnnotationPresent(JPA_POST_UPDATE) ||
+               isAnnotationPresent(JPA_PRE_INSERT) ||
                isAnnotationPresent(JPA_PRE_PERSIST) ||
                isAnnotationPresent(JPA_PRE_REMOVE) ||
                isAnnotationPresent(JPA_PRE_UPDATE);
