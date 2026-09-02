@@ -838,6 +838,22 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                     updateTunerPostDeploy(deployProperties, classLoaderToUse);
                     this.deployLock.release();
                     isLockAcquired = false;
+                } else if (this.session.isDatabaseSession() && !isValidationOnly(deployProperties, false)) {
+
+                    // The persistence unit is already deployed and logged in, which is what happens
+                    // whenever an EntityManagerFactory is created for a unit that another, still open,
+                    // factory already deployed. The branch above never runs in that case, so without
+                    // this one the schema generation properties passed to this particular
+                    // createEntityManagerFactory or Persistence.generateSchema call would be silently
+                    // ignored.
+                    //
+                    // Nothing in Jakarta Persistence exempts an already deployed unit, and Hibernate
+                    // performs both the script and the database action on every factory it builds.
+                    // This was never tested for before, but in the 4.0 TCK
+                    // ee.jakarta.tck.persistence.se.schemaGeneration.annotations.discriminatorColumn.Client now
+                    // implicitly tests for this.
+
+                    writeDDL(deployProperties, getDatabaseSession(deployProperties), classLoaderToUse);
                 }
                 // 266912: Initialize the Metamodel, a login should have already occurred.
                 try {
