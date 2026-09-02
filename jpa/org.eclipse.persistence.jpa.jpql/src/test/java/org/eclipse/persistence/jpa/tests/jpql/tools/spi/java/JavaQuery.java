@@ -49,7 +49,7 @@ public class JavaQuery implements IQuery {
     public JavaQuery(IManagedTypeProvider provider, CharSequence jpqlQuery) {
         super();
         this.provider = provider;
-        setExpression(jpqlQuery);
+        this.jpqlQuery = (jpqlQuery != null) ? jpqlQuery.toString() : ExpressionTools.EMPTY_STRING;
     }
 
     @Override

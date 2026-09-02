@@ -77,6 +77,7 @@ public class JavaManagedTypeProvider implements IManagedTypeProvider {
      * {@link org.eclipse.persistence.jpa.jpql.tools.spi.IMapping IMapping} wrapping a persistent attribute or property
      * @exception NullPointerException The {@link IMappingBuilder} cannot be <code>null</code>
      */
+    @SuppressWarnings("this-escape")
     public JavaManagedTypeProvider(IMappingBuilder<Member> mappingBuilder) {
         super();
         initialize(mappingBuilder);
