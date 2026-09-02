@@ -15,6 +15,7 @@
 //
 package org.eclipse.persistence.jpa.tests.jpql.parser;
 
+import org.eclipse.persistence.jpa.jpql.parser.ResultVariableFactoryTest;
 import org.eclipse.persistence.jpa.tests.jpql.JPQLTestRunner;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite.SuiteClasses;
@@ -35,6 +36,7 @@ import org.junit.runners.Suite.SuiteClasses;
     AllEclipseLinkJPQLParserTests2_1.class,
     AllEclipseLinkJPQLParserTests2_4.class,
     AllEclipseLinkJPQLParserTests2_5.class,
+    ResultVariableFactoryTest.class,
     AllJPQLParserConcurrentTests.class
 })
 @RunWith(JPQLTestRunner.class)
