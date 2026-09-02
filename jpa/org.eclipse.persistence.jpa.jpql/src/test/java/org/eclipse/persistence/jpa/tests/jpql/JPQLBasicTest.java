@@ -27,6 +27,7 @@ public abstract class JPQLBasicTest {
     /**
      * Creates a new <code>JPQLBasicTest</code>.
      */
+    @SuppressWarnings("this-escape")
     protected JPQLBasicTest() {
         super();
         initialize();
