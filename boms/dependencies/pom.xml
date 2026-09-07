@@ -60,16 +60,16 @@
         <angus-mail.version>2.0.5</angus-mail.version>
         <jaxb.version>4.0.9</jaxb.version>
         <jaxwsrt.version>4.0.5</jaxwsrt.version>
-        <ant.version>1.10.17</ant.version>
+        <ant.version>1.10.18</ant.version>
         <apache.felix.framework.version>7.0.5</apache.felix.framework.version>
         <parsson.version>1.1.9</parsson.version>
         <org.glassfish.corba.version>5.0.2</org.glassfish.corba.version>
         <jgroups.version>5.3.11.Final</jgroups.version>
         <slf4j.version>2.0.18</slf4j.version>
         <wsdl4j.version>1.6.3</wsdl4j.version>
-        <mongodb.version>5.10.0</mongodb.version>
+        <mongodb.version>5.11.0</mongodb.version>
         <oracle.nosql.version>18.3.10</oracle.nosql.version>
-        <oracle.nosql.sdk.version>5.4.23</oracle.nosql.sdk.version>
+        <oracle.nosql.sdk.version>5.4.24</oracle.nosql.sdk.version>
         <oracle.jdbc.version>23.3.0.23.09</oracle.jdbc.version>
         <oracle.aqapi.version>23.9.0.0</oracle.aqapi.version>
 
