@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (c) 2026 Contributors to the Eclipse Foundation.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+-->
+<!--
+    Runs the TCK DDL as a sub-build so its output can be captured to a file
+    instead of streamed to the console.
+
+    The DDL drops every object before creating it, and drops are interleaved with
+    creates rather than grouped, so the drop statements cannot simply be skipped.
+    On a clean database every one of them fails, which buries any real problem in
+    a few hundred expected errors. The caller filters the captured log instead.
+
+    Run as a forked Ant process so the caller can redirect its output. Running it
+    in-process (via <ant output="..."/>) does not work: maven-antrun's listener still
+    receives every log event, so the drop failures reach the console anyway.
+
+    The JDBC driver is expected on the forked JVM's classpath, so no classpathref
+    is needed here. All connection settings arrive as -D properties.
+
+    Both the schema and the stored procedures are plain SQL for PostgreSQL, so this
+    single target covers them; the Derby build needed a second target to install
+    Java procedures through SQLJ.
+-->
+<project name="persistence-tck-initdb" default="initdb">
+
+    <!--
+        Loads the TCK's DDL. Every drop fails on a clean database; the caller
+        filters those out of the captured log.
+    -->
+    <target name="initdb">
+        <sql autocommit="true"
+             delimiter="${db.delimiter}"
+             driver="${jakarta.persistence.jdbc.driver}"
+             onerror="continue"
+             password="${jakarta.persistence.jdbc.password}"
+             url="${jakarta.persistence.jdbc.url}"
+             userid="${jakarta.persistence.jdbc.user}">
+            <transaction src="${sql.directory}/${jdbc.db}/${jdbc.db}.ddl.persistence.sql"/>
+            <transaction src="${sql.directory}/${jdbc.db}/${jdbc.db}.ddl.persistence.sprocs.sql"/>
+        </sql>
+    </target>
+
+</project>

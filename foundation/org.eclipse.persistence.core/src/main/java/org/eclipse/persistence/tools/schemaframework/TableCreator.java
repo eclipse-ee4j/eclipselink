@@ -366,7 +366,12 @@ public class TableCreator {
         List<TableDefinition> tables = tableCreator.getTableDefinitions();
         dropConstraints(session, schemaManager, false);
         for (TableDefinition table : tables) {
-            if (!table.getName().equals(sequenceTableName)) {
+            // Skip tables that are not on the database. Emptying a table that does not exist is
+            // a no-op, but attempting it costs two failed statements - the TRUNCATE and then the
+            // DELETE it falls back to - and the accessor logs each of them at WARNING before this
+            // method swallows them. SchemaManager.checkTableExists suppresses logging for the
+            // probe itself and restores the previous setting afterwards.
+            if (!table.getName().equals(sequenceTableName) && schemaManager.checkTableExists(table)) {
                 try {
                     Writer stmtWriter = new StringWriter();
                     session.getPlatform().writeTruncateTable(stmtWriter, ((AbstractSession) session), table);

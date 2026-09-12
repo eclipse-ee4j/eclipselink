@@ -1,0 +1,768 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (c) 2026 Contributors to the Eclipse Foundation.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.eclipse.persistence</groupId>
+        <artifactId>eclipselink-tck</artifactId>
+        <version>6.0.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>eclipselink-tck-run</artifactId>
+    <packaging>jar</packaging>
+    <name>EclipseLink TCK: run the Jakarta Persistence TCK</name>
+
+    <properties>
+        <!--
+            The EclipseLink under test. Override to run the TCK against a released
+            build instead of the local snapshot.
+        -->
+        <eclipselink.version>6.0.0-SNAPSHOT</eclipselink.version>
+
+        <!--TCK properties-->
+        <persistence.tck.version>4.0.0-SNAPSHOT</persistence.tck.version>
+        <persistence.api.version>4.0.0-SNAPSHOT</persistence.api.version>
+
+        <!--
+            Everything the tests need is resolved from Maven and therefore already on
+            the test classpath. The predecessor of this runner had to name each jar
+            explicitly because it took them from an unpacked GlassFish distribution.
+        -->
+        <jakarta.persistence.provider>org.eclipse.persistence.jpa.PersistenceProvider</jakarta.persistence.provider>
+
+        <!--
+            PostgreSQL runs outside this build. Override any of these on the command
+            line to point elsewhere; the role and database named here have to exist
+            before the run, or use -Ppostgres-start to have one started for you.
+        -->
+        <postgres.port>5432</postgres.port>
+        <postgres.db.name>jpatck</postgres.db.name>
+        <jakarta.persistence.jdbc.driver>org.postgresql.Driver</jakarta.persistence.jdbc.driver>
+        <jakarta.persistence.jdbc.url>jdbc:postgresql://localhost:${postgres.port}/${postgres.db.name}</jakarta.persistence.jdbc.url>
+        <jakarta.persistence.jdbc.user>cts1</jakarta.persistence.jdbc.user>
+        <jakarta.persistence.jdbc.password>cts1</jakarta.persistence.jdbc.password>
+        <jdbc.db>postgresql</jdbc.db>
+
+        <jpa.provider.implementation.specific.properties>eclipselink.logging.level=OFF${jpa.provider.implementation.specific.additional.properties}</jpa.provider.implementation.specific.properties>
+        <jpa.provider.implementation.specific.additional.properties/>
+        <db.supports.sequence>true</db.supports.sequence>
+        <persistence.second.level.caching.supported>true</persistence.second.level.caching.supported>
+
+        <!--Dependency versions-->
+        <junit.jupiter.version>5.10.2</junit.jupiter.version>
+        <postgresql.jdbc.version>42.7.4</postgresql.jdbc.version>
+        <hibernate.validator.version>9.1.0.Final</hibernate.validator.version>
+        <jakarta.validation.version>4.0.0-M1</jakarta.validation.version>
+        <expressly.version>6.0.0</expressly.version>
+
+        <!--
+            The forked Ant process that loads the DDL builds its own classpath and
+            cannot see Maven's, so the driver is also copied to a fixed path for it.
+        -->
+        <jdbc.driver.jar>${project.build.directory}/postgresql.jar</jdbc.driver.jar>
+        <sql.directory>./sql</sql.directory>
+        <db.delimiter>;</db.delimiter>
+
+        <!--
+            Default value for the failsafe "test" parameter of the persistence-tests-1
+            execution. Client2#createEntityManagerFactoryNoBeanValidatorTest needs a
+            classpath without the Bean Validation provider, so it runs separately in
+            persistence-tests-2.
+
+            This is a property rather than a <test> element in the execution because an
+            explicit <test> would win over the it.test user property, which stops
+            "mvn verify -Ptest1 -Dit.test=..." from selecting a single test. A
+            method-level <excludes> is not an option either: failsafe rejects those with
+            "Method filter prohibited in includes|excludes parameter".
+        -->
+        <it.test>!**/ee/jakarta/tck/persistence/se/entityManagerFactory/Client2#createEntityManagerFactoryNoBeanValidatorTest</it.test>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.junit</groupId>
+                <artifactId>junit-bom</artifactId>
+                <version>${junit.jupiter.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+        <!--
+            EclipseLink, the implementation under test. org.eclipse.persistence.jpa
+            brings core, jpa.jpql and the OW2 ASM jars transitively; moxy and the
+            static weaver are optional upstream and so are named here.
+        -->
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.jpa</artifactId>
+            <version>${eclipselink.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.jpa.modelgen.processor</artifactId>
+            <version>${eclipselink.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.moxy</artifactId>
+            <version>${eclipselink.version}</version>
+        </dependency>
+
+        <!--
+            The specification API, pinned rather than inherited, so the TCK version and
+            the API version cannot drift apart.
+        -->
+        <dependency>
+            <groupId>jakarta.persistence</groupId>
+            <artifactId>jakarta.persistence-api</artifactId>
+            <version>${persistence.api.version}</version>
+        </dependency>
+
+        <!--
+            jakarta.tck:common declares these as provided, so they do not reach the test
+            classpath on their own. The GlassFish distribution used to supply them.
+        -->
+        <dependency>
+            <groupId>jakarta.transaction</groupId>
+            <artifactId>jakarta.transaction-api</artifactId>
+            <version>2.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
+            <version>6.1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.ejb</groupId>
+            <artifactId>jakarta.ejb-api</artifactId>
+            <version>4.0.1</version>
+        </dependency>
+
+        <!--
+            Bean Validation. persistence-tests-2 deliberately runs without the provider,
+            which it achieves with classpathDependencyExcludes rather than by leaving
+            these out here.
+        -->
+        <dependency>
+            <groupId>jakarta.validation</groupId>
+            <artifactId>jakarta.validation-api</artifactId>
+            <version>${jakarta.validation.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate.validator</groupId>
+            <artifactId>hibernate-validator</artifactId>
+            <version>${hibernate.validator.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.expressly</groupId>
+            <artifactId>expressly</artifactId>
+            <version>${expressly.version}</version>
+        </dependency>
+
+        <!-- PostgreSQL is the database under test; the server runs outside this build. -->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>${postgresql.jdbc.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>jakarta.persistence</groupId>
+            <artifactId>persistence-tck-common</artifactId>
+            <version>${persistence.tck.version}</version>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>jakarta.persistence</groupId>
+                    <artifactId>jakarta.persistence-api</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>jakarta.persistence</groupId>
+            <artifactId>persistence-tck-spec-tests</artifactId>
+            <version>${persistence.tck.version}</version>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>jakarta.persistence</groupId>
+                    <artifactId>jakarta.persistence-api</artifactId>
+                </exclusion>
+                <!--
+                    The spec-tests pom carries the reference implementation's own runtime
+                    (Hibernate, H2, ShrinkWrap) and a JDBC driver per supported database.
+                    None of it is referenced by the TCK test classes themselves, and the
+                    Hibernate artifacts are declared without a version, so they only
+                    resolve when the Hibernate BOM is imported. Exclude them: EclipseLink
+                    is the provider under test, and a second provider on the classpath
+                    only invites the wrong one being selected.
+                -->
+                <exclusion>
+                    <groupId>org.hibernate.orm</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.hibernate.models</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>io.smallrye</groupId>
+                    <artifactId>jandex</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.antlr</groupId>
+                    <artifactId>antlr4-runtime</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>net.bytebuddy</groupId>
+                    <artifactId>byte-buddy</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.h2database</groupId>
+                    <artifactId>h2</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.jboss.shrinkwrap.resolver</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.ibm.db2</groupId>
+                    <artifactId>jcc</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.derby</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.microsoft.sqlserver</groupId>
+                    <artifactId>mssql-jdbc</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.mysql</groupId>
+                    <artifactId>mysql-connector-j</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.oracle.database.jdbc</groupId>
+                    <artifactId>ojdbc11</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.postgresql</groupId>
+                    <artifactId>postgresql</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>jakarta.tck</groupId>
+            <artifactId>common</artifactId>
+            <version>11.0.3</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!--
+            PMClientBase builds deployment archives with ShrinkWrap. shrinkwrap-api
+            arrives via jakarta.tck:common, but the implementation does not: it is
+            located reflectively at runtime (ConfigurationBuilder ->
+            ServiceExtensionLoader), so nothing declares a compile dependency on it and
+            its absence only shows up as "Could not find extension loader impl class"
+            once a test runs. It used to be pulled in transitively by
+            shrinkwrap-resolver-depchain, which the spec-tests exclusions drop.
+        -->
+        <dependency>
+            <groupId>org.jboss.shrinkwrap</groupId>
+            <artifactId>shrinkwrap-impl-base</artifactId>
+            <version>1.2.6</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <!--
+            No test resources are needed: PMClientBase.createDeploymentJar builds the
+            persistence unit at runtime from the TCK's own template, writes it into a
+            ShrinkWrap jar as META-INF/persistence.xml and pushes that jar onto the
+            thread context classloader. A persistence.xml placed here would be visible
+            on the parent classloader at the same time and would compete with it.
+        -->
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-antrun-plugin</artifactId>
+                    <version>3.1.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-dependency-plugin</artifactId>
+                    <version>3.8.1</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-failsafe-plugin</artifactId>
+                    <version>3.5.4</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-report-plugin</artifactId>
+                    <version>3.5.4</version>
+                </plugin>
+                <plugin>
+                    <groupId>io.fabric8</groupId>
+                    <artifactId>docker-maven-plugin</artifactId>
+                    <version>0.49.0</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+
+        <plugins>
+            <plugin>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <!--
+                        Only the JDBC driver needs copying, and only because the forked
+                        Ant process that loads the DDL cannot see Maven's classpath.
+                    -->
+                    <execution>
+                        <id>copy-jdbc-driver</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.postgresql</groupId>
+                                    <artifactId>postgresql</artifactId>
+                                    <overWrite>true</overWrite>
+                                    <outputDirectory>${project.build.directory}</outputDirectory>
+                                    <destFileName>postgresql.jar</destFileName>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!--
+                Starts the database the tests need. Declared here, with no executions,
+                purely to fix its place in the plugin order: docker:start and initdb are
+                both bound to pre-integration-test, and executions in the same phase run
+                in the order their plugins are declared. Leaving the declaration inside
+                the profile would leave that order to chance, and initdb would race the
+                database.
+            -->
+            <plugin>
+                <groupId>io.fabric8</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <configuration>
+                    <images>
+                        <image>
+                            <alias>postgres</alias>
+                            <name>postgres:17</name>
+                            <run>
+                                <containerNamePattern>eclipselink-tck-postgres</containerNamePattern>
+                                <env>
+                                    <POSTGRES_USER>${jakarta.persistence.jdbc.user}</POSTGRES_USER>
+                                    <POSTGRES_PASSWORD>${jakarta.persistence.jdbc.password}</POSTGRES_PASSWORD>
+                                    <POSTGRES_DB>${postgres.db.name}</POSTGRES_DB>
+                                </env>
+                                <ports>
+                                    <port>${postgres.port}:5432</port>
+                                </ports>
+                                <!-- The image logs "ready to accept connections" once while initdb
+                                     is still running and the server listens on the unix socket
+                                     only, so the port check is what proves it can be reached over
+                                     TCP. -->
+                                <wait>
+                                    <log><![CDATA[database system is ready to accept connections]]></log>
+                                    <tcp>
+                                        <ports>
+                                            <port>5432</port>
+                                        </ports>
+                                    </tcp>
+                                    <time>600000</time>
+                                </wait>
+                            </run>
+                        </image>
+                    </images>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>initdb</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <!--
+                                    The TCK DDL drops every object before creating it, so on a clean
+                                    database a few hundred drops fail with "does not exist". Those are
+                                    expected and drown out anything real, so run the DDL as a sub-build
+                                    with its output captured, then report only what matters.
+
+                                    Forked deliberately. <ant output="..."/> runs in this JVM, where
+                                    maven-antrun's listener still receives every log event, so the drop
+                                    failures reach the console regardless of the redirect. Only a
+                                    separate process gives <exec> real ownership of the streams.
+                                -->
+                                <property name="initdb.log" location="${project.build.directory}/initdb.log"/>
+                                <pathconvert property="initdb.classpath" refid="maven.plugin.classpath"/>
+                                <!--
+                                    The forked build's basedir is the directory holding initdb.xml, so
+                                    the relative sql.directory would resolve against sql/ rather than
+                                    the module root. Pass it absolute.
+                                -->
+                                <property name="sql.directory.absolute" location="${sql.directory}"/>
+                                <!--
+                                    failonerror is deliberately off. With it on, Ant aborts the
+                                    moment the fork returns non-zero, which is before any of the
+                                    reporting below runs - and since the output is redirected to a
+                                    file, the build fails with a bare "exec returned: 1" and no
+                                    indication of why. Capture the exit code instead and diagnose it.
+                                -->
+                                <exec executable="${java.home}/bin/java" resultproperty="initdb.exit"
+                                      output="${initdb.log}" logError="false" failonerror="false">
+                                    <arg value="-cp"/>
+                                    <arg value="${initdb.classpath}${path.separator}${jdbc.driver.jar}"/>
+                                    <arg value="org.apache.tools.ant.Main"/>
+                                    <arg value="-f"/>
+                                    <arg value="${sql.directory}/initdb.xml"/>
+                                    <arg value="-Dsql.directory=${sql.directory.absolute}"/>
+                                    <arg value="-Djdbc.db=${jdbc.db}"/>
+                                    <arg value="-Ddb.delimiter=${db.delimiter}"/>
+                                    <arg value="-Djakarta.persistence.jdbc.driver=${jakarta.persistence.jdbc.driver}"/>
+                                    <arg value="-Djakarta.persistence.jdbc.url=${jakarta.persistence.jdbc.url}"/>
+                                    <arg value="-Djakarta.persistence.jdbc.user=${jakarta.persistence.jdbc.user}"/>
+                                    <arg value="-Djakarta.persistence.jdbc.password=${jakarta.persistence.jdbc.password}"/>
+                                    <arg value="initdb"/>
+                                </exec>
+
+                                <!--
+                                    Diagnose a failed fork before touching the log filters below,
+                                    which assume the DDL actually ran. The common failure by far is
+                                    no database listening, and the cause is almost always a missing
+                                    profile rather than anything wrong with the DDL.
+                                -->
+                                <condition property="initdb.unreachable">
+                                    <and>
+                                        <not><equals arg1="${initdb.exit}" arg2="0"/></not>
+                                        <resourcecontains resource="${initdb.log}" substring="ConnectException"/>
+                                    </and>
+                                </condition>
+                                <fail if="initdb.unreachable">
+initdb could not reach a database at ${jakarta.persistence.jdbc.url} - connection refused.
+
+Nothing is listening there. The PostgreSQL container is started by the postgres-start
+profile, which is not active by default, so the usual cause is leaving it out:
+
+    mvn clean verify -Ppostgres-start,test1
+
+All three profiles have to be named together. test1 and test2 are activeByDefault, and
+activating any profile explicitly would otherwise switch them off.
+
+On macOS Maven also needs to be able to see the Docker socket:
+
+    export DOCKER_HOST=unix://$HOME/.docker/run/docker.sock
+
+If you are pointing at a database you manage yourself, check it is up and that
+jakarta.persistence.jdbc.url is right.
+
+Full log: ${initdb.log}
+                                </fail>
+
+                                <condition property="initdb.auth.failed">
+                                    <and>
+                                        <not><equals arg1="${initdb.exit}" arg2="0"/></not>
+                                        <resourcecontains resource="${initdb.log}" substring="password authentication failed"/>
+                                    </and>
+                                </condition>
+                                <fail if="initdb.auth.failed">
+initdb reached ${jakarta.persistence.jdbc.url} but was rejected as user
+'${jakarta.persistence.jdbc.user}'.
+
+A container left over from an earlier run will have the credentials it was created with,
+which do not have to match the current settings. docker:stop is bound to
+post-integration-test and does not run when the build fails, so a failed run can leave one
+behind. Remove it and let this build start a fresh one:
+
+    docker rm -f eclipselink-tck-postgres
+
+Full log: ${initdb.log}
+                                </fail>
+
+                                <fail message="initdb failed with exit code ${initdb.exit}. See ${initdb.log} for the cause.">
+                                    <condition>
+                                        <not><equals arg1="${initdb.exit}" arg2="0"/></not>
+                                    </condition>
+                                </fail>
+
+                                <!--
+                                    PostgreSQL reports each object the drops look for - table,
+                                    sequence, procedure, type, constraint - with a message ending
+                                    in "does not exist". Every other failure is genuine and is
+                                    echoed below.
+                                -->
+                                <loadfile property="initdb.real.errors" srcFile="${initdb.log}" quiet="true">
+                                    <filterchain>
+                                        <linecontainsregexp>
+                                            <regexp pattern="\[sql\].*(Exception|Error)"/>
+                                        </linecontainsregexp>
+                                        <linecontainsregexp negate="true">
+                                            <regexp pattern="PSQLException: ERROR: .* does not exist"/>
+                                        </linecontainsregexp>
+                                        <tokenfilter>
+                                            <replaceregex pattern="^\s*\[sql\]\s*" replace=""/>
+                                        </tokenfilter>
+                                    </filterchain>
+                                </loadfile>
+
+                                <loadfile property="initdb.summary" srcFile="${initdb.log}" quiet="true">
+                                    <filterchain>
+                                        <linecontains>
+                                            <contains value="SQL statements executed successfully"/>
+                                        </linecontains>
+                                        <tokenfilter>
+                                            <replaceregex pattern="^\s*\[sql\]\s*" replace=""/>
+                                            <trim/>
+                                            <ignoreblank/>
+                                        </tokenfilter>
+                                    </filterchain>
+                                </loadfile>
+
+                                <resourcecount property="initdb.suppressed.count">
+                                    <tokens>
+                                        <concat>
+                                            <fileset file="${initdb.log}"/>
+                                            <filterchain>
+                                                <linecontainsregexp>
+                                                    <regexp pattern="PSQLException: ERROR: .* does not exist"/>
+                                                </linecontainsregexp>
+                                            </filterchain>
+                                        </concat>
+                                    </tokens>
+                                </resourcecount>
+
+                                <echo message="initdb: ${initdb.summary}"/>
+                                <echo message="initdb: suppressed ${initdb.suppressed.count} expected &quot;object does not exist&quot; failures from the drop statements. Full log: ${initdb.log}"/>
+
+                                <!--
+                                    loadfile leaves the property unset when nothing matched, and Ant
+                                    properties are immutable, so this only takes effect when the DDL
+                                    produced no unexpected errors.
+                                -->
+                                <property name="initdb.real.errors" value="(none)"/>
+
+                                <!--
+                                    Reported rather than fatal, matching the onerror="continue"
+                                    behaviour this replaced. Change this echo to a <fail> to make an
+                                    unexpected DDL error stop the run.
+                                -->
+                                <echo level="warning" message="initdb: unexpected DDL errors: ${initdb.real.errors}"/>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <!--
+                    Everything the test1 and test2 profiles have in common. Each profile
+                    contributes only its own execution; Maven merges this configuration
+                    into it.
+                -->
+                <configuration>
+                    <dependenciesToScan>jakarta.persistence:persistence-tck-spec-tests</dependenciesToScan>
+                    <systemPropertyVariables>
+                        <platform.mode>standalone</platform.mode>
+                        <vehicle>standalone</vehicle>
+
+                        <persistence.unit.name>JPATCK</persistence.unit.name>
+                        <persistence.unit.name.2>JPATCK2</persistence.unit.name.2>
+                        <jakarta.persistence.provider>${jakarta.persistence.provider}</jakarta.persistence.provider>
+                        <jakarta.persistence.jdbc.driver>${jakarta.persistence.jdbc.driver}</jakarta.persistence.jdbc.driver>
+                        <jakarta.persistence.jdbc.url>${jakarta.persistence.jdbc.url}</jakarta.persistence.jdbc.url>
+                        <jakarta.persistence.jdbc.user>${jakarta.persistence.jdbc.user}</jakarta.persistence.jdbc.user>
+                        <jakarta.persistence.jdbc.password>${jakarta.persistence.jdbc.password}</jakarta.persistence.jdbc.password>
+                        <jpa.provider.implementation.specific.properties>${jpa.provider.implementation.specific.properties}</jpa.provider.implementation.specific.properties>
+                        <persistence.second.level.caching.supported>${persistence.second.level.caching.supported}</persistence.second.level.caching.supported>
+
+                        <user.dir>/tmp</user.dir>
+                        <log.file.location>/tmp</log.file.location>
+
+                        <db.supports.sequence>${db.supports.sequence}</db.supports.sequence>
+                        <Insert_Jpa_Purchase_Order>INSERT INTO PURCHASE_ORDER(ID, TOTAL, DESCRIPTION) VALUES(?, ?, null)</Insert_Jpa_Purchase_Order>
+                        <Select_Jpa_Purchase_Order>SELECT ID, TOTAL FROM PURCHASE_ORDER WHERE ID=?</Select_Jpa_Purchase_Order>
+                        <jdbc.db>${jdbc.db}</jdbc.db>
+                    </systemPropertyVariables>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-report-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>generate-failsafe-html-report</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>failsafe-report-only</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <!--
+        The two failsafe executions live in profiles so that a single test can be run
+        against one of them: "mvn verify -Ptest1 -Dit.test=..." activates test1, which
+        as a side effect deactivates test2 and stops the full suite from running after
+        it. Both are active by default, so a plain "mvn verify" still runs everything.
+
+        postgres-start is the only other profile, and activating it deactivates these
+        two, so it has to be named alongside them - see its own comment.
+    -->
+    <profiles>
+        <!--
+            Runs the database the tests need, for anyone who does not already have one.
+            Without it the build expects a server to be reachable at
+            jakarta.persistence.jdbc.url already.
+
+            Maven deactivates every activeByDefault profile as soon as any other profile
+            in this pom becomes active, and that is where the two test executions live,
+            so this has to be listed together with them or the build runs no tests at all:
+
+                mvn clean install -Ppostgres-start,test1,test2        full suite
+                mvn clean install -Ppostgres-start,test1 -Dit.test=...     one test
+
+            The container is removed again at post-integration-test, so every run starts
+            from an empty database. A failure before that phase (initdb, say) leaves it
+            running; "docker rm -f eclipselink-tck-postgres" clears it.
+
+            On macOS the daemon socket is under the user's home rather than /var/run, so
+            the plugin needs to be pointed at it:
+
+                DOCKER_HOST=unix://$HOME/.docker/run/docker.sock
+        -->
+        <profile>
+            <id>postgres-start</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>io.fabric8</groupId>
+                        <artifactId>docker-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>start-postgres</id>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>start</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>stop-postgres</id>
+                                <phase>post-integration-test</phase>
+                                <goals>
+                                    <goal>stop</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <profile>
+            <id>test1</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>persistence-tests-1</id>
+                                <goals>
+                                    <goal>integration-test</goal>
+                                    <goal>verify</goal>
+                                </goals>
+                                <configuration>
+                                    <includes>
+                                        <include>**/*Client*.*</include>
+                                        <include>**/*JPASigTest*.*</include>
+                                    </includes>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <profile>
+            <id>test2</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>persistence-tests-2</id>
+                                <goals>
+                                    <goal>integration-test</goal>
+                                    <goal>verify</goal>
+                                </goals>
+                                <configuration>
+                                    <test>**/ee/jakarta/tck/persistence/se/entityManagerFactory/Client2#createEntityManagerFactoryNoBeanValidatorTest</test>
+                                    <!--
+                                        This test asserts the behaviour when no Bean Validation
+                                        provider is present, so the provider is taken off the
+                                        classpath for this execution only. The GlassFish runner
+                                        achieved the same by listing jars by hand.
+                                    -->
+                                    <classpathDependencyExcludes>
+                                        <classpathDependencyExclude>org.hibernate.validator:hibernate-validator</classpathDependencyExclude>
+                                    </classpathDependencyExcludes>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+</project>
