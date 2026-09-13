@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2006, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2006, 2026 IBM Corporation. All rights reserved.
- * Copyright (c) 2024 Contributors to the Eclipse Foundation. All rights reserved.
+ * Copyright (c) 2024, 2026 Contributors to the Eclipse Foundation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -2794,6 +2794,17 @@ final class ExpressionBuilderVisitor extends JPQLFunctionsAbstractBuilder implem
                 if (result) {
                     return;
                 }
+            }
+            // The paths of an UPDATE or DELETE query that does not declare an identification variable
+            // are qualified with a virtual one, including a fully qualified enum constant. The first
+            // segment of an enum constant is not an attribute of the entity, which is how it is told
+            // apart from a navigation such as "address.city"
+            else if (expression.hasImplicitIdentificationVariable() &&
+                     (descriptor != null) &&
+                     (descriptor.getObjectBuilder().getMappingForAttributeName(expression.getPath(0)) == null) &&
+                     (descriptor.getQueryKeyNamed(expression.getPath(0)) == null) &&
+                     resolveEnumConstant(expression)) {
+                return;
             }
 
             // The path expression is mapping to a database table
