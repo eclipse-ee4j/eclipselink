@@ -56,7 +56,6 @@ import java.util.Set;
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
-import org.eclipse.persistence.internal.jpa.querydef.ParameterExpressionImpl;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.queries.JPQLCallQueryMechanism;
@@ -543,6 +542,19 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * {@code QueryImpl} returns {@code List<Object>}, which does not satisfy the {@code List<X>}
+     * required by {@link jakarta.persistence.TypedQuery}. This is the typed query, so it narrows the
+     * result type here, exactly as {@link #getSingleResult()} and {@link #getSingleResultOrNull()} do.
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<X> getResultList() {
+        return (List<X>) super.getResultList();
+    }
+
     @Override
     @SuppressWarnings("unchecked")
     public X getSingleResult() {
@@ -654,7 +666,7 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
 
         //bug 402686: type validation
         String position = getParameterId(param);
-        ParameterExpressionImpl parameter = (ParameterExpressionImpl) this.getInternalParameters().get(position);
+        Parameter<?> parameter = this.getInternalParameters().get(position);
         if (parameter == null ) {
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("NO_PARAMETER_WITH_NAME", new Object[] { param.toString(), this.databaseQuery }));
         }
@@ -683,7 +695,7 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
 
         //bug 402686: type validation
         String position = getParameterId(param);
-        ParameterExpressionImpl parameter = (ParameterExpressionImpl) this.getInternalParameters().get(position);
+        Parameter<?> parameter = this.getInternalParameters().get(position);
         if (parameter == null ) {
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("NO_PARAMETER_WITH_NAME", new Object[] { param.toString(), this.databaseQuery }));
         }
@@ -713,7 +725,7 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
 
         //bug 402686: type validation
         String position = getParameterId(param);
-        ParameterExpressionImpl parameter = (ParameterExpressionImpl) this.getInternalParameters().get(position);
+        Parameter<?> parameter = this.getInternalParameters().get(position);
         if (parameter == null ) {
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("NO_PARAMETER_WITH_NAME", new Object[] { param.toString(), this.databaseQuery }));
         }

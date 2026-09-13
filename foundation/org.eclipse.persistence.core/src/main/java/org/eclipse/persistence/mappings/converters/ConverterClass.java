@@ -30,12 +30,12 @@ package org.eclipse.persistence.mappings.converters;
 
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.PersistenceException;
+
+import java.io.Serial;
+
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.descriptors.ClassNameConversionRequired;
-import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedClassForName;
-import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.DatabaseMapping;
@@ -44,114 +44,54 @@ import org.eclipse.persistence.mappings.DirectMapMapping;
 import org.eclipse.persistence.mappings.DirectToFieldMapping;
 import org.eclipse.persistence.sessions.Session;
 
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
+import static org.eclipse.persistence.internal.localization.ExceptionLocalization.buildMessage;
+import static org.eclipse.persistence.logging.SessionLog.FINEST;
 
 /**
- * A JPA attribute converter class wrapped with an EclipseLink converter. This
- * class is placed directly on mappings.
+ * A Jakarta Persistence attribute converter class wrapped with an EclipseLink converter. This class is placed directly on mappings.
  *
  * @author Guy Pelletier
  * @since Eclipselink 2.5
  */
-public class ConverterClass<T extends AttributeConverter<X,Y>,X,Y> implements Converter, ClassNameConversionRequired {
-    protected boolean isForMapKey;
-    protected boolean disableConversion;
-    protected Class<?> fieldClassification;
-    protected String fieldClassificationName;
+public class ConverterClass<T extends AttributeConverter<X, Y>, X, Y> implements Converter, ClassNameConversionRequired {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
+
     protected String attributeConverterClassName;
-    protected AttributeConverter<X,Y> attributeConverter;
+    protected boolean isForMapKey;
+    protected Class<?> fieldClassification;
+    protected boolean disableConversion;
+
+    protected String fieldClassificationName;
+    protected AttributeConverter<X, Y> attributeConverter;
     protected AbstractSession session;
     private Class<T> attributeConverterClass;
 
-    /**
-     * INTERNAL:
-     * This method will be called when creating a converter for an embedded
-     * mapping attribute. The isForMapKey information will need to be known
-     * for proper initialization.
-     */
-    public ConverterClass(String attributeConverterClassName, boolean isForMapKey, String fieldClassificationName, boolean disableConversion) {
-        this.isForMapKey = isForMapKey;
-        this.disableConversion = disableConversion;
-        this.fieldClassificationName = fieldClassificationName;
-        this.attributeConverterClassName = attributeConverterClassName;
+    public ConverterClass(AbstractSession session, Class<T> attributeConverterClass) {
+        this.attributeConverterClass = attributeConverterClass;
+        setSession(session);
     }
 
     /**
-     * INTERNAL:
-     * Convert all the class-name-based settings in this converter to actual
-     * class-based settings. This method is used when converting a project
-     * that has been built with class names to a project with classes.
+     * INTERNAL: This method will be called when creating a converter for an embedded mapping attribute. The isForMapKey
+     * information will need to be known for proper initialization.
+     */
+    public ConverterClass(String attributeConverterClassName, boolean isForMapKey, String fieldClassificationName, boolean disableConversion) {
+        this.attributeConverterClassName = attributeConverterClassName;
+        this.isForMapKey = isForMapKey;
+        this.fieldClassificationName = fieldClassificationName;
+        this.disableConversion = disableConversion;
+    }
+
+    /**
+     * INTERNAL: Convert all the class-name-based settings in this converter to actual class-based settings. This method is
+     * used when converting a project that has been built with class names to a project with classes.
      */
     @Override
     public void convertClassNamesToClasses(ClassLoader classLoader) {
         attributeConverterClass = getAttributeConverterClass(classLoader);
         constructFieldClassification(classLoader);
-    }
-
-    private void constructAttributeConverter() {
-        T attributeConverterInstance = getAttributeConverterInstance(attributeConverterClass);
-        
-        try {
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                try {
-                    if (attributeConverterInstance == null){
-                        attributeConverterInstance = AccessController.doPrivileged(new PrivilegedNewInstanceFromClass<>(attributeConverterClass));
-                    }
-                } catch (PrivilegedActionException exception) {
-                    throw ValidationException.errorInstantiatingClass(attributeConverterClass, exception.getException());
-                }
-            } else {
-                if (attributeConverterInstance == null){
-                    attributeConverterInstance = PrivilegedAccessHelper.newInstanceFromClass(attributeConverterClass);
-                }
-            }
-        } catch (IllegalAccessException | InstantiationException exception) {
-            throw ValidationException.errorInstantiatingClass(attributeConverterClass, exception);
-        }
-        
-        attributeConverter = attributeConverterInstance;
-    }
-
-    private T getAttributeConverterInstance(Class<T> attributeConverterClass) {
-        try{
-            return session.<T>getInjectionManager().createManagedBeanAndInjectDependencies(attributeConverterClass);
-        } catch (Exception e){
-            session.logThrowable(SessionLog.FINEST, SessionLog.JPA, e);
-            return null;
-        }
-    }
-
-    private Class<T> getAttributeConverterClass(ClassLoader classLoader) {
-        try {
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                try {
-                    return AccessController.doPrivileged(new PrivilegedClassForName<>(attributeConverterClassName, true, classLoader));
-                } catch (PrivilegedActionException exception) {
-                    throw ValidationException.classNotFoundWhileConvertingClassNames(attributeConverterClassName, exception.getException());
-                }
-            } else {
-                return PrivilegedAccessHelper.getClassForName(attributeConverterClassName, true, classLoader);
-            }
-        } catch (ClassNotFoundException exception) {
-            throw ValidationException.classNotFoundWhileConvertingClassNames(attributeConverterClassName, exception);
-        }
-    }
-
-    private void constructFieldClassification(ClassLoader classLoader) {
-        try {
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                try {
-                    fieldClassification = AccessController.doPrivileged(new PrivilegedClassForName<>(fieldClassificationName, true, classLoader));
-                } catch (PrivilegedActionException exception) {
-                    throw ValidationException.classNotFoundWhileConvertingClassNames(fieldClassificationName, exception.getException());
-                }
-            } else {
-                fieldClassification = PrivilegedAccessHelper.getClassForName(fieldClassificationName, true, classLoader);
-            }
-        } catch (ClassNotFoundException exception) {
-            throw ValidationException.classNotFoundWhileConvertingClassNames(fieldClassificationName, exception);
-        }
     }
 
     /**
@@ -161,10 +101,10 @@ public class ConverterClass<T extends AttributeConverter<X,Y>,X,Y> implements Co
     @SuppressWarnings("unchecked")
     public Object convertDataValueToObjectValue(Object dataValue, Session session) {
         try {
-            return getAttributeConverter().convertToEntityAttribute((Y)dataValue);
+            return getAttributeConverter().convertToEntityAttribute((Y) dataValue);
         } catch (RuntimeException re) {
-            throw new PersistenceException(ExceptionLocalization.buildMessage("wrap_convert_exception",
-                    new Object[]{"convertToEntityAttribute", attributeConverterClassName, dataValue}), re);
+            throw new PersistenceException(buildMessage("wrap_convert_exception",
+                    "convertToEntityAttribute", attributeConverterClassName, dataValue), re);
         }
     }
 
@@ -177,8 +117,8 @@ public class ConverterClass<T extends AttributeConverter<X,Y>,X,Y> implements Co
         try {
             return getAttributeConverter().convertToDatabaseColumn((X) objectValue);
         } catch (RuntimeException re) {
-            throw new PersistenceException(ExceptionLocalization.buildMessage("wrap_convert_exception",
-                    new Object[]{"convertToDatabaseColumn", attributeConverterClassName, objectValue}), re);
+            throw new PersistenceException(buildMessage("wrap_convert_exception",
+                    "convertToDatabaseColumn", attributeConverterClassName, objectValue), re);
         }
     }
 
@@ -189,40 +129,40 @@ public class ConverterClass<T extends AttributeConverter<X,Y>,X,Y> implements Co
     public void initialize(DatabaseMapping mapping, Session session) {
         // Ensure the mapping has the correct field classification set.
         if (mapping.isDirectToFieldMapping()) {
-            DirectToFieldMapping m = (DirectToFieldMapping) mapping;
+            DirectToFieldMapping fieldMapping = (DirectToFieldMapping) mapping;
 
             if (disableConversion) {
-                m.setConverter(null);
-                m.setFieldClassification(m.getAttributeClassification());
-                m.setFieldClassificationClassName(m.getAttributeClassificationName());
+                fieldMapping.setConverter(null);
+                fieldMapping.setFieldClassification(fieldMapping.getAttributeClassification());
+                fieldMapping.setFieldClassificationClassName(fieldMapping.getAttributeClassificationName());
             } else {
-                m.setConverter(this);
-                m.setFieldClassification(fieldClassification);
-                m.setFieldClassificationClassName(fieldClassificationName);
+                fieldMapping.setConverter(this);
+                fieldMapping.setFieldClassification(fieldClassification);
+                fieldMapping.setFieldClassificationClassName(fieldClassificationName);
             }
         } else if (mapping.isDirectMapMapping() && isForMapKey) {
-            DirectMapMapping m = (DirectMapMapping) mapping;
+            DirectMapMapping mapMapping = (DirectMapMapping) mapping;
 
             if (disableConversion) {
-                m.setKeyConverter(null);
-                m.setDirectKeyFieldClassification(m.getDirectKeyField().getType());
-                m.setDirectKeyFieldClassificationName(m.getDirectKeyField().getTypeName());
+                mapMapping.setKeyConverter(null);
+                mapMapping.setDirectKeyFieldClassification(mapMapping.getDirectKeyField().getType());
+                mapMapping.setDirectKeyFieldClassificationName(mapMapping.getDirectKeyField().getTypeName());
             } else {
-                m.setKeyConverter(this);
-                m.setDirectKeyFieldClassification(fieldClassification);
-                m.setDirectKeyFieldClassificationName(fieldClassificationName);
+                mapMapping.setKeyConverter(this);
+                mapMapping.setDirectKeyFieldClassification(fieldClassification);
+                mapMapping.setDirectKeyFieldClassificationName(fieldClassificationName);
             }
-        }  else if (mapping.isDirectCollectionMapping()) {
-            DirectCollectionMapping m = (DirectCollectionMapping) mapping;
+        } else if (mapping.isDirectCollectionMapping()) {
+            DirectCollectionMapping collectionMapping = (DirectCollectionMapping) mapping;
 
             if (disableConversion) {
-                m.setValueConverter(null);
-                m.setDirectFieldClassification(m.getDirectField().getType());
-                m.setDirectFieldClassificationName(m.getDirectField().getTypeName());
+                collectionMapping.setValueConverter(null);
+                collectionMapping.setDirectFieldClassification(collectionMapping.getDirectField().getType());
+                collectionMapping.setDirectFieldClassificationName(collectionMapping.getDirectField().getTypeName());
             } else {
-                m.setValueConverter(this);
-                m.setDirectFieldClassification(fieldClassification);
-                m.setDirectFieldClassificationName(fieldClassificationName);
+                collectionMapping.setValueConverter(this);
+                collectionMapping.setDirectFieldClassification(fieldClassification);
+                collectionMapping.setDirectFieldClassificationName(fieldClassificationName);
             }
         } else {
             // TODO: what else could it be???
@@ -241,10 +181,53 @@ public class ConverterClass<T extends AttributeConverter<X,Y>,X,Y> implements Co
         this.session = session;
     }
 
-    protected AttributeConverter<X, Y> getAttributeConverter() {
+    public AttributeConverter<X, Y> getAttributeConverter() {
         if (attributeConverter == null) {
             constructAttributeConverter();
         }
+
         return attributeConverter;
+    }
+
+
+    // ### Private methods
+
+    private void constructAttributeConverter() {
+        T attributeConverterInstance = getAttributeConverterInstance(attributeConverterClass);
+
+        try {
+            if (attributeConverterInstance == null) {
+                attributeConverterInstance = attributeConverterClass.getDeclaredConstructor().newInstance();
+            }
+        } catch (ReflectiveOperationException exception) {
+            throw ValidationException.errorInstantiatingClass(attributeConverterClass, exception);
+        }
+
+        attributeConverter = attributeConverterInstance;
+    }
+
+    private T getAttributeConverterInstance(Class<T> attributeConverterClass) {
+        try {
+            return session.<T>getInjectionManager().createManagedBeanAndInjectDependencies(attributeConverterClass);
+        } catch (Exception e) {
+            session.logThrowable(FINEST, SessionLog.JPA, e);
+            return null;
+        }
+    }
+
+    private Class<T> getAttributeConverterClass(ClassLoader classLoader) {
+        try {
+            return PrivilegedAccessHelper.getClassForName(attributeConverterClassName, true, classLoader);
+        } catch (ClassNotFoundException exception) {
+            throw ValidationException.classNotFoundWhileConvertingClassNames(attributeConverterClassName, exception);
+        }
+    }
+
+    private void constructFieldClassification(ClassLoader classLoader) {
+        try {
+            fieldClassification = PrivilegedAccessHelper.getClassForName(fieldClassificationName, true, classLoader);
+        } catch (ClassNotFoundException exception) {
+            throw ValidationException.classNotFoundWhileConvertingClassNames(fieldClassificationName, exception);
+        }
     }
 }

@@ -15,6 +15,8 @@
 //
 package org.eclipse.persistence.internal.jpa.querydef;
 
+import java.io.Serial;
+
 import jakarta.persistence.criteria.ParameterExpression;
 import jakarta.persistence.metamodel.Metamodel;
 
@@ -22,6 +24,9 @@ import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 
 public class ParameterExpressionImpl<T> extends ExpressionImpl<T> implements ParameterExpression<T> {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     protected String name;
     protected String internalName;
@@ -126,7 +131,7 @@ public class ParameterExpressionImpl<T> extends ExpressionImpl<T> implements Par
         }
         if (getClass() != obj.getClass())
             return false;
-        ParameterExpressionImpl other = (ParameterExpressionImpl) obj;
+        ParameterExpressionImpl<?> other = (ParameterExpressionImpl<?>) obj;
         if (internalName == null) {
             if (other.internalName != null){
                 return false;

@@ -21,6 +21,8 @@
 //       - 365931: @JoinColumn(name="FK_DEPT",insertable = false, updatable = true) causes INSERT statement to include this data value that it is associated with
 package org.eclipse.persistence.internal.helper;
 
+import java.io.Serializable;
+
 //javase imports
 
 import org.eclipse.persistence.exceptions.ValidationException;
@@ -28,8 +30,6 @@ import org.eclipse.persistence.internal.core.helper.CoreField;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-
-import java.io.Serializable;
 
 import static java.lang.Integer.MIN_VALUE;
 
@@ -43,6 +43,9 @@ import static java.lang.Integer.MIN_VALUE;
  * @see DatabaseTable
  */
 public class DatabaseField implements Cloneable, Serializable, CoreField  {
+
+    private static final long serialVersionUID = 1L;
+
     /** Variables used for generating DDL **/
     protected int scale;
     protected int length;

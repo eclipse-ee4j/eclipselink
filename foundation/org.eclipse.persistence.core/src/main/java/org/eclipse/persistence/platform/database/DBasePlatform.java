@@ -15,9 +15,6 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.platform.database;
 
-import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
-
 import java.io.Writer;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -26,6 +23,9 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
 
 /**
  *    <p><b>Purpose</b>: Provides DBase specific behavior.
@@ -94,12 +94,12 @@ public class DBasePlatform extends DatabasePlatform {
      * DBase does not support Time/Timestamp so we must map to strings.
      */
     @Override
-    public void setParameterValueInDatabaseCall(Object parameter,
-            PreparedStatement statement, int index, AbstractSession session) throws SQLException {
+    public void setParameterValueInDatabaseCall(Object parameter, PreparedStatement statement, int index, AbstractSession session) throws SQLException {
         Object databaseValue = super.convertToDatabaseType(parameter);
         if ((databaseValue instanceof java.sql.Time) || (databaseValue instanceof java.sql.Timestamp)) {
             databaseValue = databaseValue.toString();
         }
+
         super.setParameterValueInDatabaseCall(databaseValue, statement, index, session);
     }
 
@@ -108,12 +108,12 @@ public class DBasePlatform extends DatabasePlatform {
      * DBase does not support Time/Timestamp so we must map to strings.
      */
     @Override
-    public void setParameterValueInDatabaseCall(Object parameter,
-            CallableStatement statement, String name, AbstractSession session) throws SQLException {
+    public void setParameterValueInDatabaseCall(Object parameter, CallableStatement statement, String name, AbstractSession session) throws SQLException {
         Object databaseValue = super.convertToDatabaseType(parameter);
         if ((databaseValue instanceof java.sql.Time) || (databaseValue instanceof java.sql.Timestamp)) {
             databaseValue = databaseValue.toString();
         }
+
         super.setParameterValueInDatabaseCall(databaseValue, statement, name, session);
     }
 

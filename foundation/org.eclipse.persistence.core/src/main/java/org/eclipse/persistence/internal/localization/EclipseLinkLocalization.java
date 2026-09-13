@@ -34,6 +34,16 @@ public abstract class EclipseLinkLocalization {
 
     /**
      * Return the message for the given exception class and error number.
+     * <p>
+     * Deliberately not varargs. Every subclass declares its own
+     * {@code buildMessage(String key, Object... arguments)}, and inherits this one. If both
+     * are varargs then a call such as
+     * {@code ExceptionLocalization.buildMessage("some-key", name, queryString)} resolves to
+     * this method rather than the subclass's, because a three-parameter signature is more
+     * specific than a two-parameter one. The message key is then silently taken as the
+     * localization class name, and the bundle lookup fails with MissingResourceException.
+     * Keeping the array form makes this method inapplicable to the unwrapped call and lets
+     * the intended subclass method win.
      */
     public static String buildMessage(String localizationClassName, String key, Object[] arguments) {
         return buildMessage(localizationClassName, key, arguments, true);
@@ -58,7 +68,8 @@ public abstract class EclipseLinkLocalization {
         }
 
         try {
-            bundle = ResourceBundle.getBundle("org.eclipse.persistence.internal.localization.i18n." + localizationClassName + "Resource", Locale.getDefault());
+            bundle = ResourceBundle.getBundle("org.eclipse.persistence.internal.localization.i18n." + localizationClassName + "Resource",
+                    Locale.getDefault());
             message = bundle.getString(key);
         } catch (java.util.MissingResourceException mre) {
             if (translate) {
@@ -66,15 +77,17 @@ public abstract class EclipseLinkLocalization {
                 // Use the current language's NoTranslationForThisLocale message.
                 if (arguments == null) {
                     return message + NO_TRANSLATION_MESSAGE;
-                } else {
-                    return MessageFormat.format(message, arguments) + NO_TRANSLATION_MESSAGE;
-                }            }
+                }
+
+                return MessageFormat.format(message, arguments) + NO_TRANSLATION_MESSAGE;
+            }
         }
+
         if (arguments == null) {
             return message;
-        } else {
-            return MessageFormat.format(message, arguments);
         }
+
+        return MessageFormat.format(message, arguments);
     }
 
 }
