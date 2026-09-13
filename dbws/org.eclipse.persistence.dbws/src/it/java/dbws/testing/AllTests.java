@@ -29,6 +29,7 @@ import org.junit.runners.Suite.SuiteClasses;
 import dbws.testing.keymappings.KeyMappingsTestSuite;
 import dbws.testing.relationships.RelationshipsTestSuite;
 import dbws.testing.xrdynamicentity.XRDynamicEntityTestSuite;
+import dbws.testing.xrservicefactory.XRServiceFactorySecureXmlTestSuite;
 import static dbws.testing.DBWSTestHelper.DATABASE_PASSWORD_KEY;
 import static dbws.testing.DBWSTestHelper.DATABASE_URL_KEY;
 import static dbws.testing.DBWSTestHelper.DATABASE_USERNAME_KEY;
@@ -41,7 +42,8 @@ import static dbws.testing.DBWSTestHelper.DEFAULT_DATABASE_USERNAME;
 @SuiteClasses({
     KeyMappingsTestSuite.class,
     RelationshipsTestSuite.class,
-    XRDynamicEntityTestSuite.class
+    XRDynamicEntityTestSuite.class,
+    XRServiceFactorySecureXmlTestSuite.class
   }
 )
 
