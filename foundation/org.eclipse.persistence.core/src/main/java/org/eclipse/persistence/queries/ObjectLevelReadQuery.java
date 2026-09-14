@@ -2145,6 +2145,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             this.defaultBuilder = readQuery.defaultBuilder;
             this.distinctState = readQuery.distinctState;
             this.shouldUseSerializedObjectPolicy = readQuery.shouldUseSerializedObjectPolicy;
+            this.shouldCacheConcreteSubclassCalls = readQuery.shouldCacheConcreteSubclassCalls;
         }
     }
 
@@ -2177,7 +2178,6 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             this.shouldOuterJoinSubclasses = objectQuery.shouldOuterJoinSubclasses;
             this.shouldUseDefaultFetchGroup = objectQuery.shouldUseDefaultFetchGroup;
             this.concreteSubclassCalls = objectQuery.concreteSubclassCalls;
-            this.shouldCacheConcreteSubclassCalls = objectQuery.shouldCacheConcreteSubclassCalls;
             this.concreteSubclassQueries = objectQuery.concreteSubclassQueries;
             this.aggregateQueries = objectQuery.aggregateQueries;
             this.concreteSubclassJoinedMappingIndexes = objectQuery.concreteSubclassJoinedMappingIndexes;

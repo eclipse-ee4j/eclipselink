@@ -46,16 +46,52 @@ class ObjectLevelReadQueryConcreteSubclassCallsCacheTest {
     }
 
     @Test
-    void prepareFromQueryCopiesShouldCacheConcreteSubclassCallsValue() {
-        // https://github.com/eclipse-ee4j/eclipselink/issues/2806
-        // A dynamic query prepared from an already-prepared query must inherit the
-        // cache-disabling flag, not silently fall back to the (caching) default.
-        ReadAllQuery preparedQuery = new ReadAllQuery();
-        preparedQuery.setShouldCacheConcreteSubclassCalls(false);
+    void copyFromQueryCopiesShouldCacheConcreteSubclassCallsValue() {
+        ReadAllQuery source = new ReadAllQuery();
+        source.setShouldCacheConcreteSubclassCalls(false);
 
-        ReadAllQuery dynamicQuery = new ReadAllQuery();
-        dynamicQuery.prepareFromQuery(preparedQuery);
+        ReadAllQuery query = new ReadAllQuery();
+        query.copyFromQuery(source);
 
-        assertFalse(dynamicQuery.shouldCacheConcreteSubclassCalls());
+        assertFalse(query.shouldCacheConcreteSubclassCalls());
+    }
+
+    @Test
+    void prepareFromQueryKeepsDisabledSettingWhenCachedQueryIsEnabled() {
+        // A query prepared from an equivalent cached query keeps its own setting
+        ReadAllQuery cachedQuery = new ReadAllQuery();
+
+        ReadAllQuery query = new ReadAllQuery();
+        query.setShouldCacheConcreteSubclassCalls(false);
+        query.prepareFromQuery(cachedQuery);
+
+        assertFalse(query.shouldCacheConcreteSubclassCalls());
+    }
+
+    @Test
+    void prepareFromQueryKeepsEnabledSettingWhenCachedQueryIsDisabled() {
+        ReadAllQuery cachedQuery = new ReadAllQuery();
+        cachedQuery.setShouldCacheConcreteSubclassCalls(false);
+
+        ReadAllQuery query = new ReadAllQuery();
+        query.prepareFromQuery(cachedQuery);
+
+        assertTrue(query.shouldCacheConcreteSubclassCalls());
+    }
+
+    @Test
+    void readObjectQueryPrepareFromQueryKeepsItsOwnSetting() {
+        ReadObjectQuery enabledCachedQuery = new ReadObjectQuery();
+        ReadObjectQuery disabledQuery = new ReadObjectQuery();
+        disabledQuery.setShouldCacheConcreteSubclassCalls(false);
+        disabledQuery.prepareFromQuery(enabledCachedQuery);
+
+        ReadObjectQuery disabledCachedQuery = new ReadObjectQuery();
+        disabledCachedQuery.setShouldCacheConcreteSubclassCalls(false);
+        ReadObjectQuery enabledQuery = new ReadObjectQuery();
+        enabledQuery.prepareFromQuery(disabledCachedQuery);
+
+        assertFalse(disabledQuery.shouldCacheConcreteSubclassCalls());
+        assertTrue(enabledQuery.shouldCacheConcreteSubclassCalls());
     }
 }
