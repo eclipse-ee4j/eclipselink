@@ -207,13 +207,45 @@ public class MetamodelImpl implements Metamodel, Serializable {
         }
     }
 
+    /**
+     * Return the metamodel entity type with the given entity name.
+     * <p>
+     * The entity name is the one given by {@code @Entity(name = "...")}, which defaults to the
+     * unqualified class name but need not match it. {@code entities} is keyed by class name - see
+     * {@link #entity(Class)}, which looks up {@code clazz.getName()} - so the name cannot be used as a
+     * key here.
+     * <p>
+     * The class name is accepted as well, and is tried first. That is how the map is keyed, so it
+     * costs nothing, and callers that hold a class name rather than an entity name would otherwise
+     * have no way to ask. The reference implementation resolves both, in this order, for the same
+     * reason. A collision is not a practical concern: it would take an entity whose declared name is
+     * the fully qualified name of a different entity.
+     * <p>
+     * Failing that, the values are searched by entity name. {@link EntityTypeImpl#getName()} returns
+     * the descriptor alias, which is the entity name.
+     *
+     * @param entityName the entity name, or the entity class name
+     * @return the metamodel entity type
+     * @throws IllegalArgumentException if there is no entity of that name
+     * @since Jakarta Persistence 3.2
+     */
     @Override
     public EntityType<?> entity(String entityName) {
-        EntityTypeImpl<?> aType = this.entities.get(entityName);
-        if (aType == null) {
-            entityEmbeddableManagedTypeNotFound(entities, null, entityName, "Entity", "EntityType");
+        if (entityName != null) {
+            EntityTypeImpl<?> byClassName = this.entities.get(entityName);
+            if (byClassName != null) {
+                return byClassName;
+            }
+
+            for (EntityTypeImpl<?> aType : this.entities.values()) {
+                if (entityName.equals(aType.getName())) {
+                    return aType;
+                }
+            }
         }
-        return aType;
+
+        entityEmbeddableManagedTypeNotFound(entities, null, entityName, "Entity", "EntityType");
+        return null;
     }
 
     /**
