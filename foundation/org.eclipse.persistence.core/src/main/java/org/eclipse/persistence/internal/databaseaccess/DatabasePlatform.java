@@ -68,9 +68,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.Vector;
-import javax.xml.transform.dom.DOMResult;
 
-import org.w3c.dom.Document;
+import javax.xml.transform.dom.DOMResult;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DatabaseException;
@@ -93,12 +92,9 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField;
-import org.eclipse.persistence.platform.database.AccessPlatform;
 import org.eclipse.persistence.platform.database.DB2Platform;
-import org.eclipse.persistence.platform.database.DBasePlatform;
 import org.eclipse.persistence.platform.database.OraclePlatform;
 import org.eclipse.persistence.platform.database.PostgreSQLPlatform;
-import org.eclipse.persistence.platform.database.SybasePlatform;
 import org.eclipse.persistence.platform.database.SymfowarePlatform;
 import org.eclipse.persistence.platform.database.converters.StructConverter;
 import org.eclipse.persistence.platform.database.partitioning.DataPartitioningCallback;
@@ -117,6 +113,7 @@ import org.eclipse.persistence.tools.schemaframework.DDLPlatform;
 import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
 import org.eclipse.persistence.tools.schemaframework.SequenceDefinition;
 import org.eclipse.persistence.tools.schemaframework.TableDefinition;
+import org.w3c.dom.Document;
 
 /**
  * DatabasePlatform is private to EclipseLink. It encapsulates behavior specific to a database platform
@@ -1824,9 +1821,7 @@ public class DatabasePlatform extends DatasourcePlatform implements DDLPlatform 
      * This support a wide range of different parameter types,
      * and is heavily optimized for common types.
      */
-    public void setParameterValueInDatabaseCall(Object parameter,
-                PreparedStatement statement, int index, AbstractSession session)
-                throws SQLException {
+    public void setParameterValueInDatabaseCall(Object parameter, PreparedStatement statement, int index, AbstractSession session) throws SQLException {
         // Process common types first.
         if (parameter instanceof String) {
             // Check for stream binding of large strings.
@@ -1861,7 +1856,10 @@ public class DatabasePlatform extends DatasourcePlatform implements DDLPlatform 
             } else {
                 statement.setObject(index, parameter);
             }
-        }  else if (parameter instanceof java.sql.Date){
+        }
+
+        // SQL time/dates
+        else if (parameter instanceof java.sql.Date){
             statement.setDate(index,(java.sql.Date)parameter);
         }  else if (parameter instanceof java.time.LocalDate){
             statement.setDate(index, java.sql.Date.valueOf((java.time.LocalDate) parameter));
@@ -1887,7 +1885,10 @@ public class DatabasePlatform extends DatasourcePlatform implements DDLPlatform 
             statement.setTimestamp(index, ts);
         } else if (parameter instanceof Boolean) {
             statement.setBoolean(index, (Boolean) parameter);
-        } else if (parameter == null) {
+        }
+
+        // Null handling
+        else if (parameter == null) {
             // Normally null is passed as a DatabaseField so the type is included, but in some case may be passed directly.
             statement.setNull(index, getJDBCType((Class<?>)null));
         } else if (parameter instanceof DatabaseField) {
@@ -1900,6 +1901,7 @@ public class DatabasePlatform extends DatasourcePlatform implements DDLPlatform 
                 statement.setBytes(index, (byte[])parameter);
             }
         }
+
         // Next process types that need conversion.
         else if (parameter instanceof Calendar) {
             statement.setTimestamp(index, Helper.timestampFromDate(((Calendar)parameter).getTime()));

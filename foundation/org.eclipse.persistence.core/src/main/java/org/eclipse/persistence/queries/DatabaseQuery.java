@@ -37,6 +37,17 @@
 //       - 456067 : Added support for defining query timeout units
 package org.eclipse.persistence.queries;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
+import java.util.concurrent.TimeUnit;
+
 import org.eclipse.persistence.config.ParameterDelimiterType;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.DescriptorQueryManager;
@@ -71,22 +82,12 @@ import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.sessions.SessionProfiler;
 import org.eclipse.persistence.sessions.remote.DistributedSession;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
-import java.util.concurrent.TimeUnit;
+import static org.eclipse.persistence.internal.helper.CollectionUtils.isEmpty;
 
 /**
  * <p>
- * <b>Purpose</b>: Abstract class for all database query objects. DatabaseQuery
- * is a visible class to the EclipseLink user. Users create an appropriate query
- * by creating an instance of a concrete subclasses of DatabaseQuery.
+ * <b>Purpose</b>: Abstract class for all database query objects. DatabaseQuery is a visible class to the EclipseLink
+ * user. Users create an appropriate query by creating an instance of a concrete subclasses of DatabaseQuery.
  *
  * <p>
  * <b>Responsibilities</b>:
@@ -105,26 +106,22 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     public static final String BATCH_FETCH_PROPERTY = "BATCH_FETCH_PROPERTY";
 
     /**
-     * Queries can be given a name and registered with a descriptor to allow
-     * common queries to be reused.
+     * Queries can be given a name and registered with a descriptor to allow common queries to be reused.
      */
     protected String name;
 
     /**
-     * Arguments can be given and specified to predefined queries to allow
-     * reuse.
+     * Arguments can be given and specified to predefined queries to allow reuse.
      */
     protected List<String> arguments;
 
     /**
-     * PERF: Argument fields are cached in prepare to avoid rebuilding on each
-     * execution.
+     * PERF: Argument fields are cached in prepare to avoid rebuilding on each execution.
      */
     protected List<DatabaseField> argumentFields;
 
     /**
-     * Arguments values can be given and specified to predefined queries to
-     * allow reuse.
+     * Arguments values can be given and specified to predefined queries to allow reuse.
      */
     protected List<Object> argumentValues;
 
@@ -135,7 +132,9 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     protected List<String> argumentTypeNames;
 
     /** Used for parameter retreival in JPQL **/
-    public enum ParameterType {POSITIONAL, NAMED}
+    public enum ParameterType {
+        POSITIONAL, NAMED
+    }
 
     protected List<ParameterType> argumentParameterTypes;
 
@@ -146,20 +145,18 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     protected List<ClassDescriptor> descriptors;
 
     /**
-     * The query mechanism determines the mechanism on how the database will be
-     * accessed.
+     * The query mechanism determines the mechanism on how the database will be accessed.
      */
     protected DatabaseQueryMechanism queryMechanism;
 
     /**
-     * A redirector allows for a queries execution to be the execution of a
-     * piece of code.
+     * A redirector allows for a queries execution to be the execution of a piece of code.
      */
     protected QueryRedirector redirector;
 
     /**
-     * Can be set to true in the case there is a redirector or a default
-     * redirector but the user does not want the query redirected.
+     * Can be set to true in the case there is a redirector or a default redirector but the user does not want the query
+     * redirected.
      */
     protected boolean doNotRedirect = false;
 
@@ -174,9 +171,10 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     protected boolean shouldStoreBypassCache = false;
 
     /**
-     * Property used to override a persistence unit level that disallows native
-     * SQL queries.
-     * @see org.eclipse.persistence.sessions.Project#setAllowNativeSQLQueries(boolean) Project.setAllowNativeSQLQueries(boolean)
+     * Property used to override a persistence unit level that disallows native SQL queries.
+     *
+     * @see org.eclipse.persistence.sessions.Project#setAllowNativeSQLQueries(boolean)
+     * Project.setAllowNativeSQLQueries(boolean)
      */
     protected Boolean allowNativeSQLQuery;
 
@@ -184,39 +182,33 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     protected Map<Object, Object> properties;
 
     /**
-     * Only used after the query is cloned for execution to store the session
-     * under which the query was executed.
+     * Only used after the query is cloned for execution to store the session under which the query was executed.
      */
     protected transient AbstractSession session;
 
     /**
-     * Only used after the query is cloned for execution to store the execution
-     * session under which the query was executed.
+     * Only used after the query is cloned for execution to store the execution session under which the query was executed.
      */
     protected transient AbstractSession executionSession;
 
     /**
-     * Connection to use for database access, required for server session
-     * connection pooling.
-     * There can be multiple connections with partitioning and replication.
+     * Connection to use for database access, required for server session connection pooling. There can be multiple
+     * connections with partitioning and replication.
      */
     protected transient Collection<Accessor> accessors;
 
     /**
-     * Mappings and the descriptor use parameterized mechanisms that will be
-     * translated with the data from the row.
+     * Mappings and the descriptor use parameterized mechanisms that will be translated with the data from the row.
      */
     protected AbstractRecord translationRow;
 
     /**
-     * Internal flag used to bypass user define queries when executing one for
-     * custom sql/query support.
+     * Internal flag used to bypass user define queries when executing one for custom sql/query support.
      */
     protected boolean isUserDefined;
 
     /**
-     * Internal flag used to bypass user define queries when executing one for
-     * custom sql/query support.
+     * Internal flag used to bypass user define queries when executing one for custom sql/query support.
      */
     protected boolean isUserDefinedSQLCall;
 
@@ -233,14 +225,12 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     protected boolean shouldCloneCall;
 
     /**
-     * Allow for the prepare of queries to be turned off, this allow for dynamic
-     * non-pre SQL generated queries.
+     * Allow for the prepare of queries to be turned off, this allow for dynamic non-pre SQL generated queries.
      */
     protected boolean shouldPrepare;
 
     /**
-     * List of arguments to check for null.
-     * If any are null, the query needs to be re-prepared.
+     * List of arguments to check for null. If any are null, the query needs to be re-prepared.
      */
     protected List<DatabaseField> nullableArguments;
 
@@ -251,8 +241,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     protected Boolean shouldBindAllParameters;
 
     /**
-     * Cache the prepared statement, this requires full parameter binding as
-     * well.
+     * Cache the prepared statement, this requires full parameter binding as well.
      */
 
     // Has False, Undefined or True value. In case of Undefined -
@@ -263,27 +252,22 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     protected boolean shouldUseWrapperPolicy;
 
     /**
-     * Table per class requires multiple query executions. Internally we prepare
-     * those queries and cache them against the source mapping's selection
-     * query. When queries are executed they are cloned so we need a mechanism
-     * to keep a reference back to the actual selection query so that we can
-     * successfully look up and chain query executions within a table per class
-     * inheritance hierarchy.
+     * Table per class requires multiple query executions. Internally we prepare those queries and cache them against the
+     * source mapping's selection query. When queries are executed they are cloned so we need a mechanism to keep a
+     * reference back to the actual selection query so that we can successfully look up and chain query executions within a
+     * table per class inheritance hierarchy.
      */
     protected DatabaseMapping sourceMapping;
 
     /**
-     * queryTimeout has three possible settings: DefaultTimeout, NoTimeout, and
-     * 1..N This applies to both DatabaseQuery.queryTimeout and
-     * DescriptorQueryManager.queryTimeout
+     * queryTimeout has three possible settings: DefaultTimeout, NoTimeout, and 1..N This applies to both
+     * DatabaseQuery.queryTimeout and DescriptorQueryManager.queryTimeout
      * <p>
-     * DatabaseQuery.queryTimeout: - DefaultTimeout: get queryTimeout from
-     * DescriptorQueryManager - NoTimeout, 1..N: overrides queryTimeout in
-     * DescriptorQueryManager
+     * DatabaseQuery.queryTimeout: - DefaultTimeout: get queryTimeout from DescriptorQueryManager - NoTimeout, 1..N:
+     * overrides queryTimeout in DescriptorQueryManager
      * <p>
-     * DescriptorQueryManager.queryTimeout: - DefaultTimeout: get queryTimeout
-     * from parent DescriptorQueryManager. If there is no parent, default to
-     * NoTimeout - NoTimeout, 1..N: overrides parent queryTimeout
+     * DescriptorQueryManager.queryTimeout: - DefaultTimeout: get queryTimeout from parent DescriptorQueryManager. If there
+     * is no parent, default to NoTimeout - NoTimeout, 1..N: overrides parent queryTimeout
      */
     protected int queryTimeout;
 
@@ -295,14 +279,12 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     public static final int NoCascading = 1;
 
     /*
-     * Used as default for write, used for refreshing to refresh the whole
-     * object.
+     * Used as default for write, used for refreshing to refresh the whole object.
      */
     public static final int CascadePrivateParts = 2;
 
     /*
-     * Currently not supported, used for deep write/refreshes/reads in the
-     * future.
+     * Currently not supported, used for deep write/refreshes/reads in the future.
      */
     public static final int CascadeAllParts = 3;
 
@@ -310,16 +292,14 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     public static final int CascadeDependentParts = 4;
 
     /*
-     * Used by aggregate Collections: As aggregates delete at update time,
-     * cascaded deletes must know to stop when entering postDelete for a
-     * particular mapping. Only used by the aggregate collection when update is
-     * occurring in a UnitOfWork CR 2811
+     * Used by aggregate Collections: As aggregates delete at update time, cascaded deletes must know to stop when entering
+     * postDelete for a particular mapping. Only used by the aggregate collection when update is occurring in a UnitOfWork
+     * CR 2811
      */
     public static final int CascadeAggregateDelete = 5;
 
     /*
-     * Used when refreshing should check the mappings to determine if a
-     * particular mapping should be cascaded.
+     * Used when refreshing should check the mappings to determine if a particular mapping should be cascaded.
      */
     public static final int CascadeByMapping = 6;
 
@@ -327,14 +307,13 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     protected String hintString;
 
     /*
-     * Stores the FlushMode of this Query. This is only applicable when executed
-     * in a flushable UnitOfWork and will be ignored otherwise.
+     * Stores the FlushMode of this Query. This is only applicable when executed in a flushable UnitOfWork and will be
+     * ignored otherwise.
      */
     protected Boolean flushOnExecute;
 
     /**
-     * PERF: Determines if the query has already been cloned for execution, to
-     * avoid duplicate cloning.
+     * PERF: Determines if the query has already been cloned for execution, to avoid duplicate cloning.
      */
     protected boolean isExecutionClone;
 
@@ -354,7 +333,6 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
 
     /** Allow queries to be targeted at specific connection pools. */
     protected PartitioningPolicy partitioningPolicy;
-
 
     /** Allow the reserved pound char used to delimit bind parameters to be overridden */
     protected String parameterDelimiter;
@@ -382,28 +360,24 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     }
 
     /**
-     * PUBLIC:
-     * Return the query's partitioning policy.
+     * PUBLIC: Return the query's partitioning policy.
      */
     public PartitioningPolicy getPartitioningPolicy() {
         return partitioningPolicy;
     }
 
     /**
-     * PUBLIC:
-     * Set the query's partitioning policy.
-     * A PartitioningPolicy is used to partition, load-balance or replicate data across multiple difference databases
-     * or across a database cluster such as Oracle RAC.
-     * Partitioning can provide improved scalability by allowing multiple database machines to service requests.
-     * Setting a policy on a query will override the descriptor and session defaults.
+     * PUBLIC: Set the query's partitioning policy. A PartitioningPolicy is used to partition, load-balance or replicate
+     * data across multiple difference databases or across a database cluster such as Oracle RAC. Partitioning can provide
+     * improved scalability by allowing multiple database machines to service requests. Setting a policy on a query will
+     * override the descriptor and session defaults.
      */
     public void setPartitioningPolicy(PartitioningPolicy partitioningPolicy) {
         this.partitioningPolicy = partitioningPolicy;
     }
 
     /**
-     * INTERNAL:
-     * Return the name to use for the query in performance monitoring.
+     * INTERNAL: Return the name to use for the query in performance monitoring.
      */
     public String getMonitorName() {
         if (monitorName == null) {
@@ -413,8 +387,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     }
 
     /**
-     * INTERNAL:
-     * Return the name to use for the query in performance monitoring.
+     * INTERNAL: Return the name to use for the query in performance monitoring.
      */
     public void resetMonitorName() {
         if (getReferenceClassName() == null) {
@@ -425,48 +398,42 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     }
 
     /**
-     * PUBLIC: Add the argument named argumentName. This will cause the
-     * translation of references of argumentName in the receiver's expression,
-     * with the value of the argument as supplied to the query in order from
-     * executeQuery()
+     * PUBLIC: Add the argument named argumentName. This will cause the translation of references of argumentName in the
+     * receiver's expression, with the value of the argument as supplied to the query in order from executeQuery()
      */
     public void addArgument(String argumentName) {
         addArgument(argumentName, Object.class);
     }
 
     /**
-     * PUBLIC: Add the argument named argumentName and its class type. This will
-     * cause the translation of references of argumentName in the receiver's
-     * expression, with the value of the argument as supplied to the query in
-     * order from executeQuery(). Specifying the class type is important if
-     * identically named queries are used but with different argument lists.
+     * PUBLIC: Add the argument named argumentName and its class type. This will cause the translation of references of
+     * argumentName in the receiver's expression, with the value of the argument as supplied to the query in order from
+     * executeQuery(). Specifying the class type is important if identically named queries are used but with different
+     * argument lists.
      */
     public void addArgument(String argumentName, Class<?> type) {
         addArgument(argumentName, type, false);
     }
 
     /**
-     * INTERNAL: Add the argument named argumentName.  This method was added to maintain
-     * information about whether parameters are positional or named for JPQL query introspeciton
-     * API
+     * INTERNAL: Add the argument named argumentName. This method was added to maintain information about whether parameters
+     * are positional or named for JPQL query introspeciton API
      */
     public void addArgument(String argumentName, Class<?> type, ParameterType parameterType) {
         addArgument(argumentName, type, parameterType, false);
     }
 
     /**
-     * PUBLIC: Add the argument named argumentName and its class type. This will
-     * cause the translation of references of argumentName in the receiver's
-     * expression, with the value of the argument as supplied to the query in
-     * order from executeQuery(). Specifying the class type is important if
-     * identically named queries are used but with different argument lists.
-     * If the argument can be null, and null must be treated differently in the
-     * generated SQL, then nullable should be set to true.
+     * PUBLIC: Add the argument named argumentName and its class type. This will cause the translation of references of
+     * argumentName in the receiver's expression, with the value of the argument as supplied to the query in order from
+     * executeQuery(). Specifying the class type is important if identically named queries are used but with different
+     * argument lists. If the argument can be null, and null must be treated differently in the generated SQL, then nullable
+     * should be set to true.
      */
     public void addArgument(String argumentName, Class<?> type, boolean nullable) {
         getArguments().add(argumentName);
         getArgumentTypes().add(type);
-        if(type != null) {
+        if (type != null) {
             getArgumentTypeNames().add(type.getName());
         }
         if (nullable) {
@@ -475,9 +442,8 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     }
 
     /**
-     * INTERNAL: Add the argument named argumentName.  This method was added to maintain
-     * information about whether parameters are positional or named for JPQL query introspeciton
-     * API
+     * INTERNAL: Add the argument named argumentName. This method was added to maintain information about whether parameters
+     * are positional or named for JPQL query introspeciton API
      */
     public void addArgument(String argumentName, Class<?> type, ParameterType argumentParameterType, boolean nullable) {
         addArgument(argumentName, type, nullable);
@@ -485,11 +451,10 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     }
 
     /**
-     * PUBLIC: Add the argument named argumentName and its class type. This will
-     * cause the translation of references of argumentName in the receiver's
-     * expression, with the value of the argument as supplied to the query in
-     * order from executeQuery(). Specifying the class type is important if
-     * identically named queries are used but with different argument lists.
+     * PUBLIC: Add the argument named argumentName and its class type. This will cause the translation of references of
+     * argumentName in the receiver's expression, with the value of the argument as supplied to the query in order from
+     * executeQuery(). Specifying the class type is important if identically named queries are used but with different
+     * argument lists.
      */
     public void addArgument(String argumentName, String typeAsString) {
         getArguments().add(argumentName);
@@ -499,9 +464,8 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     }
 
     /**
-     * INTERNAL: Add an argument to the query, but do not resolve the class yet.
-     * This is useful for building a query without putting the domain classes on
-     * the classpath for the Mapping Workbench.
+     * INTERNAL: Add an argument to the query, but do not resolve the class yet. This is useful for building a query without
+     * putting the domain classes on the classpath for the Mapping Workbench.
      */
     public void addArgumentByTypeName(String argumentName, String typeAsString) {
         getArguments().add(argumentName);
@@ -509,25 +473,23 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     }
 
     /**
-     * PUBLIC: Add the argumentValue. Argument values must be added in the same
-     * order the arguments are defined.
+     * PUBLIC: Add the argumentValue. Argument values must be added in the same order the arguments are defined.
      */
     public void addArgumentValue(Object argumentValue) {
         getArgumentValues().add(argumentValue);
     }
 
     /**
-     * PUBLIC: Add the argumentValues to the query. Argument values must be
-     * added in the same order the arguments are defined.
+     * PUBLIC: Add the argumentValues to the query. Argument values must be added in the same order the arguments are
+     * defined.
      */
     public void addArgumentValues(List theArgumentValues) {
         getArgumentValues().addAll(theArgumentValues);
     }
 
     /**
-     * PUBLIC: Used to define a store procedure or SQL query. This may be used
-     * for multiple SQL executions to be mapped to a single query. This cannot
-     * be used for cursored selects, delete alls or does exists.
+     * PUBLIC: Used to define a store procedure or SQL query. This may be used for multiple SQL executions to be mapped to a
+     * single query. This cannot be used for cursored selects, delete alls or does exists.
      */
     public void addCall(Call call) {
         setQueryMechanism(call.buildQueryMechanism(this, getQueryMechanism()));
@@ -536,9 +498,8 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     }
 
     /**
-     * PUBLIC: Used to define a statement level query. This may be used for
-     * multiple SQL executions to be mapped to a single query. This cannot be
-     * used for cursored selects, delete all(s) or does exists.
+     * PUBLIC: Used to define a statement level query. This may be used for multiple SQL executions to be mapped to a single
+     * query. This cannot be used for cursored selects, delete all(s) or does exists.
      */
     public void addStatement(SQLStatement statement) {
         // bug 3524620: lazy-init query mechanism
@@ -560,37 +521,33 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     }
 
     /**
-     * INTERNAL: In the case of EJBQL, an expression needs to be generated.
-     * Build the required expression.
+     * INTERNAL: In the case of EJBQL, an expression needs to be generated. Build the required expression.
      */
     protected void buildSelectionCriteria(AbstractSession session) {
         this.getQueryMechanism().buildSelectionCriteria(session);
     }
 
     /**
-     * PUBLIC: Cache the prepared statements, this requires full parameter
-     * binding as well.
+     * PUBLIC: Cache the prepared statements, this requires full parameter binding as well.
      */
     public void cacheStatement() {
         setShouldCacheStatement(true);
     }
 
     /**
-     * PUBLIC: Cascade the query and its properties on the queries object(s) and
-     * all objects related to the queries object(s). This includes private and
-     * independent relationships, but not read-only relationships. This will
-     * still stop on uninstantiated indirection objects except for deletion.
-     * Great caution should be used in using the property as the query may
-     * effect a large number of objects. This policy is used by the unit of work
-     * to ensure persistence by reachability.
+     * PUBLIC: Cascade the query and its properties on the queries object(s) and all objects related to the queries
+     * object(s). This includes private and independent relationships, but not read-only relationships. This will still stop
+     * on uninstantiated indirection objects except for deletion. Great caution should be used in using the property as the
+     * query may effect a large number of objects. This policy is used by the unit of work to ensure persistence by
+     * reachability.
      */
     public void cascadeAllParts() {
         setCascadePolicy(CascadeAllParts);
     }
 
     /**
-     * PUBLIC: Cascade the query and its properties on the queries object(s) and
-     * all related objects where the mapping has been set to cascade the merge.
+     * PUBLIC: Cascade the query and its properties on the queries object(s) and all related objects where the mapping has
+     * been set to cascade the merge.
      */
     public void cascadeByMapping() {
         setCascadePolicy(CascadeByMapping);
@@ -604,10 +561,9 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     }
 
     /**
-     * PUBLIC: Cascade the query and its properties on the queries object(s) and
-     * all privately owned objects related to the queries object(s). This is the
-     * default for write and delete queries. This policy should normally be used
-     * for refreshing, otherwise you could refresh half of any object.
+     * PUBLIC: Cascade the query and its properties on the queries object(s) and all privately owned objects related to the
+     * queries object(s). This is the default for write and delete queries. This policy should normally be used for
+     * refreshing, otherwise you could refresh half of any object.
      */
     public void cascadePrivateParts() {
         setCascadePolicy(CascadePrivateParts);
@@ -620,26 +576,23 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     }
 
     /**
-     * INTERNAL: Check to see if this query already knows the return value
-     * without performing any further work.
+     * INTERNAL: Check to see if this query already knows the return value without performing any further work.
      */
     public Object checkEarlyReturn(AbstractSession session, AbstractRecord translationRow) {
         return null;
     }
 
     /**
-     * INTERNAL: Check to see if a custom query should be used for this query.
-     * This is done before the query is copied and prepared/executed. null means
-     * there is none.
+     * INTERNAL: Check to see if a custom query should be used for this query. This is done before the query is copied and
+     * prepared/executed. null means there is none.
      */
     protected DatabaseQuery checkForCustomQuery(AbstractSession session, AbstractRecord translationRow) {
         return null;
     }
 
     /**
-     * INTERNAL: Check to see if this query needs to be prepare and prepare it.
-     * The prepare is done on the original query to ensure that the work is not
-     * repeated.
+     * INTERNAL: Check to see if this query needs to be prepare and prepare it. The prepare is done on the original query to
+     * ensure that the work is not repeated.
      */
     public void checkPrepare(AbstractSession session, AbstractRecord translationRow) {
         this.checkPrepare(session, translationRow, false);
@@ -658,16 +611,15 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     }
 
     /**
-     * INTERNAL: Check to see if this query needs to be prepare and prepare it.
-     * The prepare is done on the original query to ensure that the work is not
-     * repeated.
+     * INTERNAL: Check to see if this query needs to be prepare and prepare it. The prepare is done on the original query to
+     * ensure that the work is not repeated.
      */
     public void checkPrepare(AbstractSession session, AbstractRecord translationRow, boolean force) {
         try {
             // This query is first prepared for global common state, this must be synced.
             if (!this.isPrepared) {// Avoid the monitor is already prepare, must
                 // If this query will use the custom query, do not prepare.
-                if ((!force) && (!this.shouldPrepare || !((DatasourcePlatform)session.getDatasourcePlatform()).shouldPrepare(this)
+                if ((!force) && (!this.shouldPrepare || !((DatasourcePlatform) session.getDatasourcePlatform()).shouldPrepare(this)
                         || (checkForCustomQuery(session, translationRow) != null))) {
                     return;
                 }
@@ -750,17 +702,15 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     }
 
     /**
-     * INTERNAL Used to give the subclasses opportunity to copy aspects of the
-     * cloned query to the original query.
+     * INTERNAL Used to give the subclasses opportunity to copy aspects of the cloned query to the original query.
      */
     protected void clonedQueryExecutionComplete(DatabaseQuery query, AbstractSession session) {
         // no-op for this class
     }
 
     /**
-     * INTERNAL: Convert all the class-name-based settings in this query to
-     * actual class-based settings This method is implemented by subclasses as
-     * necessary.
+     * INTERNAL: Convert all the class-name-based settings in this query to actual class-based settings This method is
+     * implemented by subclasses as necessary.
      *
      */
     public void convertClassNamesToClasses(ClassLoader classLoader) {
@@ -777,19 +727,16 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     }
 
     /**
-     * PUBLIC: Don't cache the prepared statements, this requires full parameter
-     * binding as well.
+     * PUBLIC: Don't cache the prepared statements, this requires full parameter binding as well.
      */
     public void dontCacheStatement() {
         setShouldCacheStatement(false);
     }
 
     /**
-     * PUBLIC: Do not cascade the query and its properties on the queries
-     * object(s) relationships. This does not effect the queries private parts
-     * but only the object(s) direct row-level attributes. This is the default
-     * for read queries and can be used in writing if it is known that only
-     * row-level attributes changed, or to resolve circular foreign key
+     * PUBLIC: Do not cascade the query and its properties on the queries object(s) relationships. This does not effect the
+     * queries private parts but only the object(s) direct row-level attributes. This is the default for read queries and
+     * can be used in writing if it is known that only row-level attributes changed, or to resolve circular foreign key
      * dependencies.
      */
     public void dontCascadeParts() {
@@ -797,10 +744,9 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     }
 
     /**
-     * PUBLIC: Set for the identity map (cache) to be ignored completely. The
-     * cache check will be skipped and the result will not be put into the
-     * identity map. This can be used to retrieve the exact state of an object
-     * on the database. By default the identity map is always maintained.
+     * PUBLIC: Set for the identity map (cache) to be ignored completely. The cache check will be skipped and the result
+     * will not be put into the identity map. This can be used to retrieve the exact state of an object on the database. By
+     * default the identity map is always maintained.
      */
     public void dontMaintainCache() {
         setShouldMaintainCache(false);
@@ -809,10 +755,8 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     /**
      * INTERNAL: Execute the query
      *
-     * @exception DatabaseException
-     *                - an error has occurred on the database.
-     * @exception OptimisticLockException
-     *                - an error has occurred using the optimistic lock feature.
+     * @exception DatabaseException - an error has occurred on the database.
+     * @exception OptimisticLockException - an error has occurred using the optimistic lock feature.
      * @return - the result of executing the query.
      */
     public abstract Object executeDatabaseQuery() throws DatabaseException, OptimisticLockException;
@@ -822,37 +766,30 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * <p>
      * If there are objects in the cache return the results of the cache lookup.
      *
-     * @param unitOfWork
-     *            - the session in which the receiver will be executed.
-     * @param translationRow
-     *            - the arguments
-     * @exception DatabaseException
-     *                - an error has occurred on the database.
-     * @exception OptimisticLockException
-     *                - an error has occurred using the optimistic lock feature.
+     * @param unitOfWork - the session in which the receiver will be executed.
+     * @param translationRow - the arguments
+     * @exception DatabaseException - an error has occurred on the database.
+     * @exception OptimisticLockException - an error has occurred using the optimistic lock feature.
      * @return An object, the result of executing the query.
      */
-    public Object executeInUnitOfWork(UnitOfWorkImpl unitOfWork, AbstractRecord translationRow) throws DatabaseException, OptimisticLockException {
+    public Object executeInUnitOfWork(UnitOfWorkImpl unitOfWork, AbstractRecord translationRow)
+            throws DatabaseException, OptimisticLockException {
         return execute(unitOfWork, translationRow);
     }
 
     /**
-     * INTERNAL: Execute the query. If there are objects in the cache return the
-     * results of the cache lookup.
+     * INTERNAL: Execute the query. If there are objects in the cache return the results of the cache lookup.
      *
-     * @param session
-     *            - the session in which the receiver will be executed.
-     * @exception DatabaseException
-     *                - an error has occurred on the database.
-     * @exception OptimisticLockException
-     *                - an error has occurred using the optimistic lock feature.
+     * @param session - the session in which the receiver will be executed.
+     * @exception DatabaseException - an error has occurred on the database.
+     * @exception OptimisticLockException - an error has occurred using the optimistic lock feature.
      * @return An object, the result of executing the query.
      */
     public Object execute(AbstractSession session, AbstractRecord translationRow) throws DatabaseException, OptimisticLockException {
         DatabaseQuery queryToExecute = this;
         // JPQL call may not have defined the reference class yet, so need to use prepare.
         if (isJPQLCallQuery() && isObjectLevelReadQuery()) {
-            ((ObjectLevelReadQuery)this).checkPrePrepare(session);
+            ((ObjectLevelReadQuery) this).checkPrePrepare(session);
         } else {
             checkDescriptor(session);
         }
@@ -957,7 +894,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
             return null;
         }
         if (this.accessors instanceof List) {
-            return ((List<Accessor>)this.accessors).get(0);
+            return ((List<Accessor>) this.accessors).get(0);
         }
         return this.accessors.iterator().next();
     }
@@ -980,45 +917,44 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     }
 
     /**
-     * INTERNAL:
-     * Used to calculate parameter types in JPQL
+     * INTERNAL: Used to calculate parameter types in JPQL
      */
-    public List<ParameterType> getArgumentParameterTypes(){
-        if (argumentParameterTypes == null){
+    public List<ParameterType> getArgumentParameterTypes() {
+        if (argumentParameterTypes == null) {
             this.argumentParameterTypes = new ArrayList<>();
         }
         return this.argumentParameterTypes;
     }
 
+    // if ((this.argumentTypes == null) || (this.argumentTypes.isEmpty() && (this.argumentTypeNames != null) && !this.argumentTypeNames.isEmpty()))
+
     /**
-     * INTERNAL: Return the argumentTypes for use with the pre-defined query
-     * option
+     * INTERNAL: Return the argumentTypes for use with the pre-defined query option
      */
     public List<Class<?>> getArgumentTypes() {
-        if ((this.argumentTypes == null) || (this.argumentTypes.isEmpty() && (this.argumentTypeNames != null) && !this.argumentTypeNames.isEmpty())) {
-            this.argumentTypes = new ArrayList<>();
-            // Bug 3256198 - lazily initialize the argument types from their
-            // class names
-            if (this.argumentTypeNames != null) {
-                Iterator<String> args = this.argumentTypeNames.iterator();
-                while (args.hasNext()) {
-                    String argumentTypeName = args.next();
-                    this.argumentTypes.add(Helper.getObjectClass(ConversionManager.loadClass(argumentTypeName)));
-                }
-            }
+        if (argumentTypes == null) {
+            argumentTypes = new ArrayList<>();
         }
-        return this.argumentTypes;
+
+        if (isEmpty(argumentTypes) && !isEmpty(argumentTypeNames)) {
+            // Bug 3256198 - lazily initialize the argument types from their class names
+            for (String argumentTypeName : argumentTypeNames) {
+                argumentTypes.add(Helper.getObjectClass(ConversionManager.loadClass(argumentTypeName)));
+            }
+       }
+
+       return argumentTypes;
     }
 
     /**
-     * INTERNAL: Return the argumentTypeNames for use with the pre-defined query
-     * option These are used pre-initialization to construct the argumentTypes
-     * list.
+     * INTERNAL: Return the argumentTypeNames for use with the pre-defined query option These are used pre-initialization to
+     * construct the argumentTypes list.
      */
     public List<String> getArgumentTypeNames() {
         if (argumentTypeNames == null) {
             argumentTypeNames = new ArrayList<>();
         }
+
         return argumentTypeNames;
     }
 
@@ -1043,8 +979,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     }
 
     /**
-     * INTERNAL: Set the arguments for use with the pre-defined query option.
-     * Maintain the argumentTypes as well.
+     * INTERNAL: Set the arguments for use with the pre-defined query option. Maintain the argumentTypes as well.
      */
     public void setArguments(List<String> arguments) {
         List<Class<?>> types = new ArrayList<>(arguments.size());
@@ -1081,44 +1016,45 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     }
 
     /**
-     * OBSOLETE: Return the call for this query. This call contains the SQL and
-     * argument list.
+     * OBSOLETE: Return the call for this query. This call contains the SQL and argument list.
      *
      * @see #getDatasourceCall()
      */
     public DatabaseCall getCall() {
         Call call = getDatasourceCall();
-        if (call instanceof DatabaseCall) {
-            return (DatabaseCall) call;
-        } else {
-            return null;
+        if (call instanceof DatabaseCall databaseCall) {
+            return databaseCall;
         }
+
+        return null;
     }
 
     /**
-     * ADVANCED: Return the call for this query. This call contains the SQL and
-     * argument list.
+     * ADVANCED: Return the call for this query. This call contains the SQL and argument list.
      *
      * @see #prepareCall(org.eclipse.persistence.sessions.Session, DataRecord) prepareCall(Session, Record)
      */
     public Call getDatasourceCall() {
         Call call = null;
-        if (this.queryMechanism instanceof DatasourceCallQueryMechanism mechanism) {
+        if (queryMechanism instanceof DatasourceCallQueryMechanism mechanism) {
             call = mechanism.getCall();
+
             // If has multiple calls return the first one.
             if ((call == null) && mechanism.hasMultipleCalls()) {
                 call = mechanism.getCalls().get(0);
             }
         }
-        if ((call == null) && (this.queryMechanism != null) && this.queryMechanism.isJPQLCallQueryMechanism()) {
-            call = ((JPQLCallQueryMechanism) this.queryMechanism).getJPQLCall();
+
+        if (call == null && queryMechanism != null && queryMechanism.isJPQLCallQueryMechanism()) {
+            call = ((JPQLCallQueryMechanism) queryMechanism).getJPQLCall();
         }
+
         return call;
     }
 
     /**
-     * ADVANCED: Return the calls for this query. This method can be called for
-     * queries with multiple calls This call contains the SQL and argument list.
+     * ADVANCED: Return the calls for this query. This method can be called for queries with multiple calls This call
+     * contains the SQL and argument list.
      *
      * @see #prepareCall(org.eclipse.persistence.sessions.Session, DataRecord) prepareCall(Session, Record)
      */
@@ -1154,19 +1090,17 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     }
 
     /**
-     * INTERNAL:
-     * This is here only for JPA queries and currently only populated for JPA
-     * queries. JPAQuery is a jpa class and currently not part of the core.
+     * INTERNAL: This is here only for JPA queries and currently only populated for JPA queries. JPAQuery is a jpa class and
+     * currently not part of the core.
      */
     public List<ClassDescriptor> getDescriptors() {
         return null;
     }
 
     /**
-     * INTERNAL:
-     * TopLink_sessionName_domainClass.  Cached in properties
+     * INTERNAL: TopLink_sessionName_domainClass. Cached in properties
      */
-     public String getDomainClassNounName(String sessionName) {
+    public String getDomainClassNounName(String sessionName) {
         if (getProperty("DMSDomainClassNounName") == null) {
             StringBuilder buffer = new StringBuilder("EclipseLink");
             if (sessionName != null) {
@@ -1178,8 +1112,8 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
             }
             setProperty("DMSDomainClassNounName", buffer.toString());
         }
-        return (String)getProperty("DMSDomainClassNounName");
-     }
+        return (String) getProperty("DMSDomainClassNounName");
+    }
 
     /**
      * PUBLIC: Return the name of the query
@@ -1189,19 +1123,17 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     }
 
     /**
-     * INTERNAL:
-     * Return the String used to delimit an SQL parameter.
+     * INTERNAL: Return the String used to delimit an SQL parameter.
      */
     public String getParameterDelimiter() {
-        if(null == parameterDelimiter || parameterDelimiter.isEmpty()) {
+        if (null == parameterDelimiter || parameterDelimiter.isEmpty()) {
             parameterDelimiter = ParameterDelimiterType.DEFAULT;
         }
         return parameterDelimiter;
     }
 
     /**
-     * INTERNAL:
-     * Return the char used to delimit an SQL parameter.
+     * INTERNAL: Return the char used to delimit an SQL parameter.
      */
     public char getParameterDelimiterChar() {
         return getParameterDelimiter().charAt(0);
@@ -1219,8 +1151,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     }
 
     /**
-     * INTERNAL: Property support used by mappings to store temporary stuff in
-     * the query.
+     * INTERNAL: Property support used by mappings to store temporary stuff in the query.
      */
     public synchronized Object getProperty(Object property) {
         if (this.properties == null) {
@@ -1230,8 +1161,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     }
 
     /**
-     * INTERNAL:
-     * TopLink_sessionName_domainClass_queryClass_queryName (if exist).  Cached in properties
+     * INTERNAL: TopLink_sessionName_domainClass_queryClass_queryName (if exist). Cached in properties
      */
     public String getQueryNounName(String sessionName) {
         if (getProperty("DMSQueryNounName") == null) {
@@ -1244,7 +1174,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
             }
             setProperty("DMSQueryNounName", buffer.toString());
         }
-        return (String)getProperty("DMSQueryNounName");
+        return (String) getProperty("DMSQueryNounName");
     }
 
     /**
@@ -1266,8 +1196,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     }
 
     /**
-     * PUBLIC: Return the number of seconds the driver will wait for a Statement
-     * to execute to the given number of seconds.
+     * PUBLIC: Return the number of seconds the driver will wait for a Statement to execute to the given number of seconds.
      *
      * @see DescriptorQueryManager#getQueryTimeout()
      */
@@ -1276,9 +1205,8 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     }
 
     /**
-     * PUBLIC: Return the unit of time the driver will wait for a Statement to
-     * execute.
-     * 
+     * PUBLIC: Return the unit of time the driver will wait for a Statement to execute.
+     *
      * @see DescriptorQueryManager#getQueryTimeoutUnit()
      */
     public TimeUnit getQueryTimeoutUnit() {
@@ -1286,19 +1214,17 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     }
 
     /**
-     * INTERNAL: Returns the specific default redirector for this query type.
-     * There are numerous default query redirectors. See ClassDescriptor for
-     * their types.
+     * INTERNAL: Returns the specific default redirector for this query type. There are numerous default query redirectors.
+     * See ClassDescriptor for their types.
      */
     protected QueryRedirector getDefaultRedirector() {
         return this.descriptor.getDefaultQueryRedirector();
     }
 
     /**
-     * PUBLIC: Return the query redirector. A redirector can be used in a query
-     * to replace its execution with the execution of code. This can be used for
-     * named or parameterized queries to allow dynamic configuration of the
-     * query base on the query arguments.
+     * PUBLIC: Return the query redirector. A redirector can be used in a query to replace its execution with the execution
+     * of code. This can be used for named or parameterized queries to allow dynamic configuration of the query base on the
+     * query arguments.
      *
      * @see QueryRedirector
      */
@@ -1316,10 +1242,9 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     }
 
     /**
-     * PUBLIC: Return the query redirector. A redirector can be used in a query
-     * to replace its execution with the execution of code. This can be used for
-     * named or parameterized queries to allow dynamic configuration of the
-     * query base on the query arguments.
+     * PUBLIC: Return the query redirector. A redirector can be used in a query to replace its execution with the execution
+     * of code. This can be used for named or parameterized queries to allow dynamic configuration of the query base on the
+     * query arguments.
      *
      * @see QueryRedirector
      */
@@ -1331,24 +1256,24 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     }
 
     /**
-     * PUBLIC: Return the domain class associated with this query. By default
-     * this is null, but should be overridden in subclasses.
+     * PUBLIC: Return the domain class associated with this query. By default this is null, but should be overridden in
+     * subclasses.
      */
     public Class<?> getReferenceClass() {
         return null;
     }
 
     /**
-     * INTERNAL: return the name of the reference class. Added for Mapping
-     * Workbench removal of classpath dependency. Overridden by subclasses.
+     * INTERNAL: return the name of the reference class. Added for Mapping Workbench removal of classpath dependency.
+     * Overridden by subclasses.
      */
     public String getReferenceClassName() {
         return null;
     }
 
     /**
-     * PUBLIC: Return the selection criteria of the query. This should only be
-     * used with expression queries, null will be returned for others.
+     * PUBLIC: Return the selection criteria of the query. This should only be used with expression queries, null will be
+     * returned for others.
      */
     public Expression getSelectionCriteria() {
         if (this.queryMechanism == null) {
@@ -1358,14 +1283,14 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     }
 
     /**
-     * INTERNAL:
-     * TopLink_sessionName_domainClass_queryClass_queryName (if exist)_operationName (if exist).  Cached in properties
+     * INTERNAL: TopLink_sessionName_domainClass_queryClass_queryName (if exist)_operationName (if exist). Cached in
+     * properties
      */
     public String getSensorName(String operationName, String sessionName) {
         if (operationName == null) {
             return getQueryNounName(sessionName);
         }
-        @SuppressWarnings({"unchecked"})
+        @SuppressWarnings({ "unchecked" })
         Hashtable<String, String> sensorNames = (Hashtable<String, String>) getProperty("DMSSensorNames");
         if (sensorNames == null) {
             sensorNames = new Hashtable<>();
@@ -1390,8 +1315,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     }
 
     /**
-     * INTERNAL: Return the execution session. This is the session used to build
-     * objects returned by the query.
+     * INTERNAL: Return the execution session. This is the session used to build objects returned by the query.
      */
     public AbstractSession getExecutionSession() {
         if (this.executionSession == null) {
@@ -1403,25 +1327,22 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     }
 
     /**
-     * INTERNAL: Set the execution session. This is the session used to build
-     * objects returned by the query.
+     * INTERNAL: Set the execution session. This is the session used to build objects returned by the query.
      */
     protected void setExecutionSession(AbstractSession executionSession) {
         this.executionSession = executionSession;
     }
 
     /**
-     * PUBLIC: Return the name of the session that the query should be executed
-     * under. This can be with the session broker to override the default
-     * session.
+     * PUBLIC: Return the name of the session that the query should be executed under. This can be with the session broker
+     * to override the default session.
      */
     public String getSessionName() {
         return sessionName;
     }
 
     /**
-     * PUBLIC: Return the SQL statement of the query. This can only be used with
-     * statement queries.
+     * PUBLIC: Return the SQL statement of the query. This can only be used with statement queries.
      */
     public SQLStatement getSQLStatement() {
         return ((StatementQueryMechanism) getQueryMechanism()).getSQLStatement();
@@ -1453,9 +1374,8 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     }
 
     /**
-     * ADVANCED: Return the SQL string of the query. This can be used for SQL
-     * queries. This can also be used for normal queries if they have been
-     * prepared, (i.e. query.prepareCall()).
+     * ADVANCED: Return the SQL string of the query. This can be used for SQL queries. This can also be used for normal
+     * queries if they have been prepared, (i.e. query.prepareCall()).
      *
      * @see #prepareCall(org.eclipse.persistence.sessions.Session, DataRecord) prepareCall(Session, Record)
      */
@@ -1472,10 +1392,8 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     }
 
     /**
-     * ADVANCED: Return the SQL strings of the query. Used for queries with
-     * multiple calls This can be used for SQL queries. This can also be used
-     * for normal queries if they have been prepared, (i.e.
-     * query.prepareCall()).
+     * ADVANCED: Return the SQL strings of the query. Used for queries with multiple calls This can be used for SQL queries.
+     * This can also be used for normal queries if they have been prepared, (i.e. query.prepareCall()).
      *
      * @see #prepareCall(org.eclipse.persistence.sessions.Session, DataRecord) prepareCall(Session, Record)
      */
@@ -1497,8 +1415,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     }
 
     /**
-     * INTERNAL: Returns the internal tri-state value of shouldBindParameters
-     * used far cascading these settings
+     * INTERNAL: Returns the internal tri-state value of shouldBindParameters used far cascading these settings
      */
     public Boolean getShouldBindAllParameters() {
         return this.shouldBindAllParameters;
@@ -1512,9 +1429,8 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     }
 
     /**
-     * ADVANCED: This can be used to access a queries translated SQL if they
-     * have been prepared, (i.e. query.prepareCall()). The Record argument is
-     * one of (Record, XMLRecord) that contains the query arguments.
+     * ADVANCED: This can be used to access a queries translated SQL if they have been prepared, (i.e. query.prepareCall()).
+     * The Record argument is one of (Record, XMLRecord) that contains the query arguments.
      *
      * @see #prepareCall(org.eclipse.persistence.sessions.Session, DataRecord)
      */
@@ -1532,9 +1448,8 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     }
 
     /**
-     * ADVANCED: This can be used to access a queries translated SQL if they
-     * have been prepared, (i.e. query.prepareCall()). This method can be used
-     * for queries with multiple calls.
+     * ADVANCED: This can be used to access a queries translated SQL if they have been prepared, (i.e. query.prepareCall()).
+     * This method can be used for queries with multiple calls.
      *
      * @see #prepareCall(org.eclipse.persistence.sessions.Session, DataRecord) prepareCall(Session, Record)
      */
@@ -1564,8 +1479,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     }
 
     /**
-     * INTERNAL: returns true if the accessor has already been set. The
-     * getAccessor() will attempt to lazily initialize it.
+     * INTERNAL: returns true if the accessor has already been set. The getAccessor() will attempt to lazily initialize it.
      */
     public boolean hasAccessor() {
         return this.accessors != null;
@@ -1586,41 +1500,37 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     }
 
     /**
-     * PUBLIC: Return if a name of the session that the query should be executed
-     * under has been specified. This can be with the session broker to override
-     * the default session.
+     * PUBLIC: Return if a name of the session that the query should be executed under has been specified. This can be with
+     * the session broker to override the default session.
      */
     public boolean hasSessionName() {
         return sessionName != null;
     }
 
     /**
-     * PUBLIC: Session's shouldBindAllParameters() defines whether to bind or
-     * not (default setting)
+     * PUBLIC: Session's shouldBindAllParameters() defines whether to bind or not (default setting)
      */
     public void ignoreBindAllParameters() {
         this.shouldBindAllParameters = null;
     }
 
     /**
-     * PUBLIC: Session's shouldCacheAllStatements() defines whether to cache or
-     * not (default setting)
+     * PUBLIC: Session's shouldCacheAllStatements() defines whether to cache or not (default setting)
      */
     public void ignoreCacheStatement() {
         this.shouldCacheStatement = null;
     }
 
     /**
-     * PUBLIC: Return true if this query uses SQL, a stored procedure, or SDK
-     * call.
+     * PUBLIC: Return true if this query uses SQL, a stored procedure, or SDK call.
      */
     public boolean isCallQuery() {
         return (this.queryMechanism != null) && this.queryMechanism.isCallQueryMechanism();
     }
 
     /**
-     * INTERNAL: Returns true if this query has been created as the result of
-     * cascading a delete of an aggregate collection in a UnitOfWork CR 2811
+     * INTERNAL: Returns true if this query has been created as the result of cascading a delete of an aggregate collection
+     * in a UnitOfWork CR 2811
      */
     public boolean isCascadeOfAggregateDelete() {
         return this.cascadePolicy == CascadeAggregateDelete;
@@ -1704,9 +1614,8 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     }
 
     /**
-     * PUBLIC: If executed against a RepeatableWriteUnitOfWork if this attribute
-     * is true EclipseLink will write changes to the database before executing
-     * the query.
+     * PUBLIC: If executed against a RepeatableWriteUnitOfWork if this attribute is true EclipseLink will write changes to
+     * the database before executing the query.
      */
     public Boolean getFlushOnExecute() {
         return this.flushOnExecute;
@@ -1741,10 +1650,9 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     }
 
     /**
-     * INTERNAL: Queries are prepared when they are executed and then do not
-     * need to be prepared on subsequent executions. This method returns true if
-     * this query has been prepared. Updating the settings on a query will
-     * 'un-prepare' the query.
+     * INTERNAL: Queries are prepared when they are executed and then do not need to be prepared on subsequent executions.
+     * This method returns true if this query has been prepared. Updating the settings on a query will 'un-prepare' the
+     * query.
      */
     public boolean isPrepared() {
         return isPrepared;
@@ -1799,9 +1707,8 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * PUBLIC: Return true if this query uses an JPQL query mechanism .
      */
     public boolean isJPQLCallQuery() {
-        return ((this.queryMechanism != null)
-                && this.queryMechanism.isJPQLCallQueryMechanism()
-                && ((JPQLCallQueryMechanism)this.queryMechanism).getJPQLCall() != null);
+        return ((this.queryMechanism != null) && this.queryMechanism.isJPQLCallQueryMechanism()
+                && ((JPQLCallQueryMechanism) this.queryMechanism).getJPQLCall() != null);
     }
 
     /**
@@ -1819,14 +1726,13 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     }
 
     /**
-     * INTERNAL: Return true if the query uses default properties. This is used
-     * to determine if this query is cacheable. i.e. does not use any properties
-     * that may conflict with another query with the same EJBQL or selection
-     * criteria.
+     * INTERNAL: Return true if the query uses default properties. This is used to determine if this query is cacheable.
+     * i.e. does not use any properties that may conflict with another query with the same EJBQL or selection criteria.
      */
     public boolean isDefaultPropertiesQuery() {
         return (!this.isUserDefined) && (this.shouldPrepare) && (this.queryTimeout == DescriptorQueryManager.DefaultTimeout)
-            && (this.hintString == null) && (this.shouldBindAllParameters == null) && (this.shouldCacheStatement == null) && (this.shouldUseWrapperPolicy);
+                && (this.hintString == null) && (this.shouldBindAllParameters == null) && (this.shouldCacheStatement == null)
+                && (this.shouldUseWrapperPolicy);
     }
 
     /**
@@ -1837,18 +1743,16 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     }
 
     /**
-     * PUBLIC: Set for the identity map (cache) to be maintained. This is the
-     * default.
+     * PUBLIC: Set for the identity map (cache) to be maintained. This is the default.
      */
     public void maintainCache() {
         setShouldMaintainCache(true);
     }
 
     /**
-     * INTERNAL: This is different from 'prepareForExecution' in that this is
-     * called on the original query, and the other is called on the copy of the
-     * query. This query is copied for concurrency so this prepare can only
-     * setup things that will apply to any future execution of this query.
+     * INTERNAL: This is different from 'prepareForExecution' in that this is called on the original query, and the other is
+     * called on the copy of the query. This query is copied for concurrency so this prepare can only setup things that will
+     * apply to any future execution of this query.
      * <p>
      * Resolve the queryTimeout using the DescriptorQueryManager if required.
      */
@@ -1858,7 +1762,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
         if (this.queryTimeout == DescriptorQueryManager.DefaultTimeout) {
             if (this.descriptor == null) {
                 setQueryTimeout(this.session.getQueryTimeoutDefault());
-                if(this.session.getQueryTimeoutUnitDefault() == null) {
+                if (this.session.getQueryTimeoutUnitDefault() == null) {
                     this.session.setQueryTimeoutUnitDefault(DescriptorQueryManager.DefaultTimeoutUnit);
                 }
                 setQueryTimeoutUnit(this.session.getQueryTimeoutUnitDefault());
@@ -1870,9 +1774,9 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
                 }
                 setQueryTimeout(timeout);
 
-                //Bug #456067
+                // Bug #456067
                 TimeUnit timeoutUnit = this.descriptor.getQueryManager().getQueryTimeoutUnit();
-                if(timeoutUnit == DescriptorQueryManager.DefaultTimeoutUnit) {
+                if (timeoutUnit == DescriptorQueryManager.DefaultTimeoutUnit) {
                     timeoutUnit = this.session.getQueryTimeoutUnitDefault();
                 }
                 setQueryTimeoutUnit(timeoutUnit);
@@ -1886,10 +1790,9 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     }
 
     /**
-     * INTERNAL: Copy all setting from the query. This is used to morph queries
-     * from one type to the other. By default this calls prepareFromQuery, but
-     * additional properties may be required to be copied as prepareFromQuery
-     * only copies properties that affect the SQL.
+     * INTERNAL: Copy all setting from the query. This is used to morph queries from one type to the other. By default this
+     * calls prepareFromQuery, but additional properties may be required to be copied as prepareFromQuery only copies
+     * properties that affect the SQL.
      */
     public void copyFromQuery(DatabaseQuery query) {
         prepareFromQuery(query);
@@ -1919,11 +1822,9 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     }
 
     /**
-     * INTERNAL: Prepare the query from the prepared query. This allows a
-     * dynamic query to prepare itself directly from a prepared query instance.
-     * This is used in the JPQL parse cache to allow preparsed queries to be
-     * used to prepare dynamic queries. This only copies over properties that
-     * are configured through JPQL.
+     * INTERNAL: Prepare the query from the prepared query. This allows a dynamic query to prepare itself directly from a
+     * prepared query instance. This is used in the JPQL parse cache to allow preparsed queries to be used to prepare
+     * dynamic queries. This only copies over properties that are configured through JPQL.
      */
     public void prepareFromQuery(DatabaseQuery query) {
         setQueryMechanism((DatabaseQueryMechanism) query.getQueryMechanism().clone());
@@ -1937,17 +1838,14 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     }
 
     /**
-     * ADVANCED: Pre-generate the call/SQL for the query. This method takes a
-     * Session and an implementor of Record (DatebaseRow or XMLRecord). This can
-     * be used to access the SQL for a query without executing it. To access the
-     * call use, query.getCall(), or query.getSQLString() for the SQL. Note the
-     * SQL will have argument markers in it (i.e. "?"). To translate these use
-     * query.getTranslatedSQLString(session, translationRow).
+     * ADVANCED: Pre-generate the call/SQL for the query. This method takes a Session and an implementor of Record
+     * (DatebaseRow or XMLRecord). This can be used to access the SQL for a query without executing it. To access the call
+     * use, query.getCall(), or query.getSQLString() for the SQL. Note the SQL will have argument markers in it (i.e. "?").
+     * To translate these use query.getTranslatedSQLString(session, translationRow).
      *
      * @see #getCall()
      * @see #getSQLString()
-     * @see #getTranslatedSQLString(org.eclipse.persistence.sessions.Session,
-     *      DataRecord)
+     * @see #getTranslatedSQLString(org.eclipse.persistence.sessions.Session, DataRecord)
      */
     public void prepareCall(org.eclipse.persistence.sessions.Session session, DataRecord translationRow) throws QueryException {
         // CR#2859559 fix to use Session and Record interfaces not impl classes.
@@ -1962,9 +1860,8 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     }
 
     /**
-     * INTERNAL: Prepare the receiver for execution in a session. In particular,
-     * set the descriptor of the receiver to the ClassDescriptor for the
-     * appropriate class for the receiver's object.
+     * INTERNAL: Prepare the receiver for execution in a session. In particular, set the descriptor of the receiver to the
+     * ClassDescriptor for the appropriate class for the receiver's object.
      */
     public void prepareForExecution() throws QueryException {
     }
@@ -1973,11 +1870,11 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     }
 
     /**
-     * INTERNAL: Use a EclipseLink redirector to redirect this query to a
-     * method. Added for bug 3241138
+     * INTERNAL: Use a EclipseLink redirector to redirect this query to a method. Added for bug 3241138
      *
      */
-    public Object redirectQuery(QueryRedirector redirector, DatabaseQuery queryToRedirect, AbstractSession session, AbstractRecord translationRow) {
+    public Object redirectQuery(QueryRedirector redirector, DatabaseQuery queryToRedirect, AbstractSession session,
+            AbstractRecord translationRow) {
         if (redirector == null) {
             return null;
         }
@@ -2028,18 +1925,16 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     }
 
     /**
-     * ADVANCED: JPA flag used to control the behavior of the shared cache. This
-     * flag specifies the behavior when data is retrieved by the find methods
-     * and by the execution of queries. Calling this method will set a retrieve
-     * bypass to true.
+     * ADVANCED: JPA flag used to control the behavior of the shared cache. This flag specifies the behavior when data is
+     * retrieved by the find methods and by the execution of queries. Calling this method will set a retrieve bypass to
+     * true.
      */
     public void retrieveBypassCache() {
         setShouldRetrieveBypassCache(true);
     }
 
     /**
-     * INTERNAL: Build the list of arguments fields from the argument names and
-     * types.
+     * INTERNAL: Build the list of arguments fields from the argument names and types.
      */
     public List<DatabaseField> buildArgumentFields() {
         List<String> arguments = getArguments();
@@ -2083,9 +1978,9 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     }
 
     /**
-     * When the same JPQL parameter appears multiple times, the translation row collapses them to a
-     * single field by name. Keep the most specific type metadata on that surviving field so null
-     * binding does not degrade to Object/VARCHAR based only on expression order.
+     * When the same JPQL parameter appears multiple times, the translation row collapses them to a single field by name.
+     * Keep the most specific type metadata on that surviving field so null binding does not degrade to Object/VARCHAR based
+     * only on expression order.
      */
     private static void promoteArgumentFieldMetadata(AbstractRecord row, DatabaseField argumentField) {
         DatabaseField rowField = row.getField(argumentField);
@@ -2119,16 +2014,15 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     }
 
     /**
-     * INTERNAL:
-     * Set the list of connection accessors to execute the query on.
+     * INTERNAL: Set the list of connection accessors to execute the query on.
      */
     public void setAccessors(Collection<Accessor> accessors) {
         this.accessors = accessors;
     }
 
     /**
-     * INTERNAL: Set the accessor, the query must always use the same accessor
-     * for database access. This is required to support connection pooling.
+     * INTERNAL: Set the accessor, the query must always use the same accessor for database access. This is required to
+     * support connection pooling.
      */
     public void setAccessor(Accessor accessor) {
         if (accessor == null) {
@@ -2177,17 +2071,16 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     }
 
     /**
-     * PUBLIC: Set the JPQL string of the query. If arguments are required in
-     * the string they will be preceded by ":" then the argument name. The JPQL
-     * arguments must also be added as argument to the query.
+     * PUBLIC: Set the JPQL string of the query. If arguments are required in the string they will be preceded by ":" then
+     * the argument name. The JPQL arguments must also be added as argument to the query.
      */
     public void setJPQLString(String jpqlString) {
         setEJBQLString(jpqlString);
     }
 
     /**
-     * PUBLIC: Set the EJBQL string of the query. If arguments are required in
-     * the string they will be preceded by "?" then the argument number.
+     * PUBLIC: Set the EJBQL string of the query. If arguments are required in the string they will be preceded by "?" then
+     * the argument number.
      */
     public void setEJBQLString(String ejbqlString) {
         // Added the check for when we are building the query from the
@@ -2199,32 +2092,32 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     }
 
     /**
-     * PUBLIC: If executed against a RepeatableWriteUnitOfWork if this attribute
-     * is true EclipseLink will write changes to the database before executing
-     * the query.
+     * PUBLIC: If executed against a RepeatableWriteUnitOfWork if this attribute is true EclipseLink will write changes to
+     * the database before executing the query.
      */
     public void setFlushOnExecute(Boolean flushMode) {
         this.flushOnExecute = flushMode;
     }
 
     /**
-     * Used to set a database hint string on the query. This should be the full
-     * hint string including the comment delimiters. The hint string will be
-     * generated into the SQL string after the SELECT/INSERT/UPDATE/DELETE
-     * instruction.
+     * Used to set a database hint string on the query. This should be the full hint string including the comment
+     * delimiters. The hint string will be generated into the SQL string after the SELECT/INSERT/UPDATE/DELETE instruction.
      * <p>
      * <b>Example:</b>
+     *
      * <pre>
      * readAllQuery.setHintString("/*+ index(scott.emp ix_emp) * /");
      * </pre>
-     * would result in SQL like:
-     * <pre>select /*+ index(scott.emp ix_emp) * / from scott.emp emp_alias</pre>
-     * <p>
-     * This method will cause a query to re-prepare if it has already been
-     * executed.
      *
-     * @param newHintString
-     *            the hint string to be added into the SQL call.
+     * would result in SQL like:
+     *
+     * <pre>
+     * select /*+ index(scott.emp ix_emp) * / from scott.emp emp_alias
+     * </pre>
+     * <p>
+     * This method will cause a query to re-prepare if it has already been executed.
+     *
+     * @param newHintString the hint string to be added into the SQL call.
      */
     public void setHintString(String newHintString) {
         hintString = newHintString;
@@ -2232,8 +2125,8 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     }
 
     /**
-     * INTERNAL: If changes are made to the query that affect the derived SQL or
-     * Call parameters the query needs to be prepared again.
+     * INTERNAL: If changes are made to the query that affect the derived SQL or Call parameters the query needs to be
+     * prepared again.
      * <p>
      * Automatically called internally.
      */
@@ -2248,43 +2141,39 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     }
 
     /**
-     * INTERNAL: PERF: Return if the query is an execution clone. This allow the
-     * clone during execution to be avoided in the cases when the query has
-     * already been clone elsewhere.
+     * INTERNAL: PERF: Return if the query is an execution clone. This allow the clone during execution to be avoided in the
+     * cases when the query has already been clone elsewhere.
      */
     public boolean isExecutionClone() {
         return isExecutionClone;
     }
 
     /**
-     * INTERNAL: PERF: Set if the query is an execution clone. This allow the
-     * clone during execution to be avoided in the cases when the query has
-     * already been clone elsewhere.
+     * INTERNAL: PERF: Set if the query is an execution clone. This allow the clone during execution to be avoided in the
+     * cases when the query has already been clone elsewhere.
      */
     public void setIsExecutionClone(boolean isExecutionClone) {
         this.isExecutionClone = isExecutionClone;
     }
 
     /**
-     * INTERNAL: PERF: Return if this query will use the descriptor custom query
-     * instead of executing itself.
+     * INTERNAL: PERF: Return if this query will use the descriptor custom query instead of executing itself.
      */
     public Boolean isCustomQueryUsed() {
         return this.isCustomQueryUsed;
     }
 
     /**
-     * INTERNAL: If the query mechanism is a call query mechanism and there are
-     * no arguments on the query then it must be a foreign reference custom
-     * selection query.
+     * INTERNAL: If the query mechanism is a call query mechanism and there are no arguments on the query then it must be a
+     * foreign reference custom selection query.
      */
     protected boolean isCustomSelectionQuery() {
         return getQueryMechanism().isCallQueryMechanism() && getArguments().isEmpty();
     }
 
     /**
-     * INTERNAL: PERF: Set if this query will use the descriptor custom query
-     * instead of executing itself.
+     * INTERNAL: PERF: Set if this query will use the descriptor custom query instead of executing itself.
+     *
      * @param isCustomQueryUsed Custom query flag as {@code boolean}.
      */
     protected void setIsCustomQueryUsed(final boolean isCustomQueryUsed) {
@@ -2306,20 +2195,19 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     }
 
     /**
-     * PUBLIC: Set the query's name. Queries can be named and added to a
-     * descriptor or the session and then referenced by name.
+     * PUBLIC: Set the query's name. Queries can be named and added to a descriptor or the session and then referenced by
+     * name.
      */
     public void setName(String queryName) {
         name = queryName;
     }
 
     /**
-     * INTERNAL:
-     * Set the String char used to delimit an SQL parameter.
+     * INTERNAL: Set the String char used to delimit an SQL parameter.
      */
     public void setParameterDelimiter(String aParameterDelimiter) {
         // 325167: if the parameterDelimiter is invalid - use the default # symbol
-        if(null == aParameterDelimiter || aParameterDelimiter.isEmpty()) {
+        if (null == aParameterDelimiter || aParameterDelimiter.isEmpty()) {
             aParameterDelimiter = ParameterDelimiterType.DEFAULT;
         }
         parameterDelimiter = aParameterDelimiter;
@@ -2349,12 +2237,11 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     }
 
     /**
-     * PUBLIC: Set the number of seconds the driver will wait for a Statement to
-     * execute to the given number of seconds. If the limit is exceeded, a
-     * DatabaseException is thrown.
+     * PUBLIC: Set the number of seconds the driver will wait for a Statement to execute to the given number of seconds. If
+     * the limit is exceeded, a DatabaseException is thrown.
      * <p>
-     * queryTimeout - the new query timeout limit in seconds; DefaultTimeout is
-     * the default, which redirects to DescriptorQueryManager's queryTimeout.
+     * queryTimeout - the new query timeout limit in seconds; DefaultTimeout is the default, which redirects to
+     * DescriptorQueryManager's queryTimeout.
      *
      * @see DescriptorQueryManager#setQueryTimeout(int)
      *
@@ -2370,10 +2257,9 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     }
 
     /**
-     * PUBLIC: Set the query redirector. A redirector can be used in a query to
-     * replace its execution with the execution of code. This can be used for
-     * named or parameterized queries to allow dynamic configuration of the
-     * query base on the query arguments.
+     * PUBLIC: Set the query redirector. A redirector can be used in a query to replace its execution with the execution of
+     * code. This can be used for named or parameterized queries to allow dynamic configuration of the query base on the
+     * query arguments.
      *
      * @see QueryRedirector
      */
@@ -2384,8 +2270,8 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     }
 
     /**
-     * PUBLIC: To any user of this object. Set the selection criteria of the
-     * query. This method be used when dealing with expressions.
+     * PUBLIC: To any user of this object. Set the selection criteria of the query. This method be used when dealing with
+     * expressions.
      */
     public void setSelectionCriteria(Expression expression) {
         // Do not overwrite the call if the expression is null.
@@ -2411,9 +2297,8 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     }
 
     /**
-     * PUBLIC: Set the name of the session that the query should be executed
-     * under. This can be with the session broker to override the default
-     * session.
+     * PUBLIC: Set the name of the session that the query should be executed under. This can be with the session broker to
+     * override the default session.
      */
     public void setSessionName(String sessionName) {
         this.sessionName = sessionName;
@@ -2428,16 +2313,14 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     }
 
     /**
-     * INTERNAL: Sets the internal tri-state value of shouldBindAllParams Used
-     * to cascade this value to other queries
+     * INTERNAL: Sets the internal tri-state value of shouldBindAllParams Used to cascade this value to other queries
      */
     public void setShouldBindAllParameters(Boolean bindAllParams) {
         this.shouldBindAllParameters = bindAllParams;
     }
 
     /**
-     * PUBLIC: Cache the prepared statements, this requires full parameter
-     * binding as well.
+     * PUBLIC: Cache the prepared statements, this requires full parameter binding as well.
      */
     public void setShouldCacheStatement(boolean shouldCacheStatement) {
         this.shouldCacheStatement = shouldCacheStatement;
@@ -2445,29 +2328,25 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     }
 
     /**
-     * PUBLIC: Set if the identity map (cache) should be used or not. If not the
-     * cache check will be skipped and the result will not be put into the
-     * identity map. By default the identity map is always maintained.
+     * PUBLIC: Set if the identity map (cache) should be used or not. If not the cache check will be skipped and the result
+     * will not be put into the identity map. By default the identity map is always maintained.
      */
     public void setShouldMaintainCache(boolean shouldMaintainCache) {
         this.shouldMaintainCache = shouldMaintainCache;
     }
 
     /**
-     * PUBLIC: Set if the query should be prepared. EclipseLink automatically
-     * prepares queries to generate their SQL only once, one each execution of
-     * the query the SQL does not need to be generated again only the arguments
-     * need to be translated. This option is provide to disable this
-     * optimization as in can cause problems with certain types of queries that
-     * require dynamic SQL based on their arguments.
+     * PUBLIC: Set if the query should be prepared. EclipseLink automatically prepares queries to generate their SQL only
+     * once, one each execution of the query the SQL does not need to be generated again only the arguments need to be
+     * translated. This option is provide to disable this optimization as in can cause problems with certain types of
+     * queries that require dynamic SQL based on their arguments.
      * <p>
      * These queries include:
      * <ul>
-     * <li>Expressions that make use of 'equal' where the argument value has the
-     * potential to be null, this can cause problems on databases that require
-     * IS NULL, instead of = NULL.
-     * <li>Expressions that make use of 'in' and that use parameter binding,
-     * this will cause problems as the in values must be bound individually.
+     * <li>Expressions that make use of 'equal' where the argument value has the potential to be null, this can cause
+     * problems on databases that require IS NULL, instead of = NULL.
+     * <li>Expressions that make use of 'in' and that use parameter binding, this will cause problems as the in values must
+     * be bound individually.
      * </ul>
      */
     public void setShouldPrepare(boolean shouldPrepare) {
@@ -2476,39 +2355,34 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     }
 
     /**
-     * ADVANCED: JPA flag used to control the behavior of the shared cache. This
-     * flag specifies the behavior when data is retrieved by the find methods
-     * and by the execution of queries.
+     * ADVANCED: JPA flag used to control the behavior of the shared cache. This flag specifies the behavior when data is
+     * retrieved by the find methods and by the execution of queries.
      */
     public void setShouldRetrieveBypassCache(boolean shouldRetrieveBypassCache) {
         this.shouldRetrieveBypassCache = shouldRetrieveBypassCache;
     }
 
     /**
-     * ADVANCED: JPA flag used to control the behavior of IDENTITY generation. This
-     * flag specifies the behavior when data is retrieved by the find methods
-     * and by the execution of queries.
+     * ADVANCED: JPA flag used to control the behavior of IDENTITY generation. This flag specifies the behavior when data is
+     * retrieved by the find methods and by the execution of queries.
      * <p>
-     * This flag is only applicable to Insert queries and will only apply if the database
-     * platform supports {@link java.sql.Statement#RETURN_GENERATED_KEYS}
+     * This flag is only applicable to Insert queries and will only apply if the database platform supports
+     * {@link java.sql.Statement#RETURN_GENERATED_KEYS}
      */
     public void setShouldReturnGeneratedKeys(boolean shouldReturnGeneratedKeys) {
         this.shouldReturnGeneratedKeys = shouldReturnGeneratedKeys;
     }
 
     /**
-     * ADVANCED: JPA flag used to control the behavior of the shared cache. This
-     * flag specifies the behavior when data is read from the database and when
-     * data is committed into the database.
+     * ADVANCED: JPA flag used to control the behavior of the shared cache. This flag specifies the behavior when data is
+     * read from the database and when data is committed into the database.
      */
     public void setShouldStoreBypassCache(boolean shouldStoreBypassCache) {
         this.shouldStoreBypassCache = shouldStoreBypassCache;
     }
 
     /**
-     * INTERNAL:
-     * Set if additional validation should be performed before the query uses
-     * the update call cache.
+     * INTERNAL: Set if additional validation should be performed before the query uses the update call cache.
      */
     public void setShouldValidateUpdateCallCacheUse(boolean shouldCheckUpdateCallCacheUse) {
         this.shouldValidateUpdateCallCacheUse = shouldCheckUpdateCallCacheUse;
@@ -2529,20 +2403,18 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     }
 
     /**
-     * PUBLIC: To any user of this object. Set the SQL statement of the query.
-     * This method should only be used when dealing with statement objects.
+     * PUBLIC: To any user of this object. Set the SQL statement of the query. This method should only be used when dealing
+     * with statement objects.
      */
     public void setSQLStatement(SQLStatement sqlStatement) {
         setQueryMechanism(new StatementQueryMechanism(this, sqlStatement));
     }
 
     /**
-     * PUBLIC: To any user of this object. Set the SQL string of the query. This
-     * method should only be used when dealing with user defined SQL strings. If
-     * arguments are required in the string they will be preceded by "#" then
-     * the argument name. Warning: Allowing an unverified SQL string to be
-     * passed into this method makes your application vulnerable to SQL
-     * injection attacks.
+     * PUBLIC: To any user of this object. Set the SQL string of the query. This method should only be used when dealing
+     * with user defined SQL strings. If arguments are required in the string they will be preceded by "#" then the argument
+     * name. Warning: Allowing an unverified SQL string to be passed into this method makes your application vulnerable to
+     * SQL injection attacks.
      */
     public void setSQLString(String sqlString) {
         // Added the check for when we are building the query from the
@@ -2567,9 +2439,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     }
 
     /**
-     * INTERNAL:
-     * Return true if this individual query should allow native a SQL call
-     * to be issued.
+     * INTERNAL: Return true if this individual query should allow native a SQL call to be issued.
      */
     public boolean shouldAllowNativeSQLQuery(boolean projectAllowsNativeQueries) {
         // If allow native SQL query is undefined, use the project setting
@@ -2578,8 +2448,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     }
 
     /**
-     * PUBLIC: Cache the prepared statements, this requires full parameter
-     * binding as well.
+     * PUBLIC: Cache the prepared statements, this requires full parameter binding as well.
      */
     public boolean shouldCacheStatement() {
         return Boolean.TRUE.equals(shouldCacheStatement);
@@ -2593,8 +2462,8 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     }
 
     /**
-     * PUBLIC: Mappings should be checked to determined if the current operation
-     * should be cascaded to the objects referenced.
+     * PUBLIC: Mappings should be checked to determined if the current operation should be cascaded to the objects
+     * referenced.
      */
     public boolean shouldCascadeByMapping() {
         return this.cascadePolicy == CascadeByMapping;
@@ -2629,45 +2498,39 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     }
 
     /**
-     * PUBLIC: Local shouldBindAllParameters() should be ignored, Session's
-     * shouldBindAllParameters() should be used.
+     * PUBLIC: Local shouldBindAllParameters() should be ignored, Session's shouldBindAllParameters() should be used.
      */
     public boolean shouldIgnoreBindAllParameters() {
         return shouldBindAllParameters == null;
     }
 
     /**
-     * PUBLIC: Local shouldCacheStatement() should be ignored, Session's
-     * shouldCacheAllStatements() should be used.
+     * PUBLIC: Local shouldCacheStatement() should be ignored, Session's shouldCacheAllStatements() should be used.
      */
     public boolean shouldIgnoreCacheStatement() {
         return shouldCacheStatement == null;
     }
 
     /**
-     * PUBLIC: Return if the identity map (cache) should be used or not. If not
-     * the cache check will be skipped and the result will not be put into the
-     * identity map. By default the identity map is always maintained.
+     * PUBLIC: Return if the identity map (cache) should be used or not. If not the cache check will be skipped and the
+     * result will not be put into the identity map. By default the identity map is always maintained.
      */
     public boolean shouldMaintainCache() {
         return shouldMaintainCache;
     }
 
     /**
-     * PUBLIC: Return if the query should be prepared. EclipseLink automatically
-     * prepares queries to generate their SQL only once, one each execution of
-     * the query the SQL does not need to be generated again only the arguments
-     * need to be translated. This option is provide to disable this
-     * optimization as in can cause problems with certain types of queries that
-     * require dynamic SQL based on their arguments.
+     * PUBLIC: Return if the query should be prepared. EclipseLink automatically prepares queries to generate their SQL only
+     * once, one each execution of the query the SQL does not need to be generated again only the arguments need to be
+     * translated. This option is provide to disable this optimization as in can cause problems with certain types of
+     * queries that require dynamic SQL based on their arguments.
      * <p>
      * These queries include:
      * <ul>
-     * <li>Expressions that make use of 'equal' where the argument value has the
-     * potential to be null, this can cause problems on databases that require
-     * IS NULL, instead of = NULL.
-     * <li>Expressions that make use of 'in' and that use parameter binding,
-     * this will cause problems as the in values must be bound individually.
+     * <li>Expressions that make use of 'equal' where the argument value has the potential to be null, this can cause
+     * problems on databases that require IS NULL, instead of = NULL.
+     * <li>Expressions that make use of 'in' and that use parameter binding, this will cause problems as the in values must
+     * be bound individually.
      * </ul>
      */
     public boolean shouldPrepare() {
@@ -2675,16 +2538,14 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     }
 
     /**
-     * INTERNAL:
-     * Check if the query should be prepared, or dynamic, depending on the arguments.
-     * This allows null parameters to affect the SQL, such as stored procedure default values,
-     * or IS NULL, or insert defaults.
+     * INTERNAL: Check if the query should be prepared, or dynamic, depending on the arguments. This allows null parameters
+     * to affect the SQL, such as stored procedure default values, or IS NULL, or insert defaults.
      */
     public boolean shouldPrepare(AbstractRecord translationRow, AbstractSession session) {
         if (!this.shouldPrepare) {
             return false;
         }
-        if (!((DatasourcePlatform)session.getDatasourcePlatform()).shouldPrepare(this)) {
+        if (!((DatasourcePlatform) session.getDatasourcePlatform()).shouldPrepare(this)) {
             this.shouldPrepare = false;
             return false;
         }
@@ -2699,30 +2560,27 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     }
 
     /**
-     * ADVANCED: JPA flag used to control the behavior of the shared cache. This
-     * flag specifies the behavior when data is retrieved by the find methods
-     * and by the execution of queries.
+     * ADVANCED: JPA flag used to control the behavior of the shared cache. This flag specifies the behavior when data is
+     * retrieved by the find methods and by the execution of queries.
      */
     public boolean shouldRetrieveBypassCache() {
         return this.shouldRetrieveBypassCache;
     }
 
     /**
-     * ADVANCED: JPA flag used to control the behavior of IDENTITY generation. This
-     * flag specifies the behavior when data is retrieved by the find methods
-     * and by the execution of queries.
+     * ADVANCED: JPA flag used to control the behavior of IDENTITY generation. This flag specifies the behavior when data is
+     * retrieved by the find methods and by the execution of queries.
      * <p>
-     * This flag is only applicable to Insert queries and will only apply if the database
-     * platform supports {@link java.sql.Statement#RETURN_GENERATED_KEYS}
+     * This flag is only applicable to Insert queries and will only apply if the database platform supports
+     * {@link java.sql.Statement#RETURN_GENERATED_KEYS}
      */
     public boolean shouldReturnGeneratedKeys() {
         return this.shouldReturnGeneratedKeys;
     }
 
     /**
-     * ADVANCED: JPA flag used to control the behavior of the shared cache. This
-     * flag specifies the behavior when data is read from the database and when
-     * data is committed into the database.
+     * ADVANCED: JPA flag used to control the behavior of the shared cache. This flag specifies the behavior when data is
+     * read from the database and when data is committed into the database.
      */
     public boolean shouldStoreBypassCache() {
         return this.shouldStoreBypassCache;
@@ -2736,22 +2594,19 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     }
 
     /**
-     * ADVANCED:
-     * Return true if additional validation should be performed before the query uses
-     * the update call cache, false otherwise.
+     * ADVANCED: Return true if additional validation should be performed before the query uses the update call cache, false
+     * otherwise.
      */
     public boolean shouldValidateUpdateCallCacheUse() {
         return shouldValidateUpdateCallCacheUse;
     }
 
     /**
-     * ADVANCED: JPA flag used to control the behavior of the shared cache. This
-     * flag specifies the behavior when data is read from the database and when
-     * data is committed into the database. Calling this method will set a store
-     * bypass to true.
+     * ADVANCED: JPA flag used to control the behavior of the shared cache. This flag specifies the behavior when data is
+     * read from the database and when data is committed into the database. Calling this method will set a store bypass to
+     * true.
      * <p>
-     * Note: For a cache store mode of REFRESH, see refreshIdentityMapResult()
-     * from ObjectLevelReadQuery.
+     * Note: For a cache store mode of REFRESH, see refreshIdentityMapResult() from ObjectLevelReadQuery.
      */
     public void storeBypassCache() {
         setShouldStoreBypassCache(true);
@@ -2777,83 +2632,71 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     }
 
     /**
-     * ADVANCED: Set if the descriptor requires usage of a native (unwrapped)
-     * JDBC connection. This may be required for some Oracle JDBC support when a
-     * wrapping DataSource is used.
+     * ADVANCED: Set if the descriptor requires usage of a native (unwrapped) JDBC connection. This may be required for some
+     * Oracle JDBC support when a wrapping DataSource is used.
      */
     public void setIsNativeConnectionRequired(boolean isNativeConnectionRequired) {
         this.isNativeConnectionRequired = isNativeConnectionRequired;
     }
 
     /**
-     * ADVANCED: Return if the descriptor requires usage of a native (unwrapped)
-     * JDBC connection. This may be required for some Oracle JDBC support when a
-     * wrapping DataSource is used.
+     * ADVANCED: Return if the descriptor requires usage of a native (unwrapped) JDBC connection. This may be required for
+     * some Oracle JDBC support when a wrapping DataSource is used.
      */
     public boolean isNativeConnectionRequired() {
         return isNativeConnectionRequired;
     }
 
     /**
-     * This method is used in combination with redirected queries. If a
-     * redirector is set on the query or there is a default redirector on the
-     * Descriptor setting this value to true will force EclipseLink to ignore
-     * the redirector during execution. This setting will be used most often
-     * when reexecuting the query within a redirector.
+     * This method is used in combination with redirected queries. If a redirector is set on the query or there is a default
+     * redirector on the Descriptor setting this value to true will force EclipseLink to ignore the redirector during
+     * execution. This setting will be used most often when reexecuting the query within a redirector.
      */
     public boolean getDoNotRedirect() {
         return doNotRedirect;
     }
 
     /**
-     * This method is used in combination with redirected queries. If a
-     * redirector is set on the query or there is a default redirector on the
-     * Descriptor setting this value to true will force EclipseLink to ignore
-     * the redirector during execution. This setting will be used most often
-     * when reexecuting the query within a redirector.
+     * This method is used in combination with redirected queries. If a redirector is set on the query or there is a default
+     * redirector on the Descriptor setting this value to true will force EclipseLink to ignore the redirector during
+     * execution. This setting will be used most often when reexecuting the query within a redirector.
      */
     public void setDoNotRedirect(boolean doNotRedirect) {
         this.doNotRedirect = doNotRedirect;
     }
 
     /**
-     * INTERNAL:
-     * Return temporary map of batched objects.
+     * INTERNAL: Return temporary map of batched objects.
      */
-    @SuppressWarnings({"unchecked"})
+    @SuppressWarnings({ "unchecked" })
     public Map<Object, Object> getBatchObjects() {
-        return (Map<Object, Object>)getProperty(BATCH_FETCH_PROPERTY);
+        return (Map<Object, Object>) getProperty(BATCH_FETCH_PROPERTY);
     }
 
     /**
-     * INTERNAL:
-     * Set temporary map of batched objects.
+     * INTERNAL: Set temporary map of batched objects.
      */
     public void setBatchObjects(Map<Object, Object> batchObjects) {
         setProperty(BATCH_FETCH_PROPERTY, batchObjects);
     }
 
     /**
-     * INTERNAL:
-     * Set to true if this individual query should be marked to bypass a
-     * persistence unit level disallow SQL queries flag.
+     * INTERNAL: Set to true if this individual query should be marked to bypass a persistence unit level disallow SQL
+     * queries flag.
      */
     public void setAllowNativeSQLQuery(Boolean allowNativeSQLQuery) {
         this.allowNativeSQLQuery = allowNativeSQLQuery;
     }
 
     /**
-     * INTERNAL:
-     * Return if the query has any nullable arguments.
+     * INTERNAL: Return if the query has any nullable arguments.
      */
     public boolean hasNullableArguments() {
         return (this.nullableArguments != null) && !this.nullableArguments.isEmpty();
     }
 
     /**
-     * INTERNAL:
-     * Return the list of arguments to check for null.
-     * If any are null, the query needs to be re-prepared.
+     * INTERNAL: Return the list of arguments to check for null. If any are null, the query needs to be re-prepared.
      */
     public List<DatabaseField> getNullableArguments() {
         if (this.nullableArguments == null) {
@@ -2863,9 +2706,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     }
 
     /**
-     * INTERNAL:
-     * Set the list of arguments to check for null.
-     * If any are null, the query needs to be re-prepared.
+     * INTERNAL: Set the list of arguments to check for null. If any are null, the query needs to be re-prepared.
      */
     public void setNullableArguments(List<DatabaseField> nullableArguments) {
         this.nullableArguments = nullableArguments;

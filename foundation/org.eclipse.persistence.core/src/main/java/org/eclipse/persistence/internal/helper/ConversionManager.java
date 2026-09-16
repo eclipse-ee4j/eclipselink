@@ -21,15 +21,6 @@
 //       - 1391: JSON support in JPA
 package org.eclipse.persistence.internal.helper;
 
-import org.eclipse.persistence.config.SystemProperties;
-import org.eclipse.persistence.exceptions.ConversionException;
-import org.eclipse.persistence.exceptions.DatabaseException;
-import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
-import org.eclipse.persistence.internal.core.helper.CoreConversionManager;
-import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.logging.AbstractSessionLog;
-import org.eclipse.persistence.logging.SessionLog;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -56,6 +47,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
+
+import org.eclipse.persistence.config.SystemProperties;
+import org.eclipse.persistence.exceptions.ConversionException;
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
+import org.eclipse.persistence.internal.core.helper.CoreConversionManager;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.logging.SessionLog;
 
 /**
  * <p>
@@ -102,15 +102,15 @@ public class ConversionManager extends CoreConversionManager implements Serializ
                         // If an invalid time zone id is supplied, then fall back to checking for checking for using
                         // either UTC or the system's default time zone.
                         if (AbstractSessionLog.getLog().shouldLog(SessionLog.WARNING)) {
-                            AbstractSessionLog.getLog().log(SessionLog.WARNING, "invalid_tzone", 
+                            AbstractSessionLog.getLog().log(SessionLog.WARNING, "invalid_tzone",
                                     SystemProperties.CONVERSION_USE_TIMEZONE, tzone);
                         }
                     }
-                } 
+                }
             } catch (Exception e) {
                 // Error occurred attempting to access this system property.  Fall back to the next property.
             }
-            
+
             String propVal = null;
             try {
                 if (tzoneid == null) {
@@ -125,21 +125,21 @@ public class ConversionManager extends CoreConversionManager implements Serializ
                 // Error occurred attempting to access this system property.  Fall back to UTC.
                 tzoneid = ZoneOffset.UTC;
                 if (AbstractSessionLog.getLog().shouldLog(SessionLog.WARNING)) {
-                    AbstractSessionLog.getLog().log(SessionLog.WARNING, "invalid_default_tzone", 
+                    AbstractSessionLog.getLog().log(SessionLog.WARNING, "invalid_default_tzone",
                             SystemProperties.CONVERSION_USE_DEFAULT_TIMEZONE, propVal);
                 }
-            }           
-            
+            }
+
             defaultZoneOffset = tzoneid;
-            
+
             if (AbstractSessionLog.getLog().shouldLog(SessionLog.FINER)) {
                 AbstractSessionLog.getLog().log(SessionLog.FINER, "using_conversion_tzone", defaultZoneOffset);
             }
         }
-        
-        return defaultZoneOffset;        
+
+        return defaultZoneOffset;
     }
-    
+
     public ConversionManager() {
         this.dataTypesConvertedFromAClass = new Hashtable<>();
         this.dataTypesConvertedToAClass = new Hashtable<>();
@@ -171,12 +171,14 @@ public class ConversionManager extends CoreConversionManager implements Serializ
         if (sourceObject == null) {
             // Check for default null conversion.
             // i.e. allow for null to be defaulted to "", or 0 etc.
-            if (javaClass != null ) {
-                return getDefaultNullValue(javaClass);
-            } else {
+
+            if (javaClass == null ) {
                 return null;
             }
+
+            return getDefaultNullValue(javaClass);
         }
+
         if (sourceObject.getClass() == javaClass || javaClass == null || javaClass == CoreClassConstants.OBJECT
                 || javaClass == ClassConstants.BLOB || javaClass == ClassConstants.CLOB
                 // JSON has its own default converter registered. Direct jakarta.json class reference can't be used in core.
@@ -1290,7 +1292,7 @@ public class ConversionManager extends CoreConversionManager implements Serializ
      */
     @SuppressWarnings({"unchecked"})
     public static <T> Class<T> loadClass(String className) {
-        return (Class<T>) getDefaultManager().convertObject(className, CoreClassConstants.CLASS);
+        return getDefaultManager().convertObject(className, CoreClassConstants.CLASS);
     }
 
     /**
@@ -1329,13 +1331,13 @@ public class ConversionManager extends CoreConversionManager implements Serializ
             if (javaClass == CoreClassConstants.PBOOLEAN) {
                 return (Class<T>) CoreClassConstants.BOOLEAN;
             }
-            } else if (javaClass == CoreClassConstants.APBYTE) {
+            if (javaClass == CoreClassConstants.APBYTE) {
                 return (Class<T>) CoreClassConstants.APBYTE;
-            } else if (javaClass == CoreClassConstants.APCHAR) {
-                return (Class<T>) CoreClassConstants.APCHAR;
-            } else {
-                return (Class<T>) javaClass;
             }
+            if (javaClass == CoreClassConstants.APCHAR) {
+                return (Class<T>) CoreClassConstants.APCHAR;
+            }
+        }
 
         return (Class<T>) javaClass;
     }

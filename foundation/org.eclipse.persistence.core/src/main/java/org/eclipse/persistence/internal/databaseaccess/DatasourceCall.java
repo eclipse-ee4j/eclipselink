@@ -25,6 +25,16 @@
 //       - 450818: Column names with hash mark => "java.sql.SQLException: Invalid column index"
 package org.eclipse.persistence.internal.databaseaccess;
 
+import java.io.CharArrayWriter;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.Serial;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.expressions.ParameterExpression;
 import org.eclipse.persistence.internal.helper.DatabaseField;
@@ -37,15 +47,11 @@ import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField
 import org.eclipse.persistence.queries.Call;
 import org.eclipse.persistence.queries.DatabaseQuery;
 
-import java.io.CharArrayWriter;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.Serial;
-import java.io.Writer;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
+import static org.eclipse.persistence.internal.databaseaccess.DatasourceCall.ParameterType.INOUT;
+import static org.eclipse.persistence.internal.databaseaccess.DatasourceCall.ParameterType.OUT;
+import static org.eclipse.persistence.internal.databaseaccess.DatasourceCall.ParameterType.OUT_CURSOR;
+import static org.eclipse.persistence.internal.helper.CollectionUtils.isEmpty;
+import static org.eclipse.persistence.internal.helper.CollectionUtils.isOneOf;
 
 /**
  * INTERNAL:
@@ -55,6 +61,9 @@ import java.util.List;
  * @since OracleAS TopLink 10<i>g</i> (10.0.3)
  */
 public abstract class DatasourceCall implements Call {
+
+    private static final long serialVersionUID = 1L;
+
     // Back reference to query, unfortunately required for events.
     protected transient DatabaseQuery query;
 
@@ -71,17 +80,17 @@ public abstract class DatasourceCall implements Call {
      *  The call may specify that all of its parameters should/shouldn't be bound.
      *  <p>
      *  Typically, this is set to false in the event that the DatabasePlatform marks the call
-     *  as containing illegal binding behavior during JPQL parsing. 
+     *  as containing illegal binding behavior during JPQL parsing.
      *  <p>
      *  Defaults to null to indicate no preference and allows database platforms to determine
      */
     protected Boolean usesBinding;
 
     public enum ParameterType {
-        LITERAL(1), MODIFY(2), TRANSLATION(3), CUSTOM_MODIFY(4), OUT(5), 
+        LITERAL(1), MODIFY(2), TRANSLATION(3), CUSTOM_MODIFY(4), OUT(5),
         INOUT(6), IN(7), OUT_CURSOR(8), INLINE(9);
 
-        public int val; 
+        public int val;
 
         ParameterType(int val) {
             this.val = val;
@@ -176,10 +185,9 @@ public abstract class DatasourceCall implements Call {
 
     /**
      * The parameters are the values in order of occurrence in call.
-     * This is lazy initialized to conserve space on calls that have no parameters.
      */
     public boolean hasParameters() {
-        return (parameters != null) && (!getParameters().isEmpty());
+        return !isEmpty(parameters);
     }
 
     /**
@@ -198,7 +206,7 @@ public abstract class DatasourceCall implements Call {
      * Return true if there are output cursors on this call.
      */
     public boolean hasOutputCursors() {
-        return outputCursors != null && ! outputCursors.isEmpty();
+        return !isEmpty(outputCursors);
     }
 
     /**
@@ -209,7 +217,7 @@ public abstract class DatasourceCall implements Call {
     }
 
     public static boolean isOutputParameterType(ParameterType  parameterType) {
-        return (parameterType == ParameterType.OUT) || (parameterType == ParameterType.INOUT) || (parameterType == ParameterType.OUT_CURSOR);
+        return isOneOf(parameterType, OUT, INOUT, OUT_CURSOR);
     }
 
     /**
@@ -242,19 +250,19 @@ public abstract class DatasourceCall implements Call {
     }
 
     /**
-     * Determines if this call should bind all parameters. 
+     * Determines if this call should bind all parameters.
      * <p>
-     * Defaults behavior to the databasePlatform if this call does not have a preference; if 
+     * Defaults behavior to the databasePlatform if this call does not have a preference; if
      * {@link org.eclipse.persistence.internal.databaseaccess.DatasourceCall#usesBinding} is not set
      *
      * @see org.eclipse.persistence.internal.databaseaccess.DatabasePlatform#shouldBindAllParameters()
      */
     public boolean usesBinding(DatabasePlatform databasePlatform) {
-        if (this.usesBinding == null) {
+        if (usesBinding == null) {
             return databasePlatform.shouldBindAllParameters();
-        } else {
-            return this.usesBinding.booleanValue();
         }
+
+        return usesBinding.booleanValue();
     }
 
     /**
@@ -262,7 +270,7 @@ public abstract class DatasourceCall implements Call {
      * Indicates whether usesBinding has been set.
      */
     public Boolean usesBinding() {
-        return this.usesBinding;
+        return usesBinding;
     }
 
     /**
@@ -1101,7 +1109,7 @@ public abstract class DatasourceCall implements Call {
             List<ParameterType> parameterTypes = getParameterTypes();
             List<Boolean> canBindParameters = getParameterBindings();
 
-            // clear the parameters list 
+            // clear the parameters list
             setParameters(new ArrayList<>(parameterFields.size()));
 
             for (int parameterIndex = 0; parameterIndex < size; parameterIndex++) {
@@ -1124,12 +1132,12 @@ public abstract class DatasourceCall implements Call {
                         } while (true);
 
                         int endQuoteIndex = -1;
-                        if (!hasPairedQuoteBeforeMark) { 
+                        if (!hasPairedQuoteBeforeMark) {
                             // All the quotes in front of current mark are not paired, so we should be inside quotes
                             endQuoteIndex = queryString.indexOf(String.valueOf('\''), tokenIndex + 1);
                         }
 
-                        if (endQuoteIndex != -1) { 
+                        if (endQuoteIndex != -1) {
                             // there is a quote around the mark, so find the next mark and try again
                             tokenIndex = queryString.indexOf(marker, tokenIndex + 1);
                         } else {
@@ -1146,7 +1154,7 @@ public abstract class DatasourceCall implements Call {
                 Boolean canBind = canBindParameters.get(parameterIndex);
 
                 switch(parameterType) {
-                    case MODIFY: 
+                    case MODIFY:
                         field = (DatabaseField) parameterValue;
                         translatedValue = modifyRow.get(field);
 
@@ -1160,7 +1168,7 @@ public abstract class DatasourceCall implements Call {
                             }
                         }
 
-                        // If the parameter doesn't allow binding, we have to append this translated 
+                        // If the parameter doesn't allow binding, we have to append this translated
                         // parameter value into the query string
                         if(Boolean.FALSE.equals(canBind)) {
                             String token = queryString.substring(lastIndex, tokenIndex);
@@ -1172,7 +1180,7 @@ public abstract class DatasourceCall implements Call {
                         }
 
                         break;
-                    case CUSTOM_MODIFY: 
+                    case CUSTOM_MODIFY:
                         field = (DatabaseField) parameterValue;
                         translatedValue = modifyRow.get(field);
                         translatedValue = session.getPlatform().getCustomModifyValueForCall(this, translatedValue, field, true);
@@ -1191,7 +1199,7 @@ public abstract class DatasourceCall implements Call {
                             }
                         }
 
-                        // If the parameter doesn't allow binding, we have to append this translated 
+                        // If the parameter doesn't allow binding, we have to append this translated
                         // parameter value into the query string
                         if(Boolean.FALSE.equals(canBind)) {
                             String token = queryString.substring(lastIndex, tokenIndex);
@@ -1203,7 +1211,7 @@ public abstract class DatasourceCall implements Call {
                         }
 
                         break;
-                    case TRANSLATION: 
+                    case TRANSLATION:
                         if (parameterValue instanceof ParameterExpression) {
                             field = ((ParameterExpression) parameterValue).getField();
                             translatedValue = ((ParameterExpression) parameterValue).getValue(translationRow, query, session);
@@ -1230,7 +1238,7 @@ public abstract class DatasourceCall implements Call {
                                     translatedValue = field;
                                 }
 
-                                // If the parameter doesn't allow binding, we have to append this translated 
+                                // If the parameter doesn't allow binding, we have to append this translated
                                 // parameter value into the query string
                                 if(Boolean.FALSE.equals(canBind)) {
                                     String token = queryString.substring(lastIndex, tokenIndex);
@@ -1242,7 +1250,7 @@ public abstract class DatasourceCall implements Call {
                                 }
                             }
                         } else {
-                            // If the parameter doesn't allow binding, we have to append this translated 
+                            // If the parameter doesn't allow binding, we have to append this translated
                             // parameter value into the query string
                             if(Boolean.FALSE.equals(canBind)) {
                                 String token = queryString.substring(lastIndex, tokenIndex);
@@ -1254,10 +1262,10 @@ public abstract class DatasourceCall implements Call {
                             }
                         }
                         break;
-                    case LITERAL: 
+                    case LITERAL:
                         translatedValue = parameterValue;
 
-                        // If the parameter doesn't allow binding, we have to append this translated 
+                        // If the parameter doesn't allow binding, we have to append this translated
                         // parameter value into the query string
                         if(Boolean.FALSE.equals(canBind)) {
                             String token = queryString.substring(lastIndex, tokenIndex);
@@ -1272,11 +1280,11 @@ public abstract class DatasourceCall implements Call {
                             translatedParametersValues.add(translatedValue);
                         }
                         break;
-                    case IN: 
+                    case IN:
                         translatedValue = getValueForInParameter(parameterValue, translationRow, modifyRow, session, true);
                         // Returning this means the parameter was optional and should not be included.
                         if (translatedValue != this) {
-                            // If the parameter doesn't allow binding, we have to append this translated 
+                            // If the parameter doesn't allow binding, we have to append this translated
                             // parameter value into the query string
                             if(Boolean.FALSE.equals(canBind)) {
                                 String token = queryString.substring(lastIndex, tokenIndex);
@@ -1288,10 +1296,10 @@ public abstract class DatasourceCall implements Call {
                             }
                         }
                         break;
-                    case INOUT: 
+                    case INOUT:
                         translatedValue = getValueForInOutParameter(parameterValue, translationRow, modifyRow, session);
 
-                        // If the parameter doesn't allow binding, we have to append this translated 
+                        // If the parameter doesn't allow binding, we have to append this translated
                         // parameter value into the query string
                         if(Boolean.FALSE.equals(canBind)) {
                             String token = queryString.substring(lastIndex, tokenIndex);
@@ -1302,13 +1310,13 @@ public abstract class DatasourceCall implements Call {
                             translatedParametersValues.add(translatedValue);
                         }
                         break;
-                    case OUT: 
-                    case OUT_CURSOR: 
+                    case OUT:
+                    case OUT_CURSOR:
                         if (parameterValue != null && parameterValue instanceof OutputParameterForCallableStatement) {
                             ((OutputParameterForCallableStatement) parameterValue).getOutputField().setIndex(parameterIndex);
                         }
 
-                        // If the parameter doesn't allow binding, we have to append this translated 
+                        // If the parameter doesn't allow binding, we have to append this translated
                         // parameter value into the query string
                         if(Boolean.FALSE.equals(canBind)) {
                             String token = queryString.substring(lastIndex, tokenIndex);
@@ -1351,7 +1359,7 @@ public abstract class DatasourceCall implements Call {
         Writer writer = new CharArrayWriter(queryString.length() + 50);
         try {
             // PERF: This method is heavily optimized do not touch anything unless you know "very well" what your doing.
-            List<Object> parameters = getParameters();            
+            List<Object> parameters = getParameters();
             List<Object> parametersValues = new ArrayList<>(parameters.size());
             while (lastIndex != -1) {
                 int tokenIndex = queryString.indexOf(argumentMarker(), lastIndex);

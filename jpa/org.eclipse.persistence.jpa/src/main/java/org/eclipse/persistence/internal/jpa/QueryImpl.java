@@ -31,6 +31,7 @@
 //       - 393867: Named queries do not work when using EM level Table Per Tenant Multitenancy.
 package org.eclipse.persistence.internal.jpa;
 
+import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.FlushModeType;
 import jakarta.persistence.LockModeType;
 import jakarta.persistence.LockTimeoutException;
@@ -85,6 +86,8 @@ import static jakarta.persistence.QueryFlushMode.FLUSH;
 import static jakarta.persistence.QueryFlushMode.NO_FLUSH;
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
+import static org.eclipse.persistence.internal.helper.CollectionUtils.isEmpty;
+import static org.eclipse.persistence.internal.localization.ExceptionLocalization.buildMessage;
 
 /**
  * Concrete JPA query class. The JPA query wraps a DatabaseQuery which is
@@ -97,16 +100,20 @@ public class QueryImpl {
     /**
      * Wrapped native query. The query may be {@link #isShared}
      */
-    protected DatabaseQuery databaseQuery = null;
+    protected DatabaseQuery databaseQuery;
 
-    protected EntityManagerImpl entityManager = null;
-    protected String queryName = null;
-    protected Map<String, Object> parameterValues = null;
+    protected EntityManagerImpl entityManager;
+    protected String queryName;
+
+    protected Map<String, Object> parameterValues = new HashMap<>();
+    protected Map<String, Class<?>> parameterTypes = new HashMap<>();
+    protected Map<String, AttributeConverter<Object, Object>> parameterConverters = new HashMap<>();
     protected Map<String, Parameter<?>> parameters;
+
     protected int firstResultIndex = UNDEFINED;
     protected int maxResults = UNDEFINED;
 
-    protected LockModeType lockMode = null;
+    protected LockModeType lockMode;
 
     /**
      * Stores if the wrapped query is shared, and requires cloning before being
@@ -114,14 +121,6 @@ public class QueryImpl {
      */
     protected boolean isShared;
 
-    /**
-     * Base constructor for EJBQueryImpl. Initializes basic variables.
-     */
-    protected QueryImpl(EntityManagerImpl entityManager) {
-        this.parameterValues = new HashMap<>();
-        this.entityManager = entityManager;
-        this.isShared = true;
-    }
 
     /**
      * Create an EJBQueryImpl with a DatabaseQuery.
@@ -129,6 +128,14 @@ public class QueryImpl {
     public QueryImpl(DatabaseQuery query, EntityManagerImpl entityManager) {
         this(entityManager);
         this.databaseQuery = query;
+    }
+
+    /**
+     * Base constructor for EJBQueryImpl. Initializes basic variables.
+     */
+    protected QueryImpl(EntityManagerImpl entityManager) {
+        this.entityManager = entityManager;
+        this.isShared = true;
     }
 
     /**
@@ -146,9 +153,11 @@ public class QueryImpl {
     protected void setAsDataModifyQuery() {
         DataModifyQuery query = new DataModifyQuery();
         query.setIsUserDefined(this.databaseQuery.isUserDefined());
+
         // By default, do not batch user native queries, as row count must be returned.
         query.setIsBatchExecutionSupported(false);
         query.copyFromQuery(this.databaseQuery);
+
         // Need to clone call, in case was executed as read.
         query.setDatasourceCall((Call) this.databaseQuery.getDatasourceCall().clone());
         this.databaseQuery = query;
@@ -191,18 +200,21 @@ public class QueryImpl {
      */
     protected Object executeReadQuery() {
         List<Object> parameterValues = processParameters();
-        // TODO: the following performFlush() call is a temporary workaround for
+        // TODO: the following performFlush() call is a "temporary" workaround for
         // bug 4752493:
         // CTS: INMEMORY QUERYING IN EJBQUERY BROKEN DUE TO CHANGE TO USE
         // REPORTQUERY.
         // Ideally we should only flush in case the selectionExpression can't be
         // conformed in memory.
+        //
         // There are two alternative ways to implement that:
+        //
         // 1. Try running the query with conformInUOW flag first - if it fails
         // with
         // QueryException.cannotConformExpression then flush and run the query
         // again -
         // now without conforming.
+        //
         // 2. Implement a new isComformable method on Expression which would
         // determine whether the expression
         // could be conformed in memory, flush only in case it returns false.
@@ -410,12 +422,12 @@ public class QueryImpl {
      * Return the internal map of parameters.
      */
     protected Map<String, Parameter<?>> getInternalParameters() {
-        if (this.parameters == null) {
-            this.parameters = new HashMap<>();
-            DatabaseQuery query = getDatabaseQueryInternal(); // Retrieve named
-                                                              // query
+        if (parameters == null) {
+            parameters = new HashMap<>();
+            DatabaseQuery query = getDatabaseQueryInternal(); // Retrieve named query
+
             int count = 0;
-            if (query.getArguments() != null && !query.getArguments().isEmpty()) {
+            if (!isEmpty(query.getArguments())) {
                 boolean checkParameterType = query.getArgumentParameterTypes().size() == query.getArguments().size();
                 for (String argName : query.getArguments()) {
                     Parameter<?> param = null;
@@ -423,20 +435,22 @@ public class QueryImpl {
                     if (checkParameterType){
                         type = query.getArgumentParameterTypes().get(count);
                     }
+
                     if (type == ParameterType.POSITIONAL){
                         Integer position = Integer.parseInt(argName);
-                        param = new ParameterExpressionImpl(null, query.getArgumentTypes().get(count), position);
+                        param = new ParameterExpressionImpl<>(null, query.getArgumentTypes().get(count), position);
                     } else {
-                        param = new ParameterExpressionImpl(null, query.getArgumentTypes().get(count), argName);
+                        param = new ParameterExpressionImpl<>(null, query.getArgumentTypes().get(count), argName);
                     }
-                    this.parameters.put(argName, param);
+
+                    parameters.put(argName, param);
                     ++count;
                 }
             }
 
         }
 
-        return this.parameters;
+        return parameters;
     }
 
     /**
@@ -461,7 +475,7 @@ public class QueryImpl {
      *
      * @return a list of the results
      */
-    public List getResultList() {
+    public List<?> getResultList() {
         // bug51411440: need to throw IllegalStateException if query
         // executed on closed em
         this.entityManager.verifyOpenWithSetRollbackOnly();
@@ -603,31 +617,49 @@ public class QueryImpl {
      */
     protected List<Object> processParameters() {
         DatabaseQuery query = getDatabaseQueryInternal();
+
         List<String> arguments = query.getArguments();
         if (arguments.isEmpty()) {
             // This occurs for native queries, as the query does not know of its arguments.
             // This may have issues, it is better if the query set its arguments
             // when parsing the SQL.
 
-            arguments = new ArrayList<>(this.parameterValues.keySet());
+            arguments = new ArrayList<>(parameterValues.keySet());
             query.setArguments(arguments);
         }
-        // now create parameterValues in the same order as the argument list
+
+        // Now create parameterValues in the same order as the argument list
         int size = arguments.size();
-        List<Object> parameterValues = new ArrayList<>(size);
+
+        List<Object> processedParameterValues = new ArrayList<>(size);
+
         for (int index = 0; index < size; index++) {
-            String name = arguments.get(index);
-            Object parameter = this.parameterValues.get(name);
-            if ((parameter != null) || this.parameterValues.containsKey(name)) {
-                parameterValues.add(parameter);
-            } else if (query.hasNullableArguments() && query.getNullableArguments().contains(new DatabaseField(name))) {
-                parameterValues.add(null);
+            String parameterName = arguments.get(index);
+            Object parameterValue = parameterValues.get(parameterName);
+
+            if (parameterConverters.containsKey(parameterName)) {
+                parameterValue = parameterConverters.get(parameterName).convertToDatabaseColumn(parameterValue);
+            }
+
+            if (parameterValue != null || parameterValues.containsKey(parameterName)) {
+
+                Class<?> parameterType = parameterTypes.get(parameterName);
+                if (parameterValue == null && parameterType != null) {
+                    DatabaseField field = new DatabaseField(parameterName);
+                    field.setType(parameterType);
+                    parameterValue = field;
+                }
+
+                processedParameterValues.add(parameterValue);
+            } else if (query.hasNullableArguments() && query.getNullableArguments().contains(new DatabaseField(parameterName))) {
+                processedParameterValues.add(null);
             } else {
                 // Error: missing actual parameter value
-                throw new IllegalStateException(ExceptionLocalization.buildMessage("missing_parameter_value", new Object[] { name }));
+                throw new IllegalStateException(ExceptionLocalization.buildMessage("missing_parameter_value", new Object[] { parameterName }));
             }
         }
-        return parameterValues;
+
+        return processedParameterValues;
     }
 
     /**
@@ -805,13 +837,14 @@ public class QueryImpl {
 
 
     /**
-     * Return the identifier of this parameter.  This will be the name if it is set, else it will be the position
+     * Return the identifier of this parameter. This will be the name if it is set, else it will be the position
      */
-    public static String getParameterId(Parameter param){
-        Integer id= param.getPosition();
-        if (id == null ){
-            return String.valueOf(((ParameterExpressionImpl)param).getInternalName());
+    public static String getParameterId(Parameter param) {
+        Integer id = param.getPosition();
+        if (id == null) {
+            return String.valueOf(((ParameterExpressionImpl<?>) param).getInternalName());
         }
+
         return String.valueOf(id);
     }
 
@@ -825,9 +858,11 @@ public class QueryImpl {
      */
     public boolean isBound(Parameter<?> param) {
         entityManager.verifyOpenWithSetRollbackOnly();
-        if (param == null)
+        if (param == null) {
             return false;
-        return this.parameterValues.containsKey(getParameterId(param));
+        }
+
+        return parameterValues.containsKey(getParameterId(param));
     }
 
     /**
@@ -968,10 +1003,11 @@ public class QueryImpl {
         if (maxResult < 0) {
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("negative_max_result", null));
         }
+
         if (maxResult == Integer.MAX_VALUE) {
-            this.maxResults = UNDEFINED;
+            maxResults = UNDEFINED;
         } else {
-            this.maxResults = maxResult;
+            maxResults = maxResult;
         }
     }
 
@@ -1005,6 +1041,10 @@ public class QueryImpl {
         setParameterInternal(String.valueOf(position), value, true);
     }
 
+    protected void setParameterInternal(String name, Object value, boolean isIndex) {
+        setParameterInternal(name, value, null, isIndex);
+    }
+
     /**
      * Bind an argument to a named or indexed parameter.
      *
@@ -1015,50 +1055,55 @@ public class QueryImpl {
      * @param isIndex
      *            defines if index or named
      */
-    protected void setParameterInternal(String name, Object value, boolean isIndex) {
+    protected void setParameterInternal(String name, Object value, Class<?> typex, boolean isIndex) {
         DatabaseQuery query = getDatabaseQueryInternal();
+
         if (query.getQueryMechanism().isJPQLCallQueryMechanism()) { // only non native queries
             final List<String> queryArguments = query.getArguments();
             int index = queryArguments.indexOf(name);
             if (index == -1) {
                 if (isIndex) {
-                    throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-argument-index", new Object[] { name, query.getEJBQLString() }));
-                } else {
-                    throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-argument-name", new Object[] { name, query.getEJBQLString() }));
+                    throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-argument-index", name, query.getEJBQLString()));
                 }
+
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-argument-name", name, query.getEJBQLString()));
             }
+
             do {
                 Class<?> type = query.getArgumentTypes().get(index);
                 if (!isValidActualParameter(value, type)) {
-                    throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-incorrect-parameter-type", new Object[]{name, value.getClass(), query.getArgumentTypes().get(index), query.getEJBQLString()}));
+                    throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-incorrect-parameter-type", name, value.getClass(), query.getArgumentTypes().get(index), query.getEJBQLString()));
                 }
+
                 int pos = queryArguments.subList(index + 1, queryArguments.size()).indexOf(name);
                 index = pos < 0 ? -1 : (pos + index + 1);
             } while (index > - 1);
         } else {
             // native queries start a 1 not 0.
             if (isIndex && name.equals("0")) {
-                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-argument-index", new Object[] { name, query.getSQLString() }));
+                throw new IllegalArgumentException(buildMessage("ejb30-wrong-argument-index", new Object[] { name, query.getSQLString() }));
             }
         }
-        this.parameterValues.put(name, value);
+
+        parameterValues.put(name, value);
     }
 
     protected boolean isValidActualParameter(Object value, Class<?> parameterType) {
         if (value == null) {
             return true;
-        } else {
-            return BasicTypeHelperImpl.getInstance().isAssignableFrom(parameterType, value.getClass());
         }
+
+        return BasicTypeHelperImpl.getInstance().isAssignableFrom(parameterType, value.getClass());
     }
 
     protected Session getActiveSession() {
         DatabaseQuery query = getDatabaseQueryInternal();
         // PERF: If read-only query, avoid creating unit of work and JTA transaction.
         if (query.isObjectLevelReadQuery() && ((ObjectLevelReadQuery) query).isReadOnly()) {
-            return this.entityManager.getReadOnlySession();
+            return entityManager.getReadOnlySession();
         }
-        return this.entityManager.getActiveSession();
+
+        return entityManager.getActiveSession();
     }
 
     protected void performPreQueryFlush() {
