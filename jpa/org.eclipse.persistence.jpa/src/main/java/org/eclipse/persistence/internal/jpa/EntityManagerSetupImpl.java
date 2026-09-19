@@ -124,8 +124,6 @@ import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.security.PrivilegedActionException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -205,11 +203,6 @@ import org.eclipse.persistence.internal.jpa.weaving.TransformerFactory;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.localization.LoggingLocalization;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedClassForName;
-import org.eclipse.persistence.internal.security.PrivilegedGetDeclaredField;
-import org.eclipse.persistence.internal.security.PrivilegedGetDeclaredFields;
-import org.eclipse.persistence.internal.security.PrivilegedGetValueFromField;
-import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 import org.eclipse.persistence.internal.security.SecurableObjectHolder;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
@@ -413,6 +406,12 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
 
     public static final String ERROR_LOADING_XML_FILE = "error_loading_xml_file";
     public static final String EXCEPTION_LOADING_ENTITY_CLASS = "exception_loading_entity_class";
+
+    /**
+     * Name of the canonical metamodel field holding the managed type itself. Standardised by Jakarta
+     * Persistence and emitted by EclipseLink's own canonical model generator.
+     */
+    private static final String CANONICAL_MODEL_TYPE_FIELD = "class_";
 
     /*
      * Properties used to generate sessionName if none is provided.
@@ -1388,11 +1387,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
 
 
     protected static Class<?> findClass(String className, ClassLoader loader) throws ClassNotFoundException, PrivilegedActionException {
-        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-            return AccessController.doPrivileged(new PrivilegedClassForName<>(className, true, loader));
-        } else {
-            return org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(className, true, loader);
-        }
+        return org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(className, true, loader);
     }
 
     protected static <T> Class<T> findClassForProperty(String className, String propertyName, ClassLoader loader) {
@@ -1501,16 +1496,12 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
     /**
      * This method will be used to validate the specified class and return it's instance.
      */
-    protected static Object buildObjectForClass(Class<?> clazz, Class<?> mustBeImplementedInterface) throws IllegalAccessException, PrivilegedActionException,InstantiationException {
-        if(clazz!=null && Helper.classImplementsInterface(clazz,mustBeImplementedInterface)){
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                return AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(clazz));
-            } else {
-                return PrivilegedAccessHelper.newInstanceFromClass(clazz);
-            }
-        } else {
-            return null;
+    protected static Object buildObjectForClass(Class<?> clazz, Class<?> mustBeImplementedInterface) throws IllegalAccessException, PrivilegedActionException, InstantiationException {
+        if (clazz != null && Helper.classImplementsInterface(clazz, mustBeImplementedInterface)) {
+            return PrivilegedAccessHelper.newInstanceFromClass(clazz);
         }
+
+        return null;
     }
 
     protected void updateDescriptorCacheSettings(Map m, ClassLoader loader) {
@@ -2071,18 +2062,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                     updateSharedCacheMode(predeployProperties);
 
                     // Process the Object/relational metadata from XML and annotations.
-                    // If Java Security is enabled, surround this call with a doPrivileged block.
-                    if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                        AccessController.doPrivileged(new PrivilegedAction<Void>() {
-                            @Override
-                            public Void run() {
-                                PersistenceUnitProcessor.processORMetadata(processor, throwExceptionOnFail, mode);
-                                return null;
-                            }
-                        });
-                    } else {
-                        PersistenceUnitProcessor.processORMetadata(processor, throwExceptionOnFail, mode);
-                    }
+                    PersistenceUnitProcessor.processORMetadata(processor, throwExceptionOnFail, mode);
 
                     if (mode == PersistenceUnitProcessor.Mode.COMPOSITE_MEMBER_INITIAL) {
                         mode = PersistenceUnitProcessor.Mode.COMPOSITE_MEMBER_MIDDLE;
@@ -4054,30 +4034,21 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             String helperClassName = "org.eclipse.persistence.internal.jpa.deployment.BeanValidationInitializationHelper$BeanValidationInitializationHelperImpl";
             Class<?> helperClass;
             try {
-                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                    try {
-                        helperClass = AccessController.doPrivileged(
-                                new PrivilegedClassForName<>(helperClassName, true, appClassLoader));
-                    } catch (Throwable t) {
-                        // Try the ClassLoader that loaded Eclipselink classes
-                        ClassLoader eclipseLinkClassLoader = EntityManagerSetupImpl.class.getClassLoader();
-                        helperClass = AccessController.doPrivileged(new PrivilegedClassForName<>(helperClassName, true, eclipseLinkClassLoader));
-                    }
-                } else {
-                    try {
-                        helperClass = PrivilegedAccessHelper.getClassForName(helperClassName, true, appClassLoader);
-                    } catch (Throwable t) {
-                        // Try the ClassLoader that loaded Eclipselink classes
-                        ClassLoader eclipseLinkClassLoader = EntityManagerSetupImpl.class.getClassLoader();
-                        helperClass = PrivilegedAccessHelper.getClassForName(helperClassName, true, eclipseLinkClassLoader);
-                    }
+                try {
+                    helperClass = PrivilegedAccessHelper.getClassForName(helperClassName, true, appClassLoader);
+                } catch (Throwable t) {
+                    // Try the ClassLoader that loaded Eclipselink classes
+                    ClassLoader eclipseLinkClassLoader = EntityManagerSetupImpl.class.getClassLoader();
+                    helperClass = PrivilegedAccessHelper.getClassForName(helperClassName, true, eclipseLinkClassLoader);
                 }
                 BeanValidationInitializationHelper beanValidationInitializationHelper = (BeanValidationInitializationHelper)helperClass.getConstructor().newInstance();
                 beanValidationInitializationHelper.bootstrapBeanValidation(puProperties, session, appClassLoader);
             } catch (Throwable e) {  //Catching Throwable to catch any linkage errors on vms that resolve eagerly
                 if (validationMode == ValidationMode.CALLBACK) {
                     throw PersistenceUnitLoadingException.exceptionObtainingRequiredBeanValidatorFactory(e);
-                } // else validationMode == ValidationMode.AUTO. Log a message, Ignore the exception
+                }
+
+                // else validationMode == ValidationMode.AUTO. Log a message, Ignore the exception
                 this.session.log(SessionLog.FINEST, SessionLog.JPA, "validation_factory_not_initialized", new Object[]{ e.getMessage() });
             }
         }
@@ -4145,24 +4116,37 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                 classInitialized=true;
                 this.getSession().log(SessionLog.FINER, SessionLog.METAMODEL, "metamodel_canonical_model_class_found", className);
                 String fieldName = "";
-                for(Object attribute : manType.getDeclaredAttributes()) {
+
+                // The canonical metamodel holds the managed type itself in "class_", alongside one
+                // field per attribute. Only the attribute fields were being set, so class_ stayed
+                // null - including in the models EclipseLink's own generator produces, which do
+                // declare it. Missing fields are tolerated the same way the attribute loop below
+                // tolerates them, for hand-written or older canonical classes that lack it.
+                try {
+                    PrivilegedAccessHelper.getDeclaredField(clazz, CANONICAL_MODEL_TYPE_FIELD, false).set(clazz, manType);
+                } catch (NoSuchFieldException nsfe) {
+                    // Canonical class without a class_ field; nothing to populate.
+                } catch (Exception e) {
+                    ValidationException v = ValidationException.invalidFieldForClass(CANONICAL_MODEL_TYPE_FIELD, clazz);
+                    v.setInternalException(e);
+                    throw v;
+                }
+
+                for (Object attribute : manType.getDeclaredAttributes()) {
                     try {
-                        fieldName = ((Attribute)attribute).getName();
-                        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                            AccessController.doPrivileged(new PrivilegedGetDeclaredField(clazz, fieldName, false)).set(clazz, attribute);
-                        } else {
-                            PrivilegedAccessHelper.getDeclaredField(clazz, fieldName, false).set(clazz, attribute);
-                        }
+                        fieldName = ((Attribute) attribute).getName();
+                        PrivilegedAccessHelper.getDeclaredField(clazz, fieldName, false).set(clazz, attribute);
                     } catch (NoSuchFieldException nsfe) {
                         // Ignore fields missing in canonical model (dclarke bug 346106)
                     } catch (Exception e) {
-                       ValidationException v = ValidationException.invalidFieldForClass(fieldName, clazz);
-                       v.setInternalException(e);
-                       throw v;
+                        ValidationException v = ValidationException.invalidFieldForClass(fieldName, clazz);
+                        v.setInternalException(e);
+                        throw v;
                     }
                 }
             } catch (ConversionException exception){
             }
+
             if (!classInitialized) {
                 getSession().log(SessionLog.FINER, SessionLog.METAMODEL, "metamodel_canonical_model_class_not_found", className);
             }
@@ -4336,19 +4320,13 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                 classInitialized=true;
                 this.getSession().log(SessionLog.FINER, SessionLog.METAMODEL, "metamodel_canonical_model_class_found", className);
                 Field[] fields = null;
-                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                    fields = AccessController.doPrivileged(new PrivilegedGetDeclaredFields(clazz));
-                } else {
-                    fields = PrivilegedAccessHelper.getDeclaredFields(clazz);
-                }
+
+                fields = PrivilegedAccessHelper.getDeclaredFields(clazz);
+
                 for(Field attribute : fields) {
                     if (Attribute.class.isAssignableFrom(attribute.getType())){
-                        Object assignedAttribute = null;
-                        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                            assignedAttribute = AccessController.doPrivileged(new PrivilegedGetValueFromField(attribute, null));
-                        } else {
-                            assignedAttribute =PrivilegedAccessHelper.getValueFromField(attribute, null);
-                        }
+                        Object assignedAttribute = PrivilegedAccessHelper.getValueFromField(attribute, null);
+
                         AttributeProxyImpl proxy = null;
                         if (assignedAttribute == null){
                             if (SingularAttribute.class.isAssignableFrom(attribute.getType())){
@@ -4374,7 +4352,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                         }
                     }
                 }
-            } catch (PrivilegedActionException | IllegalAccessException pae){
+            } catch (IllegalAccessException pae){
                 getSession().logThrowable(SessionLog.FINEST,  SessionLog.METAMODEL, pae);
             } catch (ConversionException ce){
             }
