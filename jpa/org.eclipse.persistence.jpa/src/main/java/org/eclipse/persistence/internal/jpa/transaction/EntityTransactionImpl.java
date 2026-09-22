@@ -20,14 +20,14 @@
 //       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
 package org.eclipse.persistence.internal.jpa.transaction;
 
+import jakarta.persistence.RollbackException;
+
 import java.util.Map;
 import java.util.WeakHashMap;
 
-import jakarta.persistence.RollbackException;
-
-import org.eclipse.persistence.transaction.TransactionException;
 import org.eclipse.persistence.internal.jpa.QueryImpl;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
+import org.eclipse.persistence.transaction.TransactionException;
 
 /**
  * JDK 1.5 version of the EntityTransaction.  Differs from base version only in that
@@ -43,14 +43,14 @@ public class EntityTransactionImpl implements jakarta.persistence.EntityTransact
 
     protected EntityTransactionWrapper wrapper;
 
-    protected boolean active = false;
-
-    protected boolean rollbackOnly = false;
+    protected boolean active;
+    protected boolean rollbackOnly;
+    protected Integer timeout;
 
     protected TransactionFinalizer finalizer;
 
     /** PERF: Avoid finalization if not required by the application, and finalizers have major concurrency affects. */
-    public static boolean isFinalizedRequired = false;
+    public static boolean isFinalizedRequired;
 
     public EntityTransactionImpl(EntityTransactionWrapper wrapper) {
         this.wrapper = wrapper;
@@ -89,6 +89,7 @@ public class EntityTransactionImpl implements jakarta.persistence.EntityTransact
         if (isActive()) {
             throw new IllegalStateException(TransactionException.transactionIsActive().getMessage());
         }
+
         //bug307445 : Throw IllegalStateException if entityManager was closed
         this.wrapper.getEntityManager().verifyOpen();
 
@@ -129,37 +130,41 @@ public class EntityTransactionImpl implements jakarta.persistence.EntityTransact
         closeOpenQueries();
 
         try {
-            if (this.wrapper.localUOW != null) {
-                this.wrapper.localUOW.setShouldTerminateTransaction(true);
-                if (!this.rollbackOnly) {
-                    if (this.wrapper.localUOW.shouldResumeUnitOfWorkOnTransactionCompletion()) {
-                        this.wrapper.localUOW.commitAndResume();
+            if (wrapper.localUOW != null) {
+                wrapper.localUOW.setShouldTerminateTransaction(true);
+                if (!rollbackOnly) {
+                    if (wrapper.localUOW.shouldResumeUnitOfWorkOnTransactionCompletion()) {
+                        wrapper.localUOW.commitAndResume();
                         return;
-                    } else {
-                        this.wrapper.localUOW.commit();
-                        // all change sets and are cleared, but the cache is
-                        // kept
-                        this.wrapper.localUOW.clearForClose(false);
                     }
+
+                    wrapper.localUOW.commit();
+
+                    // all change sets and are cleared, but the cache is kept
+                    wrapper.localUOW.clearForClose(false);
+
                 } else {
                     throw new RollbackException(ExceptionLocalization.buildMessage("rollback_because_of_rollback_only"));
                 }
             }
         } catch (RuntimeException exception) {
             try {
-                if (this.wrapper.localUOW != null) {
-                    this.wrapper.getEntityManager().removeExtendedPersistenceContext();
-                    this.wrapper.localUOW.release();
-                    this.wrapper.localUOW.getParent().release();
+                if (wrapper.localUOW != null) {
+                    wrapper.getEntityManager().removeExtendedPersistenceContext();
+                    wrapper.localUOW.release();
+                    wrapper.localUOW.getParent().release();
                 }
             } catch (Exception ignore) {} // Throw first exception.
             if (exception instanceof RollbackException) {
                 throw exception;
-            } else if (exception instanceof org.eclipse.persistence.exceptions.OptimisticLockException) {
-                throw new RollbackException(new jakarta.persistence.OptimisticLockException(exception));
-            } else {
-                throw new RollbackException(exception);
             }
+
+            if (exception instanceof org.eclipse.persistence.exceptions.OptimisticLockException) {
+                throw new RollbackException(new jakarta.persistence.OptimisticLockException(exception));
+            }
+
+            throw new RollbackException(exception);
+
         } finally {
             this.active = false;
             this.rollbackOnly = false;
@@ -186,15 +191,15 @@ public class EntityTransactionImpl implements jakarta.persistence.EntityTransact
 
         try {
             if (wrapper.getLocalUnitOfWork() != null) {
-                this.wrapper.localUOW.setShouldTerminateTransaction(true);
-                this.wrapper.localUOW.release();
-                this.wrapper.localUOW.getParent().release();
+                wrapper.localUOW.setShouldTerminateTransaction(true);
+                wrapper.localUOW.release();
+                wrapper.localUOW.getParent().release();
             }
         } finally {
-            this.active = false;
-            this.rollbackOnly = false;
-            this.wrapper.getEntityManager().removeExtendedPersistenceContext();
-            this.wrapper.setLocalUnitOfWork(null);
+            active = false;
+            rollbackOnly = false;
+            wrapper.getEntityManager().removeExtendedPersistenceContext();
+            wrapper.setLocalUnitOfWork(null);
         }
     }
 
@@ -211,7 +216,7 @@ public class EntityTransactionImpl implements jakarta.persistence.EntityTransact
             throw new IllegalStateException(TransactionException.transactionNotActive().getMessage());
         }
 
-        this.rollbackOnly = true;
+        rollbackOnly = true;
     }
 
     /**
@@ -236,7 +241,8 @@ public class EntityTransactionImpl implements jakarta.persistence.EntityTransact
         if (!isActive()) {
             throw new IllegalStateException(TransactionException.transactionNotActive().getMessage());
         }
-        return this.rollbackOnly;
+
+        return rollbackOnly;
     }
 
     /**
@@ -244,18 +250,18 @@ public class EntityTransactionImpl implements jakarta.persistence.EntityTransact
      */
     @Override
     public boolean isActive() {
-        return this.active;
+        return active;
     }
 
     @Override
-    public void setTimeout(Integer integer) {
-        //TODO NEW IN JPA 3.2.0-M2 - IMPLEMENT BODY
+    public void setTimeout(Integer timeout) {
+        this.timeout = timeout;
     }
 
     @Override
     public Integer getTimeout() {
-        //TODO NEW IN JPA 3.2.0-M2 - IMPLEMENT BODY
-        return null;
+        //TODO NEW IN JPA 3.2.0-M2 - Make sure something actually does someting with this
+        return timeout;
     }
 
     class TransactionFinalizer {

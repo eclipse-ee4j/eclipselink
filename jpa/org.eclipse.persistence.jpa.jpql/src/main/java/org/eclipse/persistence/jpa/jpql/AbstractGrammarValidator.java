@@ -1805,6 +1805,15 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
      */
     protected boolean isNumericLiteral(String text) {
 
+        // A 'bi' or 'bd' suffix makes the literal a BigInteger or a BigDecimal. Neither can be
+        // checked by parsing it as a double - the value may be larger than a double can hold, and
+        // the exactness of a BigDecimal is the reason for writing one in the first place - so the
+        // shape of the literal is matched instead
+        if (ExpressionTools.BIG_INTEGER_REGEXP.matcher(text).matches() ||
+            ExpressionTools.BIG_DECIMAL_REGEXP.matcher(text).matches()) {
+            return true;
+        }
+
         // The ending 'l' or 'L' for a long number has to be removed, Java will not parse it
         if (text.endsWith("l") || text.endsWith("L")) {
             text = text.substring(0, text.length() - 1);

@@ -23,6 +23,23 @@
 //       - Issue 1771: Fix UUID handling for PostgreSQL
 package org.eclipse.persistence.platform.database;
 
+import java.io.CharArrayWriter;
+import java.io.IOException;
+import java.io.Writer;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.sql.CallableStatement;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Types;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionOperator;
@@ -41,23 +58,6 @@ import org.eclipse.persistence.queries.Call;
 import org.eclipse.persistence.queries.SQLCall;
 import org.eclipse.persistence.queries.ValueReadQuery;
 import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
-
-import java.io.CharArrayWriter;
-import java.io.IOException;
-import java.io.Writer;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.sql.CallableStatement;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Types;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 
 /**
  * <p>
@@ -748,12 +748,15 @@ public class PostgreSQLPlatform extends DatabasePlatform {
         fieldTypeMapping.put(java.sql.Time.class, TYPE_TIME);
         fieldTypeMapping.put(java.sql.Timestamp.class, TYPE_TIMESTAMP);
 
+
+
         fieldTypeMapping.put(java.time.LocalDate.class, PGSQL_TYPE_DATE);
         fieldTypeMapping.put(java.time.LocalDateTime.class, TYPE_TIMESTAMP);
         fieldTypeMapping.put(java.time.LocalTime.class, TYPE_TIME);
         fieldTypeMapping.put(java.time.OffsetDateTime.class, TYPE_TIMESTAMP);
         fieldTypeMapping.put(java.time.OffsetTime.class, TYPE_TIME);
         fieldTypeMapping.put(java.time.Instant.class, TYPE_TIMESTAMP);
+        fieldTypeMapping.put(java.time.Year.class, PGSQL_TYPE_INTEGER);
 
         fieldTypeMapping.put(java.util.UUID.class, PGSQL_TYPE_UUID);
 

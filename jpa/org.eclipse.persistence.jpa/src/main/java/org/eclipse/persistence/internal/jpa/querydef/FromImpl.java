@@ -688,41 +688,54 @@ public class FromImpl<Z, X> extends PathImpl<X> implements jakarta.persistence.c
 
     // Adds join for specified class.
     @Override
-    @SuppressWarnings("unchecked")
     public <Y> Join<X, Y> join(Class<Y> entityClass, JoinType joinType) {
-        // Search target class (this) for SingularAttributes matching source class (entityClass)
-        JoinImpl<X, Y> join = null;
-        for (Attribute<? super X, ?> attribute : ((ManagedType<X>) managedType).getAttributes()) {
-            if ((attribute instanceof SingularAttribute)
-                    && ((SingularAttribute<?, ?>) attribute).getBindableJavaType().isAssignableFrom(entityClass)) {
-                SingularAttribute<? super X, Y> singularAttribute = (SingularAttribute<? super X, Y>) attribute;
-                // Create Join instance if not exists
-                if (join == null) {
-                    ObjectExpression exp =
-                            ((ObjectExpression) this.currentNode).newDerivedExpressionNamed(singularAttribute.getName());
-                    switch (joinType) {
-                        case LEFT:
-                            exp.doUseOuterJoin();
-                            break;
-                        case RIGHT:
-                            throw new UnsupportedOperationException(ExceptionLocalization.buildMessage("RIGHT_JOIN_NOT_SUPPORTED"));
-                        case INNER:
-                            exp.doNotUseOuterJoin();
-                    }
-                    join = new JoinImpl<>(this, managedType, this.metamodel, entityClass, exp, singularAttribute, joinType);
-                    this.joins.add(join);
-                    join.isJoin = true;
-                }
+        // Search this type for a singular attribute the requested entity class can stand in for,
+        // and join through the first one found
+        for (Attribute<?, ?> attribute : ((ManagedType<?>) managedType).getAttributes()) {
+            if (!(attribute instanceof SingularAttribute<?, ?> singularAttribute) || !singularAttribute.getBindableJavaType().isAssignableFrom(entityClass)) {
+                continue;
             }
+
+            ObjectExpression expression =
+                    ((ObjectExpression) currentNode).newDerivedExpressionNamed(singularAttribute.getName());
+
+            switch (joinType) {
+                case LEFT:
+                    expression.doUseOuterJoin();
+                    break;
+                case RIGHT:
+                    throw new UnsupportedOperationException(ExceptionLocalization.buildMessage("RIGHT_JOIN_NOT_SUPPORTED"));
+                case INNER:
+                    expression.doNotUseOuterJoin();
+            }
+
+            // The managed type of a join is the type being joined to, not the type being
+            // joined from. It is what the super type method org.eclipse.persistence.internal.jpa.querydef.FromImpl.get(String)
+            // resolves attribute names against.
+            //
+            // The attribute overload of this method passes metamodel.managedType(clazz) for
+            // the same reason
+            JoinImpl<X, Y> join =
+                new JoinImpl<>(
+                    this,
+                    metamodel.managedType(entityClass),
+                    metamodel,
+                    entityClass,
+                    expression,
+                    singularAttribute,
+                    joinType);
+
+            joins.add(join);
+            join.isJoin = true;
+
+            return join;
         }
-        if (join == null) {
-            throw new IllegalStateException(
-                    ExceptionLocalization.buildMessage("no_key_in_entity",
-                                                       new String[] {
-                                                               entityClass.getName(),
-                                                               this.managedType.getJavaType().getName()}));
-        }
-        return join;
+
+        throw new IllegalStateException(
+                ExceptionLocalization.buildMessage("no_key_in_entity",
+                                                   new String[] {
+                                                           entityClass.getName(),
+                                                           this.managedType.getJavaType().getName()}));
     }
 
     @Override

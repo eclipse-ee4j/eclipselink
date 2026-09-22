@@ -997,9 +997,17 @@ final class TypeResolver extends JPQLFunctionsAbstractBuilder implements Eclipse
         try {
             String text = expression.getText();
 
+            // BigInteger value
+            if (ExpressionTools.BIG_INTEGER_REGEXP.matcher(text).matches()) {
+                type = BigInteger.class;
+            }
+            // BigDecimal value
+            else if (ExpressionTools.BIG_DECIMAL_REGEXP.matcher(text).matches()) {
+                type = BigDecimal.class;
+            }
             // Long value
             // Integer value
-            if (ExpressionTools.LONG_REGEXP   .matcher(text).matches() ||
+            else if (ExpressionTools.LONG_REGEXP   .matcher(text).matches() ||
                 ExpressionTools.INTEGER_REGEXP.matcher(text).matches()) {
 
                 // Special case for a long number, Long.parseLong() does not handle 'l|L'

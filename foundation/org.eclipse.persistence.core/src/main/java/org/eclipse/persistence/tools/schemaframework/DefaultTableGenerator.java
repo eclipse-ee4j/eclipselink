@@ -427,6 +427,7 @@ public class DefaultTableGenerator {
 
         if (cp != null){
             addFieldsForMappedKeyMapContainerPolicy(cp, table);
+            useMapKeyAsRelationTablePrimaryKey(relationTableMechanism.getRelationTable(), targFkFields, cp, table);
         }
 
         if (listOrderField != null) {
@@ -434,6 +435,60 @@ public class DefaultTableGenerator {
             if (!table.getFields().contains(fieldDef)) {
                 table.addField(fieldDef);
             }
+        }
+    }
+
+    /**
+     * Make the map key, rather than the target foreign key, the part of a relation table's primary
+     * key that tells one entry from another.
+     * <p>
+     * A relation table for a collection is keyed by the source and target foreign keys together,
+     * because what it records is that the two are related and the pair occurs at most once. A
+     * {@link java.util.Map} is not like that: it holds one entry per key, and the key is what may
+     * not repeat. A {@code Map<Course, Semester>} keyed by a map key join column is free to relate
+     * one student to the same semester several times over - once per course - and keying the table
+     * by the target would refuse the second of them with a duplicate key.
+     * <p>
+     * So the target foreign key gives up its place in the primary key to the map key, which is the
+     * same choice the reference implementation makes. The target keeps its foreign key constraint;
+     * only its part in the primary key changes.
+     * <p>
+     * A map key that is an attribute of the target entity - {@code @MapKey(name = "...")} rather
+     * than a map key column - has no column in the relation table to key it by, and there the
+     * target foreign key remains the right choice. Such a key is recognised by its field belonging
+     * to a table other than the relation table.
+     *
+     * @param relationTable the relation table being built
+     * @param targetFkFields the foreign key to the target of the mapping
+     * @param cp the container policy of the mapping, which holds the map key when there is one
+     * @param table the definition of {@code relationTable}
+     */
+    protected void useMapKeyAsRelationTablePrimaryKey(DatabaseTable relationTable, List<DatabaseField> targetFkFields, ContainerPolicy cp, TableDefinition table) {
+        if (!cp.isMappedKeyMapPolicy()) {
+            return;
+        }
+
+        List<DatabaseField> mapKeyFields = cp.getIdentityFieldsForMapKey();
+
+        if ((mapKeyFields == null) || mapKeyFields.isEmpty()) {
+            return;
+        }
+
+        for (DatabaseField mapKeyField : mapKeyFields) {
+            if (!relationTable.equals(mapKeyField.getTable())) {
+                return;
+            }
+        }
+
+        for (DatabaseField targetFkField : targetFkFields) {
+            getFieldDefFromDBField(targetFkField).setIsPrimaryKey(false);
+        }
+
+        for (DatabaseField mapKeyField : mapKeyFields) {
+            FieldDefinition mapKeyFieldDef = getFieldDefFromDBField(mapKeyField);
+            mapKeyFieldDef.setIsPrimaryKey(true);
+            // A map key is never absent, and a primary key column cannot be null in any case
+            mapKeyFieldDef.setShouldAllowNull(false);
         }
     }
 

@@ -24,6 +24,8 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -880,9 +882,17 @@ public abstract class ResolverBuilder implements ExpressionVisitor {
         try {
             String text = expression.getText();
 
+            // BigInteger value
+            if (ExpressionTools.BIG_INTEGER_REGEXP.matcher(text).matches()) {
+                resolver = buildClassResolver(BigInteger.class);
+            }
+            // BigDecimal value
+            else if (ExpressionTools.BIG_DECIMAL_REGEXP.matcher(text).matches()) {
+                resolver = buildClassResolver(BigDecimal.class);
+            }
             // Long value
             // Integer value
-            if (ExpressionTools.LONG_REGEXP   .matcher(text).matches() ||
+            else if (ExpressionTools.LONG_REGEXP   .matcher(text).matches() ||
                 ExpressionTools.INTEGER_REGEXP.matcher(text).matches()) {
 
                 Long value = Long.parseLong(text);

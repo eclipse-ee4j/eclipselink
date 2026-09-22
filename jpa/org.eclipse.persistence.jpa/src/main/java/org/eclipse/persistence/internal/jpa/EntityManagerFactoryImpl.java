@@ -956,14 +956,12 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
 
     @Override
     public EntityAgent createEntityAgent(jakarta.persistence.EntityAgent.CreationOption... options) {
-        // TODO Auto-generated method stub
-        return null;
+        return delegate.createEntityAgent(options);
     }
 
     @Override
     public EntityAgent createEntityAgent(Map<?, ?> properties) {
-        // TODO Auto-generated method stub
-        return null;
+        return delegate.createEntityAgent(properties);
     }
 
     @Override
@@ -1001,12 +999,12 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
 
     @Override
     public <H extends EntityHandler> void runInTransaction(Class<H> handlerClass, Consumer<H> work) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        delegate.runInTransaction(handlerClass, work);
     }
 
     @Override
     public <R, H extends EntityHandler> R callInTransaction(Class<H> handlerClass, Function<H, R> work) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        return delegate.callInTransaction(handlerClass, work);
     }
 
 }
