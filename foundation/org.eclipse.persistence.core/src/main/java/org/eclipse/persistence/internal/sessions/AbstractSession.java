@@ -2816,74 +2816,78 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
                    getIdentityMapAccessorInstance().getWriteLockManager().transitionToDeferredLocks(mergeManager);
                }
                cacheKey.acquireDeferredLock();
+               try {
+                   switch (ConcurrencyUtil.SINGLETON.getConcurrencyManagerAllowGetCacheKeyForMergeMode()) {
+                       case MergeManagerOperationMode.ORIGIN -> {
+                           original = cacheKey.getObject();
+                           if (original == null) {
+                               cacheKey.getInstanceLock().lock();
+                               try {
+                                   // Deferred acquisition may now own an empty key after a failed construction.
+                                   while (cacheKey.isAcquiredForWritingAndOwnedByDifferentThread() && cacheKey.getObject() == null) {
+                                       try {
+                                           cacheKey.getInstanceLockCondition().await();
+                                       } catch (InterruptedException e) {
+                                           //ignore and return
+                                           break;
+                                       }
+                                   }
+                                   original = cacheKey.getObject();
+                               } finally {
+                                   cacheKey.getInstanceLock().unlock();
+                               }
+                           }
+                       }
+                       case MergeManagerOperationMode.WAITLOOP -> {
+                           final Thread currentThread = Thread.currentThread();
+                           final String currentThreadName = currentThread.getName();
+                           final long whileStartTimeMillis = System.currentTimeMillis();
+                           final DeferredLockManager lockManager = ConcurrencyManager.getDeferredLockManager(currentThread);
+                           final ReadLockManager readLockManager = ConcurrencyManager.getReadLockManager(currentThread);
 
-               switch (ConcurrencyUtil.SINGLETON.getConcurrencyManagerAllowGetCacheKeyForMergeMode()) {
-                   case MergeManagerOperationMode.ORIGIN -> {
-                       original = cacheKey.getObject();
-                       if (original == null) {
+                           original = cacheKey.getObject();
+                           boolean originalIsStillNull = original == null;
+                           boolean isToBeStuckIntoDeadlock = false;
+                           if (!originalIsStillNull) {
+                               return cacheKey;
+                           }
                            cacheKey.getInstanceLock().lock();
                            try {
-                               if (cacheKey.isAcquired()) {
-                                   try {
-                                       cacheKey.getInstanceLockCondition().await();
-                                   } catch (InterruptedException e) {
-                                       //ignore and return
+                               boolean someOtherThreadCurrentlyOwningTheCacheKey = cacheKey.isAcquiredForWritingAndOwnedByDifferentThread();
+                               if (!someOtherThreadCurrentlyOwningTheCacheKey) {
+                                   return cacheKey;
+                               }
+                               final String cacheKeyToStringOwnedByADifferentThread = ConcurrencyUtil.SINGLETON.createToStringExplainingOwnedCacheKey(cacheKey);
+                               String justification = TraceLocalization.buildMessage("concurrency_util_threads_having_difficulty_getting_cache_keys_with_object_different_than_null_during_merge_clones_to_cache_after_transaction_commit_justification",
+                                       new Object[] {cacheKeyToStringOwnedByADifferentThread, cacheKey.getActiveThread(), currentThreadName});
+                               try {
+                                   setThreadsToWaitMergeManagerWaitingDeferredCacheKeys(justification);
+                                   while (someOtherThreadCurrentlyOwningTheCacheKey && originalIsStillNull && !isToBeStuckIntoDeadlock) {
+                                       cacheKey.getInstanceLockCondition().await(ConcurrencyUtil.SINGLETON.getAcquireWaitTime(), TimeUnit.MILLISECONDS);
+                                       isToBeStuckIntoDeadlock = ConcurrencyUtil.SINGLETON.determineIfReleaseDeferredLockAppearsToBeDeadLocked(cacheKey, whileStartTimeMillis,
+                                               lockManager, readLockManager, true);
+                                       someOtherThreadCurrentlyOwningTheCacheKey = cacheKey.isAcquiredForWritingAndOwnedByDifferentThread();
+                                       original = cacheKey.getObject();
+                                       originalIsStillNull = original == null;
+
+                                   }
+                               } catch (InterruptedException e) {
+                                   cacheKey.setInvalidationState(CacheKey.CACHE_KEY_INVALID);
+                                   return cacheKey;
+                               } finally {
+                                   if (isToBeStuckIntoDeadlock) {
+                                       cacheKey.setInvalidationState(CacheKey.CACHE_KEY_INVALID);
                                    }
                                }
-                               original = cacheKey.getObject();
                            } finally {
+                               clearThreadsToWaitMergeManagerWaitingDeferredCacheKeys();
                                cacheKey.getInstanceLock().unlock();
                            }
                        }
                    }
-                   case MergeManagerOperationMode.WAITLOOP -> {
-                       final Thread currentThread = Thread.currentThread();
-                       final String currentThreadName = currentThread.getName();
-                       final long whileStartTimeMillis = System.currentTimeMillis();
-                       final DeferredLockManager lockManager = ConcurrencyManager.getDeferredLockManager(currentThread);
-                       final ReadLockManager readLockManager = ConcurrencyManager.getReadLockManager(currentThread);
-
-                       original = cacheKey.getObject();
-                       boolean originalIsStillNull = original == null;
-                       boolean isToBeStuckIntoDeadlock = false;
-                       if (!originalIsStillNull) {
-                           return cacheKey;
-                       }
-                       cacheKey.getInstanceLock().lock();
-                           try {
-                           boolean someOtherThreadCurrentlyOwningTheCacheKey = cacheKey.isAcquiredForWritingAndOwnedByDifferentThread();
-                           if (!someOtherThreadCurrentlyOwningTheCacheKey) {
-                               return cacheKey;
-                           }
-                           final String cacheKeyToStringOwnedByADifferentThread = ConcurrencyUtil.SINGLETON.createToStringExplainingOwnedCacheKey(cacheKey);
-                           String justification = TraceLocalization.buildMessage("concurrency_util_threads_having_difficulty_getting_cache_keys_with_object_different_than_null_during_merge_clones_to_cache_after_transaction_commit_justification",
-                                   new Object[] {cacheKeyToStringOwnedByADifferentThread, cacheKey.getActiveThread(), currentThreadName});
-                           try {
-                               setThreadsToWaitMergeManagerWaitingDeferredCacheKeys(justification);
-                               while (someOtherThreadCurrentlyOwningTheCacheKey && originalIsStillNull && !isToBeStuckIntoDeadlock) {
-                                   cacheKey.getInstanceLockCondition().await(ConcurrencyUtil.SINGLETON.getAcquireWaitTime(), TimeUnit.MILLISECONDS);
-                                   isToBeStuckIntoDeadlock = ConcurrencyUtil.SINGLETON.determineIfReleaseDeferredLockAppearsToBeDeadLocked(cacheKey, whileStartTimeMillis,
-                                                   lockManager, readLockManager, true);
-                                   someOtherThreadCurrentlyOwningTheCacheKey = cacheKey.isAcquiredForWritingAndOwnedByDifferentThread();
-                                   original = cacheKey.getObject();
-                                   originalIsStillNull = original == null;
-
-                               }
-                           } catch (InterruptedException e) {
-                               cacheKey.setInvalidationState(CacheKey.CACHE_KEY_INVALID);
-                               return cacheKey;
-                           } finally {
-                               if (isToBeStuckIntoDeadlock) {
-                                   cacheKey.setInvalidationState(CacheKey.CACHE_KEY_INVALID);
-                               }
-                           }
-                       } finally {
-                           clearThreadsToWaitMergeManagerWaitingDeferredCacheKeys();
-                           cacheKey.getInstanceLock().unlock();
-                       }
-                   }
+               } finally {
+                   cacheKey.releaseDeferredLock();
                }
-               cacheKey.releaseDeferredLock();
            }
        }
        return cacheKey;
