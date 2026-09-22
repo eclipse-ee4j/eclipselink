@@ -273,8 +273,11 @@ public class WriteLockManager {
             for (CacheKey cacheKey : mergeManager.getAcquiredLocks()){
                 cacheKey.release();
             }
-            ConcurrencyManager.getDeferredLockManager(Thread.currentThread()).setIsThreadComplete(true);
-            ConcurrencyManager.removeDeferredLockManager(Thread.currentThread());
+            DeferredLockManager lockManager = ConcurrencyManager.getDeferredLockManager(Thread.currentThread());
+            if (lockManager != null) {
+                lockManager.setIsThreadComplete(true);
+                ConcurrencyManager.removeDeferredLockManager(Thread.currentThread());
+            }
             mergeManager.getAcquiredLocks().clear();
             throw ex;
         }
@@ -553,7 +556,13 @@ public class WriteLockManager {
                 // for others to find an prevent cycles
             }
             if (mergeManager.isTransitionedToDeferredLocks()){
-                ConcurrencyManager.getDeferredLockManager(Thread.currentThread()).getActiveLocks().add(lockedCacheKey);
+                DeferredLockManager deferredLockManager = ConcurrencyManager.getDeferredLockManager(Thread.currentThread());
+                if (deferredLockManager != null) {
+                    deferredLockManager.getActiveLocks().add(lockedCacheKey);
+                } else {
+                    // Fallback to regular lock tracking if DeferredLockManager not available
+                    mergeManager.getAcquiredLocks().add(lockedCacheKey);
+                }
             }else{
                  mergeManager.getAcquiredLocks().add(lockedCacheKey);
             }
