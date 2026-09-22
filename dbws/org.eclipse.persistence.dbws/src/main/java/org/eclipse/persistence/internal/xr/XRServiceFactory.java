@@ -64,6 +64,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamSource;
 
 //EclipseLink imports
+import org.eclipse.persistence.internal.helper.XMLHelper;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.dbws.DBWSException;
 import org.eclipse.persistence.oxm.exceptions.XMLMarshalException;
@@ -577,8 +578,7 @@ public class XRServiceFactory  {
     public static DocumentBuilder getDocumentBuilder() {
         DocumentBuilder db = null;
         try {
-            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-            dbf.setNamespaceAware(true);
+            DocumentBuilderFactory dbf = XMLHelper.createDocumentBuilderFactory(false);
             db = dbf.newDocumentBuilder();
         }
         catch (ParserConfigurationException e) {
@@ -590,7 +590,7 @@ public class XRServiceFactory  {
     public static Transformer getTransformer() {
         Transformer transformer = null;
         try {
-            TransformerFactory tf = TransformerFactory.newInstance();
+            TransformerFactory tf = XMLHelper.createTransformerFactory(false);
             transformer = tf.newTransformer();
         }
         catch (TransformerConfigurationException e) {
