@@ -38,6 +38,8 @@ package org.eclipse.persistence.internal.jpa;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.Cache;
+import jakarta.persistence.CacheRetrieveMode;
+import jakarta.persistence.CacheStoreMode;
 import jakarta.persistence.EntityAgent;
 import jakarta.persistence.EntityGraph;
 import jakarta.persistence.EntityHandler;
@@ -64,6 +66,7 @@ import jakarta.persistence.sql.ResultSetMapping;
 
 import java.lang.annotation.Annotation;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -961,12 +964,48 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
 
     @Override
     public EntityAgent createEntityAgent(jakarta.persistence.EntityAgent.CreationOption... options) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        return new EntityAgentImpl(createEntityManager(parseAgentCreationOptions(options)));
     }
 
     @Override
     public EntityAgent createEntityAgent(Map<?, ?> properties) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        EntityAgent entityAgent = new EntityAgentImpl(createEntityManager(properties));
+        if ( properties != null ) {
+            for (var entry : properties.entrySet()) {
+                if (entry.getKey() instanceof String key) {
+                    entityAgent.setProperty(key, entry.getValue());
+                }
+            }
+        }
+
+        return entityAgent;
+    }
+
+    /**
+     * Translate an agent's creation options into the properties an entity manager is created with.
+     * <p>
+     * {@link jakarta.persistence.EntityAgent.CreationOption} is an open interface, so a provider may
+     * define its own; the specification itself defines only the two cache modes. Anything else is
+     * refused rather than ignored, so that an option a caller expects to take effect cannot pass
+     * silently.
+     */
+    private Map<String, Object> parseAgentCreationOptions(jakarta.persistence.EntityAgent.CreationOption... options) {
+        if (options == null || options.length == 0) {
+            return null;
+        }
+
+        Map<String, Object> properties = new HashMap<>();
+
+        for (jakarta.persistence.EntityAgent.CreationOption option : options) {
+            switch (option) {
+                case CacheRetrieveMode retrieveMode -> OptionUtils.setCacheRetrieveMode(properties, retrieveMode);
+                case CacheStoreMode storeMode -> OptionUtils.setCacheStoreMode(properties, storeMode);
+                default -> throw new IllegalArgumentException(
+                        "Unknown entity agent creation option [" + option + "].");
+            }
+        }
+
+        return properties;
     }
 
     @Override
@@ -1004,12 +1043,69 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
 
     @Override
     public <H extends EntityHandler> void runInTransaction(Class<H> handlerClass, Consumer<H> work) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        callInTransaction(handlerClass, handler -> {
+            work.accept(handler);
+            return null;
+        });
     }
 
+    /**
+     * Create an entity handler of the requested type with an active transaction, call the given
+     * function with it, and close it again.
+     * <p>
+     * Both handler types are built on an entity manager, so the transaction being managed here is
+     * always that entity manager's - see {@link EntityAgentImpl#getTransaction()}. Closing the entity
+     * manager closes the handler with it, which is why the handler itself is not closed separately.
+     */
     @Override
     public <R, H extends EntityHandler> R callInTransaction(Class<H> handlerClass, Function<H, R> work) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        try (EntityManager entityManager = createEntityManager()) {
+            H handler = createEntityHandler(handlerClass, entityManager);
+
+            switch (getTransactionType()) {
+                case JTA:
+                    entityManager.joinTransaction();
+                    return work.apply(handler);
+                case RESOURCE_LOCAL:
+                    EntityTransaction transaction = entityManager.getTransaction();
+                    transaction.begin();
+                    try {
+                        R result = work.apply(handler);
+                        transaction.commit();
+                        return result;
+                    } catch (Exception e) {
+                        if (transaction.isActive()) {
+                            transaction.rollback();
+                        }
+                        throw e;
+                    }
+                // This may happen only when JPA gets new transaction type
+                default:
+                    throw new IllegalStateException(
+                            "Unknown transaction type " + setupImpl.getPersistenceUnitInfo().getTransactionType().name());
+            }
+        }
+    }
+
+    /**
+     * Present the given entity manager as a handler of the requested type.
+     * <p>
+     * {@link EntityHandler} has exactly two specified subtypes - an entity manager is one itself, and
+     * an entity agent wraps one - so a request for anything else cannot be satisfied.
+     */
+    private <H extends EntityHandler> H createEntityHandler(Class<H> handlerClass, EntityManager entityManager) {
+        if (handlerClass == EntityManager.class) {
+            return handlerClass.cast(entityManager);
+        }
+
+        if (handlerClass == EntityAgent.class) {
+            return handlerClass.cast(new EntityAgentImpl(entityManager));
+        }
+
+        throw new IllegalArgumentException("""
+                Cannot create an entity handler of type [%s]. \
+                Only [%s] and [%s] are supported."""
+                .formatted(handlerClass.getName(), EntityManager.class.getName(), EntityAgent.class.getName()));
     }
 
 }

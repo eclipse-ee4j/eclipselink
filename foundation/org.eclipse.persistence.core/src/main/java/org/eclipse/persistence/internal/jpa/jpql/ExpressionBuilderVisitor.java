@@ -165,6 +165,8 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -1782,6 +1784,11 @@ final class ExpressionBuilderVisitor extends JPQLFunctionsAbstractBuilder implem
 
         if ((type[0] == Long.class) && (text.endsWith("L") || text.endsWith("l"))) {
             text = text.substring(0, text.length() - 1);
+        }
+        // BigInteger and BigDecimal are built below from their String constructor, which rejects
+        // the 'bi' and 'bd' suffixes, so those are removed here too
+        else if ((type[0] == BigInteger.class) || (type[0] == BigDecimal.class)) {
+            text = text.substring(0, text.length() - 2);
         }
 
         @SuppressWarnings({"unchecked"})

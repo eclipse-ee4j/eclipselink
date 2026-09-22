@@ -289,7 +289,23 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
      *            a list of hints to be applied to the query.
      */
     public static DatabaseQuery buildSQLDatabaseQuery(Class<?> resultClass, String sqlString, Map<String, Object> hints, ClassLoader classLoader, AbstractSession session) {
-        ReadAllQuery query = new ReadAllQuery(resultClass);
+        DatabaseQuery query;
+
+        // A result class naming an entity is read as an entity result, with the columns of the
+        // result set matched against the entity's mapped columns. Any other result class - a basic
+        // type, or a class constructed from the columns - describes rows that are not entities at
+        // all, and reading them as one would go looking for a descriptor that cannot exist. Those
+        // are read through their result class instead; see
+        // ResultSetMappingQuery#buildResultSetMappingForResultClass.
+        if (session.getDescriptor(resultClass) != null) {
+            query = new ReadAllQuery(resultClass);
+        }
+        else {
+            ResultSetMappingQuery resultSetMappingQuery = new ResultSetMappingQuery();
+            resultSetMappingQuery.setResultClass(resultClass);
+            query = resultSetMappingQuery;
+        }
+
         query.setCall(((DatasourcePlatform)session.getPlatform(resultClass)).buildNativeCall(sqlString));
         query.setIsUserDefined(true);
 

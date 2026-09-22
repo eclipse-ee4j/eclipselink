@@ -24,6 +24,9 @@
 //       - 393867: Named queries do not work when using EM level Table Per Tenant Multitenancy.
 package org.eclipse.persistence.internal.jpa.metadata.queries;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.jpa.JPAQuery;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
@@ -31,8 +34,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.queries.SQLResultSetMapping;
 
-import java.util.ArrayList;
-import java.util.List;
+import static org.eclipse.persistence.internal.helper.CollectionUtils.isEmpty;
 
 /**
  * INTERNAL:
@@ -52,10 +54,11 @@ import java.util.List;
  * @since TopLink EJB 3.0 Reference Implementation
  */
 public class NamedNativeQueryMetadata extends NamedQueryMetadata {
-    private String m_resultSetMapping;
-    private List<EntityResultMetadata> m_entityResults = new ArrayList<>();
-    private List<ConstructorResultMetadata> m_constructorResults = new ArrayList<>();
-    private List<ColumnResultMetadata> m_columnResults = new ArrayList<>();
+
+    private String resultSetMapping;
+    private List<EntityResultMetadata> entityResults = new ArrayList<>();
+    private List<ConstructorResultMetadata> constructorResults = new ArrayList<>();
+    private List<ColumnResultMetadata> columnResults = new ArrayList<>();
 
     /**
      * INTERNAL:
@@ -72,18 +75,18 @@ public class NamedNativeQueryMetadata extends NamedQueryMetadata {
     public NamedNativeQueryMetadata(MetadataAnnotation namedNativeQuery, MetadataAccessor accessor) {
         super(namedNativeQuery, accessor);
 
-        m_resultSetMapping = namedNativeQuery.getAttributeString("resultSetMapping");
+        resultSetMapping = namedNativeQuery.getAttributeString("resultSetMapping");
 
         for (Object entityResult : namedNativeQuery.getAttributeArray("entities")) {
-            m_entityResults.add(new EntityResultMetadata((MetadataAnnotation) entityResult, accessor));
+            entityResults.add(new EntityResultMetadata((MetadataAnnotation) entityResult, accessor));
         }
 
         for (Object constructorResult : namedNativeQuery.getAttributeArray("classes")) {
-            m_constructorResults.add(new ConstructorResultMetadata((MetadataAnnotation) constructorResult, accessor));
+            constructorResults.add(new ConstructorResultMetadata((MetadataAnnotation) constructorResult, accessor));
         }
 
         for (Object columnResult : namedNativeQuery.getAttributeArray("columns")) {
-            m_columnResults.add(new ColumnResultMetadata((MetadataAnnotation) columnResult, accessor));
+            columnResults.add(new ColumnResultMetadata((MetadataAnnotation) columnResult, accessor));
         }
     }
 
@@ -97,45 +100,10 @@ public class NamedNativeQueryMetadata extends NamedQueryMetadata {
 
     /**
      * INTERNAL:
-     */
-    @Override
-    public boolean equals(Object objectToCompare) {
-        if (super.equals(objectToCompare) && objectToCompare instanceof NamedNativeQueryMetadata query) {
-
-            if (! valuesMatch(m_entityResults, query.getEntityResults())) {
-                return false;
-            }
-
-            if (! valuesMatch(m_columnResults, query.getColumnResults())) {
-                return false;
-            }
-
-            if (! valuesMatch(m_constructorResults, query.getConstructorResults())) {
-                return false;
-            }
-
-            return valuesMatch(m_resultSetMapping, query.getResultSetMapping());
-        }
-
-        return false;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = super.hashCode();
-        result = 31 * result + (m_resultSetMapping != null ? m_resultSetMapping.hashCode() : 0);
-        result = 31 * result + (m_entityResults != null ? m_entityResults.hashCode() : 0);
-        result = 31 * result + (m_columnResults != null ? m_columnResults.hashCode() : 0);
-        result = 31 * result + (m_constructorResults != null ? m_constructorResults.hashCode() : 0);
-        return result;
-    }
-
-    /**
-     * INTERNAL:
      * Used for OX mapping.
      */
     public List<ColumnResultMetadata> getColumnResults() {
-        return m_columnResults;
+        return columnResults;
     }
 
     /**
@@ -143,7 +111,7 @@ public class NamedNativeQueryMetadata extends NamedQueryMetadata {
      * Used for OX mapping.
      */
     public List<ConstructorResultMetadata> getConstructorResults() {
-        return m_constructorResults;
+        return constructorResults;
     }
 
     /**
@@ -151,7 +119,7 @@ public class NamedNativeQueryMetadata extends NamedQueryMetadata {
      * Used for OX mapping.
      */
     public List<EntityResultMetadata> getEntityResults() {
-        return m_entityResults;
+        return entityResults;
     }
 
     /**
@@ -159,27 +127,7 @@ public class NamedNativeQueryMetadata extends NamedQueryMetadata {
      * Used for OX mapping.
      */
     public String getResultSetMapping() {
-        return m_resultSetMapping;
-    }
-
-    /**
-     * INTERNAL:
-     * Return true is a result set mapping has been specified.
-     */
-    protected boolean hasResultSetMapping(AbstractSession session) {
-        if (m_resultSetMapping != null && !m_resultSetMapping.isEmpty()) {
-            // User has specified a result set mapping. Since all the result
-            // set mappings are processed and placed on the session before named
-            // queries, let's validate that the sql result set mapping specified
-            // on this query actually exists.
-            if (session.getProject().hasSQLResultSetMapping(m_resultSetMapping)) {
-                return true;
-            } else {
-                throw ValidationException.invalidSQLResultSetMapping(m_resultSetMapping, getName(), getLocation());
-            }
-        }
-
-        return false;
+        return resultSetMapping;
     }
 
     /**
@@ -187,33 +135,29 @@ public class NamedNativeQueryMetadata extends NamedQueryMetadata {
      */
     @Override
     public void process(AbstractSession session) {
-        if (hasResultSetMapping(session) && (!m_entityResults.isEmpty() || !m_constructorResults.isEmpty() || !m_columnResults.isEmpty())) {
+        if (hasResultSetMapping(session) && hasInlineResultSetMapping()) {
             throw ValidationException.duplicitResultSetMappingInNativeQuery(getAccessibleObjectName(), getName());
         }
-        // Create a JPA query to store internally on the session.
+
+        // Create a Jakarta Persistence query to store internally on the session.
         JPAQuery query = new JPAQuery(getName(), getQuery(), processQueryHints(session));
-        // Process the result class.
-        if (!getResultClass().isVoid()) {
+
+        // The entities, classes and columns elements are a way of declaring a result set mapping on
+        // the query itself rather than referring to a named one, so they are processed ahead of the
+        // result class: they describe the shape of each row, whereas a result class only names the
+        // type a row is read into, and must agree with what the mapping says.
+        //
+        // Were the result class taken first, a result class naming anything other than an entity (a basic
+        // type or a constructor's class), would be read as an entity result and fail for want of a descriptor,
+        // and the mapping the caller declared would be discarded unused.
+        if (hasInlineResultSetMapping()) {
+            query.setLocalResultSetMapping(processInlineResultSetMapping());
+        } else if (!getResultClass().isVoid()) {
             query.setResultClassName(getJavaClassName(getResultClass()));
         } else if (hasResultSetMapping(session)) {
             query.addResultSetMapping(getResultSetMapping());
-        } else if (!this.getEntityResults().isEmpty() || !this.getConstructorResults().isEmpty() || !this.getColumnResults().isEmpty()) {
-            // Initialize a new SqlResultSetMapping (with the metadata name)
-            SQLResultSetMapping sqlResultSetMapping = new SQLResultSetMapping(getName());
-            // Process the entity results first.
-            for (EntityResultMetadata entityResult : m_entityResults) {
-                sqlResultSetMapping.addResult(entityResult.process());
-            }
-            // Process the constructor results second.
-            for (ConstructorResultMetadata constructorResult : m_constructorResults) {
-                sqlResultSetMapping.addResult(constructorResult.process());
-            }
-            // Process the column results third.
-            for (ColumnResultMetadata columnResult : m_columnResults) {
-                sqlResultSetMapping.addResult(columnResult.process());
-            }
-            query.setLocalResultSetMapping(sqlResultSetMapping);
         }
+
         addJPAQuery(query, session);
     }
 
@@ -222,7 +166,7 @@ public class NamedNativeQueryMetadata extends NamedQueryMetadata {
      * Used for OX mapping.
      */
     public void setColumnResults(List<ColumnResultMetadata> columnResults) {
-        m_columnResults = columnResults;
+        this.columnResults = columnResults;
     }
 
     /**
@@ -230,7 +174,7 @@ public class NamedNativeQueryMetadata extends NamedQueryMetadata {
      * Used for OX mapping.
      */
     public void setConstructorResults(List<ConstructorResultMetadata> constructorResults) {
-        m_constructorResults = constructorResults;
+        this.constructorResults = constructorResults;
     }
 
     /**
@@ -238,7 +182,7 @@ public class NamedNativeQueryMetadata extends NamedQueryMetadata {
      * Used for OX mapping.
      */
     public void setEntityResults(List<EntityResultMetadata> entityResults) {
-        m_entityResults = entityResults;
+        this.entityResults = entityResults;
     }
 
     /**
@@ -246,6 +190,95 @@ public class NamedNativeQueryMetadata extends NamedQueryMetadata {
      * Used for OX mapping.
      */
     public void setResultSetMapping(String resultSetMapping) {
-        m_resultSetMapping = resultSetMapping;
+        this.resultSetMapping = resultSetMapping;
+    }
+
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public boolean equals(Object objectToCompare) {
+        if (super.equals(objectToCompare) && objectToCompare instanceof NamedNativeQueryMetadata query) {
+
+            if (!valuesMatch(entityResults, query.getEntityResults())) {
+                return false;
+            }
+
+            if (!valuesMatch(columnResults, query.getColumnResults())) {
+                return false;
+            }
+
+            if (!valuesMatch(constructorResults, query.getConstructorResults())) {
+                return false;
+            }
+
+            return valuesMatch(resultSetMapping, query.getResultSetMapping());
+        }
+
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + (resultSetMapping != null ? resultSetMapping.hashCode() : 0);
+        result = 31 * result + (entityResults != null ? entityResults.hashCode() : 0);
+        result = 31 * result + (columnResults != null ? columnResults.hashCode() : 0);
+        result = 31 * result + (constructorResults != null ? constructorResults.hashCode() : 0);
+        return result;
+    }
+
+    /**
+     * INTERNAL:
+     * Return true is a result set mapping has been specified.
+     */
+    protected boolean hasResultSetMapping(AbstractSession session) {
+        if (isEmpty(resultSetMapping)) {
+            return false;
+        }
+
+        // User has specified a result set mapping. Since all the result
+        // set mappings are processed and placed on the session before named
+        // queries, let's validate that the sql result set mapping specified
+        // on this query actually exists.
+        if (!session.getProject().hasSQLResultSetMapping(resultSetMapping)) {
+            throw ValidationException.invalidSQLResultSetMapping(resultSetMapping, getName(), getLocation());
+        }
+
+        return true;
+    }
+
+    /**
+     * INTERNAL:
+     * Return whether this query declares its own result set mapping through the entities, classes
+     * or columns elements, rather than naming one declared elsewhere.
+     */
+    protected boolean hasInlineResultSetMapping() {
+        return !entityResults.isEmpty() || !constructorResults.isEmpty() || !columnResults.isEmpty();
+    }
+
+    /**
+     * INTERNAL:
+     * Build the result set mapping this query declares through its entities, classes and columns
+     * elements. It is named after the query, since it belongs to the query alone and is never
+     * looked up by name.
+     */
+    protected SQLResultSetMapping processInlineResultSetMapping() {
+        SQLResultSetMapping sqlResultSetMapping = new SQLResultSetMapping(getName());
+
+        // Process the entity results first.
+        for (EntityResultMetadata entityResult : entityResults) {
+            sqlResultSetMapping.addResult(entityResult.process());
+        }
+        // Process the constructor results second.
+        for (ConstructorResultMetadata constructorResult : constructorResults) {
+            sqlResultSetMapping.addResult(constructorResult.process());
+        }
+        // Process the column results third.
+        for (ColumnResultMetadata columnResult : columnResults) {
+            sqlResultSetMapping.addResult(columnResult.process());
+        }
+
+        return sqlResultSetMapping;
     }
 }
