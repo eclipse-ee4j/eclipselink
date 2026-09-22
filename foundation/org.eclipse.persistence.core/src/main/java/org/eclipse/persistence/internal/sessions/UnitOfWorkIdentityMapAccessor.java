@@ -177,14 +177,16 @@ public class UnitOfWorkIdentityMapAccessor extends IdentityMapAccessor {
             cacheKey.getInstanceLock().lock();
             try {
                 // A key can be acquired before its object is built. Release the state lock
-                // while waiting and poll because construction can precede the release signal.
+                // while waiting for another writer to finish constructing the object.
                 objectFromCache = cacheKey.getObject();
-                try {
-                    while (cacheKey.isAcquired() && (objectFromCache == null)) {
-                        cacheKey.getInstanceLockCondition().await(5, TimeUnit.MILLISECONDS);
+                if (objectFromCache == null) {
+                    try {
+                        while (cacheKey.isAcquiredForWritingAndOwnedByDifferentThread()) {
+                            cacheKey.getInstanceLockCondition().await(5, TimeUnit.MILLISECONDS);
+                        }
                         objectFromCache = cacheKey.getObject();
+                    } catch (InterruptedException ex) {
                     }
-                } catch (InterruptedException ex) {
                 }
             } finally {
                 cacheKey.getInstanceLock().unlock();

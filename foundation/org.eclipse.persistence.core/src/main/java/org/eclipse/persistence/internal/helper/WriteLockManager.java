@@ -537,15 +537,18 @@ public class WriteLockManager {
         if (lockedCacheKey == null) {
             session.getIdentityMapAccessorInstance().getWriteLockManager().transitionToDeferredLocks(mergeManager);
             lockedCacheKey = session.getIdentityMapAccessorInstance().acquireDeferredLock(primaryKey, descriptor.getJavaClass(), descriptor, true);
-            Object cachedObject = lockedCacheKey.getObject();
-            if (cachedObject == null) {
-                if (lockedCacheKey.getActiveThread() == Thread.currentThread()) {
-                    lockedCacheKey.setObject(objectToLock);
-                } else {
-                    cachedObject = lockedCacheKey.waitForObject();
+            try {
+                Object cachedObject = lockedCacheKey.getObject();
+                if (cachedObject == null) {
+                    if (lockedCacheKey.getActiveThread() == Thread.currentThread()) {
+                        lockedCacheKey.setObject(objectToLock);
+                    } else {
+                        cachedObject = lockedCacheKey.waitForObject();
+                    }
                 }
+            } finally {
+                lockedCacheKey.releaseDeferredLock();
             }
-            lockedCacheKey.releaseDeferredLock();
             return lockedCacheKey;
         } else {
             if (lockedCacheKey.getObject() == null) {

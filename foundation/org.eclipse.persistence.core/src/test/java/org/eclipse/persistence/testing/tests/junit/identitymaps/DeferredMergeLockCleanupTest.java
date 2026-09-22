@@ -40,6 +40,20 @@ public class DeferredMergeLockCleanupTest {
 
     @ParameterizedTest(name = "{0}")
     @EnumSource(value = Route.class, names = {"CHANGE_SET", "SESSION_ORIGIN", "SESSION_WAITLOOP"})
+    public void preservesTheOriginalExceptionAndReleasesReadLocks(Route route) throws Exception {
+        try (Fixture fixture = new Fixture(route)) {
+            fixture.finishConstruction(true);
+            RuntimeException expected = new IllegalStateException("Injected failure after read acquisition");
+            fixture.referenceKey.failureAfterReadAcquire = expected;
+            Future<Object> read = fixture.start();
+            ExecutionException failure = assertThrows(ExecutionException.class, () -> read.get(5, TimeUnit.SECONDS));
+            assertSame(expected, failure.getCause());
+            fixture.assertReleased();
+        }
+    }
+
+    @ParameterizedTest(name = "{0}")
+    @EnumSource(value = Route.class, names = {"CHANGE_SET", "SESSION_ORIGIN", "SESSION_WAITLOOP"})
     public void preservesTheOriginalExceptionAndReleasesDeferredLocks(Route route) throws Exception {
         try (Fixture fixture = new Fixture(route)) {
             RuntimeException expected = new IllegalStateException("Injected failure after deferred acquisition");

@@ -25,6 +25,11 @@ import static org.junit.jupiter.api.Assertions.*;
 @Timeout(value = 15, unit = TimeUnit.SECONDS)
 public class SessionMergeLockRaceTest {
     @Test
+    public void changeSetDoesNotWaitForAnEmptyKeyNowOwnedByTheReader() throws Exception {
+        releasesKeyBetweenReadAndDeferredAcquisition(Route.CHANGE_SET);
+    }
+
+    @Test
     public void originDoesNotWaitForAnEmptyKeyNowOwnedByTheReader() throws Exception {
         releasesKeyBetweenReadAndDeferredAcquisition(Route.SESSION_ORIGIN);
     }
