@@ -2831,8 +2831,11 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
        cacheKey = getIdentityMapAccessorInstance().getCacheKeyForObject(primaryKey, implementation.getClass(), descriptor, true);
        if (cacheKey != null) {
            if (cacheKey.acquireReadLockNoWait()) {
-               original = cacheKey.getObject();
-               cacheKey.releaseReadLock();
+               try {
+                   original = cacheKey.getObject();
+               } finally {
+                   cacheKey.releaseReadLock();
+               }
            } else {
                if (!mergeManager.isTransitionedToDeferredLocks()) {
                    getIdentityMapAccessorInstance().getWriteLockManager().transitionToDeferredLocks(mergeManager);

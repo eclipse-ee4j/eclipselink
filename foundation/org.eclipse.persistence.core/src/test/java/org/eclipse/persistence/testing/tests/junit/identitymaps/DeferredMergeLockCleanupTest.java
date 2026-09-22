@@ -51,6 +51,19 @@ public class DeferredMergeLockCleanupTest {
     }
 
     @Test(timeout = 15000)
+    public void preservesTheOriginalExceptionAndReleasesReadLocks() throws Exception {
+        try (Fixture fixture = new Fixture(route)) {
+            fixture.finishConstruction(true);
+            RuntimeException expected = new IllegalStateException("Injected failure after read acquisition");
+            fixture.referenceKey.failureAfterReadAcquire = expected;
+            Future<Object> read = fixture.start();
+            ExecutionException failure = assertThrows(ExecutionException.class, () -> read.get(5, TimeUnit.SECONDS));
+            assertSame(expected, failure.getCause());
+            fixture.assertReleased();
+        }
+    }
+
+    @Test(timeout = 15000)
     public void preservesTheOriginalExceptionAndReleasesDeferredLocks() throws Exception {
         try (Fixture fixture = new Fixture(route)) {
             RuntimeException expected = new IllegalStateException("Injected failure after deferred acquisition");

@@ -115,6 +115,17 @@ public class CacheKeyConcurrencyTest {
     }
 
     @Test(timeout = 15000)
+    public void returnsNullWhenConstructionFinishesWithoutAnObject() throws Exception {
+        try (Fixture fixture = new Fixture(route)) {
+            Future<Object> read = fixture.start();
+            fixture.awaitWaitingOrCompletion();
+            fixture.finishConstruction(false);
+            assertNull(read.get(2, TimeUnit.SECONDS));
+            fixture.assertReleased();
+        }
+    }
+
+    @Test(timeout = 15000)
     public void interruptionDoesNotLeakLocks() throws Exception {
         try (Fixture fixture = new Fixture(route)) {
             Future<Object> read = fixture.start();
@@ -145,6 +156,9 @@ public class CacheKeyConcurrencyTest {
         });
         final String previousMode = ConcurrencyUtil.SINGLETON.getConcurrencyManagerAllowGetCacheKeyForMergeMode();
         volatile CacheKey mergeKey;
+        volatile boolean acquireReferenceKeyBeforeRead;
+        boolean readOnly;
+        boolean appendLock;
         Future<Object> result;
 
         Fixture(Route route) {
@@ -171,29 +185,46 @@ public class CacheKeyConcurrencyTest {
         Future<Object> start() {
             result = executor.submit(() -> {
                 assertNull(ConcurrencyManager.getDeferredLockManager(Thread.currentThread()));
-                if (!route.isMerge()) {
-                    if (route == Route.UNIT_OF_WORK) {
-                        UnitOfWorkImpl unit = new UnitOfWorkImpl(session, ReferenceMode.HARD);
-                        return new TestUnitOfWorkAccessor(unit).read(descriptor);
-                    }
-                    IsolatedClientSession client = new IsolatedClientSession(session,
-                            new ConnectionPolicy(session.getDatasourceLogin()));
-                    return new TestIsolatedAccessor(client).read(descriptor);
-                }
-                WriteLockManager locks = session.getIdentityMapAccessorInstance().getWriteLockManager();
-                MergeManager merge = new MergeManager(session);
-                merge.mergeIntoDistributedCache();
-                mergeKey = locks.appendLock(1, new Entity(1), descriptor, merge, session);
+                boolean ownsReferenceKey = false;
                 try {
-                    if (route == Route.CHANGE_SET) {
-                        ObjectChangeSet change = new ObjectChangeSet(2, descriptor, reference,
-                                new UnitOfWorkChangeSet(session), false);
-                        return change.getTargetVersionOfSourceObject(merge, session, false);
+                    if (acquireReferenceKeyBeforeRead) {
+                        assertTrue(referenceKey.acquireNoWait());
+                        ownsReferenceKey = true;
                     }
-                    CacheKey key = session.resolve(reference, descriptor, merge);
-                    return key == null ? null : key.getObject();
+                    if (!route.isMerge()) {
+                        if (route == Route.UNIT_OF_WORK) {
+                            UnitOfWorkImpl unit = new UnitOfWorkImpl(session, ReferenceMode.HARD);
+                            if (readOnly) {
+                                unit.addReadOnlyClass(Entity.class);
+                            }
+                            return new TestUnitOfWorkAccessor(unit).read(descriptor);
+                        }
+                        IsolatedClientSession client = new IsolatedClientSession(session,
+                                new ConnectionPolicy(session.getDatasourceLogin()));
+                        return new TestIsolatedAccessor(client).read(descriptor);
+                    }
+                    WriteLockManager locks = session.getIdentityMapAccessorInstance().getWriteLockManager();
+                    MergeManager merge = new MergeManager(session);
+                    merge.mergeIntoDistributedCache();
+                    mergeKey = locks.appendLock(1, new Entity(1), descriptor, merge, session);
+                    try {
+                        if (appendLock) {
+                            return locks.appendLock(2, reference, descriptor, merge, session).getObject();
+                        }
+                        if (route == Route.CHANGE_SET) {
+                            ObjectChangeSet change = new ObjectChangeSet(2, descriptor, reference,
+                                    new UnitOfWorkChangeSet(session), false);
+                            return change.getTargetVersionOfSourceObject(merge, session, false);
+                        }
+                        CacheKey key = session.resolve(reference, descriptor, merge);
+                        return key == null ? null : key.getObject();
+                    } finally {
+                        locks.releaseAllAcquiredLocks(merge);
+                    }
                 } finally {
-                    locks.releaseAllAcquiredLocks(merge);
+                    if (ownsReferenceKey) {
+                        referenceKey.release();
+                    }
                 }
             });
             return result;
@@ -217,7 +248,8 @@ public class CacheKeyConcurrencyTest {
                         if (frame.getMethodName().equals("getObjectForMerge")
                                 || frame.getMethodName().equals("getCacheKeyFromTargetSessionForMerge")
                                 || frame.getMethodName().equals("getAndCloneCacheKeyFromParent")
-                                || frame.getMethodName().equals("releaseDeferredLock")) {
+                                || frame.getMethodName().equals("releaseDeferredLock")
+                                || frame.getMethodName().equals("waitForObject")) {
                             return;
                         }
                     }
@@ -255,7 +287,7 @@ public class CacheKeyConcurrencyTest {
         void assertResult(Object value) {
             assertNotNull("The object published by the producer must be returned", value);
             assertEquals(2, ((Entity) value).id);
-            if (route.isMerge()) {
+            if (route.isMerge() || readOnly) {
                 assertSame(reference, value);
             } else {
                 assertNotSame("A client/unit of work must receive its working clone", reference, value);
@@ -265,6 +297,7 @@ public class CacheKeyConcurrencyTest {
         void assertReleased() throws Exception {
             assertNull("Deferred manager retained after normal cleanup",
                     ConcurrencyManager.getDeferredLockManager(worker.get()));
+            assertNull("Read manager retained after normal cleanup", ConcurrencyManager.getReadLockManager(worker.get()));
             for (CacheKey key : new CacheKey[] {referenceKey, mergeKey}) {
                 if (key != null) {
                     assertNull("Logical cache lock owner retained", key.getActiveThread());
@@ -284,6 +317,12 @@ public class CacheKeyConcurrencyTest {
         public void close() throws Exception {
             finishConstruction(true);
             if (result != null && !result.isDone()) {
+                referenceKey.getInstanceLock().lock();
+                try {
+                    referenceKey.setObject(reference); // Let a self-waiting regression baseline terminate.
+                } finally {
+                    referenceKey.getInstanceLock().unlock();
+                }
                 worker.get().interrupt(); // Also unblocks the original ORIGIN monitor wait on a failing baseline.
             }
             try {
@@ -291,6 +330,9 @@ public class CacheKeyConcurrencyTest {
                     DeferredLockManager remaining = ConcurrencyManager.removeDeferredLockManager(Thread.currentThread());
                     if (remaining != null) {
                         remaining.releaseActiveLocksOnThread();
+                    }
+                    while (referenceKey.getNumberOfReaders() > 0) {
+                        referenceKey.releaseReadLock();
                     }
                     if (mergeKey != null && mergeKey.getActiveThread() == Thread.currentThread()) {
                         while (mergeKey.getDepth() > 0) {
@@ -335,6 +377,8 @@ public class CacheKeyConcurrencyTest {
     static class ProbeCacheKey extends CacheKey {
         volatile Runnable beforeDeferredAcquire;
         volatile RuntimeException failureAfterDeferredAcquire;
+        volatile RuntimeException failureAfterReadAcquire;
+        volatile RuntimeException failureDuringObjectWait;
         volatile boolean deferredAcquired;
         private Thread failingThread;
 
@@ -355,10 +399,27 @@ public class CacheKeyConcurrencyTest {
         }
 
         @Override
+        public boolean acquireReadLockNoWait() {
+            boolean acquired = super.acquireReadLockNoWait();
+            if (acquired && failureAfterReadAcquire != null) {
+                failingThread = Thread.currentThread();
+            }
+            return acquired;
+        }
+
+        @Override
+        public Object waitForObject() {
+            if (failureDuringObjectWait != null) {
+                throw failureDuringObjectWait;
+            }
+            return super.waitForObject();
+        }
+
+        @Override
         public Object getObject() {
             if (Thread.currentThread() == failingThread) {
                 failingThread = null;
-                throw failureAfterDeferredAcquire;
+                throw failureAfterReadAcquire != null ? failureAfterReadAcquire : failureAfterDeferredAcquire;
             }
             return super.getObject();
         }

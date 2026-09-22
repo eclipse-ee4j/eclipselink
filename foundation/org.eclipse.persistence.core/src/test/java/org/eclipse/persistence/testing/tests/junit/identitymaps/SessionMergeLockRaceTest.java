@@ -23,6 +23,11 @@ import static org.junit.Assert.*;
 
 public class SessionMergeLockRaceTest {
     @Test(timeout = 15000)
+    public void changeSetDoesNotWaitForAnEmptyKeyNowOwnedByTheReader() throws Exception {
+        releasesKeyBetweenReadAndDeferredAcquisition(Route.CHANGE_SET);
+    }
+
+    @Test(timeout = 15000)
     public void originDoesNotWaitForAnEmptyKeyNowOwnedByTheReader() throws Exception {
         releasesKeyBetweenReadAndDeferredAcquisition(Route.SESSION_ORIGIN);
     }
