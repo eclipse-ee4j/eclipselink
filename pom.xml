@@ -182,8 +182,8 @@ mvn clean install -Ptest1 \
         <javadoc.prefixTitle>EclipseLink ${release.version}</javadoc.prefixTitle>
         <javadoc.postfixTitle>API Reference</javadoc.postfixTitle>
 
-        <checkstyle.version>13.11.0</checkstyle.version>
-        <spotbugs.version>4.10.3</spotbugs.version>
+        <checkstyle.version>14.0.0</checkstyle.version>
+        <spotbugs.version>4.10.4</spotbugs.version>
         <findsecbugs.version>1.14.0</findsecbugs.version>
 
         <!--Documentation Dependencies version-->
@@ -438,7 +438,7 @@ mvn clean install -Ptest1 \
                 <plugin>
                     <groupId>com.github.spotbugs</groupId>
                     <artifactId>spotbugs-maven-plugin</artifactId>
-                    <version>4.10.3.0</version>
+                    <version>4.10.4.0</version>
                     <dependencies>
                         <dependency>
                             <groupId>com.github.spotbugs</groupId>
