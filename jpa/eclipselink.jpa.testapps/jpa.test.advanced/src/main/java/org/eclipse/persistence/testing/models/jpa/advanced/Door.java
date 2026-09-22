@@ -22,6 +22,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
+import org.eclipse.persistence.annotations.Customizer;
 import org.eclipse.persistence.annotations.Mutable;
 import org.eclipse.persistence.annotations.ReadTransformer;
 import org.eclipse.persistence.annotations.WriteTransformer;
@@ -36,6 +37,7 @@ import java.util.Calendar;
 
 @Entity
 @Table(name="CMP3_DOOR")
+@Customizer(AdvancedHistoryCustomizer.class)
 public class Door implements Serializable, Cloneable {
     @Id
     private int id;
