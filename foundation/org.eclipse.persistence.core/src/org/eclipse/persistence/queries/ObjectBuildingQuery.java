@@ -63,6 +63,7 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
     public static final short NO_LOCK = 0;
     public static final short LOCK = 1;
     public static final short LOCK_NOWAIT = 2;
+    public static final short LOCK_SHARED = 3;
     // allow pessimistic locking policy to be used
     public static final short DEFAULT_LOCK_MODE = -1;
 

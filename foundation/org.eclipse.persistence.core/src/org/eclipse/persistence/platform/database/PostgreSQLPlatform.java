@@ -253,6 +253,14 @@ public class PostgreSQLPlatform extends DatabasePlatform {
     }
 
     /**
+     * PostgreSQL uses FOR SHARE for shared/read locks.
+     */
+    @Override
+    public String getSelectForShareString() {
+        return " FOR SHARE";
+    }
+
+    /**
      * INTERNAL: Indicates whether the platform supports identity.
      */
     @Override

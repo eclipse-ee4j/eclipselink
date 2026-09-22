@@ -2177,7 +2177,10 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         if (this.lockModeType != null) {
             if (this.lockModeType.equals(NONE)) {
                 setLockMode(ObjectBuildingQuery.NO_LOCK);
+            } else if (this.lockModeType.equals(PESSIMISTIC_READ)) {
+                setLockMode(ObjectBuildingQuery.LOCK_SHARED);
             } else if (this.lockModeType.contains(PESSIMISTIC_)) {
+                // PESSIMISTIC_WRITE and PESSIMISTIC_FORCE_INCREMENT
                 // If no wait timeout was set from a query hint, grab the
                 // default one from the session if one is available.
                 Integer timeout = (this.waitTimeout == null) ? this.session.getPessimisticLockTimeoutDefault() : this.waitTimeout;
@@ -2511,7 +2514,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * @see org.eclipse.persistence.descriptors.PessimisticLockingPolicy
      */
     public void setLockMode(short lockMode) {
-        if ((lockMode == LOCK) || (lockMode == LOCK_NOWAIT)) {
+        if ((lockMode == LOCK) || (lockMode == LOCK_NOWAIT) || (lockMode == LOCK_SHARED)) {
             lockingClause = ForUpdateClause.newInstance(lockMode);
             setShouldRefreshIdentityMapResult(true);
         } else if (lockMode == NO_LOCK) {

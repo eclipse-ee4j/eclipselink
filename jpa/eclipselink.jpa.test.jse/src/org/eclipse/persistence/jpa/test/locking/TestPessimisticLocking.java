@@ -118,9 +118,8 @@ public class TestPessimisticLocking {
             Future<LockingDog> future = executor.submit(blocked);
             cdl.countDown();
             Thread.sleep(3000);
-            // Make sure worker is blocked
-            Assert.assertFalse(future.isDone());
-            // Rolling back of tran should allow worker to complete
+            // Two PESSIMISTIC_READ holders should not block each other (FOR SHARE)
+            Assert.assertTrue(future.isDone());
             em.getTransaction().rollback();
             Assert.assertEquals(locked.getId(), future.get().getId());
 
