@@ -14,7 +14,6 @@
 pipeline {
     agent {
         kubernetes {
-            label 'el-master-agent-pod'
             yaml """
 apiVersion: v1
 kind: Pod
@@ -24,9 +23,6 @@ spec:
   - name: tools
     persistentVolumeClaim:
       claimName: tools-claim-jiro-eclipselink
-  - name: volume-known-hosts
-    configMap:
-      name: known-hosts      
   - name: settings-xml
     secret:
       secretName: m2-secret-dir
@@ -55,8 +51,8 @@ spec:
         memory: "4Gi"
         cpu: "2"
       requests:
-        memory: "4Gi"
-        cpu: "1"
+        memory: "3Gi"
+        cpu: "500m"
   - name: el-build
     resources:
       limits:
@@ -64,13 +60,11 @@ spec:
         cpu: "6"
       requests:
         memory: "12Gi"
-        cpu: "5.5"
+        cpu: "5"
     image: rfelcman/el-build:2.0.3
     volumeMounts:
     - name: tools
-      mountPath: /opt/tools
-    - name: volume-known-hosts
-      mountPath: /home/jenkins/.ssh      
+      mountPath: /opt/tools     
     - name: settings-xml
       mountPath: /home/jenkins/.m2/settings.xml
       subPath: settings.xml
@@ -90,6 +84,9 @@ spec:
     - cat
 """
         }
+    }
+    options {
+        disableConcurrentBuilds(abortPrevious: true)
     }
     environment {
         LANG = 'en_US.UTF-8'
@@ -232,8 +229,8 @@ spec:
             script {
                 //Multiple Jenkins junit plugin calls due java.nio.channels.ClosedChannelException in new/cloud Eclipse.org build infrastructure if it's called once
                 //Retry is there to try (in case of crash) junit test upload again.
-                retryCount = 5
-                junitReportFiles = [
+                def retryCount = 5
+                def junitReportFiles = [
                         'bundles/**/target/surefire-reports/*.xml,bundles/**/target/failsafe-reports/*.xml',
                         'dbws/**/target/surefire-reports/*.xml,dbws/**/target/failsafe-reports/*.xml',
                         'foundation/**/target/surefire-reports/*.xml,foundation/**/target/failsafe-reports/*.xml',
