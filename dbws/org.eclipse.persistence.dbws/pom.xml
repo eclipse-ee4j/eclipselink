@@ -147,6 +147,7 @@
                                 <include>**/KeyMappingsTest*</include>
                                 <include>**/RelationshipsTest*</include>
                                 <include>**/XRDynamicEntityTest*</include>
+                                <include>**/XRServiceFactorySecureXmlTest*</include>
                             </includes>
                         </configuration>
                     </execution>

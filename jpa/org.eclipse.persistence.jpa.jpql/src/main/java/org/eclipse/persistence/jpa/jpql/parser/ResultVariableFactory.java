@@ -31,12 +31,6 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
 public final class ResultVariableFactory extends ExpressionFactory {
 
     /**
-     * Caches the visitor that determines if the parent {@link Expression} is the top-level
-     * <code><b>SELECT</b></code> clause.
-     */
-    private SelectClauseVisitor selectClauseVisitor;
-
-    /**
      * The unique identifier of this {@link ResultVariableFactory}.
      */
     public static final String ID = "result_variable";
@@ -56,18 +50,13 @@ public final class ResultVariableFactory extends ExpressionFactory {
                                                  AbstractExpression expression,
                                                  boolean tolerant) {
 
-        SelectClauseVisitor visitor = selectClauseVisitor();
+        SelectClauseVisitor visitor = new SelectClauseVisitor();
 
-        try {
-            if (expression != null) {
-                parent.accept(visitor);
-                if (!visitor.supported) {
-                    expression = null;
-                }
+        if (expression != null) {
+            parent.accept(visitor);
+            if (!visitor.supported) {
+                expression = null;
             }
-        }
-        finally {
-            visitor.supported = false;
         }
 
         // There was already an expression parsed, we'll assume it's a valid
@@ -84,13 +73,6 @@ public final class ResultVariableFactory extends ExpressionFactory {
         // Use the default factory
         ExpressionFactory factory = getExpressionRegistry().getExpressionFactory(LiteralExpressionFactory.ID);
         return factory.buildExpression(parent, wordParser, word, queryBNF, expression, tolerant);
-    }
-
-    private SelectClauseVisitor selectClauseVisitor() {
-        if (selectClauseVisitor == null) {
-            selectClauseVisitor = new SelectClauseVisitor();
-        }
-        return selectClauseVisitor;
     }
 
     /**
