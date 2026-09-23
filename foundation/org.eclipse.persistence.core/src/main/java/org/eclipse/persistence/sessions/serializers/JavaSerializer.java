@@ -15,11 +15,13 @@
 package org.eclipse.persistence.sessions.serializers;
 
 import org.eclipse.persistence.internal.helper.CustomObjectInputStream;
+import org.eclipse.persistence.internal.security.EclipseLinkSerialFilter;
 import org.eclipse.persistence.sessions.Session;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputFilter;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
@@ -51,10 +53,31 @@ public class JavaSerializer extends AbstractSerializer {
 
     @Override
     public Object deserialize(Object bytes, Session session) {
+        return deserialize(bytes, session, null);
+    }
+
+    /**
+     * Deserialize bytes from a remote command or remote session.
+     * Java serialization is filtered. Other serializers are unchanged.
+     */
+    public static Object deserializeRemote(Serializer serializer, Object bytes, Session session) {
+        if (serializer instanceof JavaSerializer javaSerializer) {
+            return javaSerializer.deserialize(bytes, session, EclipseLinkSerialFilter.create(session));
+        }
+        return serializer.deserialize(bytes, session);
+    }
+
+    /**
+     * @param filter {@code null} keeps the historical unfiltered read used by column converters
+     */
+    public Object deserialize(Object bytes, Session session, ObjectInputFilter filter) {
         ByteArrayInputStream byteIn = new ByteArrayInputStream((byte[])bytes);
         try (ObjectInputStream objectIn = session == null
                 ? new ObjectInputStream(byteIn)
                 : new CustomObjectInputStream(byteIn, session)) {
+            if (filter != null) {
+                objectIn.setObjectInputFilter(filter);
+            }
             return objectIn.readObject();
         } catch (IOException | ClassNotFoundException exception) {
             throw new RuntimeException(exception);
