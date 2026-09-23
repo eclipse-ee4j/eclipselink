@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
  * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2021, 2024 IBM Corporation. All rights reserved.
  *
@@ -1677,6 +1678,14 @@ public abstract class Expression implements Serializable, Cloneable {
                 // We don't know which side of the relationship cares about the other one, so notify both
                 // However for 3107049 value.equal(value) would cause infinite loop if did that.
                 base.setLocalBase(exp);
+                // A constant or parameter argument of CASE, COALESCE or NULLIF is converted like the attribute
+                // on the other side. Only an attribute is passed down, a value would create a cycle (3107049).
+                if (exp.isFunctionExpression() && ((org.eclipse.persistence.internal.expressions.FunctionExpression) exp).returnsArgument()) {
+                    Expression conversionBase = org.eclipse.persistence.internal.expressions.FunctionExpression.conversionBase(base);
+                    if (conversionBase != null) {
+                        exp.setLocalBase(conversionBase);
+                    }
+                }
             }
             return exp;
         }
