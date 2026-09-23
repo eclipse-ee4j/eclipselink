@@ -22,6 +22,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.FetchGroupManager;
@@ -519,36 +520,44 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
         CacheKey cacheKey = session.getIdentityMapAccessorInstance().getCacheKeyForObject(primaryKey, descriptor.getJavaClass(), descriptor, true);
         if (cacheKey != null) {
             if (cacheKey.acquireReadLockNoWait()) {
-                domainObject = cacheKey.getObject();
-                cacheKey.releaseReadLock();
+                try {
+                    domainObject = cacheKey.getObject();
+                } finally {
+                    cacheKey.releaseReadLock();
+                }
             } else {
                 if (!mergeManager.isTransitionedToDeferredLocks()) {
                     session.getIdentityMapAccessorInstance().getWriteLockManager().transitionToDeferredLocks(mergeManager);
                 }
                 cacheKey.acquireDeferredLock();
-                domainObject = cacheKey.getObject();
-                int tries = 0;
-                while (domainObject == null) {
-                    ++tries;
-                    if (tries > MAX_TRIES){
-                        session.getParent().log(SessionLog.SEVERE, SessionLog.CACHE, "entity_not_available_during_merge", new Object[]{descriptor.getJavaClassName(), cacheKey.getKey(), Thread.currentThread().getName(), cacheKey.getActiveThread()});
-                        break;
-                    }
-                    cacheKey.getInstanceLock().lock();
-                    try {
-                        if (cacheKey.isAcquired()) {
+                try {
+                    domainObject = cacheKey.getObject();
+                    int tries = 0;
+                    while (domainObject == null) {
+                        ++tries;
+                        if (tries > MAX_TRIES){
+                            session.log(SessionLog.SEVERE, SessionLog.CACHE, "entity_not_available_during_merge", new Object[]{descriptor.getJavaClassName(), cacheKey.getKey(), Thread.currentThread().getName(), cacheKey.getActiveThread()});
+                            break;
+                        }
+                        cacheKey.getInstanceLock().lock();
+                        try {
+                            if (!cacheKey.isAcquiredForWritingAndOwnedByDifferentThread()) {
+                                domainObject = cacheKey.getObject();
+                                break;
+                            }
                             try {
-                                cacheKey.wait(10);
+                                cacheKey.getInstanceLockCondition().await(10, TimeUnit.MILLISECONDS);
                             } catch (InterruptedException e) {
                                 //ignore and return
                             }
+                            domainObject = cacheKey.getObject();
+                        } finally {
+                            cacheKey.getInstanceLock().unlock();
                         }
-                        domainObject = cacheKey.getObject();
-                    } finally {
-                        cacheKey.getInstanceLock().unlock();
                     }
+                } finally {
+                    cacheKey.releaseDeferredLock();
                 }
-                cacheKey.releaseDeferredLock();
             }
         } else {
             domainObject = mergeManager.registerExistingObjectOfReadOnlyClassInNestedTransaction(getUnitOfWorkClone(), descriptor, session);
