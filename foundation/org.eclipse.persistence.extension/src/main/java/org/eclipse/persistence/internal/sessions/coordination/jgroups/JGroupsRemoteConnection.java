@@ -20,7 +20,6 @@ import org.eclipse.persistence.sessions.coordination.RemoteCommandManager;
 import org.eclipse.persistence.sessions.serializers.JavaSerializer;
 import org.eclipse.persistence.sessions.serializers.Serializer;
 import org.jgroups.BytesMessage;
-import org.jgroups.ObjectMessage;
 import org.jgroups.JChannel;
 import org.jgroups.Message;
 import org.jgroups.Receiver;
@@ -96,12 +95,14 @@ public class JGroupsRemoteConnection extends BroadcastRemoteConnection {
      */
     @Override
     protected Object executeCommandInternal(Object command) throws Exception {
-        Message message = null;
-        if (command instanceof byte[]) {
-            message = new BytesMessage(null, (byte[])command);
-        } else {
-            message = new ObjectMessage(null, command);
+        if (!(command instanceof byte[])) {
+            Serializer serializer = this.rcm.getSerializer();
+            if (serializer == null) {
+                serializer = JavaSerializer.instance;
+            }
+            command = serializer.serialize(command, (AbstractSession) this.rcm.getCommandProcessor());
         }
+        Message message = new BytesMessage(null, (byte[]) command);
 
         Object[] debugInfo = null;
         if(this.rcm.shouldLogDebugMessage()) {
