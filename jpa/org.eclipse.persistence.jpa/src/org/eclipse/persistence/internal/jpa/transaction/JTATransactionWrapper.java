@@ -35,8 +35,7 @@ public class JTATransactionWrapper extends TransactionWrapperImpl implements Tra
      //This is a quick reference for the external Transaction Controller
     protected AbstractTransactionController txnController;
 
-    //flag that allows lazy initialization of the persistence context while still registering
-    // with the transaction for after completion.
+    // flag so we know if we've already registered our Synchronization or not
     private boolean isJoined = false;
 
     public JTATransactionWrapper(EntityManagerImpl entityManager) {
@@ -97,56 +96,32 @@ public class JTATransactionWrapper extends TransactionWrapperImpl implements Tra
     }
 
     public boolean isJoinedToTransaction(UnitOfWorkImpl uow) {
-        if (this.entityManager.hasActivePersistenceContext()) {
-            return uow.getParent().hasExternalTransactionController() && uow.isSynchronized();
-        }
-        //We don't need to check if there is an active trans, as we now register with it when join is called
-        //until we get an active context
         return isJoined;
     }
 
-    public void registerIfRequired(UnitOfWorkImpl uow){
-        //EM already validated that there is a JTA transaction.
-        if (this.entityManager.hasActivePersistenceContext()) {
-            //we have a context initialized, so have it register with the transaction
-            uow.registerWithTransactionIfRequired();
-        } else if (!isJoined) {
-
-//        JPA 3.2.4
-//                In general, a persistence context will be synchronized to the database as described below. However, a
-//                persistence context of type SynchronizationType.UNSYNCHRONIZED or an application-managed
-//                persistence context that has been created outside the scope of the current transaction will only be
-//                synchronized to the database if it has been joined to the current transaction by the application's use of
-//                the EntityManager joinTransaction method.
-//                ..
-//                If there is no transaction active
-//                or if the persistence context has not been joined to the current transaction, the persistence provider must
-//                not flush to the database.
-//          if (syncType == null {
-//              App managed, so we need to start the active persistence Context.  Or do we?
-//          } else if (syncType.equals(SynchronizationType.SYNCHRONIZED)) {
-//              need to ensure we do not init the context until we need too
-//          } else {
-//              this is unsynchronized, so we need to start the active persistence Context.  Or do we?
-//          }
-
+    public void registerIfRequired(UnitOfWorkImpl uow) {
+        if (!isJoined) {
             Object txn = checkForTransaction(true);
-//            duplicating what is done in
-//            TransactionController.registerSynchronizationListener(this, this.parent);
-//            This will need to change if javax.transaction dependencies are to be removed from JPA. See TransactionImpl
             try {
-                ((Transaction)txn).registerSynchronization(new Synchronization() {
-
+                ((Transaction) txn).registerSynchronization(new Synchronization() {
                     public void beforeCompletion() {}
                     public void afterCompletion(int status) {
-                        //let the wrapper know the listener is no longer registered to an active transaction
+                        // let the wrapper know the listener is no longer registered to an active transaction
                         isJoined = false;
+                        
+                        // close any open queries
+                        JTATransactionWrapper.this.entityManager.closeOpenQueries();
                     }
                 });
             } catch (Exception e) {
                 throw new PersistenceException(TransactionException.errorBindingToExternalTransaction(e).getMessage(), e);
             }
             isJoined = true;
+        }
+        
+        if (this.entityManager.hasActivePersistenceContext()) {
+            // we have a context initialized, so have it register with the transaction
+            uow.registerWithTransactionIfRequired();
         }
     }
 
