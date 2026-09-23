@@ -208,7 +208,10 @@ public class JMSTopicRemoteConnection extends BroadcastRemoteConnection implemen
         Object object = null;
         try {
             if (message instanceof ObjectMessage) {
-                object = ((ObjectMessage)message).getObject();
+                // The JMS provider deserializes ObjectMessage before this method runs.
+                Object[] args = {message.getClass().getName(), topic == null ? "" : topic};
+                this.rcm.logWarningWithoutLevelCheck("received_unexpected_message_type", args);
+                return;
             } else if (message instanceof BytesMessage byteMessage) {
                 byte[] bytes = new byte[(int)byteMessage.getBodyLength()];
                 byteMessage.readBytes(bytes);
@@ -216,7 +219,7 @@ public class JMSTopicRemoteConnection extends BroadcastRemoteConnection implemen
                 if (serializer == null) {
                     serializer = JavaSerializer.instance;
                 }
-                object = serializer.deserialize(bytes, (AbstractSession)this.rcm.getCommandProcessor());
+                object = JavaSerializer.deserializeRemote(serializer, bytes, (AbstractSession)this.rcm.getCommandProcessor());
             } else {
                 if (this.rcm.shouldLogWarningMessage() && (topic == null)) {
                     try {

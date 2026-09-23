@@ -17,6 +17,7 @@ package org.eclipse.persistence.internal.sessions.coordination.jgroups;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.coordination.broadcast.BroadcastRemoteConnection;
 import org.eclipse.persistence.sessions.coordination.RemoteCommandManager;
+import org.eclipse.persistence.sessions.serializers.JavaSerializer;
 import org.eclipse.persistence.sessions.serializers.Serializer;
 import org.jgroups.BytesMessage;
 import org.jgroups.ObjectMessage;
@@ -131,11 +132,14 @@ public class JGroupsRemoteConnection extends BroadcastRemoteConnection {
 
         Object object = null;
         try {
-            Serializer serializer = this.rcm.getSerializer();
             if (message instanceof BytesMessage) {
-                object = serializer.deserialize(message.getArray(), (AbstractSession)this.rcm.getCommandProcessor());
+                Serializer serializer = this.rcm.getSerializer();
+                if (serializer == null) {
+                    serializer = JavaSerializer.instance;
+                }
+                object = JavaSerializer.deserializeRemote(serializer, message.getArray(), (AbstractSession)this.rcm.getCommandProcessor());
             } else {
-                object = message.getObject();
+                throw new IllegalArgumentException("JGroups ObjectMessage is not accepted");
             }
         } catch (Exception exception) {
             failDeserializeMessage(null, exception);
