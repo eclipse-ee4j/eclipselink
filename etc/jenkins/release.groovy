@@ -148,17 +148,6 @@ spec:
         }
     }
     post {
-        always {
-            sshagent([SSH_CREDENTIALS_ID]) {
-                container('el-build') {
-                    sh """
-                            cd ${WORKSPACE}/boms/parent/target/central-publishing/
-                            ls -al
-                        """
-                    archiveArtifacts allowEmptyArchive: true, artifacts: 'boms/parent/target/central-publishing/**/*.zip', onlyIfSuccessful: false
-                }
-            }
-        }
         // Send a mail on unsuccessful and fixed builds
         unsuccessful { // means unstable || failure || aborted
             emailext subject: 'Build $BUILD_STATUS $PROJECT_NAME #$BUILD_NUMBER failed!',
