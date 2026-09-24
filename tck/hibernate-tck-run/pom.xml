@@ -57,7 +57,7 @@
             To point at a server you run yourself, override these on the command line and
             name neither profile.
         -->
-        <derby.version>10.16.1.1</derby.version>
+        <derby.version>10.17.1.0</derby.version>
         <derby.port>1527</derby.port>
         <derby.db.name>derbyDB</derby.db.name>
 
