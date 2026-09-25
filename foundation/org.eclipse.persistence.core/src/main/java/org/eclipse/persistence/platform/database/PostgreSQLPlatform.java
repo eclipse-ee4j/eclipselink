@@ -620,6 +620,17 @@ public class PostgreSQLPlatform extends DatabasePlatform {
     }
 
     @Override
+    public int getJDBCTypeForSetNull(DatabaseField field) {
+        if (field != null
+                && field.getSqlType() == DatabaseField.NULL_SQL_TYPE
+                && field.getType() == UUID.class) {
+            // PostgreSQL rejects VARCHAR-typed nulls for native UUID columns.
+            return Types.OTHER;
+        }
+        return super.getJDBCTypeForSetNull(field);
+    }
+
+    @Override
     protected void setNullFromDatabaseField(DatabaseField databaseField, PreparedStatement statement, int index) throws SQLException {
         // Substituted null value for the corresponding DatabaseField.
         // Cannot bind null through set object, so we must compute the type, this is not good.
