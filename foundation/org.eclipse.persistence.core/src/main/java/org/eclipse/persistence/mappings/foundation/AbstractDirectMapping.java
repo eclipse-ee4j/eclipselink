@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -30,6 +30,7 @@ import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
 import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
+import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.Helper;
@@ -69,6 +70,7 @@ import java.security.PrivilegedActionException;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -77,6 +79,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Vector;
 
 /**
  * <b>Purpose</b>: Maps an attribute to the corresponding database field type.
@@ -118,6 +121,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
      * some data-types such as Calendar or byte[] or converter types may be desired to be used as mutable.
      */
     protected Boolean isMutable;
+    private static final Map<String, Integer> columnSqlTypeCache = new HashMap<>();
 
     /**
      * Default constructor.
@@ -820,6 +824,12 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
         if (fieldClassification == null) {
             fieldClassification = getFieldClassification(this.field);
         }
+        // If the mapping is java.util.Date but DB metadata says TIMESTAMP, coerce to Timestamp.
+        // This avoids date-shaped literal rendering on Derby for TIMESTAMP predicates.
+        if ((fieldClassification == ClassConstants.UTILDATE)
+                && shouldUseTimestampFieldClassification(this.field, session)) {
+            fieldClassification = ClassConstants.TIMESTAMP;
+        }
         // PERF: Avoid conversion if not required.
         // EclipseLink bug 240407 - nulls not translated when writing to database
         if ((fieldValue == null) || (fieldClassification != fieldValue.getClass())) {
@@ -832,6 +842,65 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
             }
         }
         return fieldValue;
+    }
+
+    /**
+     * INTERNAL:
+     * Return whether the field should be treated as {@link java.sql.Timestamp}
+     * for value conversion.
+     * If the field SQL type is unknown, column metadata may be consulted and cached
+     * to determine whether the underlying database type is {@link Types#TIMESTAMP}.
+     */
+    private boolean shouldUseTimestampFieldClassification(DatabaseField dbField, AbstractSession session) {
+        if (dbField == null) {
+            return false;
+        }
+        int sqlType = dbField.getSqlType();
+        Class fieldType = dbField.getType();
+        String typeName = dbField.getTypeName();
+        String columnDefinition = dbField.getColumnDefinition();
+        String qualifiedFieldName = dbField.getQualifiedName();
+        String fieldName = dbField.getName();
+        if (sqlType == DatabaseField.NULL_SQL_TYPE) {
+            if ((session != null) && (session.getAccessor() != null)) {
+                String tableName = dbField.hasTableName() ? dbField.getTableName() : null;
+                String columnName = dbField.getName();
+                if ((tableName != null) && (tableName.length() > 0) && (columnName != null) && (columnName.length() > 0)) {
+                    String cacheKey = tableName.toUpperCase() + "." + columnName.toUpperCase();
+                    Integer metadataSqlType = columnSqlTypeCache.get(cacheKey);
+                    if (metadataSqlType == null) {
+                        Vector columnInfo = session.getAccessor().getColumnInfo(null, null, tableName, columnName, session);
+                        if ((columnInfo != null) && !columnInfo.isEmpty()) {
+                            for (int i = 0; i < columnInfo.size(); i++) {
+                                Object rowObject = columnInfo.elementAt(i);
+                                if (!(rowObject instanceof AbstractRecord)) {
+                                    continue;
+                                }
+                                Object dataType = ((AbstractRecord) rowObject).get("DATA_TYPE");
+                                if (dataType instanceof Number) {
+                                    metadataSqlType = Integer.valueOf(((Number) dataType).intValue());
+                                } else if (dataType != null) {
+                                    metadataSqlType = Integer.valueOf(dataType.toString());
+                                }
+                                if (metadataSqlType != null) {
+                                    columnSqlTypeCache.put(cacheKey, metadataSqlType);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    if (metadataSqlType != null) {
+                        sqlType = metadataSqlType.intValue();
+                        dbField.setSqlType(sqlType);
+                    }
+                }
+            }
+        }
+        if (sqlType == Types.TIMESTAMP) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
