@@ -1,6 +1,7 @@
 /*
  * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2020 IBM Corporation. All rights reserved.
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -56,6 +57,7 @@ import org.eclipse.persistence.internal.indirection.NoIndirectionPolicy;
 import org.eclipse.persistence.internal.indirection.WeavedObjectBasicIndirectionPolicy;
 import org.eclipse.persistence.internal.queries.AttributeItem;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
+import org.eclipse.persistence.internal.queries.PendingBatchResult;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
@@ -547,7 +549,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
                 batchedObjects = new Hashtable<>();
                 batchQuery.setBatchObjects(batchedObjects);
             } else {
-                result = batchedObjects.get(sourceKey);
+                result = resolveBatchResult(batchedObjects, sourceKey);
                 if (result == Helper.NULL_VALUE) {
                     return null;
                 // If IN may not have that batch yet, or it may have been null.
@@ -651,13 +653,35 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
             executeBatchQuery(batchQueryToExecute, parentCacheKey, batchedObjects, session, translationRow);
             batchQueryToExecute.setSession(null);
             batchQuery.setSession(null);
+            result = resolveBatchResult(batchedObjects, sourceKey);
         }
-        result = batchedObjects.get(sourceKey);
         if (result == Helper.NULL_VALUE) {
             return null;
         } else {
             return result;
         }
+    }
+
+    /**
+     * INTERNAL:
+     * Return the batch result of the source key, building its objects if that has not been done yet.
+     * Must be called holding the batch query's monitor.
+     */
+    private Object resolveBatchResult(Map<Object, Object> batchedObjects, Object sourceKey) {
+        Object result = batchedObjects.get(sourceKey);
+        if (result instanceof PendingBatchResult) {
+            result = buildPendingBatchResult((PendingBatchResult)result, batchedObjects, sourceKey);
+        }
+        return result;
+    }
+
+    /**
+     * INTERNAL:
+     * Build the objects of the pending batch result of the source key and replace it in the batched objects.
+     * Only mappings whose executeBatchQuery creates pending results must support this.
+     */
+    protected Object buildPendingBatchResult(PendingBatchResult pendingResult, Map<Object, Object> batchedObjects, Object sourceKey) {
+        throw QueryException.batchReadingNotSupported(this, pendingResult.getQuery());
     }
 
     /**
