@@ -35,6 +35,7 @@ import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.jpa.metamodel.AttributeImpl;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.queries.AttributeItem;
+import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.queries.MappedKeyMapContainerPolicy;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.queries.AttributeGroup;
@@ -274,24 +275,40 @@ public class EntityGraphImpl<X> extends AttributeNodeImpl<X> implements EntityGr
         return entityGraph;
     }
 
+    /*
+     * The four addElementSubgraph/addTreatedElementSubgraph overloads describe the element of a
+     * collection:
+     *
+     * "a node to the graph representing a collection element that is a managed type"
+     *
+     * This is the value side, and so they delegate to addSubgraph.
+     *
+     * They used to delegate to addKeySubgraph, which describes the key of a Map instead; that
+     * resolved the target against getDescriptorForMapKey() and recorded it as a key group, and
+     * for any attribute that was not
+     *
+     * a Map at all it failed outright. addKeySubgraph, addMapKeySubgraph and
+     * addTreatedMapKeySubgraph are the map key methods and stay as they are.
+     */
+
     @Override
     public <X1> Subgraph<X1> addElementSubgraph(String attributeName) {
-        return addKeySubgraph(attributeName, null);
+        return addSubgraph(attributeName, null);
     }
 
     @Override
     public <X1> Subgraph<X1> addElementSubgraph(String attributeName, Class<X1> type) {
-        return addKeySubgraph(attributeName, type);
+        return addSubgraph(attributeName, type);
     }
 
     @Override
     public <E> Subgraph<E> addElementSubgraph(PluralAttribute<? super X, ?, E> attribute) {
-        return addKeySubgraph(attribute.getName(), attribute.getBindableJavaType());
+        return addSubgraph(attribute.getName(), attribute.getBindableJavaType());
     }
 
     @Override
     public <E> Subgraph<E> addTreatedElementSubgraph(PluralAttribute<? super X, ?, ? super E> attribute, Class<E> type) {
-        return addKeySubgraph(attribute.getName(), type);
+        return addSubgraph(attribute.getName(), type);
     }
 
     @Override
@@ -328,13 +345,22 @@ public class EntityGraphImpl<X> extends AttributeNodeImpl<X> implements EntityGr
         if (mapping == null) {
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("metamodel_managed_type_attribute_not_present", new Object[] { this.descriptor.getJavaClassName(), attributeName }));
         }
-        if (!mapping.getContainerPolicy().isMappedKeyMapPolicy() && !((MappedKeyMapContainerPolicy) mapping.getContainerPolicy()).isMapKeyAttribute()) {
+        ContainerPolicy containerPolicy = mapping.getContainerPolicy();
+
+        // A key subgraph needs a Map whose key is a managed type. isMapKeyAttribute() is true when
+        // the key is a basic attribute, so a managed key is the negation of it - and the || is what
+        // keeps the cast safe, since it is only reached once the policy is known to be a map policy.
+        // With && the test for "not a map policy" was itself what evaluated the cast, so any other
+        // kind of collection reached it and failed with a ClassCastException instead of this
+        // exception. getDescriptorForMapKey() below would likewise be null for anything else.
+        if (!containerPolicy.isMappedKeyMapPolicy()
+                || ((MappedKeyMapContainerPolicy) containerPolicy).isMapKeyAttribute()) {
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("attribute_is_not_map_with_managed_key", new Object[] { attributeName, descriptor.getJavaClassName() }));
         }
 
         localGroup = new AttributeGroup(attributeName, type, true);
 
-        ClassDescriptor targetDesc = mapping.getContainerPolicy().getDescriptorForMapKey();
+        ClassDescriptor targetDesc = containerPolicy.getDescriptorForMapKey();
         if (type != null && targetDesc.hasInheritance()) {
             targetDesc = targetDesc.getInheritancePolicy().getDescriptor(type);
             if (targetDesc == null) {
