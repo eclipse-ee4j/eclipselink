@@ -32,6 +32,16 @@
 //       - 388564: Generated DDL does not match annotation
 package org.eclipse.persistence.tools.schemaframework;
 
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.ValidationException;
@@ -71,16 +81,6 @@ import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.server.ServerSession;
 
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
 /**
  * DefaultTableGenerator is a utility class used to generate a default table schema for a EclipseLink project object.
  * <p>
@@ -115,8 +115,9 @@ import java.util.Map;
  * @since Oracle TopLink 10.1.3
  */
 public class DefaultTableGenerator {
+
     /** The project object used to generate the default data schema. */
-    Project project = null;
+    Project project;
 
     /** the target database platform. */
     protected DatabasePlatform databasePlatform;
@@ -125,13 +126,13 @@ public class DefaultTableGenerator {
      * Used to track the table definition: keyed by the table name, and valued
      * by the table definition object.
      */
-    protected Map<String, TableDefinition> tableMap = null;
+    protected Map<String, TableDefinition> tableMap;
 
     /**
      * Used to track the field definition: keyed by the database field object, and
      * valued by the field definition.
      */
-    protected Map<DatabaseField, FieldDefinition> fieldMap = null;
+    protected Map<DatabaseField, FieldDefinition> fieldMap;
 
     /** DatabaseField pool (synchronized with above 'fieldMap') */
     protected Map<DatabaseField, DatabaseField> databaseFields;
@@ -371,6 +372,7 @@ public class DefaultTableGenerator {
                     addForeignKeyFieldToSourceTargetTable((OneToManyMapping) mapping);
                     TableDefinition targTblDef = getTableDefFromDBTable(mapping.getReferenceDescriptor().getDefaultTable());
                     addFieldsForMappedKeyMapContainerPolicy(mapping.getContainerPolicy(), targTblDef);
+                    allowNullForMapKeyWrittenAfterInsert(mapping.getContainerPolicy());
                 }
             } else if (mapping.isTransformationMapping()) {
                 resetTransformedFieldType((TransformationMapping) mapping);
@@ -403,6 +405,45 @@ public class DefaultTableGenerator {
             if (foreignKeys != null){
                 addForeignMappingFkConstraint(foreignKeys, false);
             }
+        }
+    }
+
+    /**
+     * Let the key column of a Map mapped by a one to many hold null, whatever the mapping says.
+     *
+     * <p>
+     * Such a key lives in the target's own table. There is nothing writing that table that knows about 
+     * it:
+     * 
+     * The target's row is inserted by the target's descriptor, which has no mapping for the key,
+     * and the key is filled in afterwards by the update
+     * {@link org.eclipse.persistence.mappings.OneToManyMapping#updateTargetRowPostInsertSource}
+     * issues. A column filled in after the insert cannot be NOT NULL. The insert comes first and
+     * would fail. So, {@code @MapKeyColumn(nullable = false)} cannot be honoured here and is
+     * dropped rather than generating a schema the provider itself cannot write to. Other
+     * implementations seem to make the same choice.
+     *
+     * <p>
+     * Only the null constraint is relaxed. A unique constraint is left in place, and remains
+     * satisfiable: the databases that enforce it treat nulls as distinct.
+     *
+     * <p>
+     * The key columns of the other two kinds of map - a relation table and a collection table -
+     * are written by the insert that creates the row, so they keep whatever the mapping asks for.
+     */
+    protected void allowNullForMapKeyWrittenAfterInsert(ContainerPolicy containerPolicy) {
+        if (!containerPolicy.isMappedKeyMapPolicy()) {
+            return;
+        }
+
+        List<DatabaseField> mapKeyFields = containerPolicy.getIdentityFieldsForMapKey();
+
+        if (mapKeyFields == null) {
+            return;
+        }
+
+        for (DatabaseField mapKeyField : mapKeyFields) {
+            getFieldDefFromDBField(mapKeyField).setShouldAllowNull(true);
         }
     }
 
