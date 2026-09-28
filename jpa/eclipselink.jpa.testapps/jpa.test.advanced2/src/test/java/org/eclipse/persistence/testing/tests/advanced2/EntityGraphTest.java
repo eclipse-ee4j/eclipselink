@@ -20,6 +20,7 @@ package org.eclipse.persistence.testing.tests.advanced2;
 import jakarta.persistence.EntityGraph;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceUnitUtil;
+import jakarta.persistence.Subgraph;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 import org.eclipse.persistence.config.QueryHints;
@@ -27,7 +28,10 @@ import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa21.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa21.advanced.LargeProject;
 import org.eclipse.persistence.testing.models.jpa21.advanced.Project;
+import org.eclipse.persistence.testing.models.jpa21.advanced.Race;
 import org.eclipse.persistence.testing.models.jpa21.advanced.Runner;
+import org.eclipse.persistence.testing.models.jpa21.advanced.Shoe;
+import org.eclipse.persistence.testing.models.jpa21.advanced.ShoeTag;
 
 import java.util.HashMap;
 import java.util.List;
@@ -58,6 +62,9 @@ public class EntityGraphTest extends JUnitTestCase {
         suite.addTest(new EntityGraphTest("testEmbeddedFetchGroupRefresh"));
         suite.addTest(new EntityGraphTest("testsubclassSubgraphs"));
         suite.addTest(new EntityGraphTest("testMapKeyFetchGroupRefresh"));
+        suite.addTest(new EntityGraphTest("testElementSubgraphOnList"));
+        suite.addTest(new EntityGraphTest("testElementSubgraphOnMapValue"));
+        suite.addTest(new EntityGraphTest("testKeySubgraphRejectsBasicKey"));
         suite.addTest(new EntityGraphTest("testNestedEmbeddedFetchGroup"));
         suite.addTest(new EntityGraphTest("testLoadGroup"));
 
@@ -176,5 +183,72 @@ public class EntityGraphTest extends JUnitTestCase {
         Runner result = (Runner) em.createQuery("Select r from Runner r join r.shoes s").setHint(QueryHints.JPA_FETCH_GRAPH, runnerGraph).getResultList().get(0);
         PersistenceUnitUtil util = em.getEntityManagerFactory().getPersistenceUnitUtil();
         assertTrue("FetchGroup was not applied", util.isLoaded(result, "shoes"));
+    }
+
+    /**
+     * An element subgraph describes the element of a collection, so it has to work on a collection
+     * that is not a Map at all. races is a ManyToMany List, whose container policy is an
+     * IndirectListContainerPolicy; asking for an element subgraph over it used to fail with a
+     * ClassCastException, because the call was routed through the map key code.
+     */
+    public void testElementSubgraphOnList() {
+        EntityManager em = createEntityManager();
+        EntityGraph<Runner> runnerGraph = em.createEntityGraph(Runner.class);
+
+        Subgraph<Race> racesGraph = runnerGraph.addElementSubgraph("races", Race.class);
+        assertEquals("Element subgraph resolved to the wrong type", Race.class, racesGraph.getClassType());
+
+        racesGraph.addAttributeNode("name");
+        assertTrue("Attribute node was not added to the element subgraph", racesGraph.hasAttributeNode("name"));
+
+        closeEntityManager(em);
+    }
+
+    /**
+     * For a Map the element subgraph describes the value and the key subgraph describes the key, so
+     * the two must resolve to different types. shoes is a Map&lt;ShoeTag, Shoe&gt;. addAttributeNode
+     * validates the name against the type the subgraph resolved to, so asking each subgraph for an
+     * attribute that only the other type has is what pins them apart.
+     */
+    public void testElementSubgraphOnMapValue() {
+        EntityManager em = createEntityManager();
+        EntityGraph<Runner> runnerGraph = em.createEntityGraph(Runner.class);
+
+        Subgraph<Shoe> shoesGraph = runnerGraph.addElementSubgraph("shoes");
+        shoesGraph.addAttributeNode("brand");
+        assertTrue("Element subgraph did not resolve to the map value", shoesGraph.hasAttributeNode("brand"));
+
+        Subgraph<ShoeTag> tagGraph = runnerGraph.addKeySubgraph("shoes");
+        tagGraph.addAttributeNode("tag");
+        assertTrue("Key subgraph did not resolve to the map key", tagGraph.hasAttributeNode("tag"));
+
+        try {
+            runnerGraph.<Shoe>addElementSubgraph("shoes").addAttributeNode("tag");
+            fail("The element subgraph accepted an attribute of the map key, so it resolved to the key type");
+        } catch (IllegalArgumentException expected) {
+            // Shoe has no "tag" attribute; only ShoeTag does
+        }
+
+        closeEntityManager(em);
+    }
+
+    /**
+     * A key subgraph needs a Map whose key is a managed type. personalBests is a
+     * Map&lt;String, String&gt;, so its key is a basic attribute and the request has to be refused -
+     * with IllegalArgumentException, which is what the specification asks for, rather than the
+     * ClassCastException the guard used to produce for anything it did not expect.
+     */
+    public void testKeySubgraphRejectsBasicKey() {
+        EntityManager em = createEntityManager();
+        EntityGraph<Runner> runnerGraph = em.createEntityGraph(Runner.class);
+
+        try {
+            runnerGraph.addKeySubgraph("personalBests");
+            fail("A key subgraph on a Map with a basic key should be rejected");
+        } catch (IllegalArgumentException expected) {
+            // expected
+        }
+
+        closeEntityManager(em);
     }
 }
