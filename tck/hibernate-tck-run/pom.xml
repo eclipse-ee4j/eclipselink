@@ -94,7 +94,7 @@
 
         <!--Dependency versions-->
         <junit.jupiter.version>5.10.2</junit.jupiter.version>
-        <postgresql.jdbc.version>42.7.4</postgresql.jdbc.version>
+        <postgresql.jdbc.version>42.7.12</postgresql.jdbc.version>
         <!--
             Jakarta Persistence 3.2 belongs to Jakarta EE 11, so the Bean Validation
             stack is the EE 11 one: Validation 3.1 with Hibernate Validator 9.0 and
