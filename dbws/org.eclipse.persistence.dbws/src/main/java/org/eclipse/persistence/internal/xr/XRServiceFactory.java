@@ -15,21 +15,17 @@
 
 package org.eclipse.persistence.internal.xr;
 
-import static org.eclipse.persistence.internal.core.helper.CoreClassConstants.APBYTE;
-import static org.eclipse.persistence.internal.oxm.Constants.ANY;
-import static org.eclipse.persistence.internal.oxm.Constants.ANY_QNAME;
-import static org.eclipse.persistence.internal.xr.Util.ALL_QUERYNAME;
-import static org.eclipse.persistence.internal.xr.Util.COLON_CHAR;
-import static org.eclipse.persistence.internal.xr.Util.DASH_STR;
-import static org.eclipse.persistence.internal.xr.Util.DBWS_OR_SESSION_NAME_SUFFIX;
-import static org.eclipse.persistence.internal.xr.Util.DBWS_OX_SESSION_NAME_SUFFIX;
-import static org.eclipse.persistence.internal.xr.Util.DBWS_SESSIONS_XML;
-import static org.eclipse.persistence.internal.xr.Util.META_INF_PATHS;
-import static org.eclipse.persistence.internal.xr.Util.PK_QUERYNAME;
-import static org.eclipse.persistence.internal.xr.Util.SLASH_CHAR;
-import static org.eclipse.persistence.internal.xr.Util.TARGET_NAMESPACE_PREFIX;
-import static org.eclipse.persistence.internal.xr.Util.TYPE_STR;
-import static org.eclipse.persistence.internal.xr.Util.UNDERSCORE_STR;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.PersistenceUnitTransactionType;
+import jakarta.persistence.SharedCacheMode;
+import jakarta.persistence.ValidationMode;
+import jakarta.persistence.spi.ClassTransformer;
+import jakarta.persistence.spi.PersistenceUnitInfo;
+//java eXtension imports
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Unmarshaller;
 
 //javase imports
 import java.io.InputStream;
@@ -43,18 +39,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import jakarta.persistence.FetchType;
-import jakarta.persistence.SharedCacheMode;
-import jakarta.persistence.ValidationMode;
-import jakarta.persistence.spi.ClassTransformer;
-import jakarta.persistence.spi.PersistenceUnitInfo;
-import jakarta.persistence.PersistenceUnitTransactionType;
 import javax.sql.DataSource;
-//java eXtension imports
-import jakarta.xml.bind.JAXBContext;
-import jakarta.xml.bind.JAXBElement;
-import jakarta.xml.bind.JAXBException;
-import jakarta.xml.bind.Unmarshaller;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -64,11 +49,10 @@ import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamSource;
 
+import org.eclipse.persistence.dbws.DBWSException;
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 //EclipseLink imports
 import org.eclipse.persistence.internal.helper.XMLHelper;
-import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.dbws.DBWSException;
-import org.eclipse.persistence.oxm.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.jpa.deployment.PersistenceUnitProcessor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProcessor;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
@@ -88,6 +72,7 @@ import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLLogin;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
+import org.eclipse.persistence.oxm.exceptions.XMLMarshalException;
 import org.eclipse.persistence.oxm.mappings.XMLBinaryDataMapping;
 import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
 import org.eclipse.persistence.queries.DatabaseQuery;
@@ -96,6 +81,22 @@ import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.factories.SessionManager;
 import org.eclipse.persistence.sessions.server.ServerSession;
+
+import static org.eclipse.persistence.internal.core.helper.CoreClassConstants.APBYTE;
+import static org.eclipse.persistence.internal.oxm.Constants.ANY;
+import static org.eclipse.persistence.internal.oxm.Constants.ANY_QNAME;
+import static org.eclipse.persistence.internal.xr.Util.ALL_QUERYNAME;
+import static org.eclipse.persistence.internal.xr.Util.COLON_CHAR;
+import static org.eclipse.persistence.internal.xr.Util.DASH_STR;
+import static org.eclipse.persistence.internal.xr.Util.DBWS_OR_SESSION_NAME_SUFFIX;
+import static org.eclipse.persistence.internal.xr.Util.DBWS_OX_SESSION_NAME_SUFFIX;
+import static org.eclipse.persistence.internal.xr.Util.DBWS_SESSIONS_XML;
+import static org.eclipse.persistence.internal.xr.Util.META_INF_PATHS;
+import static org.eclipse.persistence.internal.xr.Util.PK_QUERYNAME;
+import static org.eclipse.persistence.internal.xr.Util.SLASH_CHAR;
+import static org.eclipse.persistence.internal.xr.Util.TARGET_NAMESPACE_PREFIX;
+import static org.eclipse.persistence.internal.xr.Util.TYPE_STR;
+import static org.eclipse.persistence.internal.xr.Util.UNDERSCORE_STR;
 
 /**
  * <p><b>INTERNAL</b>: helper class that knows how to build a {@link XRServiceAdapter} (a.k.a DBWS). An
@@ -682,51 +683,135 @@ public class XRServiceFactory  {
      *
      */
     public static final class XRPersistenceUnitInfo implements PersistenceUnitInfo {
-        XRDynamicClassLoader xrdecl;
+
+        XRDynamicClassLoader xrDynamicClassLoader;
+
         public XRPersistenceUnitInfo(XRDynamicClassLoader loader) {
-            xrdecl = loader;
+            xrDynamicClassLoader = loader;
         }
+
         @Override
-        public PersistenceUnitTransactionType getTransactionType() { return null; }
+        public PersistenceUnitTransactionType getTransactionType() {
+            return null;
+        }
+
         @Override
-        public FetchType getDefaultToOneFetchType() { return FetchType.DEFAULT; }
+        public FetchType getDefaultToOneFetchType() {
+            return FetchType.DEFAULT;
+        }
+
         @Override
-        public List<String> getAllClassNames() { return new ArrayList<>(); }
+        public List<String> getAllClassNames() {
+            return new ArrayList<>();
+        }
+
         @Override
-        public Properties getProperties() { return new Properties(); }
+        public Properties getProperties() {
+            return new Properties();
+        }
+
         @Override
-        public URL getPersistenceUnitRootUrl() { return null; }
+        public URL getPersistenceUnitRootUrl() {
+            return null;
+        }
+
         @Override
-        public String getPersistenceUnitName() { return null; }
+        public String getPersistenceUnitName() {
+            return null;
+        }
+
         @Override
-        public String getPersistenceProviderClassName() { return null; }
+        public String getPersistenceProviderClassName() {
+            return null;
+        }
+
         @Override
-        public String getScopeAnnotationName() { return null; }
+        public String getScopeAnnotationName() {
+            return null;
+        }
+
         @Override
-        public List<String> getQualifierAnnotationNames() { return null; }
+        public List<String> getQualifierAnnotationNames() {
+            return null;
+        }
+
         @Override
-        public DataSource getNonJtaDataSource() { return null; }
+        public DataSource getNonJtaDataSource() {
+            return null;
+        }
+
         @Override
-        public ClassLoader getNewTempClassLoader() { return xrdecl; }
+        public ClassLoader getNewTempClassLoader() {
+            return xrDynamicClassLoader;
+        }
+
         @Override
-        public List<String> getMappingFileNames() { return new ArrayList<>(); }
+        public List<String> getMappingFileNames() {
+            return new ArrayList<>();
+        }
+
         @Override
-        public List<String> getManagedClassNames() { return new ArrayList<>(); }
+        public List<String> getManagedClassNames() {
+            return new ArrayList<>();
+        }
+
         @Override
-        public DataSource getJtaDataSource() { return null; }
+        public DataSource getJtaDataSource() {
+            return null;
+        }
+
         @Override
-        public List<URL> getJarFileUrls() { return new ArrayList<>(); }
+        public List<URL> getJarFileUrls() {
+            return new ArrayList<>();
+        }
+
         @Override
-        public ClassLoader getClassLoader() { return xrdecl; }
+        public ClassLoader getClassLoader() {
+            return xrDynamicClassLoader;
+        }
+
         @Override
-        public boolean excludeUnlistedClasses() { return false; }
+        public boolean excludeUnlistedClasses() {
+            return false;
+        }
+
         @Override
-        public void addTransformer(ClassTransformer arg0) { }
+        public void addTransformer(ClassTransformer arg0) {
+        }
+
         @Override
-        public SharedCacheMode getSharedCacheMode() { return null; }
+        public SharedCacheMode getSharedCacheMode() {
+            return null;
+        }
+
         @Override
-        public ValidationMode getValidationMode() { return null; }
+        public ValidationMode getValidationMode() {
+            return null;
+        }
+
         @Override
-        public String getPersistenceXMLSchemaVersion() { return null; }
+        public String getPersistenceXMLSchemaVersion() {
+            return null;
+        }
+
+        @Override
+        public List<String> getManagedPackageDescriptors() {
+            return null;
+        }
+
+        @Override
+        public List<String> getManagedModuleDescriptors() {
+            return null;
+        }
+
+        @Override
+        public List<String> getAllPackageDescriptors() {
+            return null;
+        }
+
+        @Override
+        public List<String> getAllModuleDescriptors() {
+            return null;
+        }
     }
 }

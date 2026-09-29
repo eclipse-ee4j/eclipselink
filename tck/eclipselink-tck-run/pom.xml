@@ -61,8 +61,8 @@
 
         <!--Dependency versions-->
         <junit.jupiter.version>5.10.2</junit.jupiter.version>
-        <postgresql.jdbc.version>42.7.4</postgresql.jdbc.version>
-        <hibernate.validator.version>9.1.0.Final</hibernate.validator.version>
+        <postgresql.jdbc.version>42.7.13</postgresql.jdbc.version>
+        <hibernate.validator.version>9.1.4.Final</hibernate.validator.version>
         <jakarta.validation.version>4.0.0-M1</jakarta.validation.version>
         <expressly.version>6.0.0</expressly.version>
 

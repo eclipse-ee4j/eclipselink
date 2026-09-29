@@ -18,6 +18,9 @@ import org.eclipse.persistence.jpa.JpaEntityManagerFactory;
 import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCaseHelper;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Abstract {@link JUnitTestCase} suite.
  * Adds {@link #suiteSetUp()} and {@link #suiteTearDown()} methods executed before and after
@@ -30,10 +33,13 @@ import org.eclipse.persistence.testing.framework.junit.JUnitTestCaseHelper;
  */
 public abstract class AbstractSuite extends JUnitTestCase {
 
-    // Total number of tests in this suite
-    private static int TEST_COUNT = 0;
-    // Test counter (decreasing from TEST_COUNT to 0) to trigger suiteSetUp/suiteTearDown
-    private static int testCounter;
+    // Number of tests in each suite, and how many of them are still to run, both keyed by test class.
+    // One pair of counters was enough while every suite was built immediately before it ran. Surefire
+    // 3.6.0 builds them all up front, which left a single pair of counters describing whichever suite
+    // was built last: suiteTearDown() then dropped the schema and closed the shared factory in the
+    // middle of the run, and everything after that failed on a closed EntityManagerFactory.
+    private static final Map<Class<?>, Integer> SUITE_SIZE = new HashMap<>();
+    private static final Map<Class<?>, Integer> TESTS_TO_RUN = new HashMap<>();
 
     // EntityManagerFactory instance shared by the whole suite
     static JpaEntityManagerFactory emf = null;
@@ -51,10 +57,14 @@ public abstract class AbstractSuite extends JUnitTestCase {
     static TestSuite suite(String name, AbstractSuite... tests) {
         TestSuite suite = new TestSuite();
         suite.setName(name);
+        Map<Class<?>, Integer> sizes = new HashMap<>();
         for (AbstractSuite test : tests) {
             suite.addTest(test);
+            sizes.merge(test.getClass(), 1, Integer::sum);
         }
-        testCounter = TEST_COUNT = suite.testCount();
+        // Assigned rather than accumulated, so that building the same suite twice is harmless.
+        SUITE_SIZE.putAll(sizes);
+        TESTS_TO_RUN.putAll(sizes);
         return suite;
     }
 
@@ -107,10 +117,16 @@ public abstract class AbstractSuite extends JUnitTestCase {
     @Override
     public void setUp() {
         super.setUp();
-        if (testCounter == TEST_COUNT) {
+        Class<?> suiteClass = getClass();
+        // A test that reaches here without having been added through suite(...) - a single method
+        // selected on the command line, say - counts as a suite of one, so it still gets the factory
+        // and the schema it needs.
+        int suiteSize = SUITE_SIZE.computeIfAbsent(suiteClass, testClass -> 1);
+        int testsToRun = TESTS_TO_RUN.computeIfAbsent(suiteClass, testClass -> 1);
+        if (testsToRun == suiteSize) {
             suiteSetUp();
         }
-        testCounter--;
+        TESTS_TO_RUN.put(suiteClass, testsToRun - 1);
     }
 
     /**
@@ -120,7 +136,7 @@ public abstract class AbstractSuite extends JUnitTestCase {
     @Override
     public void tearDown() {
         super.tearDown();
-        if (testCounter == 0) {
+        if (TESTS_TO_RUN.getOrDefault(getClass(), -1) == 0) {
             suiteTearDown();
         }
     }
