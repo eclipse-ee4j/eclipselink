@@ -1064,6 +1064,27 @@ public class SQLServerPlatform extends DatabasePlatform {
 
     @Override
     public void printSQLSelectStatement(DatabaseCall call, ExpressionSQLPrinter printer, SQLSelectStatement statement) {
+        // SQL Server does not support NULLS FIRST / NULLS LAST syntax. Rewrite each such ORDER BY
+        // expression to the equivalent CASE workaround before printing:
+        //   col NULLS FIRST  →  (CASE WHEN col IS NULL THEN 0 ELSE 1 END), col
+        //   col NULLS LAST   →  (CASE WHEN col IS NULL THEN 1 ELSE 0 END), col
+        List<Expression> orderBy = statement.getOrderByExpressions();
+        for (int i = 0; i < orderBy.size(); i++) {
+            Expression expr = orderBy.get(i);
+            if (expr instanceof FunctionExpression funcExpr) {
+                int selector = funcExpr.getOperator().getSelector();
+                if (selector == ExpressionOperator.NullsFirst || selector == ExpressionOperator.NullsLast) {
+                    Expression base = funcExpr.getBaseExpression();
+                    // NULLS FIRST: nulls sort before non-nulls (null → 0, non-null → 1)
+                    // NULLS LAST:  nulls sort after  non-nulls (null → 1, non-null → 0)
+                    String nullValue    = (selector == ExpressionOperator.NullsFirst) ? "0" : "1";
+                    String nonNullValue = (selector == ExpressionOperator.NullsFirst) ? "1" : "0";
+                    String caseSql = "(CASE WHEN ? IS NULL THEN " + nullValue + " ELSE " + nonNullValue + " END), ?";
+                    orderBy.set(i, base.sql(caseSql, Arrays.asList(base)));
+                }
+            }
+        }
+
         ReadQuery query = statement.getQuery();
         if (query == null || !isVersion11OrHigher || !shouldUseRownumFiltering()) {
             super.printSQLSelectStatement(call, printer, statement);
@@ -1080,7 +1101,6 @@ public class SQLServerPlatform extends DatabasePlatform {
         
         // OFFSET + FETCH NEXT requires ORDER BY, so add an ordering if there are none
         // this SQL will satisfy the query parser without actually changing the ordering of the rows
-        List<Expression> orderBy = statement.getOrderByExpressions();
         if (orderBy.isEmpty()) {
             orderBy.add(statement.getBuilder().literal("ROW_NUMBER() OVER (ORDER BY (SELECT null))"));
         }
