@@ -1074,13 +1074,24 @@ public class SQLServerPlatform extends DatabasePlatform {
             if (expr instanceof FunctionExpression funcExpr) {
                 int selector = funcExpr.getOperator().getSelector();
                 if (selector == ExpressionOperator.NullsFirst || selector == ExpressionOperator.NullsLast) {
-                    Expression base = funcExpr.getBaseExpression();
+                    // The base may be wrapped in an ASC/DESC FunctionExpression
+                    // The CASE predicate must use the bare field (no ASC/DESC keyword), while
+                    // the second sort term keeps the original ASC/DESC wrapper.
+                    Expression sortExpr = funcExpr.getBaseExpression();   // may be ASC/DESC or bare field
+                    Expression fieldExpr = sortExpr;                       // field for the CASE predicate
+                    if (sortExpr instanceof FunctionExpression sortFuncExpr) {
+                        int sortSelector = sortFuncExpr.getOperator().getSelector();
+                        if (sortSelector == ExpressionOperator.Ascending || sortSelector == ExpressionOperator.Descending) {
+                            fieldExpr = sortFuncExpr.getBaseExpression();  // unwrap to bare field
+                        }
+                    }
                     // NULLS FIRST: nulls sort before non-nulls (null → 0, non-null → 1)
                     // NULLS LAST:  nulls sort after  non-nulls (null → 1, non-null → 0)
                     String nullValue    = (selector == ExpressionOperator.NullsFirst) ? "0" : "1";
                     String nonNullValue = (selector == ExpressionOperator.NullsFirst) ? "1" : "0";
+                    // Use bare fieldExpr in the CASE predicate; keep sortExpr (with ASC/DESC) as the second term
                     String caseSql = "(CASE WHEN ? IS NULL THEN " + nullValue + " ELSE " + nonNullValue + " END), ?";
-                    orderBy.set(i, base.sql(caseSql, Arrays.asList(base)));
+                    orderBy.set(i, fieldExpr.sql(caseSql, Arrays.asList(sortExpr)));
                 }
             }
         }
