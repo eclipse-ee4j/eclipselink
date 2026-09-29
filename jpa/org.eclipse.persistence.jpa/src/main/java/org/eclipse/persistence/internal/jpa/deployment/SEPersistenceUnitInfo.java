@@ -497,4 +497,28 @@ public class SEPersistenceUnitInfo implements jakarta.persistence.spi.Persistenc
         // TODO Auto-generated method stub
         return null;
     }
+
+    @Override
+    public List<String> getManagedPackageDescriptors() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public List<String> getManagedModuleDescriptors() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public List<String> getAllPackageDescriptors() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public List<String> getAllModuleDescriptors() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }
