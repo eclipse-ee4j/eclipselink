@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
  * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019, 2024 IBM Corporation. All rights reserved.
  *
@@ -203,6 +204,18 @@ public class FunctionExpression extends BaseExpression {
         for (Object argument : arguments) {
             Expression arg = Expression.from(argument, localBase);
             addChild(arg);
+        }
+        // NULLIF compares its arguments, a constant or parameter is converted like the attribute it is compared with
+        if (anOperator.getSelector() == ExpressionOperator.NullIf && this.children.size() == 2) {
+            Expression first = this.children.get(0);
+            Expression second = this.children.get(1);
+            Expression firstBase = conversionBase(first);
+            Expression secondBase = conversionBase(second);
+            if (firstBase != null && second.isValueExpression()) {
+                second.setLocalBase(firstBase);
+            } else if (secondBase != null && first.isValueExpression()) {
+                first.setLocalBase(secondBase);
+            }
         }
         return this;
     }
@@ -424,6 +437,8 @@ public class FunctionExpression extends BaseExpression {
             prepareObjectAttributeCount(normalizer, null, null, null);
         }
 
+        convertValueResultArguments();
+
         if (!isObjectComparison()) {
             for (int index = 0; index < this.children.size(); index++) {
                 this.children.set(index, this.children.get(index).normalize(normalizer));
@@ -626,7 +641,122 @@ public class FunctionExpression extends BaseExpression {
     // Most types will ignore this, since they don't need it.
     @Override
     public void setLocalBase(Expression exp) {
-        getBaseExpression().setLocalBase(exp);
+        Expression conversionBase = returnsArgument() ? conversionBase(exp) : null;
+        if (conversionBase == null) {
+            getBaseExpression().setLocalBase(exp);
+            return;
+        }
+        for (int index = 0; index < this.children.size(); index++) {
+            if (isResultArgument(index)) {
+                this.children.get(index).setLocalBase(conversionBase);
+            }
+        }
+    }
+
+    /**
+     * INTERNAL:
+     * Return the attribute that converts a constant or parameter compared with or assigned to the given
+     * expression: the expression itself if it is an attribute, the first attribute result argument if it is
+     * a CASE, COALESCE or NULLIF function, otherwise null.
+     * Only an attribute is ever used as a local base, so the local bases cannot form a cycle.
+     */
+    public static Expression conversionBase(Expression expression) {
+        if (expression == null) {
+            return null;
+        }
+        if (expression.isQueryKeyExpression() || expression.isFieldExpression()) {
+            return expression;
+        }
+        if (expression.isFunctionExpression() && ((FunctionExpression) expression).returnsArgument()) {
+            FunctionExpression function = (FunctionExpression) expression;
+            for (int index = 0; index < function.children.size(); index++) {
+                if (function.isResultArgument(index)) {
+                    Expression base = conversionBase(function.children.get(index));
+                    if (base != null) {
+                        return base;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * INTERNAL:
+     * Convert a constant or parameter result argument that is not converted through an attribute, like
+     * the attribute result argument of the same function, e.g. the constant in COALESCE(e.status, Status.DONE)
+     * or the parameter in CASE WHEN ... THEN e.status ELSE :status END.
+     * Done when normalizing, as CASE and COALESCE arguments are added one at a time.
+     */
+    protected void convertValueResultArguments() {
+        if (!returnsArgument()) {
+            return;
+        }
+        Expression conversionBase = conversionBase(this);
+        if (conversionBase == null) {
+            return;
+        }
+        for (int index = 0; index < this.children.size(); index++) {
+            Expression child = this.children.get(index);
+            if (isResultArgument(index) && child.isValueExpression() && (conversionBase(localBaseOf(child)) == null)) {
+                child.setLocalBase(conversionBase);
+            }
+        }
+    }
+
+    private static Expression localBaseOf(Expression value) {
+        if (value instanceof ConstantExpression constant) {
+            return constant.getLocalBase();
+        }
+        if (value instanceof ParameterExpression parameter) {
+            return parameter.getLocalBase();
+        }
+        return null;
+    }
+
+    /**
+     * INTERNAL:
+     * Whether the value of this function is one of its arguments (CASE, COALESCE, NULLIF), so a
+     * constant or parameter argument must be converted like the expression the function is
+     * compared with or assigned to.
+     */
+    public boolean returnsArgument() {
+        if (this.operator == null) {
+            return false;
+        }
+        return switch (this.operator.getSelector()) {
+            case ExpressionOperator.Case, ExpressionOperator.CaseCondition,
+                 ExpressionOperator.Coalesce, ExpressionOperator.NullIf -> true;
+            default -> false;
+        };
+    }
+
+    private boolean isResultArgument(int index) {
+        int last = this.children.size() - 1;
+        return switch (this.operator.getSelector()) {
+            // CASE operand WHEN value THEN result ... ELSE result
+            case ExpressionOperator.Case -> index > 0 && (index == last || index % 2 == 0);
+            // CASE WHEN condition THEN result ... ELSE result
+            case ExpressionOperator.CaseCondition -> index == last || index % 2 == 1;
+            case ExpressionOperator.Coalesce -> true;
+            // NULLIF(result, compared)
+            case ExpressionOperator.NullIf -> index <= 1;
+            default -> false;
+        };
+    }
+
+    /**
+     * INTERNAL:
+     * Convert through the first result argument that is an attribute, e.g. the constant in
+     * COALESCE(e.status, :p) = Status.DONE.
+     */
+    @Override
+    public Object getFieldValue(Object value, AbstractSession session) {
+        Expression conversionBase = returnsArgument() ? conversionBase(this) : null;
+        if (conversionBase != null) {
+            return conversionBase.getFieldValue(value, session);
+        }
+        return super.getFieldValue(value, session);
     }
 
     public void setOperator(ExpressionOperator theOperator) {
