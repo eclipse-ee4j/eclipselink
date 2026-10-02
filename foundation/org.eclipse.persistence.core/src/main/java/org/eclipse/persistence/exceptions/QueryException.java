@@ -33,6 +33,7 @@ import org.eclipse.persistence.internal.helper.DatabaseType;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.querykeys.ManyToManyQueryKey;
 import org.eclipse.persistence.queries.Call;
@@ -561,11 +562,10 @@ public class QueryException extends ValidationException {
      */
     @Override
     public String getMessage() {
-        if (getQuery() == null) {
-            return super.getMessage();
-        } else {
+        if (getSession() != null && getSession().shouldLog(SessionLog.FINE, SessionLog.SQL) && getQuery() != null) {
             return super.getMessage() + cr() + getIndentationString() + ExceptionMessageGenerator.getHeader("QueryHeader") + getQuery().toString();
         }
+        return super.getMessage();
     }
 
     /**
