@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
  * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -766,10 +767,10 @@ public class XmlExtendedAdvancedTest extends XmlAdvancedTest {
             }
         }
 
-        // clean up
+        // clean up (found again: on the server the persistence context ends with each transaction)
         beginTransaction(em);
         try {
-            em.remove(employee);
+            em.remove(em.find(Employee.class, id));
             commitTransaction(em);
         } finally {
             if (isTransactionActive(em)){
@@ -801,7 +802,8 @@ public class XmlExtendedAdvancedTest extends XmlAdvancedTest {
         assertTrue("Did not correctly persist a mapping using a class-instance converter", (add.getType() instanceof Bungalow));
 
         beginTransaction(em);
-        em.remove(add);
+        // found again: on the server the persistence context ends with each transaction
+        em.remove(em.find(Address.class, assignedSequenceNumber));
         commitTransaction(em);
     }
 
@@ -811,9 +813,9 @@ public class XmlExtendedAdvancedTest extends XmlAdvancedTest {
      */
     public void testProperty() {
         EntityManager em = createEntityManager();
-        ClassDescriptor descriptor = ((EntityManagerImpl) em).getServerSession().getDescriptorForAlias("XMLEmployee");
-        ClassDescriptor aggregateDescriptor = ((EntityManagerImpl) em).getServerSession().getDescriptor(EmploymentPeriod.class);
-        em.close();
+        ClassDescriptor descriptor = em.unwrap(EntityManagerImpl.class).getServerSession().getDescriptorForAlias("XMLEmployee");
+        ClassDescriptor aggregateDescriptor = em.unwrap(EntityManagerImpl.class).getServerSession().getDescriptor(EmploymentPeriod.class);
+        closeEntityManager(em);
 
         StringBuilder errorMsg = new StringBuilder();
 
@@ -1084,7 +1086,9 @@ public class XmlExtendedAdvancedTest extends XmlAdvancedTest {
             // Do an update
             beginTransaction(em);
 
-            em.merge(refreshedShovel);
+            // continue with what merge returns: on the server refreshedShovel is detached, and the managed copy
+            // is the one that gets the new version on commit
+            refreshedShovel = em.merge(refreshedShovel);
             refreshedShovel.setMy("cost", 7.99);
 
             commitTransaction(em);
@@ -1097,8 +1101,7 @@ public class XmlExtendedAdvancedTest extends XmlAdvancedTest {
 
             // Now delete it
             beginTransaction(em);
-            em.merge(refreshedUpdatedShovel);
-            em.remove(refreshedUpdatedShovel);
+            em.remove(em.merge(refreshedUpdatedShovel));
             commitTransaction(em);
 
             // Check what's left

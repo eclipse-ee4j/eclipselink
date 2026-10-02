@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
  * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -311,15 +312,27 @@ public class JPAAdvPropertiesTest extends JUnitTestCase {
             Integer customerId = customer.getCustomerId();
             commitTransaction(em);
 
-            customer = em.find(org.eclipse.persistence.testing.models.jpa.jpaadvancedproperties.Customer.class, customerId);
-            //Purge it
+            //Purge it - found within the transaction, as on the server it would otherwise be detached
             beginTransaction(em);
+            customer = em.find(org.eclipse.persistence.testing.models.jpa.jpaadvancedproperties.Customer.class, customerId);
+            assertNotNull(customer);
             em.remove(customer);
             commitTransaction(em);
 
-            assertNotNull(customer);
-            assertTrue("CustomizedEncryptor.encryptPassword() method wasn't called.", CustomizedEncryptor.encryptPasswordCounter > 0);
-            assertTrue("CustomizedEncryptor.decryptPassword() method wasn't called.", CustomizedEncryptor.decryptPasswordCounter > 0);
+            if (isOnServer()) {
+                // The unit uses a container data source there, so no password is ever passed for the encryptor to
+                // work on. Setting one on a copy of the login still shows the configured encryptor is the one used.
+                em.unwrap(ServerSession.class).getDatasourceLogin().clone().setPassword("password");
+                assertTrue("CustomizedEncryptor.encryptPassword() method wasn't called.", CustomizedEncryptor.encryptPasswordCounter > 0);
+            } else {
+                assertTrue("CustomizedEncryptor.encryptPassword() method wasn't called.", CustomizedEncryptor.encryptPasswordCounter > 0);
+                assertTrue("CustomizedEncryptor.decryptPassword() method wasn't called.", CustomizedEncryptor.decryptPasswordCounter > 0);
+            }
+        } catch (RuntimeException e) {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+            throw e;
         } finally {
             closeEntityManager(em);
         }

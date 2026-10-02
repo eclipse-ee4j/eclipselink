@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
  * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
@@ -90,11 +91,13 @@ import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.sessions.ExternalTransactionController;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.UnitOfWork.CommitOrderType;
 import org.eclipse.persistence.sessions.broker.SessionBroker;
 import org.eclipse.persistence.sessions.server.Server;
 import org.eclipse.persistence.sessions.server.ServerSession;
+import org.eclipse.persistence.transaction.AbstractTransactionController;
 
 import static java.util.Collections.emptyMap;
 import static org.eclipse.persistence.internal.jpa.OptionUtils.parseCreateOptions;
@@ -903,8 +906,10 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
         try (EntityManager em = createEntityManager()) {
             switch (getTransactionType()) {
                 case JTA:
-                    em.joinTransaction();
-                    work.accept(em);
+                    applyInJtaTransaction(em, entityManager -> {
+                        work.accept(entityManager);
+                        return null;
+                    });
                     return;
                 case RESOURCE_LOCAL:
                     EntityTransaction et = em.getTransaction();
@@ -932,8 +937,7 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
         try (EntityManager em = createEntityManager()) {
             switch (getTransactionType()) {
                 case JTA:
-                    em.joinTransaction();
-                    return work.apply(em);
+                    return applyInJtaTransaction(em, work);
                 case RESOURCE_LOCAL:
                     EntityTransaction et = em.getTransaction();
                     et.begin();
@@ -953,6 +957,43 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
                             "Unknown transaction type " + setupImpl.getPersistenceUnitInfo().getTransactionType().name());
             }
         }
+    }
+
+    /**
+     * Applies the work of {@link #runInTransaction} or {@link #callInTransaction} for a JTA persistence unit:
+     * within the JTA transaction associated with the caller, which is marked for rollback when the work throws,
+     * or else within a new one, committed when the work completes and rolled back when it throws.
+     */
+    private <R> R applyInJtaTransaction(EntityManager em, Function<EntityManager, R> work) {
+        AbstractSession session = getAbstractSession();
+        ExternalTransactionController controller = session.getExternalTransactionController();
+        if (!(controller instanceof AbstractTransactionController transactionController)) {
+            // No way to find out about, let alone start, a JTA transaction: joining fails if there is none
+            em.joinTransaction();
+            return work.apply(em);
+        }
+
+        if (transactionController.getTransaction() != null) {
+            em.joinTransaction();
+            try {
+                return work.apply(em);
+            } catch (RuntimeException | Error e) {
+                controller.markTransactionForRollback();
+                throw e;
+            }
+        }
+
+        controller.beginTransaction(session);
+        R result;
+        try {
+            em.joinTransaction();
+            result = work.apply(em);
+        } catch (RuntimeException | Error e) {
+            controller.rollbackTransaction(session);
+            throw e;
+        }
+        controller.commitTransaction(session);
+        return result;
     }
 
     @Override

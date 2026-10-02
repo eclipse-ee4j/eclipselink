@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
  * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2020 IBM Corporation. All rights reserved.
  *
@@ -420,7 +421,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
         super.convertClassNamesToClasses(classLoader);
 
         // DirectCollection mappings don't require a reference class.
-        if (getReferenceClass() == null && getReferenceClassName() != null) {
+        if (getReferenceClassName() != null && Helper.needsClassConversion(getReferenceClass(), classLoader)) {
             Class<?> referenceClass = null;
             try{
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){

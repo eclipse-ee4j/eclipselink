@@ -326,6 +326,10 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
     protected PersistenceUnitInfo persistenceUnitInfo = null;
     // count a number of open factories that use this object.
     protected int factoryCount = 0;
+    // true if PersistenceProvider.getClassTransformer has predeployed this object ahead of the factory the
+    // container creates for the same persistence unit later, and that factory has not taken it over yet.
+    // That predeploy already counted the factory, see takeOverClassTransformerPredeploy.
+    private boolean predeployedForClassTransformer = false;
     protected AbstractSession session = null;
     // true if predeploy called by createContainerEntityManagerFactory; false - createEntityManagerFactory
     protected boolean isInContainerMode = false;
@@ -3106,6 +3110,27 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
 
     public boolean isUndeployed() {
         return state == STATE_UNDEPLOYED;
+    }
+
+    /**
+     * Records that {@link #predeploy} was called by
+     * {@link org.eclipse.persistence.jpa.PersistenceProvider#getClassTransformer}, on behalf of a factory
+     * the container has yet to create.
+     */
+    public synchronized void setPredeployedForClassTransformer() {
+        this.predeployedForClassTransformer = true;
+    }
+
+    /**
+     * Called by the factory the container creates after
+     * {@link org.eclipse.persistence.jpa.PersistenceProvider#getClassTransformer}: returns {@code true}
+     * only once, when that earlier predeploy was made for this factory, which then must not predeploy
+     * (and so count itself) again.
+     */
+    public synchronized boolean takeOverClassTransformerPredeploy() {
+        boolean predeployed = this.predeployedForClassTransformer;
+        this.predeployedForClassTransformer = false;
+        return predeployed;
     }
 
     public boolean isPredeployFailed() {

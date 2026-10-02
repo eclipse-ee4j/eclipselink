@@ -372,6 +372,19 @@ public class PersistenceProvider implements jakarta.persistence.spi.PersistenceP
                 || EntityManagerFactoryProvider.class.getName().equals(providerClassName);
     }
 
+    // The integration-level properties as createContainerEntityManagerFactory and getClassTransformer
+    // pass them to predeploy.
+    private static Map containerProperties(Map<?, ?> properties) {
+        Map nonNullProperties = (properties == null) ? new HashMap<>() : properties;
+
+        String forceTargetServer = EntityManagerFactoryProvider.getConfigPropertyAsString(SystemProperties.ENFORCE_TARGET_SERVER, null);
+        if ("true".equalsIgnoreCase(forceTargetServer)) {
+            nonNullProperties.remove(PersistenceUnitProperties.TARGET_SERVER);
+        }
+
+        return nonNullProperties;
+    }
+
     /**
      * Called by the container when an EntityManagerFactory
      * is to be created.
@@ -391,12 +404,7 @@ public class PersistenceProvider implements jakarta.persistence.spi.PersistenceP
         // Record that we are inside a JEE container to allow weaving for non managed persistence units.
         JavaSECMPInitializer.setIsInContainer(true);
 
-        Map nonNullProperties = (properties == null) ? new HashMap<>() : properties;
-
-        String forceTargetServer = EntityManagerFactoryProvider.getConfigPropertyAsString(SystemProperties.ENFORCE_TARGET_SERVER, null);
-        if ("true".equalsIgnoreCase(forceTargetServer)) {
-            nonNullProperties.remove(PersistenceUnitProperties.TARGET_SERVER);
-        }
+        Map nonNullProperties = containerProperties(properties);
 
         EntityManagerSetupImpl emSetupImpl = null;
         if (EntityManagerSetupImpl.mustBeCompositeMember(info)) {
@@ -434,6 +442,10 @@ public class PersistenceProvider implements jakarta.persistence.spi.PersistenceP
                 synchronized(emSetupImpl) {
                     if(emSetupImpl.isUndeployed()) {
                         undeployed = true;
+                    } else if (emSetupImpl.takeOverClassTransformerPredeploy()) {
+                        // getClassTransformer predeployed emSetupImpl for this very factory, which is
+                        // counted already, and its transformer went to the container from there: there is
+                        // neither anything to count nor a transformer to add.
                     } else {
                         // emSetupImpl has been already predeployed, predeploy will just increment factoryCount.
                         transformer = emSetupImpl.predeploy(emSetupImpl.getPersistenceUnitInfo(), nonNullProperties);
@@ -615,9 +627,62 @@ public class PersistenceProvider implements jakarta.persistence.spi.PersistenceP
         return false;
     }
 
+    /**
+     * The weaving transformer, for a container that calls this method, new in Jakarta Persistence 4.0, rather
+     * than taking the transformer {@link #createContainerEntityManagerFactory} hands to the deprecated
+     * {@link PersistenceUnitInfo#addTransformer} - which has no effect once this method has been called.
+     * <p>
+     * The transformer only exists after {@link EntityManagerSetupImpl#predeploy}, so this method predeploys,
+     * on behalf of the factory the container is expected to create for the same persistence unit next, and
+     * that factory takes this predeploy over instead of predeploying (and counting itself) again.
+     * <p>
+     * Not called by anything yet: GlassFish, the container this was written for, still uses
+     * {@code addTransformer}. Before it is: a container that calls this method but never creates the
+     * factory leaves the persistence unit predeployed, and nothing undeploys it.
+     */
     @Override
     public ClassTransformer getClassTransformer(PersistenceUnitInfo info, Map<?, ?> properties) {
-        // TODO Auto-generated method stub
+        JavaSECMPInitializer.setIsInContainer(true);
+
+        if (EntityManagerSetupImpl.mustBeCompositeMember(info)) {
+            // woven by the transformer of the composite persistence unit that lists this member
+            return NO_TRANSFORMATION;
+        }
+
+        Map nonNullProperties = containerProperties(properties);
+        String uniqueName = PersistenceUnitProcessor.buildPersistenceUnitName(info.getPersistenceUnitRootUrl(),
+                                                                              info.getPersistenceUnitName(),
+                                                                              null);
+        String sessionName = EntityManagerSetupImpl.getOrBuildSessionName(nonNullProperties, info, uniqueName);
+        synchronized (EntityManagerFactoryProvider.emSetupImpls) {
+            if (EntityManagerFactoryProvider.getEntityManagerSetupImpl(sessionName) == null) {
+                EntityManagerSetupImpl emSetupImpl = new EntityManagerSetupImpl(uniqueName, sessionName);
+                emSetupImpl.setIsInContainerMode(true);
+                // if predeploy fails then emSetupImpl shouldn't be added to FactoryProvider
+                ClassTransformer transformer = emSetupImpl.predeploy(info, nonNullProperties);
+                emSetupImpl.setPredeployedForClassTransformer();
+                EntityManagerFactoryProvider.addEntityManagerSetupImpl(sessionName, emSetupImpl);
+
+                return (transformer != null) ? transformer : NO_TRANSFORMATION;
+            }
+        }
+
+        // Predeployed already, by an earlier call or by a factory, whose transformer went to the container
+        // then. Only the first predeploy creates one.
+        return NO_TRANSFORMATION;
+    }
+
+    // What getClassTransformer returns when there is nothing to weave, as the specification does not allow null
+    private static final ClassTransformer NO_TRANSFORMATION =
+        (loader, className, classBeingRedefined, protectionDomain, classfileBuffer) -> null;
+
+    /**
+     * EclipseLink does not enhance client classes, the classes that merely use the entities of a
+     * persistence unit, so there is no such transformer: the specification allows {@code null} for
+     * exactly this case.
+     */
+    @Override
+    public ClassTransformer getClientClassTransformer(PersistenceUnitInfo info, Map<?, ?> properties) {
         return null;
     }
 }

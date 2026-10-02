@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
  * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  * Copyright (c) 2020 Payara Services Ltd. All rights reserved.
@@ -1468,7 +1469,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
     public void convertClassNamesToClasses(ClassLoader classLoader) {
         //Class<?> redirectorClass = null;
 
-        if (getJavaClass() == null && getJavaClassName() != null) {
+        if (getJavaClassName() != null && Helper.needsClassConversion(getJavaClass(), classLoader)) {
             final Class<?> descriptorClass = PrivilegedAccessHelper.callDoPrivilegedWithException(
                     () -> org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(getJavaClassName(), true, classLoader),
                     (ex) -> ValidationException.classNotFoundWhileConvertingClassNames(getJavaClassName(), ex)
@@ -1476,7 +1477,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
             setJavaClass(descriptorClass);
         }
 
-        if (getAmendmentClass() == null && getAmendmentClassName() != null) {
+        if (getAmendmentClassName() != null && Helper.needsClassConversion(getAmendmentClass(), classLoader)) {
             final Class<?> amendmentClass = PrivilegedAccessHelper.callDoPrivilegedWithException(
                     () -> org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(getAmendmentClassName(), true, classLoader),
                     (ex) -> ValidationException.classNotFoundWhileConvertingClassNames(getAmendmentClassName(), ex)

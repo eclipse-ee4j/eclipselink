@@ -28,6 +28,14 @@
 
     <name>Test - beanvalidation.dynamic</name>
 
+    <properties>
+        <!-- Java SE only. DynamicEmployee only exists once EclipseLink generates it at runtime, but
+             META-INF/validation.xml maps constraints onto it, and a container bootstraps the Jakarta
+             Validation ValidatorFactory from that file when it deploys the application - before the class
+             exists - so the deployment fails (HV000065: Unable to load class). Skips the deployment too. -->
+        <server.test.skip>true</server.test.skip>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>jakarta.validation</groupId>

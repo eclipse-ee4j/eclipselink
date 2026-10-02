@@ -1,5 +1,6 @@
 <!--
 
+    Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
     Copyright (c) 2019, 2022 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
@@ -20,10 +21,10 @@
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
     </persistence-unit>
 
-    <persistence-unit name="invalid-named-query">
+    <persistence-unit name="embeddable-record">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-        <mapping-file>META-INF/orm-invalid-named-query.xml</mapping-file>
-        <class>org.eclipse.persistence.testing.models.jpa.advanced.embeddable.Visitor</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.embeddable.RecordEntity</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.embeddable.Segment</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
     </persistence-unit>
 
@@ -37,5 +38,7 @@
         </properties>
     </persistence-unit>
 
-    <!-- invalid-named-query-validation-only won't deploy -->
+    <!-- invalid-named-query and invalid-named-query-validation-only won't deploy: the server deploys every
+         persistence unit of the application when it deploys the application, and these contain an invalid
+         named query, so the application as a whole would fail to deploy -->
 </persistence>

@@ -13,8 +13,17 @@
 
 -->
 
+<!--
+    Every path here is a Maven dependency property set by dependency:properties, so each artifact
+    named below has to be a (possibly transitive) dependency of this module - an unresolved
+    groupId:artifactId:jar property would end up in the server's module.xml as a literal and the
+    module would fail to load. ASM comes from org.ow2.asm since 6.0; the repackaged
+    org.eclipse.persistence.antlr is gone, and WildFly's own module declares org.antlr anyway.
+-->
 <resources>
-<resource-root path="${org.eclipse.persistence:org.eclipse.persistence.antlr:jar}"/>
+<resource-root path="${org.ow2.asm:asm:jar}"/>
+<resource-root path="${org.ow2.asm:asm-commons:jar}"/>
+<resource-root path="${org.ow2.asm:asm-tree:jar}"/>
 <resource-root path="${org.eclipse.persistence:org.eclipse.persistence.jpa.jpql:jar}"/>
 <resource-root path="${org.eclipse.persistence:org.eclipse.persistence.core:jar}"/>
 <resource-root path="${org.eclipse.persistence:org.eclipse.persistence.jpa:jar}"/>

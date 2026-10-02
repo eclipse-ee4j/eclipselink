@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
  * Copyright (c) 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -76,7 +77,8 @@ public class FractionalSecondsPrecisionTest extends JUnitTestCase {
             return;
         }
 
-        try (EntityManager em = createEntityManager()) {
+        EntityManager em = createEntityManager();
+        try {
             beginTransaction(em);
             try {
                 em.persist(DATE_TIME_ENTITIES[1]);
@@ -87,17 +89,22 @@ public class FractionalSecondsPrecisionTest extends JUnitTestCase {
                 }
                 throw e;
             }
+        } finally {
+            closeEntityManager(em);
         }
 
         getEntityManagerFactory().getCache().evictAll();
 
-        try (EntityManager em = createEntityManager()) {
+        em = createEntityManager();
+        try {
             DateTimeEntity dateTimeEntity =
                 em.createQuery("SELECT e FROM DateTimeEntity e WHERE e.id = :id", DateTimeEntity.class)
                   .setParameter("id", 1L)
                   .getSingleResult();
 
             assertEquals(12345_0000, dateTimeEntity.getLocalDateTime().getNano());
+        } finally {
+            closeEntityManager(em);
         }
 
     }
@@ -111,7 +118,8 @@ public class FractionalSecondsPrecisionTest extends JUnitTestCase {
             return;
         }
 
-        try (EntityManager em = createEntityManager()) {
+        EntityManager em = createEntityManager();
+        try {
             beginTransaction(em);
             try {
                 em.persist(DATE_TIME_ENTITIES[2]);
@@ -122,23 +130,29 @@ public class FractionalSecondsPrecisionTest extends JUnitTestCase {
                 }
                 throw e;
             }
+        } finally {
+            closeEntityManager(em);
         }
 
         getEntityManagerFactory().getCache().evictAll();
 
-        try (EntityManager em = createEntityManager()) {
+        em = createEntityManager();
+        try {
             DateTimeEntity dateTimeEntity =
                 em.createQuery("SELECT e FROM DateTimeEntity e WHERE e.id = :id", DateTimeEntity.class)
                   .setParameter("id", 2L)
                   .getSingleResult();
 
             assertEquals(1234_00000, dateTimeEntity.getLocalTime().getNano());
+        } finally {
+            closeEntityManager(em);
         }
     }
 
     // Cleanup DateTimeEntity related database content
     public void testCleanup() {
-        try (EntityManager em = createEntityManager()) {
+        EntityManager em = createEntityManager();
+        try {
             beginTransaction(em);
             try {
                 em.createQuery("DELETE FROM DateTimeEntity")
@@ -150,6 +164,8 @@ public class FractionalSecondsPrecisionTest extends JUnitTestCase {
                 }
                 throw e;
             }
+        } finally {
+            closeEntityManager(em);
         }
     }
 

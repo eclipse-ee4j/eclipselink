@@ -127,8 +127,8 @@ mvn clean install -Ptest1 \
 
         <!--Default location for JEE servers binaries-->
         <test.directory>${user.home}/.eclipselinktests</test.directory>
-        <installation.url>https://github.com/wildfly/wildfly/releases/download/27.0.0.Final/wildfly-27.0.0.Final.zip</installation.url>
-        <installation.checksum.md5>56e2dd6f54e65603ada5659a06ad782b</installation.checksum.md5>
+        <installation.url>https://github.com/wildfly/wildfly/releases/download/41.0.1.Final/wildfly-41.0.1.Final.zip</installation.url>
+        <installation.checksum.md5>60dbc60c17a6ef712a9cc3b92784e1ec</installation.checksum.md5>
 
         <!--Test DB property file names-->
         <test.h2.properties.file>el-test.h2.properties</test.h2.properties.file>
@@ -194,7 +194,7 @@ mvn clean install -Ptest1 \
 
         <!--Server tests-->
         <weblogic.version>12.2.1-3</weblogic.version>
-        <wildfly.version>27.0.0.Final</wildfly.version>
+        <wildfly.version>41.0.1.Final</wildfly.version>
     </properties>
 
     <build>
@@ -1426,8 +1426,8 @@ mvn clean install -Ptest1 \
                 <jee.client.version>${wildfly.version}</jee.client.version>
                 <jee.client.type>pom</jee.client.type>
                 <!--Download properties-->
-                <installation.url>https://github.com/wildfly/wildfly/releases/download/27.0.0.Final/wildfly-27.0.0.Final.zip</installation.url>
-                <installation.checksum.md5>56e2dd6f54e65603ada5659a06ad782b</installation.checksum.md5>
+                <installation.url>https://github.com/wildfly/wildfly/releases/download/41.0.1.Final/wildfly-41.0.1.Final.zip</installation.url>
+                <installation.checksum.md5>60dbc60c17a6ef712a9cc3b92784e1ec</installation.checksum.md5>
             </properties>
         </profile>
 
@@ -1437,13 +1437,20 @@ mvn clean install -Ptest1 \
                 <testjee.properties.file>${user.home}/${testjee.glassfish.properties.file}</testjee.properties.file>
                 <testjee.properties.fileName>${testjee.glassfish.properties.file}</testjee.properties.fileName>
                 <jee.client.groupId>org.glassfish.main.appclient</jee.client.groupId>
-                <jee.client.artifactId>gf-client</jee.client.artifactId>
+                <!--gf-client is only the app client container launcher; gf-client-module is the artifact
+                    that brings the naming and IIOP stack a remote EJB client needs-->
+                <jee.client.artifactId>gf-client-module</jee.client.artifactId>
                 <jee.client.version>${glassfish.version}</jee.client.version>
                 <jee.client.type>jar</jee.client.type>
                 <skip.glassfish.configuration>false</skip.glassfish.configuration>
-                <!--Download properties-->
-                <installation.url>https://repo1.maven.org/maven2/org/glassfish/main/distributions/glassfish/5.1.0/glassfish-5.1.0.zip</installation.url>
-                <installation.checksum.md5>2ed2d211fd56e270f3daf8e2b5e01e30</installation.checksum.md5>
+                <!--
+                    GlassFish 9 is not published as a downloadable zip the way WildFly is, so there is no
+                    installation.url/checksum here: the distribution is resolved from the Maven repository
+                    (org.glassfish.main.distributions:glassfish:${glassfish.version}) and unpacked, which
+                    also means a locally built GlassFish is picked up automatically. The zip unpacks to a
+                    glassfish9 directory, and this is the single place that path is spelled out.
+                -->
+                <glassfish.home>${test.directory}/glassfish9</glassfish.home>
             </properties>
         </profile>
 

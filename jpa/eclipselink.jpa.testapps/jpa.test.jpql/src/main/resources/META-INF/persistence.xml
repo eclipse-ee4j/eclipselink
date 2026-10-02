@@ -1,7 +1,7 @@
 <!--
 
     Copyright (c) 2018, 2025 Oracle and/or its affiliates. All rights reserved.
-    Copyright (c) 2024 Contributors to the Eclipse Foundation. All rights reserved
+    Copyright (c) 2024, 2026 Contributors to the Eclipse Foundation. All rights reserved
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -166,7 +166,10 @@
         <class>org.eclipse.persistence.testing.models.jpa.relationships.ServiceCall</class>
         <class>org.eclipse.persistence.testing.models.jpa.relationships.StreetAddress</class>
         <class>org.eclipse.persistence.testing.models.jpa.relationships.ShippingAddress</class>
-        <exclude-unlisted-classes>false</exclude-unlisted-classes>
+        <!-- true: this module has no classes of its own, so in Java SE there is nothing unlisted to find,
+             but the server test packaging merges all the model jars into one, where scanning would also
+             pick up the entities of the other models (and their clashing entity names, like Company) -->
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <properties>
             <property name="jakarta.persistence.schema-generation.database.action" value="drop-and-create"/>
             <property name="eclipselink.validate-existence" value="true"/>

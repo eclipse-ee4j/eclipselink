@@ -81,7 +81,9 @@
         <weld-se.version>7.0.0.Final</weld-se.version>
         <expressly.version>6.0.0</expressly.version>
         <jersey.version> 5.0.0-M1</jersey.version>
-        <glassfish.version>9.0.0-M3</glassfish.version>
+        <glassfish.version>9.0.0-SNAPSHOT</glassfish.version>
+        <!--GlassFish remote EJB client needs the gmbal implementation, gf-client-module brings only gmbal-api-only-->
+        <gmbal.version>4.1.2</gmbal.version>
         <jmh.version>1.37</jmh.version>
         <springframework.version>7.0.9</springframework.version>
         <hibernate.version>9.1.4.Final</hibernate.version>

@@ -92,8 +92,31 @@
                             <includes>
                                 <include>**/JPAAdvancedTestModel</include>
                                 <include>**/advanced/*Test</include>
+                                <include>**/advanced/concurrency/*Test</include>
                                 <include>**/advanced/EntityManagerJUnitTestSuite</include>
                             </includes>
+                        </configuration>
+                    </execution>
+                    <!-- The same as for the Java SE run, minus JPAAdvancedTestModel: the testmodel tests
+                         log in to the database over JDBC from the test JVM, which a server run does not
+                         configure, so only that suite can run them. Without these includes surefire's
+                         defaults picked each testmodel test up on its own, and missed
+                         EntityManagerJUnitTestSuite. -->
+                    <execution>
+                        <id>server-test</id>
+                        <configuration>
+                            <includes>
+                                <include>**/advanced/*Test</include>
+                                <include>**/advanced/concurrency/*Test</include>
+                                <include>**/advanced/EntityManagerJUnitTestSuite</include>
+                            </includes>
+                            <excludes>
+                                <!-- Java SE only, as it always has been: its tables are created by a JUnit
+                                     TestSetup decorator, which the JUnit runner calls in the test JVM
+                                     rather than delegating it to the server like a test method, so there
+                                     it has no database to connect to and none of its tests run. -->
+                                <exclude>**/advanced/UpdateAllQueryAdvancedJunitTest</exclude>
+                            </excludes>
                         </configuration>
                     </execution>
                 </executions>

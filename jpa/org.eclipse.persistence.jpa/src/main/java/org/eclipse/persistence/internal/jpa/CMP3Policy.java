@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
  * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -43,6 +44,7 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.identitymaps.CacheId;
 import org.eclipse.persistence.internal.indirection.WeavedObjectBasicIndirectionPolicy;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
@@ -132,7 +134,7 @@ public class CMP3Policy extends CMPPolicy {
      */
     @Override
     public void convertClassNamesToClasses(ClassLoader classLoader){
-        if(getPKClass() == null && getPKClassName() != null){
+        if(getPKClassName() != null && Helper.needsClassConversion(getPKClass(), classLoader)){
             try{
                 Class<?> aPKClass = null;
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){

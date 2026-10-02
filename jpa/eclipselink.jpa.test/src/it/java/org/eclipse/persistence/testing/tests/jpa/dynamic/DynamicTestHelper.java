@@ -163,6 +163,12 @@ public class DynamicTestHelper {
             public ClassTransformer getClassTransformer(PersistenceUnitInfo info, Map<?, ?> properties) {
                 return null;
             }
+
+            // Not used, added in Jakarta Persistence 4.0
+            @Override
+            public ClassTransformer getClientClassTransformer(PersistenceUnitInfo info, Map<?, ?> properties) {
+                return null;
+            }
          };
          return provider.createEntityManagerFactory(emName, getDatabaseProperties());
     }

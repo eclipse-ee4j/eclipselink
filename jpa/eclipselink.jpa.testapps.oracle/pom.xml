@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
+    Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
     Copyright (c) 2022, 2024 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
@@ -38,7 +39,10 @@
     </modules>
 
     <properties>
-
+        <!-- Like default-test below, the server tests only run with the oracle profile: they need an Oracle
+             database (with -Pglassfish, the GlassFish data sources must then point to one too). Skips the
+             deployment as well. -->
+        <server.test.skip>true</server.test.skip>
     </properties>
 
     <dependencies>
@@ -115,6 +119,9 @@
     <profiles>
         <profile>
             <id>oracle</id>
+            <properties>
+                <server.test.skip>false</server.test.skip>
+            </properties>
             <build>
                 <plugins>
                     <plugin>

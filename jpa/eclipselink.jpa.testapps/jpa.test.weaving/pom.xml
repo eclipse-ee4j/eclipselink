@@ -30,6 +30,9 @@
 
     <properties>
         <argLine/>
+        <!-- Java SE only: no server test archive is built (package-server-tests is switched off below).
+             Skips the deployment too. -->
+        <server.test.skip>true</server.test.skip>
     </properties>
 
     <build>

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
+    Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
     Copyright (c) 2023, 2025 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
@@ -29,6 +30,12 @@
 
     <properties>
         <argLine/>
+        <!-- Java SE only. The tests bootstrap their own EntityManagerFactory (Persistence.createEntityManagerFactory,
+             or the Jakarta Persistence 3.2 configuration API), close it again and use resource-local transactions.
+             In a server that factory is the deployed, JTA one, so closing it breaks every test after it. One of the
+             units also verifies the schema when created, which fails the deployment before any table exists.
+             Skips the deployment too. -->
+        <server.test.skip>true</server.test.skip>
     </properties>
 
     <build>

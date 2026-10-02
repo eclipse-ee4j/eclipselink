@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
+    Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
     Copyright (c) 2023 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
@@ -106,6 +107,22 @@
                     <execution>
                         <id>package-model</id>
                         <phase>package</phase>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.eclipse.persistence</groupId>
+                <artifactId>eclipselink-testbuild-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>package-server-tests</id>
+                        <configuration>
+                            <!-- The aspects woven into the entity classes need the AspectJ runtime, which an
+                                 application server does not provide -->
+                            <libs>
+                                <lib>org.aspectj:aspectjrt</lib>
+                            </libs>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
