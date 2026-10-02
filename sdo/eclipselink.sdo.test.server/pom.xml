@@ -67,6 +67,13 @@
             <artifactId>org.eclipse.persistence.sdo</artifactId>
             <scope>test</scope>
         </dependency>
+        <!--SDO declares MOXy optional, so it is named here to make dependency:properties resolve the
+            path that src/it/resources/wildfly/elResources.xml puts into the server's module.xml-->
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.moxy</artifactId>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>commonj.sdo</artifactId>
@@ -307,7 +314,11 @@
             <id>glassfish</id>
             <properties>
                 <ejb-jndi-name>DeptServiceBean#org.eclipse.persistence.testing.sdo.server.DeptService</ejb-jndi-name>
-                <skip-server-test-sdo>false</skip-server-test-sdo>
+                <!--skipped until this module deploys with asadmin like jpa/eclipselink.jpa.testapps does:
+                    cargo-maven3-plugin's glassfish9x container looks for the admin CLI at
+                    glassfish/modules/admin-cli.jar, which GlassFish 9 moved to glassfish/admin-cli.jar,
+                    so it cannot deploy at all-->
+                <skip-server-test-sdo>true</skip-server-test-sdo>
             </properties>
         </profile>
         <profile>

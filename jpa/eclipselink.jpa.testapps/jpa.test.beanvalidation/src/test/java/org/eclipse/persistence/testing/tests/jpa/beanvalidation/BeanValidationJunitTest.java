@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
  * Copyright (c) 2009, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -19,7 +20,6 @@ import java.util.Vector;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.LockModeType;
-import jakarta.persistence.RollbackException;
 import jakarta.persistence.TypedQuery;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
@@ -474,12 +474,19 @@ public class BeanValidationJunitTest extends JUnitTestCase {
             task.setPriority(2);
             
             commitTransaction(em);
-        }  catch (RollbackException e) {
-            // we're expecting a rollback exception because we've changed the object
-            // and it isn't passing validation. Check that the cause is a ConstraintViolationException.
-
-            final ConstraintViolationException cve = (ConstraintViolationException) e.getCause();
-            final Set<ConstraintViolation<?>> constraintViolations = cve.getConstraintViolations();
+        }  catch (RuntimeException e) {
+            // we're expecting a rollback because we've changed the object and it isn't passing validation.
+            // Check that it was caused by a ConstraintViolationException: the direct cause of a
+            // jakarta.persistence.RollbackException in Java SE, further down on the server, where the commit
+            // of the Jakarta Transactions transaction fails instead.
+            Throwable cause = e.getCause();
+            while (cause != null && !(cause instanceof ConstraintViolationException)) {
+                cause = cause.getCause();
+            }
+            if (cause == null) {
+                throw e;
+            }
+            final Set<ConstraintViolation<?>> constraintViolations = ((ConstraintViolationException) cause).getConstraintViolations();
             final ConstraintViolation constraintViolation = constraintViolations.iterator().next();
             // Messages may be localized so "must not be null" may not match
             assertTrue(constraintViolation.getMessage().toLowerCase().contains("null"));

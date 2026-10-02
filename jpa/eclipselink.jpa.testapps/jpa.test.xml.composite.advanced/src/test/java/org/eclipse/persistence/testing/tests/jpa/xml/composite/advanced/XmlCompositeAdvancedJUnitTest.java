@@ -1764,7 +1764,7 @@ public class XmlCompositeAdvancedJUnitTest extends JUnitTestCase {
                 }
             } catch (IllegalStateException ex){
                 if (i == 1) {
-                    fail("createEntityManager(" + puName +") failed - should have succeeded");
+                    fail("createEntityManager(" + puName +") failed - should have succeeded: " + ex);
                 } else {
                     // expected exception
                 }

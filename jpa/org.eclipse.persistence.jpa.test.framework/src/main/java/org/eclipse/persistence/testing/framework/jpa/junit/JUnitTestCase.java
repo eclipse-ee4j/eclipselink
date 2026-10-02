@@ -102,6 +102,7 @@ public abstract class JUnitTestCase extends TestCase {
     /** System variable to set the tests to run on the server. */
     public static final String RUN_ON_SERVER = "server.run";
 
+
     /** Persistence unit name associated with the test runner, null means single persistence unit */
     public String puName = null;
 
@@ -710,10 +711,13 @@ public abstract class JUnitTestCase extends TestCase {
     public void runBareClient() throws Throwable {
         Properties properties = new Properties();
         String url = System.getProperty("server.url");
-        if (url == null) {
-            fail("System property 'server.url' must be set.");
+        if (url != null && !url.isEmpty()) {
+            properties.put("java.naming.provider.url", url);
         }
-        properties.put("java.naming.provider.url", url);
+        // An empty server.url is not an error: a GlassFish client bootstraps over IIOP through
+        // org.omg.CORBA.ORBInitialHost/ORBInitialPort and takes its initial context factory from the
+        // jndi.properties that gf-client puts on the classpath, so it has no naming provider URL to
+        // give. WildFly does, and passes it here.
         Context context = new InitialContext(properties);
 
         String testrunnerCtx = System.getProperty("server.testrunner.context");
@@ -730,7 +734,7 @@ public abstract class JUnitTestCase extends TestCase {
                 }
             }
             if (testRunners.isEmpty()) {
-                throw new RuntimeException("No TestRunner found");
+                throw new RuntimeException("No TestRunner found in JNDI context " + testrunnerCtx);
             }
             if (testRunners.size() > 1) {
                 Iterator<String> it = testRunners.iterator();

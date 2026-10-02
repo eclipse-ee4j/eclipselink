@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
  * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
@@ -290,6 +291,16 @@ public class Helper implements Serializable {
             return false;
         }
         return classImplementsInterface(superClass, anInterface);
+    }
+
+    /**
+     * INTERNAL:
+     * Return whether a class name still has to be resolved with the given class loader: either it has not been
+     * resolved yet, or it was resolved with another class loader, such as the temporary one a container passes
+     * during predeploy (for instance when a project is loaded from sessions-xml).
+     */
+    public static boolean needsClassConversion(Class<?> resolvedClass, ClassLoader classLoader) {
+        return resolvedClass == null || resolvedClass.getClassLoader() != classLoader;
     }
 
     /**

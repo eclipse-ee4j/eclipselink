@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
  * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -165,13 +166,25 @@ public class JpaHelper {
     }
 
     /**
-     * Given a JPA EntityManagerFactory attempt to cast it to a EclipseLink EMF.
+     * Given a JPA EntityManagerFactory attempt to cast it to a EclipseLink EMF. This will work
+     * both within a JavaSE deployment as well as within a container where the
+     * EntityManagerFactory may be wrapped.
      *
      * @see JpaEntityManagerFactory
      */
     public static JpaEntityManagerFactory getEntityManagerFactory(EntityManagerFactory emf) {
         if (emf instanceof JpaEntityManagerFactory) {
             return ((JpaEntityManagerFactory)emf);
+        }
+
+        // A container may hand out its own wrapper around the EclipseLink factory
+        try {
+            JpaEntityManagerFactory unwrapped = emf.unwrap(JpaEntityManagerFactory.class);
+            if (unwrapped != null) {
+                return unwrapped;
+            }
+        } catch (RuntimeException e) {
+            // Not an EclipseLink factory underneath either
         }
         throw new IllegalArgumentException(ExceptionLocalization.buildMessage("jpa_helper_invalid_entity_manager_factory", new Object[]{emf.getClass()}));
     }

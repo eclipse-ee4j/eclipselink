@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
+    Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
     Copyright (c) 2024, 2025 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
@@ -101,6 +102,19 @@
                                 <db.pwd>${db.pwd}</db.pwd>
                                 <db.platform>${db.platform}</db.platform>
                             </systemPropertyVariables>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>server-test</id>
+                        <configuration>
+                            <excludes>
+                                <!-- Java SE only: they bootstrap their own EntityManagerFactory with
+                                     Persistence.createEntityManagerFactory and use resource-local transactions,
+                                     start Weld SE, and provoke stuck threads while replacing the global session
+                                     log - none of which belongs in a shared server -->
+                                <exclude>CacheDeadLockDetectionTest*</exclude>
+                                <exclude>CacheDeadLockManagersTest*</exclude>
+                            </excludes>
                         </configuration>
                     </execution>
                 </executions>

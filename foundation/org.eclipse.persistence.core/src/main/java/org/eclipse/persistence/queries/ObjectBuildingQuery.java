@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
  * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -19,6 +20,7 @@ import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.internal.expressions.ForUpdateClause;
 import org.eclipse.persistence.internal.expressions.QueryKeyExpression;
+import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
@@ -151,7 +153,7 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
     @Override
     public void convertClassNamesToClasses(ClassLoader classLoader){
         super.convertClassNamesToClasses(classLoader);
-        if (getReferenceClass() == null && getReferenceClassName() != null) {
+        if (getReferenceClassName() != null && Helper.needsClassConversion(getReferenceClass(), classLoader)) {
             Class<?> referenceClass = null;
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {

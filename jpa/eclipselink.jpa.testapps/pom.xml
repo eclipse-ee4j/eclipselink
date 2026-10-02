@@ -136,6 +136,10 @@
         <eclipselink.logging.parameters>true</eclipselink.logging.parameters>
         <eclipselink.logging.sql.level>INFO</eclipselink.logging.sql.level>
 
+        <!--@default@ in the server side persistence.xml resolves from this. Without it the token was
+            left literal and the deployed unit was called "@default@", which no test could find:
+            JUnitTestCase's default unit name is "default".-->
+        <persistence-unit.name>default</persistence-unit.name>
         <persistence-unit.data-source-name>jdbc/EclipseLinkDS</persistence-unit.data-source-name>
         <persistence-unit.data-source-type>jta-data-source</persistence-unit.data-source-type>
         <persistence-unit.transaction-type>JTA</persistence-unit.transaction-type>
@@ -521,6 +525,13 @@
                     <execution>
                         <id>jar</id>
                         <phase>package</phase>
+                        <configuration>
+                            <!-- This aggregator runs it too: with nothing to package it would still produce an
+                                 empty jar, set it as its main artifact, and install would put that in place of
+                                 the installed pom - breaking every model jar that resolves this parent from the
+                                 local repository (as in a -rf resume) -->
+                            <skipIfEmpty>true</skipIfEmpty>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
@@ -685,6 +696,388 @@
                     </plugin>
                 </plugins>
             </build>
+        </profile>
+        <profile>
+            <!-- run tests on the server, GlassFish variant of the wildfly profile above
+                 Same contract: the server is started and its JDBC datasources are created
+                 externally, this profile only deploys the EAR, runs the tests and undeploys.
+                 Two things differ. GlassFish is not downloaded from a URL - the distribution is
+                 resolved from the Maven repository, so a locally built GlassFish is used as it is -
+                 and the EclipseLink jars it ships as its JPA provider are replaced by the ones
+                 built here. See the GlassFish section of README.md for the server side setup. -->
+            <id>glassfish</id>
+            <properties>
+                <!-- gf-client-module carries a jndi.properties naming this same factory, so a
+                     client on that classpath works without it; it is set for symmetry with wildfly.
+                     server.remote.url stays empty on purpose: a GlassFish client bootstraps over
+                     IIOP using org.omg.CORBA.ORBInitialHost/ORBInitialPort, set on the test JVM
+                     below, not through a naming provider URL. -->
+                <server.jndi.factory>com.sun.enterprise.naming.impl.SerialInitContextFactory</server.jndi.factory>
+                <server.remote.url/>
+                <!-- GlassFish binds EJBs under the portable global name -->
+                <server.test.runner.context>java:global/${project.build.finalName}/${project.build.finalName}_ejb</server.test.runner.context>
+                <glassfish.deploy.skip>${server.test.skip}</glassfish.deploy.skip>
+                <!-- port of GlassFish's own Derby server, which holds the databases behind the test
+                     datasources. Not Derby's default 1527: the Java SE test runs start their own Derby
+                     server there, so with both on 1527 the two phases cannot share a build. -->
+                <glassfish.db.port>1528</glassfish.db.port>
+            </properties>
+            <dependencyManagement>
+                <dependencies>
+                    <dependency>
+                        <groupId>${jee.client.groupId}</groupId>
+                        <artifactId>${jee.client.artifactId}</artifactId>
+                        <version>${jee.client.version}</version>
+                        <exclusions>
+                            <!-- Not needed by a remote EJB client, but its CDI extension is: Weld SE in the
+                                 Java SE tests loads every extension on the classpath, and this one fails
+                                 without the Jakarta Security API (NoClassDefFoundError: IdentityStore) -->
+                            <exclusion>
+                                <groupId>org.glassfish.soteria</groupId>
+                                <artifactId>soteria</artifactId>
+                            </exclusion>
+                        </exclusions>
+                    </dependency>
+                </dependencies>
+            </dependencyManagement>
+            <dependencies>
+                <dependency>
+                    <groupId>${jee.client.groupId}</groupId>
+                    <artifactId>${jee.client.artifactId}</artifactId>
+                    <scope>test</scope>
+                </dependency>
+                <!--gf-client-module depends on gmbal-api-only, but the ORB the client starts needs the
+                    implementation as well: without it every lookup fails with
+                    "No ManagedObjectManagerService found using the service loader"-->
+                <dependency>
+                    <groupId>org.glassfish.gmbal</groupId>
+                    <artifactId>gmbal</artifactId>
+                    <version>${gmbal.version}</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+            <build>
+                <plugins>
+                    <!-- inherited=false on the executions: the distribution is unpacked and patched once
+                         for the aggregator, not again in each of the test modules below it. Not on the
+                         plugin: this declaration merges with the maven-dependency-plugin of the root pom,
+                         and a plugin-level inherited=false would take that one's executions away from the
+                         test modules too - among them unpack-test-properties, which provides the
+                         target/test-default-properties they read. -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-dependency-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>install-glassfish</id>
+                                <phase>initialize</phase>
+                                <inherited>false</inherited>
+                                <goals>
+                                    <goal>unpack</goal>
+                                </goals>
+                                <configuration>
+                                    <markersDirectory>${test.directory}/dependency-maven-plugin-markers</markersDirectory>
+                                    <artifactItems>
+                                        <artifactItem>
+                                            <groupId>org.glassfish.main.distributions</groupId>
+                                            <artifactId>glassfish</artifactId>
+                                            <version>${glassfish.version}</version>
+                                            <type>zip</type>
+                                            <!-- the zip brings its own glassfish9 directory, which is
+                                                 what ${glassfish.home} points at -->
+                                            <outputDirectory>${test.directory}</outputDirectory>
+                                            <overWrite>false</overWrite>
+                                        </artifactItem>
+                                    </artifactItems>
+                                </configuration>
+                            </execution>
+                            <!-- GlassFish ships EclipseLink as its JPA provider, so testing this
+                                 build means replacing those jars under the names GlassFish itself
+                                 uses. A no-op when the distribution was built from this same
+                                 EclipseLink, and the whole point when it was not.
+                                 Only the jars GlassFish actually ships are listed: moxy, nosql and
+                                 sdo are absent from the distribution, and copying them in would add
+                                 new bundles rather than replace existing ones. asm is left alone,
+                                 GlassFish pins its own repackaging of it. -->
+                            <execution>
+                                <id>configure-glassfish-modules</id>
+                                <phase>initialize</phase>
+                                <inherited>false</inherited>
+                                <goals>
+                                    <goal>copy</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${glassfish.home}/glassfish/modules</outputDirectory>
+                                    <overWriteReleases>true</overWriteReleases>
+                                    <overWriteSnapshots>true</overWriteSnapshots>
+                                    <artifactItems>
+                                        <artifactItem>
+                                            <groupId>org.eclipse.persistence</groupId>
+                                            <artifactId>org.eclipse.persistence.core</artifactId>
+                                            <version>${project.version}</version>
+                                            <destFileName>org.eclipse.persistence.core.jar</destFileName>
+                                        </artifactItem>
+                                        <artifactItem>
+                                            <groupId>org.eclipse.persistence</groupId>
+                                            <artifactId>org.eclipse.persistence.jpa</artifactId>
+                                            <version>${project.version}</version>
+                                            <destFileName>org.eclipse.persistence.jpa.jar</destFileName>
+                                        </artifactItem>
+                                        <artifactItem>
+                                            <groupId>org.eclipse.persistence</groupId>
+                                            <artifactId>org.eclipse.persistence.jpa.jpql</artifactId>
+                                            <version>${project.version}</version>
+                                            <destFileName>org.eclipse.persistence.jpa.jpql.jar</destFileName>
+                                        </artifactItem>
+                                        <artifactItem>
+                                            <groupId>org.eclipse.persistence</groupId>
+                                            <artifactId>org.eclipse.persistence.jpa.modelgen.processor</artifactId>
+                                            <version>${project.version}</version>
+                                            <destFileName>org.eclipse.persistence.jpa.modelgen.processor.jar</destFileName>
+                                        </artifactItem>
+                                        <artifactItem>
+                                            <groupId>org.eclipse.persistence</groupId>
+                                            <artifactId>org.eclipse.persistence.dbws</artifactId>
+                                            <version>${project.version}</version>
+                                            <destFileName>org.eclipse.persistence.dbws.jar</destFileName>
+                                        </artifactItem>
+                                        <artifactItem>
+                                            <groupId>org.eclipse.persistence</groupId>
+                                            <artifactId>org.eclipse.persistence.oracle</artifactId>
+                                            <version>${project.version}</version>
+                                            <destFileName>org.eclipse.persistence.oracle.jar</destFileName>
+                                        </artifactItem>
+                                    </artifactItems>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <!-- glassfish-resources.xml, with glassfish.db.port filled in, for the
+                         add-glassfish-resources step below. inherited=false, like that step. -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-resources-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>filter-glassfish-resources</id>
+                                <phase>generate-resources</phase>
+                                <inherited>false</inherited>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${project.build.directory}</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <directory>${project.basedir}</directory>
+                                            <includes>
+                                                <include>glassfish-resources.xml</include>
+                                            </includes>
+                                            <filtering>true</filtering>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <!-- deploy to a running server with asadmin, the GlassFish CLI.
+                         Not cargo-maven3-plugin: its glassfish9x container looks for the admin CLI at
+                         glassfish/modules/admin-cli.jar, which GlassFish 9 moved to
+                         glassfish/admin-cli.jar, so it fails before it deploys anything. asadmin is
+                         what Cargo would have driven anyway. -->
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <configuration>
+                            <skip>${glassfish.deploy.skip}</skip>
+                            <executable>${glassfish.home}/glassfish/bin/asadmin</executable>
+                        </configuration>
+                        <executions>
+                            <!-- Domain setup: inherited=false, so it runs once, from the aggregator, before
+                                 any test module deploys, and in this order (executions bound to one phase
+                                 run in declaration order). They set skip themselves because the
+                                 aggregator-no-deploy profile sets glassfish.deploy.skip, the plugin-level
+                                 skip, in the aggregator. Every step is idempotent, so running the build
+                                 against a domain that is already up and configured is harmless. -->
+                            <!-- GlassFish's own Derby, on glassfish.db.port rather than Derby's default
+                                 1527, which the Java SE test runs use. A no-op when it already runs. -->
+                            <execution>
+                                <id>start-glassfish-database</id>
+                                <phase>pre-integration-test</phase>
+                                <inherited>false</inherited>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <skip>${server.test.skip}</skip>
+                                    <arguments>
+                                        <argument>start-database</argument>
+                                        <argument>--dbhome=${glassfish.home}/javadb</argument>
+                                        <argument>--dbport=${glassfish.db.port}</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                            <!-- restart rather than start: starts a stopped domain, and restarts a running
+                                 one so that it loads the EclipseLink jars configure-glassfish-modules has
+                                 just copied in (GlassFish updates a bundle whose jar is newer on startup) -->
+                            <execution>
+                                <id>restart-glassfish-domain</id>
+                                <phase>pre-integration-test</phase>
+                                <inherited>false</inherited>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <skip>${server.test.skip}</skip>
+                                    <arguments>
+                                        <argument>restart-domain</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                            <!-- the datasources, see glassfish-resources.xml. Skips any that already
+                                 exist, without failing. -->
+                            <execution>
+                                <id>add-glassfish-resources</id>
+                                <phase>pre-integration-test</phase>
+                                <inherited>false</inherited>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <skip>${server.test.skip}</skip>
+                                    <arguments>
+                                        <argument>add-resources</argument>
+                                        <argument>${project.build.directory}/glassfish-resources.xml</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                            <!-- Also run against an existing domain, where add-resources left the pools
+                                 as they were: the ports are set again so a domain configured before
+                                 glassfish.db.port existed follows along, DerbyPool included (GlassFish's
+                                 default pool, unused by the tests but pointing at 1527 as well).
+                                 disable-nonportable-jndi-names: the test framework's two runner beans share
+                                 @Remote(TestRunner.class), and besides the portable java:global names
+                                 GlassFish binds every remote bean under a non-portable global name derived
+                                 from that interface, so the second runner in an application - and every
+                                 runner after the first in a composite EAR, whose member EJB jars each carry
+                                 both - fails with NameAlreadyBoundException. This switch drops the
+                                 non-portable names; the test client only uses the portable ones. -->
+                            <execution>
+                                <id>configure-glassfish-domain</id>
+                                <phase>pre-integration-test</phase>
+                                <inherited>false</inherited>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <skip>${server.test.skip}</skip>
+                                    <arguments>
+                                        <argument>set</argument>
+                                        <argument>resources.jdbc-connection-pool.EclipseLinkPool.property.portNumber=${glassfish.db.port}</argument>
+                                        <argument>resources.jdbc-connection-pool.EclipseLinkPool2.property.portNumber=${glassfish.db.port}</argument>
+                                        <argument>resources.jdbc-connection-pool.EclipseLinkPool3.property.portNumber=${glassfish.db.port}</argument>
+                                        <argument>resources.jdbc-connection-pool.EclipseLinkXAPool.property.portNumber=${glassfish.db.port}</argument>
+                                        <argument>resources.jdbc-connection-pool.DerbyPool.property.PortNumber=${glassfish.db.port}</argument>
+                                        <argument>configs.config.server-config.ejb-container.property.disable-nonportable-jndi-names=true</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                            <!-- fails the build here, rather than in every test module, when the database
+                                 cannot be reached -->
+                            <execution>
+                                <id>ping-glassfish-database</id>
+                                <phase>pre-integration-test</phase>
+                                <inherited>false</inherited>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <skip>${server.test.skip}</skip>
+                                    <arguments>
+                                        <argument>ping-connection-pool</argument>
+                                        <argument>EclipseLinkPool</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>server-deploy</id>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <arguments>
+                                        <argument>deploy</argument>
+                                        <argument>--force=true</argument>
+                                        <!-- the application name has to match the one the test client
+                                             builds its JNDI lookup from, see server.test.runner.context -->
+                                        <argument>--name=${project.build.finalName}</argument>
+                                        <argument>${project.build.directory}/${project.build.finalName}.ear</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>server-undeploy</id>
+                                <phase>post-integration-test</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <arguments>
+                                        <argument>undeploy</argument>
+                                        <argument>${project.build.finalName}</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>server-test</id>
+                                <phase>integration-test</phase>
+                                <configuration>
+                                    <!--The EJB stub generator the client starts reflects into
+                                        java.lang, which is why GlassFish's own appclient script
+                                        passes this too-->
+                                    <argLine>--add-opens=java.base/java.lang=ALL-UNNAMED</argLine>
+                                    <!--the GlassFish client is a large set of automatic modules whose
+                                        ORB does not bootstrap from the module path, so this execution
+                                        overrides the useModulePath=true used for the SE runs-->
+                                    <useModulePath>false</useModulePath>
+                                    <!--merged with the systemPropertyVariables from pluginManagement,
+                                        which carry server.run and friends. The client bootstraps over
+                                        IIOP, so it needs the ORB host and port rather than a naming
+                                        provider URL.-->
+                                    <systemPropertyVariables combine.children="merge">
+                                        <org.omg.CORBA.ORBInitialHost>${server.host}</org.omg.CORBA.ORBInitialHost>
+                                        <org.omg.CORBA.ORBInitialPort>${server.rmi.port}</org.omg.CORBA.ORBInitialPort>
+                                        <com.sun.aas.installRoot>${glassfish.home}/glassfish</com.sun.aas.installRoot>
+                                    </systemPropertyVariables>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <!-- The aggregator has no EAR of its own, but inherits nothing different from the test
+             modules below it, so the glassfish profile's asadmin deploy would run here too and fail
+             on the missing file. (wildfly-maven-plugin skips pom packaging by itself.) Every test
+             module has a src directory and the aggregator does not, and file activation is evaluated
+             against each module's own basedir. Declared after glassfish so this value wins. -->
+        <profile>
+            <id>aggregator-no-deploy</id>
+            <activation>
+                <file>
+                    <missing>${basedir}/src</missing>
+                </file>
+            </activation>
+            <properties>
+                <glassfish.deploy.skip>true</glassfish.deploy.skip>
+            </properties>
         </profile>
     </profiles>
 </project>

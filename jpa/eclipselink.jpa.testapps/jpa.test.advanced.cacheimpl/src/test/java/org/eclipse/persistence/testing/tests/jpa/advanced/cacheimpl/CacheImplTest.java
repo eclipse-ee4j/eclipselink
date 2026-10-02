@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
  * Copyright (c) 2008, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -343,7 +344,8 @@ public class CacheImplTest extends JUnitTestCase {
         EntityManager em2 = createEntityManager();
         try {
             ChestProtector e2 = (ChestProtector) getDatabaseSession().getIdentityMapAccessor().getFromIdentityMap(e1);
-            Pads p2 = (Pads) ((JpaEntityManagerFactory) getEntityManagerFactory())
+            // unwrap, not cast: on the server the factory is the container's wrapper around EclipseLink's
+            Pads p2 = (Pads) getEntityManagerFactory().unwrap(JpaEntityManagerFactory.class)
                     .getServerSession().getIdentityMapAccessor().getFromIdentityMap(p1);
             // change the entity in the cache (only) - later a find() will get the unmodified version in the database
             e2.setDescription("new_chest_protector");

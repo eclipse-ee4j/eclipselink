@@ -33,7 +33,7 @@ updates:
         versions: [ ">1.3.3" ]
       # test locally first before updating
       - dependency-name: "org.wildfly:*"
-        versions: [ ">27.0.0.Final" ]
+        versions: [ ">41.0.1.Final" ]
       # v7 targets EE 12
       - dependency-name: "org.jboss.weld.se:*"
         versions: [ ">=6.1.0.Final" ]
