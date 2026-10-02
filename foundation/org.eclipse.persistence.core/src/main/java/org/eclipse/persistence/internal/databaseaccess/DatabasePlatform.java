@@ -3119,7 +3119,7 @@ public class DatabasePlatform extends DatasourcePlatform implements DDLPlatform 
      */
     protected Map<String, Class<?>> buildJavaTypes() {
         if (javaTypes == null) {
-            javaTypes = CLASS_TYPES;
+            javaTypes = new HashMap<>(CLASS_TYPES);
         }
         return javaTypes;
     }
