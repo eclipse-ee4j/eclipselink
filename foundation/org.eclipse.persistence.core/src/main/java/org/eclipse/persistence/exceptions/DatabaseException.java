@@ -212,7 +212,7 @@ public class DatabaseException extends EclipseLinkException {
             } else {
                 writer.write("000");
             }
-            if (getCall() != null && session.shouldLog(SessionLog.FINE, SessionLog.SQL)) {
+            if (session != null && session.shouldLog(SessionLog.FINE, SessionLog.SQL) && getCall() != null) {
                 writer.write(cr());
                 writer.write(getIndentationString());
                 writer.write(ExceptionMessageGenerator.getHeader("CallHeader"));
@@ -222,7 +222,7 @@ public class DatabaseException extends EclipseLinkException {
                     writer.write(getCall().toString());
                 }
             }
-            if (getQuery() != null) {
+            if (session != null && session.shouldLog(SessionLog.FINE, SessionLog.SQL) && getQuery() != null) {
                 writer.write(cr());
                 writer.write(getIndentationString());
                 writer.write(ExceptionMessageGenerator.getHeader("QueryHeader"));
@@ -346,6 +346,7 @@ public class DatabaseException extends EclipseLinkException {
         databaseException.setErrorCode(SQL_EXCEPTION);
         databaseException.setAccessor(accessor);
         databaseException.setCall(call);
+        databaseException.setSession(session);
         databaseException.setCommunicationFailure(isCommunicationFailure);
         return databaseException;
     }
