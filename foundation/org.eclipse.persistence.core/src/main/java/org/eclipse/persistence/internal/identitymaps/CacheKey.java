@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,6 +17,8 @@ package org.eclipse.persistence.internal.identitymaps;
 import org.eclipse.persistence.exceptions.ConcurrencyException;
 import org.eclipse.persistence.internal.helper.ConcurrencyManager;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.eclipse.persistence.sessions.DataRecord;
 import org.eclipse.persistence.sessions.DatabaseRecord;
@@ -501,6 +503,27 @@ public class CacheKey extends ConcurrencyManager implements Cloneable {
             return;
         }
         super.releaseReadLock();
+    }
+
+    /**
+     * Release the read lock on the cache key object, without letting a failure propagate to the caller.
+     *
+     * The read locks acquired for one clone are released in a loop, and each of those loops sits in a
+     * {@code finally} block. A single {@link #releaseReadLock()} that blows up - with
+     * {@link org.eclipse.persistence.exceptions.ConcurrencyException#signalAttemptedBeforeWait()} when the reader
+     * counter has already reached zero - therefore aborts the loop, and every cache key behind the failing one
+     * keeps a reader that nobody will ever remove. Those entries become permanently unbuildable: every later
+     * {@code acquireDeferredLock} on them waits for the maximum and then fails, for the remaining life of the
+     * session. Releasing the rest of the set is always preferable, so the failure is logged and the loop continues.
+     *
+     * @see <a href="https://github.com/eclipse-ee4j/eclipselink/issues/2609">issue 2609</a>
+     */
+    public void releaseReadLockQuietly() {
+        try {
+            releaseReadLock();
+        } catch (RuntimeException exception) {
+            AbstractSessionLog.getLog().logThrowable(SessionLog.WARNING, SessionLog.CACHE, exception);
+        }
     }
 
     /**
