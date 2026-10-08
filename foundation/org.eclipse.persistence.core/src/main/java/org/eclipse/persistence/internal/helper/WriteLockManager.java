@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -161,7 +161,7 @@ public class WriteLockManager {
             int tries = 0;
             while (toWaitOn != null) {// loop until we've tried too many times.
                 for (Iterator lockedList = lockedObjects.values().iterator(); lockedList.hasNext();) {
-                    ((CacheKey)lockedList.next()).releaseReadLock();
+                    ((CacheKey)lockedList.next()).releaseReadLockQuietly();
                     lockedList.remove();
                 }
 
@@ -209,7 +209,7 @@ public class WriteLockManager {
             }
             if (!successful) {//did not acquire locks but we are exiting
                 for (Iterator lockedList = lockedObjects.values().iterator(); lockedList.hasNext();) {
-                    ((CacheKey)lockedList.next()).releaseReadLock();
+                    ((CacheKey)lockedList.next()).releaseReadLockQuietly();
                     lockedList.remove();
                 }
             }
