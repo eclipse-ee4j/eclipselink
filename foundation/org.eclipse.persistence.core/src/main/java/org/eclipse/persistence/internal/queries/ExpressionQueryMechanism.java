@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
  * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2025 IBM and/or its affiliates. All rights reserved.
  *
@@ -2129,7 +2130,8 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
                 // GF#1123 - UPDATE with JPQL does not handle enums correctly
                 // Set localBase so that the value can be converted properly later.
                 // NOTE: If baseExpression is FieldExpression, conversion is not required.
-                if(valueExpression.isValueExpression()) {
+                if(valueExpression.isValueExpression()
+                        || (valueExpression.isFunctionExpression() && ((org.eclipse.persistence.internal.expressions.FunctionExpression) valueExpression).returnsArgument())) {
                     valueExpression.setLocalBase(baseExpressions.get(i));
                 }
 
