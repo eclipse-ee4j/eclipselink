@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2024, 2025 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2024 Contributors to the Eclipse Foundation. All rights reserved
+ * Copyright (c) 2024, 2026 Contributors to the Eclipse Foundation. All rights reserved
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -64,6 +64,7 @@ public class JUnitJPQLJakartaDataNoAliasTest extends JUnitTestCase {
         aRoom(4, 1, 1, 1, Room.Status.OCCUPIED, 4001, 400, 400, new Date(4L)),
     };
     private static final long ROOMS_COUNT = ROOMS.length - 1; // we ignore the first one with index 0
+    private static final String ROOM_STATUS = Room.Status.class.getCanonicalName() + ".";
 
     private static int wrapperId;
 
@@ -126,6 +127,13 @@ public class JUnitJPQLJakartaDataNoAliasTest extends JUnitTestCase {
         suite.addTest(new JUnitJPQLJakartaDataNoAliasTest("testThisVariableInPathAndIdFunctionExpressionUpdate"));
         suite.addTest(new JUnitJPQLJakartaDataNoAliasTest("testThisVariableInPathExpressionDelete"));
         suite.addTest(new JUnitJPQLJakartaDataNoAliasTest("testThisVariableInLikeExpressionDelete"));
+        suite.addTest(new JUnitJPQLJakartaDataNoAliasTest("testUpdateQueryImplicitThisVariableAndEnumInSet"));
+        suite.addTest(new JUnitJPQLJakartaDataNoAliasTest("testUpdateQueryImplicitThisVariableAndEnumInSetAndWhere"));
+        suite.addTest(new JUnitJPQLJakartaDataNoAliasTest("testDeleteQueryImplicitThisVariableAndEnumInWhere"));
+        suite.addTest(new JUnitJPQLJakartaDataNoAliasTest("testDeleteQueryImplicitThisVariableAndEnumInList"));
+        suite.addTest(new JUnitJPQLJakartaDataNoAliasTest("testUpdateQueryImplicitThisVariableAndEnumInNavigation"));
+        suite.addTest(new JUnitJPQLJakartaDataNoAliasTest("testUpdateQueryImplicitThisVariableAndCollectionValuedNavigation"));
+        suite.addTest(new JUnitJPQLJakartaDataNoAliasTest("testDeleteQueryImplicitThisVariableAndCollectionValuedNavigation"));
         return suite;
     }
 
@@ -532,9 +540,103 @@ public class JUnitJPQLJakartaDataNoAliasTest extends JUnitTestCase {
         }
     }
 
+    // Covers https://github.com/eclipse-ee4j/eclipselink/issues/2758
+    public void testUpdateQueryImplicitThisVariableAndEnumInSet() {
+        resetRooms(false);
+        int numberOfChanges = getEntityManagerFactory().callInTransaction(em -> em.createQuery(
+                "UPDATE Room SET status = " + ROOM_STATUS + "OCCUPIED WHERE id = :idParam")
+                .setParameter("idParam", ROOMS[1].getId())
+                .executeUpdate());
+        assertEquals("Number of rooms updated", 1, numberOfChanges);
+        assertEquals("Number of occupied rooms", ROOMS_COUNT - 1, countRooms(Room.Status.OCCUPIED));
+    }
+
+    // Covers https://github.com/eclipse-ee4j/eclipselink/issues/2758
+    public void testUpdateQueryImplicitThisVariableAndEnumInSetAndWhere() {
+        resetRooms(false);
+        int numberOfChanges = getEntityManagerFactory().callInTransaction(em -> em.createQuery(
+                "UPDATE Room SET status = " + ROOM_STATUS + "OCCUPIED WHERE status = " + ROOM_STATUS + "FREE")
+                .executeUpdate());
+        assertEquals("Number of rooms updated", 2, numberOfChanges);
+        assertEquals("Number of occupied rooms", ROOMS_COUNT, countRooms(Room.Status.OCCUPIED));
+    }
+
+    // Covers https://github.com/eclipse-ee4j/eclipselink/issues/2758
+    public void testDeleteQueryImplicitThisVariableAndEnumInWhere() {
+        resetRooms(true);
+        int numberOfChanges = getEntityManagerFactory().callInTransaction(em -> em.createQuery(
+                "DELETE FROM Room WHERE status = " + ROOM_STATUS + "FREE")
+                .executeUpdate());
+        assertEquals("Number of rooms deleted", 2, numberOfChanges);
+        assertEquals("Number of remaining rooms", ROOMS_COUNT - 2, getAllRooms().count());
+        assertEquals("Number of remaining free rooms", 0, countRooms(Room.Status.FREE));
+    }
+
+    // Covers https://github.com/eclipse-ee4j/eclipselink/issues/2758
+    public void testDeleteQueryImplicitThisVariableAndEnumInList() {
+        resetRooms(true);
+        int numberOfChanges = getEntityManagerFactory().callInTransaction(em -> em.createQuery(
+                "DELETE FROM Room WHERE status IN (" + ROOM_STATUS + "OCCUPIED)")
+                .executeUpdate());
+        assertEquals("Number of rooms deleted", 2, numberOfChanges);
+        assertEquals("Number of remaining rooms", ROOMS_COUNT - 2, getAllRooms().count());
+        assertEquals("Number of remaining occupied rooms", 0, countRooms(Room.Status.OCCUPIED));
+    }
+
+    // Covers https://github.com/eclipse-ee4j/eclipselink/issues/2758
+    // A navigation must keep being resolved against the entity while enum constants are resolved
+    public void testUpdateQueryImplicitThisVariableAndEnumInNavigation() {
+        resetRooms(false);
+        int numberOfChanges = getEntityManagerFactory().callInTransaction(em -> em.createQuery(
+                "UPDATE Door SET width = 5 WHERE room.status = " + ROOM_STATUS + "OCCUPIED")
+                .executeUpdate());
+        assertEquals("Number of doors updated", 2, numberOfChanges);
+        assertEquals("Number of doors with width 5", 2, countDoorsWithWidth(5));
+    }
+
+    // Covers https://github.com/eclipse-ee4j/eclipselink/issues/2758
+    // A collection-valued navigation must keep being resolved against the entity
+    public void testUpdateQueryImplicitThisVariableAndCollectionValuedNavigation() {
+        resetRooms(false);
+        int numberOfChanges = getEntityManagerFactory().callInTransaction(em -> em.createQuery(
+                "UPDATE Door SET width = 5 WHERE room.doors IS NOT EMPTY")
+                .executeUpdate());
+        assertEquals("Number of doors updated", ROOMS_COUNT, numberOfChanges);
+        assertEquals("Number of doors with width 5", ROOMS_COUNT, countDoorsWithWidth(5));
+    }
+
+    // Covers https://github.com/eclipse-ee4j/eclipselink/issues/2758
+    // A collection-valued navigation must keep being resolved against the entity
+    public void testDeleteQueryImplicitThisVariableAndCollectionValuedNavigation() {
+        resetRooms(false);
+        int numberOfChanges = getEntityManagerFactory().callInTransaction(em -> em.createQuery(
+                "DELETE FROM Door WHERE room.doors IS NOT EMPTY")
+                .executeUpdate());
+        assertEquals("Number of doors deleted", ROOMS_COUNT, numberOfChanges);
+        assertEquals("Number of remaining doors", 0, countAllDoors());
+    }
+
     private Stream<Room> getAllRooms() {
         return getEntityManagerFactory().callInTransaction(em -> em.createQuery(
                 "SELECT r FROM Room r", Room.class).getResultStream());
+    }
+
+    private long countRooms(Room.Status status) {
+        return getAllRooms()
+                .filter(room -> room.getStatus() == status)
+                .count();
+    }
+
+    private long countAllDoors() {
+        return getEntityManagerFactory().callInTransaction(em -> em.createQuery(
+                "SELECT COUNT(d) FROM Door d", Long.class).getSingleResult());
+    }
+
+    private long countDoorsWithWidth(int width) {
+        return getEntityManagerFactory().callInTransaction(em -> em.createQuery(
+                "SELECT COUNT(d) FROM Door d WHERE d.width = :width", Long.class)
+                .setParameter("width", width)
+                .getSingleResult());
     }
 
     private Room findRoomById(int i) {
