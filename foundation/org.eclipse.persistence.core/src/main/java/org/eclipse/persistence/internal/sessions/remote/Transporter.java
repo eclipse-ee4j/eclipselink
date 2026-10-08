@@ -70,7 +70,8 @@ public class Transporter implements Serializable {
      */
     public void expand(AbstractSession session) {
         if (session.getSerializer() != null) {
-            this.object = session.getSerializer().deserialize(this.object, session);
+            this.object = org.eclipse.persistence.sessions.serializers.JavaSerializer.deserializeRemote(
+                    session.getSerializer(), this.object, session);
         }
     }
 
