@@ -552,6 +552,8 @@ public class TestDateTimeFunctions {
 
         // Derby does not support SECOND fractions
         Assume.assumeFalse(platform.isDerby());
+        // H2 TIME type does not preserve sub-second precision
+        Assume.assumeFalse(platform.isH2());
 
         final EntityManager em = emf.createEntityManager();
         try {
@@ -650,6 +652,9 @@ public class TestDateTimeFunctions {
     // Test 3. JPQL EXTRACT(WEEK FROM date) to check whether ISO_WEEK is used in MS SQL - issue 1550
     @Test
     public void testIssue1550ExtractIsoWeek() {
+        DatabasePlatform platform = emf.unwrap(Session.class).getPlatform();
+        // H2 returns ISO week 23 for 2022-06-07 but this test expects 24 (MS SQL ISO week)
+        Assume.assumeFalse(platform.isH2());
         final EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
@@ -762,6 +767,8 @@ public class TestDateTimeFunctions {
         // DB2 does not support SECOND fractions for the LocalTime mapped to TIME type
         // See issue 2555
         Assume.assumeFalse(platform.isDB2());
+        // H2 TIME type does not preserve sub-second precision
+        Assume.assumeFalse(platform.isH2());
 
         final EntityManager em = emf.createEntityManager();
         try {
@@ -789,6 +796,94 @@ public class TestDateTimeFunctions {
             assertEquals(expected, actual, delta);
 
             em.getTransaction().commit();
+        } catch (Throwable t) {
+            t.printStackTrace();
+            throw t;
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            em.close();
+        }
+    }
+
+    // ### H2-specific regression tests
+    //
+    // These two tests cover the H2Platform fix for EXTRACT(DATE FROM ...) and
+    // EXTRACT(TIME FROM ...) used in a WHERE clause with a LocalDate/LocalTime parameter.
+    //
+    // Bug 1: H2 rejects EXTRACT(DATE/TIME FROM col) with
+    //   "Invalid value 'DATE'/'TIME' for parameter 'date-time field' [90008-224]"
+    //   because H2's EXTRACT() only accepts single-component fields.
+    //   Fix: H2ExtractOperator rewrites to CAST(col AS DATE) / CAST(col AS TIME).
+    //
+    // Bug 2: Even after Bug 1, queries returned 0 rows because the base DatabasePlatform
+    //   binds LocalTime as setTimestamp(epoch + time) = '1970-01-01 14:30:25',
+    //   which never equals the TIME result of CAST(col AS TIME).
+    //   Fix: H2Platform.setParameterValueInDatabaseCall overrides to use setTime().
+
+
+    /**
+     * H2 regression: EXTRACT(DATE FROM datetimeValue) in WHERE clause with LocalDate parameter.
+     * Verifies that H2Platform correctly emits CAST(col AS DATE) and binds the LocalDate
+     * parameter via setDate(), returning only rows whose datetime date-part matches.
+     */
+    @Test
+    public void testH2ExtractDateFromDateTimeInWhereClause() {
+        DatabasePlatform platform = emf.unwrap(Session.class).getPlatform();
+        Assume.assumeTrue("H2-specific regression test", platform.isH2());
+
+        final EntityManager em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            // ENTITY[0] has datetimeValue = 2022-03-09T14:30:25 -> date part = 2022-03-09
+            // ENTITY[2] has datetimeValue = 2022-06-07T12:00    -> date part = 2022-06-07
+            // Only ENTITY[0] should match LocalDate 2022-03-09
+            TypedQuery<DateTimeQueryEntity> q = em.createQuery(
+                    "SELECT e FROM DateTimeQueryEntity e WHERE EXTRACT(DATE FROM e.datetimeValue) = :d",
+                    DateTimeQueryEntity.class);
+            q.setParameter("d", TS[0].toLocalDate()); // 2022-03-09
+            List<DateTimeQueryEntity> result = q.getResultList();
+            em.getTransaction().commit();
+            assertEquals("Expected exactly 1 row with date 2022-03-09", 1, result.size());
+            assertEquals(Integer.valueOf(1), result.get(0).getId());
+            assertEquals(TS[0].toLocalDate(), result.get(0).getDateValue());
+        } catch (Throwable t) {
+            t.printStackTrace();
+            throw t;
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            em.close();
+        }
+    }
+
+    /**
+     * H2 regression: EXTRACT(TIME FROM datetimeValue) in WHERE clause with LocalTime parameter.
+     * Verifies that H2Platform correctly emits CAST(col AS TIME) and binds the LocalTime
+     * parameter via setTime() (not setTimestamp), returning only rows whose datetime time-part matches.
+     */
+    @Test
+    public void testH2ExtractTimeFromDateTimeInWhereClause() {
+        DatabasePlatform platform = emf.unwrap(Session.class).getPlatform();
+        Assume.assumeTrue("H2-specific regression test", platform.isH2());
+
+        final EntityManager em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            // ENTITY[0] has datetimeValue = 2022-03-09T14:30:25 -> time part = 14:30:25
+            // ENTITY[2] has datetimeValue = 2022-06-07T12:00    -> time part = 12:00
+            // Only ENTITY[0] should match LocalTime 14:30:25
+            TypedQuery<DateTimeQueryEntity> q = em.createQuery(
+                    "SELECT e FROM DateTimeQueryEntity e WHERE EXTRACT(TIME FROM e.datetimeValue) = :t",
+                    DateTimeQueryEntity.class);
+            q.setParameter("t", TS[0].toLocalTime()); // 14:30:25
+            List<DateTimeQueryEntity> result = q.getResultList();
+            em.getTransaction().commit();
+            assertEquals("Expected exactly 1 row with time 14:30:25", 1, result.size());
+            assertEquals(Integer.valueOf(1), result.get(0).getId());
+            assertEquals(TS[0].toLocalTime(), result.get(0).getTimeValue());
         } catch (Throwable t) {
             t.printStackTrace();
             throw t;
