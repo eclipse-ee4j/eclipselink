@@ -1,6 +1,7 @@
 /*
  * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -67,6 +68,7 @@ import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.queries.ListContainerPolicy;
 import org.eclipse.persistence.internal.queries.MapContainerPolicy;
 import org.eclipse.persistence.internal.queries.OrderedListContainerPolicy;
+import org.eclipse.persistence.internal.queries.PendingBatchResult;
 import org.eclipse.persistence.internal.queries.SortedCollectionContainerPolicy;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
@@ -1029,8 +1031,27 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
     protected void executeBatchQuery(DatabaseQuery query, CacheKey parentCacheKey, Map referenceObjectsByKey, AbstractSession session, AbstractRecord translationRow) {
         // Execute query and index resulting object sets by key.
         ReadAllQuery batchQuery = (ReadAllQuery)query;
+        // Issue #2885: only build the targets of a source object when it asks for them,
+        // building the whole batch at once recurses once per object if the targets eagerly batch fetch back.
+        // Eager relationships only (also when woven to use indirection), a lazy one is not fetched while
+        // building and keeps building (and caching) the whole batch at once.
+        batchQuery.setShouldBuildResultsOnDemand(!isLazy());
         ComplexQueryResult complexResult = (ComplexQueryResult)session.executeQuery(batchQuery, translationRow);
         Object results = complexResult.getResult();
+        if (results instanceof PendingBatchResult) {
+            PendingBatchResult pendingResult = (PendingBatchResult)results;
+            Map<Object, List<AbstractRecord>> rowsByKey = new HashMap<>();
+            for (AbstractRecord row : (List<AbstractRecord>)complexResult.getData()) {
+                // Duplicate rows may have been replaced with null.
+                if (row != null) {
+                    rowsByKey.computeIfAbsent(extractKeyFromTargetRow(row, session), key -> new ArrayList<>()).add(row);
+                }
+            }
+            for (Map.Entry<Object, List<AbstractRecord>> entry : rowsByKey.entrySet()) {
+                referenceObjectsByKey.put(entry.getKey(), pendingResult.forRows(entry.getValue(), parentCacheKey));
+            }
+            return;
+        }
         Iterator<AbstractRecord> rowsIterator = ((List<AbstractRecord>)complexResult.getData()).iterator();
         ContainerPolicy queryContainerPolicy = batchQuery.getContainerPolicy();
         if (this.containerPolicy.shouldAddAll()) {
@@ -1075,6 +1096,40 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                 this.containerPolicy.addInto(eachReferenceObject, container, session, row, batchQuery, parentCacheKey, true);
             }
         }
+    }
+
+    /**
+     * INTERNAL:
+     * Build the target objects of one source object from the rows selected by the batch query.
+     */
+    @Override
+    protected Object buildPendingBatchResult(PendingBatchResult pendingResult, Map<Object, Object> batchedObjects, Object sourceKey) {
+        ReadAllQuery batchQuery = pendingResult.getQuery();
+        AbstractSession session = pendingResult.getSession();
+        List<AbstractRecord> rows = pendingResult.getRows();
+        Object container = this.containerPolicy.containerInstance(rows.size());
+        // Publish the container first, so a nested request for this source object doesn't build the targets again.
+        batchedObjects.put(sourceKey, container);
+        // The query was executed already, it needs its session again to build the objects.
+        AbstractSession previousSession = batchQuery.getSession();
+        batchQuery.setSession(session);
+        try {
+            ObjectBuilder builder = batchQuery.getDescriptor().getObjectBuilder();
+            if (this.containerPolicy.shouldAddAll()) {
+                List objects = new ArrayList(rows.size());
+                for (AbstractRecord row : rows) {
+                    objects.add(builder.buildObject(batchQuery, row));
+                }
+                this.containerPolicy.addAll(objects, container, session, rows, batchQuery, pendingResult.getParentCacheKey(), true);
+            } else {
+                for (AbstractRecord row : rows) {
+                    this.containerPolicy.addInto(builder.buildObject(batchQuery, row), container, session, row, batchQuery, pendingResult.getParentCacheKey(), true);
+                }
+            }
+        } finally {
+            batchQuery.setSession(previousSession);
+        }
+        return container;
     }
 
     /**
