@@ -61,7 +61,7 @@ spec:
         cpu: "1"
       requests:
         memory: "2Gi"
-        cpu: "500m"
+        cpu: "100m"
   - name: el-build
     resources:
       limits:
@@ -69,7 +69,7 @@ spec:
         cpu: "2"
       requests:
         memory: "4Gi"
-        cpu: "1.5"
+        cpu: "750m"
     image: rfelcman/el-build:2.0.3
     volumeMounts:
     - name: tools
