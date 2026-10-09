@@ -1429,7 +1429,8 @@ public abstract class DatasourceCall implements Call {
                         writer.write(")");
                     //handle null passed into ...IN (?) as a parameter
                     } else if (parameter instanceof DatabaseField && translationRow.get(parameter) == null){
-                        parametersValues.add(null);
+                        // Preserve type information for null binding, including scalar parameters beside an IN collection.
+                        parametersValues.add(parameter);
                         writer.write("(?)");
                     } else {
                         parametersValues.add(parameter);
