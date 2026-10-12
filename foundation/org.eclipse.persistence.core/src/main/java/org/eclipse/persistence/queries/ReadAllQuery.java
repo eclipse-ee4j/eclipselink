@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,6 +34,7 @@ import org.eclipse.persistence.internal.helper.InvalidObject;
 import org.eclipse.persistence.internal.helper.ThreadCursoredList;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.queries.DatasourceCallQueryMechanism;
+import org.eclipse.persistence.internal.queries.PendingBatchResult;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.ResultSetRecord;
@@ -79,6 +81,9 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
     protected Expression connectByExpression;
     protected List<Expression> orderSiblingsByExpressions;
     protected Direction direction;
+
+    /** Used by batch fetching to defer building the objects, see PendingBatchResult. */
+    protected boolean shouldBuildResultsOnDemand;
 
     /**
      * Specifies the direction in which the hierarchy is traversed in a
@@ -596,6 +601,9 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
 
                 if (this.session.isUnitOfWork()) {
                     result = registerResultInUnitOfWork(rows, (UnitOfWorkImpl)this.session, this.translationRow, true);//
+                } else if ((sopObject == null) && canBuildResultsOnDemand(rows)) {
+                    // Issue #2885: the batch fetching caller builds the objects when they are requested
+                    result = new PendingBatchResult(this, this.session, rows, null);
                 } else {
                     if (rows instanceof ThreadCursoredList) {
                         result = this.containerPolicy.containerInstance();
@@ -759,6 +767,39 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
      */
     public boolean hasHierarchicalExpressions() {
         return ((this.startWithExpression != null) || (this.connectByExpression != null) || (this.orderSiblingsByExpressions != null));
+    }
+
+    /**
+     * INTERNAL:
+     * Return if the query may return its rows as a {@link PendingBatchResult} instead of building the objects.
+     * This is used by batch fetching.
+     */
+    public boolean shouldBuildResultsOnDemand() {
+        return this.shouldBuildResultsOnDemand;
+    }
+
+    /**
+     * INTERNAL:
+     * Set if the query may return its rows as a {@link PendingBatchResult} instead of building the objects.
+     * The objects are then built by the caller as required. This is used by batch fetching.
+     */
+    public void setShouldBuildResultsOnDemand(boolean shouldBuildResultsOnDemand) {
+        this.shouldBuildResultsOnDemand = shouldBuildResultsOnDemand;
+    }
+
+    /**
+     * INTERNAL:
+     * Return if the objects of the rows can be built after the query was executed.
+     * Anything that processes the built objects as part of the execution rules it out.
+     */
+    protected boolean canBuildResultsOnDemand(List<AbstractRecord> rows) {
+        if (!this.shouldBuildResultsOnDemand || !this.shouldIncludeData || (rows instanceof ThreadCursoredList)
+                || hasJoining() || shouldCacheQueryResults() || shouldRefreshIdentityMapResult()
+                || (getLoadGroup() != null) || this.descriptor.hasTablePerClassPolicy()) {
+            return false;
+        }
+        FetchGroup executionFetchGroup = getExecutionFetchGroup();
+        return (executionFetchGroup == null) || (executionFetchGroup.toLoadGroupLoadOnly() == null);
     }
 
     /**
