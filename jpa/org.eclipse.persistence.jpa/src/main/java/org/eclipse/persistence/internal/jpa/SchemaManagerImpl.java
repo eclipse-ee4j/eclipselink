@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
  * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
@@ -78,7 +79,15 @@ class SchemaManagerImpl implements SchemaManager {
     @Override
     public void truncate() {
         try {
-            schemaManager.truncateDefaultTables(false);
+            // Generate the foreign key constraint metadata (true) so that the
+            // constraints are dropped before each table is truncated and
+            // recreated afterwards. Without it the constraint drop/recreate that
+            // wraps the truncation is a no-op and TRUNCATE fails on databases
+            // that reject truncating a table referenced by a foreign key
+            // (e.g. PostgreSQL). This also keeps truncate() consistent with
+            // create(), drop() and validate(), which all operate with the
+            // foreign-key-aware table model.
+            schemaManager.truncateDefaultTables(true);
         } catch (EclipseLinkException ex) {
             throw new PersistenceException(ex.getMessage(), ex);
         }
