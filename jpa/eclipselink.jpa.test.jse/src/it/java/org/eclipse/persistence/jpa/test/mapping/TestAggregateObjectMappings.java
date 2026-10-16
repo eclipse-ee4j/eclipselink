@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
  * Copyright (c) 2019, 2020 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019, 2020 IBM Corporation. All rights reserved.
  *
@@ -73,6 +74,38 @@ public class TestAggregateObjectMappings {
             em.getTransaction().begin();
             em.remove(ent);
             em.getTransaction().commit();
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            if(em.isOpen()) {
+                em.close();
+            }
+        }
+    }
+
+    /**
+     * Test selecting the same AggregateObjectMapping through different identification variables.
+     * Each item has to be built from its own columns and not from the equally named columns of a following item.
+     */
+    @Test
+    public void testSelectSameAggregateObjectMappingOfDifferentEntities() {
+
+        EntityManager em = emf.createEntityManager();
+        try {
+            //populate the table, the transaction is rolled back at the end
+            em.getTransaction().begin();
+            SimpleMappingEntity ent1 = new SimpleMappingEntity(101, new SimpleMappingEmbeddable("first1", "first2"));
+            SimpleMappingEntity ent2 = new SimpleMappingEntity(102, new SimpleMappingEmbeddable("second1", "second2"));
+            em.persist(ent1);
+            em.persist(ent2);
+            em.flush();
+
+            Object[] results = (Object[]) em.createQuery("SELECT e1.aggregateObjectMapping, e2.aggregateObjectMapping "
+                    + "FROM SimpleMappingEntity e1, SimpleMappingEntity e2 "
+                    + "WHERE e1.mappingField1 = 101 AND e2.mappingField1 = 102").getSingleResult();
+
+            Assert.assertArrayEquals(new Object[] {ent1.getAggregateObjectMapping(), ent2.getAggregateObjectMapping()}, results);
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
