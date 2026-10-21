@@ -303,16 +303,16 @@ public class H2Platform extends DatabasePlatform {
     /**
      * INTERNAL
      * Set the parameter in the JDBC statement at the given index.
-     * H2 requires {@link java.time.LocalTime} to be bound via {@code setTime()} rather than
-     * {@code setTimestamp()} (the base-class default). Binding as a TIMESTAMP causes H2 to
-     * compare a TIME column result against a TIMESTAMP value, which never matches.
+     * Bind {@link LocalTime} as a JDBC 4.2 TIME value, preserving nanoseconds.
+     * The base-class TIMESTAMP binding has a date component that prevents TIME
+     * comparisons from matching; conversion through java.sql.Time loses fractions.
      */
     @Override
     public void setParameterValueInDatabaseCall(Object parameter,
                                                 PreparedStatement statement, int index, AbstractSession session)
             throws SQLException {
         if (parameter instanceof LocalTime) {
-            statement.setTime(index, java.sql.Time.valueOf((LocalTime) parameter));
+            statement.setObject(index, parameter);
             return;
         }
         super.setParameterValueInDatabaseCall(parameter, statement, index, session);
@@ -328,7 +328,7 @@ public class H2Platform extends DatabasePlatform {
                                                 CallableStatement statement, String name, AbstractSession session)
             throws SQLException {
         if (parameter instanceof LocalTime) {
-            statement.setTime(name, java.sql.Time.valueOf((LocalTime) parameter));
+            statement.setObject(name, parameter);
             return;
         }
         super.setParameterValueInDatabaseCall(parameter, statement, name, session);
@@ -336,14 +336,14 @@ public class H2Platform extends DatabasePlatform {
 
     // H2 does not accept EXTRACT(DATE FROM ...) or EXTRACT(TIME FROM ...) because
     // DATE and TIME are not valid single-field datetime specifiers in H2's EXTRACT().
-    // We emulate them with CAST(col AS DATE) and CAST(col AS TIME) instead,
-    // which H2 supports natively and returns java.sql.Date / java.sql.Time respectively.
+    // We emulate them with CAST(col AS DATE) and CAST(col AS TIME(9)) instead.
+    // Explicit TIME precision preserves the fractional seconds of the input value.
     private static final class H2ExtractOperator extends ExtractOperator {
 
         // DATE emulation: CAST(:first AS DATE)
         private static final String[] DATE_STRINGS = new String[] {"CAST(", " AS DATE)"};
-        // TIME emulation: CAST(:first AS TIME)
-        private static final String[] TIME_STRINGS = new String[] {"CAST(", " AS TIME)"};
+        // TIME emulation: CAST(:first AS TIME(9))
+        private static final String[] TIME_STRINGS = new String[] {"CAST(", " AS TIME(9))"};
 
         private H2ExtractOperator() {
             super();
