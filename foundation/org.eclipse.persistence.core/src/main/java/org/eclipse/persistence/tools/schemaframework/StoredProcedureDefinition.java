@@ -166,11 +166,11 @@ public class StoredProcedureDefinition extends DatabaseObjectDefinition {
                 writer.write("\t");
                 FieldDefinition argument = getArguments().get(i);
                 Integer argumentType = getArgumentTypes().get(i);
-                if (argumentType == IN) {
+                if (IN.equals(argumentType)) {
                     printArgument(argument, writer, session);
-                } else if (argumentType == OUT) {
+                } else if (OUT.equals(argumentType)) {
                     printOutputArgument(argument, writer, session);
-                } else if (argumentType == INOUT) {
+                } else if (INOUT.equals(argumentType)) {
                     printInOutputArgument(argument, writer, session);
                 }
                 if (i < (getArguments().size() - 1)) {
