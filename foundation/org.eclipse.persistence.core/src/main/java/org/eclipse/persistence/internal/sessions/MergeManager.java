@@ -1097,7 +1097,7 @@ public class MergeManager {
         if (primaryKey != null) {
             doesExist = (Boolean)existQuery.checkEarlyReturn(clone, primaryKey, unitOfWork, null);
         }
-        if (doesExist == Boolean.FALSE) {
+        if (Boolean.FALSE.equals(doesExist)) {
             checkNewObjectLockVersion(clone, primaryKey, descriptor, unitOfWork);
             Object registeredObject = unitOfWork.internalRegisterObject(clone, descriptor, shouldForceCascade);//should use cloneAndRegisterNewObject to avoid the exist check
             this.mergedNewObjects.put(registeredObject, registeredObject);

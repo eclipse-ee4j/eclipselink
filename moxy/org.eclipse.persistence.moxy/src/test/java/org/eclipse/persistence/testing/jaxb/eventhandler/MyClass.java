@@ -14,6 +14,8 @@
 //    Denise Smith - May 2012
 package org.eclipse.persistence.testing.jaxb.eventhandler;
 
+import java.util.Objects;
+
 import jakarta.xml.bind.annotation.XmlAttribute;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlRootElement;
@@ -32,7 +34,7 @@ public class MyClass {
        public boolean equals(Object testObject){
            if(testObject instanceof MyClass){
                MyClass compareObject = (MyClass)testObject;
-               if(myAttribute != compareObject.myAttribute || myElement != compareObject.myElement){
+               if(!Objects.equals(myAttribute, compareObject.myAttribute) || !Objects.equals(myElement, compareObject.myElement)){
                    return false;
                }
                if(myEnumAttribute == null){
