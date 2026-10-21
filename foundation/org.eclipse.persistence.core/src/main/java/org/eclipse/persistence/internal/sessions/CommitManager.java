@@ -529,7 +529,7 @@ public class CommitManager {
      * if true the query should not write the object.
      */
     public boolean isCommitCompleted(Object object) {
-        return getCommitState().get(object) == COMPLETE;
+        return COMPLETE.equals(getCommitState().get(object));
     }
 
     /**
@@ -539,7 +539,7 @@ public class CommitManager {
      */
     public boolean isCommitCompletedInPostOrIgnore(Object object) {
         Integer state = getCommitState().get(object);
-        return (state == COMPLETE) || (state == POST) || (state == IGNORE);
+        return COMPLETE.equals(state) || POST.equals(state) || IGNORE.equals(state);
     }
 
     /**
@@ -547,7 +547,7 @@ public class CommitManager {
      * This should be called by any query that is writing an object.
      */
     public boolean isCommitInPostModify(Object object) {
-        return getCommitState().get(object) == POST;
+        return POST.equals(getCommitState().get(object));
     }
 
     /**
@@ -556,7 +556,7 @@ public class CommitManager {
      * if true the query must force a shallow insert of the object if it is new.
      */
     public boolean isCommitInPreModify(Object objectOrChangeSet) {
-        return getCommitState().get(objectOrChangeSet) == PRE;
+        return PRE.equals(getCommitState().get(objectOrChangeSet));
     }
 
     /**
