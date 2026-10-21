@@ -32,6 +32,7 @@ import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter;
 import org.eclipse.persistence.internal.expressions.FunctionExpression;
 import org.eclipse.persistence.internal.expressions.LiteralExpression;
+import org.eclipse.persistence.internal.expressions.ParameterExpression;
 import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
@@ -286,8 +287,8 @@ public class SQLServerPlatformTest {
             assertDistinctProjection(repeated, 2, 3);
             Assert.assertEquals(prepared.getSQLString(), repeated.getSQLString());
             Assert.assertEquals(2, repeated.getParameters().size());
-            Assert.assertEquals("minimum", ((DatabaseField) repeated.getParameters().get(0)).getName());
-            Assert.assertEquals("excluded", ((DatabaseField) repeated.getParameters().get(1)).getName());
+            Assert.assertEquals("minimum", ((ParameterExpression) repeated.getParameters().get(0)).getField().getName());
+            Assert.assertEquals("excluded", ((ParameterExpression) repeated.getParameters().get(1)).getField().getName());
         }
         Assert.assertEquals(2, ((ReportQuery) query).getItems().size());
     }
