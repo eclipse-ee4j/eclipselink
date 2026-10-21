@@ -44,7 +44,8 @@
         <servlet.version>6.2.0-M2</servlet.version>
         <transaction.version>2.0.1</transaction.version>
         <validation.version>4.0.0-M1</validation.version>
-        <jaxb.api.version>4.1.0-M1</jaxb.api.version>
+        <!--Temporary JDK 25 compatibility pin until https://github.com/jakartaee/jaxb-api/issues/409 is resolved.-->
+        <jaxb.api.version>4.0.5</jaxb.api.version>
         <soap.api.version>3.0.2</soap.api.version>
         <ws-api.version>4.0.3</ws-api.version>
         <ws-rs.version>4.0.0</ws-rs.version>
