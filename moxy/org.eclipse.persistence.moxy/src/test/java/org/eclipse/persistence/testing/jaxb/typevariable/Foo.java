@@ -14,6 +14,8 @@
 //     Blaise Doughan - 2.5.1 - initial implementation
 package org.eclipse.persistence.testing.jaxb.typevariable;
 
+import java.util.Objects;
+
 public class Foo {
 
     public Integer id;
@@ -31,7 +33,7 @@ public class Foo {
             return false;
         }
         Foo test = (Foo) obj;
-        return id == test.id;
+        return Objects.equals(id, test.id);
     }
 
     @Override
