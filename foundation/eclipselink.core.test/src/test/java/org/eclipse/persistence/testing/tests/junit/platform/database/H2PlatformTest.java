@@ -12,9 +12,15 @@
 
 // Contributors:
 //     IBM - Fix for issue 2903: H2 SQL type mismatch when comparing boolean attribute to integer
+//     Additional null and JDBC binding controls generated with OpenAI Codex.
 package org.eclipse.persistence.testing.tests.junit.platform.database;
 
 import java.io.StringWriter;
+import java.lang.reflect.Proxy;
+import java.sql.CallableStatement;
+import java.sql.PreparedStatement;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.persistence.queries.SQLCall;
 import org.eclipse.persistence.platform.database.H2Platform;
@@ -86,5 +92,40 @@ public class H2PlatformTest {
     @Test
     public void testIsH2() {
         Assert.assertTrue("H2Platform.isH2() must return true", h2Platform.isH2());
+    }
+
+    @Test
+    public void testNullLiteralRemainsNull() {
+        StringWriter writer = new StringWriter();
+        h2Platform.appendParameter(new SQLCall(), writer, null);
+        Assert.assertEquals("NULL", writer.toString());
+    }
+
+    @Test
+    public void testIndexedBooleanBindingRemainsJdbcBoolean() throws Exception {
+        List<String> calls = new ArrayList<>();
+        PreparedStatement statement = (PreparedStatement) Proxy.newProxyInstance(
+                getClass().getClassLoader(), new Class<?>[] {PreparedStatement.class},
+                (proxy, method, args) -> {
+                    calls.add(method.getName() + ":" + args[0] + ":" + args[1]);
+                    return null;
+                });
+        h2Platform.setParameterValueInDatabaseCall(true, statement, 1, null);
+        h2Platform.setParameterValueInDatabaseCall(false, statement, 2, null);
+        Assert.assertEquals(List.of("setBoolean:1:true", "setBoolean:2:false"), calls);
+    }
+
+    @Test
+    public void testNamedBooleanBindingRemainsJdbcBoolean() throws Exception {
+        List<String> calls = new ArrayList<>();
+        CallableStatement statement = (CallableStatement) Proxy.newProxyInstance(
+                getClass().getClassLoader(), new Class<?>[] {CallableStatement.class},
+                (proxy, method, args) -> {
+                    calls.add(method.getName() + ":" + args[0] + ":" + args[1]);
+                    return null;
+                });
+        h2Platform.setParameterValueInDatabaseCall(true, statement, "first", null);
+        h2Platform.setParameterValueInDatabaseCall(false, statement, "second", null);
+        Assert.assertEquals(List.of("setBoolean:first:true", "setBoolean:second:false"), calls);
     }
 }
