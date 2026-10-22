@@ -14,18 +14,30 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.descriptors.copying;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DescriptorException;
+import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
+import org.eclipse.persistence.mappings.CollectionMapping;
+import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.ManyToManyMapping;
+import org.eclipse.persistence.mappings.OneToManyMapping;
 import org.eclipse.persistence.sessions.Session;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.RecordComponent;
 import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * <p><b>Purpose</b>: This is the copy policy for {@code java.lang.Record}.
  * <p>
  * It creates a copy by creating a new instance. As {@code java.lang.Record} is immutable
  * all cloned attributes must be collected and passed to the constructor.
+ * <p>
+ * Relationship collections ({@code @OneToMany}/{@code @ManyToMany}) are cloned through the
+ * mapping so that their referenced entities are registered as UnitOfWork working clones;
+ * otherwise the clone would keep the shared-cache originals and a later {@code persist()} on
+ * such an entity would re-INSERT it (EclipseLink issue #2929).
  */
 public class RecordCopyPolicy extends AbstractCopyPolicy {
     public RecordCopyPolicy() {
@@ -34,7 +46,7 @@ public class RecordCopyPolicy extends AbstractCopyPolicy {
 
     @Override
     public Object buildClone(Object domainObject, Session session) throws DescriptorException {
-        return cloneRecord((Record) domainObject);
+        return cloneRecord((Record) domainObject, session);
     }
 
     @Override
@@ -43,15 +55,24 @@ public class RecordCopyPolicy extends AbstractCopyPolicy {
     }
 
     //There is limited functionality some complex nested objects shouldn't be cloned.
-    private <R extends Record> R cloneRecord(R template) {
+    private <R extends Record> R cloneRecord(R template, Session session) {
         try {
             ArrayList<Class<?>> types = new ArrayList<>();
             ArrayList<Object> values = new ArrayList<>();
+            ClassDescriptor descriptor = (session == null) ? null : session.getDescriptor(template.getClass());
             for (RecordComponent component : template.getClass().getRecordComponents()) {
                 types.add(component.getType());
                 Object value = component.getAccessor().invoke(template);
                 if (value instanceof Record) {
-                    value = cloneRecord((Record) value);
+                    value = cloneRecord((Record) value, session);
+                } else if (value instanceof Collection && session instanceof UnitOfWorkImpl && descriptor != null) {
+                    DatabaseMapping mapping = descriptor.getMappingForAttributeName(component.getName());
+                    if (mapping instanceof OneToManyMapping || mapping instanceof ManyToManyMapping) {
+                        // Clone the relationship collection so that its entities are registered
+                        // as working clones in the UnitOfWork, not left as shared-cache originals.
+                        value = ((CollectionMapping) mapping).buildCloneForPartObject(
+                                value, template, null, null, (UnitOfWorkImpl) session, null, false, false);
+                    }
                 }
                 values.add(value);
             }
