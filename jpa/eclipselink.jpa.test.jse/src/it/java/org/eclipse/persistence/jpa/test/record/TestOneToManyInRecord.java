@@ -69,4 +69,39 @@ public class TestOneToManyInRecord {
             em.close();
         }
     }
+
+    @Test
+    public void testPersistLoadedChild() {
+        EntityManager em = emf.createEntityManager();
+        try {
+            // Initial state: parent with one child.
+            em.getTransaction().begin();
+            RecordAggregateChildEntity child = new RecordAggregateChildEntity("child");
+            RecordAggregateParentEntity parent = new RecordAggregateParentEntity(
+                    7L, new RecordAggregateContainer(List.of(child)));
+            em.persist(parent);
+            em.getTransaction().commit();
+            em.clear();
+
+            // Load the parent, then persist the already-loaded child (as a repository
+            // store() does with legs.forEach(persist(leg))). This used to re-INSERT the
+            // child and fail with a duplicate-key violation (issue #2929).
+            em.getTransaction().begin();
+            RecordAggregateParentEntity loaded = em.find(RecordAggregateParentEntity.class, 7L);
+            RecordAggregateChildEntity loadedChild = loaded.getContainer().children().get(0);
+            em.persist(loadedChild);
+            em.getTransaction().commit();
+            em.clear();
+
+            RecordAggregateParentEntity found = em.find(RecordAggregateParentEntity.class, 7L);
+            assertNotNull("Parent should be found", found);
+            assertEquals(1, found.getContainer().children().size());
+            assertEquals("child", found.getContainer().children().get(0).getName());
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            em.close();
+        }
+    }
 }
