@@ -29,6 +29,7 @@ import org.eclipse.persistence.testing.models.jpa.xml.relationships.unidirection
 import org.eclipse.persistence.testing.models.jpa.xml.relationships.unidirectional.Project;
 
 import java.util.Collection;
+import java.util.Objects;
 
 /**
  * JUnit test case(s) for the TopLink EntityMappingsXMLProcessor.
@@ -192,7 +193,7 @@ public class XmlUnidirectionalRelationshipsTest extends JUnitTestCase {
         assertEquals("Employee didn't have correct number of phone numbers", 2, phones.size());
         boolean phonesMatched = true;
         for (PhoneNumber phone : phones) {
-            if (phone.getId() != otmPhone1Id && phone.getId() != otmPhone2Id) {
+            if (!Objects.equals(phone.getId(), otmPhone1Id) && !Objects.equals(phone.getId(), otmPhone2Id)) {
                 phonesMatched = false;
             }
         }
@@ -347,7 +348,7 @@ public class XmlUnidirectionalRelationshipsTest extends JUnitTestCase {
         assertEquals("Employee didn't have correct number of projects", 2, projects.size());
         boolean projectsMatched = true;
         for (Project project : projects) {
-            if (project.getId() != mtmProject1Id && project.getId() != mtmProject2Id) {
+            if (!Objects.equals(project.getId(), mtmProject1Id) && !Objects.equals(project.getId(), mtmProject2Id)) {
                 projectsMatched = false;
             }
         }

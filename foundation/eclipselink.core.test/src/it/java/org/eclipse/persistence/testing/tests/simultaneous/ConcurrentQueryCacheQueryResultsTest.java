@@ -114,7 +114,7 @@ public class ConcurrentQueryCacheQueryResultsTest extends TestCase {
         }
         // fail if any test result was incorrect (false)
         for (int resultId = 0; resultId < NUMBER_OF_EXECUTIONS; resultId++) {
-            if (this.testResults.get(resultId) == Boolean.FALSE) {
+            if (Boolean.FALSE.equals(this.testResults.get(resultId))) {
                 fail("Test result failed (false) for test result id: " + resultId);
             }
         }

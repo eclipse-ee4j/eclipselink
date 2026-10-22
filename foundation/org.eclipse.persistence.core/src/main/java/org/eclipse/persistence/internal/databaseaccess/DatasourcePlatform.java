@@ -92,8 +92,12 @@ public class DatasourcePlatform implements Platform {
     protected String startDelimiter = null;
     protected String endDelimiter = null;
 
-    /** Ensures that only one thread at a time can add/remove sequences */
-    protected Object sequencesLock = Boolean.TRUE;
+    /**
+     * Ensures that only one thread at a time can add/remove sequences.
+     * Must be a distinct per-instance object (never a shared/cached value-based wrapper like Boolean.TRUE).
+     * An empty array is used instead of new Object() because this class is Serializable.
+     */
+    protected Object sequencesLock = new Object[0];
 
     /** If the native sequence type is not supported, if table sequencing should be used. */
     protected boolean defaultNativeSequenceToTable;
