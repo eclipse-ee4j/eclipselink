@@ -24,6 +24,7 @@ package org.eclipse.persistence.internal.jpa.metadata.xml;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
@@ -57,11 +58,11 @@ public class XMLPersistenceUnitMetadata extends ORMetadata {
         if (objectToCompare instanceof XMLPersistenceUnitMetadata) {
             XMLPersistenceUnitMetadata persistenceUnitMetadata = (XMLPersistenceUnitMetadata) objectToCompare;
 
-            if (m_xmlMappingMetadataComplete != persistenceUnitMetadata.getXMLMappingMetadataComplete()) {
+            if (!Objects.equals(m_xmlMappingMetadataComplete, persistenceUnitMetadata.getXMLMappingMetadataComplete())) {
                 return false;
             }
 
-            if (m_excludeDefaultMappings != persistenceUnitMetadata.getExcludeDefaultMappings()) {
+            if (!Objects.equals(m_excludeDefaultMappings, persistenceUnitMetadata.getExcludeDefaultMappings())) {
                 return false;
             }
 

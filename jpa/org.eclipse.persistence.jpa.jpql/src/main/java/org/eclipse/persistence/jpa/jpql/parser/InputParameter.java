@@ -102,7 +102,7 @@ public final class InputParameter extends AbstractExpression {
         if (positional == null) {
             positional = getText().charAt(0) == '?';
         }
-        return (positional == Boolean.FALSE);
+        return Boolean.FALSE.equals(positional);
     }
 
     /**
@@ -114,7 +114,7 @@ public final class InputParameter extends AbstractExpression {
         if (positional == null) {
             positional = getText().charAt(0) == '?';
         }
-        return (positional == Boolean.TRUE);
+        return Boolean.TRUE.equals(positional);
     }
 
     @Override
