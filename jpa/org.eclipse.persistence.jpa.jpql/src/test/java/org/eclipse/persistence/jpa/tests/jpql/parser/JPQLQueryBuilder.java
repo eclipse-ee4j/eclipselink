@@ -314,7 +314,7 @@ public final class JPQLQueryBuilder {
                         if ((length > 0) && registry.isIdentifier(identifier)) {
 
                             // The word "ORDER"/"GROUP" is not the entity name but the identifier ORDER BY
-                            if ((fromClause == Boolean.TRUE) &&
+                            if (Boolean.TRUE.equals(fromClause) &&
                                 (identifier.equalsIgnoreCase("ORDER") ||
                                  identifier.equalsIgnoreCase("GROUP")) &&
                                 (wordParser.startsWithIgnoreCase(ORDER_BY, index - 5) ||
@@ -324,7 +324,7 @@ public final class JPQLQueryBuilder {
                             }
 
                             // Special case where Order/Group should not be capitalized when it's the entity name
-                            if (!((fromClause == Boolean.TRUE) &&
+                            if (!(Boolean.TRUE.equals(fromClause) &&
                                   (identifier.equalsIgnoreCase("ORDER") ||
                                    identifier.equalsIgnoreCase("GROUP")))) {
 
@@ -338,11 +338,11 @@ public final class JPQLQueryBuilder {
                                 fromClause = Boolean.FALSE;
                             }
                             // Entering the FROM clause
-                            else if ((fromClause == Boolean.FALSE) && FROM.equalsIgnoreCase(identifier)) {
+                            else if (Boolean.FALSE.equals(fromClause) && FROM.equalsIgnoreCase(identifier)) {
                                 fromClause = Boolean.TRUE;
                             }
                             // Exiting the FROM clause
-                            else if ((fromClause == Boolean.TRUE) &&
+                            else if (Boolean.TRUE.equals(fromClause) &&
                                      (WHERE  .equalsIgnoreCase(identifier) ||
                                       HAVING .equalsIgnoreCase(identifier) ||
                                       "ORDER".equalsIgnoreCase(identifier) ||

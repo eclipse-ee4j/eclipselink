@@ -62,7 +62,7 @@ public class ConcurrencyTest extends JUnitTestCase {
         em.getTransaction().commit();
         em.close();
         try {
-            Integer i = 5;
+            Object i = new Object();
             Thread thread1 = new Thread(new Runner1(i, dept.getId(), equip.getId(), emf));
             thread1.setName("Runner1");
             Thread thread2 = new Thread(new Runner2(i, dept.getId(), equip.getId(), emf));
@@ -105,7 +105,7 @@ public class ConcurrencyTest extends JUnitTestCase {
         if (isOnServer()) {
             return;
         }
-        Integer toWaitOn = 4;
+        Object toWaitOn = new Object();
         Thread thread1 = null;
         EntityManagerFactory emf = getEntityManagerFactory();
         EntityManager em = emf.createEntityManager();
