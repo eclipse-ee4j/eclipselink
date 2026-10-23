@@ -277,6 +277,22 @@ public class H2Platform extends DatabasePlatform {
         return exOperator;
     }
 
+    /**
+     * Help to generate SQL like WHERE (REDUCED = TRUE) instead of
+     * WHERE (REDUCED = 1), which is compatible with H2's strict type system
+     * @param bool
+     * @param writer
+     * @throws IOException
+     */
+    @Override
+    protected void appendBoolean(Boolean bool, Writer writer) throws IOException {
+        if (bool) {
+            writer.write("TRUE");
+        } else {
+            writer.write("FALSE");
+        }
+    }
+
     @Override
     public boolean isH2() {
         return true;
