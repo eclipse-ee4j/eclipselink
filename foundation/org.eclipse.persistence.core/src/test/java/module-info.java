@@ -23,6 +23,7 @@ open module org.eclipse.persistence.core.test {
     requires org.eclipse.persistence.asm;
     requires org.eclipse.persistence.core;
     requires junit;
+    requires org.mockito;
 
     exports org.eclipse.persistence.testing.oxm;
     exports org.eclipse.persistence.testing.oxm.classloader;
