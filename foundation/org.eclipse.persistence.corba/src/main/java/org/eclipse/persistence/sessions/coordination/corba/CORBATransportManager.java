@@ -15,11 +15,9 @@
 package org.eclipse.persistence.sessions.coordination.corba;
 
 import org.eclipse.persistence.sessions.coordination.RemoteCommandManagerException;
-import org.eclipse.persistence.internal.helper.SerializationHelper;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sessions.coordination.RemoteConnection;
 import org.eclipse.persistence.internal.sessions.coordination.corba.*;
-import org.eclipse.persistence.sessions.coordination.Command;
 import org.eclipse.persistence.sessions.coordination.RemoteCommandManager;
 import org.eclipse.persistence.sessions.coordination.ServiceId;
 import org.eclipse.persistence.sessions.coordination.TransportManager;
@@ -147,13 +145,8 @@ public abstract class CORBATransportManager extends TransportManager {
      */
     public static byte[] processCommand(byte[] command, RemoteCommandManager rcm) {
         try {
-            if (rcm.getSerializer() != null) {
-                rcm.processCommandFromRemoteConnection(command);
-            } else {
-                // deserialize byte [] to Command object
-                Command deserializedCmd = (Command)SerializationHelper.deserialize(command);
-                rcm.processCommandFromRemoteConnection(deserializedCmd);
-            }
+            // Both branches deserialize through RemoteCommandManager, which applies the class filter.
+            rcm.processCommandFromRemoteConnection(command);
         } catch (Exception e) {
             // Log the problem encountered during deserialization or rcm processing command
             Object[] args = { command.getClass().getSimpleName(), Helper.printStackTraceToString(e) };

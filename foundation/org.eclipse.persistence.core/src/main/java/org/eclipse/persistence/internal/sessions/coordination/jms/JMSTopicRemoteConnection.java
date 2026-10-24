@@ -33,7 +33,6 @@ import org.eclipse.persistence.sessions.coordination.jms.JMSTopicTransportManage
 import org.eclipse.persistence.sessions.serializers.JavaSerializer;
 import org.eclipse.persistence.sessions.serializers.Serializer;
 
-import java.io.Serializable;
 
 /**
  * <p>
@@ -155,14 +154,15 @@ public class JMSTopicRemoteConnection extends BroadcastRemoteConnection implemen
                 topicPublisher = publishingSession.createPublisher(topic);
             }
 
-            Message message;
-            if (command instanceof byte[]) {
-                message = publishingSession.createBytesMessage();
-                ((BytesMessage)message).writeBytes((byte[])command);
-            } else {
-                message = publishingSession.createObjectMessage();
-                ((ObjectMessage)message).setObject((Serializable)command);
+            if (!(command instanceof byte[])) {
+                Serializer serializer = this.rcm.getSerializer();
+                if (serializer == null) {
+                    serializer = JavaSerializer.instance;
+                }
+                command = serializer.serialize(command, (AbstractSession) this.rcm.getCommandProcessor());
             }
+            BytesMessage message = publishingSession.createBytesMessage();
+            message.writeBytes((byte[]) command);
 
             Object[] debugInfo = null;
             if (rcm.shouldLogDebugMessage()) {
@@ -208,7 +208,10 @@ public class JMSTopicRemoteConnection extends BroadcastRemoteConnection implemen
         Object object = null;
         try {
             if (message instanceof ObjectMessage) {
-                object = ((ObjectMessage)message).getObject();
+                // The JMS provider deserializes ObjectMessage before this method runs.
+                Object[] args = {message.getClass().getName(), topic == null ? "" : topic};
+                this.rcm.logWarningWithoutLevelCheck("received_unexpected_message_type", args);
+                return;
             } else if (message instanceof BytesMessage byteMessage) {
                 byte[] bytes = new byte[(int)byteMessage.getBodyLength()];
                 byteMessage.readBytes(bytes);
@@ -216,7 +219,7 @@ public class JMSTopicRemoteConnection extends BroadcastRemoteConnection implemen
                 if (serializer == null) {
                     serializer = JavaSerializer.instance;
                 }
-                object = serializer.deserialize(bytes, (AbstractSession)this.rcm.getCommandProcessor());
+                object = JavaSerializer.deserializeRemote(serializer, bytes, (AbstractSession)this.rcm.getCommandProcessor());
             } else {
                 if (this.rcm.shouldLogWarningMessage() && (topic == null)) {
                     try {
