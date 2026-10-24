@@ -33,6 +33,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
+import java.util.concurrent.TimeUnit;
 
 /**
  * INTERNAL:
@@ -271,17 +272,17 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
         if ((cacheKey != null) && (shouldReturnInvalidatedObjects || !descriptor.getCacheInvalidationPolicy().isInvalidated(cacheKey))) {
             cacheKey.getInstanceLock().lock();
             try {
-                //if the object in the cachekey is null but the key is acquired then
-                //someone must be rebuilding it or creating a new one.  Sleep until
-                // it's finished. A plain wait here would be more efficient but we may not
-                // get notified for quite some time (ie deadlock) if the other thread
-                //is building the object.  Must wait and not sleep in order for the monitor to be released
+                // A key can be acquired before its object is built. Release the state lock
+                // while waiting for another writer to finish constructing the object.
                 objectFromCache = cacheKey.getObject();
-                try {
-                    while (cacheKey.isAcquired() && (objectFromCache == null)) {
-                        cacheKey.wait(5);
+                if (objectFromCache == null) {
+                    try {
+                        while (cacheKey.isAcquiredForWritingAndOwnedByDifferentThread()) {
+                            cacheKey.getInstanceLockCondition().await(5, TimeUnit.MILLISECONDS);
+                        }
+                        objectFromCache = cacheKey.getObject();
+                    } catch (InterruptedException ex) {
                     }
-                } catch (InterruptedException ex) {
                 }
                 if (objectFromCache == null) {
                     return null;
