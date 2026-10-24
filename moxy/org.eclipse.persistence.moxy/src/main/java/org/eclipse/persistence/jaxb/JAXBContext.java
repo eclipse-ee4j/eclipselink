@@ -37,6 +37,7 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
@@ -261,12 +262,32 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
         if (!initializedXMLInputFactory) {
             try {
                 xmlInputFactory = XMLInputFactory.newInstance();
+                hardenXMLInputFactory(xmlInputFactory);
             } catch (FactoryConfigurationError e) {
             } finally {
                 initializedXMLInputFactory = true;
             }
         }
         return xmlInputFactory;
+    }
+
+    /**
+     * StAX defaults still resolve external entities. SAX and DOM go through
+     * XMLHelper, which enables secure processing. This factory does not.
+     */
+    private static void hardenXMLInputFactory(XMLInputFactory factory) {
+        setFactoryProperty(factory, XMLInputFactory.SUPPORT_DTD, Boolean.FALSE);
+        setFactoryProperty(factory, XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, Boolean.FALSE);
+        setFactoryProperty(factory, XMLInputFactory.IS_REPLACING_ENTITY_REFERENCES, Boolean.FALSE);
+        setFactoryProperty(factory, XMLConstants.ACCESS_EXTERNAL_DTD, "");
+    }
+
+    private static void setFactoryProperty(XMLInputFactory factory, String name, Object value) {
+        try {
+            factory.setProperty(name, value);
+        } catch (IllegalArgumentException unsupported) {
+            // The JDK factory supports these. A third-party factory might not.
+        }
     }
 
     AtomicBoolean getHasLoggedValidatorInfo() {
