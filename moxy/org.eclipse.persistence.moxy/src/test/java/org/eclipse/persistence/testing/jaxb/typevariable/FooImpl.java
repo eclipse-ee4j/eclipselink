@@ -14,6 +14,8 @@
 //     Blaise Doughan - 2.5.1 - initial implementation
 package org.eclipse.persistence.testing.jaxb.typevariable;
 
+import java.util.Objects;
+
 public class FooImpl implements FooInterface{
 
     public Integer id;
@@ -31,7 +33,7 @@ public class FooImpl implements FooInterface{
             return false;
         }
         FooImpl test = (FooImpl) obj;
-        return id == test.id;
+        return Objects.equals(id, test.id);
     }
 
     @Override

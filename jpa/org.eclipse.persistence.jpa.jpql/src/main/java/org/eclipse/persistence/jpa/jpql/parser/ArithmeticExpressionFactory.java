@@ -76,7 +76,7 @@ public final class ArithmeticExpressionFactory extends ExpressionFactory {
 
         // Return right away the number literal
         // "1 + 1" can't be parsed as "1, +1"
-        if ((type == Boolean.TRUE) && (expression == null)) {
+        if (Boolean.TRUE.equals(type) && (expression == null)) {
             expression = new NumericLiteral(parent);
             expression.parse(wordParser, tolerant);
             return expression;
@@ -86,7 +86,7 @@ public final class ArithmeticExpressionFactory extends ExpressionFactory {
         // is null, then it means an ArithmeticFactor has to be used.
         // In any other cases, the expression would be for instance an AND
         // expression, a function, etc
-        if ((type == Boolean.FALSE) && (expression == null)) {
+        if (Boolean.FALSE.equals(type) && (expression == null)) {
             expression = new ArithmeticFactor(parent, word);
             expression.parse(wordParser, tolerant);
             return expression;
