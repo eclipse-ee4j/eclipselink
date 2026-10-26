@@ -87,6 +87,7 @@ spec:
     }
     options {
         disableConcurrentBuilds(abortPrevious: true)
+        buildDiscarder(logRotator(numToKeepStr: '5', artifactNumToKeepStr: '1'))
     }
     environment {
         LANG = 'en_US.UTF-8'
