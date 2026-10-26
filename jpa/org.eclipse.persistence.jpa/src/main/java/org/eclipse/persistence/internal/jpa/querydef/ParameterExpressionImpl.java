@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,6 +17,7 @@ package org.eclipse.persistence.internal.jpa.querydef;
 
 import java.io.Serial;
 
+import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.criteria.ParameterExpression;
 import jakarta.persistence.metamodel.Metamodel;
 
@@ -28,6 +29,9 @@ public class ParameterExpressionImpl<T> extends ExpressionImpl<T> implements Par
     @Serial
     private static final long serialVersionUID = 1L;
 
+    public static final String QUERY_PARAMETERS_PROPERTY = "eclipselink.criteria.parameter-metadata";
+
+    protected Class<? extends AttributeConverter<T, ?>> converterClass;
     protected String name;
     protected String internalName;
     protected Integer position;
@@ -42,6 +46,16 @@ public class ParameterExpressionImpl<T> extends ExpressionImpl<T> implements Par
         super(metamodel, javaType, null);
         this.internalName = String.valueOf(System.identityHashCode(this));
         this.currentNode = new ExpressionBuilder().getParameter(this.internalName, javaType);
+    }
+
+    public ParameterExpressionImpl(Metamodel metamodel, Class<T> javaType,
+            Class<? extends AttributeConverter<T, ?>> converterClass) {
+        this(metamodel, javaType);
+        this.converterClass = converterClass;
+    }
+
+    public Class<? extends AttributeConverter<T, ?>> getConverterClass() {
+        return converterClass;
     }
 
     public ParameterExpressionImpl(Metamodel metamodel, Class<T> javaType, Integer position){

@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation.
  * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2025 IBM Corporation. All rights reserved.
  *
@@ -827,6 +828,25 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
                 hasCustomQuery = true;
                 // The custom query will be used not the original.
                 queryToExecute = customQuery;
+            }
+        }
+
+        // An immediate agent operation carries per-invocation state which must
+        // survive replacement by the descriptor's cached write query. Reprepare
+        // only an owned clone, since generated-key and owned-row SQL can differ.
+        if (hasCustomQuery && (getProperty("eclipselink.entity-agent.operation") != null
+                || Boolean.TRUE.equals(getProperty("eclipselink.entity-agent.internal-read"))
+                || Boolean.TRUE.equals(getProperty("eclipselink.entity-agent")))) {
+            queryToExecute = (DatabaseQuery) queryToExecute.clone();
+            Map<Object, Object> operationProperties = new HashMap<>(queryToExecute.getProperties());
+            operationProperties.putAll(getProperties());
+            queryToExecute.setProperties(operationProperties);
+            if ("UPSERT".equals(getProperty("eclipselink.entity-agent.operation"))
+                    && queryToExecute.isInsertObjectQuery()
+                    && queryToExecute.getQueryMechanism().isExpressionQueryMechanism()) {
+                queryToExecute.setQueryMechanism(new ExpressionQueryMechanism(queryToExecute));
+                ((InsertObjectQuery) queryToExecute).setModifyRow(null);
+                queryToExecute.setIsPrepared(false);
             }
         }
 
@@ -1801,6 +1821,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
         this.arguments = query.arguments;
         this.nullableArguments = query.nullableArguments;
         this.argumentTypes = query.argumentTypes;
+        this.argumentParameterTypes = query.argumentParameterTypes;
         this.argumentTypeNames = query.argumentTypeNames;
         this.argumentValues = query.argumentValues;
         this.queryTimeout = query.queryTimeout;

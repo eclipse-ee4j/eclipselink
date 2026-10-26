@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
- * Copyright (c) 2012, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 Payara Services Ltd.
  *
  * This program and the accompanying materials are made available under the
@@ -65,7 +65,7 @@ public class ConverterClass<T extends AttributeConverter<X, Y>, X, Y> implements
 
     protected String fieldClassificationName;
     protected AttributeConverter<X, Y> attributeConverter;
-    protected AbstractSession session;
+    protected transient AbstractSession session;
     private Class<T> attributeConverterClass;
 
     public ConverterClass(AbstractSession session, Class<T> attributeConverterClass) {
@@ -127,6 +127,8 @@ public class ConverterClass<T extends AttributeConverter<X, Y>, X, Y> implements
      */
     @Override
     public void initialize(DatabaseMapping mapping, Session session) {
+        // Runtime services belong to the deployment using this mapping, not its cached metadata.
+        setSession((AbstractSession) session);
         // Ensure the mapping has the correct field classification set.
         if (mapping.isDirectToFieldMapping()) {
             DirectToFieldMapping fieldMapping = (DirectToFieldMapping) mapping;

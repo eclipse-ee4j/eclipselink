@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2025 Contributors to the Eclipse Foundation.
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -110,6 +110,9 @@ public abstract class DatabaseCall extends DatasourceCall {
      *  Indicate this call should return generated keys. Only supported for INSERT calls.
      */
     protected boolean shouldReturnGeneratedKeys;
+
+    // The qualified identity table for an immediate SQL Server assigned-id insert.
+    private String identityInsertTable;
 
     // The returned fields.
     transient protected Vector<DatabaseField> fields;
@@ -1295,7 +1298,30 @@ public abstract class DatabaseCall extends DatasourceCall {
      * Some queries, such as DDL are not compatible.
      */
     public boolean isBatchExecutionSupported() {
-        return isBatchExecutionSupported;
+        return isBatchExecutionSupported && identityInsertTable == null;
+    }
+
+    /**
+     * Keep assigned identity inserts in a prepared server-side scope, including
+     * when ordinary queries have explicitly disabled parameter binding.
+     */
+    @Override
+    public boolean usesBinding(DatabasePlatform databasePlatform) {
+        return identityInsertTable != null || super.usesBinding(databasePlatform);
+    }
+
+    /**
+     * INTERNAL: Return the identity table whose setting brackets this JDBC call.
+     */
+    public String getIdentityInsertTable() {
+        return identityInsertTable;
+    }
+
+    /**
+     * INTERNAL: Set a platform-quoted table name for assigned identity insertion.
+     */
+    public void setIdentityInsertTable(String identityInsertTable) {
+        this.identityInsertTable = identityInsertTable;
     }
 
     /**

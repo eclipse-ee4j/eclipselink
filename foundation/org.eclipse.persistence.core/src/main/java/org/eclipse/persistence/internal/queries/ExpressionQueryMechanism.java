@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation.
  * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2025 IBM and/or its affiliates. All rights reserved.
  *
@@ -10,7 +11,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
  */
-
 // Contributors:
 //     Oracle - initial API and implementation from Oracle TopLink
 //     Thomas Spiegl - fix for bug 324406
@@ -569,6 +569,13 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         SQLInsertStatement insertStatement = new SQLInsertStatement();
         insertStatement.setTable(table);
         insertStatement.setModifyRow(getModifyRow());
+        ClassDescriptor descriptor = getDescriptor();
+        if ("UPSERT".equals(getQuery().getProperty("eclipselink.entity-agent.operation"))
+                && getSession().getPlatform().isSQLServer() && descriptor.usesSequenceNumbers()
+                && descriptor.getSequence().shouldAcquireValueAfterInsert()
+                && table.equals(descriptor.getSequenceNumberField().getTable())) {
+            insertStatement.setOverrideIdentity(true);
+        }
         if (getDescriptor().hasReturningPolicies() && getDescriptor().getReturnFieldsToGenerateInsert() != null) {
             // In case of RelationalDescriptor only return fields for current table must be used.
             List<DatabaseField> returnFieldsForTable = new ArrayList<>();

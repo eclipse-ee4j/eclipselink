@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -1689,7 +1689,14 @@ public class CacheableTestBase extends JUnitTestCase {
             entity = (CacheableFalseEntity)query.getResultList().get(0);
             IndirectList<?> list = (IndirectList<?>)entity.getDetailsBackPointer();
             assertFalse(list.isInstantiated());
+            IndirectList<?> otherDetails = (IndirectList<?>)entity.getDetails();
+            assertFalse("A constructor-created collection is not previously loaded state", otherDetails.isInstantiated());
+            assertEquals(1, counter.getSqlStatements().size());
+            assertTrue(otherDetails.isEmpty());
             assertEquals(2, counter.getSqlStatements().size());
+            assertFalse(list.isInstantiated());
+            assertEquals(1, list.size());
+            assertTrue(list.isInstantiated());
         } finally{
             rollbackTransaction(em);
             counter.remove();

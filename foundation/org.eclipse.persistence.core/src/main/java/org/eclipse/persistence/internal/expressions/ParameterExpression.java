@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2022,2026 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -39,6 +39,10 @@ import java.util.Map;
  * Used for parameterized expressions, such as expression defined in mapping queries.
  */
 public class ParameterExpression extends BaseExpression {
+
+    /** An explicitly converted argument must not pass through its mapped converter again. */
+    public record ConvertedValue(Object value) implements java.io.Serializable {
+    }
 
     /** The parameter field or name. */
     protected DatabaseField field;
@@ -338,6 +342,9 @@ public class ParameterExpression extends BaseExpression {
                 }
             }
 
+            if (value instanceof ConvertedValue converted) {
+                return converted.value();
+            }
             // validate parameter type against mapping
             // validate against the localbase (false), since there are no nested params
             validateParameterValueAgainstMapping(value, false);

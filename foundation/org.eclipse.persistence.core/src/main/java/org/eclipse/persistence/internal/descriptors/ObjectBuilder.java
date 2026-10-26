@@ -1117,8 +1117,21 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
      * from the values stored in the database row.
      */
     protected Object buildObject(boolean returnCacheKey, ObjectBuildingQuery query, AbstractRecord databaseRow, AbstractSession session, Object primaryKey, CacheKey preFetchedCacheKey, ClassDescriptor concreteDescriptor, JoinedAttributeManager joinManager) throws DatabaseException, QueryException {
+        Map<Object, CacheKey> materializedObjects = null;
+        Object context = query.getProperty("eclipselink.entity-agent.read-context");
+        if (!query.shouldMaintainCache() && primaryKey != null
+                && !concreteDescriptor.isAggregateDescriptor() && !concreteDescriptor.isAggregateCollectionDescriptor()
+                && context instanceof Map<?, ?>) {
+            @SuppressWarnings("unchecked")
+            Map<ClassDescriptor, Map<Object, CacheKey>> materialization = (Map<ClassDescriptor, Map<Object, CacheKey>>) context;
+            materializedObjects = materialization.computeIfAbsent(concreteDescriptor, ignored -> new HashMap<>());
+            CacheKey existing = materializedObjects.get(primaryKey);
+            if (existing != null) {
+                return returnCacheKey ? existing : existing.getObject();
+            }
+        }
         boolean isProtected = concreteDescriptor.getCachePolicy().isProtectedIsolation();
-        if (isProtected && session.isIsolatedClientSession()){
+        if (isProtected && session.isIsolatedClientSession() && materializedObjects == null){
             return buildProtectedObject(returnCacheKey, query, databaseRow, session, primaryKey, preFetchedCacheKey, concreteDescriptor, joinManager);
         }
         Object domainObject = null;
@@ -1179,6 +1192,11 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                     cacheKey = new CacheKey(primaryKey);
                     cacheKey.setObject(domainObject);
                 }
+                if (materializedObjects != null) {
+                    // Resolve eager cycles before traversing attributes, without
+                    // publishing the source to any shared identity map.
+                    materializedObjects.put(primaryKey, cacheKey);
+                }
                 concreteObjectBuilder.buildAttributesIntoObject(domainObject, cacheKey, databaseRow, query, joinManager, fetchGroup, false, session);
                 if (isProtected && (cacheKey != null)) {
                     cacheForeignKeyValues(databaseRow, cacheKey, session);
@@ -1233,6 +1251,11 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                     loadBatchReadAttributes(concreteDescriptor, domainObject, cacheKey, databaseRow, query, joinManager, false);
                 }
             }
+        } catch (RuntimeException | Error failure) {
+            if (materializedObjects != null) {
+                materializedObjects.remove(primaryKey, cacheKey);
+            }
+            throw failure;
         } finally {
             if (shouldMaintainCache && (cacheKey != null)) {
                 // bug 2681401:
@@ -2061,7 +2084,8 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
      */
     public void trimFieldsForInsert(AbstractSession session, AbstractRecord databaseRow) {
         ClassDescriptor descriptor = this.descriptor;
-        if (descriptor.usesSequenceNumbers() && descriptor.getSequence().shouldAcquireValueAfterInsert()) {
+        if (descriptor.usesSequenceNumbers() && descriptor.getSequence().shouldAcquireValueAfterInsert()
+                && !"UPSERT".equals(session.getProperty("eclipselink.entity-agent.operation"))) {
             databaseRow.remove(descriptor.getSequenceNumberField());
         }
         if (descriptor.hasReturningPolicy()) {
@@ -2175,7 +2199,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
         for (int index = 0; index < size; index++) {
             DatabaseMapping mapping = mappings.get(index);
             if (readAllMappings || query.shouldReadMapping(mapping, executionFetchGroup)) {
-                mapping.buildCloneFromRow(databaseRow, joinManager, clone, sharedCacheKey, query, unitOfWork, unitOfWork);
+                mapping.buildCloneFromRow(databaseRow, joinManager, clone, sharedCacheKey, query, unitOfWork, unitOfWork, forRefresh);
             }
         }
 
@@ -2216,10 +2240,10 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                         if (mapping.isOutSopObject()) {
                             // the mapping should be processed as if there is no sopObject
                             databaseRow.setSopObject(null);
-                            mapping.buildCloneFromRow(databaseRow, joinManager, clone, sharedCacheKey, query, unitOfWork, unitOfWork);
+                            mapping.buildCloneFromRow(databaseRow, joinManager, clone, sharedCacheKey, query, unitOfWork, unitOfWork, forRefresh);
                         } else {
                             databaseRow.setSopObject(sopObject);
-                            mapping.buildCloneFromRow(databaseRow, joinManager, clone, sharedCacheKey, query, unitOfWork, unitOfWork);
+                            mapping.buildCloneFromRow(databaseRow, joinManager, clone, sharedCacheKey, query, unitOfWork, unitOfWork, forRefresh);
                         }
                     }
                 }
@@ -2245,10 +2269,10 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                             if (mapping.isOutSopObject()) {
                                 // the mapping should be processed as if there is no sopObject
                                 databaseRow.setSopObject(null);
-                                mapping.buildCloneFromRow(databaseRow, joinManager, clone, sharedCacheKey, query, unitOfWork, unitOfWork);
+                                mapping.buildCloneFromRow(databaseRow, joinManager, clone, sharedCacheKey, query, unitOfWork, unitOfWork, forRefresh);
                             } else {
                                 databaseRow.setSopObject(sopObject);
-                                mapping.buildCloneFromRow(databaseRow, joinManager, clone, sharedCacheKey, query, unitOfWork, unitOfWork);
+                                mapping.buildCloneFromRow(databaseRow, joinManager, clone, sharedCacheKey, query, unitOfWork, unitOfWork, forRefresh);
                             }
                         }
                     }
@@ -2992,14 +3016,20 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                 return copy;
             }
 
-            copy = instantiateClone(original, copyGroup.getSession());
+            copy = copyGroup.createCopy(original);
+            if (copy == null) {
+                copy = instantiateClone(original, copyGroup.getSession());
+            }
             copyGroup.getCopies().put(original, copy);
 
             // PERF: Avoid synchronized enumerator as is concurrency bottleneck.
             List<DatabaseMapping> mappings = getCloningMappings();
             int size = mappings.size();
             for (int index = 0; index < size; index++) {
-                mappings.get(index).buildCopy(copy, original, copyGroup);
+                DatabaseMapping mapping = mappings.get(index);
+                if (!copyGroup.copyUnfetchedAttribute(mapping, original, copy)) {
+                    mapping.buildCopy(copy, original, copyGroup);
+                }
             }
 
             if (copyGroup.shouldResetPrimaryKey() && (!(this.descriptor.isDescriptorTypeAggregate()))) {

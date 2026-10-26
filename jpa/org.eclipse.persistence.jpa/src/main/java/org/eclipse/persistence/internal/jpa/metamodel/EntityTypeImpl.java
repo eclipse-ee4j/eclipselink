@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,8 +31,11 @@ import jakarta.persistence.metamodel.Type;
 
 import java.io.Serial;
 import java.util.Map;
+import java.util.HashMap;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.internal.jpa.EntityGraphImpl;
+import org.eclipse.persistence.queries.AttributeGroup;
 
 /**
  * <p>
@@ -126,12 +129,18 @@ public class EntityTypeImpl<X> extends IdentifiableTypeImpl<X> implements Entity
 
     @Override
     public EntityGraph<X> createEntityGraph() {
-        throw new UnsupportedOperationException("Not yet implemented");
+        return new EntityGraphImpl<>(new AttributeGroup(null, getJavaType(), true), getDescriptor(), getMetamodel());
     }
 
     @Override
     public Map<String, EntityGraph<X>> getNamedEntityGraphs() {
-        throw new UnsupportedOperationException("Not yet implemented");
+        Map<String, EntityGraph<X>> graphs = new HashMap<>();
+        getMetamodel().getSession().getAttributeGroups().forEach((name, group) -> {
+            if (getJavaType().equals(group.getType())) {
+                graphs.put(name, new EntityGraphImpl<>(group.clone(), getDescriptor(), getMetamodel()));
+            }
+        });
+        return graphs;
     }
 
 }

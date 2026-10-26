@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -78,6 +78,8 @@ import org.eclipse.persistence.internal.jpa.metadata.queries.NamedNativeQueryMet
 import org.eclipse.persistence.internal.jpa.metadata.queries.NamedPLSQLStoredFunctionQueryMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.NamedPLSQLStoredProcedureQueryMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.NamedQueryMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.queries.NamedNativeStatementMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.queries.NamedStatementMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.NamedStoredFunctionQueryMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.NamedStoredProcedureQueryMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.OracleArrayTypeMetadata;
@@ -116,6 +118,8 @@ public class XMLEntityMappings extends ORMetadata {
     private List<EmbeddableAccessor> m_embeddables;
     private List<MappedSuperclassAccessor> m_mappedSuperclasses;
     private List<NamedNativeQueryMetadata> m_namedNativeQueries;
+    private List<NamedStatementMetadata> m_namedStatements = new ArrayList<>();
+    private List<NamedNativeStatementMetadata> m_namedNativeStatements = new ArrayList<>();
     private List<NamedQueryMetadata> m_namedQueries;
     private List<NamedStoredProcedureQueryMetadata> m_namedStoredProcedureQueries;
     private List<NamedStoredFunctionQueryMetadata> m_namedStoredFunctionQueries;
@@ -379,6 +383,22 @@ public class XMLEntityMappings extends ORMetadata {
      */
     public List<NamedPLSQLStoredProcedureQueryMetadata> getNamedPLSQLStoredProcedureQueries() {
         return m_namedPLSQLStoredProcedureQueries;
+    }
+
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public List<NamedStatementMetadata> getNamedStatements() {
+        return m_namedStatements;
+    }
+
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public List<NamedNativeStatementMetadata> getNamedNativeStatements() {
+        return m_namedNativeStatements;
     }
 
     /**
@@ -823,6 +843,15 @@ public class XMLEntityMappings extends ORMetadata {
             m_project.addPartitioningPolicy(partitioning);
         }
 
+        for (NamedStatementMetadata statement : m_namedStatements) {
+            statement.initXMLObject(m_file, this);
+            m_project.addQuery(statement);
+        }
+        for (NamedNativeStatementMetadata statement : m_namedNativeStatements) {
+            statement.initXMLObject(m_file, this);
+            m_project.addQuery(statement);
+        }
+
         // Add the XML named queries to the project.
         for (NamedQueryMetadata namedQuery : m_namedQueries) {
             namedQuery.initXMLObject(m_file, this);
@@ -1181,6 +1210,22 @@ public class XMLEntityMappings extends ORMetadata {
      */
     public void setNamedPLSQLStoredProcedureQueries(List<NamedPLSQLStoredProcedureQueryMetadata> namedPLSQLStoredProcedureQueries) {
         m_namedPLSQLStoredProcedureQueries = namedPLSQLStoredProcedureQueries;
+    }
+
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setNamedStatements(List<NamedStatementMetadata> namedStatements) {
+        m_namedStatements = namedStatements;
+    }
+
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setNamedNativeStatements(List<NamedNativeStatementMetadata> namedNativeStatements) {
+        m_namedNativeStatements = namedNativeStatements;
     }
 
     /**

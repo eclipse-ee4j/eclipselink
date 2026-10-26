@@ -10704,7 +10704,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
 
         query = em.createQuery("Select a from Address a");
         hints = query.getHints();
-        assertNull("Hints is not null when it should be.", hints);
+        assertNotNull("Hints must be a non-null map.", hints);
+        assertTrue("Hints should be empty.", hints.isEmpty());
     }
 
 

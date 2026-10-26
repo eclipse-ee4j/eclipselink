@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -51,6 +51,22 @@ import java.util.Map;
  * @since EclipseLink 2.1
  */
 public class AttributeGroup extends CoreAttributeGroup<AttributeItem, ClassDescriptor> implements Serializable, Cloneable {
+
+    // Immutable snapshots allow named graph copies to share this metadata safely.
+    // Option values are interpreted by the JPA graph layer, keeping core independent of Jakarta APIs.
+    private Map<String, Map<Class<?>, Object>> attributeOptions = Map.of();
+
+    /** INTERNAL: Options for explicitly added or removed graph attributes. */
+    public Map<String, Map<Class<?>, Object>> getAttributeOptions() {
+        return attributeOptions;
+    }
+
+    /** INTERNAL: Replace one attribute's option snapshot without mutating graph copies. */
+    public void setAttributeOptions(String attributeName, Map<Class<?>, Object> options) {
+        Map<String, Map<Class<?>, Object>> updated = new HashMap<>(attributeOptions);
+        updated.put(attributeName, Map.copyOf(options));
+        attributeOptions = Map.copyOf(updated);
+    }
 
     public AttributeGroup(String name) {
         this.name = name;

@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
- * Copyright (c) 2012, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -70,6 +70,9 @@ import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLStoredProcedu
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLargument;
 import org.eclipse.persistence.queries.Call;
 import org.eclipse.persistence.queries.DataModifyQuery;
+import org.eclipse.persistence.queries.ResultSetMappingQuery;
+import org.eclipse.persistence.queries.SQLResultSetMapping;
+import org.eclipse.persistence.queries.SQLCall;
 import org.eclipse.persistence.queries.DataReadQuery;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.DatabaseQuery.ParameterType;
@@ -103,6 +106,7 @@ public class QueryImpl {
     protected DatabaseQuery databaseQuery;
 
     protected EntityManagerImpl entityManager;
+    protected final QueryExecutionContext executionContext;
     protected String queryName;
 
     protected Map<String, Object> parameterValues = new HashMap<>();
@@ -134,7 +138,19 @@ public class QueryImpl {
      * Base constructor for EJBQueryImpl. Initializes basic variables.
      */
     protected QueryImpl(EntityManagerImpl entityManager) {
-        this.entityManager = entityManager;
+        this(new EntityManagerQueryContext(entityManager));
+    }
+
+    QueryImpl(DatabaseQuery query, QueryExecutionContext executionContext) {
+        this(executionContext);
+        this.databaseQuery = query;
+    }
+
+    QueryImpl(QueryExecutionContext executionContext) {
+        this.executionContext = executionContext;
+        if (executionContext instanceof EntityManagerQueryContext context) {
+            this.entityManager = context.getEntityManager();
+        }
         this.isShared = true;
     }
 
@@ -143,7 +159,13 @@ public class QueryImpl {
      * the database (if there is one).
      */
     public void close() {
-        // Currently nothing to do at this level. Connections are not left open.
+        releaseResources();
+    }
+
+    /** Internal disposal, also usable after the owner has been closed. */
+    public void releaseResources() {
+        // Ordinary list results do not retain JDBC resources.
+        executionContext.unregisterQuery(this);
     }
 
     /**
@@ -199,7 +221,34 @@ public class QueryImpl {
      * @return the results of the query execution
      */
     protected Object executeReadQuery() {
+        prepareNamedResultSetMappingLocks();
         List<Object> parameterValues = processParameters();
+        if (Boolean.TRUE.equals(getDatabaseQueryInternal().getProperty(ResultSetMappingTranslator.MAPPING_LOCK_PROPERTY))) {
+            executionContext.requireTransaction();
+        }
+        if (executionContext.isEntityAgent()) {
+            final LockModeType executionLockMode = lockMode;
+            DatabaseQuery executable = getDatabaseQueryInternal();
+            if (executable.isReportQuery() || executable instanceof ResultSetMappingQuery) {
+                // Owner-specific materialization state belongs only to this execution,
+                // never to a query later registered as shared named metadata.
+                executable = (DatabaseQuery) executable.clone();
+                executable.setProperty(ResultSetMappingTranslator.EXECUTION_CONTEXT_PROPERTY, executionContext);
+            }
+            if (executable.isReportQuery()) {
+                executable.setProperty(
+                        org.eclipse.persistence.queries.ReportQueryResult.CONSTRUCTOR_ARGUMENT_PREPARER,
+                        (java.util.function.UnaryOperator<Object>) value -> {
+                            Object prepared = executionContext.prepareResult(value);
+                            if (prepared != null && executionContext.getSession().getDescriptor(prepared) != null
+                                    && executionLockMode != null && executionLockMode != LockModeType.NONE) {
+                                executionContext.lockResult(prepared, executionLockMode);
+                            }
+                            return prepared;
+                        });
+            }
+            return executionContext.executeQuery(executable, parameterValues, executionLockMode);
+        }
         // TODO: the following performFlush() call is a "temporary" workaround for
         // bug 4752493:
         // CTS: INMEMORY QUERYING IN EJBQUERY BROKEN DUE TO CHANGE TO USE
@@ -245,7 +294,7 @@ public class QueryImpl {
         if (this.lockMode != null && !this.lockMode.equals(LockModeType.NONE)) {
             // We need to throw TransactionRequiredException if there is no
             // active transaction
-            this.entityManager.checkForTransaction(true);
+            this.executionContext.requireTransaction();
 
             // The lock mode setters and getters validate the query type
             // so should be safe to make the casting.
@@ -266,7 +315,7 @@ public class QueryImpl {
             // in case it's a user-defined query
             if (query.isUserDefined()) {
                 // and there is an active transaction
-                if (this.entityManager.checkForTransaction(false) != null) {
+                if (this.executionContext.hasActiveTransaction()) {
                     // verify whether uow has begun early transaction
                     if (session.isUnitOfWork() && !((UnitOfWorkImpl)session).wasTransactionBegunPrematurely()) {
                         // uow begins early transaction in case it hasn't
@@ -280,8 +329,18 @@ public class QueryImpl {
                 }
             }
 
-            // Execute the query and return the result.
-            return session.executeQuery(query, parameterValues);
+            // Materialization owners are execution state, not reusable named metadata.
+            if (query instanceof ResultSetMappingQuery) {
+                query = (DatabaseQuery) query.clone();
+                query.setProperty(ResultSetMappingTranslator.EXECUTION_CONTEXT_PROPERTY, executionContext);
+            }
+            Object result = session.executeQuery(query, parameterValues);
+            if (query instanceof ObjectLevelReadQuery objectQuery && objectQuery.getLoadGroup() != null) {
+                // A primary-key cache hit may return before the core query's load phase.
+                // Apply this query's graph to the managed result in the same session.
+                ((AbstractSession) session).load(result, objectQuery.getLoadGroup(), objectQuery.getDescriptor(), false);
+            }
+            return result;
         } catch (DatabaseException e) {
             throw getDetailedException(e);
         } catch (RuntimeException e) {
@@ -296,6 +355,37 @@ public class QueryImpl {
         }
     }
 
+    /** Retain locks declared by named SQL mappings on both handler implementations. */
+    private void prepareNamedResultSetMappingLocks() {
+        DatabaseQuery query = getDatabaseQueryInternal();
+        if (!(query instanceof ResultSetMappingQuery mapped)
+                || Boolean.TRUE.equals(query.getProperty(ResultSetMappingTranslator.MAPPING_LOCK_PROPERTY))) {
+            return;
+        }
+        List<SQLResultSetMapping> mappings = new ArrayList<>();
+        if (mapped.getSQLResultSetMappingNames().isEmpty()) {
+            mappings.addAll(mapped.getSQLResultSetMappings());
+        } else {
+            for (String name : mapped.getSQLResultSetMappingNames()) {
+                mappings.add(executionContext.getSession().getProject().getSQLResultSetMapping(name));
+            }
+        }
+        if (mappings.stream().noneMatch(ResultSetMappingTranslator::mappingRequiresTransaction)) {
+            return;
+        }
+        executionContext.requireTransaction();
+        cloneSharedQuery();
+        List<SQLResultSetMapping> translated = new ArrayList<>(mappings.size());
+        for (SQLResultSetMapping mapping : mappings) {
+            translated.add(ResultSetMappingTranslator.mappingRequiresTransaction(mapping)
+                    ? ResultSetMappingTranslator.toEclipseLinkMapping(
+                            ResultSetMappingTranslator.toJakartaMapping(mapping, executionContext.getSession()), executionContext)
+                    : mapping);
+        }
+        ((ResultSetMappingQuery) getDatabaseQueryInternal()).setSQLResultSetMappings(translated);
+        getDatabaseQueryInternal().setProperty(ResultSetMappingTranslator.MAPPING_LOCK_PROPERTY, Boolean.TRUE);
+    }
+
     /**
      * Execute an update or delete statement.
      *
@@ -304,7 +394,7 @@ public class QueryImpl {
     public int executeUpdate() {
         // bug51411440: need to throw IllegalStateException if query
         // executed on closed em
-        this.entityManager.verifyOpenWithSetRollbackOnly();
+        this.executionContext.verifyOpenWithSetRollbackOnly();
         try {
             setAsSQLModifyQuery();
             // bug:4294241, only allow modify queries - UpdateAllQuery preferred
@@ -314,14 +404,14 @@ public class QueryImpl {
 
             // need to throw TransactionRequiredException if there is no active
             // transaction
-            entityManager.checkForTransaction(true);
+            executionContext.requireTransaction();
 
             // fix for bug:4288845, did not add the parameters to the query
             List<Object> parameterValues = processParameters();
             if (isFlushModeAUTO()) {
                 performPreQueryFlush();
             }
-            Integer changedRows = (Integer) getActiveSession().executeQuery(databaseQuery, parameterValues);
+            Integer changedRows = (Integer) executionContext.executeQuery(databaseQuery, parameterValues, null);
             return changedRows;
         } catch (PersistenceException | IllegalStateException exception) {
             setRollbackOnly();
@@ -340,6 +430,7 @@ public class QueryImpl {
      * @see #getDatabaseQueryInternal()
      */
     public DatabaseQuery getDatabaseQuery() {
+        executionContext.verifyOpen();
         cloneSharedQuery();
         return getDatabaseQueryInternal();
     }
@@ -350,19 +441,20 @@ public class QueryImpl {
      * be looked up and stored as the cached query.
      */
     public DatabaseQuery getDatabaseQueryInternal() {
+        executionContext.verifyOpen();
         if ((this.queryName != null) && (this.databaseQuery == null)) {
             // Always ask for the query from the active session. Table per
             // tenant multitenant entity queries may be isolated per EM meaning
             // those queries will not have been initialized (and made available)
             // from their parent session.
-            this.databaseQuery = this.entityManager.getActiveSessionIfExists().getQuery(this.queryName);
+            this.databaseQuery = this.executionContext.getSession().getQuery(this.queryName);
             // need error checking and appropriate exception for non-existing query
             if (this.databaseQuery != null) {
                 if (!this.databaseQuery.isPrepared()) {
                     // prepare the query before cloning, this ensures we do not
                     // have to continually prepare on each usage
                     try {
-                        this.databaseQuery.checkPrepare(this.entityManager.getActiveSessionIfExists(), new DatabaseRecord());
+                        this.databaseQuery.checkPrepare(this.executionContext.getSession(), new DatabaseRecord());
                     } catch(RuntimeException re){
                         throw new IllegalArgumentException(re);
                     }
@@ -415,6 +507,10 @@ public class QueryImpl {
      * Return the entityManager this query is tied to.
      */
     public JpaEntityManager getEntityManager() {
+        executionContext.verifyOpen();
+        if (entityManager == null) {
+            throw new IllegalStateException("This query belongs to an EntityAgent");
+        }
         return entityManager;
     }
 
@@ -425,6 +521,11 @@ public class QueryImpl {
         if (parameters == null) {
             parameters = new HashMap<>();
             DatabaseQuery query = getDatabaseQueryInternal(); // Retrieve named query
+            Object criteriaParameters = query.getProperty(ParameterExpressionImpl.QUERY_PARAMETERS_PROPERTY);
+            if (criteriaParameters instanceof Map<?, ?> metadata) {
+                metadata.forEach((name, parameter) -> parameters.put((String) name, (Parameter<?>) parameter));
+                return parameters;
+            }
 
             int count = 0;
             if (!isEmpty(query.getArguments())) {
@@ -453,6 +554,34 @@ public class QueryImpl {
         return parameters;
     }
 
+    /** Validate the complete positional bind before changing any existing argument values. */
+    protected void validatePositionalArgumentCount(int actualCount) {
+        DatabaseQuery query = getDatabaseQueryInternal();
+        Set<String> positions = new HashSet<>();
+        if (query.getEJBQLString() == null && query.getDatasourceCall() instanceof SQLCall sqlCall) {
+            SQLCall translated = (SQLCall) sqlCall.clone();
+            translated.setQuery(query);
+            if (translated.getParameters().isEmpty()) {
+                translated.translateCustomQuery();
+            }
+            for (Object value : translated.getParameters()) {
+                if (value instanceof DatabaseField field && field.getName().matches("[1-9][0-9]*")) {
+                    positions.add(field.getName());
+                }
+            }
+        } else {
+            for (Parameter<?> parameter : getInternalParameters().values()) {
+                if (parameter.getPosition() != null) {
+                    positions.add(parameter.getPosition().toString());
+                }
+            }
+        }
+        if (positions.size() != actualCount) {
+            throw new IllegalArgumentException("Expected " + positions.size()
+                    + " positional arguments, but received " + actualCount);
+        }
+    }
+
     /**
      * Get the current lock mode for the query.
      *
@@ -461,13 +590,13 @@ public class QueryImpl {
      *             if not a Java Persistence query language SELECT query
      */
     public LockModeType getLockMode() {
-        entityManager.verifyOpen();
+        executionContext.verifyOpen();
 
         if (!getDatabaseQueryInternal().isObjectLevelReadQuery()) {
             throw new IllegalStateException(ExceptionLocalization.buildMessage("invalid_lock_query", null));
         }
 
-        return this.lockMode;
+        return this.lockMode == null ? LockModeType.NONE : this.lockMode;
     }
 
     /**
@@ -478,7 +607,7 @@ public class QueryImpl {
     public List<?> getResultList() {
         // bug51411440: need to throw IllegalStateException if query
         // executed on closed em
-        this.entityManager.verifyOpenWithSetRollbackOnly();
+        this.executionContext.verifyOpenWithSetRollbackOnly();
         try {
             setAsSQLReadQuery();
             propagateResultProperties();
@@ -501,7 +630,7 @@ public class QueryImpl {
                 throw new IllegalStateException(ExceptionLocalization.buildMessage("incorrect_query_for_get_result_list"));
             }
             return (List) executeReadQuery();
-        } catch (LockTimeoutException exception) {
+        } catch (LockTimeoutException | QueryTimeoutException exception) {
             throw exception;
         } catch (PersistenceException | IllegalStateException exception) {
             setRollbackOnly();
@@ -563,7 +692,7 @@ public class QueryImpl {
         boolean rollbackOnException = true;
         // bug51411440: need to throw IllegalStateException if query
         // executed on closed em
-        this.entityManager.verifyOpenWithSetRollbackOnly();
+        this.executionContext.verifyOpenWithSetRollbackOnly();
         try {
             setAsSQLReadQuery();
             propagateResultProperties();
@@ -594,7 +723,7 @@ public class QueryImpl {
                 }
                 return result;
             }
-        } catch (LockTimeoutException exception) {
+        } catch (LockTimeoutException | QueryTimeoutException exception) {
             throw exception;
         } catch (PersistenceException exception) {
             if (rollbackOnException) {
@@ -644,12 +773,17 @@ public class QueryImpl {
             if (parameterValue != null || parameterValues.containsKey(parameterName)) {
 
                 Class<?> parameterType = parameterTypes.get(parameterName);
-                if (parameterValue == null && parameterType != null) {
+                boolean expressionArgument = query.getQueryMechanism().isExpressionQueryMechanism();
+                if (parameterValue == null && parameterType != null
+                        && (!expressionArgument || parameterConverters.containsKey(parameterName))) {
                     DatabaseField field = new DatabaseField(parameterName);
                     field.setType(parameterType);
                     parameterValue = field;
                 }
 
+                if (expressionArgument && parameterConverters.containsKey(parameterName)) {
+                    parameterValue = new org.eclipse.persistence.internal.expressions.ParameterExpression.ConvertedValue(parameterValue);
+                }
                 processedParameterValues.add(parameterValue);
             } else if (query.hasNullableArguments() && query.getNullableArguments().contains(new DatabaseField(parameterName))) {
                 processedParameterValues.add(null);
@@ -666,6 +800,7 @@ public class QueryImpl {
      * Replace the cached query with the given query.
      */
     public void setDatabaseQuery(DatabaseQuery query) {
+        executionContext.verifyOpen();
         databaseQuery = query;
     }
 
@@ -678,7 +813,7 @@ public class QueryImpl {
      */
     public QueryImpl setFirstResult(int startPosition) {
         try {
-            entityManager.verifyOpen();
+            executionContext.verifyOpen();
             setFirstResultInternal(startPosition);
             return this;
         } catch (RuntimeException e) {
@@ -692,7 +827,7 @@ public class QueryImpl {
      * @since Java Persistence API 2.0
      */
     public int getFirstResult() {
-        entityManager.verifyOpenWithSetRollbackOnly();
+        executionContext.verifyOpenWithSetRollbackOnly();
         if (this.firstResultIndex == UNDEFINED) {
             return 0;
         }
@@ -701,7 +836,7 @@ public class QueryImpl {
 
     public QueryFlushMode getQueryFlushMode() {
         try {
-            entityManager.verifyOpen();
+            executionContext.verifyOpen();
             return flushOnExecuteToQueryFlushMode(getDatabaseQueryInternal().getFlushOnExecute());
         } catch (RuntimeException e) {
             setRollbackOnly();
@@ -711,7 +846,7 @@ public class QueryImpl {
 
     public QueryImpl setQueryFlushMode(QueryFlushMode queryFlushMode) {
         try {
-            entityManager.verifyOpen();
+            executionContext.verifyOpen();
             cloneSharedQuery();
             getDatabaseQueryInternal().setFlushOnExecute(queryFlushModeToFlushOnExecute(queryFlushMode));
             return this;
@@ -728,10 +863,10 @@ public class QueryImpl {
     @Deprecated(since = "6.0")
     public FlushModeType getFlushMode() {
         try {
-            entityManager.verifyOpen();
+            executionContext.verifyOpen();
             Boolean flushOnExecute = getDatabaseQueryInternal().getFlushOnExecute();
             if (flushOnExecute == null) {
-                return entityManager.getFlushMode();
+                return executionContext.getFlushMode();
             }
             return flushOnExecute ? FlushModeType.AUTO : FlushModeType.COMMIT;
         } catch (RuntimeException e) {
@@ -857,7 +992,7 @@ public class QueryImpl {
      * @return boolean indicating whether parameter has been bound
      */
     public boolean isBound(Parameter<?> param) {
-        entityManager.verifyOpenWithSetRollbackOnly();
+        executionContext.verifyOpenWithSetRollbackOnly();
         if (param == null) {
             return false;
         }
@@ -875,11 +1010,14 @@ public class QueryImpl {
      * query."
      */
     protected boolean isFlushModeAUTO() {
+        if (executionContext.isEntityAgent()) {
+            return false;
+        }
         if (getDatabaseQueryInternal().getFlushOnExecute() != null) {
             return getDatabaseQueryInternal().getFlushOnExecute();
         }
 
-        return entityManager.isFlushModeAUTO();
+        return executionContext.getFlushMode() == FlushModeType.AUTO;
     }
 
     /**
@@ -891,7 +1029,7 @@ public class QueryImpl {
      */
     protected void setHintInternal(String hintName, Object value) {
         cloneSharedQuery();
-        ClassLoader loader = getEntityManager().getAbstractSession().getLoader();
+        ClassLoader loader = executionContext.getSession().getLoader();
         DatabaseQuery hintQuery = QueryHintsHandler.apply(hintName, value, getDatabaseQueryInternal(), loader, (AbstractSession) getActiveSession());
         if (hintQuery != null) {
             setDatabaseQuery(hintQuery);
@@ -906,7 +1044,7 @@ public class QueryImpl {
      */
     public QueryImpl setLockMode(LockModeType lockMode) {
         try {
-            entityManager.verifyOpen();
+            executionContext.verifyOpen();
 
             if (!getDatabaseQueryInternal().isObjectLevelReadQuery()) {
                 throw new IllegalStateException(ExceptionLocalization.buildMessage("invalid_lock_query", null));
@@ -942,7 +1080,7 @@ public class QueryImpl {
      * @return an object representing the given TemporalType.
      */
     protected Object convertTemporalType(Object value, TemporalType type) {
-        ConversionManager conversionManager = getEntityManager().getActiveSession().getDatasourcePlatform().getConversionManager();
+        ConversionManager conversionManager = executionContext.getSession().getDatasourcePlatform().getConversionManager();
         if (type == TemporalType.TIME) {
             return conversionManager.convertObject(value, ClassConstants.TIME);
         }
@@ -965,7 +1103,7 @@ public class QueryImpl {
      */
     public QueryImpl setMaxResults(int maxResult) {
         try {
-            entityManager.verifyOpen();
+            executionContext.verifyOpen();
             setMaxResultsInternal(maxResult);
             return this;
         } catch (RuntimeException e) {
@@ -979,7 +1117,7 @@ public class QueryImpl {
      * @since Java Persistence API 2.0
      */
     public int getMaxResults() {
-        entityManager.verifyOpenWithSetRollbackOnly();
+        executionContext.verifyOpenWithSetRollbackOnly();
         if (maxResults == UNDEFINED) {
             return Integer.MAX_VALUE;
         }
@@ -992,6 +1130,7 @@ public class QueryImpl {
      * @since Java Persistence API 2.0
      */
     public int getMaxResultsInternal() {
+        executionContext.verifyOpen();
         return maxResults;
     }
 
@@ -1056,6 +1195,9 @@ public class QueryImpl {
      *            defines if index or named
      */
     protected void setParameterInternal(String name, Object value, Class<?> typex, boolean isIndex) {
+        if (name == null || name.isEmpty() || (isIndex && Integer.parseInt(name) < 1)) {
+            throw new IllegalArgumentException("Invalid query parameter identifier");
+        }
         DatabaseQuery query = getDatabaseQueryInternal();
 
         if (query.getQueryMechanism().isJPQLCallQueryMechanism()) { // only non native queries
@@ -1086,6 +1228,11 @@ public class QueryImpl {
         }
 
         parameterValues.put(name, value);
+        if (typex != null) {
+            parameterTypes.put(name, typex);
+        } else {
+            parameterTypes.remove(name);
+        }
     }
 
     protected boolean isValidActualParameter(Object value, Class<?> parameterType) {
@@ -1097,23 +1244,21 @@ public class QueryImpl {
     }
 
     protected Session getActiveSession() {
-        DatabaseQuery query = getDatabaseQueryInternal();
-        // PERF: If read-only query, avoid creating unit of work and JTA transaction.
-        if (query.isObjectLevelReadQuery() && ((ObjectLevelReadQuery) query).isReadOnly()) {
-            return entityManager.getReadOnlySession();
-        }
-
-        return entityManager.getActiveSession();
+        return executionContext.getExecutionSession(getDatabaseQueryInternal());
     }
 
     protected void performPreQueryFlush() {
-        if (this.entityManager.shouldFlushBeforeQuery()) {
-            this.entityManager.flush();
+        if (executionContext.shouldFlush()) {
+            executionContext.flush();
         }
     }
 
     protected void setRollbackOnly() {
-        entityManager.setRollbackOnly();
+        // Agent statement/optimistic failures may be caught and recovered from.
+        // Its execution boundary decides whether the physical transaction failed.
+        if (!executionContext.isEntityAgent()) {
+            executionContext.setRollbackOnly();
+        }
     }
 
     protected void throwNoResultException(String message) {
@@ -1129,8 +1274,9 @@ public class QueryImpl {
      * @since Java Persistence 2.0
      */
     public Map<String, Object> getHints() {
-        entityManager.verifyOpenWithSetRollbackOnly();
-        return (Map<String, Object>) getDatabaseQueryInternal().getProperty(QueryHintsHandler.QUERY_HINT_PROPERTY);
+        executionContext.verifyOpenWithSetRollbackOnly();
+        Map<String, Object> hints = (Map<String, Object>) getDatabaseQueryInternal().getProperty(QueryHintsHandler.QUERY_HINT_PROPERTY);
+        return hints == null ? new HashMap<>() : new HashMap<>(hints);
     }
 
     /**
@@ -1139,7 +1285,7 @@ public class QueryImpl {
      */
     public <T> Parameter<T> getParameter(String name, Class<T> type) {
         //don't rollback transaction on error
-        entityManager.verifyOpen();
+        executionContext.verifyOpen();
         Parameter param = getInternalParameters().get(name);
         if (param == null) {
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("NO_PARAMETER_WITH_NAME", new Object[] { name, this.databaseQuery }));
@@ -1155,7 +1301,7 @@ public class QueryImpl {
      */
     public <T> Parameter<T> getParameter(int position, Class<T> type) {
         //don't rollback transaction on error
-        entityManager.verifyOpen();
+        executionContext.verifyOpen();
         Parameter param = getInternalParameters().get(String.valueOf(position));
         if (param == null) {
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("NO_PARAMETER_WITH_INDEX", new Object[] { position, this.databaseQuery }));
@@ -1171,7 +1317,7 @@ public class QueryImpl {
      */
     public Parameter<?> getParameter(String name) {
         //don't rollback transaction on error
-        entityManager.verifyOpen();
+        executionContext.verifyOpen();
         Parameter<?> param = getInternalParameters().get(name);
         if (param == null) {
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("NO_PARAMETER_WITH_NAME", new Object[] { name, this.databaseQuery }));
@@ -1185,7 +1331,7 @@ public class QueryImpl {
      */
     public Parameter<?> getParameter(int position) {
         //don't rollback transaction on error
-        entityManager.verifyOpen();
+        executionContext.verifyOpen();
         Parameter<?> param = getInternalParameters().get(String.valueOf(position));
         if (param == null) {
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("NO_PARAMETER_WITH_INDEX", new Object[] { position, this.databaseQuery }));
@@ -1198,6 +1344,7 @@ public class QueryImpl {
      * @since Java Persistence 2.0
      */
     public <T> T getParameterValue(Parameter<T> param) {
+        executionContext.verifyOpen();
         if (param == null)
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("PARAMETER_NILL_NOT_FOUND"));
 
@@ -1217,7 +1364,7 @@ public class QueryImpl {
      *             if the parameter has not been been bound
      */
     public Object getParameterValue(String name) {
-        entityManager.verifyOpen();//don't rollback transaction
+        executionContext.verifyOpen();//don't rollback transaction
         if (!getInternalParameters().containsKey(name)) {
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("NO_PARAMETER_WITH_NAME", new Object[] { name, this.databaseQuery }));
         }
@@ -1238,7 +1385,7 @@ public class QueryImpl {
      *             if the parameter has not been been bound
      */
     public Object getParameterValue(int position) {
-        entityManager.verifyOpen();//don't rollback transaction
+        executionContext.verifyOpen();//don't rollback transaction
         String param = String.valueOf(position);
 
         if (!getInternalParameters().containsKey(param)) {
@@ -1257,7 +1404,7 @@ public class QueryImpl {
      * @since Jakarta Persistence 2.0
      */
     public Set<Parameter<?>> getParameters() {
-        entityManager.verifyOpen();//don't rollback transaction
+        executionContext.verifyOpen();//don't rollback transaction
         return new HashSet<>(getInternalParameters().values());
     }
 
@@ -1265,6 +1412,7 @@ public class QueryImpl {
      * @since Jakarta Persistence 2.0
      */
     public Set<String> getSupportedHints() {
+        executionContext.verifyOpen();
         return QueryHintsHandler.getSupportedHints();
     }
 
@@ -1276,6 +1424,10 @@ public class QueryImpl {
      * @since Jakarta Persistence 2.0
      */
     public <T> T unwrap(Class<T> cls) {
+        executionContext.verifyOpen();
+        if (cls == null) {
+            throw new IllegalArgumentException("Unwrap type must not be null");
+        }
         if (cls.isAssignableFrom(this.getClass())) {
             // unwraps any proxy to Query, JPAQuery or EJBQueryImpl
             return (T) this;

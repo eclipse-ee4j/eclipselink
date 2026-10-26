@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation.
  * Copyright (c) 2011, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -330,7 +331,7 @@ public class MetamodelImpl implements Metamodel, Serializable {
      * INTERNAL:
      * Return the DatabaseSession associated with this Metamodel
      */
-    protected AbstractSession getSession() {
+    public AbstractSession getSession() {
         return this.session;
     }
 

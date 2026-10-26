@@ -28,13 +28,15 @@ public final class GenericTypes {
     }
 
     public static Type getTypeArgument(Object object, Class<?> targetType, int argumentIndex) {
+        return getTypeArgument(object.getClass(), targetType, argumentIndex);
+    }
 
-        Type result = findTypeArgument(object.getClass(), targetType, argumentIndex, Map.of());
-
+    /** Resolve generic metadata without constructing the described class. */
+    public static Type getTypeArgument(Class<?> sourceType, Class<?> targetType, int argumentIndex) {
+        Type result = findTypeArgument(sourceType, targetType, argumentIndex, Map.of());
         if (result == null) {
-            throw new IllegalArgumentException(object.getClass().getName() + " does not implement/extend " + targetType.getName());
+            throw new IllegalArgumentException(sourceType.getName() + " does not implement/extend " + targetType.getName());
         }
-
         return result;
     }
 

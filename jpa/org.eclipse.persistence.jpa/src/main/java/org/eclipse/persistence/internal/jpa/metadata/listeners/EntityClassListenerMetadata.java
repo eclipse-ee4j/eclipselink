@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -66,6 +66,13 @@ public class EntityClassListenerMetadata extends EntityListenerMetadata {
      */
     protected void initCallbackMethods(MappedSuperclassAccessor accessor) {
         // Set any XML defined call back method names.
+        setPostDelete(accessor.getPostDelete());
+        setPostInsert(accessor.getPostInsert());
+        setPostUpsert(accessor.getPostUpsert());
+        setPreDelete(accessor.getPreDelete());
+        setPreInsert(accessor.getPreInsert());
+        setPreMerge(accessor.getPreMerge());
+        setPreUpsert(accessor.getPreUpsert());
         setPostLoad(accessor.getPostLoad());
         setPostPersist(accessor.getPostPersist());
         setPostRemove(accessor.getPostRemove());
@@ -90,16 +97,12 @@ public class EntityClassListenerMetadata extends EntityListenerMetadata {
         initCallbackMethods(m_accessor);
         processCallbackMethods(getDeclaredMethods(accessorClass), m_accessor);
 
-        // Process the callback methods as defined in XML or annotations
-        // on the mapped superclasses if not excluded second.
-        if (! m_descriptor.excludeSuperclassListeners()) {
-            for (MappedSuperclassAccessor mappedSuperclass : mappedSuperclasses) {
-                Class<?> superClass = getClass(mappedSuperclass.getJavaClass(), loader);
-                // Init callback methods as specified in XML for each mapped
-                // superclass before processing.
-                initCallbackMethods(mappedSuperclass);
-                processCallbackMethods(getDeclaredMethods(superClass), mappedSuperclass);
-            }
+        // ExcludeSuperclassListeners excludes listener classes, not callback
+        // methods declared by mapped superclasses themselves.
+        for (MappedSuperclassAccessor mappedSuperclass : mappedSuperclasses) {
+            Class<?> superClass = getClass(mappedSuperclass.getJavaClass(), loader);
+            initCallbackMethods(mappedSuperclass);
+            processCallbackMethods(getDeclaredMethods(superClass), mappedSuperclass);
         }
 
         // Add the listener only if we actually found callback methods.

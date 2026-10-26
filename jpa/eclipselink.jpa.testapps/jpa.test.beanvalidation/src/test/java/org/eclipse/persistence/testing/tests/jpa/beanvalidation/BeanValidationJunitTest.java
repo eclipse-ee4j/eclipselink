@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
- * Copyright (c) 2009, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -134,6 +134,8 @@ public class BeanValidationJunitTest extends JUnitTestCase {
             beginTransaction(em);
             Employee e1 = new Employee(100, invalidName, validName, 1337);
             em.persist(e1);
+            // Default validation occurs before the database insert in Persistence 4.0.
+            em.flush();
         } catch (ConstraintViolationException e) {
             assertTrue("Transaction not marked for roll back when ConstraintViolation is thrown", getRollbackOnly(em)) ;
             Set<ConstraintViolation<?>> constraintViolations = e.getConstraintViolations();
@@ -168,6 +170,8 @@ public class BeanValidationJunitTest extends JUnitTestCase {
             beginTransaction(em);
             Employee e1 = new Employee(100, validName, invalidName, 1337);
             em.persist(e1);
+            // Default validation occurs before the database insert in Persistence 4.0.
+            em.flush();
         } catch (ConstraintViolationException e) {
             assertTrue("Transaction not marked for roll back when ConstraintViolation is thrown", getRollbackOnly(em)) ;
             Set<ConstraintViolation<?>> constraintViolations = e.getConstraintViolations();
@@ -240,6 +244,8 @@ public class BeanValidationJunitTest extends JUnitTestCase {
             Address address = new Address("street", "city", "state" /*passing invalid value for state */);
             e1.setAddress(address);
             em.persist(e1);
+            // Default validation occurs before the database insert in Persistence 4.0.
+            em.flush();
         } catch (ConstraintViolationException e) {
             assertTrue("Transaction not marked for roll back when ConstraintViolation is thrown", getRollbackOnly(em)) ;
             gotConstraintViolations = true;

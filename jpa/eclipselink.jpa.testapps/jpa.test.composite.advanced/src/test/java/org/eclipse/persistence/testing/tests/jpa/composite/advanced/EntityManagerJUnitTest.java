@@ -9538,7 +9538,8 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
 
         query = em.createQuery("Select a from Address a");
         hints = query.getHints();
-        assertNull("Hints is not null when it should be.", hints);
+        assertNotNull("Hints must not be null.", hints);
+        assertTrue("Hints should be empty.", hints.isEmpty());
     }
 
 

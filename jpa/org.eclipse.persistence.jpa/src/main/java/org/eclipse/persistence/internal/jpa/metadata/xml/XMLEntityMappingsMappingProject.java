@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -180,6 +180,8 @@ import org.eclipse.persistence.internal.jpa.metadata.queries.NamedNativeQueryMet
 import org.eclipse.persistence.internal.jpa.metadata.queries.NamedPLSQLStoredFunctionQueryMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.NamedPLSQLStoredProcedureQueryMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.NamedQueryMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.queries.NamedNativeStatementMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.queries.NamedStatementMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.NamedStoredFunctionQueryMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.NamedStoredProcedureQueryMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.OracleArrayTypeMetadata;
@@ -284,6 +286,8 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         addDescriptor(buildMultitenantDescriptor());
         addDescriptor(buildTenantDiscriminatorColumnDescriptor());
         addDescriptor(buildTenantTableDiscriminatorDescriptor());
+        addDescriptor(buildNamedStatementDescriptor());
+        addDescriptor(buildNamedNativeStatementDescriptor());
         addDescriptor(buildNamedQueryDescriptor());
         addDescriptor(buildNamedNativeQueryDescriptor());
         addDescriptor(buildSqlResultSetMappingDescriptor());
@@ -494,6 +498,13 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         embeddedIdMapping.setReferenceClass(EmbeddedIdAccessor.class);
         embeddedIdMapping.setXPath("orm:embedded-id");
         descriptor.addMapping(embeddedIdMapping);
+
+        XMLCompositeDirectCollectionMapping excludedFromVersioningMapping = new XMLCompositeDirectCollectionMapping();
+        excludedFromVersioningMapping.setAttributeName("m_excludedFromVersioning");
+        excludedFromVersioningMapping.setGetMethodName("getExcludedFromVersioning");
+        excludedFromVersioningMapping.setSetMethodName("setExcludedFromVersioning");
+        excludedFromVersioningMapping.setXPath("orm:excluded-from-versioning/@name");
+        descriptor.addMapping(excludedFromVersioningMapping);
 
         XMLCompositeCollectionMapping idsMapping = new XMLCompositeCollectionMapping();
         idsMapping.setAttributeName("m_ids");
@@ -1492,6 +1503,8 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getHashPartitioningMapping());
         descriptor.addMapping(getUnionPartitioningMapping());
         descriptor.addMapping(getPartitionedMapping());
+        descriptor.addMapping(getNamedStatementMapping());
+        descriptor.addMapping(getNamedNativeStatementMapping());
         descriptor.addMapping(getNamedQueryMapping());
         descriptor.addMapping(getNamedNativeQueryMapping());
         descriptor.addMapping(getNamedStoredProcedureQueryMapping());
@@ -1514,6 +1527,13 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getPreUpdateMapping());
         descriptor.addMapping(getPostUpdateMapping());
         descriptor.addMapping(getPostLoadMapping());
+        descriptor.addMapping(getLifecycleCallbackMapping("postDelete", "post-delete"));
+        descriptor.addMapping(getLifecycleCallbackMapping("postInsert", "post-insert"));
+        descriptor.addMapping(getLifecycleCallbackMapping("postUpsert", "post-upsert"));
+        descriptor.addMapping(getLifecycleCallbackMapping("preDelete", "pre-delete"));
+        descriptor.addMapping(getLifecycleCallbackMapping("preInsert", "pre-insert"));
+        descriptor.addMapping(getLifecycleCallbackMapping("preMerge", "pre-merge"));
+        descriptor.addMapping(getLifecycleCallbackMapping("preUpsert", "pre-upsert"));
         descriptor.addMapping(getPropertyMapping());
         descriptor.addMapping(getAttributeOverrideMapping());
         descriptor.addMapping(getAssociationOverrideMapping());
@@ -1556,6 +1576,13 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getPreUpdateMapping());
         descriptor.addMapping(getPostUpdateMapping());
         descriptor.addMapping(getPostLoadMapping());
+        descriptor.addMapping(getLifecycleCallbackMapping("postDelete", "post-delete"));
+        descriptor.addMapping(getLifecycleCallbackMapping("postInsert", "post-insert"));
+        descriptor.addMapping(getLifecycleCallbackMapping("postUpsert", "post-upsert"));
+        descriptor.addMapping(getLifecycleCallbackMapping("preDelete", "pre-delete"));
+        descriptor.addMapping(getLifecycleCallbackMapping("preInsert", "pre-insert"));
+        descriptor.addMapping(getLifecycleCallbackMapping("preMerge", "pre-merge"));
+        descriptor.addMapping(getLifecycleCallbackMapping("preUpsert", "pre-upsert"));
         descriptor.addMapping(getClassAttributeMapping());
 
         return descriptor;
@@ -1687,6 +1714,8 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         partitioningMapping.setXPath("orm:union-partitioning");
         descriptor.addMapping(partitioningMapping);
 
+        descriptor.addMapping(getNamedStatementMapping());
+        descriptor.addMapping(getNamedNativeStatementMapping());
         descriptor.addMapping(getNamedQueryMapping());
         descriptor.addMapping(getNamedNativeQueryMapping());
         descriptor.addMapping(getNamedStoredProcedureQueryMapping());
@@ -2248,6 +2277,8 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getHashPartitioningMapping());
         descriptor.addMapping(getUnionPartitioningMapping());
         descriptor.addMapping(getPartitionedMapping());
+        descriptor.addMapping(getNamedStatementMapping());
+        descriptor.addMapping(getNamedNativeStatementMapping());
         descriptor.addMapping(getNamedQueryMapping());
         descriptor.addMapping(getNamedNativeQueryMapping());
         descriptor.addMapping(getNamedStoredProcedureQueryMapping());
@@ -2270,6 +2301,13 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getPreUpdateMapping());
         descriptor.addMapping(getPostUpdateMapping());
         descriptor.addMapping(getPostLoadMapping());
+        descriptor.addMapping(getLifecycleCallbackMapping("postDelete", "post-delete"));
+        descriptor.addMapping(getLifecycleCallbackMapping("postInsert", "post-insert"));
+        descriptor.addMapping(getLifecycleCallbackMapping("postUpsert", "post-upsert"));
+        descriptor.addMapping(getLifecycleCallbackMapping("preDelete", "pre-delete"));
+        descriptor.addMapping(getLifecycleCallbackMapping("preInsert", "pre-insert"));
+        descriptor.addMapping(getLifecycleCallbackMapping("preMerge", "pre-merge"));
+        descriptor.addMapping(getLifecycleCallbackMapping("preUpsert", "pre-upsert"));
         descriptor.addMapping(getPropertyMapping());
         descriptor.addMapping(getAttributeOverrideMapping());
         descriptor.addMapping(getAssociationOverrideMapping());
@@ -2431,6 +2469,36 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
      * INTERNAL:
      * XSD: named-query
      */
+    protected ClassDescriptor buildNamedStatementDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(NamedStatementMetadata.class);
+        XMLDirectMapping statementMapping = getQueryMapping();
+        statementMapping.setXPath("orm:statement");
+        descriptor.addMapping(statementMapping);
+        descriptor.addMapping(getHintMapping());
+        descriptor.addMapping(getNameAttributeMapping());
+        return descriptor;
+    }
+
+    /**
+     * INTERNAL:
+     * XSD: named-query
+     */
+    protected ClassDescriptor buildNamedNativeStatementDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(NamedNativeStatementMetadata.class);
+        XMLDirectMapping statementMapping = getQueryMapping();
+        statementMapping.setXPath("orm:statement");
+        descriptor.addMapping(statementMapping);
+        descriptor.addMapping(getHintMapping());
+        descriptor.addMapping(getNameAttributeMapping());
+        return descriptor;
+    }
+
+    /**
+     * INTERNAL:
+     * XSD: named-query
+     */
     protected ClassDescriptor buildNamedQueryDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(NamedQueryMetadata.class);
@@ -2439,6 +2507,20 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getHintMapping());
         descriptor.addMapping(getLockModeMapping());
         descriptor.addMapping(getNameAttributeMapping());
+
+        XMLDirectMapping lockScopeMapping = new XMLDirectMapping();
+        lockScopeMapping.setAttributeName("m_lockScope");
+        lockScopeMapping.setGetMethodName("getLockScope");
+        lockScopeMapping.setSetMethodName("setLockScope");
+        lockScopeMapping.setXPath("orm:lock-scope");
+        descriptor.addMapping(lockScopeMapping);
+
+        XMLDirectMapping entityGraphMapping = new XMLDirectMapping();
+        entityGraphMapping.setAttributeName("m_entityGraph");
+        entityGraphMapping.setGetMethodName("getEntityGraph");
+        entityGraphMapping.setSetMethodName("setEntityGraph");
+        entityGraphMapping.setXPath("orm:entity-graph");
+        descriptor.addMapping(entityGraphMapping);
 
         return descriptor;
     }
@@ -5348,6 +5430,32 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     /**
      * INTERNAL:
      */
+    protected XMLCompositeCollectionMapping getNamedStatementMapping() {
+        XMLCompositeCollectionMapping mapping = new XMLCompositeCollectionMapping();
+        mapping.setAttributeName("m_namedStatements");
+        mapping.setGetMethodName("getNamedStatements");
+        mapping.setSetMethodName("setNamedStatements");
+        mapping.setReferenceClass(NamedStatementMetadata.class);
+        mapping.setXPath("orm:named-statement");
+        return mapping;
+    }
+
+    /**
+     * INTERNAL:
+     */
+    protected XMLCompositeCollectionMapping getNamedNativeStatementMapping() {
+        XMLCompositeCollectionMapping mapping = new XMLCompositeCollectionMapping();
+        mapping.setAttributeName("m_namedNativeStatements");
+        mapping.setGetMethodName("getNamedNativeStatements");
+        mapping.setSetMethodName("setNamedNativeStatements");
+        mapping.setReferenceClass(NamedNativeStatementMetadata.class);
+        mapping.setXPath("orm:named-native-statement");
+        return mapping;
+    }
+
+    /**
+     * INTERNAL:
+     */
     protected XMLCompositeCollectionMapping getNamedQueryMapping() {
         XMLCompositeCollectionMapping namedQueryMapping = new XMLCompositeCollectionMapping();
         namedQueryMapping.setAttributeName("m_namedQueries");
@@ -5694,6 +5802,16 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     /**
      * INTERNAL:
      */
+    protected XMLDirectMapping getLifecycleCallbackMapping(String attribute, String element) {
+        XMLDirectMapping mapping = new XMLDirectMapping();
+        mapping.setAttributeName("m_" + attribute);
+        String suffix = Character.toUpperCase(attribute.charAt(0)) + attribute.substring(1);
+        mapping.setGetMethodName("get" + suffix);
+        mapping.setSetMethodName("set" + suffix);
+        mapping.setXPath("orm:" + element + "/@method-name");
+        return mapping;
+    }
+
     protected XMLDirectMapping getPostLoadMapping() {
         XMLDirectMapping postLoadMapping = new XMLDirectMapping();
         postLoadMapping.setAttributeName("m_postLoad");

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -80,7 +80,7 @@ public class DescriptorEvent extends EventObject implements CoreDescriptorEvent 
 
         eventNames[DescriptorEventManager.PreWriteEvent] = "PreWriteEvent";
         eventNames[DescriptorEventManager.PostWriteEvent] = "PostWriteEvent";
-        eventNames[DescriptorEventManager.PreDeleteEvent] = "PostDeleteEvent";
+        eventNames[DescriptorEventManager.PreDeleteEvent] = "PreDeleteEvent";
         eventNames[DescriptorEventManager.PostDeleteEvent] = "PostDeleteEvent";
         eventNames[DescriptorEventManager.PreInsertEvent] = "PreInsertEvent";
         eventNames[DescriptorEventManager.PostInsertEvent] = "PostInsertEvent";
@@ -92,6 +92,15 @@ public class DescriptorEvent extends EventObject implements CoreDescriptorEvent 
         eventNames[DescriptorEventManager.PostMergeEvent] = "PostMergeEvent";
         eventNames[DescriptorEventManager.AboutToInsertEvent] = "AboutToInsertEvent";
         eventNames[DescriptorEventManager.AboutToUpdateEvent] = "AboutToUpdateEvent";
+        eventNames[DescriptorEventManager.AboutToDeleteEvent] = "AboutToDeleteEvent";
+        eventNames[DescriptorEventManager.PrePersistEvent] = "PrePersistEvent";
+        eventNames[DescriptorEventManager.PreRemoveEvent] = "PreRemoveEvent";
+        eventNames[DescriptorEventManager.PreUpdateWithChangesEvent] = "PreUpdateWithChangesEvent";
+        eventNames[DescriptorEventManager.PreUpsertEvent] = "PreUpsertEvent";
+        eventNames[DescriptorEventManager.PostUpsertEvent] = "PostUpsertEvent";
+        eventNames[DescriptorEventManager.PreMergeEvent] = "PreMergeEvent";
+        eventNames[DescriptorEventManager.PostPersistEvent] = "PostPersistEvent";
+        eventNames[DescriptorEventManager.PostRemoveEvent] = "PostRemoveEvent";
     }
 
     /**

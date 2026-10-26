@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,10 +17,13 @@ package org.eclipse.persistence.internal.jpa;
 
 import jakarta.persistence.AttributeNode;
 import jakarta.persistence.FetchOption;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Subgraph;
 import jakarta.persistence.metamodel.Attribute;
 
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Objects;
 import java.util.Map;
 import java.util.Set;
 
@@ -33,6 +36,7 @@ import java.util.Set;
 public class AttributeNodeImpl<X> implements AttributeNode<X>{
 
     protected String currentAttribute;
+    protected EntityGraphImpl<?> parentGraph;
     protected Map<Class<?>, Subgraph<?>> subgraphs;
     protected Map<Class<?>, Subgraph<?>> keySubgraphs;
 
@@ -41,6 +45,11 @@ public class AttributeNodeImpl<X> implements AttributeNode<X>{
 
     protected AttributeNodeImpl(String attribute){
         this.currentAttribute = attribute;
+    }
+
+    protected AttributeNodeImpl(String attribute, EntityGraphImpl<?> parentGraph) {
+        this(attribute);
+        this.parentGraph = parentGraph;
     }
 
     @Override
@@ -54,7 +63,7 @@ public class AttributeNodeImpl<X> implements AttributeNode<X>{
             subgraphs = new HashMap<>();
         }
 
-        return subgraphs;
+        return new HashMap<>(subgraphs);
     }
 
     @Override
@@ -63,7 +72,7 @@ public class AttributeNodeImpl<X> implements AttributeNode<X>{
             this.keySubgraphs = new HashMap<>();
         }
 
-        return this.keySubgraphs;
+        return new HashMap<>(this.keySubgraphs);
     }
 
     public void addSubgraph(EntityGraphImpl entityGraphImpl) {
@@ -83,27 +92,37 @@ public class AttributeNodeImpl<X> implements AttributeNode<X>{
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public Attribute<?, X> getAttribute() {
-        throw new UnsupportedOperationException("Not yet implemented");
+        return (Attribute<?, X>) parentGraph.getGraphedType().getAttribute(currentAttribute);
     }
 
     @Override
     public Subgraph<X> addSubgraph() {
-        throw new UnsupportedOperationException("Not yet implemented");
+        return parentGraph.addSubgraph(currentAttribute);
     }
 
     @Override
     public <S extends X> Subgraph<S> addTreatedSubgraph(Class<S> type) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        return parentGraph.addSubgraph(currentAttribute, Objects.requireNonNull(type));
     }
 
     @Override
     public AttributeNode<X> addOption(FetchOption option) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        parentGraph.setNodeOption(this, Objects.requireNonNull(option));
+        return this;
     }
 
     @Override
     public Set<FetchOption> getOptions() {
-        throw new UnsupportedOperationException("Not yet implemented");
+        Set<FetchOption> options = new HashSet<>();
+        if (parentGraph != null) {
+            parentGraph.getAttributeGroup().getAttributeOptions().getOrDefault(currentAttribute, Map.of())
+                    .values().forEach(value -> options.add((FetchOption) value));
+        }
+        if (options.stream().noneMatch(FetchType.class::isInstance)) {
+            options.add(FetchType.EAGER);
+        }
+        return options;
     }
 }

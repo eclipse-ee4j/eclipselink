@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation.
  * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -107,7 +108,7 @@ public class EntityTransactionImpl implements jakarta.persistence.EntityTransact
     protected void closeOpenQueries() {
         if (openQueriesMap != null) {
             for (QueryImpl openQuery : openQueriesMap.keySet()) {
-                openQuery.close();
+                openQuery.releaseResources();
             }
         }
     }

@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation.
  * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
@@ -517,6 +518,9 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
             registerObjectInIdentityMap(object, descriptor, session);
         }
 
+        if (writeQuery.getProperty("eclipselink.entity-agent.operation") != null) {
+            session.setProperty("eclipselink.entity-agent.write-succeeded", Boolean.TRUE);
+        }
         commitManager.markPostModifyCommitInProgress(object);
         // Verify if deep shallow modify is turned on.
         if (writeQuery.shouldCascadeParts()) {
@@ -976,6 +980,9 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
                 // only throw the events if there is no changeset otherwise the event will be thrown twice
                 // once by the calculate changes code and here
                 eventManager.executeEvent(new DescriptorEvent(DescriptorEventManager.PreUpdateEvent, writeQuery));
+                if (writeQuery.getProperty("eclipselink.entity-agent.operation") != null) {
+                    eventManager.executeEvent(new DescriptorEvent(DescriptorEventManager.PreUpdateWithChangesEvent, writeQuery));
+                }
             }
         }
 
@@ -984,12 +991,40 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
             queryManager.preUpdate(writeQuery);
         }
 
+        boolean agentWrite = writeQuery.getProperty("eclipselink.entity-agent.operation") != null;
+        boolean lockOnly = "LOCK".equals(writeQuery.getProperty("eclipselink.entity-agent.operation"));
+        Object original = writeQuery.getProperty("eclipselink.entity-agent.original");
+        boolean incrementVersion = true;
+        if (agentWrite && !lockOnly) {
+            if (original == null) {
+                throw OptimisticLockException.objectChangedSinceLastReadWhenUpdating(object, writeQuery);
+            }
+            writeQuery.setBackupClone(original);
+            incrementVersion = false;
+            for (org.eclipse.persistence.mappings.DatabaseMapping mapping : descriptor.getMappings()) {
+                if (!mapping.isPrimaryKeyMapping()
+                        && mapping.isAttributeValueFromObjectInstantiated(object)
+                        && !Boolean.TRUE.equals(mapping.getProperty("jakarta.persistence.excluded-from-versioning"))
+                        && !(descriptor.getOptimisticLockingPolicy() instanceof VersionLockingPolicy versionPolicy
+                            && mapping == versionPolicy.getVersionMapping())
+                        && !mapping.compareObjects(object, original, session)) {
+                    incrementVersion = true;
+                    break;
+                }
+            }
+        }
+
         // The row must not be built until after preUpdate in case the object reference has changed.
         // For a user defined update in the uow to row must be built twice to check if any update is required.
         if ((writeQuery.isUserDefined() || writeQuery.isCallQuery()) && (!getSession().isUnitOfWork())) {
             writeQuery.setModifyRow(descriptor.getObjectBuilder().buildRow(object, getSession(), WriteType.UNDEFINED));
         } else {
             writeQuery.setModifyRow(descriptor.getObjectBuilder().buildRowForUpdate(writeQuery));
+        }
+
+        if (lockOnly && descriptor.getOptimisticLockingPolicy() instanceof VersionLockingPolicy policy) {
+            getModifyRow().clear();
+            policy.writeLockValueIntoRow(writeQuery, object);
         }
 
         // Optimistic read lock implementation
@@ -1009,10 +1044,10 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
                 OptimisticLockingPolicy policy = descriptor.getOptimisticLockingPolicy();
                 policy.addLockValuesToTranslationRow(writeQuery);
 
-                if (!getModifyRow().isEmpty() || shouldModifyVersionField) {
+                if ((!agentWrite || incrementVersion) && (!getModifyRow().isEmpty() || Boolean.TRUE.equals(shouldModifyVersionField))) {
                     // Update the row with newer lock value.
                     policy.updateRowAndObjectForUpdate(writeQuery, object);
-                } else if (!shouldModifyVersionField && (policy instanceof VersionLockingPolicy versionLockingPolicy)) {
+                } else if (!Boolean.TRUE.equals(shouldModifyVersionField) && (policy instanceof VersionLockingPolicy versionLockingPolicy)) {
                     // Add the existing write lock value to the for a "read" lock (requires something to update).
                     versionLockingPolicy.writeLockValueIntoRow(writeQuery, object);
                 }
@@ -1034,6 +1069,9 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
             int rowCount = updateObject();
 
             if (rowCount < 1) {
+                if (agentWrite) {
+                    throw OptimisticLockException.objectChangedSinceLastReadWhenUpdating(object, writeQuery);
+                }
                 if (session.hasEventManager()) {
                     session.getEventManager().noRowsModified(writeQuery, object);
                 }
@@ -1043,6 +1081,9 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
             }
         }
 
+        if (agentWrite) {
+            session.setProperty("eclipselink.entity-agent.write-succeeded", Boolean.TRUE);
+        }
         commitManager.markPostModifyCommitInProgress(object);
 
         // Verify if deep shallow modify is turned on
@@ -1142,10 +1183,14 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
                 if (!existingOptimisticLock) {
                     // update the row and object if shouldModifyVersionField is non null and has a value of true (a forced update),
                     // or if there is no forced update and modifyRow has modifications
-                    if ((shouldModifyVersionField != null && shouldModifyVersionField) || !getModifyRow().isEmpty()) {
+                    boolean versionedChange = changeSet.getChanges().stream().anyMatch(change -> {
+                        org.eclipse.persistence.mappings.DatabaseMapping mapping = descriptor.getMappingForAttributeName(change.getAttribute());
+                        return mapping == null || !Boolean.TRUE.equals(mapping.getProperty("jakarta.persistence.excluded-from-versioning"));
+                    });
+                    if (Boolean.TRUE.equals(shouldModifyVersionField) || (!getModifyRow().isEmpty() && versionedChange)) {
                         // Update the row with newer lock value.
                         lockingPolicy.updateRowAndObjectForUpdate(writeQuery, object);
-                    } else if (!shouldModifyVersionField && (lockingPolicy instanceof VersionLockingPolicy policy)) {
+                    } else if (!Boolean.TRUE.equals(shouldModifyVersionField) && (lockingPolicy instanceof VersionLockingPolicy policy)) {
                         // Add the existing write lock value to the for a "read" lock (requires something to update).
                         policy.writeLockValueIntoRow(writeQuery, object);
                     }

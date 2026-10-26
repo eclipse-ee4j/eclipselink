@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -176,6 +176,7 @@ import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JP
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_CONVERT;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_CONVERTS;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_FETCH_EAGER;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_EXCLUDED_FROM_VERSIONING;
 
 /**
  * INTERNAL:
@@ -2239,6 +2240,11 @@ public abstract class MappingAccessor extends MetadataAccessor {
      *     metadata.
      */
     protected void setMapping(DatabaseMapping mapping) {
+        if (isAnnotationPresent(JPA_EXCLUDED_FROM_VERSIONING)
+                || (getClassAccessor().getAttributes() != null
+                && getClassAccessor().getAttributes().getExcludedFromVersioning().contains(getAttributeName()))) {
+            mapping.setProperty("jakarta.persistence.excluded-from-versioning", Boolean.TRUE);
+        }
         if (! isMultitenantId()) {
             // Before adding the mapping to the descriptor, process the
             // properties for this mapping (if any). Avoid this is we are

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -39,6 +39,11 @@ public class JPAEntityListenerHolder implements SerializableDescriptorEventHolde
     public String listenerClassName;
 
     public Boolean isDefaultListener;
+
+    public static final int DECLARED_LISTENER = 0;
+    public static final int DISCOVERED_LISTENER = 1;
+    public static final int PACKAGE_LISTENER = 2;
+    public int listenerType;
 
     public transient DescriptorEventListener listener;
 
@@ -83,7 +88,11 @@ public class JPAEntityListenerHolder implements SerializableDescriptorEventHolde
         }
         //need to also check if this is a EntityClassListener and call
         if (listenerClassName!=null) {
-            if (isDefaultListener) {
+            if (listenerType == DISCOVERED_LISTENER) {
+                descriptor.getEventManager().addDiscoveredEventListener(listener);
+            } else if (listenerType == PACKAGE_LISTENER) {
+                descriptor.getEventManager().addPackageEventListener(listener);
+            } else if (isDefaultListener) {
                 descriptor.getEventManager().addDefaultEventListener(listener);
             } else {
                 descriptor.getEventManager().addEntityListenerEventListener(listener);
