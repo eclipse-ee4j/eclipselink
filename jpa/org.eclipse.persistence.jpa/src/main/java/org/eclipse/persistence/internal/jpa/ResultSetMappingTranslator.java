@@ -36,6 +36,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.internal.helper.EntityAgentProperties;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.queries.ConstructorResult;
@@ -52,7 +53,7 @@ import org.eclipse.persistence.sessions.DatabaseRecord;
 
 /** Translates the programmatic result mapping using the existing row materializer. */
 public final class ResultSetMappingTranslator {
-    static final String MAPPING_LOCK_PROPERTY = "eclipselink.entity-agent.mapping-lock";
+    static final String MAPPING_LOCK_PROPERTY = EntityAgentProperties.MAPPING_LOCK;
     static final String EXECUTION_CONTEXT_PROPERTY = "eclipselink.result-mapping.execution-context";
     private static final String TRANSLATED_MAPPING_NAME = "jakarta.persistence.sql.ResultSetMapping";
 

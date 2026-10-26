@@ -407,6 +407,12 @@ public class DB2Platform extends DatabasePlatform {
     }
 
     @Override
+    protected boolean isUniqueConstraintViolation(SQLException exception) {
+        // Derby inherits this platform but has different vendor error codes.
+        return isDB2() && exception.getErrorCode() == -803 || super.isUniqueConstraintViolation(exception);
+    }
+
+    @Override
     public boolean isLockTimeoutException(DatabaseException e) {
         return
             e.getInternalException() instanceof SQLException s &&

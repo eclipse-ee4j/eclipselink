@@ -97,6 +97,12 @@ public class SQLServerPlatform extends DatabasePlatform {
     }
 
     @Override
+    protected boolean isUniqueConstraintViolation(SQLException exception) {
+        // Microsoft JDBC xopenStates may report 42000 for these duplicate codes.
+        return exception.getErrorCode() == 2601 || exception.getErrorCode() == 2627 || super.isUniqueConstraintViolation(exception);
+    }
+
+    @Override
     public Map<Object, Object> connectionProperties() {
         // All MS SQL Server properties must be of String type.
         // Send Time values as TIME type.

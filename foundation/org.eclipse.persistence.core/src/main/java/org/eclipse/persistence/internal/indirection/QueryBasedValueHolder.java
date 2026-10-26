@@ -18,6 +18,7 @@ package org.eclipse.persistence.internal.indirection;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.helper.EntityAgentProperties;
 import org.eclipse.persistence.internal.queries.FetchedLockContext;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -78,7 +79,7 @@ public class QueryBasedValueHolder<T> extends DatabaseValueHolder<T> {
         // Note that if isolated session & query will return itself, which is
         // safe
         // for if isolated it will not go in the shared cache.
-        if (!session.isUnitOfWork() && !Boolean.TRUE.equals(session.getProperty("eclipselink.entity-agent"))) {
+        if (!session.isUnitOfWork() && !Boolean.TRUE.equals(session.getProperty(EntityAgentProperties.ENTITY_AGENT))) {
             this.session = session.getRootSession(query);
         }
         // An agent materializes the requested detached graph before returning it.

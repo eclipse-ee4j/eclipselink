@@ -32,6 +32,7 @@ import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.databaseaccess.DatasourceCall;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.internal.helper.EntityAgentProperties;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
@@ -389,7 +390,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
     public void insertObject() throws DatabaseException {
         ClassDescriptor descriptor = getDescriptor();
         boolean usesSequencing = descriptor.usesSequenceNumbers()
-                && !"UPSERT".equals(getQuery().getProperty("eclipselink.entity-agent.operation"));
+                && !"UPSERT".equals(getQuery().getProperty(EntityAgentProperties.OPERATION));
         boolean shouldAcquireValueAfterInsert = false;
         if (usesSequencing) {
             shouldAcquireValueAfterInsert = descriptor.getSequence().shouldAcquireValueAfterInsert();

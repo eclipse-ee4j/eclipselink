@@ -64,6 +64,7 @@ import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
 import org.eclipse.persistence.internal.expressions.SQLStatement;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.EntityAgentProperties;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.helper.InvalidObject;
 import org.eclipse.persistence.internal.queries.CallQueryMechanism;
@@ -834,14 +835,14 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
         // An immediate agent operation carries per-invocation state which must
         // survive replacement by the descriptor's cached write query. Reprepare
         // only an owned clone, since generated-key and owned-row SQL can differ.
-        if (hasCustomQuery && (getProperty("eclipselink.entity-agent.operation") != null
-                || Boolean.TRUE.equals(getProperty("eclipselink.entity-agent.internal-read"))
-                || Boolean.TRUE.equals(getProperty("eclipselink.entity-agent")))) {
+        if (hasCustomQuery && (getProperty(EntityAgentProperties.OPERATION) != null
+                || Boolean.TRUE.equals(getProperty(EntityAgentProperties.INTERNAL_READ))
+                || Boolean.TRUE.equals(getProperty(EntityAgentProperties.ENTITY_AGENT)))) {
             queryToExecute = (DatabaseQuery) queryToExecute.clone();
             Map<Object, Object> operationProperties = new HashMap<>(queryToExecute.getProperties());
             operationProperties.putAll(getProperties());
             queryToExecute.setProperties(operationProperties);
-            if ("UPSERT".equals(getProperty("eclipselink.entity-agent.operation"))
+            if ("UPSERT".equals(getProperty(EntityAgentProperties.OPERATION))
                     && queryToExecute.isInsertObjectQuery()
                     && queryToExecute.getQueryMechanism().isExpressionQueryMechanism()) {
                 queryToExecute.setQueryMechanism(new ExpressionQueryMechanism(queryToExecute));

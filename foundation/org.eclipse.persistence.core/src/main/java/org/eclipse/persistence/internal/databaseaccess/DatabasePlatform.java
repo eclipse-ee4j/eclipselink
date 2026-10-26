@@ -59,13 +59,17 @@ import java.sql.SQLXML;
 import java.sql.Statement;
 import java.sql.Struct;
 import java.sql.Types;
+import java.util.ArrayDeque;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HexFormat;
+import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.Vector;
 
@@ -1068,6 +1072,47 @@ public class DatabasePlatform extends DatasourcePlatform implements DDLPlatform 
     public boolean isLockTimeoutException(DatabaseException e) {
         return false;
     }
+
+    /**
+     * Return whether the primary database failure represents a unique constraint
+     * violation on this platform. Causes and JDBC next-exception chains are
+     * inspected with identity-based cycle protection. Suppressed exceptions are
+     * deliberately excluded because cleanup failures do not describe the write.
+     */
+    public boolean isUniqueConstraintViolation(DatabaseException exception) {
+        Set<Throwable> visited = Collections.newSetFromMap(new IdentityHashMap<>());
+        ArrayDeque<Throwable> pending = new ArrayDeque<>();
+        if (exception.getInternalException() != null) {
+            pending.add(exception.getInternalException());
+        }
+        while (!pending.isEmpty()) {
+            Throwable failure = pending.removeFirst();
+            if (!visited.add(failure)) {
+                continue;
+            }
+            if (failure instanceof SQLException sql) {
+                if (isUniqueConstraintViolation(sql)) {
+                    return true;
+                }
+                if (sql.getNextException() != null) {
+                    pending.addLast(sql.getNextException());
+                }
+            }
+            if (failure.getCause() != null) {
+                pending.addLast(failure.getCause());
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Classify one SQL exception. Subclasses may add their own vendor codes;
+     * the default recognizes only the precise unique-violation SQLState.
+     */
+    protected boolean isUniqueConstraintViolation(SQLException exception) {
+        return "23505".equals(exception.getSQLState());
+    }
+
 
     /**
      * INTERNAL:

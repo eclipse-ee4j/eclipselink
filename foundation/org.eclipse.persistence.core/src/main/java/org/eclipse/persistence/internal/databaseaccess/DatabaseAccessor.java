@@ -38,6 +38,7 @@ import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.EntityAgentProperties;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.helper.LOBValueWriter;
 import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
@@ -1687,7 +1688,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
      */
     protected boolean isInBatchWritingMode(AbstractSession session) {
         // Agent writes must complete their SQL before returning, including owned data.
-        return !Boolean.TRUE.equals(session.getProperty("eclipselink.entity-agent"))
+        return !Boolean.TRUE.equals(session.getProperty(EntityAgentProperties.ENTITY_AGENT))
                 && getPlatform().usesBatchWriting() && this.isInTransaction;
     }
 
@@ -1799,7 +1800,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
      * will be returned.
      */
     public DatabaseException processExceptionForCommError(AbstractSession session, SQLException exception, Call call) {
-        if (Boolean.TRUE.equals(session.getProperty("eclipselink.entity-agent"))
+        if (Boolean.TRUE.equals(session.getProperty(EntityAgentProperties.ENTITY_AGENT))
                 && session.getPlatform().isPostgreSQL() && exception.getSQLState() != null
                 && (exception.getSQLState().startsWith("22") || exception.getSQLState().startsWith("23")
                     || exception.getSQLState().startsWith("25") || exception.getSQLState().startsWith("40")

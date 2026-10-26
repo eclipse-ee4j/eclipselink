@@ -100,6 +100,11 @@ public class MySQLPlatform extends DatabasePlatform {
     }
 
     @Override
+    protected boolean isUniqueConstraintViolation(SQLException exception) {
+        return exception.getErrorCode() == 1062 || super.isUniqueConstraintViolation(exception);
+    }
+
+    @Override
     public void initializeConnectionData(Connection connection) throws SQLException {
         if (this.isConnectionDataInitialized) {
             return;

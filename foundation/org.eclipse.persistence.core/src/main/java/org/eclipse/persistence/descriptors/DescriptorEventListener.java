@@ -159,12 +159,16 @@ public interface DescriptorEventListener extends EventListener {
     void preWrite(DescriptorEvent event);
 
     /**
-     * INTERNAL: Called before an entity upsert writes database state.
+     * INTERNAL: Reserved for JPA and Bean Validation listener dispatch before an entity upsert writes database state.
+     * Native listeners registered with {@code addListener} and entity-native callbacks receive the physical
+     * insert or update events instead.
      */
     default void preUpsert(DescriptorEvent event) {}
 
     /**
-     * INTERNAL: Called after an entity upsert writes database state.
+     * INTERNAL: Reserved for JPA and Bean Validation listener dispatch after an entity upsert writes database state.
+     * Native listeners registered with {@code addListener} and entity-native callbacks receive the physical
+     * insert or update events instead.
      */
     default void postUpsert(DescriptorEvent event) {}
 

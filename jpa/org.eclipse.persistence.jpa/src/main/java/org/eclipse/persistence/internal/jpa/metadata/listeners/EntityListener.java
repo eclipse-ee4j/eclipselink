@@ -36,6 +36,7 @@ import org.eclipse.persistence.descriptors.DescriptorEvent;
 import org.eclipse.persistence.descriptors.DescriptorEventAdapter;
 import org.eclipse.persistence.descriptors.DescriptorEventManager;
 import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.helper.EntityAgentProperties;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
 import org.eclipse.persistence.internal.security.PrivilegedGetDeclaredMethods;
@@ -444,7 +445,7 @@ public class EntityListener<T> extends DescriptorEventAdapter {
      */
     @Override
     public void postClone(DescriptorEvent event) {
-        Object suppressedSource = event.getSession().getProperty("eclipselink.entity-agent.suppressed-copy-source");
+        Object suppressedSource = event.getSession().getProperty(EntityAgentProperties.SUPPRESSED_COPY_SOURCE);
         if (!isInternalRead(event) && (suppressedSource == null || suppressedSource != event.getOriginalObject())) {
             invokeMethod(POST_CLONE, event);
         }
@@ -476,7 +477,7 @@ public class EntityListener<T> extends DescriptorEventAdapter {
         // source refreshes, while suppressing the agent's marked internal reads.
         boolean entityTarget = event.getSession().isUnitOfWork()
                 || (event.getSession().isClientSession()
-                && Boolean.TRUE.equals(event.getSession().getProperty("eclipselink.entity-agent")));
+                && Boolean.TRUE.equals(event.getSession().getProperty(EntityAgentProperties.ENTITY_AGENT)));
         boolean requestedRefresh = event.getQuery() instanceof org.eclipse.persistence.queries.ObjectLevelReadQuery read
                 && read.shouldRefreshIdentityMapResult();
         if ((entityTarget || requestedRefresh) && !isInternalRead(event)) {
@@ -485,9 +486,9 @@ public class EntityListener<T> extends DescriptorEventAdapter {
     }
 
     private boolean isInternalRead(DescriptorEvent event) {
-        return Boolean.TRUE.equals(event.getSession().getProperty("eclipselink.entity-agent.internal-read"))
+        return Boolean.TRUE.equals(event.getSession().getProperty(EntityAgentProperties.INTERNAL_READ))
                 || (event.getQuery() != null && Boolean.TRUE.equals(
-                event.getQuery().getProperty("eclipselink.entity-agent.internal-read")));
+                event.getQuery().getProperty(EntityAgentProperties.INTERNAL_READ)));
     }
 
     /**

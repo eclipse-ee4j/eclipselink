@@ -19,6 +19,7 @@ package org.eclipse.persistence.descriptors;
 import org.eclipse.persistence.core.descriptors.CoreDescriptorEventManager;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.helper.EntityAgentProperties;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -254,15 +255,6 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
     public void executeEvent(DescriptorEvent event) throws DescriptorException {
         int originalCode = event.getEventCode();
         try {
-            // An upsert has its own callbacks, regardless of the SQL operation
-            // selected to realize it. The marker belongs to this execution only.
-            if ("UPSERT".equals(getEntityAgentOperation(event))) {
-                if (originalCode == PreInsertEvent || originalCode == PreUpdateWithChangesEvent) {
-                    event.setEventCode(PreUpsertEvent);
-                } else if (originalCode == PostInsertEvent || originalCode == PostUpdateEvent) {
-                    event.setEventCode(PostUpsertEvent);
-                }
-            }
             executeEventInternal(event);
             // Managed lifecycle callbacks follow successful database operations.
             // A client-session write has no managed lifecycle to notify.
@@ -282,11 +274,11 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
 
     private Object getEntityAgentOperation(DescriptorEvent event) {
         Object operation = event.getQuery() == null ? null
-                : event.getQuery().getProperty("eclipselink.entity-agent.operation");
-        if (operation == null && Boolean.TRUE.equals(event.getSession().getProperty("eclipselink.entity-agent"))) {
+                : event.getQuery().getProperty(EntityAgentProperties.OPERATION);
+        if (operation == null && Boolean.TRUE.equals(event.getSession().getProperty(EntityAgentProperties.ENTITY_AGENT))) {
             // A descriptor custom query can replace the original query. The
             // operation-scoped client marker survives that substitution.
-            operation = event.getSession().getProperty("eclipselink.entity-agent.operation");
+            operation = event.getSession().getProperty(EntityAgentProperties.OPERATION);
         }
         return operation;
     }
@@ -302,7 +294,22 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
             // automatic validation for this internal version write.
             boolean lockWrite = "LOCK".equals(getEntityAgentOperation(event));
             if (!lockWrite) {
-                notifyEJB30Listeners(event);
+                int physicalCode = event.getEventCode();
+                try {
+                    // Only JPA callbacks and automatic validation use upsert
+                    // semantics. Native listeners and selectors observe the
+                    // physical insert/update operation that actually occurred.
+                    if ("UPSERT".equals(getEntityAgentOperation(event))) {
+                        if (physicalCode == PreInsertEvent || physicalCode == PreUpdateWithChangesEvent) {
+                            event.setEventCode(PreUpsertEvent);
+                        } else if (physicalCode == PostInsertEvent || physicalCode == PostUpdateEvent) {
+                            event.setEventCode(PostUpsertEvent);
+                        }
+                    }
+                    notifyEJB30Listeners(event);
+                } finally {
+                    event.setEventCode(physicalCode);
+                }
             }
 
             if (event.getSource() instanceof DescriptorEventListener) {

@@ -54,6 +54,7 @@ import org.eclipse.persistence.internal.expressions.SQLUpdateAllStatementForTemp
 import org.eclipse.persistence.internal.expressions.SQLUpdateStatement;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.internal.helper.EntityAgentProperties;
 import org.eclipse.persistence.internal.helper.InvalidObject;
 import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
@@ -570,7 +571,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         insertStatement.setTable(table);
         insertStatement.setModifyRow(getModifyRow());
         ClassDescriptor descriptor = getDescriptor();
-        if ("UPSERT".equals(getQuery().getProperty("eclipselink.entity-agent.operation"))
+        if ("UPSERT".equals(getQuery().getProperty(EntityAgentProperties.OPERATION))
                 && getSession().getPlatform().isSQLServer() && descriptor.usesSequenceNumbers()
                 && descriptor.getSequence().shouldAcquireValueAfterInsert()
                 && table.equals(descriptor.getSequenceNumberField().getTable())) {
