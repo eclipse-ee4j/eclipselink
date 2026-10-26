@@ -27,7 +27,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class ConcurrentFixedCache<K, V> implements Serializable {
     protected int maxSize;
-    protected Map<K, V> cache;
+    protected final Map<K, V> cache;
 
     /**
      * Create a new concurrent cache, with a fixed size of 100.
