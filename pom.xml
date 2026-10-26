@@ -169,8 +169,6 @@ mvn clean install -Ptest1 \
         <jee.client.version>${wildfly.version}</jee.client.version>
         <jee.client.type>pom</jee.client.type>
 
-        <skip.glassfish.configuration>true</skip.glassfish.configuration>
-
         <!--These properties are used in MOXy and SDO tests only-->
         <test.xml.platform>org.eclipse.persistence.platform.xml.jaxp.JAXPPlatform</test.xml.platform>
         <test.xml.parser>org.eclipse.persistence.platform.xml.jaxp.JAXPParser</test.xml.parser>
@@ -1442,7 +1440,6 @@ mvn clean install -Ptest1 \
                 <jee.client.artifactId>gf-client-module</jee.client.artifactId>
                 <jee.client.version>${glassfish.version}</jee.client.version>
                 <jee.client.type>jar</jee.client.type>
-                <skip.glassfish.configuration>false</skip.glassfish.configuration>
                 <!--
                     GlassFish 9 is not published as a downloadable zip the way WildFly is, so there is no
                     installation.url/checksum here: the distribution is resolved from the Maven repository
