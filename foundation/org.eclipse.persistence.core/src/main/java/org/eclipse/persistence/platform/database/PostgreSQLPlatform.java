@@ -357,6 +357,12 @@ public class PostgreSQLPlatform extends DatabasePlatform {
         return false;
     }
 
+    /** DISTINCT result rows cannot carry a FOR UPDATE locking clause. */
+    @Override
+    public boolean isForUpdateCompatibleWithDistinct() {
+        return false;
+    }
+
     /**
      * INTERNAL: Answers whether platform is Postgres.
      */

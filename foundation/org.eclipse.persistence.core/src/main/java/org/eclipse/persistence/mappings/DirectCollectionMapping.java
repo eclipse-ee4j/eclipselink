@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
  * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
@@ -63,6 +64,7 @@ import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.identitymaps.CacheId;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
+import org.eclipse.persistence.internal.queries.FetchedLockContext;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.queries.OrderedListContainerPolicy;
@@ -3189,7 +3191,8 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
         if (row.hasSopObject()) {
             return getAttributeValueFromObject(row.getSopObject());
         }
-        if (sourceQuery.isObjectLevelReadQuery() && (((ObjectLevelReadQuery)sourceQuery).isAttributeBatchRead(this.descriptor, getAttributeName())
+        if (!isLockingFetchedMapping(sourceQuery) && FetchedLockContext.current() == null && sourceQuery.isObjectLevelReadQuery()
+                && (((ObjectLevelReadQuery)sourceQuery).isAttributeBatchRead(this.descriptor, getAttributeName())
                 || (sourceQuery.isReadAllQuery() && shouldUseBatchReading()))) {
             return batchedValueFromRow(row, (ObjectLevelReadQuery)sourceQuery, cacheKey);
         }
@@ -3202,7 +3205,8 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
         // or retrieve the object from the query property.
         ReadQuery targetQuery = getSelectionQuery();
 
-        boolean extendingPessimisticLockScope = isExtendingPessimisticLockScope(sourceQuery) && extendPessimisticLockScope == ExtendPessimisticLockScope.TARGET_QUERY;
+        boolean extendingPessimisticLockScope = isLockingFetchedMapping(sourceQuery)
+                || isExtendingPessimisticLockScope(sourceQuery) && extendPessimisticLockScope == ExtendPessimisticLockScope.TARGET_QUERY;
         if ((getHistoryPolicy() != null) || (sourceQuery.getSession().getAsOfClause() != null) || ((sourceQuery.isObjectLevelReadQuery() && ((ObjectLevelReadQuery)sourceQuery).hasAsOfClause()) && (sourceQuery.shouldCascadeAllParts() || (sourceQuery.shouldCascadePrivateParts() && isPrivateOwned()) || (sourceQuery.shouldCascadeByMapping() && this.cascadeRefresh))) || extendingPessimisticLockScope) {
             targetQuery = (ReadQuery)targetQuery.clone();
             // Code copied roughly from initializeSelectionStatement.
@@ -3236,7 +3240,24 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
             targetQuery.setSQLStatement(statement);
         }
 
+        targetQuery = FetchedLockContext.attachToSelection(targetQuery, sourceQuery);
         return getIndirectionPolicy().valueFromQuery(targetQuery, row, sourceQuery.getSession());
+    }
+
+    @Override
+    public ReadQuery prepareFetchedQuery(ReadQuery original, AbstractRecord row, AbstractSession session,
+            FetchedLockContext context) {
+        if (context == null || !context.isActive()) {
+            return original;
+        }
+        ReadQuery query = (ReadQuery) original.clone();
+        SQLSelectStatement statement = (SQLSelectStatement) original.getSQLStatement().clone();
+        statement.setLockingClause(new ForUpdateClause(context.getLockMode()));
+        statement.normalize(session, null);
+        query.setSQLStatement(statement);
+        query.setIsExecutionClone(true);
+        context.attach(query);
+        return query;
     }
 
     /**

@@ -31,7 +31,7 @@
 
     <properties>
         <!--Jakarta APIs-->
-        <persistence.api.version>4.0.0-SNAPSHOT</persistence.api.version>
+        <persistence.api.version>4.0.0-M7</persistence.api.version>
         
         <annotation.version>3.0.0</annotation.version>
         <activation-api.version>2.2.0-M2</activation-api.version>

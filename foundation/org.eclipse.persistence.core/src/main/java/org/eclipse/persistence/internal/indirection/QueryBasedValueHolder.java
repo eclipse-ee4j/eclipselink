@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation.
  * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -17,6 +18,7 @@ package org.eclipse.persistence.internal.indirection;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.queries.FetchedLockContext;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
@@ -76,9 +78,12 @@ public class QueryBasedValueHolder<T> extends DatabaseValueHolder<T> {
         // Note that if isolated session & query will return itself, which is
         // safe
         // for if isolated it will not go in the shared cache.
-        if (!session.isUnitOfWork()) {
+        if (!session.isUnitOfWork() && !Boolean.TRUE.equals(session.getProperty("eclipselink.entity-agent"))) {
             this.session = session.getRootSession(query);
         }
+        // An agent materializes the requested detached graph before returning it.
+        // Retain the owning session until then so uncommitted relationships are
+        // read through that transaction, not the shared server read connection.
         this.query = query;
         this.sourceObject = sourceObject;
     }
@@ -117,6 +122,11 @@ public class QueryBasedValueHolder<T> extends DatabaseValueHolder<T> {
         return query;
     }
 
+    /** INTERNAL: Query for loading just this association in another operation context. */
+    public ReadQuery getQueryForIndependentInstantiation() {
+        return query;
+    }
+
     @Override
     protected T instantiate() throws DatabaseException {
         return instantiate(this.session);
@@ -133,10 +143,17 @@ public class QueryBasedValueHolder<T> extends DatabaseValueHolder<T> {
         if (this.query.isObjectBuildingQuery() && ((ObjectBuildingQuery)this.query).shouldRefreshIdentityMapResult()){
             this.refreshCascade = this.query.getCascadePolicy();
         }
-        Object result = session.executeQuery(getQuery(), getRow());
-        // Bug 489898 - ensure that the query's session is dereferenced, post-execution
-        getQuery().setSession(null);
-        return (T) result;
+        ReadQuery read = getQuery();
+        FetchedLockContext context = FetchedLockContext.get(read);
+        if (context != null && read.getSourceMapping() instanceof ForeignReferenceMapping mapping) {
+            read = mapping.prepareFetchedQuery(read, getRow(), session, context);
+        }
+        try {
+            return (T) session.executeQuery(read, getRow());
+        } finally {
+            // Bug 489898 - release the execution session even when a callback fails.
+            read.setSession(null);
+        }
     }
 
     /**

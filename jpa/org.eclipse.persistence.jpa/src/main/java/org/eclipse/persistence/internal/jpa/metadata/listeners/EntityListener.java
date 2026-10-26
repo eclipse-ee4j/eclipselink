@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,6 +27,7 @@ import java.lang.reflect.Modifier;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -37,6 +38,7 @@ import org.eclipse.persistence.descriptors.DescriptorEventManager;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
+import org.eclipse.persistence.internal.security.PrivilegedGetDeclaredMethods;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.SessionLog;
@@ -60,6 +62,15 @@ public class EntityListener<T> extends DescriptorEventAdapter {
     public final static String PRE_REMOVE = "preRemove";
     public final static String PRE_UPDATE_WITH_CHANGES = "preUpdateWithChanges";
 
+    public static final String POST_LOAD = "postLoad";
+    public static final String POST_PERSIST = "postPersist";
+    public static final String POST_REMOVE = "postRemove";
+    public static final String POST_UPSERT = "postUpsert";
+    public static final String PRE_DELETE = "preDelete";
+    public static final String PRE_INSERT = "preInsert";
+    public static final String PRE_MERGE = "preMerge";
+    public static final String PRE_UPSERT = "preUpsert";
+
     private T m_listener;
     private Class<T> m_listenerClass;
     private Class<?> m_entityClass;
@@ -70,7 +81,23 @@ public class EntityListener<T> extends DescriptorEventAdapter {
 
     static {
         // For quick look up of equivalent event strings from event codes.
-        m_eventStrings = Map.of(DescriptorEventManager.PostBuildEvent, POST_BUILD, DescriptorEventManager.PostCloneEvent, POST_CLONE, DescriptorEventManager.PostDeleteEvent, POST_DELETE, DescriptorEventManager.PostInsertEvent, POST_INSERT, DescriptorEventManager.PostRefreshEvent, POST_REFRESH, DescriptorEventManager.PostUpdateEvent, POST_UPDATE, DescriptorEventManager.PrePersistEvent, PRE_PERSIST, DescriptorEventManager.PreRemoveEvent, PRE_REMOVE, DescriptorEventManager.PreUpdateWithChangesEvent, PRE_UPDATE_WITH_CHANGES);
+        m_eventStrings = Map.ofEntries(
+                Map.entry(DescriptorEventManager.PostBuildEvent, POST_LOAD),
+                Map.entry(DescriptorEventManager.PostCloneEvent, POST_CLONE),
+                Map.entry(DescriptorEventManager.PostDeleteEvent, POST_DELETE),
+                Map.entry(DescriptorEventManager.PostInsertEvent, POST_INSERT),
+                Map.entry(DescriptorEventManager.PostRefreshEvent, POST_REFRESH),
+                Map.entry(DescriptorEventManager.PostUpdateEvent, POST_UPDATE),
+                Map.entry(DescriptorEventManager.PrePersistEvent, PRE_PERSIST),
+                Map.entry(DescriptorEventManager.PreRemoveEvent, PRE_REMOVE),
+                Map.entry(DescriptorEventManager.PreUpdateWithChangesEvent, PRE_UPDATE_WITH_CHANGES),
+                Map.entry(DescriptorEventManager.PostPersistEvent, POST_PERSIST),
+                Map.entry(DescriptorEventManager.PostRemoveEvent, POST_REMOVE),
+                Map.entry(DescriptorEventManager.PreInsertEvent, PRE_INSERT),
+                Map.entry(DescriptorEventManager.PreDeleteEvent, PRE_DELETE),
+                Map.entry(DescriptorEventManager.PreMergeEvent, PRE_MERGE),
+                Map.entry(DescriptorEventManager.PreUpsertEvent, PRE_UPSERT),
+                Map.entry(DescriptorEventManager.PostUpsertEvent, POST_UPSERT));
     }
     /**
      * INTERNAL:
@@ -95,26 +122,16 @@ public class EntityListener<T> extends DescriptorEventAdapter {
      * one event method per class is permitted.
      */
     public void addEventMethod(String event, Method method) {
-        if (m_methods.containsKey(event)) {
-            Method lastEventMethod = getLastEventMethod(event);
-
-            if (lastEventMethod.getDeclaringClass().equals(method.getDeclaringClass())) {
-                throw ValidationException.multipleLifecycleCallbackMethodsForSameLifecycleEvent(getListenerClass(), method, lastEventMethod);
-            } else {
-                // We must be adding a callback method from a mapped superclass
-                // at this point, so validate the method and add it.
-                validateMethod(method);
-                m_methods.get(event).add(method);
+        validateMethod(method);
+        List<Method> methods = m_methods.computeIfAbsent(event, key -> new ArrayList<>());
+        for (Method existing : methods) {
+            if (existing.getDeclaringClass().equals(method.getDeclaringClass())
+                    && Arrays.equals(existing.getParameterTypes(), method.getParameterTypes())) {
+                throw ValidationException.multipleLifecycleCallbackMethodsForSameLifecycleEvent(
+                        getListenerClass(), method, existing);
             }
-        } else {
-            // Validate the method is valid.
-            validateMethod(method);
-
-            // Create the methods list and add this method to it.
-            List<Method> methods = new ArrayList<>();
-            methods.add(method);
-            m_methods.put(event, methods);
         }
+        methods.add(method);
     }
 
     /**
@@ -260,7 +277,8 @@ public class EntityListener<T> extends DescriptorEventAdapter {
     protected boolean hasOverriddenEventMethod(List<Method> eventMethods, Method eventMethod) {
         if (eventMethods != null) {
             for (Method method : eventMethods) {
-                if (method.getName().equals(eventMethod.getName())) {
+                if (method.getName().equals(eventMethod.getName())
+                        && Arrays.equals(method.getParameterTypes(), eventMethod.getParameterTypes())) {
                     return true;
                 }
             }
@@ -281,6 +299,32 @@ public class EntityListener<T> extends DescriptorEventAdapter {
      */
     protected boolean hasOverriddenEventMethod(Method eventMethod, String eventCode) {
         return hasOverriddenEventMethod(getEventMethods(eventCode), eventMethod);
+    }
+
+    /**
+     * INTERNAL: An override suppresses an inherited callback even when the
+     * overriding method does not itself carry a lifecycle annotation.
+     */
+    protected static boolean isMethodOverridden(Method method, Class<?> targetClass) {
+        if (Modifier.isPrivate(method.getModifiers())) {
+            return false;
+        }
+        for (Class<?> type = targetClass; type != null && type != method.getDeclaringClass();
+                type = type.getSuperclass()) {
+            Method[] methods = PrivilegedAccessHelper.shouldUsePrivilegedAccess()
+                    ? AccessController.doPrivileged(new PrivilegedGetDeclaredMethods(type))
+                    : PrivilegedAccessHelper.getDeclaredMethods(type);
+            for (Method candidate : methods) {
+                if (candidate.getName().equals(method.getName())
+                        && Arrays.equals(candidate.getParameterTypes(), method.getParameterTypes())
+                        && !Modifier.isPrivate(candidate.getModifiers())
+                        && (Modifier.isPublic(method.getModifiers()) || Modifier.isProtected(method.getModifiers())
+                        || type.getPackageName().equals(method.getDeclaringClass().getPackageName()))) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**
@@ -390,6 +434,8 @@ public class EntityListener<T> extends DescriptorEventAdapter {
      */
     @Override
     public void postBuild(DescriptorEvent event) {
+        // Agent reads notify PostLoad on the final detached copy through PostClone.
+        // Never notify application callbacks on a cache/source object here.
         invokeMethod(POST_BUILD, event);
     }
 
@@ -398,7 +444,10 @@ public class EntityListener<T> extends DescriptorEventAdapter {
      */
     @Override
     public void postClone(DescriptorEvent event) {
-        invokeMethod(POST_CLONE, event);
+        Object suppressedSource = event.getSession().getProperty("eclipselink.entity-agent.suppressed-copy-source");
+        if (!isInternalRead(event) && (suppressedSource == null || suppressedSource != event.getOriginalObject())) {
+            invokeMethod(POST_CLONE, event);
+        }
     }
 
     /**
@@ -422,7 +471,23 @@ public class EntityListener<T> extends DescriptorEventAdapter {
      */
     @Override
     public void postRefresh(DescriptorEvent event) {
-        invokeMethod(POST_REFRESH, event);
+        // Invalidated cache reconstruction is followed by a clone callback.
+        // Preserve requested refresh delivery, including ordinary EntityManager
+        // source refreshes, while suppressing the agent's marked internal reads.
+        boolean entityTarget = event.getSession().isUnitOfWork()
+                || (event.getSession().isClientSession()
+                && Boolean.TRUE.equals(event.getSession().getProperty("eclipselink.entity-agent")));
+        boolean requestedRefresh = event.getQuery() instanceof org.eclipse.persistence.queries.ObjectLevelReadQuery read
+                && read.shouldRefreshIdentityMapResult();
+        if ((entityTarget || requestedRefresh) && !isInternalRead(event)) {
+            invokeMethod(POST_REFRESH, event);
+        }
+    }
+
+    private boolean isInternalRead(DescriptorEvent event) {
+        return Boolean.TRUE.equals(event.getSession().getProperty("eclipselink.entity-agent.internal-read"))
+                || (event.getQuery() != null && Boolean.TRUE.equals(
+                event.getQuery().getProperty("eclipselink.entity-agent.internal-read")));
     }
 
     /**
@@ -522,6 +587,97 @@ public class EntityListener<T> extends DescriptorEventAdapter {
 
     /**
      * INTERNAL:
+     */
+    public void setPostLoadMethod(Method method) {
+        addEventMethod(POST_LOAD, method);
+    }
+
+    @Override
+    public void postPersist(DescriptorEvent event) {
+        invokeMethod(POST_PERSIST, event);
+    }
+
+    /**
+     * INTERNAL:
+     */
+    public void setPostPersistMethod(Method method) {
+        addEventMethod(POST_PERSIST, method);
+    }
+
+    @Override
+    public void postRemove(DescriptorEvent event) {
+        invokeMethod(POST_REMOVE, event);
+    }
+
+    /**
+     * INTERNAL:
+     */
+    public void setPostRemoveMethod(Method method) {
+        addEventMethod(POST_REMOVE, method);
+    }
+
+    @Override
+    public void postUpsert(DescriptorEvent event) {
+        invokeMethod(POST_UPSERT, event);
+    }
+
+    /**
+     * INTERNAL:
+     */
+    public void setPostUpsertMethod(Method method) {
+        addEventMethod(POST_UPSERT, method);
+    }
+
+    @Override
+    public void preDelete(DescriptorEvent event) {
+        invokeMethod(PRE_DELETE, event);
+    }
+
+    /**
+     * INTERNAL:
+     */
+    public void setPreDeleteMethod(Method method) {
+        addEventMethod(PRE_DELETE, method);
+    }
+
+    @Override
+    public void preInsert(DescriptorEvent event) {
+        invokeMethod(PRE_INSERT, event);
+    }
+
+    /**
+     * INTERNAL:
+     */
+    public void setPreInsertMethod(Method method) {
+        addEventMethod(PRE_INSERT, method);
+    }
+
+    @Override
+    public void preMerge(DescriptorEvent event) {
+        invokeMethod(PRE_MERGE, event);
+    }
+
+    /**
+     * INTERNAL:
+     */
+    public void setPreMergeMethod(Method method) {
+        addEventMethod(PRE_MERGE, method);
+    }
+
+    @Override
+    public void preUpsert(DescriptorEvent event) {
+        invokeMethod(PRE_UPSERT, event);
+    }
+
+    /**
+     * INTERNAL:
+     */
+    public void setPreUpsertMethod(Method method) {
+        addEventMethod(PRE_UPSERT, method);
+    }
+
+    /**
+     * INTERNAL:
      * Used in the debugger.
      */
     @Override
@@ -550,7 +706,7 @@ public class EntityListener<T> extends DescriptorEventAdapter {
     protected void validateMethodModifiers(Method method) {
         int modifiers = method.getModifiers();
 
-        if (Modifier.isStatic(modifiers) || Modifier.isFinal(modifiers)) {
+        if (Modifier.isStatic(modifiers) || Modifier.isFinal(modifiers) || method.getReturnType() != void.class) {
             throw ValidationException.invalidCallbackMethodModifier(getListenerClass(), method.getName());
         }
     }

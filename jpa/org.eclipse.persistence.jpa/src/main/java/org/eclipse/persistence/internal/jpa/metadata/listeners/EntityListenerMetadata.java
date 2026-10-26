@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,8 +34,11 @@ import java.security.AccessController;
 import java.security.PrivilegedActionException;
 
 import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
 
 import org.eclipse.persistence.descriptors.DescriptorEventListener;
 
@@ -58,6 +61,13 @@ import org.eclipse.persistence.internal.security.PrivilegedGetDeclaredMethods;
 import org.eclipse.persistence.internal.security.PrivilegedGetMethods;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_POST_DELETE;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_POST_INSERT;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_POST_UPSERT;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_PRE_DELETE;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_PRE_INSERT;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_PRE_MERGE;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_PRE_UPSERT;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_POST_LOAD;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_POST_PERSIST;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_POST_REMOVE;
@@ -86,7 +96,15 @@ public class EntityListenerMetadata extends ORMetadata implements Cloneable {
     private MetadataClass m_entityListenerClass;
 
     protected EntityListener m_listener;
+    private int m_listenerType;
     private String m_className;
+    private String m_postDelete;
+    private String m_postInsert;
+    private String m_postUpsert;
+    private String m_preDelete;
+    private String m_preInsert;
+    private String m_preMerge;
+    private String m_preUpsert;
     private String m_postLoad;
     private String m_postPersist;
     private String m_postRemove;
@@ -137,6 +155,34 @@ public class EntityListenerMetadata extends ORMetadata implements Cloneable {
                 return false;
             }
 
+            if (! valuesMatch(m_postDelete, entityListener.getPostDelete())) {
+                return false;
+            }
+
+            if (! valuesMatch(m_postInsert, entityListener.getPostInsert())) {
+                return false;
+            }
+
+            if (! valuesMatch(m_postUpsert, entityListener.getPostUpsert())) {
+                return false;
+            }
+
+            if (! valuesMatch(m_preDelete, entityListener.getPreDelete())) {
+                return false;
+            }
+
+            if (! valuesMatch(m_preInsert, entityListener.getPreInsert())) {
+                return false;
+            }
+
+            if (! valuesMatch(m_preMerge, entityListener.getPreMerge())) {
+                return false;
+            }
+
+            if (! valuesMatch(m_preUpsert, entityListener.getPreUpsert())) {
+                return false;
+            }
+
             if (! valuesMatch(m_postLoad, entityListener.getPostLoad())) {
                 return false;
             }
@@ -171,6 +217,13 @@ public class EntityListenerMetadata extends ORMetadata implements Cloneable {
     public int hashCode() {
         int result = super.hashCode();
         result = 31 * result + (m_className != null ? m_className.hashCode() : 0);
+        result = 31 * result + (m_postDelete != null ? m_postDelete.hashCode() : 0);
+        result = 31 * result + (m_postInsert != null ? m_postInsert.hashCode() : 0);
+        result = 31 * result + (m_postUpsert != null ? m_postUpsert.hashCode() : 0);
+        result = 31 * result + (m_preDelete != null ? m_preDelete.hashCode() : 0);
+        result = 31 * result + (m_preInsert != null ? m_preInsert.hashCode() : 0);
+        result = 31 * result + (m_preMerge != null ? m_preMerge.hashCode() : 0);
+        result = 31 * result + (m_preUpsert != null ? m_preUpsert.hashCode() : 0);
         result = 31 * result + (m_postLoad != null ? m_postLoad.hashCode() : 0);
         result = 31 * result + (m_postPersist != null ? m_postPersist.hashCode() : 0);
         result = 31 * result + (m_postRemove != null ? m_postRemove.hashCode() : 0);
@@ -202,23 +255,16 @@ public class EntityListenerMetadata extends ORMetadata implements Cloneable {
      * methods from superclasses.
      */
     Method[] getCandidateCallbackMethodsForEntityListener() {
-        Set<Method> candidateMethods = new HashSet<>();
-        Class<?> listenerClass = m_listener.getListenerClass();
-
-        // Add all the declared methods ...
-        Method[] declaredMethods = getDeclaredMethods(listenerClass);
-        Collections.addAll(candidateMethods, declaredMethods);
-
-        // Now add any public methods from superclasses ...
-        Method[] methods = getMethods(listenerClass);
-        for (int i = 0; i < methods.length; i++) {
-            if (candidateMethods.contains(methods[i])) {
-                continue;
-            }
-
-            candidateMethods.add(methods[i]);
+        List<Method> candidateMethods = new ArrayList<>();
+        List<Class<?>> hierarchy = new ArrayList<>();
+        for (Class<?> type = m_listener.getListenerClass(); type != Object.class && type != null;
+                type = type.getSuperclass()) {
+            hierarchy.add(type);
         }
-
+        Collections.reverse(hierarchy);
+        for (Class<?> type : hierarchy) {
+            Collections.addAll(candidateMethods, getDeclaredMethods(type));
+        }
         return candidateMethods.toArray(new Method[0]);
     }
 
@@ -392,6 +438,10 @@ public class EntityListenerMetadata extends ORMetadata implements Cloneable {
     /**
      * INTERNAL:
      */
+    public void setListenerType(int listenerType) {
+        m_listenerType = listenerType;
+    }
+
     public void process(ClassAccessor classAccessor, ClassLoader loader, boolean isDefaultListener) {
         // Make sure the entityListenerClass is initialized (default listeners
         // are cloned and m_entityListenerClass may be null)
@@ -400,6 +450,7 @@ public class EntityListenerMetadata extends ORMetadata implements Cloneable {
         }
         JPAEntityListenerHolder holder = new JPAEntityListenerHolder();
         holder.setIsDefaultListener(isDefaultListener);
+        holder.listenerType = m_listenerType;
 
         holder.listenerClassName = m_entityListenerClass.getName();
 
@@ -419,12 +470,62 @@ public class EntityListenerMetadata extends ORMetadata implements Cloneable {
 
     /**
      * INTERNAL:
-     * Process the the callback methods. The XML defined callback methods are
+     * Validate annotation callbacks for every parameter type, registering only
+     * callbacks compatible with the entity currently being processed.
+     */
+    private void processCallbackMethod(String event, Method method,
+            Map<Class<?>, EntityListener<?>> otherEntityListeners, Consumer<Method> register) {
+        Class<?>[] parameters = method.getParameterTypes();
+        if (!(m_listener instanceof EntityClassListener) && parameters.length == 1
+                && !parameters[0].isPrimitive()
+                && !parameters[0].isAssignableFrom(m_listener.getEntityClass())) {
+            // Shared listeners may declare callbacks for unrelated entity types.
+            // Validate their modifiers and duplicate event/type declarations too,
+            // but do not register them for the entity currently being processed.
+            otherEntityListeners.computeIfAbsent(parameters[0],
+                    type -> new EntityListener<>(m_listener.getListenerClass(), type))
+                    .addEventMethod(event, method);
+        } else {
+            register.accept(method);
+        }
+    }
+
+    /**
+     * INTERNAL:
+     * Process the callback methods. The XML defined callback methods are
      * always added first, followed by those defined by annotations (only if not
-     * already defined in XML)
+     * already defined in XML).
      */
     protected void processCallbackMethods(Method[] methods, ClassAccessor classAccessor) {
         // 1 - Set the XML specified methods first.
+        if (m_preUpsert != null) {
+            setPreUpsert(getCallbackMethod(m_preUpsert, methods));
+        }
+
+        if (m_preMerge != null) {
+            setPreMerge(getCallbackMethod(m_preMerge, methods));
+        }
+
+        if (m_preInsert != null) {
+            setPreInsert(getCallbackMethod(m_preInsert, methods));
+        }
+
+        if (m_preDelete != null) {
+            setPreDelete(getCallbackMethod(m_preDelete, methods));
+        }
+
+        if (m_postUpsert != null) {
+            setPostUpsert(getCallbackMethod(m_postUpsert, methods));
+        }
+
+        if (m_postInsert != null) {
+            setPostInsert(getCallbackMethod(m_postInsert, methods));
+        }
+
+        if (m_postDelete != null) {
+            setPostDelete(getCallbackMethod(m_postDelete, methods));
+        }
+
         if (m_postLoad != null) {
             setPostLoad(getCallbackMethod(m_postLoad, methods));
         }
@@ -455,42 +556,179 @@ public class EntityListenerMetadata extends ORMetadata implements Cloneable {
 
         // 2 - Set any annotation defined methods second. We should only add
         // add them if they were not overridden in XML.
+        Map<Class<?>, EntityListener<?>> otherEntityListeners = new HashMap<>();
         for (Method method : methods) {
+            if (EntityListener.isMethodOverridden(method, m_listener.getListenerClass())) {
+                continue;
+            }
             // Bug 495587 - Ignoring bridge methods
             if (!method.isBridge()) {
                 MetadataMethod metadataMethod = getMetadataClass(method.getDeclaringClass().getName(), false).getMethod(method.getName(), method.getParameterTypes());
                 // Metadata method can be null when dealing with jdk methods: equals, notify, toString, wait etc..
                 if (metadataMethod != null) {
+                    if (metadataMethod.isAnnotationPresent(JPA_PRE_UPSERT, classAccessor) && m_preUpsert == null) {
+                        processCallbackMethod(JPA_PRE_UPSERT, method, otherEntityListeners, this::setPreUpsert);
+                    }
+
+                    if (metadataMethod.isAnnotationPresent(JPA_PRE_MERGE, classAccessor) && m_preMerge == null) {
+                        processCallbackMethod(JPA_PRE_MERGE, method, otherEntityListeners, this::setPreMerge);
+                    }
+
+                    if (metadataMethod.isAnnotationPresent(JPA_PRE_INSERT, classAccessor) && m_preInsert == null) {
+                        processCallbackMethod(JPA_PRE_INSERT, method, otherEntityListeners, this::setPreInsert);
+                    }
+
+                    if (metadataMethod.isAnnotationPresent(JPA_PRE_DELETE, classAccessor) && m_preDelete == null) {
+                        processCallbackMethod(JPA_PRE_DELETE, method, otherEntityListeners, this::setPreDelete);
+                    }
+
+                    if (metadataMethod.isAnnotationPresent(JPA_POST_UPSERT, classAccessor) && m_postUpsert == null) {
+                        processCallbackMethod(JPA_POST_UPSERT, method, otherEntityListeners, this::setPostUpsert);
+                    }
+
+                    if (metadataMethod.isAnnotationPresent(JPA_POST_INSERT, classAccessor) && m_postInsert == null) {
+                        processCallbackMethod(JPA_POST_INSERT, method, otherEntityListeners, this::setPostInsert);
+                    }
+
+                    if (metadataMethod.isAnnotationPresent(JPA_POST_DELETE, classAccessor) && m_postDelete == null) {
+                        processCallbackMethod(JPA_POST_DELETE, method, otherEntityListeners, this::setPostDelete);
+                    }
+
                     if (metadataMethod.isAnnotationPresent(JPA_POST_LOAD, classAccessor) && m_postLoad == null) {
-                        setPostLoad(method);
+                        processCallbackMethod(JPA_POST_LOAD, method, otherEntityListeners, this::setPostLoad);
                     }
 
                     if (metadataMethod.isAnnotationPresent(JPA_POST_PERSIST, classAccessor) && m_postPersist == null) {
-                        setPostPersist(method);
+                        processCallbackMethod(JPA_POST_PERSIST, method, otherEntityListeners, this::setPostPersist);
                     }
 
                     if (metadataMethod.isAnnotationPresent(JPA_POST_REMOVE, classAccessor) && m_postRemove == null) {
-                        setPostRemove(method);
+                        processCallbackMethod(JPA_POST_REMOVE, method, otherEntityListeners, this::setPostRemove);
                     }
 
                     if (metadataMethod.isAnnotationPresent(JPA_POST_UPDATE, classAccessor) && m_postUpdate == null) {
-                        setPostUpdate(method);
+                        processCallbackMethod(JPA_POST_UPDATE, method, otherEntityListeners, this::setPostUpdate);
                     }
 
                     if (metadataMethod.isAnnotationPresent(JPA_PRE_PERSIST, classAccessor) && m_prePersist == null) {
-                        setPrePersist(method);
+                        processCallbackMethod(JPA_PRE_PERSIST, method, otherEntityListeners, this::setPrePersist);
                     }
 
                     if (metadataMethod.isAnnotationPresent(JPA_PRE_REMOVE, classAccessor) && m_preRemove == null) {
-                        setPreRemove(method);
+                        processCallbackMethod(JPA_PRE_REMOVE, method, otherEntityListeners, this::setPreRemove);
                     }
 
                     if (metadataMethod.isAnnotationPresent(JPA_PRE_UPDATE, classAccessor) && m_preUpdate == null) {
-                        setPreUpdate(method);
+                        processCallbackMethod(JPA_PRE_UPDATE, method, otherEntityListeners, this::setPreUpdate);
                     }
                 }
             }
         }
+    }
+
+    /**
+     * INTERNAL: Used for XML loading.
+     */
+    public String getPostDelete() {
+        return m_postDelete;
+    }
+
+    public void setPostDelete(String methodName) {
+        m_postDelete = methodName;
+    }
+
+    protected void setPostDelete(Method method) {
+        m_listener.setPostDeleteMethod(method);
+    }
+
+    /**
+     * INTERNAL: Used for XML loading.
+     */
+    public String getPostInsert() {
+        return m_postInsert;
+    }
+
+    public void setPostInsert(String methodName) {
+        m_postInsert = methodName;
+    }
+
+    protected void setPostInsert(Method method) {
+        m_listener.setPostInsertMethod(method);
+    }
+
+    /**
+     * INTERNAL: Used for XML loading.
+     */
+    public String getPostUpsert() {
+        return m_postUpsert;
+    }
+
+    public void setPostUpsert(String methodName) {
+        m_postUpsert = methodName;
+    }
+
+    protected void setPostUpsert(Method method) {
+        m_listener.setPostUpsertMethod(method);
+    }
+
+    /**
+     * INTERNAL: Used for XML loading.
+     */
+    public String getPreDelete() {
+        return m_preDelete;
+    }
+
+    public void setPreDelete(String methodName) {
+        m_preDelete = methodName;
+    }
+
+    protected void setPreDelete(Method method) {
+        m_listener.setPreDeleteMethod(method);
+    }
+
+    /**
+     * INTERNAL: Used for XML loading.
+     */
+    public String getPreInsert() {
+        return m_preInsert;
+    }
+
+    public void setPreInsert(String methodName) {
+        m_preInsert = methodName;
+    }
+
+    protected void setPreInsert(Method method) {
+        m_listener.setPreInsertMethod(method);
+    }
+
+    /**
+     * INTERNAL: Used for XML loading.
+     */
+    public String getPreMerge() {
+        return m_preMerge;
+    }
+
+    public void setPreMerge(String methodName) {
+        m_preMerge = methodName;
+    }
+
+    protected void setPreMerge(Method method) {
+        m_listener.setPreMergeMethod(method);
+    }
+
+    /**
+     * INTERNAL: Used for XML loading.
+     */
+    public String getPreUpsert() {
+        return m_preUpsert;
+    }
+
+    public void setPreUpsert(String methodName) {
+        m_preUpsert = methodName;
+    }
+
+    protected void setPreUpsert(Method method) {
+        m_listener.setPreUpsertMethod(method);
     }
 
     /**
@@ -507,6 +745,7 @@ public class EntityListenerMetadata extends ORMetadata implements Cloneable {
      */
     protected void setPostLoad(Method method) {
         // bug 259404: PostClone is called for all objects when registered with the unitOfWork
+        m_listener.setPostLoadMethod(method);
         m_listener.setPostCloneMethod(method);
         m_listener.setPostRefreshMethod(method);
     }
@@ -524,7 +763,7 @@ public class EntityListenerMetadata extends ORMetadata implements Cloneable {
      * Set the post persist event method on the listener.
      */
     protected void setPostPersist(Method method) {
-        m_listener.setPostInsertMethod(method);
+        m_listener.setPostPersistMethod(method);
     }
 
     /**
@@ -540,7 +779,7 @@ public class EntityListenerMetadata extends ORMetadata implements Cloneable {
      * Set the post remove event method on the listener.
      */
     protected void setPostRemove(Method method) {
-        m_listener.setPostDeleteMethod(method);
+        m_listener.setPostRemoveMethod(method);
     }
 
     /**

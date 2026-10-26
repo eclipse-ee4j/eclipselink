@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -20,8 +20,10 @@ package org.eclipse.persistence.internal.jpa.querydef;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
@@ -261,9 +263,13 @@ public abstract class CommonAbstractCriteriaImpl<T> implements CommonAbstractCri
      * @return EclipseLink {@link DatabaseQuery}
      */
     protected DatabaseQuery translate(DatabaseQuery query) {
+        Map<String, ParameterExpression<?>> parameterMetadata = new HashMap<>();
         for (ParameterExpression<?> parameter : getParameters()) {
-            query.addArgument(((ParameterExpressionImpl<?>)parameter).getInternalName(), parameter.getJavaType());
+            String name = ((ParameterExpressionImpl<?>) parameter).getInternalName();
+            query.addArgument(name, parameter.getJavaType());
+            parameterMetadata.put(name, parameter);
         }
+        query.setProperty(ParameterExpressionImpl.QUERY_PARAMETERS_PROPERTY, Map.copyOf(parameterMetadata));
         if (this.where != null) {
             if (((InternalExpression) this.where).isJunction()) {
                 if (!((PredicateImpl) this.where).getJunctionValue()) {

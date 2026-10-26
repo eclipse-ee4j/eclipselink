@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation.
  * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
@@ -1685,7 +1686,9 @@ public class DatabaseAccessor extends DatasourceAccessor {
      * Return the batch writing mode.
      */
     protected boolean isInBatchWritingMode(AbstractSession session) {
-        return getPlatform().usesBatchWriting() && this.isInTransaction;
+        // Agent writes must complete their SQL before returning, including owned data.
+        return !Boolean.TRUE.equals(session.getProperty("eclipselink.entity-agent"))
+                && getPlatform().usesBatchWriting() && this.isInTransaction;
     }
 
     /**
@@ -1796,6 +1799,15 @@ public class DatabaseAccessor extends DatasourceAccessor {
      * will be returned.
      */
     public DatabaseException processExceptionForCommError(AbstractSession session, SQLException exception, Call call) {
+        if (Boolean.TRUE.equals(session.getProperty("eclipselink.entity-agent"))
+                && session.getPlatform().isPostgreSQL() && exception.getSQLState() != null
+                && (exception.getSQLState().startsWith("22") || exception.getSQLState().startsWith("23")
+                    || exception.getSQLState().startsWith("25") || exception.getSQLState().startsWith("40")
+                    || "55P03".equals(exception.getSQLState()) || "57014".equals(exception.getSQLState()))) {
+            // PostgreSQL rejects a ping in an aborted transaction. That does not
+            // mean its connection is broken: the owner must still roll it back.
+            return null;
+        }
         if (session.getLogin().isConnectionHealthValidatedOnError((DatabaseCall)call, this)
                 && (getConnection() != null)
                 && session.getServerPlatform().wasFailureCommunicationBased(exception, this, session)) {

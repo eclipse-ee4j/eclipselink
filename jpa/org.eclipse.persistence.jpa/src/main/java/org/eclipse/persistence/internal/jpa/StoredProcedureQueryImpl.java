@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019, 2025 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -58,6 +58,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -93,6 +94,7 @@ import org.eclipse.persistence.queries.StoredProcedureCall;
 import static org.eclipse.persistence.config.QueryHints.CACHE_RETRIEVE_MODE;
 import static org.eclipse.persistence.config.QueryHints.CACHE_STORE_MODE;
 import static org.eclipse.persistence.config.QueryHints.QUERY_TIMEOUT;
+import static org.eclipse.persistence.config.QueryHints.QUERY_TIMEOUT_UNIT;
 import static org.eclipse.persistence.internal.jpa.ResultSetMappingTranslator.toEclipseLinkMapping;
 import static org.eclipse.persistence.internal.localization.ExceptionLocalization.buildMessage;
 
@@ -155,6 +157,17 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
         super(entityManager);
         this.queryName = name;
         // Inherit applicable hints from EntityManager
+        inheritEntityManagerHints();
+    }
+
+    StoredProcedureQueryImpl(DatabaseQuery query, QueryExecutionContext context) {
+        super(query, context);
+        inheritEntityManagerHints();
+    }
+
+    StoredProcedureQueryImpl(String name, QueryExecutionContext context) {
+        super(context);
+        this.queryName = name;
         inheritEntityManagerHints();
     }
 
@@ -290,7 +303,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     @SuppressWarnings({"rawtypes"})
     public StoredProcedureQuery registerStoredProcedureParameter(int position, Class type, ParameterMode mode) {
         verifyNotClosed();
-        entityManager.verifyOpenWithSetRollbackOnly();
+        executionContext.verifyOpenWithSetRollbackOnly();
         StoredProcedureCall call = (StoredProcedureCall) getDatabaseQuery().getCall();
 
         switch (mode) {
@@ -329,7 +342,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     @SuppressWarnings({"rawtypes"})
     public StoredProcedureQuery registerStoredProcedureParameter(String parameterName, Class type, ParameterMode mode) {
         verifyNotClosed();
-        entityManager.verifyOpenWithSetRollbackOnly();
+        executionContext.verifyOpenWithSetRollbackOnly();
         StoredProcedureCall call = (StoredProcedureCall) getDatabaseQuery().getCall();
 
         switch (mode) {
@@ -377,7 +390,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
         @SuppressWarnings("unchecked")
         var converterInstance = (AttributeConverter<Object, Object>) buildConverter(converter).getAttributeConverter();
 
-        registerStoredProcedureParameter(position, getDomainType(converterInstance), mode);
+        registerStoredProcedureParameter(position, getRelationalType(converterInstance), mode);
         parameterConverters.put(String.valueOf(position), converterInstance);
 
         @SuppressWarnings("unchecked")
@@ -392,7 +405,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
         @SuppressWarnings("unchecked")
         var converterInstance = (AttributeConverter<Object, Object>) buildConverter(converter).getAttributeConverter();
 
-        registerStoredProcedureParameter(parameterName, getDomainType(converterInstance), mode);
+        registerStoredProcedureParameter(parameterName, getRelationalType(converterInstance), mode);
         parameterConverters.put(parameterName, converterInstance);
 
         @SuppressWarnings("unchecked")
@@ -404,7 +417,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     @Override
     public <T> Parameter<T> registerResultParameter(Class<T> resultType) {
         verifyNotClosed();
-        entityManager.verifyOpenWithSetRollbackOnly();
+        executionContext.verifyOpenWithSetRollbackOnly();
 
         return new FunctionReturnImpl<>(asFunctionCall(getCall(), resultType));
     }
@@ -429,7 +442,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     public StoredProcedureQuery setHint(String hintName, Object value) {
         verifyNotClosed();
         try {
-            entityManager.verifyOpen();
+            executionContext.verifyOpen();
             setHintInternal(hintName, value);
             return this;
         } catch (RuntimeException e) {
@@ -468,7 +481,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
 
         // getOptions() has to report the flush mode too: "The returned set includes options set via
         // addOption, along with options specified via setTimeout or setQueryFlushMode."
-        recordOption(queryFlushMode);
+        recordOption(queryFlushMode == null ? QueryFlushMode.DEFAULT : queryFlushMode);
         return this;
     }
 
@@ -511,7 +524,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     @Override
     public CacheRetrieveMode getCacheRetrieveMode() {
         verifyNotClosed();
-        return FindOptionUtils.getCacheRetrieveMode(entityManager.getAbstractSession(), getDatabaseQuery().getProperties());
+        return FindOptionUtils.getCacheRetrieveMode(executionContext.getSession(), getDatabaseQuery().getProperties());
     }
 
     @Override
@@ -525,7 +538,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     @Override
     public CacheStoreMode getCacheStoreMode() {
         verifyNotClosed();
-        return FindOptionUtils.getCacheStoreMode(entityManager.getAbstractSession(), getDatabaseQuery().getProperties());
+        return FindOptionUtils.getCacheStoreMode(executionContext.getSession(), getDatabaseQuery().getProperties());
     }
 
     @Override
@@ -539,28 +552,43 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     @Override
     public Integer getTimeout() {
         verifyNotClosed();
-        return FindOptionUtils.getTimeout(entityManager.getAbstractSession(), getDatabaseQuery().getProperties());
+        if (getDatabaseQuery().getProperty(QUERY_TIMEOUT) == null) {
+            return null;
+        }
+        return FindOptionUtils.getTimeout(executionContext.getSession(), getDatabaseQuery().getProperties());
     }
 
     @Override
     public StoredProcedureQueryImpl setTimeout(Integer timeout) {
         verifyNotClosed();
+        if (timeout != null && timeout < 0) {
+            throw new IllegalArgumentException("Query timeout must not be negative");
+        }
         FindOptionUtils.setTimeout(getDatabaseQuery().getProperties(), timeout);
-        setHint(QUERY_TIMEOUT, timeout);
+        setHint(QUERY_TIMEOUT_UNIT, java.util.concurrent.TimeUnit.MILLISECONDS);
+        setHint(QUERY_TIMEOUT, timeout == null ? 0 : timeout);
+        if (timeout == null) {
+            getDatabaseQuery().getProperties().remove(QUERY_TIMEOUT);
+            options.remove(Timeout.class);
+        } else {
+            recordOption(Timeout.milliseconds(timeout));
+        }
         return this;
     }
 
     @Override
     public StoredProcedureQuery setTimeout(Timeout timeout) {
         verifyNotClosed();
-        setTimeout(timeout.milliseconds());
-        recordOption(timeout);
+        setTimeout(timeout == null ? null : timeout.milliseconds());
         return this;
     }
 
     @Override
     public StoredProcedureQuery addOption(Option option) {
         verifyNotClosed();
+        if (option == null) {
+            throw new IllegalArgumentException("Procedure option must not be null");
+        }
 
         // Options that have a dedicated setter must still take effect when they arrive this way,
         // otherwise addOption(Timeout) would register the option without applying the timeout.
@@ -650,7 +678,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     public StoredProcedureQuery setParameter(int position, Object value) {
         verifyNotClosed();
         try {
-            entityManager.verifyOpen();
+            executionContext.verifyOpen();
             setParameterInternal(position, value);
             return this;
         } catch (RuntimeException e) {
@@ -663,7 +691,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     public StoredProcedureQuery setParameter(String name, Object value) {
         verifyNotClosed();
         try {
-            entityManager.verifyOpen();
+            executionContext.verifyOpen();
             setParameterInternal(name, value, false);
             return this;
         } catch (RuntimeException e) {
@@ -676,7 +704,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     public <P> StoredProcedureQuery setParameter(int position, P value, Class<P> type) {
         verifyNotClosed();
         try {
-            entityManager.verifyOpen();
+            executionContext.verifyOpen();
             setParameterInternal(String.valueOf(position), value, type, true);
             return this;
         } catch (RuntimeException e) {
@@ -689,7 +717,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     public <P> StoredProcedureQuery setParameter(String name, P value, Class<P> type) {
         verifyNotClosed();
         try {
-            entityManager.verifyOpen();
+            executionContext.verifyOpen();
             setParameterInternal(name, value, type, false);
             return this;
         } catch (RuntimeException e) {
@@ -702,7 +730,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     public <P> StoredProcedureQuery setParameter(int position, P value, Type<P> type) {
         verifyNotClosed();
         try {
-            entityManager.verifyOpen();
+            executionContext.verifyOpen();
             setParameterInternal(String.valueOf(position), value, type.getJavaType(), true);
             return this;
         } catch (RuntimeException e) {
@@ -715,7 +743,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     public <P> StoredProcedureQuery setParameter(String name, P value, Type<P> type) {
         verifyNotClosed();
         try {
-            entityManager.verifyOpen();
+            executionContext.verifyOpen();
             setParameterInternal(name, value, type.getJavaType(), false);
             return this;
         } catch (RuntimeException e) {
@@ -761,7 +789,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     @Override
     public StoredProcedureQuery setParameter(int position, Calendar value, TemporalType temporalType) {
         verifyNotClosed();
-        entityManager.verifyOpenWithSetRollbackOnly();
+        executionContext.verifyOpenWithSetRollbackOnly();
         return setParameter(position, convertTemporalType(value, temporalType));
     }
 
@@ -776,21 +804,21 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     @Override
     public StoredProcedureQuery setParameter(int position, Date value, TemporalType temporalType) {
         verifyNotClosed();
-        entityManager.verifyOpenWithSetRollbackOnly();
+        executionContext.verifyOpenWithSetRollbackOnly();
         return setParameter(position, convertTemporalType(value, temporalType));
     }
 
     @Override
     public StoredProcedureQuery setParameter(String name, Calendar value, TemporalType temporalType) {
         verifyNotClosed();
-        entityManager.verifyOpenWithSetRollbackOnly();
+        executionContext.verifyOpenWithSetRollbackOnly();
         return setParameter(name, convertTemporalType(value, temporalType));
     }
 
     @Override
     public StoredProcedureQuery setParameter(String name, Date value, TemporalType temporalType) {
         verifyNotClosed();
-        entityManager.verifyOpenWithSetRollbackOnly();
+        executionContext.verifyOpenWithSetRollbackOnly();
         return setParameter(name, convertTemporalType(value, temporalType));
     }
 
@@ -878,8 +906,12 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     @Override
     public StoredProcedureQuery setParameters(Object... arguments) {
         verifyNotClosed();
-        for (int i=0; i<arguments.length; i++) {
-            setParameter(i, arguments[i]);
+        if (arguments == null) {
+            throw new IllegalArgumentException("Parameter arguments must not be null");
+        }
+        validatePositionalArgumentCount(arguments.length);
+        for (int i = 0; i < arguments.length; i++) {
+            setParameter(i + 1, arguments[i]);
         }
 
         return this;
@@ -965,12 +997,16 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     public boolean execute() {
         verifyNotClosed();
         try {
-            entityManager.verifyOpen();
+            executionContext.verifyOpen();
 
             if (!getDatabaseQueryInternal().isResultSetMappingQuery()) {
                 throw new IllegalStateException(ExceptionLocalization.buildMessage("incorrect_spq_query_for_execute"));
             }
 
+            releaseConnections();
+            executeResultSetIndex = -1;
+            outputCursorIndex = -1;
+            isOutputCursorResultSet = false;
             getResultSetMappingQuery().setIsExecuteCall(true);
             executeCall = (DatabaseCall) executeReadQuery();
             executeStatement = executeCall.getStatement();
@@ -989,7 +1025,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
             // Deferring closing the call avoids having to go through all the
             // results now (and building all the result objects) and things
             // remain on a as needed basis from the statement.
-            entityManager.addOpenQuery(this);
+            executionContext.registerQuery(this);
 
             hasMoreResults = executeCall.getExecuteReturnValue();
 
@@ -1003,13 +1039,19 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
 
             return hasMoreResults;
         } catch (LockTimeoutException exception) {
+            cleanupAfterFailure(exception);
             throw exception;
         } catch (PersistenceException | IllegalStateException exception) {
+            cleanupAfterFailure(exception);
             setRollbackOnly();
             throw exception;
         } catch (RuntimeException exception) {
+            cleanupAfterFailure(exception);
             setRollbackOnly();
             throw new PersistenceException(exception);
+        } catch (Error failure) {
+            cleanupAfterFailure(failure);
+            throw failure;
         }
     }
 
@@ -1022,7 +1064,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
         verifyNotClosed();
         try {
             // Need to throw TransactionRequiredException if there is no active transaction
-            entityManager.checkForTransaction(true);
+            executionContext.requireTransaction();
 
             // Legacy: we could have a data read query or a read all query, so
             // clearly we shouldn't be executing an update on it. As of JPA 2.1
@@ -1042,15 +1084,19 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
                 return getUpdateCount();
             }
         } catch (LockTimeoutException exception) {
+            cleanupAfterFailure(exception);
             throw exception;
         } catch (PersistenceException | IllegalStateException e) {
+            cleanupAfterFailure(e);
             setRollbackOnly();
             throw e;
         } catch (RuntimeException exception) {
+            cleanupAfterFailure(exception);
             setRollbackOnly();
             throw new PersistenceException(exception);
-        } finally {
-            releaseConnections(); // Free the JDBC resources; the query stays usable.
+        } catch (Error failure) {
+            cleanupAfterFailure(failure);
+            throw failure;
         }
     }
 
@@ -1066,7 +1112,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
         verifyNotClosed();
         // bug51411440: need to throw IllegalStateException if query
         // executed on closed em
-        this.entityManager.verifyOpenWithSetRollbackOnly();
+        this.executionContext.verifyOpenWithSetRollbackOnly();
         try {
             // If there is no execute statement, the user has not called
             // execute and is simply calling getResultList directly on the query.
@@ -1112,16 +1158,23 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
             // Move the result pointer.
             moveResultPointer();
 
-            return getResultSetMappingQuery().buildObjectsFromRecords(result, ++executeResultSetIndex);
+            return (List<Object>) executionContext.prepareResult(
+                    getResultSetMappingQuery().buildObjectsFromRecords(result, ++executeResultSetIndex));
 
         } catch (LockTimeoutException e) {
+            cleanupAfterFailure(e);
             throw e;
         } catch (PersistenceException | IllegalStateException e) {
+            cleanupAfterFailure(e);
             setRollbackOnly();
             throw e;
         } catch (Exception e) {
+            cleanupAfterFailure(e);
             setRollbackOnly();
             throw new PersistenceException(e);
+        } catch (Error failure) {
+            cleanupAfterFailure(failure);
+            throw failure;
         }
     }
 
@@ -1131,7 +1184,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
      * has executed at the point these methods are called.
      */
     private void applyResultSetMapping(ResultSetMapping<?> mapping) {
-        DatabaseQuery query = getDatabaseQuery();
+        DatabaseQuery query = getResultSetMappingQuery();
 
         if (!(query instanceof ResultSetMappingQuery resultSetMappingQuery)) {
             throw new IllegalStateException(
@@ -1139,7 +1192,9 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
                             + " result set, but this query is a " + query.getClass().getSimpleName() + ".");
         }
 
-        resultSetMappingQuery.setSQLResultSetMappings(List.of(toEclipseLinkMapping(mapping)));
+        applyResultMapping(resultSetMappingQuery, toEclipseLinkMapping(mapping, executionContext));
+        resultSetMappingQuery.setProperty(ResultSetMappingTranslator.MAPPING_LOCK_PROPERTY,
+                ResultSetMappingTranslator.mappingRequiresTransaction(mapping));
     }
 
     @Override
@@ -1216,7 +1271,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     @Override
     public boolean hasMoreResults() {
         verifyNotClosed();
-        entityManager.verifyOpen();
+        executionContext.verifyOpen();
 
         return hasMoreResults;
     }
@@ -1236,7 +1291,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     @Override
     public int getUpdateCount() {
         verifyNotClosed();
-        entityManager.verifyOpenWithSetRollbackOnly();
+        executionContext.verifyOpenWithSetRollbackOnly();
 
         if (executeStatement != null) {
             try {
@@ -1273,18 +1328,21 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     @Override
     public Object getOutputParameterValue(int position) {
         verifyNotClosed();
-        entityManager.verifyOpen();
+        executionContext.verifyOpen();
 
         if (isValidCallableStatement()) {
             try {
-                Object obj = executeCall.getOutputParameterValue((CallableStatement) executeStatement, position - 1, entityManager.getAbstractSession());
+                Object obj = executeCall.getOutputParameterValue((CallableStatement) executeStatement,
+                        position - 1 + (getCall().isStoredFunctionCall() ? 1 : 0), executionContext.getSession());
 
                 if (!(obj instanceof ResultSet resultSet)) {
-                    return obj;
+                    AttributeConverter<Object, Object> converter = parameterConverters.get(String.valueOf(position));
+                    return converter == null ? obj : converter.convertToEntityAttribute(obj);
                 }
 
                 // If a result set is returned we have to build the objects.
-                return getResultSetMappingQuery().buildObjectsFromRecords(buildResultRecords(resultSet), ++executeResultSetIndex);
+                return executionContext.prepareResult(
+                        getResultSetMappingQuery().buildObjectsFromRecords(buildResultRecords(resultSet), ++executeResultSetIndex));
 
             } catch (Exception exception) {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("jpa21_invalid_parameter_position", new Object[] { position, exception.getMessage() }), exception);
@@ -1306,18 +1364,20 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     @Override
     public Object getOutputParameterValue(String parameterName) {
         verifyNotClosed();
-        entityManager.verifyOpen();
+        executionContext.verifyOpen();
 
         if (isValidCallableStatement()) {
             try {
-                Object obj = executeCall.getOutputParameterValue((CallableStatement) executeStatement, parameterName, entityManager.getAbstractSession());
+                Object obj = executeCall.getOutputParameterValue((CallableStatement) executeStatement, parameterName, executionContext.getSession());
 
                 if (!(obj instanceof ResultSet resultSet)) {
-                    return obj;
+                    AttributeConverter<Object, Object> converter = parameterConverters.get(parameterName);
+                    return converter == null ? obj : converter.convertToEntityAttribute(obj);
                 }
 
                 // If a result set is returned we have to build the objects.
-                return getResultSetMappingQuery().buildObjectsFromRecords(buildResultRecords(resultSet), ++executeResultSetIndex);
+                return executionContext.prepareResult(
+                        getResultSetMappingQuery().buildObjectsFromRecords(buildResultRecords(resultSet), ++executeResultSetIndex));
 
             } catch (Exception exception) {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("jpa21_invalid_parameter_name", new Object[] { parameterName, exception.getMessage() }), exception);
@@ -1333,6 +1393,19 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
         verifyNotClosed();
         verifyNotNull(parameter);
 
+        if (parameter instanceof FunctionReturnImpl<?>) {
+            isValidCallableStatement();
+            try {
+                Object value = executeCall.getOutputParameterValue((CallableStatement) executeStatement, 0, executionContext.getSession());
+                return (T) executionContext.getSession().getPlatform().getConversionManager()
+                        .convertObject(value, parameter.getParameterType());
+            } catch (SQLException exception) {
+                RuntimeException failure = getDetailedException(DatabaseException.sqlException(exception, executeCall,
+                        executeCall.getQuery().getAccessor(), executeCall.getQuery().getSession(), false));
+                cleanupAfterFailure(failure);
+                throw failure;
+            }
+        }
         Integer position = parameter.getPosition();
         return (T) (position != null
                 ? getOutputParameterValue(position)
@@ -1344,24 +1417,32 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     /**
      * {@inheritDoc}
      * <p>
-     * Note the difference between this and {@link #releaseConnections()}. Persistence 4.0 makes
-     * {@code close()} terminal: afterwards every method of the query throws
-     * {@code IllegalStateException}. EclipseLink also releases the JDBC resources after each
-     * execution, which is housekeeping rather than an end to the query's life - {@code executeUpdate()}
-     * does it and the caller is still expected to call {@code getUpdateCount()} afterwards. Those
-     * internal call sites use {@code releaseConnections()} so that they free the resources without
-     * making the query unusable.
+     * Explicit close is terminal. Transaction and owner cleanup use
+     * {@link #releaseResources()} to release JDBC resources while leaving a live owner's query
+     * reusable. Successful execution retains the callable statement so that output parameters
+     * remain available until the query is executed again or its resources are released.
      */
     @Override
     public void close() {
-        releaseConnections();
+        verifyNotClosed();
+        releaseResources();
         isClosed = true;
+    }
+
+    @Override
+    public void releaseResources() {
+        releaseConnections();
     }
 
     /**
      * Release the JDBC resources held by the last execution, leaving the query usable.
      */
     private void releaseConnections() {
+        if (executionContext.isEntityAgent()) {
+            releaseAgentConnections();
+            executionContext.unregisterQuery(this);
+            return;
+        }
         if (executeCall != null) {
             DatabaseQuery query = executeCall.getQuery();
             AbstractSession session = query.getSession();
@@ -1384,6 +1465,38 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
 
         executeCall = null;
         executeStatement = null;
+        executionContext.unregisterQuery(this);
+    }
+
+    private void cleanupAfterFailure(Throwable failure) {
+        try {
+            releaseConnections();
+        } catch (RuntimeException | Error cleanup) {
+            if (cleanup != failure) {
+                failure.addSuppressed(cleanup);
+            }
+        }
+    }
+
+    private void releaseAgentConnections() {
+        if (executeCall == null) {
+            return;
+        }
+        DatabaseQuery query = executeCall.getQuery();
+        AbstractSession session = query.getSession();
+        if (executeStatement != null) {
+            try {
+                ((DatabaseAccessor) query.getAccessor()).releaseStatement(
+                        executeStatement, query.getSQLString(), executeCall, session);
+                executeStatement = null;
+            } catch (SQLException exception) {
+                throw new PersistenceException("Could not release stored procedure statement", exception);
+            }
+        }
+        for (Accessor accessor : query.getAccessors()) {
+            session.releaseReadConnection(accessor);
+        }
+        executeCall = null;
     }
 
     /**
@@ -1457,11 +1570,13 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
 
                 // If field is not null (one we care about) then add it, otherwise continue.
                 if (field != null) {
+                    AttributeConverter<Object, Object> converter = parameterConverters.get(field.getName());
+                    Class<?> parameterClass = converter == null ? field.getType() : getDomainType(converter);
                     // If the argument name is null then it is a positional parameter.
                     if (argumentName == null) {
-                        parameters.put(field.getName(), new ParameterExpressionImpl<>(null, field.getType(), Integer.parseInt(field.getName())));
+                        parameters.put(field.getName(), new ParameterExpressionImpl<>(null, parameterClass, Integer.parseInt(field.getName())));
                     } else {
-                        parameters.put(field.getName(), new ParameterExpressionImpl<>(null, field.getType(), field.getName()));
+                        parameters.put(field.getName(), new ParameterExpressionImpl<>(null, parameterClass, field.getName()));
                     }
                 }
 
@@ -1478,8 +1593,13 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
 
         parameterValues.put(name, value);
 
-        if (type != null) {
+        AttributeConverter<Object, Object> converter = parameterConverters.get(name);
+        if (converter != null) {
+            parameterTypes.put(name, getRelationalType(converter));
+        } else if (type != null) {
             parameterTypes.put(name, type);
+        } else {
+            parameterTypes.remove(name);
         }
     }
 
@@ -1488,7 +1608,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
      * EntityManager-level settings to newly created queries.
      */
     protected void inheritEntityManagerHints() {
-        if (entityManager == null || entityManager.properties == null) {
+        if (executionContext.getProperties() == null) {
             return;
         }
 
@@ -1497,7 +1617,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
             return;
         }
 
-        Map<String, Object> entityManagerProperties = entityManager.properties;
+        Map<String, Object> entityManagerProperties = executionContext.getProperties();
 
         // CACHE_RETRIEVE_MODE only applies to ObjectLevelReadQuery (SELECT queries)
         if (dbQuery.isObjectLevelReadQuery() && entityManagerProperties.containsKey(CACHE_RETRIEVE_MODE)) {
@@ -1805,7 +1925,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
      * since this mutates it.
      */
     private void applyResultClass(Class<?> resultClass) {
-        DatabaseQuery query = getDatabaseQuery();
+        DatabaseQuery query = getResultSetMappingQuery();
 
         if (!(query instanceof ResultSetMappingQuery resultSetMappingQuery)) {
             throw new IllegalStateException(
@@ -1813,13 +1933,23 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
                             + " query is a " + query.getClass().getSimpleName() + ".");
         }
 
-        resultSetMappingQuery.setSQLResultSetMappings(List.of(new SQLResultSetMapping(resultClass)));
+        applyResultMapping(resultSetMappingQuery, ResultSetMappingTranslator.forResultClass(resultClass, executionContext));
+    }
+
+    private void applyResultMapping(ResultSetMappingQuery query, SQLResultSetMapping mapping) {
+        int index = executeCall == null ? 0 : executeResultSetIndex + 1;
+        List<SQLResultSetMapping> mappings = new ArrayList<>(query.getSQLResultSetMappings());
+        while (mappings.size() <= index) {
+            mappings.add(null);
+        }
+        mappings.set(index, mapping);
+        query.setSQLResultSetMappings(mappings);
     }
 
     private Object getSingleResult(boolean failOnEmpty) {
         // bug51411440: need to throw IllegalStateException if query
         // executed on closed em
-        this.entityManager.verifyOpenWithSetRollbackOnly();
+        this.executionContext.verifyOpenWithSetRollbackOnly();
         try {
             // If there is no execute statement, the user has not called
             // execute and is simply calling getSingleResult directly on the query.
@@ -1877,21 +2007,25 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
                         throwNonUniqueResultException(ExceptionLocalization.buildMessage("too_many_results_for_get_single_result"));
                     }
 
-                    return results.get(0);
+                    return executionContext.prepareResult(results.get(0));
                 } else {
                     return null;
                 }
             }
         } catch (LockTimeoutException e) {
+            cleanupAfterFailure(e);
             throw e;
         } catch (PersistenceException | IllegalStateException e) {
+            cleanupAfterFailure(e);
             setRollbackOnly();
             throw e;
         } catch (Exception e) {
+            cleanupAfterFailure(e);
             setRollbackOnly();
             throw new PersistenceException(e);
-        } finally {
-            releaseConnections(); // Free the JDBC resources; the query stays usable.
+        } catch (Error failure) {
+            cleanupAfterFailure(failure);
+            throw failure;
         }
     }
 
@@ -1904,8 +2038,11 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
         try {
             hasMoreResults = executeStatement.getMoreResults();
         } catch (SQLException e) {
-            // swallow it.
             hasMoreResults = false;
+            if (executionContext.isEntityAgent()) {
+                throw getDetailedException(DatabaseException.sqlException(e, executeCall,
+                        executeCall.getQuery().getAccessor(), executeCall.getQuery().getSession(), false));
+            }
         }
     }
 
@@ -1915,6 +2052,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
      * @throws IllegalStateException if {@link #close()} has been called
      */
     private void verifyNotClosed() {
+        executionContext.verifyOpen();
         if (isClosed) {
             throw new IllegalStateException("The stored procedure query has been closed.");
         }

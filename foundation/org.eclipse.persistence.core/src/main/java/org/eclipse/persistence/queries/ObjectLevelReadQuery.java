@@ -55,6 +55,7 @@ import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.history.UniversalAsOfClause;
 import org.eclipse.persistence.internal.queries.DatabaseQueryMechanism;
 import org.eclipse.persistence.internal.queries.ExpressionQueryMechanism;
+import org.eclipse.persistence.internal.queries.FetchedLockContext;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.queries.QueryByExampleMechanism;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
@@ -232,6 +233,8 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      *  reference tables (DirectCollection and AggregateCollection mapping).
      */
     protected boolean shouldExtendPessimisticLockScope;
+    /** Lock only relationship data fetched by this query operation. */
+    protected boolean shouldLockFetchedRelationships;
 
     /**
      * Allow a query's results to be unioned (UNION, INTERSECT, EXCEPT) with another query results.
@@ -1254,7 +1257,9 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             throw QueryException.refreshNotPossibleWithCheckCacheOnly(this);
         }
 
-        return super.execute(session, translationRow);
+        try (FetchedLockContext.Scope scope = FetchedLockContext.open(this)) {
+            return super.execute(session, translationRow);
+        }
     }
 
     /**
@@ -1337,6 +1342,18 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      */
     @Override
     public Object executeInUnitOfWork(UnitOfWorkImpl unitOfWork, AbstractRecord translationRow) throws DatabaseException, OptimisticLockException {
+        try (FetchedLockContext.Scope scope = FetchedLockContext.open(this)) {
+            Object result = executeInUnitOfWorkWithFetchedContext(unitOfWork, translationRow);
+            // Only the root FETCHED operation drains its callback queue here.
+            // Other reads preserve the enclosing session's original scheduling.
+            if (scope.ownsContext()) {
+                unitOfWork.executeDeferredEvents();
+            }
+            return result;
+        }
+    }
+
+    private Object executeInUnitOfWorkWithFetchedContext(UnitOfWorkImpl unitOfWork, AbstractRecord translationRow) {
         Object result = null;
 
         if (!shouldMaintainCache() || isReadOnly()) {
@@ -2032,6 +2049,42 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         shouldExtendPessimisticLockScope = isExtended;
     }
 
+    /** INTERNAL: Whether fetched relationship rows participate in the query lock. */
+    public boolean shouldLockFetchedRelationships() {
+        return shouldLockFetchedRelationships;
+    }
+
+    /** INTERNAL: Configure fetched relationship locking on this query clone. */
+    public void setShouldLockFetchedRelationships(boolean lockFetched) {
+        shouldLockFetchedRelationships = lockFetched;
+        setIsPrePrepared(false);
+    }
+
+    /** INTERNAL: Deferred lazy navigation is outside the operation obtaining the lock. */
+    public boolean shouldLockFetchedMapping(ForeignReferenceMapping mapping) {
+        if (!shouldLockFetchedRelationships || !isLockQuery()) {
+            return false;
+        }
+        String attribute = mapping.getAttributeName();
+        if (hasJoining() && getJoinedAttributeManager().isAttributeJoined(mapping.getDescriptor(), mapping)) {
+            return true;
+        }
+        if (getLoadGroup() != null && getLoadGroup().containsAttribute(attribute)) {
+            return true;
+        }
+        FetchGroup fetched = getExecutionFetchGroup(mapping.getDescriptor());
+        if (fetched != null) {
+            LoadGroup load = fetched.toLoadGroupLoadOnly();
+            if (load != null && load.containsAttribute(attribute)) {
+                return true;
+            }
+            if (!fetched.containsAttribute(attribute)) {
+                return false;
+            }
+        }
+        return !mapping.isLazy() || !mapping.usesIndirection();
+    }
+
     /**
      * INTERNAL:
      * Clear cached flags when un-preparing.
@@ -2132,9 +2185,29 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             this.shouldIncludeData = readQuery.shouldIncludeData;
             this.inMemoryQueryIndirectionPolicy = readQuery.inMemoryQueryIndirectionPolicy;
             this.lockModeType = readQuery.lockModeType;
+            this.loadGroup = readQuery.loadGroup == null ? null : readQuery.loadGroup.clone();
+            this.shouldExtendPessimisticLockScope = readQuery.shouldExtendPessimisticLockScope;
+            this.shouldLockFetchedRelationships = readQuery.shouldLockFetchedRelationships;
             this.defaultBuilder = readQuery.defaultBuilder;
             this.distinctState = readQuery.distinctState;
             this.shouldUseSerializedObjectPolicy = readQuery.shouldUseSerializedObjectPolicy;
+        }
+    }
+
+    /**
+     * INTERNAL:
+     * Preserve invocation loading requirements on the executed descriptor query.
+     * SQL preparation and the descriptor's custom call remain unchanged.
+     */
+    @Override
+    protected void prepareCustomQuery(DatabaseQuery customQuery) {
+        super.prepareCustomQuery(customQuery);
+        ObjectLevelReadQuery customReadQuery = (ObjectLevelReadQuery) customQuery;
+        if (this.loadGroup != null) {
+            customReadQuery.loadGroup = this.loadGroup.clone();
+        }
+        if (!this.shouldUseDefaultFetchGroup) {
+            customReadQuery.shouldUseDefaultFetchGroup = false;
         }
     }
 
@@ -2315,6 +2388,11 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * Prepare the receiver for execution in a session.
      */
     protected void prepareQuery() throws QueryException {
+        if (!shouldMaintainCache() && Boolean.TRUE.equals(getProperty("eclipselink.entity-agent"))) {
+            // Lock preparation may request a managed cache refresh. Agent reads
+            // already read the database and materialize detached instances.
+            setShouldRefreshIdentityMapResult(false);
+        }
         if ((!shouldMaintainCache()) && shouldRefreshIdentityMapResult() && (!this.descriptor.isAggregateCollectionDescriptor())) {
             throw QueryException.refreshNotPossibleWithoutCache(this);
         }

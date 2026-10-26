@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -90,8 +90,12 @@ import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JP
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ID_CLASS;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_NAMED_NATIVE_QUERIES;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_NAMED_NATIVE_QUERY;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_NAMED_NATIVE_STATEMENT;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_NAMED_NATIVE_STATEMENTS;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_NAMED_QUERIES;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_NAMED_QUERY;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_NAMED_STATEMENT;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_NAMED_STATEMENTS;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_NAMED_STORED_PROCEDURE_QUERIES;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_NAMED_STORED_PROCEDURE_QUERY;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_SEQUENCE_GENERATOR;
@@ -148,6 +152,8 @@ import org.eclipse.persistence.internal.jpa.metadata.queries.NamedNativeQueryMet
 import org.eclipse.persistence.internal.jpa.metadata.queries.NamedPLSQLStoredFunctionQueryMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.NamedPLSQLStoredProcedureQueryMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.NamedQueryMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.queries.NamedNativeStatementMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.queries.NamedStatementMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.NamedStoredFunctionQueryMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.NamedStoredProcedureQueryMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.QueryRedirectorsMetadata;
@@ -199,6 +205,8 @@ public class MappedSuperclassAccessor extends ClassAccessor {
 
     private List<EntityListenerMetadata> m_entityListeners = new ArrayList<>();
     private List<FetchGroupMetadata> m_fetchGroups = new ArrayList<>();
+    private List<NamedStatementMetadata> m_namedStatements = new ArrayList<>();
+    private List<NamedNativeStatementMetadata> m_namedNativeStatements = new ArrayList<>();
     private List<NamedQueryMetadata> m_namedQueries = new ArrayList<>();
     private List<NamedNativeQueryMetadata> m_namedNativeQueries = new ArrayList<>();
     private List<NamedStoredFunctionQueryMetadata> m_namedStoredFunctionQueries = new ArrayList<>();
@@ -225,6 +233,13 @@ public class MappedSuperclassAccessor extends ClassAccessor {
     private String m_postRemove;
     private String m_preUpdate;
     private String m_postUpdate;
+    private String m_postDelete;
+    private String m_postInsert;
+    private String m_postUpsert;
+    private String m_preDelete;
+    private String m_preInsert;
+    private String m_preMerge;
+    private String m_preUpsert;
     private String m_postLoad;
 
     /**
@@ -404,6 +419,22 @@ public class MappedSuperclassAccessor extends ClassAccessor {
      * INTERNAL:
      * Used for OX mapping.
      */
+    public List<NamedStatementMetadata> getNamedStatements() {
+        return m_namedStatements;
+    }
+
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public List<NamedNativeStatementMetadata> getNamedNativeStatements() {
+        return m_namedNativeStatements;
+    }
+
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public List<NamedQueryMetadata> getNamedQueries() {
         return m_namedQueries;
     }
@@ -436,6 +467,83 @@ public class MappedSuperclassAccessor extends ClassAccessor {
      * INTERNAL:
      * Used for OX mapping.
      */
+    /**
+     * INTERNAL: Used for XML loading.
+     */
+    public String getPostDelete() {
+        return m_postDelete;
+    }
+
+    public void setPostDelete(String methodName) {
+        m_postDelete = methodName;
+    }
+
+    /**
+     * INTERNAL: Used for XML loading.
+     */
+    public String getPostInsert() {
+        return m_postInsert;
+    }
+
+    public void setPostInsert(String methodName) {
+        m_postInsert = methodName;
+    }
+
+    /**
+     * INTERNAL: Used for XML loading.
+     */
+    public String getPostUpsert() {
+        return m_postUpsert;
+    }
+
+    public void setPostUpsert(String methodName) {
+        m_postUpsert = methodName;
+    }
+
+    /**
+     * INTERNAL: Used for XML loading.
+     */
+    public String getPreDelete() {
+        return m_preDelete;
+    }
+
+    public void setPreDelete(String methodName) {
+        m_preDelete = methodName;
+    }
+
+    /**
+     * INTERNAL: Used for XML loading.
+     */
+    public String getPreInsert() {
+        return m_preInsert;
+    }
+
+    public void setPreInsert(String methodName) {
+        m_preInsert = methodName;
+    }
+
+    /**
+     * INTERNAL: Used for XML loading.
+     */
+    public String getPreMerge() {
+        return m_preMerge;
+    }
+
+    public void setPreMerge(String methodName) {
+        m_preMerge = methodName;
+    }
+
+    /**
+     * INTERNAL: Used for XML loading.
+     */
+    public String getPreUpsert() {
+        return m_preUpsert;
+    }
+
+    public void setPreUpsert(String methodName) {
+        m_preUpsert = methodName;
+    }
+
     public String getPostLoad() {
         return m_postLoad;
     }
@@ -646,6 +754,8 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         // Initialize lists of objects.
         initXMLObjects(m_entityListeners, accessibleObject);
         initXMLObjects(m_fetchGroups, accessibleObject);
+        initXMLObjects(m_namedStatements, accessibleObject);
+        initXMLObjects(m_namedNativeStatements, accessibleObject);
         initXMLObjects(m_namedQueries, accessibleObject);
         initXMLObjects(m_namedNativeQueries, accessibleObject);
         initXMLObjects(m_namedStoredFunctionQueries, accessibleObject);
@@ -697,6 +807,13 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         m_postRemove = (String) mergeSimpleObjects(m_postRemove, accessor.getPostRemove(), accessor, "<post-remove>");
         m_preUpdate = (String) mergeSimpleObjects(m_preUpdate, accessor.getPreUpdate(), accessor, "<pre-update>");
         m_postUpdate = (String) mergeSimpleObjects(m_postUpdate, accessor.getPostUpdate(), accessor, "<post-update>");
+        m_postDelete = (String) mergeSimpleObjects(m_postDelete, accessor.getPostDelete(), accessor, "<post-delete>");
+        m_postInsert = (String) mergeSimpleObjects(m_postInsert, accessor.getPostInsert(), accessor, "<post-insert>");
+        m_postUpsert = (String) mergeSimpleObjects(m_postUpsert, accessor.getPostUpsert(), accessor, "<post-upsert>");
+        m_preDelete = (String) mergeSimpleObjects(m_preDelete, accessor.getPreDelete(), accessor, "<pre-delete>");
+        m_preInsert = (String) mergeSimpleObjects(m_preInsert, accessor.getPreInsert(), accessor, "<pre-insert>");
+        m_preMerge = (String) mergeSimpleObjects(m_preMerge, accessor.getPreMerge(), accessor, "<pre-merge>");
+        m_preUpsert = (String) mergeSimpleObjects(m_preUpsert, accessor.getPreUpsert(), accessor, "<pre-upsert>");
         m_postLoad = (String) mergeSimpleObjects(m_postLoad, accessor.getPostLoad(), accessor, "<post-load>");
         m_existenceChecking = (String) mergeSimpleObjects(m_existenceChecking, accessor.getExistenceChecking(), accessor, "@existence-checking");
 
@@ -716,6 +833,8 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         // ORMetadata list merging.
         m_entityListeners = mergeORObjectLists(m_entityListeners, accessor.getEntityListeners());
         m_fetchGroups = mergeORObjectLists(m_fetchGroups, accessor.getFetchGroups());
+        m_namedStatements = mergeORObjectLists(m_namedStatements, accessor.getNamedStatements());
+        m_namedNativeStatements = mergeORObjectLists(m_namedNativeStatements, accessor.getNamedNativeStatements());
         m_namedQueries = mergeORObjectLists(m_namedQueries, accessor.getNamedQueries());
         m_namedNativeQueries = mergeORObjectLists(m_namedNativeQueries, accessor.getNamedNativeQueries());
         m_namedStoredFunctionQueries = mergeORObjectLists(m_namedStoredFunctionQueries, accessor.getNamedStoredFunctionQueries());
@@ -1287,6 +1406,18 @@ public class MappedSuperclassAccessor extends ClassAccessor {
      * to the project for later processing.
      */
     protected void processNamedNativeQueries() {
+        for (NamedNativeStatementMetadata statement : m_namedNativeStatements) {
+            getProject().addQuery(statement);
+        }
+        if (isAnnotationPresent(JPA_NAMED_NATIVE_STATEMENTS)) {
+            for (Object statement : getAnnotation(JPA_NAMED_NATIVE_STATEMENTS).getAttributeArray("value")) {
+                getProject().addQuery(new NamedNativeQueryMetadata((MetadataAnnotation) statement, this));
+            }
+        }
+        if (isAnnotationPresent(JPA_NAMED_NATIVE_STATEMENT)) {
+            getProject().addQuery(new NamedNativeQueryMetadata(getAnnotation(JPA_NAMED_NATIVE_STATEMENT), this));
+        }
+
         // Process the XML named native queries first.
         for (NamedNativeQueryMetadata namedNativeQuery : m_namedNativeQueries) {
             getProject().addQuery(namedNativeQuery);
@@ -1368,6 +1499,10 @@ public class MappedSuperclassAccessor extends ClassAccessor {
      * project for later processing.
      */
     protected void processNamedQueries() {
+        for (NamedStatementMetadata statement : m_namedStatements) {
+            getProject().addQuery(statement);
+        }
+
         // Process the XML named queries first.
         for (NamedQueryMetadata namedQuery : m_namedQueries) {
             getProject().addQuery(namedQuery);
@@ -1384,6 +1519,14 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         // Look for a @NamedQuery.
         if (isAnnotationPresent(JPA_NAMED_QUERY)) {
             getProject().addQuery(new NamedQueryMetadata(getAnnotation(JPA_NAMED_QUERY), this));
+        }
+        if (isAnnotationPresent(JPA_NAMED_STATEMENTS)) {
+            for (Object statement : getAnnotation(JPA_NAMED_STATEMENTS).getAttributeArray("value")) {
+                getProject().addQuery(new NamedQueryMetadata((MetadataAnnotation) statement, this));
+            }
+        }
+        if (isAnnotationPresent(JPA_NAMED_STATEMENT)) {
+            getProject().addQuery(new NamedQueryMetadata(getAnnotation(JPA_NAMED_STATEMENT), this));
         }
     }
 
@@ -1787,6 +1930,22 @@ public class MappedSuperclassAccessor extends ClassAccessor {
      */
     public void setNamedPLSQLStoredProcedureQueries(List<NamedPLSQLStoredProcedureQueryMetadata> namedPLSQLStoredProcedureQueries) {
         m_namedPLSQLStoredProcedureQueries = namedPLSQLStoredProcedureQueries;
+    }
+
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setNamedStatements(List<NamedStatementMetadata> namedStatements) {
+        m_namedStatements = namedStatements;
+    }
+
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setNamedNativeStatements(List<NamedNativeStatementMetadata> namedNativeStatements) {
+        m_namedNativeStatements = namedNativeStatements;
     }
 
     /**

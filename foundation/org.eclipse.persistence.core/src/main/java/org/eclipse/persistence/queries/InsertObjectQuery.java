@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation.
  * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
@@ -118,8 +119,13 @@ public class InsertObjectQuery extends WriteObjectQuery {
             this.name = "insert" + this.descriptor.getJavaClass().getSimpleName();
         }
 
+        if ("UPSERT".equals(getProperty("eclipselink.entity-agent.operation"))) {
+            setShouldReturnGeneratedKeys(false);
+        }
+
         // Insert queries may need to use generated keys. Determine here if the underlying sequence for the object will want to.
-        if(this.descriptor.usesSequenceNumbers()) {
+        if (this.descriptor.usesSequenceNumbers()
+                && !"UPSERT".equals(getProperty("eclipselink.entity-agent.operation"))) {
             Sequence sequence = this.descriptor.getSequence();
             if(sequence.isNative() && ((NativeSequence)sequence).shouldUseGeneratedKeysIfPlatformSupports()) {
                 setShouldReturnGeneratedKeys(true);

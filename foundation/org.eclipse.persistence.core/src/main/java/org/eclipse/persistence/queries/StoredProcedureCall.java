@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -52,6 +52,36 @@ public class StoredProcedureCall extends DatabaseCall {
 
     public StoredProcedureCall() {
         super();
+    }
+
+    /** Keep preparation of an execution clone independent of reusable procedure metadata. */
+    @Override
+    public StoredProcedureCall clone() {
+        StoredProcedureCall clone = (StoredProcedureCall) super.clone();
+        if (parameters != null) {
+            clone.parameters = new ArrayList<>(parameters.size());
+            for (int index = 0; index < parameters.size(); index++) {
+                Object value = parameters.get(index);
+                if (parameterTypes != null && parameterTypes.get(index) == ParameterType.INOUT
+                        && value instanceof Object[] pair) {
+                    value = pair.clone();
+                }
+                clone.parameters.add(value);
+            }
+        }
+        if (parameterTypes != null) {
+            clone.parameterTypes = new ArrayList<>(parameterTypes);
+        }
+        if (procedureArgumentNames != null) {
+            clone.procedureArgumentNames = new ArrayList<>(procedureArgumentNames);
+        }
+        if (optionalArguments != null) {
+            clone.optionalArguments = new ArrayList<>(optionalArguments);
+        }
+        if (outputCursors != null) {
+            clone.outputCursors = new ArrayList<>(outputCursors);
+        }
+        return clone;
     }
 
     /**
@@ -1058,12 +1088,25 @@ public class StoredProcedureCall extends DatabaseCall {
     @Override
     public Object getOutputParameterValue(CallableStatement statement, int index, AbstractSession session) throws SQLException {
         List<String> procedureArgs = getProcedureArgumentNames();
-        if(procedureArgs.isEmpty() || procedureArgs.get(0) == null) {
+        if (isIndexBased(procedureArgs, session)) {
             return super.getOutputParameterValue(statement, index, session);
         }
 
         String name = procedureArgs.get(index);
         return getOutputParameterValue(statement, name, session);
+    }
+
+    @Override
+    public Object getOutputParameterValue(CallableStatement statement, String name, AbstractSession session) throws SQLException {
+        List<String> procedureArgs = getProcedureArgumentNames();
+        if (isIndexBased(procedureArgs, session)) {
+            int index = name == null ? -1 : procedureArgs.indexOf(name);
+            if (index < 0) {
+                throw new SQLException("Unknown stored procedure parameter: " + name);
+            }
+            return super.getOutputParameterValue(statement, index, session);
+        }
+        return super.getOutputParameterValue(statement, name, session);
     }
 
     /**

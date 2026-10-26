@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2020, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -78,6 +78,8 @@ import org.eclipse.persistence.internal.expressions.SubSelectExpression;
 import org.eclipse.persistence.internal.helper.BasicTypeHelperImpl;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.jpa.metamodel.MetamodelImpl;
+import org.eclipse.persistence.internal.jpa.AugmentedQueryReference;
+import org.eclipse.persistence.internal.helper.GenericTypes;
 import org.eclipse.persistence.internal.jpa.metamodel.TypeImpl;
 import org.eclipse.persistence.internal.jpa.querydef.AbstractQueryImpl.ResultType;
 import org.eclipse.persistence.internal.jpa.querydef.CriteriaMultiSelectImpl.Union;
@@ -3122,47 +3124,63 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
 
     @Override
     public <T> CriteriaQuery<T> createQuery(Class<T> resultClass, String jpql) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        return JPQLCriteriaHelper.select(this, resultClass, JPQLCriteriaHelper.parse(this, jpql), false);
     }
 
     @Override
     public CriteriaQuery<?> createQuery(String jpql) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        return JPQLCriteriaHelper.select(this, null, JPQLCriteriaHelper.parse(this, jpql), false);
     }
 
     @Override
     public <T> CriteriaUpdate<T> createCriteriaUpdate(Class<T> targetEntity, String jpql) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        return JPQLCriteriaHelper.update(this, targetEntity, JPQLCriteriaHelper.parse(this, jpql));
     }
 
     @Override
     public CriteriaUpdate<?> createCriteriaUpdate(String jpql) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        return JPQLCriteriaHelper.update(this, null, JPQLCriteriaHelper.parse(this, jpql));
     }
 
     @Override
     public <T> CriteriaDelete<T> createCriteriaDelete(Class<T> targetEntity, String jpql) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        return JPQLCriteriaHelper.delete(this, targetEntity, JPQLCriteriaHelper.parse(this, jpql));
     }
 
     @Override
     public CriteriaDelete<?> createCriteriaDelete(String jpql) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        return JPQLCriteriaHelper.delete(this, null, JPQLCriteriaHelper.parse(this, jpql));
     }
 
     @Override
     public <T> TypedQueryReference<T> augment(TypedQueryReference<T> reference, Consumer<CriteriaQuery<T>> augmentation) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        var session = ((MetamodelImpl) metamodel).getSession();
+        var source = AugmentedQueryReference.source(reference, session);
+        CriteriaQuery<T> criteria = JPQLCriteriaHelper.select(this, (Class<T>) reference.getResultType(), source, false);
+        java.util.Objects.requireNonNull(augmentation).accept(criteria);
+        return AugmentedQueryReference.register(reference, criteria.getResultType(),
+                ((CriteriaQueryImpl<T>) criteria).translate(), session);
     }
 
     @Override
     public <T> TypedQueryReference<T> augment(TypedQueryReference<?> reference, Class<T> augmentedResultType, Consumer<CriteriaQuery<T>> augmentation) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        var session = ((MetamodelImpl) metamodel).getSession();
+        var source = AugmentedQueryReference.source(reference, session);
+        CriteriaQuery<T> criteria = JPQLCriteriaHelper.select(this, java.util.Objects.requireNonNull(augmentedResultType), source, true);
+        java.util.Objects.requireNonNull(augmentation).accept(criteria);
+        return AugmentedQueryReference.register(reference, augmentedResultType,
+                ((CriteriaQueryImpl<T>) criteria).translate(), session);
     }
 
     @Override
     public StatementReference augment(StatementReference reference, Consumer<CriteriaStatement<?>> augmentation) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        var session = ((MetamodelImpl) metamodel).getSession();
+        var source = AugmentedQueryReference.source(reference, session);
+        CriteriaStatement<?> criteria = source.isUpdateAllQuery()
+                ? JPQLCriteriaHelper.update(this, null, source) : JPQLCriteriaHelper.delete(this, null, source);
+        java.util.Objects.requireNonNull(augmentation).accept(criteria);
+        return AugmentedQueryReference.register(reference,
+                ((CommonAbstractCriteriaImpl<?>) criteria).translate(), session);
     }
 
     @Override
@@ -3191,8 +3209,16 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T> ParameterExpression<T> convertedParameter(Class<? extends AttributeConverter<T, ?>> converter) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        if (converter == null) {
+            throw new IllegalArgumentException("Parameter converter must not be null");
+        }
+        java.lang.reflect.Type domainType = GenericTypes.getTypeArgument(converter, AttributeConverter.class, 0);
+        if (!(domainType instanceof Class<?> domainClass)) {
+            throw new IllegalArgumentException("Converter must declare a concrete domain type");
+        }
+        return new ParameterExpressionImpl<>(metamodel, (Class<T>) domainClass, converter);
     }
 
     @Override

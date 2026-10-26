@@ -71,6 +71,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -1005,21 +1006,14 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
 
     @Override
     public EntityAgent createEntityAgent(jakarta.persistence.EntityAgent.CreationOption... options) {
-        return new EntityAgentImpl(createEntityManager(parseAgentCreationOptions(options)));
+        verifyOpen();
+        return new EntityAgentImpl(this, parseAgentCreationOptions(options));
     }
 
     @Override
     public EntityAgent createEntityAgent(Map<?, ?> properties) {
-        EntityAgent entityAgent = new EntityAgentImpl(createEntityManager(properties));
-        if ( properties != null ) {
-            for (var entry : properties.entrySet()) {
-                if (entry.getKey() instanceof String key) {
-                    entityAgent.setProperty(key, entry.getValue());
-                }
-            }
-        }
-
-        return entityAgent;
+        verifyOpen();
+        return new EntityAgentImpl(this, properties);
     }
 
     /**
@@ -1057,24 +1051,50 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
 
         Map<String, Object> hints = QueryHintsHandler.get(databaseQuery);
 
-        return new TypedQueryReferenceImpl<>(
+        return AugmentedQueryReference.owned(new TypedQueryReferenceImpl<>(
             name,
-            (Class<? extends R>) databaseQuery.getReferenceClass(), hints != null ? hints : emptyMap());
+            (Class<? extends R>) EJBQueryImpl.queryResultType(databaseQuery), hints != null ? hints : emptyMap(),
+            query.getOptions(), null), getAbstractSession());
     }
 
     @Override
     public StatementReference addNamedStatement(String name, Statement statement) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        verifyOpen();
+        if (name == null || statement == null) {
+            throw new IllegalArgumentException("Statement name and statement must not be null");
+        }
+        addNamedQuery(name, statement);
+        return AugmentedQueryReference.owned(new StatementReferenceImpl(name, statement.getHints(), statement.getOptions()), getAbstractSession());
     }
 
     @Override
     public Map<String, StatementReference> getNamedStatements() {
-        throw new UnsupportedOperationException("Not yet implemented");
+        verifyOpen();
+        Map<String, StatementReference> result = new HashMap<>();
+        getAbstractSession().getQueries().forEach((name, queries) -> {
+            for (DatabaseQuery query : queries) {
+                if (query.isModifyQuery()) {
+                    result.put(name, AugmentedQueryReference.owned(new StatementReferenceImpl(name, QueryHintsHandler.get(query), java.util.Set.of()), getAbstractSession()));
+                    break;
+                }
+            }
+        });
+        return result;
     }
 
     @Override
     public <R> Map<String, ResultSetMapping<R>> getResultSetMappings(Class<R> resultType) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        verifyOpen();
+        Objects.requireNonNull(resultType);
+        Map<String, ResultSetMapping<R>> result = new HashMap<>();
+        getAbstractSession().getProject().getSQLResultSetMappings().forEach((name, mapping) -> {
+            ResultSetMapping<?> typed = ResultSetMappingTranslator.toJakartaMapping(mapping, getAbstractSession());
+            if (resultType == Object.class || resultType == typed.type()) {
+                @SuppressWarnings("unchecked") ResultSetMapping<R> compatible = (ResultSetMapping<R>) typed;
+                result.put(name, compatible);
+            }
+        });
+        return result;
     }
 
     @Override
@@ -1091,62 +1111,87 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
     }
 
     /**
-     * Create an entity handler of the requested type with an active transaction, call the given
-     * function with it, and close it again.
-     * <p>
-     * Both handler types are built on an entity manager, so the transaction being managed here is
-     * always that entity manager's - see {@link EntityAgentImpl#getTransaction()}. Closing the entity
-     * manager closes the handler with it, which is why the handler itself is not closed separately.
+     * Execute work with the requested handler, preserving caller-owned JTA transactions.
      */
     @Override
     public <R, H extends EntityHandler> R callInTransaction(Class<H> handlerClass, Function<H, R> work) {
-        try (EntityManager entityManager = createEntityManager()) {
-            H handler = createEntityHandler(handlerClass, entityManager);
-
-            switch (getTransactionType()) {
-                case JTA:
-                    entityManager.joinTransaction();
-                    return work.apply(handler);
-                case RESOURCE_LOCAL:
-                    EntityTransaction transaction = entityManager.getTransaction();
-                    transaction.begin();
-                    try {
-                        R result = work.apply(handler);
-                        transaction.commit();
-                        return result;
-                    } catch (Exception e) {
-                        if (transaction.isActive()) {
-                            transaction.rollback();
-                        }
-                        throw e;
+        verifyOpen();
+        if (handlerClass == null || work == null) {
+            throw new IllegalArgumentException("Handler type and work must not be null");
+        }
+        if (handlerClass == EntityManager.class) {
+            return callInTransaction(entityManager -> work.apply(handlerClass.cast(entityManager)));
+        }
+        if (handlerClass != EntityAgent.class) {
+            throw new IllegalArgumentException("Unsupported entity handler type: " + handlerClass.getName());
+        }
+        EntityAgentImpl agent = new EntityAgentImpl(this, null);
+        Throwable primary = null;
+        try {
+            if (getTransactionType() == PersistenceUnitTransactionType.JTA) {
+                ExternalTransactionController controller = getAbstractSession().getExternalTransactionController();
+                if (!(controller instanceof AbstractTransactionController transactions)) {
+                    throw new PersistenceException("No Jakarta Transactions controller is configured");
+                }
+                boolean owned = transactions.getTransaction() == null;
+                if (owned) {
+                    controller.beginTransaction(agent.getSession());
+                }
+                try {
+                    agent.joinTransaction();
+                    R result = work.apply(handlerClass.cast(agent));
+                    if (owned) {
+                        controller.commitTransaction(agent.getSession());
                     }
-                // This may happen only when JPA gets new transaction type
-                default:
-                    throw new IllegalStateException(
-                            "Unknown transaction type " + setupImpl.getPersistenceUnitInfo().getTransactionType().name());
+                    return result;
+                } catch (RuntimeException | Error failure) {
+                    try {
+                        if (owned) {
+                            controller.rollbackTransaction(agent.getSession());
+                        } else {
+                            controller.markTransactionForRollback();
+                        }
+                    } catch (RuntimeException | Error cleanup) {
+                        if (failure != cleanup) {
+                            failure.addSuppressed(cleanup);
+                        }
+                    }
+                    throw failure;
+                }
+            }
+            EntityTransaction transaction = agent.getTransaction();
+            transaction.begin();
+            try {
+                R result = work.apply(handlerClass.cast(agent));
+                transaction.commit();
+                return result;
+            } catch (RuntimeException | Error failure) {
+                try {
+                    if (transaction.isActive()) {
+                        transaction.rollback();
+                    }
+                } catch (RuntimeException | Error cleanup) {
+                    if (failure != cleanup) {
+                        failure.addSuppressed(cleanup);
+                    }
+                }
+                throw failure;
+            }
+        } catch (RuntimeException | Error failure) {
+            primary = failure;
+            throw failure;
+        } finally {
+            try {
+                agent.close();
+            } catch (RuntimeException | Error cleanup) {
+                if (primary == null) {
+                    throw cleanup;
+                }
+                if (primary != cleanup) {
+                    primary.addSuppressed(cleanup);
+                }
             }
         }
-    }
-
-    /**
-     * Present the given entity manager as a handler of the requested type.
-     * <p>
-     * {@link EntityHandler} has exactly two specified subtypes - an entity manager is one itself, and
-     * an entity agent wraps one - so a request for anything else cannot be satisfied.
-     */
-    private <H extends EntityHandler> H createEntityHandler(Class<H> handlerClass, EntityManager entityManager) {
-        if (handlerClass == EntityManager.class) {
-            return handlerClass.cast(entityManager);
-        }
-
-        if (handlerClass == EntityAgent.class) {
-            return handlerClass.cast(new EntityAgentImpl(entityManager));
-        }
-
-        throw new IllegalArgumentException("""
-                Cannot create an entity handler of type [%s]. \
-                Only [%s] and [%s] are supported."""
-                .formatted(handlerClass.getName(), EntityManager.class.getName(), EntityAgent.class.getName()));
     }
 
 }

@@ -55,6 +55,7 @@ import org.eclipse.persistence.internal.indirection.DatabaseValueHolder;
 import org.eclipse.persistence.internal.indirection.IndirectionPolicy;
 import org.eclipse.persistence.internal.indirection.NoIndirectionPolicy;
 import org.eclipse.persistence.internal.indirection.WeavedObjectBasicIndirectionPolicy;
+import org.eclipse.persistence.internal.queries.FetchedLockContext;
 import org.eclipse.persistence.internal.queries.AttributeItem;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
@@ -337,22 +338,39 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      */
     @Override
     public void buildCloneFromRow(AbstractRecord databaseRow, JoinedAttributeManager joinManager, Object clone, CacheKey sharedCacheKey, ObjectBuildingQuery sourceQuery, UnitOfWorkImpl unitOfWork, AbstractSession executionSession) {
+        buildCloneFromRow(databaseRow, joinManager, clone, sharedCacheKey, sourceQuery, unitOfWork, executionSession, true);
+    }
+
+    @Override
+    public void buildCloneFromRow(AbstractRecord databaseRow, JoinedAttributeManager joinManager, Object clone,
+            CacheKey sharedCacheKey, ObjectBuildingQuery sourceQuery, UnitOfWorkImpl unitOfWork,
+            AbstractSession executionSession, boolean existingClone) {
+        boolean preserveLoaded = existingClone && executionSession.isUnitOfWork()
+                && sourceQuery.shouldRefreshIdentityMapResult() && isAttributeValueFullyBuilt(clone)
+                && this.indirectionPolicy.objectIsInstantiatedOrChanged(getAttributeValueFromObject(clone));
+        if (preserveLoaded && sourceQuery instanceof ObjectLevelReadQuery read
+                && read.shouldLockFetchedRelationships() && read.isLockQuery()) {
+            // A refresh preserves already loaded application state. That actual
+            // materialization belongs to FETCHED scope, even for a LAZY mapping.
+            ObjectLevelReadQuery actual = (ObjectLevelReadQuery) read.clone();
+            org.eclipse.persistence.queries.LoadGroup loaded = read.getLoadGroup() == null
+                    ? new org.eclipse.persistence.queries.LoadGroup() : read.getLoadGroup().clone();
+            if (!loaded.containsAttribute(getAttributeName())) {
+                loaded.addAttribute(getAttributeName());
+            }
+            actual.setLoadGroup(loaded);
+            sourceQuery = actual;
+        }
         Boolean[] wasCacheUsed = new Boolean[]{Boolean.FALSE};
         Object attributeValue = valueFromRow(databaseRow, joinManager, sourceQuery, sharedCacheKey, executionSession, true, wasCacheUsed);
         Object clonedAttributeValue = this.indirectionPolicy.cloneAttribute(attributeValue, null, sharedCacheKey,clone, null, unitOfWork, !wasCacheUsed[0]);// building clone directly from row.
-        if (executionSession.isUnitOfWork() && sourceQuery.shouldRefreshIdentityMapResult()){
-            // check whether the attribute is fully build before calling getAttributeValueFromObject because that
-            // call may fully build the attribute
-            boolean wasAttributeValueFullyBuilt = isAttributeValueFullyBuilt(clone);
-            Object oldAttribute = this.getAttributeValueFromObject(clone);
+        if (preserveLoaded) {
             setAttributeValueInObject(clone, clonedAttributeValue); // set this first to prevent infinite recursion
-             if (wasAttributeValueFullyBuilt && this.indirectionPolicy.objectIsInstantiatedOrChanged(oldAttribute)){
-                this.indirectionPolicy.instantiateObject(clone, clonedAttributeValue);
-            }
+            this.indirectionPolicy.instantiateObject(clone, clonedAttributeValue);
         }else{
             setAttributeValueInObject(clone, clonedAttributeValue);
         }
-        if((joinManager != null && joinManager.isAttributeJoined(this.descriptor, this)) || (isExtendingPessimisticLockScope(sourceQuery) && extendPessimisticLockScope == ExtendPessimisticLockScope.TARGET_QUERY) || databaseRow.hasSopObject()) {
+        if((joinManager != null && joinManager.isAttributeJoined(this.descriptor, this)) || isLockingFetchedMapping(sourceQuery) || (isExtendingPessimisticLockScope(sourceQuery) && extendPessimisticLockScope == ExtendPessimisticLockScope.TARGET_QUERY) || databaseRow.hasSopObject()) {
             // need to instantiate to extended the lock beyond the source object table(s).
             this.indirectionPolicy.instantiateObject(clone, clonedAttributeValue);
         }
@@ -709,6 +727,13 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
         ObjectLevelReadQuery nestedQuery = (ObjectLevelReadQuery)((ObjectLevelReadQuery)getSelectionQuery()).deepClone();
         nestedQuery.setSession(session);
         nestedQuery.setShouldUseSerializedObjectPolicy(baseQuery.shouldUseSerializedObjectPolicy());
+        if (isLockingFetchedMapping(baseQuery)) {
+            nestedQuery.setShouldLockFetchedRelationships(true);
+            ObjectLevelReadQuery source = (ObjectLevelReadQuery) baseQuery;
+            if (source.getLoadGroup() != null) {
+                nestedQuery.setLoadGroup(source.getLoadGroup().getGroup(getAttributeName()));
+            }
+        }
         // Must cascade for nested partial/join attributes, the expressions must be filter to only the nested ones.
         if (baseQuery.hasPartialAttributeExpressions()) {
             nestedQuery.setPartialAttributeExpressions(extractNestedExpressions(((ObjectLevelReadQuery)baseQuery).getPartialAttributeExpressions(), nestedQuery.getExpressionBuilder()));
@@ -1533,6 +1558,10 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
         }else{
             setAttributeValueInObject(targetObject, attributeValue);
         }
+        if (isLockingFetchedMapping(sourceQuery)
+                || isExtendingPessimisticLockScope(sourceQuery) && extendPessimisticLockScope == ExtendPessimisticLockScope.TARGET_QUERY) {
+            this.indirectionPolicy.instantiateObject(targetObject, attributeValue);
+        }
         if (parentCacheKey != null){
             this.indirectionPolicy.setSourceObject(parentCacheKey.getObject(), attributeValue);
         }
@@ -1912,6 +1941,11 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      * Usually used by write, insert, update and delete.
      */
     protected boolean shouldObjectModifyCascadeToParts(ObjectLevelModifyQuery query) {
+        // Agent operations write owned relational data, never target entities.
+        if (query.getProperty("eclipselink.entity-agent.operation") != null
+                && !isAggregateCollectionMapping() && !isDirectCollectionMapping()) {
+            return false;
+        }
         if (this.isReadOnly) {
             return false;
         }
@@ -2181,7 +2215,8 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
         }
         // If the query uses batch reading, return a special value holder
         // or retrieve the object from the query property.
-        if (sourceQuery.isObjectLevelReadQuery() && (((ObjectLevelReadQuery)sourceQuery).isAttributeBatchRead(this.descriptor, getAttributeName())
+        if (!isLockingFetchedMapping(sourceQuery) && FetchedLockContext.current() == null && sourceQuery.isObjectLevelReadQuery()
+                && (((ObjectLevelReadQuery)sourceQuery).isAttributeBatchRead(this.descriptor, getAttributeName())
                 || (sourceQuery.isReadAllQuery() && shouldUseBatchReading()))) {
             return batchedValueFromRow(row, (ObjectLevelReadQuery)sourceQuery, cacheKey);
         } else {
@@ -2325,6 +2360,18 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
                 }
             }
 
+            if (isLockingFetchedMapping(sourceQuery)) {
+                targetQuery = (ReadQuery) targetQuery.clone();
+                targetQuery.setIsExecutionClone(true);
+                ObjectLevelReadQuery fetchedQuery = (ObjectLevelReadQuery) targetQuery;
+                fetchedQuery.setLockMode(sourceQuery.getLockMode());
+                fetchedQuery.setShouldLockFetchedRelationships(true);
+                ObjectLevelReadQuery source = (ObjectLevelReadQuery) sourceQuery;
+                if (source.getLoadGroup() != null) {
+                    fetchedQuery.setLoadGroup(source.getLoadGroup().getGroup(getAttributeName()));
+                }
+            }
+
             if (isExtendingPessimisticLockScope(sourceQuery)) {
                 if (this.extendPessimisticLockScope == ExtendPessimisticLockScope.TARGET_QUERY) {
                     if (targetQuery == this.selectionQuery) {
@@ -2342,15 +2389,69 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
                 }
             }
         }
+        if ((Boolean.TRUE.equals(sourceQuery.getProperty("eclipselink.entity-agent"))
+                || Boolean.TRUE.equals(executionSession.getProperty("eclipselink.entity-agent")))
+                && !sourceQuery.shouldMaintainCache()) {
+            // Selection queries belong to shared mapping metadata. Keep agent
+            // cache/graph policy on a private clone, including eager relations.
+            targetQuery = (ReadQuery) targetQuery.clone();
+            targetQuery.setIsExecutionClone(true);
+            targetQuery.setProperty("eclipselink.entity-agent", Boolean.TRUE);
+            targetQuery.setProperty("eclipselink.entity-agent.read-context", sourceQuery.getProperty("eclipselink.entity-agent.read-context"));
+            targetQuery.dontMaintainCache();
+            if (targetQuery instanceof ObjectLevelReadQuery read) {
+                read.dontCheckCache();
+                FetchGroup requested = read.getFetchGroup();
+                if (requested != null && read.getLoadGroup() == null) {
+                    read.setLoadGroup(requested.toLoadGroupLoadOnly());
+                }
+                read.setShouldUseDefaultFetchGroup(false);
+                if (read.getFetchGroup() != null) {
+                    read.setFetchGroup(null);
+                    read.setIsPrepared(false);
+                }
+            }
+        }
         targetQuery = prepareHistoricalQuery(targetQuery, sourceQuery, executionSession);
+        targetQuery = FetchedLockContext.attachToSelection(targetQuery, sourceQuery);
 
         return this.indirectionPolicy.valueFromQuery(targetQuery, row, executionSession);
+    }
+
+    /**
+     * INTERNAL: Promote only a relationship actually loaded in the active FETCHED operation.
+     * The caller supplies an execution-local token; shared mapping queries stay unchanged.
+     */
+    public ReadQuery prepareFetchedQuery(ReadQuery original, AbstractRecord row, AbstractSession session,
+            FetchedLockContext context) {
+        if (context == null || !context.isActive()) {
+            return original;
+        }
+        ReadQuery query = (ReadQuery) original.clone();
+        query.setIsExecutionClone(true);
+        context.attach(query);
+        if (query instanceof ObjectLevelReadQuery read) {
+            read.setLockMode(context.getLockMode());
+            read.setShouldLockFetchedRelationships(true);
+            read.setIsPrepared(false);
+            if (extendPessimisticLockScope == ExtendPessimisticLockScope.DEDICATED_QUERY) {
+                ReadQuery links = getExtendPessimisticLockScopeDedicatedQuery(session, context.getLockMode());
+                if (links != null) {
+                    session.executeQuery(links, row);
+                }
+            }
+        }
+        return query;
     }
 
     /**
      * INTERNAL:
      * Indicates whether the source query's pessimistic lock scope scope should be extended in the target query.
      */
+    protected boolean isLockingFetchedMapping(ObjectBuildingQuery sourceQuery) {
+        return sourceQuery instanceof ObjectLevelReadQuery read && read.shouldLockFetchedMapping(this);
+    }
+
     protected boolean isExtendingPessimisticLockScope(ObjectBuildingQuery sourceQuery) {
         // TODO: What if sourceQuery is NOT ObjectLevelReadQuery? Should we somehow handle this?
         // Or alternatively define ObjectBuildingQuery.shouldExtendPessimisticLockScope() to always return false?

@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation.
  * Copyright (c) 2011, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -870,12 +871,13 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
         queries.forEach((queryName, queriesList) -> {
             if (!result.containsKey(queryName)) {
                 for (DatabaseQuery query : queriesList) {
-                    if (query.getReferenceClass() != null && resultType.isAssignableFrom(query.getReferenceClass())) {
+                    Class<?> actualType = EJBQueryImpl.queryResultType(query);
+                    if (actualType != null && resultType.isAssignableFrom(actualType)) {
                         Map<String, Object> hints = QueryHintsHandler.get(query);
                         result.put(queryName,
-                                   new TypedQueryReferenceImpl<>(queryName,
-                                                               (Class<? extends R>) query.getReferenceClass(),
-                                                               hints != null ? hints : Collections.emptyMap()));
+                                   AugmentedQueryReference.owned(new TypedQueryReferenceImpl<>(queryName,
+                                                               (Class<? extends R>) actualType,
+                                                               hints != null ? hints : Collections.emptyMap()), session));
                         break;
                     }
                 }
@@ -932,7 +934,7 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
                             "jpa_non_persistent_class", new String[] {entityType.getName()}));
                 }
                 session.getDescriptor(entityType);
-                result.put(name, new EntityGraphImpl<>(attributeGroup, descriptor));
+                result.put(name, new EntityGraphImpl<>(attributeGroup.clone(), descriptor, metamodel));
             }
         });
         return result;
@@ -966,30 +968,22 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
 
     @Override
     public <R> TypedQueryReference<R> addNamedQuery(String name, TypedQuery<R> query) {
-        addNamedQuery(name, (Query) query);
-
-        DatabaseQuery databaseQuery = query.unwrap(DatabaseQuery.class);
-
-        Map<String, Object> hints = QueryHintsHandler.get(databaseQuery);
-
-        return new TypedQueryReferenceImpl<>(
-            name,
-            (Class<? extends R>) databaseQuery.getReferenceClass(), hints != null ? hints : emptyMap());
+        return delegate.addNamedQuery(name, query);
     }
 
     @Override
     public StatementReference addNamedStatement(String name, Statement statement) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        return delegate.addNamedStatement(name, statement);
     }
 
     @Override
     public Map<String, StatementReference> getNamedStatements() {
-        throw new UnsupportedOperationException("Not yet implemented");
+        return delegate.getNamedStatements();
     }
 
     @Override
     public <R> Map<String, ResultSetMapping<R>> getResultSetMappings(Class<R> resultType) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        return delegate.getResultSetMappings(resultType);
     }
 
     @Override

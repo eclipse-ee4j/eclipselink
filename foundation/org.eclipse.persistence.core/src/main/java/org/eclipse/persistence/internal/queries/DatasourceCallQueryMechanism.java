@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation.
  * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
@@ -387,7 +388,8 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
     @Override
     public void insertObject() throws DatabaseException {
         ClassDescriptor descriptor = getDescriptor();
-        boolean usesSequencing = descriptor.usesSequenceNumbers();
+        boolean usesSequencing = descriptor.usesSequenceNumbers()
+                && !"UPSERT".equals(getQuery().getProperty("eclipselink.entity-agent.operation"));
         boolean shouldAcquireValueAfterInsert = false;
         if (usesSequencing) {
             shouldAcquireValueAfterInsert = descriptor.getSequence().shouldAcquireValueAfterInsert();

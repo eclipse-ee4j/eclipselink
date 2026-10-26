@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
  * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2025 IBM Corporation. All rights reserved.
  *
@@ -368,10 +369,11 @@ public class QueryHintsHandler {
             }
 
             Map<String, Object> existingHints = (Map<String, Object>)query.getProperty(QUERY_HINT_PROPERTY);
-            if (existingHints == null){
-                existingHints = new HashMap<>();
-                query.setProperty(QUERY_HINT_PROPERTY, existingHints);
-            }
+            // DatabaseQuery clones its property map, whose values may still be
+            // shared with a named-query template. Replace the nested hint map
+            // before modifying it so per-query overrides remain independent.
+            existingHints = existingHints == null ? new HashMap<>() : new HashMap<>(existingHints);
+            query.setProperty(QUERY_HINT_PROPERTY, existingHints);
             existingHints.put(hintName, hintValue);
 
             return hint.apply(hintValue, shouldUseDefault, query, loader, activeSession);
@@ -812,7 +814,8 @@ public class QueryHintsHandler {
             super(QueryHints.PESSIMISTIC_LOCK_SCOPE, jakarta.persistence.PessimisticLockScope.NORMAL.name());
             valueArray = new Object[] {
                 jakarta.persistence.PessimisticLockScope.NORMAL.name(),
-                jakarta.persistence.PessimisticLockScope.EXTENDED.name()
+                jakarta.persistence.PessimisticLockScope.EXTENDED.name(),
+                jakarta.persistence.PessimisticLockScope.FETCHED.name()
             };
         }
 
@@ -822,6 +825,7 @@ public class QueryHintsHandler {
                 boolean shouldExtend = valueToApply.equals(jakarta.persistence.PessimisticLockScope.EXTENDED.name());
                 ObjectLevelReadQuery olrQuery = (ObjectLevelReadQuery)query;
                 olrQuery.setShouldExtendPessimisticLockScope(shouldExtend);
+                olrQuery.setShouldLockFetchedRelationships(valueToApply.equals(jakarta.persistence.PessimisticLockScope.FETCHED.name()));
                 if(shouldExtend) {
                     olrQuery.extendPessimisticLockScope();
                 }
@@ -1144,6 +1148,13 @@ public class QueryHintsHandler {
         }
     }
 
+    private static AttributeGroup namedGraph(Object name, AbstractSession session) {
+        AttributeGroup graph = session.getAttributeGroups().get(name);
+        // Named queries are prepared before the Project's graphs are copied
+        // into the session registry during descriptor initialization.
+        return graph != null ? graph : session.getProject().getAttributeGroups().get(name);
+    }
+
     protected static class FetchGraphHint extends Hint {
         FetchGraphHint() {
             super(QueryHints.JPA_FETCH_GRAPH, "");
@@ -1154,7 +1165,7 @@ public class QueryHintsHandler {
             if (query.isObjectLevelReadQuery()) {
                 if(valueToApply != null) {
                     if (valueToApply instanceof String){
-                        AttributeGroup eg = activeSession.getAttributeGroups().get(valueToApply);
+                        AttributeGroup eg = namedGraph(valueToApply, activeSession);
                         if (eg != null){
                             FetchGroup fg = eg.toFetchGroup();
                             fg.setShouldLoadAll(true);
@@ -1255,7 +1266,7 @@ public class QueryHintsHandler {
             if (query.isObjectLevelReadQuery()) {
                 if(valueToApply != null) {
                     if (valueToApply instanceof String){
-                        AttributeGroup eg = activeSession.getAttributeGroups().get(valueToApply);
+                        AttributeGroup eg = namedGraph(valueToApply, activeSession);
                         if (eg != null){
                             ((ObjectLevelReadQuery)query).setLoadGroup(eg.toLoadGroup());
                         }else{

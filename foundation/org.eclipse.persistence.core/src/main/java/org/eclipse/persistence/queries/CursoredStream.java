@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -70,10 +70,13 @@ public class CursoredStream extends Cursor {
         // Must close on exception as stream will not be returned to user.
         try {
             setLimits();
-        } catch (RuntimeException exception) {
+        } catch (RuntimeException | Error exception) {
             try {
                 close();
-            } catch (RuntimeException ignore) {
+            } catch (RuntimeException | Error cleanup) {
+                if (cleanup != exception) {
+                    exception.addSuppressed(cleanup);
+                }
             }
             throw exception;
         }
@@ -433,6 +436,7 @@ public class CursoredStream extends Cursor {
                 close();
                 return null;
             }
+            boolean closeAfterBuild = false;
             // If using 1-m joining need to fetch 1-m rows as well.
             if (this.query.isObjectLevelReadQuery() && ((ObjectLevelReadQuery)this.query).hasJoining()) {
                 if (!isClosed()) {
@@ -440,12 +444,32 @@ public class CursoredStream extends Cursor {
                     if (joinManager.isToManyJoin()) {
                         this.nextRow = joinManager.processDataResults(row, this, true);
                         if (this.nextRow == null) {
-                            close();
+                            closeAfterBuild = true;
                         }
                     }
                 }
             }
-            Object object = buildAndRegisterObject(row);
+            Object object;
+            Throwable failure = null;
+            try {
+                object = buildAndRegisterObject(row);
+            } catch (RuntimeException | Error caught) {
+                failure = caught;
+                throw caught;
+            } finally {
+                if (closeAfterBuild) {
+                    try {
+                        close();
+                    } catch (RuntimeException | Error cleanup) {
+                        if (failure == null) {
+                            throw cleanup;
+                        }
+                        if (failure != cleanup) {
+                            failure.addSuppressed(cleanup);
+                        }
+                    }
+                }
+            }
             if (object == InvalidObject.instance) {
                 continue;
             }

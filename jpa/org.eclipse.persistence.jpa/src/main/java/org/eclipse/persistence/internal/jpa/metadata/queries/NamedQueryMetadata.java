@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.jpa.JPAQuery;
@@ -64,6 +65,8 @@ public class NamedQueryMetadata extends ORMetadata {
     private List<QueryHintMetadata> m_hints = new ArrayList<>();
 
     private String m_lockMode;
+    private String m_lockScope;
+    private String m_entityGraph;
     private String m_name;
     private String m_query;
     private MetadataClass m_resultClass;
@@ -86,11 +89,25 @@ public class NamedQueryMetadata extends ORMetadata {
 
         m_name = namedQuery.getAttributeString("name");
         m_query = namedQuery.getAttributeString("query");
+        if (m_query == null) {
+            m_query = namedQuery.getAttributeString("statement");
+        }
         m_lockMode = namedQuery.getAttributeString("lockMode");
+        m_lockScope = namedQuery.getAttributeString("lockScope");
+        m_entityGraph = namedQuery.getAttributeString("entityGraph");
         m_resultClass = getMetadataClass(namedQuery.getAttributeString("resultClass"));
 
         for (Object hint : namedQuery.getAttributeArray("hints")) {
             m_hints.add(new QueryHintMetadata((MetadataAnnotation)hint, accessor));
+        }
+
+        String flush = namedQuery.getAttributeString("flush");
+        if (("FLUSH".equals(flush) || "NO_FLUSH".equals(flush))
+                && m_hints.stream().noneMatch(hint -> QueryHints.FLUSH.equals(hint.getName()))) {
+            QueryHintMetadata hint = new QueryHintMetadata();
+            hint.setName(QueryHints.FLUSH);
+            hint.setValue(Boolean.toString("FLUSH".equals(flush)));
+            m_hints.add(hint);
         }
     }
 
@@ -148,6 +165,12 @@ public class NamedQueryMetadata extends ORMetadata {
                 return false;
             }
 
+            if (!valuesMatch(m_lockMode, query.getLockMode())
+                    || !valuesMatch(m_lockScope, query.getLockScope())
+                    || !valuesMatch(m_entityGraph, query.getEntityGraph())) {
+                return false;
+            }
+
             return valuesMatch(m_hints, query.getHints());
         }
 
@@ -161,7 +184,15 @@ public class NamedQueryMetadata extends ORMetadata {
         result = 31 * result + (m_name != null ? m_name.hashCode() : 0);
         result = 31 * result + (m_query != null ? m_query.hashCode() : 0);
         result = 31 * result + (m_resultClass != null ? m_resultClass.hashCode() : 0);
+        result = 31 * result + (m_lockMode != null ? m_lockMode.hashCode() : 0);
+        result = 31 * result + (m_lockScope != null ? m_lockScope.hashCode() : 0);
+        result = 31 * result + (m_entityGraph != null ? m_entityGraph.hashCode() : 0);
         return result;
+    }
+
+    /** INTERNAL: Used for OX mapping. */
+    public String getEntityGraph() {
+        return m_entityGraph;
     }
 
     /**
@@ -187,6 +218,11 @@ public class NamedQueryMetadata extends ORMetadata {
      */
     public String getLockMode() {
         return m_lockMode;
+    }
+
+    /** INTERNAL: Used for OX mapping. */
+    public String getLockScope() {
+        return m_lockScope;
     }
 
     /**
@@ -270,7 +306,22 @@ public class NamedQueryMetadata extends ORMetadata {
             }
         }
 
+        if (m_lockScope != null) {
+            hints.putIfAbsent(QueryHints.PESSIMISTIC_LOCK_SCOPE, m_lockScope);
+        }
+        // A declared graph is a LOAD graph. An explicit graph hint takes
+        // precedence, including a FETCH graph with different default semantics.
+        if (m_entityGraph != null && !m_entityGraph.isEmpty()
+                && !hints.containsKey(QueryHints.JPA_LOAD_GRAPH)
+                && !hints.containsKey(QueryHints.JPA_FETCH_GRAPH)) {
+            hints.put(QueryHints.JPA_LOAD_GRAPH, m_entityGraph);
+        }
         return hints;
+    }
+
+    /** INTERNAL: Used for OX mapping. */
+    public void setEntityGraph(String entityGraph) {
+        m_entityGraph = entityGraph;
     }
 
     /**
@@ -287,6 +338,11 @@ public class NamedQueryMetadata extends ORMetadata {
      */
     public void setLockMode(String lockMode) {
         m_lockMode = lockMode;
+    }
+
+    /** INTERNAL: Used for OX mapping. */
+    public void setLockScope(String lockScope) {
+        m_lockScope = lockScope;
     }
 
     /**

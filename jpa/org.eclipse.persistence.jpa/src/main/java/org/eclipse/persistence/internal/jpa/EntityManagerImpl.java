@@ -850,10 +850,15 @@ public class EntityManagerImpl implements JpaEntityManager {
     // TODO-API-3.2 - Missing tests
     @Override
     public <T> T find(EntityGraph<T> entityGraph, Object primaryKey, FindOption... options) {
-        Class<T> entityClass = ((EntityGraphImpl<T>)entityGraph).getClassType();
-        Map<String, Object> properties = getQueryHints(entityClass, OperationType.FIND);
-        properties.put(QueryHints.JPA_FETCH_GRAPH, entityGraph);
-        FindOptionUtils.Options parsedOptions = FindOptionUtils.parse(getQueryHints(entityClass, OperationType.FIND), options);
+        verifyOpen();
+        if (!(entityGraph instanceof EntityGraphImpl<T> graph)) {
+            throw new IllegalArgumentException("Entity graph was not created by this provider");
+        }
+        Class<T> entityClass = graph.getClassType();
+        Map<String, Object> hints = getQueryHints(entityClass, OperationType.FIND);
+        Map<String, Object> properties = hints == null ? new HashMap<>() : new HashMap<>(hints);
+        properties.put(QueryHints.JPA_LOAD_GRAPH, entityGraph);
+        FindOptionUtils.Options parsedOptions = FindOptionUtils.parse(properties, options);
         return find(entityClass, primaryKey, parsedOptions.lockModeType(), parsedOptions.properties());
     }
 
@@ -1003,6 +1008,14 @@ public class EntityManagerImpl implements JpaEntityManager {
                     throw new OptimisticLockException(eclipselinkOLE);
                 }
             } catch (EclipseLinkException e) {
+                if (e instanceof DatabaseException database && database.getQuery() != null
+                        && database.getQuery().isInsertObjectQuery()
+                        && database.getInternalException() instanceof java.sql.SQLException sql
+                        && ("23505".equals(sql.getSQLState()) || sql.getErrorCode() == 1
+                            || sql.getErrorCode() == 1062 || sql.getErrorCode() == 2601
+                            || sql.getErrorCode() == 2627 || sql.getErrorCode() == -803)) {
+                    throw new EntityExistsException("Entity insert violated a uniqueness constraint", database);
+                }
                 throw new PersistenceException(e);
             }
         } catch (RuntimeException e) {
@@ -1023,6 +1036,33 @@ public class EntityManagerImpl implements JpaEntityManager {
      * Execute the locking query.
      */
     private Object executeQuery(ReadObjectQuery query, LockModeType lockMode, AbstractSession session) {
+        return executeQuery(query, lockMode, session, true);
+    }
+
+    private Object executeQuery(ReadObjectQuery query, LockModeType lockMode, AbstractSession session, boolean checkManagedVersion) {
+        Object managed = null;
+        Object version = null;
+        VersionLockingPolicy versionPolicy = null;
+        if (checkManagedVersion && isPessimistic(lockMode) && session instanceof UnitOfWorkImpl context) {
+            ClassDescriptor descriptor = query.getSelectionObject() == null
+                    ? session.getDescriptor(query.getReferenceClass()) : session.getDescriptor(query.getSelectionObject());
+            if (descriptor != null && descriptor.getOptimisticLockingPolicy() instanceof VersionLockingPolicy policy
+                    && policy.isStoredInObject()) {
+                managed = query.getSelectionObject();
+                if (managed == null) {
+                    // Inspect this persistence context only; a parent-cache lookup
+                    // would manufacture a managed snapshot that did not exist before locking.
+                    managed = context.getIdentityMapAccessorInstance().getIdentityMapManager().getFromIdentityMap(
+                            query.getSelectionId(), descriptor.getJavaClass(), descriptor);
+                }
+                if (managed != null && context.getCloneMapping().containsKey(managed)) {
+                    versionPolicy = policy;
+                    version = policy.getVersion(managed);
+                } else {
+                    managed = null;
+                }
+            }
+        }
         // Make sure we set the lock mode type if there is one. It will
         // be handled in the query prepare statement. Setting the lock mode
         // will validate that a valid locking policy is in place if needed. If
@@ -1033,7 +1073,11 @@ public class EntityManagerImpl implements JpaEntityManager {
         }
 
         try {
-            return session.executeQuery(query);
+            Object result = session.executeQuery(query);
+            if (managed != null && (result == null || !Objects.equals(version, versionPolicy.getVersion(result)))) {
+                throw new OptimisticLockException("Managed entity version changed before acquiring its database lock", null, managed);
+            }
+            return result;
         } catch (DatabaseException e) {
             if (!isPessimistic(lockMode)) {
                 throw e;
@@ -1192,7 +1236,7 @@ public class EntityManagerImpl implements JpaEntityManager {
                 query.cascadeByMapping();
             }
 
-            Object refreshedEntity = executeQuery(query, lockMode, uow);
+            Object refreshedEntity = executeQuery(query, lockMode, uow, false);
             if (refreshedEntity == null) {
                 // bug5955326, ReadObjectQuery will now ensure the object is
                 // invalidated if refresh returns null.
@@ -1304,7 +1348,17 @@ public class EntityManagerImpl implements JpaEntityManager {
     @Override
     public <T> TypedQuery<T> createQuery(TypedQueryReference<T> typedQueryReference) {
         Objects.requireNonNull(typedQueryReference, ExceptionLocalization.buildMessage("typed_query_reference_is_null"));
-        return createNamedQueryInternal(typedQueryReference.getName(), typedQueryReference.getHints());
+        TypedQuery<T> query = createNamedQueryInternal(typedQueryReference.getName(), null);
+        ReferenceBinder.bind(query, typedQueryReference);
+        if (typedQueryReference.getOptions() != null) {
+            typedQueryReference.getOptions().forEach(query::addOption);
+        }
+        if (typedQueryReference.getEntityGraphName() != null) {
+            @SuppressWarnings("unchecked")
+            EntityGraph<T> graph = (EntityGraph<T>) getEntityGraph(typedQueryReference.getEntityGraphName());
+            query.setHint(QueryHints.JPA_LOAD_GRAPH, graph);
+        }
+        return query;
     }
 
     /**
@@ -2015,7 +2069,7 @@ public class EntityManagerImpl implements JpaEntityManager {
 
             List<SQLResultSetMapping> sqlResultSetMappings = new ArrayList<>();
             for (Class<?> resultClass : resultClasses) {
-                sqlResultSetMappings.add(new SQLResultSetMapping(resultClass));
+                sqlResultSetMappings.add(ResultSetMappingTranslator.forResultClass(resultClass, new EntityManagerQueryContext(this)));
             }
 
             return new StoredProcedureQueryImpl(StoredProcedureQueryImpl.buildResultSetMappingQuery(sqlResultSetMappings, call), this);
@@ -2124,7 +2178,7 @@ public class EntityManagerImpl implements JpaEntityManager {
      */
     protected void closeOpenQueries() {
         for (QueryImpl openQuery : getOpenQueriesSet()) {
-            openQuery.close();
+            openQuery.releaseResources();
         }
     }
 
@@ -2197,8 +2251,10 @@ public class EntityManagerImpl implements JpaEntityManager {
             if (lockMode.name().equals(ObjectLevelReadQuery.PESSIMISTIC_READ) || lockMode.name().equals(ObjectLevelReadQuery.PESSIMISTIC_WRITE )
                     || lockMode.name().equals(ObjectLevelReadQuery.PESSIMISTIC_FORCE_INCREMENT)) {
 
-                // return if the entity has previously been pessimistically locked
-                if (uow.isPessimisticLocked(entity)) {
+                // An explicit scope may require additional relationship locks even
+                // when this entity's own row is already locked.
+                if (uow.isPessimisticLocked(entity)
+                        && (properties == null || !properties.containsKey(QueryHints.PESSIMISTIC_LOCK_SCOPE))) {
                     return;
                 }
 
@@ -2241,7 +2297,7 @@ public class EntityManagerImpl implements JpaEntityManager {
     @Override
     public void lock(Object entity, LockModeType lockMode, LockOption... options) {
         LockOptionUtils.Options parsedOptions = LockOptionUtils.parse(lockMode, options);
-        refresh(entity, parsedOptions.lockModeType(), parsedOptions.properties());
+        lock(entity, parsedOptions.lockModeType(), parsedOptions.properties());
     }
 
     public void verifyOpen() {
@@ -3214,7 +3270,7 @@ public class EntityManagerImpl implements JpaEntityManager {
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("unknown_bean_class", new Object[]{rootType.getName()}));
         }
 
-        return new EntityGraphImpl<>(new AttributeGroup(null, rootType, true), descriptor);
+        return new EntityGraphImpl<>(new AttributeGroup(null, rootType, true), descriptor, getMetamodel());
     }
 
     @Override
@@ -3225,7 +3281,7 @@ public class EntityManagerImpl implements JpaEntityManager {
         }
 
         ClassDescriptor descriptor = this.getAbstractSession().getDescriptor(group.getType());
-        return new EntityGraphImpl<>(group.clone(), descriptor);
+        return new EntityGraphImpl<>(group.clone(), descriptor, getMetamodel());
     }
 
     @Override
@@ -3236,7 +3292,7 @@ public class EntityManagerImpl implements JpaEntityManager {
         }
 
         ClassDescriptor descriptor = this.getAbstractSession().getDescriptor(group.getType());
-        return new EntityGraphImpl<>(group.clone(), descriptor);
+        return new EntityGraphImpl<>(group.clone(), descriptor, getMetamodel());
     }
 
     @Override
@@ -3248,14 +3304,14 @@ public class EntityManagerImpl implements JpaEntityManager {
 
         List<EntityGraph<? super T>> result = new ArrayList<>();
         for (AttributeGroup group : descriptor.getAttributeGroups().values()){
-            result.add(new EntityGraphImpl<>(group.clone(), descriptor));
+            result.add(new EntityGraphImpl<>(group.clone(), descriptor, getMetamodel()));
         }
 
         if (descriptor.hasInheritance()){
             while(descriptor.getInheritancePolicy().getParentDescriptor() != null){
                 descriptor = descriptor.getInheritancePolicy().getParentDescriptor();
                 for (AttributeGroup group : descriptor.getAttributeGroups().values()){
-                    result.add(new EntityGraphImpl<>(group.clone(), descriptor));
+                    result.add(new EntityGraphImpl<>(group.clone(), descriptor, getMetamodel()));
                 }
             }
         }
@@ -3279,52 +3335,119 @@ public class EntityManagerImpl implements JpaEntityManager {
 
     @Override
     public void addOption(Option option) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        verifyOpen();
+        Objects.requireNonNull(option);
+        if (option instanceof CacheRetrieveMode retrieve) {
+            setCacheRetrieveMode(retrieve);
+        } else if (option instanceof CacheStoreMode store) {
+            setCacheStoreMode(store);
+        } else if (option instanceof FlushModeType flush) {
+            setFlushMode(flush);
+        } else {
+            throw new IllegalArgumentException("Unrecognized entity manager option");
+        }
     }
 
     @Override
     public Set<Option> getOptions() {
-        throw new UnsupportedOperationException("Not yet implemented");
+        verifyOpen();
+        return new java.util.HashSet<>(List.of(getCacheRetrieveMode(), getCacheStoreMode(), getFlushMode()));
     }
 
     @Override
     public <T> T get(Class<T> entityClass, Object id) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        T entity = find(entityClass, id);
+        if (entity == null) {
+            throw new EntityNotFoundException("No entity exists for the requested identifier");
+        }
+        return entity;
     }
 
     @Override
     public <T> T get(Class<T> entityClass, Object id, FindOption... options) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        T entity = find(entityClass, id, options);
+        if (entity == null) {
+            throw new EntityNotFoundException("No entity exists for the requested identifier");
+        }
+        return entity;
     }
 
     @Override
     public <T> T get(EntityGraph<T> graph, Object id, FindOption... options) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        T entity = find(graph, id, options);
+        if (entity == null) {
+            throw new EntityNotFoundException("No entity exists for the requested identifier");
+        }
+        return entity;
     }
 
     @Override
     public <T> List<T> getMultiple(Class<T> entityClass, List<?> ids, FindOption... options) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        verifyOpen();
+        if (entityClass == null || getAbstractSession().getDescriptor(entityClass) == null) {
+            throw new IllegalArgumentException("Not an entity class");
+        }
+        if (ids == null) {
+            throw new IllegalArgumentException("Identifiers must not be null");
+        }
+        List<T> results = new ArrayList<>(ids.size());
+        for (Object id : ids) {
+            results.add(get(entityClass, id, options));
+        }
+        return results;
     }
 
     @Override
     public <T> List<T> getMultiple(EntityGraph<T> graph, List<?> ids, FindOption... options) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        verifyOpen();
+        if (!(graph instanceof EntityGraphImpl<?>)) {
+            throw new IllegalArgumentException("Entity graph was not created by this provider");
+        }
+        if (ids == null) {
+            throw new IllegalArgumentException("Identifiers must not be null");
+        }
+        List<T> results = new ArrayList<>(ids.size());
+        for (Object id : ids) {
+            results.add(get(graph, id, options));
+        }
+        return results;
     }
 
     @Override
     public <T> List<T> findMultiple(Class<T> entityClass, List<?> ids, FindOption... options) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        verifyOpen();
+        if (entityClass == null || getAbstractSession().getDescriptor(entityClass) == null) {
+            throw new IllegalArgumentException("Not an entity class");
+        }
+        if (ids == null) {
+            throw new IllegalArgumentException("Identifiers must not be null");
+        }
+        List<T> results = new ArrayList<>(ids.size());
+        for (Object id : ids) {
+            results.add(find(entityClass, id, options));
+        }
+        return results;
     }
 
     @Override
     public <T> List<T> findMultiple(EntityGraph<T> graph, List<?> ids, FindOption... options) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        verifyOpen();
+        if (!(graph instanceof EntityGraphImpl<?>)) {
+            throw new IllegalArgumentException("Entity graph was not created by this provider");
+        }
+        if (ids == null) {
+            throw new IllegalArgumentException("Identifiers must not be null");
+        }
+        List<T> results = new ArrayList<>(ids.size());
+        for (Object id : ids) {
+            results.add(find(graph, id, options));
+        }
+        return results;
     }
 
     @Override
     public Statement createStatement(String qlString) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        return createQuery(qlString).asStatement();
     }
 
     @Override
@@ -3340,31 +3463,43 @@ public class EntityManagerImpl implements JpaEntityManager {
 
     @Override
     public <T> TypedQuery<T> createQuery(String qlString, EntityGraph<T> resultGraph) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        return createQuery(qlString).withEntityGraph(resultGraph);
     }
 
     @Override
     public Statement createNamedStatement(String name) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        return createNamedQuery(name).asStatement();
     }
 
     @Override
     public Statement createStatement(StatementReference reference) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        verifyOpen();
+        Statement statement = createNamedStatement(reference.getName());
+        ReferenceBinder.bind(statement, reference);
+        if (reference.getOptions() != null) {
+            reference.getOptions().forEach(statement::addOption);
+        }
+        return statement;
     }
 
     @Override
     public Statement createNativeStatement(String sqlString) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        return createNativeQuery(sqlString).asStatement();
     }
 
     @Override
     public <T> TypedQuery<T> createNativeQuery(String sqlString, ResultSetMapping<T> resultSetMapping) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        return createNativeQuery(sqlString).withResultSetMapping(resultSetMapping);
     }
 
     @Override
     public <T> EntityGraph<T> getEntityGraph(Class<T> rootType, String graphName) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        verifyOpen();
+        EntityGraph<?> graph = getEntityGraph(graphName);
+        if (rootType != ((EntityGraphImpl<?>) graph).getClassType()) {
+            throw new IllegalArgumentException("Entity graph has an incompatible type");
+        }
+        @SuppressWarnings("unchecked") EntityGraph<T> typed = (EntityGraph<T>) graph;
+        return typed;
     }
 }

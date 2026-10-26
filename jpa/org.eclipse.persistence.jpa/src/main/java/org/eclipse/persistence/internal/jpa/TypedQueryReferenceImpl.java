@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2023 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -20,6 +20,10 @@ import jakarta.persistence.TypedQuery.Option;
 import jakarta.persistence.TypedQueryReference;
 
 import java.util.List;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -34,11 +38,32 @@ class TypedQueryReferenceImpl<R> implements TypedQueryReference<R> {
     private final String name;
     private final Class<? extends R> resultType;
     private final Map<String, Object> hints;
+    private final List<Class<?>> parameterTypes;
+    private final List<String> parameterNames;
+    private final List<Object> arguments;
+    private final Set<Option> options;
+    private final String entityGraphName;
 
     TypedQueryReferenceImpl(String name, Class<? extends R> resultType, Map<String, Object> hints) {
+        this(name, resultType, hints, Set.of(), null);
+    }
+
+    TypedQueryReferenceImpl(String name, Class<? extends R> resultType, Map<String, Object> hints,
+            Set<Option> options, String entityGraphName) {
+        this(name, resultType, hints, options, entityGraphName, null, null, null);
+    }
+
+    TypedQueryReferenceImpl(String name, Class<? extends R> resultType, Map<String, Object> hints,
+            Set<Option> options, String entityGraphName, List<Class<?>> parameterTypes,
+            List<String> parameterNames, List<Object> arguments) {
         this.name = name;
         this.resultType = resultType;
-        this.hints = hints != null ? hints : emptyMap();
+        this.hints = hints == null ? emptyMap() : Collections.unmodifiableMap(new LinkedHashMap<>(hints));
+        this.options = options == null ? Set.of() : Collections.unmodifiableSet(new LinkedHashSet<>(options));
+        this.entityGraphName = entityGraphName;
+        this.parameterTypes = immutableList(parameterTypes);
+        this.parameterNames = immutableList(parameterNames);
+        this.arguments = immutableList(arguments);
     }
 
     @Override
@@ -58,27 +83,30 @@ class TypedQueryReferenceImpl<R> implements TypedQueryReference<R> {
 
     @Override
     public List<Class<?>> getParameterTypes() {
-        throw new UnsupportedOperationException("Not yet implemented");
+        return parameterTypes;
     }
 
     @Override
     public List<String> getParameterNames() {
-        throw new UnsupportedOperationException("Not yet implemented");
+        return parameterNames;
     }
 
     @Override
     public List<Object> getArguments() {
-        throw new UnsupportedOperationException("Not yet implemented");
+        return arguments;
     }
 
     @Override
     public Set<Option> getOptions() {
-        throw new UnsupportedOperationException("Not yet implemented");
+        return options;
     }
 
     @Override
     public String getEntityGraphName() {
-        throw new UnsupportedOperationException("Not yet implemented");
+        return entityGraphName;
     }
 
+    private static <T> List<T> immutableList(List<T> values) {
+        return values == null ? null : Collections.unmodifiableList(new ArrayList<>(values));
+    }
 }

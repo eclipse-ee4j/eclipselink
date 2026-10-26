@@ -15,6 +15,9 @@
 package org.eclipse.persistence.internal.jpa;
 
 import jakarta.persistence.LockModeType;
+import jakarta.persistence.PersistenceException;
+import jakarta.persistence.Tuple;
+import jakarta.persistence.TupleElement;
 import jakarta.persistence.sql.ColumnMapping;
 import jakarta.persistence.sql.CompoundMapping;
 import jakarta.persistence.sql.ConstructorMapping;
@@ -26,169 +29,220 @@ import jakarta.persistence.sql.MemberMapping;
 import jakarta.persistence.sql.ResultSetMapping;
 import jakarta.persistence.sql.TupleMapping;
 
-import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.queries.ColumnResult;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.queries.ConstructorResult;
+import org.eclipse.persistence.internal.helper.ConversionManager;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.queries.ColumnResult;
 import org.eclipse.persistence.queries.EntityResult;
 import org.eclipse.persistence.queries.FieldResult;
+import org.eclipse.persistence.queries.ResultSetMappingQuery;
 import org.eclipse.persistence.queries.SQLResult;
 import org.eclipse.persistence.queries.SQLResultSetMapping;
+import org.eclipse.persistence.sessions.DatabaseRecord;
 
-/**
- * Translates a Jakarta Persistence 4.0 {@link ResultSetMapping} into the {@link SQLResultSetMapping}
- * that EclipseLink's query machinery consumes.
- * <p>
- *
- * {@code ResultSetMapping} is the programmatic form of {@link jakarta.persistence.SqlResultSetMapping
- * &#64;SqlResultSetMapping}, and the two models correspond closely, so this is largely a structural
- * recursion:
- * <pre>
- *     CompoundMapping      -&gt; SQLResultSetMapping holding several SQLResults
- *     EntityMapping        -&gt; EntityResult
- *       FieldMapping       -&gt;   FieldResult
- *       EmbeddedMapping    -&gt;   FieldResults with dotted attribute paths
- *     ConstructorMapping   -&gt; ConstructorResult
- *     ColumnMapping        -&gt; ColumnResult
- * </pre>
- * Both {@code ResultSetMapping} and its element and member hierarchies are {@code sealed}, so each
- * switch below is exhaustive and a type added to the specification will fail to compile here rather
- * than being silently ignored.
- *
- * <p>
- * Three things the specification can express and EclipseLink's model cannot are rejected rather than
- * quietly dropped; see {@link #toConstructorResult}, {@link #toEclipseLinkMapping} and
- * {@link #toEntityResult}.
- */
+/** Translates the programmatic result mapping using the existing row materializer. */
 public final class ResultSetMappingTranslator {
-
-    /**
-     * Name given to the translated mapping. {@link SQLResultSetMapping} refuses a null name, but the
-     * name is only used to look a mapping up on the session; one built here is handed straight to a
-     * query, so it is never looked up and the value is immaterial beyond being recognisable in logs.
-     */
+    static final String MAPPING_LOCK_PROPERTY = "eclipselink.entity-agent.mapping-lock";
+    static final String EXECUTION_CONTEXT_PROPERTY = "eclipselink.result-mapping.execution-context";
     private static final String TRANSLATED_MAPPING_NAME = "jakarta.persistence.sql.ResultSetMapping";
 
     private ResultSetMappingTranslator() {
     }
 
-    /**
-     * Translate the given mapping.
-     *
-     * @param mapping the specification's description of how a row should be read
-     * @return the equivalent EclipseLink mapping
-     * @throws IllegalArgumentException if the mapping describes something EclipseLink cannot represent
-     */
     public static SQLResultSetMapping toEclipseLinkMapping(ResultSetMapping<?> mapping) {
-        SQLResultSetMapping translated = new SQLResultSetMapping(TRANSLATED_MAPPING_NAME);
+        return toEclipseLinkMapping(mapping, null);
+    }
 
-        switch (mapping) {
-            // A compound mapping produces an Object[] per row, one element per result, which is
-            // exactly what a multi-result SQLResultSetMapping produces. Order is significant: the
-            // runtime reads results positionally, so the elements are copied in the order given
-            // rather than grouped by kind the way the annotation processing does.
-            case CompoundMapping compound -> addElements(translated, compound.elements());
-
-            case EntityMapping<?> entity -> translated.addResult(toEntityResult(entity));
-            case ConstructorMapping<?> constructor -> translated.addResult(toConstructorResult(constructor));
-            case ColumnMapping<?> column -> translated.addResult(toColumnResult(column));
-
-            // A tuple mapping differs from a compound one only in wrapping each row in a Tuple, whose
-            // elements are addressable by the alias each MappingElement carries. EclipseLink produces
-            // Object[], and nothing here can wrap the rows afterwards, so returning the untranslated
-            // shape would hand the caller Object[] where it expects Tuple. Refuse instead.
-            case TupleMapping ignored -> throw new IllegalArgumentException(
-                    "A TupleMapping cannot be used here. EclipseLink returns each row of a result set"
-                            + " mapping as an Object[], and the rows would have to be wrapped in a Tuple"
-                            + " afterwards. Use ResultSetMapping.compound(...) to read rows as Object[].");
+    static SQLResultSetMapping toEclipseLinkMapping(ResultSetMapping<?> mapping, QueryExecutionContext context) {
+        if (mapping == null) {
+            throw new IllegalArgumentException("Result set mapping must not be null");
         }
-
+        SQLResultSetMapping translated = new SQLResultSetMapping(TRANSLATED_MAPPING_NAME);
+        SQLResult result = switch (mapping) {
+            case CompoundMapping compound -> new CompoundResult(compound.elements(), context, false);
+            case TupleMapping tuple -> new CompoundResult(tuple.elements(), context, true);
+            case EntityMapping<?> entity -> toEntityResult(entity, context, false);
+            case ConstructorMapping<?> constructor -> new ConstructedResult(constructor, context);
+            case ColumnMapping<?> column -> toColumnResult(column);
+        };
+        translated.addResult(result);
         return translated;
     }
 
-    private static void addElements(SQLResultSetMapping translated, MappingElement<?>[] elements) {
-        for (MappingElement<?> element : elements) {
-            translated.addResult(toResult(element));
-        }
+    /** Reconstruct the public typed form from the initialized annotation/XML metadata. */
+    static ResultSetMapping<?> toJakartaMapping(SQLResultSetMapping mapping, AbstractSession session) {
+        MappingElement<?>[] elements = mapping.getResults().stream()
+                .map(result -> toMappingElement(result, session)).toArray(MappingElement<?>[]::new);
+        return elements.length == 1 ? (ResultSetMapping<?>) elements[0] : ResultSetMapping.compound(elements);
     }
 
-    /**
-     * Translate one element of a row. {@link MappingElement} permits exactly these three types.
-     */
-    private static SQLResult toResult(MappingElement<?> element) {
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private static MappingElement<?> toMappingElement(SQLResult result, AbstractSession session) {
+        if (result instanceof ColumnResult column) {
+            Class<?> type = column.getColumn().getType();
+            if (type == null) {
+                type = Object.class;
+            }
+            return ResultSetMapping.column(column.getColumn().getName(), type);
+        }
+        if (result instanceof ConstructorResult constructor) {
+            MappingElement<?>[] arguments = constructor.getColumnResults().stream()
+                    .map(column -> toMappingElement(column, session)).toArray(MappingElement<?>[]::new);
+            return ResultSetMapping.constructor(constructor.getTargetClass(), arguments);
+        }
+        if (result instanceof EntityResult entity) {
+            Class<?> type = entity.getEntityClass();
+            ClassDescriptor descriptor = session.getDescriptor(type);
+            List<MemberMapping<?>> fields = new ArrayList<>();
+            for (Object value : entity.getFieldResults().values()) {
+                FieldResult field = (FieldResult) value;
+                if (field.getFieldResults() == null) {
+                    fields.add(toMemberMapping(descriptor, field, 0));
+                } else {
+                    for (FieldResult component : field.getFieldResults()) {
+                        fields.add(toMemberMapping(descriptor, component, 0));
+                    }
+                }
+            }
+            String discriminator = entity.getDiscriminatorColumn() == null ? null
+                    : entity.getDiscriminatorColumn().getName();
+            return new EntityMapping(type, LockModeType.valueOf(entity.getLockMode()), discriminator,
+                    fields.toArray(MemberMapping[]::new), null);
+        }
+        throw new IllegalArgumentException("Unsupported named SQL result mapping element: " + result.getClass().getName());
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private static MemberMapping<?> toMemberMapping(ClassDescriptor descriptor, FieldResult field, int index) {
+        String[] path = field.getMultipleFieldIdentifiers();
+        DatabaseMapping attribute = descriptor.getMappingForAttributeName(path[index]);
+        if (attribute == null) {
+            throw new IllegalArgumentException("Unknown result mapping attribute: " + path[index]);
+        }
+        Class<?> type = attribute.getAttributeClassification();
+        if (index == path.length - 1) {
+            return new FieldMapping(descriptor.getJavaClass(), type == null ? Object.class : type,
+                    path[index], field.getColumn().getName());
+        }
+        ClassDescriptor embedded = attribute.getReferenceDescriptor();
+        if (embedded == null) {
+            throw new IllegalArgumentException("Result mapping path has no nested descriptor: " + path[index]);
+        }
+        return new EmbeddedMapping(descriptor.getJavaClass(), embedded.getJavaClass(), path[index],
+                new MemberMapping[] {toMemberMapping(embedded, field, index + 1)});
+    }
+
+    static boolean mappingRequiresTransaction(SQLResultSetMapping mapping) {
+        return mapping != null && mapping.getResults().stream().anyMatch(result ->
+                result instanceof EntityResult entity && !"NONE".equals(entity.getLockMode()));
+    }
+
+    static SQLResultSetMapping forResultClass(Class<?> resultClass, QueryExecutionContext context) {
+        if (resultClass == null) {
+            throw new IllegalArgumentException("Result class must not be null");
+        }
+        if (context.getSession().getDescriptor(resultClass) != null) {
+            return new SQLResultSetMapping(resultClass);
+        }
+        SQLResultSetMapping mapping = new SQLResultSetMapping(resultClass.getName());
+        mapping.addResult(new SQLResult() {
+            @Override
+            public Object getValueFromRecord(DatabaseRecord record, ResultSetMappingQuery query) {
+                ResultSetMappingQuery typed = (ResultSetMappingQuery) query.clone();
+                typed.setSQLResultSetMappings(java.util.Collections.singletonList(null));
+                typed.setResultClass(resultClass);
+                return typed.buildObjectsFromRecords(List.of(record), 0).get(0);
+            }
+        });
+        return mapping;
+    }
+
+    static boolean mappingRequiresTransaction(ResultSetMapping<?> mapping) {
+        return switch (mapping) {
+            case EntityMapping<?> entity -> entity.lockMode() != LockModeType.NONE;
+            case ConstructorMapping<?> constructor -> requiresTransaction(constructor.arguments());
+            case CompoundMapping compound -> requiresTransaction(compound.elements());
+            case TupleMapping tuple -> requiresTransaction(tuple.elements());
+            case ColumnMapping<?> ignored -> false;
+        };
+    }
+
+    private static boolean requiresTransaction(MappingElement<?>[] elements) {
+        for (MappingElement<?> element : elements) {
+            if (element instanceof EntityMapping<?> entity && entity.lockMode() != LockModeType.NONE
+                    || element instanceof ConstructorMapping<?> constructor && requiresTransaction(constructor.arguments())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static SQLResult toResult(MappingElement<?> element, QueryExecutionContext context, boolean prepareEntity) {
         return switch (element) {
-            case EntityMapping<?> entity -> toEntityResult(entity);
-            case ConstructorMapping<?> constructor -> toConstructorResult(constructor);
+            case EntityMapping<?> entity -> toEntityResult(entity, context, prepareEntity);
+            case ConstructorMapping<?> constructor -> new ConstructedResult(constructor, context);
             case ColumnMapping<?> column -> toColumnResult(column);
         };
     }
 
-    /**
-     * Translate a scalar column.
-     * <p>
-     * {@link ColumnResult} has no type of its own; it carries a {@link DatabaseField}, and the type
-     * rides on that, which is what the annotation processing does too. {@code Object} is the
-     * specification's way of saying "no type given" - {@code ResultSetMapping.column(name)} produces
-     * it - so it is left off rather than imposed on the field, where it would only stand in the way of
-     * the conversion EclipseLink would otherwise infer.
-     */
     private static ColumnResult toColumnResult(ColumnMapping<?> mapping) {
         DatabaseField field = new DatabaseField(mapping.columnName());
-
         if (mapping.type() != Object.class) {
             field.setType(mapping.type());
         }
-
         return new ColumnResult(field);
     }
 
-    /**
-     * Translate an entity result.
-     * <p>
-     * A lock mode other than {@link LockModeType#NONE} is refused: {@link EntityResult} has no notion
-     * of locking, so honouring it would mean locking the query as a whole, which is a different thing
-     * from locking the rows of one entity result.
-     */
-    private static EntityResult toEntityResult(EntityMapping<?> mapping) {
-        if (mapping.lockMode() != LockModeType.NONE) {
-            throw new IllegalArgumentException(
-                    "A lock mode on an EntityMapping is not supported. EclipseLink's entity results carry"
-                            + " no lock mode, so [" + mapping.lockMode() + "] requested for entity ["
-                            + mapping.entityClass().getName() + "] cannot be applied to that result alone."
-                            + " Lock the query instead, with Query.setLockMode.");
+    private static EntityResult toEntityResult(EntityMapping<?> mapping, QueryExecutionContext context, boolean prepareEntity) {
+        if (mapping.lockMode() != LockModeType.NONE && context == null) {
+            throw new IllegalArgumentException("An entity lock mapping requires a query execution context");
         }
-
-        EntityResult entityResult = new EntityResult(mapping.entityClass());
-
+        EntityResult result = new EntityResult(mapping.entityClass()) {
+            @Override
+            public Object getValueFromRecord(DatabaseRecord record, ResultSetMappingQuery query) {
+                // Mapping metadata may be shared by named queries and different handlers.
+                // Resolve the live owner from the execution clone instead of capturing it.
+                Object owner = query.getProperty(EXECUTION_CONTEXT_PROPERTY);
+                QueryExecutionContext current = owner instanceof QueryExecutionContext value ? value : null;
+                if (mapping.lockMode() != LockModeType.NONE) {
+                    if (current == null) {
+                        throw new IllegalStateException("An entity lock mapping requires a live query owner");
+                    }
+                    current.requireTransaction();
+                }
+                Object entity = super.getValueFromRecord(record, query);
+                if (entity != null && mapping.lockMode() != LockModeType.NONE) {
+                    current.lockResult(entity, mapping.lockMode());
+                }
+                return current == null || !prepareEntity ? entity : current.prepareResult(entity);
+            }
+        };
         if (mapping.discriminatorColumn() != null) {
-            entityResult.setDiscriminatorColumn(mapping.discriminatorColumn());
+            result.setDiscriminatorColumn(mapping.discriminatorColumn());
         }
-
         for (MemberMapping<?> field : mapping.fields()) {
-            addMemberResult(entityResult, null, field);
+            addMemberResult(result, null, field);
         }
-
-        return entityResult;
+        return result;
     }
 
-    /**
-     * Add one of an entity's members, flattening embeddables as it goes.
-     * <p>
-     * {@link EmbeddedMapping} has no counterpart in EclipseLink, and none is needed: a
-     * {@link FieldResult} splits its attribute name on {@code .} and keeps the whole path, so a nested
-     * embeddable is expressed the same way {@link jakarta.persistence.FieldResult &#64;FieldResult}
-     * has always expressed one - as {@code outer.inner}. Embeddables nest arbitrarily, so this
-     * recurses, accumulating the path as it descends.
-     */
-    private static void addMemberResult(EntityResult entityResult, String path, MemberMapping<?> member) {
+    private static void addMemberResult(EntityResult result, String path, MemberMapping<?> member) {
         switch (member) {
-            case FieldMapping<?, ?> field ->
-                    entityResult.addFieldResult(new FieldResult(append(path, field.name()), field.columnName()));
-
+            case FieldMapping<?, ?> field -> result.addFieldResult(
+                    new FieldResult(append(path, field.name()), field.columnName()));
             case EmbeddedMapping<?, ?> embedded -> {
-                String embeddedPath = append(path, embedded.name());
-
                 for (MemberMapping<?> field : embedded.fields()) {
-                    addMemberResult(entityResult, embeddedPath, field);
+                    addMemberResult(result, append(path, embedded.name()), field);
                 }
             }
         }
@@ -198,28 +252,162 @@ public final class ResultSetMappingTranslator {
         return path == null ? name : path + "." + name;
     }
 
-    /**
-     * Translate a constructor result.
-     * <p>
-     * The specification allows any {@link MappingElement} as a constructor argument, so an entity or a
-     * nested constructor is legal there. EclipseLink's {@link ConstructorResult} takes only
-     * {@link ColumnResult}s, so anything else is refused rather than approximated.
-     */
-    private static ConstructorResult toConstructorResult(ConstructorMapping<?> mapping) {
-        ConstructorResult constructorResult = new ConstructorResult(mapping.targetClass());
+    private static class CompoundResult extends SQLResult {
+        final MappingElement<?>[] elements;
+        final SQLResult[] results;
+        private final boolean tuple;
 
-        for (MappingElement<?> argument : mapping.arguments()) {
-            if (!(argument instanceof ColumnMapping<?> column)) {
-                throw new IllegalArgumentException(
-                        "Only columns are supported as constructor arguments, but the mapping for ["
-                                + mapping.targetClass().getName() + "] has an argument of type ["
-                                + argument.getClass().getSimpleName() + "]. EclipseLink's constructor"
-                                + " results are built from column values alone.");
-            }
-
-            constructorResult.addColumnResult(toColumnResult(column));
+        CompoundResult(MappingElement<?>[] elements, QueryExecutionContext context, boolean tuple) {
+            this(elements, context, tuple, tuple);
         }
 
-        return constructorResult;
+        CompoundResult(MappingElement<?>[] elements, QueryExecutionContext context, boolean tuple, boolean prepareEntities) {
+            this.elements = elements.clone();
+            this.results = new SQLResult[elements.length];
+            this.tuple = tuple;
+            for (int index = 0; index < elements.length; index++) {
+                results[index] = toResult(elements[index], context, prepareEntities);
+            }
+        }
+
+        @Override
+        public void setSQLResultMapping(SQLResultSetMapping mapping) {
+            super.setSQLResultMapping(mapping);
+            for (SQLResult result : results) {
+                result.setSQLResultMapping(mapping);
+            }
+        }
+
+        Object[] values(DatabaseRecord record, ResultSetMappingQuery query) {
+            Object[] values = new Object[results.length];
+            for (int index = 0; index < values.length; index++) {
+                values[index] = results[index].getValueFromRecord(record, query);
+            }
+            return values;
+        }
+
+        @Override
+        public Object getValueFromRecord(DatabaseRecord record, ResultSetMappingQuery query) {
+            Object[] values = values(record, query);
+            return tuple ? new MappingTuple(elements, values) : values;
+        }
+    }
+
+    private static final class ConstructedResult extends CompoundResult {
+        private final Class<?> targetClass;
+        private transient Constructor<?> constructor;
+
+        ConstructedResult(ConstructorMapping<?> mapping, QueryExecutionContext context) {
+            super(mapping.arguments(), context, false, true);
+            targetClass = mapping.targetClass();
+        }
+
+        @Override
+        public Object getValueFromRecord(DatabaseRecord record, ResultSetMappingQuery query) {
+            Object[] values = values(record, query);
+            if (constructor == null) {
+                for (Constructor<?> candidate : targetClass.getDeclaredConstructors()) {
+                    Class<?>[] types = candidate.getParameterTypes();
+                    if (types.length != elements.length) {
+                        continue;
+                    }
+                    boolean matches = true;
+                    for (int index = 0; index < types.length; index++) {
+                        Class<?> declared = elements[index].getJavaType();
+                        if (declared == Object.class && values[index] != null) {
+                            declared = values[index].getClass();
+                        }
+                        if (!ConversionManager.getObjectClass(types[index]).isAssignableFrom(
+                                ConversionManager.getObjectClass(declared))) {
+                            matches = false;
+                            break;
+                        }
+                    }
+                    if (matches) {
+                        constructor = candidate;
+                        break;
+                    }
+                }
+                if (constructor == null) {
+                    throw new IllegalArgumentException("No matching result constructor on " + targetClass.getName());
+                }
+                try {
+                    constructor = PrivilegedAccessHelper.getConstructorFor(targetClass, constructor.getParameterTypes(), true);
+                } catch (NoSuchMethodException exception) {
+                    throw new PersistenceException(exception);
+                }
+            }
+            try {
+                return PrivilegedAccessHelper.invokeConstructor(constructor, values);
+            } catch (InstantiationException | IllegalAccessException | InvocationTargetException exception) {
+                throw new PersistenceException("Could not construct mapped result " + targetClass.getName(), exception);
+            }
+        }
+    }
+
+    private static final class MappingTuple implements Tuple {
+        private final List<TupleElement<?>> elements;
+        private final Object[] values;
+
+        MappingTuple(MappingElement<?>[] elements, Object[] values) {
+            this.elements = List.copyOf(Arrays.asList(elements));
+            this.values = values.clone();
+        }
+
+        @Override
+        public <X> X get(TupleElement<X> element) {
+            int index = elements.indexOf(element);
+            if (index < 0) {
+                throw new IllegalArgumentException("Tuple element is not part of this result");
+            }
+            return get(index, element.getJavaType());
+        }
+
+        @Override
+        public <X> X get(String alias, Class<X> type) {
+            return typedValue(get(alias), type);
+        }
+
+        @Override
+        public Object get(String alias) {
+            if (alias != null) {
+                for (int index = 0; index < elements.size(); index++) {
+                    if (alias.equals(elements.get(index).getAlias())) {
+                        return values[index];
+                    }
+                }
+            }
+            throw new IllegalArgumentException("Unknown tuple alias: " + alias);
+        }
+
+        @Override
+        public <X> X get(int index, Class<X> type) {
+            return typedValue(get(index), type);
+        }
+
+        @Override
+        public Object get(int index) {
+            if (index < 0 || index >= values.length) {
+                throw new IllegalArgumentException("Invalid tuple index: " + index);
+            }
+            return values[index];
+        }
+
+        private static <X> X typedValue(Object value, Class<X> type) {
+            if (type == null || value != null && !ConversionManager.getObjectClass(type).isInstance(value)) {
+                throw new IllegalArgumentException("Tuple value does not match requested type");
+            }
+            return ConversionManager.<X>getObjectClass(type).cast(value);
+        }
+
+        @Override
+        public Object[] toArray() {
+            return values.clone();
+        }
+
+        @Override
+        public List<TupleElement<?>> getElements() {
+            return new ArrayList<>(elements);
+        }
     }
 }

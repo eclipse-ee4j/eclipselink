@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,6 +21,8 @@
 package org.eclipse.persistence.internal.sessions;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.DescriptorEvent;
+import org.eclipse.persistence.descriptors.DescriptorEventManager;
 import org.eclipse.persistence.descriptors.VersionLockingPolicy;
 import org.eclipse.persistence.exceptions.OptimisticLockException;
 import org.eclipse.persistence.exceptions.QueryException;
@@ -558,6 +560,19 @@ public class MergeManager {
      * The map is used to resolve recursion.
      */
     protected Object mergeChangesOfCloneIntoWorkingCopy(Object rmiClone) {
+
+        if (!isForRefresh && this.session instanceof UnitOfWorkImpl unitOfWork
+                && !unitOfWork.getCloneMapping().containsKey(rmiClone)) {
+            ClassDescriptor sourceDescriptor = this.session.getDescriptor(rmiClone);
+            if (!sourceDescriptor.isDescriptorTypeAggregate() && sourceDescriptor.getEventManager().hasAnyEventListeners()) {
+                // The outer merge recursion gate has already recorded the source.
+                // Notify before registration copies a new source and calls PrePersist.
+                DescriptorEvent event = new DescriptorEvent(rmiClone);
+                event.setEventCode(DescriptorEventManager.PreMergeEvent);
+                event.setSession(this.session);
+                sourceDescriptor.getEventManager().executeEvent(event);
+            }
+        }
 
         Object registeredObject = null;
         if (isForRefresh){

@@ -429,7 +429,16 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         PersistenceUnitProperties.NOSQL_CONNECTION_SPEC,
         PersistenceUnitProperties.NOSQL_CONNECTION_FACTORY,
         PersistenceUnitProperties.NOSQL_USER,
-        PersistenceUnitProperties.JDBC_CONNECTOR
+        PersistenceUnitProperties.JDBC_CONNECTOR,
+        PersistenceUnitProperties.VALIDATION_MODE,
+        "jakarta.persistence.validation.factory",
+        PersistenceUnitProperties.VALIDATION_GROUP_PRE_PERSIST,
+        PersistenceUnitProperties.VALIDATION_GROUP_PRE_UPDATE,
+        PersistenceUnitProperties.VALIDATION_GROUP_PRE_REMOVE,
+        "jakarta.persistence.validation.group.pre-merge",
+        "jakarta.persistence.validation.group.pre-insert",
+        "jakarta.persistence.validation.group.pre-delete",
+        "jakarta.persistence.validation.group.pre-upsert"
     };
 
     /*
@@ -584,8 +593,9 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                         strValue = Integer.toString(System.identityHashCode(value));
                     }
                 }
-                // don't set an empty String
-                if (!strValue.isEmpty()) {
+                // Empty validation groups disable an event, while absence selects its default.
+                // Keep the existing empty-value handling for connection properties.
+                if (!strValue.isEmpty() || name.startsWith("jakarta.persistence.validation.group.")) {
                     suffix.append("_").append(Helper.getShortClassName(name)).append("=").append(strValue);
                 }
             }

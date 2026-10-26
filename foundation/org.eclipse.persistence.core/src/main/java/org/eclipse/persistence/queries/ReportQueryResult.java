@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019, 2026 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -55,6 +55,7 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Set;
 import java.util.Vector;
+import java.util.function.UnaryOperator;
 
 /**
  * <b>Purpose</b>: A single row (type) result for a ReportQuery<p>
@@ -139,6 +140,10 @@ public class ReportQueryResult implements Serializable, Map {
         setResults(results);
     }
 
+    /** INTERNAL: Optional constructor-argument materialization boundary supplied by a query owner. */
+    public static final String CONSTRUCTOR_ARGUMENT_PREPARER = "eclipselink.report.constructor-argument-preparer";
+
+    @SuppressWarnings("unchecked")
     private Object processConstructorItem(ReportQuery query, AbstractRecord row, Vector toManyData, ConstructorReportItem constructorItem) {
         // For constructor items need to process each constructor argument.
         Class<?>[] constructorArgTypes = constructorItem.getConstructorArgTypes();
@@ -155,6 +160,11 @@ public class ReportQueryResult implements Serializable, Map {
                 result = processConstructorItem(query, row, toManyData, (ConstructorReportItem) argumentItem);
             } else {
                 result = processItem(query, row, toManyData, argumentItem);
+            }
+
+            Object preparer = query.getProperty(CONSTRUCTOR_ARGUMENT_PREPARER);
+            if (preparer instanceof UnaryOperator<?> operator) {
+                result = ((UnaryOperator<Object>) operator).apply(result);
             }
 
             // Use actual constructor parameter type if constructorArgTypes is Object.class

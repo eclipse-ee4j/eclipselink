@@ -28,6 +28,8 @@ import org.eclipse.persistence.queries.DatabaseQuery;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -47,26 +49,36 @@ import java.util.Set;
 public class StatementImpl implements Statement {
 
     private final EJBQueryImpl<?> query;
+    private final Map<Class<?>, Option> options = new LinkedHashMap<>();
 
     public StatementImpl(DatabaseQuery databaseQuery, EntityManagerImpl entityManager) {
         this.query = new EJBQueryImpl<>(databaseQuery, entityManager);
+    }
+
+    StatementImpl(DatabaseQuery databaseQuery, QueryExecutionContext context) {
+        this.query = new EJBQueryImpl<>(databaseQuery, context);
+    }
+
+    StatementImpl(EJBQueryImpl<?> query) {
+        this.query = query;
     }
 
     /**
      * Returns the query this statement delegates to.
      */
     public EJBQueryImpl<?> getDelegate() {
+        query.executionContext.verifyOpen();
         return query;
     }
 
     @Override
     public int execute() {
-        return query.executeUpdate();
+        return query.executeStatement();
     }
 
     @Override
     public int executeUpdate() {
-        return query.executeUpdate();
+        return execute();
     }
 
     @Override
@@ -125,8 +137,7 @@ public class StatementImpl implements Statement {
 
     @Override
     public Statement setFlushMode(FlushModeType flushMode) {
-        query.setFlushMode(flushMode);
-        return this;
+        return setQueryFlushMode(QueryImpl.flushModeTypeToQueryFlushMode(flushMode));
     }
 
     @Override
@@ -332,16 +343,35 @@ public class StatementImpl implements Statement {
 
     @Override
     public Statement addOption(Option option) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        query.executionContext.verifyOpen();
+        if (option == null) {
+            throw new IllegalArgumentException("Statement option must not be null");
+        }
+        if (option instanceof Timeout timeout) {
+            setTimeout(timeout);
+        } else if (option instanceof QueryFlushMode mode) {
+            setQueryFlushMode(mode);
+        } else {
+            options.put(option instanceof Enum<?> value ? value.getDeclaringClass() : option.getClass(), option);
+        }
+        return this;
     }
 
     @Override
     public Set<Option> getOptions() {
-        throw new UnsupportedOperationException("Not yet implemented");
+        query.executionContext.verifyOpen();
+        Map<Class<?>, Option> snapshot = new LinkedHashMap<>(options);
+        for (jakarta.persistence.TypedQuery.Option option : query.getOptions()) {
+            if (option instanceof Option statementOption) {
+                snapshot.put(option instanceof Enum<?> value ? value.getDeclaringClass() : option.getClass(), statementOption);
+            }
+        }
+        return new LinkedHashSet<>(snapshot.values());
     }
 
     @Override
     public <T> T unwrap(Class<T> type) {
+        query.executionContext.verifyOpen();
         if (type != null && type.isInstance(this)) {
             return type.cast(this);
         }
