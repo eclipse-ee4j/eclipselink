@@ -795,10 +795,16 @@
                                  build means replacing those jars under the names GlassFish itself
                                  uses. A no-op when the distribution was built from this same
                                  EclipseLink, and the whole point when it was not.
-                                 Only the jars GlassFish actually ships are listed: moxy, nosql and
-                                 sdo are absent from the distribution, and copying them in would add
-                                 new bundles rather than replace existing ones. asm is left alone,
-                                 GlassFish pins its own repackaging of it. -->
+                                 Keep GlassFish's file names: a jar copied in under any other name
+                                 becomes a second bundle next to the original, the core fragments
+                                 (json, oracle) then attach to both copies of core, and a provider
+                                 loaded through one copy is "not a subtype" of the interface in the
+                                 other.
+                                 moxy is the one jar added that the distribution lacks, under the
+                                 name GlassFish 7 shipped it with: jpa.test.lob maps entities with
+                                 the XML and JSON serializers, which need it on the server. nosql
+                                 and sdo, absent too, are not needed by any test run here. asm is
+                                 left alone, GlassFish pins its own repackaging of it. -->
                             <execution>
                                 <id>configure-glassfish-modules</id>
                                 <phase>initialize</phase>
@@ -846,6 +852,18 @@
                                             <artifactId>org.eclipse.persistence.oracle</artifactId>
                                             <version>${project.version}</version>
                                             <destFileName>org.eclipse.persistence.oracle.jar</destFileName>
+                                        </artifactItem>
+                                        <artifactItem>
+                                            <groupId>org.eclipse.persistence</groupId>
+                                            <artifactId>org.eclipse.persistence.json</artifactId>
+                                            <version>${project.version}</version>
+                                            <destFileName>org.eclipse.persistence.json.jar</destFileName>
+                                        </artifactItem>
+                                        <artifactItem>
+                                            <groupId>org.eclipse.persistence</groupId>
+                                            <artifactId>org.eclipse.persistence.moxy</artifactId>
+                                            <version>${project.version}</version>
+                                            <destFileName>org.eclipse.persistence.moxy.jar</destFileName>
                                         </artifactItem>
                                     </artifactItems>
                                 </configuration>
