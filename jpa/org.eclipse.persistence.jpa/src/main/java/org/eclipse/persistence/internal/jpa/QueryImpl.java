@@ -1211,10 +1211,18 @@ public class QueryImpl {
         }
 
         if (maxResult == Integer.MAX_VALUE) {
-            maxResults = UNDEFINED;
-        } else {
-            maxResults = maxResult;
+            cloneSharedQuery();
+            if (databaseQuery.isReadQuery()) {
+                ReadQuery readQuery = (ReadQuery) databaseQuery;
+                if (readQuery.getMaxRows() != 0 || maxResults != UNDEFINED) {
+                    readQuery.setMaxRows(0);
+                    // Removing a finite limit changes the SQL shape, even when
+                    // prepared pagination values are execution parameters.
+                    readQuery.setIsPrepared(false);
+                }
+            }
         }
+        maxResults = maxResult;
     }
 
     /**
@@ -1228,7 +1236,8 @@ public class QueryImpl {
             if (maxResults >= 0) {
                 cloneSharedQuery();
                 readQuery = (ReadQuery) getDatabaseQueryInternal();
-                int maxRows = maxResults + ((firstResultIndex >= 0) ? firstResultIndex : 0);
+                int maxRows = maxResults == Integer.MAX_VALUE ? 0
+                        : maxResults + ((firstResultIndex >= 0) ? firstResultIndex : 0);
                 readQuery.setMaxRows(maxRows);
             }
             if (firstResultIndex > UNDEFINED) {
