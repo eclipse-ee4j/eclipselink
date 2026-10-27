@@ -1069,6 +1069,16 @@ public class SQLServerPlatform extends DatabasePlatform {
         writeAutoJoinWhereClause(writer, tableName, tempTableName, pkFields, this);
     }
 
+    /**
+     * INTERNAL:
+     * FETCH NEXT takes a row count rather than the index of the final row.
+     */
+    @Override
+    public int computeMaxRowsForSQL(int firstResultIndex, int maxResults) {
+        return isVersion11OrHigher && shouldUseRownumFiltering()
+                ? maxResults - Math.max(0, firstResultIndex) : maxResults;
+    }
+
     @Override
     public void printSQLSelectStatement(DatabaseCall call, ExpressionSQLPrinter printer, SQLSelectStatement statement) {
         List<?> originalFields = statement.getFields();
@@ -1140,10 +1150,11 @@ public class SQLServerPlatform extends DatabasePlatform {
             List<?> offsetFetchArgs;
             if (max == 0) {
                 offsetFetchSql = "? OFFSET ? ROWS";
-                offsetFetchArgs = Arrays.asList(first);
+                offsetFetchArgs = Arrays.asList(statement.getBuilder().getParameter(DatabaseCall.FIRSTRESULT_FIELD));
             } else {
                 offsetFetchSql = "? OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
-                offsetFetchArgs = Arrays.asList(first, max - first);
+                offsetFetchArgs = Arrays.asList(statement.getBuilder().getParameter(DatabaseCall.FIRSTRESULT_FIELD),
+                        statement.getBuilder().getParameter(DatabaseCall.MAXROW_FIELD));
             }
 
             // append to the last ORDER BY clause

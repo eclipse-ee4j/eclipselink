@@ -69,6 +69,7 @@ import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLStoredProcedureCall;
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLargument;
 import org.eclipse.persistence.queries.Call;
+import org.eclipse.persistence.queries.Cursor;
 import org.eclipse.persistence.queries.DataModifyQuery;
 import org.eclipse.persistence.queries.ResultSetMappingQuery;
 import org.eclipse.persistence.queries.SQLResultSetMapping;
@@ -592,6 +593,59 @@ public class QueryImpl {
     }
 
     /**
+     * Execute a JPA result request, retaining validation, flushing and any native
+     * SQL work even when the result limit is zero.
+     */
+    private Object executeReadQueryWithResultLimit() {
+        if (maxResults != 0) {
+            return executeReadQuery();
+        }
+        DatabaseQuery query = getDatabaseQueryInternal();
+        if (query.getEJBQLString() == null && query.isUserDefined()) {
+            // Native SQL can modify data while returning rows. Execute it even
+            // for an empty result request, without a JDBC row limit on the work.
+            boolean shared = isShared;
+            databaseQuery = (DatabaseQuery) query.clone();
+            isShared = false;
+            ((ReadQuery) databaseQuery).setFirstResult(0);
+            ((ReadQuery) databaseQuery).setMaxRows(0);
+            try {
+                Object result = executeReadQuery();
+                if (result instanceof Cursor cursor) {
+                    cursor.close();
+                }
+            } finally {
+                databaseQuery = query;
+                isShared = shared;
+            }
+            return query.isReadObjectQuery() ? null : new ArrayList<>(0);
+        }
+        prepareNamedResultSetMappingLocks();
+        processParameters();
+        query = getDatabaseQueryInternal();
+        if (Boolean.TRUE.equals(query.getProperty(ResultSetMappingTranslator.MAPPING_LOCK_PROPERTY))) {
+            executionContext.requireTransaction();
+        }
+        if (!executionContext.isEntityAgent() && isFlushModeAUTO()
+                && (!(query instanceof ObjectLevelReadQuery read) || !read.isReadOnly())) {
+            performPreQueryFlush();
+        }
+        boolean locking = lockMode != null && lockMode != LockModeType.NONE;
+        if (locking) {
+            executionContext.requireTransaction();
+        }
+        AbstractSession session = (AbstractSession) getActiveSession();
+        if (locking && ((ObjectLevelReadQuery) query.clone()).setLockModeType(lockMode.name(), session)) {
+            throw new PersistenceException(ExceptionLocalization.buildMessage(
+                    "ejb30-wrong-lock_called_without_version_locking-index", null));
+        }
+        if (!executionContext.isEntityAgent()) {
+            this.lockMode = null;
+        }
+        return query.isReadObjectQuery() ? null : new ArrayList<>(0);
+    }
+
+    /**
      * Get the current lock mode for the query.
      *
      * @return lock mode
@@ -630,7 +684,7 @@ public class QueryImpl {
                 }
             } else if (query.isReadObjectQuery()) {
                 List<Object> resultList = new ArrayList<>();
-                Object result = executeReadQuery();
+                Object result = executeReadQueryWithResultLimit();
                 if (result != null) {
                     resultList.add(result);
                 }
@@ -638,7 +692,7 @@ public class QueryImpl {
             } else if (!query.isReadQuery()) {
                 throw new IllegalStateException(ExceptionLocalization.buildMessage("incorrect_query_for_get_result_list"));
             }
-            return (List) executeReadQuery();
+            return (List) executeReadQueryWithResultLimit();
         } catch (LockTimeoutException | QueryTimeoutException exception) {
             throw exception;
         } catch (PersistenceException | IllegalStateException exception) {
@@ -710,7 +764,7 @@ public class QueryImpl {
             if (!(getDatabaseQueryInternal().isReadQuery())) {
                 throw new IllegalStateException(ExceptionLocalization.buildMessage("incorrect_query_for_get_single_result"));
             }
-            Object result = executeReadQuery();
+            Object result = executeReadQueryWithResultLimit();
             if (result instanceof List<?> results) {
                 if (results.isEmpty()) {
                     if (failOnEmpty) {

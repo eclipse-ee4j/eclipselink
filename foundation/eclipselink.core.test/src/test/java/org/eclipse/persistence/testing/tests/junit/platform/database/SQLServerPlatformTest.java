@@ -143,7 +143,7 @@ public class SQLServerPlatformTest {
 
         assertRenderedTwice(session, statement,
                 "SELECT ID FROM ITEM ORDER BY (CASE WHEN NAME IS NULL THEN 1 ELSE 0 END), NAME DESC "
-                        + "OFFSET 2 ROWS FETCH NEXT 5 ROWS ONLY", true);
+                        + "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY", true);
     }
 
     @Test
@@ -154,7 +154,7 @@ public class SQLServerPlatformTest {
 
         assertRenderedTwice(session, statement,
                 "SELECT ID FROM ITEM ORDER BY ROW_NUMBER() OVER (ORDER BY (SELECT null)) "
-                        + "OFFSET 2 ROWS FETCH NEXT 5 ROWS ONLY", true);
+                        + "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY", true);
     }
 
     @Test
@@ -165,7 +165,7 @@ public class SQLServerPlatformTest {
         statement.setQuery(pagedQuery(2, 0));
 
         assertRenderedTwice(session, statement,
-                "SELECT ID FROM ITEM ORDER BY (CASE WHEN NAME IS NULL THEN 0 ELSE 1 END), NAME ASC OFFSET 2 ROWS", true);
+                "SELECT ID FROM ITEM ORDER BY (CASE WHEN NAME IS NULL THEN 0 ELSE 1 END), NAME ASC OFFSET ? ROWS", true);
     }
 
     @Test
@@ -233,6 +233,75 @@ public class SQLServerPlatformTest {
             Assert.assertSame(field, ((FunctionExpression) sort).getBaseExpression());
             Assert.assertEquals(ExpressionOperator.NullsLast, ordering.getOperator().getSelector());
             Assert.assertEquals(ExpressionOperator.Descending, sort.getOperator().getSelector());
+        }
+    }
+
+    @Test
+    public void testPreparedPaginationUsesCurrentExecutionValues() throws SQLException {
+        for (boolean binding : List.of(false, true)) {
+            DatabaseSessionImpl session = mappedSession(11, new SQLServerPlatform());
+            session.getPlatform().setShouldBindAllParameters(binding);
+            ReadAllQuery query = (ReadAllQuery) new HermesParser().buildQuery(
+                    "SELECT i FROM Item i ORDER BY i.id", session);
+            query.setFirstResult(1);
+            query.setMaxRows(2);
+            query.prepareCall(session, new DatabaseRecord());
+            DatabaseCall prepared = query.getCall();
+            assertPaginationTranslation(session, query, binding, 1, 1);
+
+            query.setFirstResult(0);
+            query.setMaxRows(2);
+            Assert.assertTrue(query.isPrepared());
+            Assert.assertSame(prepared, query.getCall());
+            assertPaginationTranslation(session, query, binding, 0, 2);
+
+            query.setFirstResult(2);
+            query.setMaxRows(5);
+            assertPaginationTranslation(session, query, binding, 2, 3);
+            query.setMaxRows(3);
+            assertPaginationTranslation(session, query, binding, 2, 1);
+            assertPaginationTranslation(session, query, binding, 2, 1);
+        }
+    }
+
+    @Test
+    public void testPreparedOffsetOnlyUsesCurrentExecutionValue() throws SQLException {
+        for (boolean binding : List.of(false, true)) {
+            DatabaseSessionImpl session = mappedSession(11, new SQLServerPlatform());
+            session.getPlatform().setShouldBindAllParameters(binding);
+            ReadAllQuery query = (ReadAllQuery) new HermesParser().buildQuery(
+                    "SELECT i FROM Item i ORDER BY i.id", session);
+            query.setFirstResult(2);
+            query.prepareCall(session, new DatabaseRecord());
+            DatabaseCall prepared = query.getCall();
+            assertPaginationTranslation(session, query, binding, 2, 0);
+            query.setFirstResult(0);
+            Assert.assertTrue(query.isPrepared());
+            Assert.assertSame(prepared, query.getCall());
+            assertPaginationTranslation(session, query, binding, 0, 0);
+            query.setMaxRows(2);
+            Assert.assertFalse(query.isPrepared());
+            query.prepareCall(session, new DatabaseRecord());
+            assertPaginationTranslation(session, query, binding, 0, 2);
+        }
+    }
+
+    private void assertPaginationTranslation(DatabaseSessionImpl session, ReadAllQuery query,
+                                             boolean binding, int offset, int limit) {
+        ReadAllQuery execution = (ReadAllQuery) query.clone();
+        execution.setSession(session);
+        execution.setTranslationRow(new DatabaseRecord());
+        execution.prepareForExecution();
+        DatabaseCall call = (DatabaseCall) query.getCall().clone();
+        call.translate(execution.getTranslationRow(), null, session);
+        if (binding) {
+            Assert.assertEquals(limit == 0 ? List.of(offset) : List.of(offset, limit), call.getParameters());
+        } else {
+            String pagination = " OFFSET " + offset + " ROWS";
+            if (limit > 0) {
+                pagination += " FETCH NEXT " + limit + " ROWS ONLY";
+            }
+            Assert.assertTrue(call.getSQLString(), call.getSQLString().endsWith(pagination));
         }
     }
 
