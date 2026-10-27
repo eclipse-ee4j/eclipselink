@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -144,6 +144,19 @@ public class UpdateAllQuery extends ModifyAllQuery {
             m_updateClauses = new HashMap();
         }
         m_updateClauses.put(fieldObject, valueObject);
+    }
+
+    /**
+     * INTERNAL:
+     * Clone the update assignments so later criteria changes cannot alter this query.
+     */
+    @Override
+    public Object clone() {
+        UpdateAllQuery cloneQuery = (UpdateAllQuery) super.clone();
+        if (m_updateClauses != null) {
+            cloneQuery.m_updateClauses = (HashMap) m_updateClauses.clone();
+        }
+        return cloneQuery;
     }
 
     /**

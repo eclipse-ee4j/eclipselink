@@ -23,6 +23,7 @@ import org.eclipse.persistence.descriptors.FetchGroupManager;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.OptimisticLockException;
 import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.internal.helper.EntityAgentProperties;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.CommitManager;
@@ -223,7 +224,7 @@ public class DeleteObjectQuery extends ObjectLevelModifyQuery {
             }
 
             if (rowCount < 1) {
-                if (getProperty("eclipselink.entity-agent.operation") != null) {
+                if (getProperty(EntityAgentProperties.OPERATION) != null) {
                     throw OptimisticLockException.objectChangedSinceLastReadWhenDeleting(object, this);
                 }
                 if (session.hasEventManager()) {

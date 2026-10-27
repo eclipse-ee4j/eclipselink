@@ -3158,7 +3158,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
         var source = AugmentedQueryReference.source(reference, session);
         CriteriaQuery<T> criteria = JPQLCriteriaHelper.select(this, (Class<T>) reference.getResultType(), source, false);
         java.util.Objects.requireNonNull(augmentation).accept(criteria);
-        return AugmentedQueryReference.register(reference, criteria.getResultType(),
+        return AugmentedQueryReference.create(reference, criteria.getResultType(),
                 ((CriteriaQueryImpl<T>) criteria).translate(), session);
     }
 
@@ -3168,7 +3168,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
         var source = AugmentedQueryReference.source(reference, session);
         CriteriaQuery<T> criteria = JPQLCriteriaHelper.select(this, java.util.Objects.requireNonNull(augmentedResultType), source, true);
         java.util.Objects.requireNonNull(augmentation).accept(criteria);
-        return AugmentedQueryReference.register(reference, augmentedResultType,
+        return AugmentedQueryReference.create(reference, augmentedResultType,
                 ((CriteriaQueryImpl<T>) criteria).translate(), session);
     }
 
@@ -3179,7 +3179,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
         CriteriaStatement<?> criteria = source.isUpdateAllQuery()
                 ? JPQLCriteriaHelper.update(this, null, source) : JPQLCriteriaHelper.delete(this, null, source);
         java.util.Objects.requireNonNull(augmentation).accept(criteria);
-        return AugmentedQueryReference.register(reference,
+        return AugmentedQueryReference.create(reference,
                 ((CommonAbstractCriteriaImpl<?>) criteria).translate(), session);
     }
 

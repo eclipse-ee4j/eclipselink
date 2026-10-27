@@ -459,18 +459,7 @@ public class QueryImpl {
                         throw new IllegalArgumentException(re);
                     }
                 }
-                if (this.databaseQuery.isObjectLevelReadQuery() && ((ObjectLevelReadQuery)this.databaseQuery).getLockModeType() != null){
-                    this.lockMode = LockModeType.valueOf(((ObjectLevelReadQuery)this.databaseQuery).getLockModeType());
-                }
-                if (this.databaseQuery.isReadQuery()){
-                    this.maxResults = ((ReadQuery)this.databaseQuery).getInternalMax();
-                    // Bug 501272
-                    // Do not reset a Query's uninitialized first result index, unless the parameter is greater than 0 (default for ReadQuery).
-                    int queryFirstResult = ((ReadQuery)this.databaseQuery).getFirstResult();
-                    if ((this.firstResultIndex != UNDEFINED) || (this.firstResultIndex == UNDEFINED && queryFirstResult > 0)) {
-                        this.firstResultIndex = queryFirstResult;
-                    }
-                }
+                initializeFromDatabaseQuery();
             } else {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("unable_to_find_named_query", new Object[] { this.queryName }));
             }
@@ -478,6 +467,26 @@ public class QueryImpl {
         }
 
         return this.databaseQuery;
+    }
+
+    /**
+     * Initialize inherited named-query settings before applying reference options
+     * or per-query overrides. Reference-local templates use the same initialization
+     * without entering the named-query registry.
+     */
+    void initializeFromDatabaseQuery() {
+        if (this.databaseQuery.isObjectLevelReadQuery() && ((ObjectLevelReadQuery)this.databaseQuery).getLockModeType() != null) {
+            this.lockMode = LockModeType.valueOf(((ObjectLevelReadQuery)this.databaseQuery).getLockModeType());
+        }
+        if (this.databaseQuery.isReadQuery()) {
+            this.maxResults = ((ReadQuery)this.databaseQuery).getInternalMax();
+            // Bug 501272
+            // Do not reset a Query's uninitialized first result index, unless the parameter is greater than 0 (default for ReadQuery).
+            int queryFirstResult = ((ReadQuery)this.databaseQuery).getFirstResult();
+            if ((this.firstResultIndex != UNDEFINED) || (this.firstResultIndex == UNDEFINED && queryFirstResult > 0)) {
+                this.firstResultIndex = queryFirstResult;
+            }
+        }
     }
 
     /**
@@ -1050,6 +1059,10 @@ public class QueryImpl {
                 throw new IllegalStateException(ExceptionLocalization.buildMessage("invalid_lock_query", null));
             }
 
+            if (lockMode == LockModeType.NONE) {
+                cloneSharedQuery();
+                ((ObjectLevelReadQuery) getDatabaseQueryInternal()).setLockModeType(lockMode.name(), executionContext.getSession());
+            }
             this.lockMode = lockMode;
             return this;
         } catch (RuntimeException e) {

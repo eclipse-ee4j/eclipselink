@@ -45,6 +45,7 @@ import org.eclipse.persistence.internal.expressions.ForUpdateOfClause;
 import org.eclipse.persistence.internal.expressions.ObjectExpression;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.EntityAgentProperties;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.helper.NonSynchronizedSubVector;
 import org.eclipse.persistence.internal.identitymaps.CacheId;
@@ -1942,7 +1943,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      */
     protected boolean shouldObjectModifyCascadeToParts(ObjectLevelModifyQuery query) {
         // Agent operations write owned relational data, never target entities.
-        if (query.getProperty("eclipselink.entity-agent.operation") != null
+        if (query.getProperty(EntityAgentProperties.OPERATION) != null
                 && !isAggregateCollectionMapping() && !isDirectCollectionMapping()) {
             return false;
         }
@@ -2389,15 +2390,15 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
                 }
             }
         }
-        if ((Boolean.TRUE.equals(sourceQuery.getProperty("eclipselink.entity-agent"))
-                || Boolean.TRUE.equals(executionSession.getProperty("eclipselink.entity-agent")))
+        if ((Boolean.TRUE.equals(sourceQuery.getProperty(EntityAgentProperties.ENTITY_AGENT))
+                || Boolean.TRUE.equals(executionSession.getProperty(EntityAgentProperties.ENTITY_AGENT)))
                 && !sourceQuery.shouldMaintainCache()) {
             // Selection queries belong to shared mapping metadata. Keep agent
             // cache/graph policy on a private clone, including eager relations.
             targetQuery = (ReadQuery) targetQuery.clone();
             targetQuery.setIsExecutionClone(true);
-            targetQuery.setProperty("eclipselink.entity-agent", Boolean.TRUE);
-            targetQuery.setProperty("eclipselink.entity-agent.read-context", sourceQuery.getProperty("eclipselink.entity-agent.read-context"));
+            targetQuery.setProperty(EntityAgentProperties.ENTITY_AGENT, Boolean.TRUE);
+            targetQuery.setProperty(EntityAgentProperties.READ_CONTEXT, sourceQuery.getProperty(EntityAgentProperties.READ_CONTEXT));
             targetQuery.dontMaintainCache();
             if (targetQuery instanceof ObjectLevelReadQuery read) {
                 read.dontCheckCache();

@@ -24,9 +24,11 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.LockModeType;
 import jakarta.persistence.NoResultException;
+import jakarta.persistence.OptimisticLockException;
 import jakarta.persistence.Parameter;
 import jakarta.persistence.NonUniqueResultException;
 import jakarta.persistence.QueryFlushMode;
+import jakarta.persistence.RollbackException;
 import jakarta.persistence.Statement;
 import jakarta.persistence.StatementReference;
 import jakarta.persistence.Timeout;
@@ -36,9 +38,12 @@ import jakarta.persistence.TypedQuery;
 import jakarta.persistence.TypedQueryReference;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.CriteriaDelete;
 import jakarta.persistence.criteria.CriteriaUpdate;
 import jakarta.persistence.criteria.Root;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -770,6 +775,222 @@ public class TestEntityAgentQueries {
     }
 
     @Test
+    public void augmentationDoesNotRegisterAnonymousQueriesOrStatements() {
+        try (EntityAgent agent = emf.createEntityAgent()) {
+            CriteriaBuilder builder = agent.getCriteriaBuilder();
+            var select = emf.getNamedQueries(AgentQueryRecord.class).get("EAQuery.byId");
+            var update = emf.getNamedStatements().get("EAQuery.rename");
+            var delete = emf.addNamedStatement("EAQuery.augment.registryDelete",
+                    agent.createStatement("delete from AgentQueryRecord r where r.id = :id"));
+            var session = emf.unwrap(org.eclipse.persistence.jpa.JpaEntityManagerFactory.class).getServerSession();
+            int queryCount = session.getQueries().values().stream().mapToInt(List::size).sum();
+            Set<String> queryNames = Set.copyOf(emf.getNamedQueries(Object.class).keySet());
+            Set<String> statementNames = Set.copyOf(emf.getNamedStatements().keySet());
+            for (int index = 0; index < 24; index++) {
+                assertNull(builder.augment(select, criteria -> {}).getName());
+                assertNull(builder.augment(update, criteria -> {}).getName());
+                assertNull(builder.augment(delete, criteria -> {}).getName());
+                assertThrows(IllegalArgumentException.class,
+                        () -> builder.augment(select, String.class, criteria -> {}));
+                assertThrows(IllegalStateException.class, () -> builder.augment(update, criteria -> {
+                    ((CriteriaUpdate<?>) criteria).set("title", "failed augmentation");
+                    throw new IllegalStateException("failed augmentation");
+                }));
+                assertThrows(IllegalStateException.class, () -> builder.augment(delete, criteria -> {
+                    throw new IllegalStateException("failed augmentation");
+                }));
+            }
+            assertEquals(queryCount, session.getQueries().values().stream().mapToInt(List::size).sum());
+            assertEquals(queryNames, emf.getNamedQueries(Object.class).keySet());
+            assertEquals(statementNames, emf.getNamedStatements().keySet());
+            assertEquals("Alpha", agent.createQuery(select).setParameter("id", 1).getSingleResult().title);
+            agent.getTransaction().begin();
+            assertEquals(1, agent.createStatement(update).setParameter("id", 1).setParameter("title", "Original").execute());
+            assertEquals("Original", agent.get(AgentQueryRecord.class, 1).title);
+            agent.getTransaction().rollback();
+        }
+    }
+
+    @Test
+    public void augmentedReferencesOutliveTheirCreatorAndKeepIndependentExecutionState() {
+        TypedQueryReference<AgentQueryRecord> reference;
+        TypedQueryReference<String> titles;
+        Map<String, Object> hints = new LinkedHashMap<>(Map.of("eclipselink.jdbc.fetch-size", 7));
+        List<Object> arguments = new ArrayList<>(List.of(1));
+        try (EntityManager creator = emf.createEntityManager()) {
+            var original = new AugmentationReference("EAQuery.byId", hints, arguments);
+            var builder = creator.getCriteriaBuilder();
+            reference = builder.augment(builder.augment(original, criteria -> {}), criteria -> {});
+            var scalarSource = new ArgumentReference("EAQuery.byId", AgentQueryRecord.class,
+                    List.of(Integer.class), List.of("id"), List.of(1));
+            titles = builder.augment(builder.augment(scalarSource, criteria -> {}), String.class,
+                    criteria -> criteria.select(criteria.getRoots().iterator().next().get("title")));
+        }
+        hints.put("eclipselink.jdbc.fetch-size", 99);
+        arguments.set(0, 3);
+        assertEquals(7, reference.getHints().get("eclipselink.jdbc.fetch-size"));
+        assertEquals(List.of(1), reference.getArguments());
+        assertEquals("EAQuery.group", reference.getEntityGraphName());
+        assertEquals(Set.of(QueryFlushMode.NO_FLUSH), reference.getOptions());
+        try (EntityAgent agent = emf.createEntityAgent(); EntityManager em = emf.createEntityManager()) {
+            var first = agent.createQuery(reference).setParameter("id", 2).setHint("eclipselink.jdbc.fetch-size", 3);
+            var second = agent.createQuery(reference);
+            assertEquals("Beta", first.getSingleResult().title);
+            AgentQueryRecord alpha = second.getSingleResult();
+            assertEquals("Alpha", alpha.title);
+            assertTrue(emf.getPersistenceUnitUtil().isLoaded(alpha, "group"));
+            assertEquals(7, second.getHints().get("eclipselink.jdbc.fetch-size"));
+            assertEquals(QueryFlushMode.NO_FLUSH, second.getQueryFlushMode());
+            var managedFirst = em.createQuery(reference).setParameter("id", 3);
+            var managedSecond = em.createQuery(reference);
+            assertEquals("Gamma", managedFirst.getSingleResult().title);
+            AgentQueryRecord managed = managedSecond.getSingleResult();
+            assertEquals("Alpha", managed.title);
+            assertTrue(em.contains(managed));
+            assertTrue(emf.getPersistenceUnitUtil().isLoaded(managed, "group"));
+            assertEquals(String.class, titles.getResultType());
+            assertEquals("Alpha", agent.createQuery(titles).getSingleResult());
+            assertEquals("Alpha", em.createQuery(titles).getSingleResult());
+        }
+        try (EntityAgent other = otherEmf.createEntityAgent(); EntityManager otherEm = otherEmf.createEntityManager()) {
+            assertThrows(IllegalArgumentException.class, () -> other.createQuery(reference));
+            assertThrows(IllegalArgumentException.class, () -> otherEm.createQuery(reference));
+            assertThrows(IllegalArgumentException.class,
+                    () -> other.getCriteriaBuilder().augment(reference, criteria -> {}));
+        }
+    }
+
+    @Test
+    public void augmentedUpdateAndDeleteReferencesOutliveTheirCreatorForBothHandlers() {
+        StatementReference update;
+        StatementReference delete;
+        List<Object> arguments = new ArrayList<>(List.of("Bound", 1));
+        try (EntityAgent creator = emf.createEntityAgent()) {
+            var builder = creator.getCriteriaBuilder();
+            var originalUpdate = new AugmentationStatementReference("EAQuery.rename", arguments);
+            update = builder.augment(builder.augment(originalUpdate, criteria -> {}), criteria -> {});
+            var originalDelete = emf.addNamedStatement("EAQuery.augment.retainedDelete",
+                    creator.createStatement("delete from AgentQueryRecord r where r.id = :id"));
+            delete = builder.augment(builder.augment(originalDelete, criteria -> {}), criteria -> {
+                var criteriaDelete = (CriteriaDelete<?>) criteria;
+                criteriaDelete.where(builder.and(criteriaDelete.getRestriction(),
+                        builder.equal(criteriaDelete.getRoot().get("group").get("id"), 1)));
+            });
+        }
+        arguments.set(0, "Changed source");
+        arguments.set(1, 3);
+        assertEquals(List.of("Bound", 1), update.getArguments());
+        assertEquals(Set.of(QueryFlushMode.NO_FLUSH), update.getOptions());
+        try (EntityAgent agent = emf.createEntityAgent()) {
+            agent.getTransaction().begin();
+            assertEquals(1, agent.createStatement(update).execute());
+            assertEquals("Bound", agent.get(AgentQueryRecord.class, 1).title);
+            var first = agent.createStatement(update).setParameter("id", 1).setParameter("title", "First");
+            var second = agent.createStatement(update).setParameter("id", 2).setParameter("title", "Second");
+            assertEquals(1, first.execute());
+            assertEquals(1, second.execute());
+            assertEquals("First", agent.get(AgentQueryRecord.class, 1).title);
+            assertEquals("Second", agent.get(AgentQueryRecord.class, 2).title);
+            assertEquals(0, agent.createStatement(delete).setParameter("id", 3).execute());
+            assertEquals(1, agent.createStatement(delete).setParameter("id", 2).execute());
+            agent.getTransaction().rollback();
+        }
+        try (EntityManager em = emf.createEntityManager()) {
+            em.getTransaction().begin();
+            try {
+                assertEquals(1, em.createStatement(update).execute());
+                assertEquals("Bound", em.createQuery("select r.title from AgentQueryRecord r where r.id = 1", String.class)
+                        .getSingleResult());
+                assertEquals(1, em.createStatement(update).setParameter("id", 1).setParameter("title", "Managed").execute());
+                assertEquals("Managed", em.createQuery("select r.title from AgentQueryRecord r where r.id = 1", String.class)
+                        .getSingleResult());
+                assertEquals(0, em.createStatement(delete).setParameter("id", 3).execute());
+                assertEquals(1, em.createStatement(delete).setParameter("id", 2).execute());
+            } finally {
+                if (em.getTransaction().isActive()) {
+                    em.getTransaction().rollback();
+                }
+            }
+        }
+        try (EntityAgent other = otherEmf.createEntityAgent(); EntityManager otherEm = otherEmf.createEntityManager()) {
+            assertThrows(IllegalArgumentException.class, () -> other.createStatement(update));
+            assertThrows(IllegalArgumentException.class, () -> otherEm.createStatement(delete));
+            assertThrows(IllegalArgumentException.class,
+                    () -> other.getCriteriaBuilder().augment(delete, criteria -> {}));
+        }
+    }
+
+    @Test
+    public void retainedAugmentationCriteriaCannotChangeStatementTemplate() {
+        List<CriteriaUpdate<?>> retained = new ArrayList<>();
+        StatementReference reference;
+        try (EntityAgent creator = emf.createEntityAgent()) {
+            var original = emf.getNamedStatements().get("EAQuery.rename");
+            reference = creator.getCriteriaBuilder().augment(original, criteria -> {
+                var update = (CriteriaUpdate<?>) criteria;
+                update.set("version", 41);
+                retained.add(update);
+            });
+        }
+        retained.get(0).set("version", 42);
+        try (EntityAgent agent = emf.createEntityAgent()) {
+            agent.getTransaction().begin();
+            assertEquals(1, agent.createStatement(reference).setParameter("title", "Snapshot")
+                    .setParameter("id", 1).execute());
+            assertEquals(Integer.valueOf(41), agent.get(AgentQueryRecord.class, 1).version);
+            agent.getTransaction().rollback();
+        }
+        try (EntityManager em = emf.createEntityManager()) {
+            em.getTransaction().begin();
+            try {
+                assertEquals(1, em.createStatement(reference).setParameter("title", "Snapshot")
+                        .setParameter("id", 2).execute());
+                assertEquals(Integer.valueOf(41), em.createQuery(
+                        "select r.version from AgentQueryRecord r where r.id = 2", Integer.class).getSingleResult());
+            } finally {
+                if (em.getTransaction().isActive()) {
+                    em.getTransaction().rollback();
+                }
+            }
+        }
+    }
+
+    private record AugmentationReference(String name, Map<String, Object> hints,
+                                         List<Object> arguments) implements TypedQueryReference<AgentQueryRecord> {
+        @Override
+        public String getName() { return name; }
+        @Override
+        public Class<AgentQueryRecord> getResultType() { return AgentQueryRecord.class; }
+        @Override
+        public Map<String, Object> getHints() { return hints; }
+        @Override
+        public Set<TypedQuery.Option> getOptions() { return Set.of(QueryFlushMode.NO_FLUSH); }
+        @Override
+        public String getEntityGraphName() { return "EAQuery.group"; }
+        @Override
+        public List<Class<?>> getParameterTypes() { return List.of(Integer.class); }
+        @Override
+        public List<String> getParameterNames() { return List.of("id"); }
+        @Override
+        public List<Object> getArguments() { return arguments; }
+    }
+
+    private record AugmentationStatementReference(String name, List<Object> arguments) implements StatementReference {
+        @Override
+        public String getName() { return name; }
+        @Override
+        public Map<String, Object> getHints() { return Map.of(); }
+        @Override
+        public Set<Statement.Option> getOptions() { return Set.of(QueryFlushMode.NO_FLUSH); }
+        @Override
+        public List<Class<?>> getParameterTypes() { return List.of(String.class, Integer.class); }
+        @Override
+        public List<String> getParameterNames() { return List.of("title", "id"); }
+        @Override
+        public List<Object> getArguments() { return arguments; }
+    }
+
+    @Test
     public void augmentedNamedQueriesPreserveOriginalOrderingParametersAndOptions() {
         try (EntityAgent agent = emf.createEntityAgent()) {
             var original = emf.addNamedQuery("EAQuery.augment.read", agent.createQuery(
@@ -793,6 +1014,150 @@ public class TestEntityAgentQueries {
                     builder.and(criteria.getRestriction(), builder.equal(criteria.getRoots().iterator().next().get("id"), 1))));
             assertEquals(1, agent.createQuery(second).setParameter("minimum", 1).getSingleResult().id.intValue());
         }
+    }
+
+    @Test
+    public void augmentedReferencesInheritUnexecutedNamedPagination() {
+        String name = "EAQuery.augment.pagination";
+        try (EntityManager creator = emf.createEntityManager()) {
+            emf.addNamedQuery(name, creator.createQuery(
+                    "select r from AgentQueryRecord r order by r.id", AgentQueryRecord.class)
+                    .setFirstResult(1).setMaxResults(1));
+        }
+        var original = emf.getNamedQueries(AgentQueryRecord.class).get(name);
+        var builder = emf.getCriteriaBuilder();
+        var augmented = builder.augment(builder.augment(original, criteria -> {}), criteria -> {});
+        try (EntityAgent agent = emf.createEntityAgent(); EntityManager em = emf.createEntityManager()) {
+            for (TypedQuery<AgentQueryRecord> query : List.of(agent.createQuery(original), em.createQuery(original),
+                    agent.createQuery(augmented), em.createQuery(augmented))) {
+                assertEquals(1, query.getFirstResult());
+                assertEquals(1, query.getMaxResults());
+                assertEquals(List.of(2), query.getResultList().stream().map(record -> record.id).toList());
+            }
+            for (TypedQuery<AgentQueryRecord> query : List.of(agent.createQuery(original), em.createQuery(original),
+                    agent.createQuery(augmented), em.createQuery(augmented))) {
+                query.setFirstResult(0).setMaxResults(2);
+                assertEquals(0, query.getFirstResult());
+                assertEquals(2, query.getMaxResults());
+                assertEquals(List.of(1, 2), query.getResultList().stream().map(record -> record.id).toList());
+            }
+            for (TypedQuery<AgentQueryRecord> query : List.of(agent.createQuery(augmented), em.createQuery(augmented))) {
+                assertEquals(1, query.getFirstResult());
+                assertEquals(1, query.getMaxResults());
+                assertEquals(List.of(2), query.getResultList().stream().map(record -> record.id).toList());
+            }
+            for (TypedQuery<AgentQueryRecord> query : List.of(
+                    agent.createQuery("select r from AgentQueryRecord r order by r.id", AgentQueryRecord.class),
+                    em.createQuery("select r from AgentQueryRecord r order by r.id", AgentQueryRecord.class))) {
+                assertEquals(0, query.getFirstResult());
+                assertEquals(Integer.MAX_VALUE, query.getMaxResults());
+                assertEquals(3, query.getResultList().size());
+            }
+        }
+    }
+
+    @Test
+    public void augmentedReferencesInheritNamedLocksBeforeExplicitOverrides() {
+        for (LockModeType lock : List.of(LockModeType.OPTIMISTIC, LockModeType.PESSIMISTIC_WRITE)) {
+            String name = "EAQuery.augment.lock." + lock.name();
+            try (EntityManager creator = emf.createEntityManager()) {
+                emf.addNamedQuery(name, creator.createQuery(
+                        "select r from AgentQueryRecord r where r.id = 1", AgentQueryRecord.class).setLockMode(lock));
+            }
+            var original = emf.getNamedQueries(AgentQueryRecord.class).get(name);
+            assertTrue("Discovered metadata must supply the inherited lock", original.getOptions().isEmpty());
+            var augmented = emf.getCriteriaBuilder().augment(original, criteria -> {});
+            var overridden = emf.getCriteriaBuilder().augment(new LockOptionReference(name, LockModeType.NONE), criteria -> {});
+            try (EntityAgent agent = emf.createEntityAgent(); EntityManager em = emf.createEntityManager()) {
+                for (TypedQuery<AgentQueryRecord> query : List.of(agent.createQuery(original), em.createQuery(original),
+                        agent.createQuery(augmented), em.createQuery(augmented))) {
+                    assertEquals(lock, query.getLockMode());
+                    assertThrows(TransactionRequiredException.class, query::getResultList);
+                    query.setLockMode(LockModeType.NONE);
+                    assertEquals(LockModeType.NONE, query.getLockMode());
+                    assertEquals(Integer.valueOf(1), query.getSingleResult().id);
+                }
+                for (TypedQuery<AgentQueryRecord> query : List.of(agent.createQuery(overridden), em.createQuery(overridden))) {
+                    assertEquals(LockModeType.NONE, query.getLockMode());
+                    assertEquals(Integer.valueOf(1), query.getSingleResult().id);
+                }
+                assertEquals(lock, agent.createQuery(augmented).getLockMode());
+                assertEquals(lock, em.createQuery(augmented).getLockMode());
+            }
+        }
+    }
+
+    @Test
+    public void augmentedNamedForceIncrementRetainsCommitObligation() {
+        String name = "EAQuery.augment.forceIncrement";
+        try (EntityManager creator = emf.createEntityManager()) {
+            emf.addNamedQuery(name, creator.createQuery(
+                    "select r from AgentQueryRecord r where r.id = 1", AgentQueryRecord.class)
+                    .setLockMode(LockModeType.OPTIMISTIC_FORCE_INCREMENT));
+        }
+        var augmented = emf.getCriteriaBuilder().augment(emf.getNamedQueries(AgentQueryRecord.class).get(name), criteria -> {});
+        try (EntityAgent agent = emf.createEntityAgent()) {
+            int version = agent.get(AgentQueryRecord.class, 1).version;
+            agent.getTransaction().begin();
+            assertTrue(agent.createQuery(augmented).getSingleResult().version >= version);
+            agent.getTransaction().commit();
+            assertTrue(agent.get(AgentQueryRecord.class, 1).version > version);
+        }
+        try (EntityManager em = emf.createEntityManager(); EntityAgent observer = emf.createEntityAgent()) {
+            int version = observer.get(AgentQueryRecord.class, 1).version;
+            em.getTransaction().begin();
+            try {
+                assertTrue(em.createQuery(augmented).getSingleResult().version >= version);
+                em.getTransaction().commit();
+            } finally {
+                if (em.getTransaction().isActive()) {
+                    em.getTransaction().rollback();
+                }
+            }
+            assertTrue(observer.get(AgentQueryRecord.class, 1).version > version);
+        }
+    }
+
+    @Test
+    public void augmentedNamedOptimisticReadRejectsCompetingVersionAtCommit() {
+        String name = "EAQuery.augment.optimistic";
+        try (EntityManager creator = emf.createEntityManager()) {
+            emf.addNamedQuery(name, creator.createQuery(
+                    "select r from AgentQueryRecord r where r.id = 1", AgentQueryRecord.class)
+                    .setLockMode(LockModeType.OPTIMISTIC));
+        }
+        var augmented = emf.getCriteriaBuilder().augment(emf.getNamedQueries(AgentQueryRecord.class).get(name), criteria -> {});
+        try (EntityAgent agent = emf.createEntityAgent(); EntityAgent peer = emf.createEntityAgent()) {
+            agent.getTransaction().begin();
+            AgentQueryRecord read = agent.createQuery(augmented).getSingleResult();
+            AgentQueryRecord changed = peer.get(AgentQueryRecord.class, 1);
+            changed.setTitle("Competing update");
+            peer.update(changed);
+            assertTrue(changed.version > read.version);
+            RollbackException failure = assertThrows(RollbackException.class, agent.getTransaction()::commit);
+            assertTrue(failure.getCause() instanceof OptimisticLockException);
+            assertFalse(agent.getTransaction().isActive());
+            assertEquals("Competing update", peer.get(AgentQueryRecord.class, 1).title);
+        }
+    }
+
+    private record LockOptionReference(String name, LockModeType lock) implements TypedQueryReference<AgentQueryRecord> {
+        @Override
+        public String getName() { return name; }
+        @Override
+        public Class<AgentQueryRecord> getResultType() { return AgentQueryRecord.class; }
+        @Override
+        public Map<String, Object> getHints() { return Map.of(); }
+        @Override
+        public Set<TypedQuery.Option> getOptions() { return Set.of(lock); }
+        @Override
+        public String getEntityGraphName() { return null; }
+        @Override
+        public List<Class<?>> getParameterTypes() { return List.of(); }
+        @Override
+        public List<String> getParameterNames() { return List.of(); }
+        @Override
+        public List<Object> getArguments() { return List.of(); }
     }
 
     @Test

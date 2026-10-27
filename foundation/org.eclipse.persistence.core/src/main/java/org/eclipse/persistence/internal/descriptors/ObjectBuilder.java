@@ -59,6 +59,7 @@ import org.eclipse.persistence.internal.helper.ConcurrencySemaphore;
 import org.eclipse.persistence.internal.helper.ConcurrencyUtil;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.internal.helper.EntityAgentProperties;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.helper.IdentityHashSet;
 import org.eclipse.persistence.internal.helper.InvalidObject;
@@ -1118,7 +1119,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
      */
     protected Object buildObject(boolean returnCacheKey, ObjectBuildingQuery query, AbstractRecord databaseRow, AbstractSession session, Object primaryKey, CacheKey preFetchedCacheKey, ClassDescriptor concreteDescriptor, JoinedAttributeManager joinManager) throws DatabaseException, QueryException {
         Map<Object, CacheKey> materializedObjects = null;
-        Object context = query.getProperty("eclipselink.entity-agent.read-context");
+        Object context = query.getProperty(EntityAgentProperties.READ_CONTEXT);
         if (!query.shouldMaintainCache() && primaryKey != null
                 && !concreteDescriptor.isAggregateDescriptor() && !concreteDescriptor.isAggregateCollectionDescriptor()
                 && context instanceof Map<?, ?>) {
@@ -2085,7 +2086,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
     public void trimFieldsForInsert(AbstractSession session, AbstractRecord databaseRow) {
         ClassDescriptor descriptor = this.descriptor;
         if (descriptor.usesSequenceNumbers() && descriptor.getSequence().shouldAcquireValueAfterInsert()
-                && !"UPSERT".equals(session.getProperty("eclipselink.entity-agent.operation"))) {
+                && !"UPSERT".equals(session.getProperty(EntityAgentProperties.OPERATION))) {
             databaseRow.remove(descriptor.getSequenceNumberField());
         }
         if (descriptor.hasReturningPolicy()) {

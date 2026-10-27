@@ -73,6 +73,7 @@ import org.eclipse.persistence.descriptors.VersionLockingPolicy;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.jpa.querydef.CommonAbstractCriteriaImpl;
+import org.eclipse.persistence.internal.helper.EntityAgentProperties;
 import org.eclipse.persistence.internal.helper.BasicTypeHelperImpl;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.CommitManager;
@@ -97,7 +98,7 @@ import org.eclipse.persistence.transaction.AbstractTransactionController;
  * persistence context is created, and returned objects are detached copies.
  */
 public class EntityAgentImpl implements EntityAgent, QueryExecutionContext {
-    static final String OPERATION = "eclipselink.entity-agent.operation";
+    static final String OPERATION = EntityAgentProperties.OPERATION;
     private final EntityManagerFactoryDelegate factory;
     private final ClientSession session;
     private final Map<String, Object> properties = new HashMap<>();
@@ -130,7 +131,7 @@ public class EntityAgentImpl implements EntityAgent, QueryExecutionContext {
         this.session = factory.getServerSession().acquireClientSession(properties);
         try {
             session.setCommitManager(new AgentCommitManager(session));
-            session.setProperty("eclipselink.entity-agent", Boolean.TRUE);
+            session.setProperty(EntityAgentProperties.ENTITY_AGENT, Boolean.TRUE);
             setCacheRetrieveMode(mode(properties.get(QueryHints.CACHE_RETRIEVE_MODE), CacheRetrieveMode.class, CacheRetrieveMode.USE));
             setCacheStoreMode(mode(properties.get(QueryHints.CACHE_STORE_MODE), CacheStoreMode.class, CacheStoreMode.USE));
         } catch (RuntimeException | Error failure) {
@@ -445,10 +446,7 @@ public class EntityAgentImpl implements EntityAgent, QueryExecutionContext {
             return new OptimisticLockException(optimistic.getMessage(), optimistic, entity == null ? optimistic.getObject() : entity);
         }
         if (failure instanceof DatabaseException database) {
-            Throwable cause = database.getInternalException();
-            if (insert && cause instanceof SQLException sql && ("23505".equals(sql.getSQLState())
-                    || sql.getErrorCode() == 1 || sql.getErrorCode() == 1062
-                    || sql.getErrorCode() == 2601 || sql.getErrorCode() == 2627 || sql.getErrorCode() == -803)) {
+            if (insert && session.getPlatform().isUniqueConstraintViolation(database)) {
                 return new EntityExistsException("Entity insert violated a uniqueness constraint", database);
             }
             return new PersistenceException(database);
@@ -618,9 +616,9 @@ public class EntityAgentImpl implements EntityAgent, QueryExecutionContext {
 
     private <T> T materialize(DatabaseQuery query, Supplier<T> read) {
         Map<ClassDescriptor, Map<Object, org.eclipse.persistence.internal.identitymaps.CacheKey>> context = new HashMap<>();
-        Object previous = query.getProperty("eclipselink.entity-agent.read-context");
-        query.setProperty("eclipselink.entity-agent", Boolean.TRUE);
-        query.setProperty("eclipselink.entity-agent.read-context", context);
+        Object previous = query.getProperty(EntityAgentProperties.READ_CONTEXT);
+        query.setProperty(EntityAgentProperties.ENTITY_AGENT, Boolean.TRUE);
+        query.setProperty(EntityAgentProperties.READ_CONTEXT, context);
         try (var scope = org.eclipse.persistence.internal.queries.FetchedLockContext.open(query)) {
             if (scope.context() != null) {
                 scope.context().attach(query);
@@ -629,9 +627,9 @@ public class EntityAgentImpl implements EntityAgent, QueryExecutionContext {
         } finally {
             context.clear();
             if (previous == null) {
-                query.removeProperty("eclipselink.entity-agent.read-context");
+                query.removeProperty(EntityAgentProperties.READ_CONTEXT);
             } else {
-                query.setProperty("eclipselink.entity-agent.read-context", previous);
+                query.setProperty(EntityAgentProperties.READ_CONTEXT, previous);
             }
         }
     }
@@ -646,11 +644,11 @@ public class EntityAgentImpl implements EntityAgent, QueryExecutionContext {
         verifyOpen();
         LockModeType lock = lockMode == null ? LockModeType.NONE : lockMode;
         if (lock != LockModeType.NONE || original.isModifyQuery()
-                || Boolean.TRUE.equals(original.getProperty("eclipselink.entity-agent.mapping-lock"))) {
+                || Boolean.TRUE.equals(original.getProperty(EntityAgentProperties.MAPPING_LOCK))) {
             requireTransaction();
         }
         DatabaseQuery query = (DatabaseQuery) original.clone();
-        query.setProperty("eclipselink.entity-agent", Boolean.TRUE);
+        query.setProperty(EntityAgentProperties.ENTITY_AGENT, Boolean.TRUE);
         query.dontMaintainCache();
         if (query instanceof org.eclipse.persistence.queries.ReadQuery readQuery) {
             readQuery.setQueryResultsCachePolicy(null);
@@ -692,7 +690,7 @@ public class EntityAgentImpl implements EntityAgent, QueryExecutionContext {
         if (query instanceof org.eclipse.persistence.queries.ModifyAllQuery modification) {
             modification.setCacheUsage(org.eclipse.persistence.queries.ModifyAllQuery.NO_CACHE);
         }
-        query.setProperty("eclipselink.entity-agent.refresh-results", refresh);
+        query.setProperty(EntityAgentProperties.REFRESH_RESULTS, refresh);
         boolean previousRefresh = refreshingResults;
         refreshingResults = refresh;
         try {
@@ -719,20 +717,20 @@ public class EntityAgentImpl implements EntityAgent, QueryExecutionContext {
                 AgentCopyGroup group = new AgentCopyGroup();
                 group.setCopies(new AgentCopies());
                 try {
-                    Object previous = session.getProperty("eclipselink.entity-agent.suppressed-copy-source");
-                    boolean internal = Boolean.TRUE.equals(query.getProperty("eclipselink.entity-agent.internal-read"));
+                    Object previous = session.getProperty(EntityAgentProperties.SUPPRESSED_COPY_SOURCE);
+                    boolean internal = Boolean.TRUE.equals(query.getProperty(EntityAgentProperties.INTERNAL_READ));
                     Object detached;
                     try {
                         if (internal) {
-                            session.setProperty("eclipselink.entity-agent.suppressed-copy-source", result);
+                            session.setProperty(EntityAgentProperties.SUPPRESSED_COPY_SOURCE, result);
                         }
                         detached = detach(result, group);
                     } finally {
                         if (internal) {
                             if (previous == null) {
-                                session.removeProperty("eclipselink.entity-agent.suppressed-copy-source");
+                                session.removeProperty(EntityAgentProperties.SUPPRESSED_COPY_SOURCE);
                             } else {
-                                session.setProperty("eclipselink.entity-agent.suppressed-copy-source", previous);
+                                session.setProperty(EntityAgentProperties.SUPPRESSED_COPY_SOURCE, previous);
                             }
                         }
                     }
@@ -789,10 +787,10 @@ public class EntityAgentImpl implements EntityAgent, QueryExecutionContext {
                 || mode == LockModeType.PESSIMISTIC_FORCE_INCREMENT) {
             ReadObjectQuery read = new ReadObjectQuery(descriptor.getJavaClass());
             read.setSelectionId(entityKey(descriptor, entity));
-            read.setProperty("eclipselink.entity-agent", Boolean.TRUE);
+            read.setProperty(EntityAgentProperties.ENTITY_AGENT, Boolean.TRUE);
             read.dontMaintainCache();
             read.dontCheckCache();
-            read.setProperty("eclipselink.entity-agent.internal-read", Boolean.TRUE);
+            read.setProperty(EntityAgentProperties.INTERNAL_READ, Boolean.TRUE);
             read.setLockModeType(LockModeType.PESSIMISTIC_WRITE.name(), session);
             try {
                 operation(false, () -> present(materialize(read, () -> session.executeQuery(read))));
@@ -811,7 +809,7 @@ public class EntityAgentImpl implements EntityAgent, QueryExecutionContext {
             requireTransaction();
         }
         boolean previousRefresh = refreshingResults;
-        refreshingResults = Boolean.TRUE.equals(query.getProperty("eclipselink.entity-agent.refresh-results"));
+        refreshingResults = Boolean.TRUE.equals(query.getProperty(EntityAgentProperties.REFRESH_RESULTS));
         try {
             return operation(false, () -> materialize(query, () -> {
                 Object detached = detachResult(build.get());
@@ -967,7 +965,7 @@ public class EntityAgentImpl implements EntityAgent, QueryExecutionContext {
 
     private Object loadForCopy(org.eclipse.persistence.queries.ReadQuery query,
             org.eclipse.persistence.internal.sessions.AbstractRecord row, AgentCopyGroup copies) {
-        query.setProperty("eclipselink.entity-agent", Boolean.TRUE);
+        query.setProperty(EntityAgentProperties.ENTITY_AGENT, Boolean.TRUE);
         query.dontMaintainCache();
         query.setQueryResultsCachePolicy(null);
         if (query instanceof ObjectLevelReadQuery read) {
@@ -1021,8 +1019,8 @@ public class EntityAgentImpl implements EntityAgent, QueryExecutionContext {
             read.setFetchGroup(identity);
             read.dontMaintainCache();
             read.dontCheckCache();
-            read.setProperty("eclipselink.entity-agent", Boolean.TRUE);
-            read.setProperty("eclipselink.entity-agent.internal-read", Boolean.TRUE);
+            read.setProperty(EntityAgentProperties.ENTITY_AGENT, Boolean.TRUE);
+            read.setProperty(EntityAgentProperties.INTERNAL_READ, Boolean.TRUE);
             reference = materialize(read, () -> session.executeQuery(read, row));
             if (reference == null) {
                 return null;
@@ -1162,11 +1160,11 @@ public class EntityAgentImpl implements EntityAgent, QueryExecutionContext {
     private Object readLockedRow(ReadLock lock) {
         ReadObjectQuery query = new ReadObjectQuery(lock.descriptor().getJavaClass());
         query.setSelectionId(lock.key());
-        query.setProperty("eclipselink.entity-agent", Boolean.TRUE);
+        query.setProperty(EntityAgentProperties.ENTITY_AGENT, Boolean.TRUE);
         query.dontMaintainCache();
         query.dontCheckCache();
         query.setLockModeType(LockModeType.PESSIMISTIC_WRITE.name(), session);
-        query.setProperty("eclipselink.entity-agent.internal-read", Boolean.TRUE);
+        query.setProperty(EntityAgentProperties.INTERNAL_READ, Boolean.TRUE);
         return materialize(query, () -> session.executeQuery(query));
     }
 
@@ -1239,6 +1237,8 @@ public class EntityAgentImpl implements EntityAgent, QueryExecutionContext {
         VersionLockingPolicy version = descriptor.getOptimisticLockingPolicy() instanceof VersionLockingPolicy policy ? policy : null;
         Object before = version == null ? null : version.getVersionMapping().getAttributeValueFromObject(entity);
         boolean[] written = {false};
+        Object previousOperation = session.getProperty(OPERATION);
+        Object previousWriteSucceeded = session.getProperty(EntityAgentProperties.WRITE_SUCCEEDED);
         try {
             operation(true, () -> {
                 ObjectLevelModifyQuery query;
@@ -1247,7 +1247,7 @@ public class EntityAgentImpl implements EntityAgent, QueryExecutionContext {
                     read.setSelectionId(entityKey(descriptor, entity));
                     read.dontMaintainCache();
                     read.dontCheckCache();
-                    read.setProperty("eclipselink.entity-agent.internal-read", Boolean.TRUE);
+                    read.setProperty(EntityAgentProperties.INTERNAL_READ, Boolean.TRUE);
                     Object existing = materialize(read, () -> session.executeQuery(read));
                     query = existing == null ? new InsertObjectQuery(entity) : new UpdateObjectQuery(entity);
                 } else {
@@ -1265,11 +1265,11 @@ public class EntityAgentImpl implements EntityAgent, QueryExecutionContext {
                     read.setShouldUseDefaultFetchGroup(false);
                     read.dontMaintainCache();
                     read.dontCheckCache();
-                    read.setProperty("eclipselink.entity-agent.internal-read", Boolean.TRUE);
-                    query.setProperty("eclipselink.entity-agent.original", materialize(read, () -> session.executeQuery(read)));
+                    read.setProperty(EntityAgentProperties.INTERNAL_READ, Boolean.TRUE);
+                    query.setProperty(EntityAgentProperties.ORIGINAL, materialize(read, () -> session.executeQuery(read)));
                 }
                 session.setProperty(OPERATION, operation);
-                session.setProperty("eclipselink.entity-agent.write-succeeded", Boolean.FALSE);
+                session.setProperty(EntityAgentProperties.WRITE_SUCCEEDED, Boolean.FALSE);
                 query.dontMaintainCache();
                 query.cascadeOnlyDependentParts();
                 ((AgentCommitManager) session.getCommitManager()).beginOperation();
@@ -1288,12 +1288,21 @@ public class EntityAgentImpl implements EntityAgent, QueryExecutionContext {
                 return null;
             });
         } catch (RuntimeException failure) {
-            if (!written[0] && !Boolean.TRUE.equals(session.getProperty("eclipselink.entity-agent.write-succeeded")) && version != null) {
+            if (!written[0] && !Boolean.TRUE.equals(session.getProperty(EntityAgentProperties.WRITE_SUCCEEDED)) && version != null) {
                 version.getVersionMapping().setAttributeValueInObject(entity, before);
             }
             throw translate(failure, entity, operation.equals("INSERT"));
         } finally {
-            session.removeProperty(OPERATION);
+            if (previousOperation == null) {
+                session.removeProperty(OPERATION);
+            } else {
+                session.setProperty(OPERATION, previousOperation);
+            }
+            if (previousWriteSucceeded == null) {
+                session.removeProperty(EntityAgentProperties.WRITE_SUCCEEDED);
+            } else {
+                session.setProperty(EntityAgentProperties.WRITE_SUCCEEDED, previousWriteSucceeded);
+            }
         }
     }
 
@@ -1332,7 +1341,7 @@ public class EntityAgentImpl implements EntityAgent, QueryExecutionContext {
         ReadObjectQuery query = new ReadObjectQuery(descriptor.getJavaClass());
         query.setSelectionId(entityKey(descriptor, entity));
         QueryHintsHandler.apply(findOptions(Objects.requireNonNull(lock)).properties(), query, session.getLoader(), session);
-        query.setProperty("eclipselink.entity-agent.internal-read", Boolean.TRUE);
+        query.setProperty(EntityAgentProperties.INTERNAL_READ, Boolean.TRUE);
         executeQuery(query, List.of(), lock, null, value -> {
             Object current = present(value);
             if (descriptor.hasFetchGroupManager()) {
@@ -1591,7 +1600,7 @@ public class EntityAgentImpl implements EntityAgent, QueryExecutionContext {
             refresh.setSelectionId(key.key());
             refresh.retrieveBypassCache();
             refresh.refreshIdentityMapResult();
-            refresh.setProperty("eclipselink.entity-agent.internal-read", Boolean.TRUE);
+            refresh.setProperty(EntityAgentProperties.INTERNAL_READ, Boolean.TRUE);
             shared.executeQuery(refresh);
         }
     }
@@ -1818,7 +1827,15 @@ public class EntityAgentImpl implements EntityAgent, QueryExecutionContext {
     public Statement createStatement(StatementReference reference) {
         verifyOpen();
         Objects.requireNonNull(reference);
-        Statement statement = createNamedStatement(reference.getName());
+        DatabaseQuery template = AugmentedQueryReference.executable(reference, factory.getServerSession());
+        Statement statement;
+        if (template == null) {
+            statement = createNamedStatement(reference.getName());
+        } else {
+            EJBQueryImpl<?> executable = new EJBQueryImpl<>(template, this);
+            executable.initializeFromDatabaseQuery();
+            statement = executable.asStatement();
+        }
         ReferenceBinder.bind(statement, reference);
         if (reference.getOptions() != null) {
             reference.getOptions().forEach(statement::addOption);
@@ -1831,9 +1848,18 @@ public class EntityAgentImpl implements EntityAgent, QueryExecutionContext {
         verifyOpen();
         Objects.requireNonNull(reference);
         @SuppressWarnings("unchecked") Class<T> type = (Class<T>) reference.getResultType();
-        @SuppressWarnings("unchecked")
-        TypedQuery<T> query = type == null ? (TypedQuery<T>) createNamedQuery(reference.getName())
-                : createNamedQuery(reference.getName(), type);
+        DatabaseQuery template = AugmentedQueryReference.executable(reference, factory.getServerSession());
+        TypedQuery<T> query;
+        if (template == null) {
+            @SuppressWarnings("unchecked")
+            TypedQuery<T> named = type == null ? (TypedQuery<T>) createNamedQuery(reference.getName())
+                    : createNamedQuery(reference.getName(), type);
+            query = named;
+        } else {
+            EJBQueryImpl<T> executable = new EJBQueryImpl<>(template, this);
+            executable.initializeFromDatabaseQuery();
+            query = type == null ? executable : executable.ofType(type);
+        }
         if (reference.getEntityGraphName() != null) {
             @SuppressWarnings("unchecked")
             EntityGraph<T> graph = type == null ? (EntityGraph<T>) getEntityGraph(reference.getEntityGraphName())

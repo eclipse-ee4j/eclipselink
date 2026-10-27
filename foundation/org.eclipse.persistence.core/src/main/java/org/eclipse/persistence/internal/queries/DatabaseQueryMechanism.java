@@ -36,6 +36,7 @@ import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.databaseaccess.DatasourceCall;
 import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.EntityAgentProperties;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.CommitManager;
@@ -518,8 +519,8 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
             registerObjectInIdentityMap(object, descriptor, session);
         }
 
-        if (writeQuery.getProperty("eclipselink.entity-agent.operation") != null) {
-            session.setProperty("eclipselink.entity-agent.write-succeeded", Boolean.TRUE);
+        if (writeQuery.getProperty(EntityAgentProperties.OPERATION) != null) {
+            session.setProperty(EntityAgentProperties.WRITE_SUCCEEDED, Boolean.TRUE);
         }
         commitManager.markPostModifyCommitInProgress(object);
         // Verify if deep shallow modify is turned on.
@@ -980,7 +981,7 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
                 // only throw the events if there is no changeset otherwise the event will be thrown twice
                 // once by the calculate changes code and here
                 eventManager.executeEvent(new DescriptorEvent(DescriptorEventManager.PreUpdateEvent, writeQuery));
-                if (writeQuery.getProperty("eclipselink.entity-agent.operation") != null) {
+                if (writeQuery.getProperty(EntityAgentProperties.OPERATION) != null) {
                     eventManager.executeEvent(new DescriptorEvent(DescriptorEventManager.PreUpdateWithChangesEvent, writeQuery));
                 }
             }
@@ -991,9 +992,9 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
             queryManager.preUpdate(writeQuery);
         }
 
-        boolean agentWrite = writeQuery.getProperty("eclipselink.entity-agent.operation") != null;
-        boolean lockOnly = "LOCK".equals(writeQuery.getProperty("eclipselink.entity-agent.operation"));
-        Object original = writeQuery.getProperty("eclipselink.entity-agent.original");
+        boolean agentWrite = writeQuery.getProperty(EntityAgentProperties.OPERATION) != null;
+        boolean lockOnly = "LOCK".equals(writeQuery.getProperty(EntityAgentProperties.OPERATION));
+        Object original = writeQuery.getProperty(EntityAgentProperties.ORIGINAL);
         boolean incrementVersion = true;
         if (agentWrite && !lockOnly) {
             if (original == null) {
@@ -1082,7 +1083,7 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
         }
 
         if (agentWrite) {
-            session.setProperty("eclipselink.entity-agent.write-succeeded", Boolean.TRUE);
+            session.setProperty(EntityAgentProperties.WRITE_SUCCEEDED, Boolean.TRUE);
         }
         commitManager.markPostModifyCommitInProgress(object);
 

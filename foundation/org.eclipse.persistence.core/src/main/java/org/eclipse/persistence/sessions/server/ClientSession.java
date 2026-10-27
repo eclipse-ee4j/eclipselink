@@ -29,6 +29,7 @@ import org.eclipse.persistence.descriptors.SchemaPerMultitenantPolicy;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
+import org.eclipse.persistence.internal.helper.EntityAgentProperties;
 import org.eclipse.persistence.internal.sequencing.Sequencing;
 import org.eclipse.persistence.internal.sequencing.SequencingFactory;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
@@ -214,7 +215,7 @@ public class ClientSession extends AbstractSession {
      */
     @Override
     public void basicRollbackTransaction() {
-        boolean agent = Boolean.TRUE.equals(getProperty("eclipselink.entity-agent"));
+        boolean agent = Boolean.TRUE.equals(getProperty(EntityAgentProperties.ENTITY_AGENT));
         Throwable failure = null;
         try {
             //BUG 2660471: Make sure there is an accessor (moved here from Session)

@@ -1313,6 +1313,11 @@ public class OraclePlatform extends DatabasePlatform {
         return false;
     }
 
+    @Override
+    protected boolean isUniqueConstraintViolation(SQLException exception) {
+        return exception.getErrorCode() == 1 || super.isUniqueConstraintViolation(exception);
+    }
+
     /**
      * Return true if the given exception occurred as a result of a lock
      * time out exception (WAIT clause).

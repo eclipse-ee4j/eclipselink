@@ -16,8 +16,16 @@ import java.util.List;
 import jakarta.persistence.EntityAgent;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
+import jakarta.validation.ConstraintViolationException;
 
+import org.eclipse.persistence.descriptors.DescriptorEvent;
+import org.eclipse.persistence.descriptors.DescriptorEventAdapter;
+import org.eclipse.persistence.descriptors.DescriptorEventManager;
+import org.eclipse.persistence.internal.helper.EntityAgentProperties;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.jpa.JpaEntityManagerFactory;
 import org.eclipse.persistence.jpa.entityagent.model.AgentCallbackRecord;
+import org.eclipse.persistence.jpa.entityagent.model.AgentNativeCallbackRecord;
 import org.eclipse.persistence.jpa.entityagent.model.AgentMergeCallbackRecord;
 import org.eclipse.persistence.jpa.entityagent.model.AgentXmlCallbackRecord;
 import org.eclipse.persistence.jpa.entityagent.model.callbacks.AgentDiscoveryRecord;
@@ -61,6 +69,17 @@ public class TestEntityAgentCallbacks {
             classes = AgentMergeCallbackRecord.class,
             properties = @Property(name = "jakarta.persistence.validation.mode", value = "NONE"))
     private EntityManagerFactory mergeEmf;
+
+    @Emf(name = "entityagent-native-callbacks", createTables = DDLGen.DROP_CREATE,
+            classes = AgentNativeCallbackRecord.class, properties = {
+            @Property(name = "jakarta.persistence.validation.mode", value = "CALLBACK"),
+            @Property(name = "jakarta.persistence.validation.group.pre-insert", value =
+                    "org.eclipse.persistence.jpa.entityagent.model.AgentNativeCallbackRecord$InsertChecks"),
+            @Property(name = "jakarta.persistence.validation.group.pre-update", value =
+                    "org.eclipse.persistence.jpa.entityagent.model.AgentNativeCallbackRecord$UpdateChecks"),
+            @Property(name = "jakarta.persistence.validation.group.pre-upsert", value =
+                    "org.eclipse.persistence.jpa.entityagent.model.AgentNativeCallbackRecord$UpsertChecks")})
+    private EntityManagerFactory nativeEmf;
 
     @Before
     public void clearMergeCallbacks() {
@@ -398,4 +417,154 @@ public class TestEntityAgentCallbacks {
             manager.getTransaction().commit();
         }
     }
+
+    @Test
+    public void nativeAndJpaCallbacksKeepTheirOwnUpsertSemantics() {
+        DescriptorEventManager events = nativeEventManager();
+        DescriptorEventAdapter listener = new NativeRecorder();
+        events.addListener(listener);
+        try (EntityAgent agent = nativeEmf.createEntityAgent()) {
+            AgentNativeCallbackRecord record = new AgentNativeCallbackRecord(601, "new");
+            agent.upsert(record);
+            assertEquals(List.of("pre-upsert", "validate-upsert", "post-upsert"), record.callbacks);
+            assertEquals(List.of("listener-pre-insert", "entity-pre-insert",
+                    "listener-post-insert", "entity-post-insert"), record.nativeEvents);
+
+            record.callbacks.clear();
+            record.nativeEvents.clear();
+            record.name = "updated";
+            agent.upsert(record);
+            assertEquals(List.of("pre-upsert", "validate-upsert", "post-upsert"), record.callbacks);
+            assertEquals(List.of("listener-pre-update", "entity-pre-update",
+                    "listener-pre-update-changes", "entity-pre-update-changes",
+                    "listener-post-update", "entity-post-update"), record.nativeEvents);
+            agent.delete(record);
+        } finally {
+            events.removeListener(listener);
+        }
+    }
+
+    @Test
+    public void ordinaryAgentAndManagedWritesRetainPhysicalAndJpaCallbacks() {
+        DescriptorEventManager events = nativeEventManager();
+        DescriptorEventAdapter listener = new NativeRecorder();
+        events.addListener(listener);
+        try (EntityAgent agent = nativeEmf.createEntityAgent()) {
+            AgentNativeCallbackRecord record = new AgentNativeCallbackRecord(602, "insert");
+            agent.insert(record);
+            assertEquals(List.of("pre-insert", "validate-insert", "post-insert"), record.callbacks);
+            assertEquals(List.of("listener-pre-insert", "entity-pre-insert",
+                    "listener-post-insert", "entity-post-insert"), record.nativeEvents);
+            record.callbacks.clear();
+            record.nativeEvents.clear();
+            record.name = "update";
+            agent.update(record);
+            assertEquals(List.of("pre-update", "validate-update", "post-update"), record.callbacks);
+            assertEquals(List.of("listener-pre-update", "entity-pre-update",
+                    "listener-pre-update-changes", "entity-pre-update-changes",
+                    "listener-post-update", "entity-post-update"), record.nativeEvents);
+            agent.delete(record);
+
+            try (EntityManager manager = nativeEmf.createEntityManager()) {
+                manager.getTransaction().begin();
+                try {
+                    AgentNativeCallbackRecord managed = new AgentNativeCallbackRecord(603, "managed");
+                    manager.persist(managed);
+                    assertEquals(List.of("pre-persist"), managed.callbacks);
+                    manager.flush();
+                    assertEquals(List.of("pre-persist", "pre-insert", "validate-insert",
+                            "post-insert", "post-persist"), managed.callbacks);
+                    assertEquals(List.of("listener-pre-insert", "entity-pre-insert",
+                            "listener-post-insert", "entity-post-insert"), managed.nativeEvents);
+                } finally {
+                    manager.getTransaction().rollback();
+                }
+            }
+        } finally {
+            events.removeListener(listener);
+        }
+    }
+
+    @Test
+    public void failedUpsertCallbacksRestoreOperationAndStopRemainingDispatch() {
+        DescriptorEventManager events = nativeEventManager();
+        DescriptorEventAdapter listener = new NativeRecorder();
+        events.addListener(listener);
+        try (EntityAgent agent = nativeEmf.createEntityAgent()) {
+            AgentNativeCallbackRecord record = new AgentNativeCallbackRecord(604, "failure");
+            record.failUpsert = true;
+            assertThrows(IllegalStateException.class, () -> agent.upsert(record));
+            assertEquals(List.of("pre-upsert"), record.callbacks);
+            assertEquals(List.of("listener-pre-insert"), record.nativeEvents);
+            AbstractSession session = agent.unwrap(AbstractSession.class);
+            assertNull(session.getProperty(EntityAgentProperties.OPERATION));
+            assertNull(agent.find(AgentNativeCallbackRecord.class, record.id));
+
+            record.failUpsert = false;
+            record.valid = false;
+            record.callbacks.clear();
+            record.nativeEvents.clear();
+            assertThrows(ConstraintViolationException.class, () -> agent.upsert(record));
+            assertEquals(List.of("pre-upsert", "validate-upsert"), record.callbacks);
+            assertEquals(List.of("listener-pre-insert"), record.nativeEvents);
+            assertNull(session.getProperty(EntityAgentProperties.OPERATION));
+            assertNull(agent.find(AgentNativeCallbackRecord.class, record.id));
+
+            record.valid = true;
+            record.callbacks.clear();
+            record.nativeEvents.clear();
+            agent.insert(record);
+            assertEquals(List.of("pre-insert", "validate-insert", "post-insert"), record.callbacks);
+            assertEquals(List.of("listener-pre-insert", "entity-pre-insert",
+                    "listener-post-insert", "entity-post-insert"), record.nativeEvents);
+            agent.delete(record);
+        } finally {
+            events.removeListener(listener);
+        }
+    }
+
+    @Test
+    public void nestedInsertRestoresEnclosingUpsertMarkerAndCallbacks() {
+        try (EntityAgent agent = nativeEmf.createEntityAgent()) {
+            AgentNativeCallbackRecord outer = new AgentNativeCallbackRecord(605, "outer");
+            AgentNativeCallbackRecord nested = new AgentNativeCallbackRecord(606, "nested");
+            AbstractSession session = agent.unwrap(AbstractSession.class);
+            outer.nestedOperation = () -> {
+                assertEquals("UPSERT", session.getProperty(EntityAgentProperties.OPERATION));
+                agent.insert(nested);
+                assertEquals("UPSERT", session.getProperty(EntityAgentProperties.OPERATION));
+                assertEquals(Boolean.FALSE, session.getProperty(EntityAgentProperties.WRITE_SUCCEEDED));
+            };
+            agent.upsert(outer);
+            assertEquals(List.of("pre-upsert", "validate-upsert", "post-upsert"), outer.callbacks);
+            assertEquals(List.of("pre-insert", "validate-insert", "post-insert"), nested.callbacks);
+            assertNull(session.getProperty(EntityAgentProperties.OPERATION));
+            assertNull(session.getProperty(EntityAgentProperties.WRITE_SUCCEEDED));
+            agent.delete(outer);
+            agent.delete(nested);
+        }
+    }
+
+    private DescriptorEventManager nativeEventManager() {
+        return nativeEmf.unwrap(JpaEntityManagerFactory.class).getServerSession()
+                .getDescriptor(AgentNativeCallbackRecord.class).getEventManager();
+    }
+
+    private static class NativeRecorder extends DescriptorEventAdapter {
+        private void record(DescriptorEvent event, String name) {
+            ((AgentNativeCallbackRecord) event.getSource()).nativeEvents.add("listener-" + name);
+        }
+
+        @Override
+        public void preInsert(DescriptorEvent event) { record(event, "pre-insert"); }
+        @Override
+        public void postInsert(DescriptorEvent event) { record(event, "post-insert"); }
+        @Override
+        public void preUpdate(DescriptorEvent event) { record(event, "pre-update"); }
+        @Override
+        public void preUpdateWithChanges(DescriptorEvent event) { record(event, "pre-update-changes"); }
+        @Override
+        public void postUpdate(DescriptorEvent event) { record(event, "post-update"); }
+    }
+
 }

@@ -1009,12 +1009,15 @@ public class EntityManagerImpl implements JpaEntityManager {
                 }
             } catch (EclipseLinkException e) {
                 if (e instanceof DatabaseException database && database.getQuery() != null
-                        && database.getQuery().isInsertObjectQuery()
-                        && database.getInternalException() instanceof java.sql.SQLException sql
-                        && ("23505".equals(sql.getSQLState()) || sql.getErrorCode() == 1
-                            || sql.getErrorCode() == 1062 || sql.getErrorCode() == 2601
-                            || sql.getErrorCode() == 2627 || sql.getErrorCode() == -803)) {
-                    throw new EntityExistsException("Entity insert violated a uniqueness constraint", database);
+                        && database.getQuery().isInsertObjectQuery()) {
+                    DatabaseQuery query = database.getQuery();
+                    AbstractSession executionSession = query.getExecutionSession();
+                    if (executionSession == null) {
+                        executionSession = databaseSession.getExecutionSession(query);
+                    }
+                    if (executionSession.getPlatform().isUniqueConstraintViolation(database)) {
+                        throw new EntityExistsException("Entity insert violated a uniqueness constraint", database);
+                    }
                 }
                 throw new PersistenceException(e);
             }
@@ -1347,8 +1350,17 @@ public class EntityManagerImpl implements JpaEntityManager {
 
     @Override
     public <T> TypedQuery<T> createQuery(TypedQueryReference<T> typedQueryReference) {
+        verifyOpen();
         Objects.requireNonNull(typedQueryReference, ExceptionLocalization.buildMessage("typed_query_reference_is_null"));
-        TypedQuery<T> query = createNamedQueryInternal(typedQueryReference.getName(), null);
+        DatabaseQuery template = AugmentedQueryReference.executable(typedQueryReference, factory.getAbstractSession());
+        TypedQuery<T> query;
+        if (template == null) {
+            query = createNamedQueryInternal(typedQueryReference.getName(), null);
+        } else {
+            EJBQueryImpl<T> executable = new EJBQueryImpl<>(template, this);
+            executable.initializeFromDatabaseQuery();
+            query = executable;
+        }
         ReferenceBinder.bind(query, typedQueryReference);
         if (typedQueryReference.getOptions() != null) {
             typedQueryReference.getOptions().forEach(query::addOption);
@@ -3474,7 +3486,16 @@ public class EntityManagerImpl implements JpaEntityManager {
     @Override
     public Statement createStatement(StatementReference reference) {
         verifyOpen();
-        Statement statement = createNamedStatement(reference.getName());
+        Objects.requireNonNull(reference);
+        DatabaseQuery template = AugmentedQueryReference.executable(reference, factory.getAbstractSession());
+        Statement statement;
+        if (template == null) {
+            statement = createNamedStatement(reference.getName());
+        } else {
+            EJBQueryImpl<?> executable = new EJBQueryImpl<>(template, this);
+            executable.initializeFromDatabaseQuery();
+            statement = executable.asStatement();
+        }
         ReferenceBinder.bind(statement, reference);
         if (reference.getOptions() != null) {
             reference.getOptions().forEach(statement::addOption);

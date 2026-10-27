@@ -50,6 +50,7 @@ import org.eclipse.persistence.internal.expressions.ObjectExpression;
 import org.eclipse.persistence.internal.expressions.QueryKeyExpression;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DeferredLockManager;
+import org.eclipse.persistence.internal.helper.EntityAgentProperties;
 import org.eclipse.persistence.internal.helper.InvalidObject;
 import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.history.UniversalAsOfClause;
@@ -2388,7 +2389,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * Prepare the receiver for execution in a session.
      */
     protected void prepareQuery() throws QueryException {
-        if (!shouldMaintainCache() && Boolean.TRUE.equals(getProperty("eclipselink.entity-agent"))) {
+        if (!shouldMaintainCache() && Boolean.TRUE.equals(getProperty(EntityAgentProperties.ENTITY_AGENT))) {
             // Lock preparation may request a managed cache refresh. Agent reads
             // already read the database and materialize detached instances.
             setShouldRefreshIdentityMapResult(false);

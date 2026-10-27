@@ -1694,8 +1694,9 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
      * and applied when the query executes.
      * <p>
      * Both are needed, because a converted argument can be bound to a parameter that was declared
-     * either way. {@link #registerConvertedParameter} declares the parameter with the converter's
-     * domain type, so the domain value the caller binds validates as it stands and the conversion can
+     * either way. {@link #registerConvertedParameter} exposes the converter's domain type in logical
+     * parameter metadata, while JDBC registration uses its relational type, including for null
+     * arguments. The domain value the caller binds therefore validates as it stands and conversion can
      * wait until {@code processParameters()} flattens the arguments - which it must, since the caller
      * may bind through any of the plain {@code setParameter} methods and never mention the converter
      * again. A parameter declared separately, by {@link #registerStoredProcedureParameter} or in
