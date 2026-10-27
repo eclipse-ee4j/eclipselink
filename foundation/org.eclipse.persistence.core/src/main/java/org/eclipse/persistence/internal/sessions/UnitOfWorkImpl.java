@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -1127,7 +1127,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                         parentCacheKey.releaseReadLock();
                     } else {
                         for (Iterator iterator = this.objectsLockedForClone.values().iterator(); iterator.hasNext();) {
-                            ((CacheKey)iterator.next()).releaseReadLock();
+                            ((CacheKey)iterator.next()).releaseReadLockQuietly();
                         }
                         this.objectsLockedForClone = null;
                     }
