@@ -3079,12 +3079,16 @@ public class EntityManagerImpl implements JpaEntityManager {
     public LockModeType getLockMode(Object entity) {
         try {
             verifyOpen();
-            checkForTransaction(true);
-            UnitOfWorkImpl uowImpl = getActivePersistenceContext(checkForTransaction(false));
+            Object transaction = checkForTransaction(false);
+            UnitOfWorkImpl uowImpl = getActivePersistenceContext(transaction);
             LockModeType lockMode = LockModeType.NONE;
 
             if (!contains(entity, uowImpl)) {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("cant_getLockMode_of_not_managed_object", new Object[] { entity }));
+            }
+
+            if (transaction == null) {
+                return LockModeType.NONE;
             }
 
             Boolean optimistickLock = (Boolean) uowImpl.getOptimisticReadLockObjects().get(entity);

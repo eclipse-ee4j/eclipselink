@@ -15,8 +15,10 @@ import java.sql.Connection;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import jakarta.persistence.EntityAgent;
+import jakarta.persistence.EntityManager;
 import jakarta.persistence.LockModeType;
 import jakarta.persistence.OptimisticLockException;
+import jakarta.persistence.SynchronizationType;
 import jakarta.persistence.TransactionRequiredException;
 import jakarta.transaction.RollbackException;
 import jakarta.transaction.Status;
@@ -64,6 +66,61 @@ public class TestEntityAgentJta {
     @AfterClass
     public static void closeObjectStore() throws Exception {
         AgentJtaFixture.shutdownObjectStore();
+    }
+
+    @Test
+    public void entityManagerGetLockModeWithoutActiveJtaTransaction() throws Exception {
+        try (EntityManager em = fixture.factory.createEntityManager()) {
+            fixture.transactions.begin();
+            em.joinTransaction();
+            AgentJtaRecord record = new AgentJtaRecord(30, "managed");
+            em.persist(record);
+            fixture.transactions.commit();
+            assertEquals("managed", fixture.observedName(30));
+            assertEquals(Status.STATUS_NO_TRANSACTION, fixture.transactions.getStatus());
+            assertTrue(em.contains(record));
+            assertEquals(LockModeType.NONE, em.getLockMode(record));
+            assertEquals(Status.STATUS_NO_TRANSACTION, fixture.transactions.getStatus());
+            assertFalse(em.isJoinedToTransaction());
+            assertEquals(0, fixture.activeEnlistments.get());
+        }
+    }
+
+    @Test
+    public void entityManagerGetLockModeDoesNotJoinActiveJtaTransaction() throws Exception {
+        try (EntityManager seed = fixture.factory.createEntityManager()) {
+            fixture.transactions.begin();
+            seed.joinTransaction();
+            seed.persist(new AgentJtaRecord(31, "unjoined"));
+            fixture.transactions.commit();
+            assertEquals("unjoined", fixture.observedName(31));
+        }
+        try (EntityManager em = fixture.factory.createEntityManager(SynchronizationType.UNSYNCHRONIZED)) {
+            fixture.transactions.begin();
+            Transaction caller = fixture.transactions.getTransaction();
+            AgentJtaRecord record = em.find(AgentJtaRecord.class, 31L);
+            assertNotNull(record);
+            assertTrue(em.contains(record));
+            assertFalse(em.isJoinedToTransaction());
+            assertEquals(Status.STATUS_ACTIVE, caller.getStatus());
+            int enlistments = fixture.activeEnlistments.get();
+            assertEquals(LockModeType.NONE, em.getLockMode(record));
+            assertFalse(em.isJoinedToTransaction());
+            assertSame(caller, fixture.transactions.getTransaction());
+            assertEquals(Status.STATUS_ACTIVE, caller.getStatus());
+            assertEquals(enlistments, fixture.activeEnlistments.get());
+
+            em.joinTransaction();
+            assertTrue(em.isJoinedToTransaction());
+            em.lock(record, LockModeType.PESSIMISTIC_WRITE);
+            assertEquals(LockModeType.PESSIMISTIC_WRITE, em.getLockMode(record));
+            assertTrue(fixture.activeEnlistments.get() > 0);
+            fixture.transactions.commit();
+            assertTrue(em.contains(record));
+            assertEquals(LockModeType.NONE, em.getLockMode(record));
+            assertEquals(Status.STATUS_NO_TRANSACTION, fixture.transactions.getStatus());
+            assertEquals(0, fixture.activeEnlistments.get());
+        }
     }
 
     @Test
