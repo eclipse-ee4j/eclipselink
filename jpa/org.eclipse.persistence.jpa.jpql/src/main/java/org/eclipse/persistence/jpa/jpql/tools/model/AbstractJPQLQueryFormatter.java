@@ -17,6 +17,7 @@
 package org.eclipse.persistence.jpa.jpql.tools.model;
 
 import java.util.ListIterator;
+import org.eclipse.persistence.jpa.jpql.parser.CaseExpression;
 import org.eclipse.persistence.jpa.jpql.parser.OrderByItem.Ordering;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.AbsExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.AbstractConditionalClauseStateObject;
@@ -533,12 +534,16 @@ public abstract class AbstractJPQLQueryFormatter extends BaseJPQLQueryFormatter 
                 writer.append(SPACE);
             }
 
-            writer.append(formatIdentifier(ELSE));
-            writer.append(SPACE);
-
-            if (stateObject.hasElse()) {
-                stateObject.getElse().accept(this);
+            CaseExpression expression = stateObject.getExpression();
+            // Preserve incomplete-query scaffolding, but not an omitted optional ELSE.
+            if (stateObject.hasElse() || expression == null || expression.hasElse() || !expression.hasEnd()) {
+                writer.append(formatIdentifier(ELSE));
                 writer.append(SPACE);
+
+                if (stateObject.hasElse()) {
+                    stateObject.getElse().accept(this);
+                    writer.append(SPACE);
+                }
             }
 
             writer.append(formatIdentifier(END));

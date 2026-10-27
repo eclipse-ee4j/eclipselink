@@ -1663,6 +1663,15 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
     }
 
     /**
+     * Determines whether a <code><b>CASE</b></code> expression may omit its <code><b>ELSE</b></code> clause.
+     *
+     * @return <code>true</code> if the <code><b>ELSE</b></code> clause is optional; <code>false</code> otherwise
+     */
+    protected boolean isCaseElseOptional() {
+        return false;
+    }
+
+    /**
      * Determines whether the given {@link Expression} is a {@link CollectionExpression}.
      *
      * @param expression The {@link Expression} to verify
@@ -3237,7 +3246,8 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 
             // Missing ELSE
             if (expression.hasWhenClauses() &&
-                    !expression.hasElse()) {
+                    !expression.hasElse() &&
+                    !isCaseElseOptional()) {
 
                 int startPosition = position(expression) +
                         4 /* CASE */ +
@@ -3266,8 +3276,8 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
                 addProblem(expression, startPosition, CaseExpression_MissingElseExpression);
             }
             // Missing END
-            else if (expression.hasElseExpression() &&
-                    !expression.hasEnd()) {
+            else if (!expression.hasEnd() &&
+                    (expression.hasElseExpression() || isCaseElseOptional() && !expression.hasElse())) {
 
                 int startPosition = position(expression) +
                         4 /* CASE */ +
@@ -3276,7 +3286,7 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
                         (expression.hasSpaceAfterCaseOperand() ? 1 : 0) +
                         length(expression.getWhenClauses()) +
                         (expression.hasSpaceAfterWhenClauses() ? 1 : 0) +
-                        4 /* ELSE */ +
+                        (expression.hasElse() ? 4 /* ELSE */ : 0) +
                         (expression.hasSpaceAfterElse() ? 1 : 0) +
                         length(expression.getElseExpression()) +
                         (expression.hasSpaceAfterElseExpression() ? 1 : 0);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2006, 2026 IBM Corporation. All rights reserved.
  * Copyright (c) 2024 Contributors to the Eclipse Foundation. All rights reserved.
  *
@@ -581,10 +581,18 @@ final class ExpressionBuilderVisitor extends JPQLFunctionsAbstractBuilder implem
             // Create the WHEN clauses
             expression.getWhenClauses().accept(visitor);
 
-            // Create the ELSE clause
-            expression.getElseExpression().accept(this);
-            Expression elseExpression = queryExpression;
-            visitor.types.add(type[0]);
+            // Only explicit result branches contribute to the CASE result type.
+            Expression elseExpression = null;
+            if (expression.hasElseExpression()) {
+                expression.getElseExpression().accept(this);
+                elseExpression = queryExpression;
+                visitor.types.add(type[0]);
+            }
+            else {
+                ConstantExpression nullExpression = new ConstantExpression(null, queryContext.getBaseExpression());
+                nullExpression.setCanBind(false);
+                elseExpression = nullExpression;
+            }
 
             // Create the CASE expression
             if (caseOperandExpression != null) {
@@ -611,6 +619,11 @@ final class ExpressionBuilderVisitor extends JPQLFunctionsAbstractBuilder implem
             else {
                 queryExpression = queryContext.getBaseExpression();
                 queryExpression = queryExpression.caseStatement(visitor.whenClauses, elseExpression);
+            }
+
+            // An implicit default has no field type and must remain a literal SQL NULL.
+            if (!expression.hasElseExpression()) {
+                elseExpression.setLocalBase(queryContext.getBaseExpression().getBuilder());
             }
 
             // Set the expression type

@@ -163,4 +163,64 @@ public final class CaseExpressionTest extends JPQLParserTest {
 
         testQuery(query, selectStatement);
     }
+
+    @Test
+    public void test_SearchedCaseWithoutElse() {
+        String query = "SELECT CASE WHEN e.age < 18 THEN 'young' WHEN e.age > 65 THEN 'senior' END, e.name FROM Employee e";
+
+        testQuery(query, selectStatement(
+            select(
+                case_(new ExpressionTester[] {
+                    when(path("e.age").lowerThan(numeric(18)), string("'young'")),
+                    when(path("e.age").greaterThan(numeric(65)), string("'senior'"))
+                }, nullExpression()),
+                path("e.name")
+            ),
+            from("Employee", "e")
+        ));
+    }
+
+    @Test
+    public void test_SimpleCaseWithoutElse() {
+        String query = "SELECT CASE e.rating WHEN 1 THEN 10 WHEN 2 THEN 20 END FROM Employee e";
+
+        testQuery(query, selectStatement(
+            select(case_(path("e.rating"), new ExpressionTester[] {
+                when(numeric(1), numeric(10)),
+                when(numeric(2), numeric(20))
+            }, nullExpression())),
+            from("Employee", "e")
+        ));
+    }
+
+    @Test
+    public void test_NestedCasesWithoutElse() {
+        String query = "SELECT CASE WHEN e.age > 18 THEN CASE e.rating WHEN 1 THEN 'one' END END FROM Employee e";
+
+        testQuery(query, selectStatement(
+            select(case_(new ExpressionTester[] {
+                when(path("e.age").greaterThan(numeric(18)),
+                    case_(path("e.rating"), new ExpressionTester[] {
+                        when(numeric(1), string("'one'"))
+                    }, nullExpression()))
+            }, nullExpression())),
+            from("Employee", "e")
+        ));
+    }
+
+    @Test
+    public void test_CaseWithoutElseInCoalesce() {
+        String query = "SELECT COALESCE(CASE WHEN e.age > 18 THEN e.name END, 'unknown') FROM Employee e";
+
+        testQuery(query, selectStatement(
+            select(coalesce(
+                case_(new ExpressionTester[] {
+                    when(path("e.age").greaterThan(numeric(18)), path("e.name"))
+                }, nullExpression()),
+                string("'unknown'")
+            )),
+            from("Employee", "e")
+        ));
+    }
+
 }

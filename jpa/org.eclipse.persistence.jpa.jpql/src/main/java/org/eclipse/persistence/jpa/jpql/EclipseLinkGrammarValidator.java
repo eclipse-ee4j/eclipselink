@@ -170,6 +170,12 @@ public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
         return inExpressionWithNestedArrayVisitor;
     }
 
+    @Override
+    protected boolean isCaseElseOptional() {
+        return isEclipseLink() &&
+                EclipseLinkVersion.value(getProviderVersion()).isNewerThanOrEqual(EclipseLinkVersion.VERSION_5_0);
+    }
+
     /**
      * Determines whether the persistence provider is EclipseLink or not.
      *
