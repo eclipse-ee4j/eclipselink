@@ -26,13 +26,16 @@ package org.eclipse.persistence.platform.database;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionOperator;
+import org.eclipse.persistence.expressions.ListExpressionOperator;
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.expressions.CollectionExpression;
+import org.eclipse.persistence.internal.expressions.CompoundExpression;
 import org.eclipse.persistence.internal.expressions.ConstantExpression;
 import org.eclipse.persistence.internal.expressions.ExpressionJavaPrinter;
 import org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter;
 import org.eclipse.persistence.internal.expressions.ExtractOperator;
+import org.eclipse.persistence.internal.expressions.FunctionExpression;
 import org.eclipse.persistence.internal.expressions.ParameterExpression;
 import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
 import org.eclipse.persistence.internal.helper.ClassConstants;
@@ -289,6 +292,95 @@ public class DerbyPlatform extends DB2Platform {
         addOperator(subtractOperator());
         addOperator(multiplyOperator());
         addOperator(divideOperator());
+    }
+
+    /**
+     * Derby evaluates the typed receiver of COALESCE twice. A simple CASE cannot
+     * reuse its cached operand, so give COALESCE an always-null receiver instead.
+     * Its unreachable branch infers the SQL type without evaluating the CASE.
+     */
+    @Override
+    protected ExpressionOperator coalesceOperator() {
+        ListExpressionOperator operator = new ListExpressionOperator() {
+            @Override
+            public void printCollection(List<Expression> items, ExpressionSQLPrinter printer) {
+                ListExpressionOperator delegate = (ListExpressionOperator) DerbyPlatform.super.coalesceOperator();
+                copyTo(delegate);
+                int[] indices = delegate.getArgumentIndices(items.size());
+                Expression receiver = coalesceCaseReceiver(items, indices, printer);
+                if (receiver != null) {
+                    // Keep operator configuration and argument changes local to this rendering.
+                    List<Expression> arguments = new ArrayList<>(indices.length + 1);
+                    arguments.add(receiver);
+                    for (int index : indices) {
+                        arguments.add(items.get(index));
+                    }
+                    delegate.setArgumentIndices(null);
+                    delegate.setStartStrings(new String[]{"COALESCE(CASE WHEN 1=0 THEN ", " ELSE NULL END, "});
+                    delegate.printCollection(arguments, printer);
+                } else {
+                    delegate.printCollection(items, printer);
+                }
+            }
+
+            @Override
+            public void printJavaCollection(List<Expression> items, ExpressionJavaPrinter printer) {
+                ExpressionOperator delegate = DerbyPlatform.super.coalesceOperator();
+                copyTo(delegate);
+                delegate.printJavaCollection(items, printer);
+            }
+        };
+        ExpressionOperator.coalesce().copyTo(operator);
+        return operator;
+    }
+
+    private Expression coalesceCaseReceiver(List<Expression> items, int[] indices, ExpressionSQLPrinter printer) {
+        boolean stableBinding = printer.getCall().usesBinding(printer.getPlatform())
+                && !printer.getPlatform().isDynamicSQLRequiredForFunctions();
+        boolean partialBinding = printer.getPlatform().shouldBindPartialParameters();
+        for (int index : indices) {
+            Expression item = items.get(index);
+            if (stableBinding && item.isParameterExpression()) {
+                // Automatic CAST modes still leave unknown and some scalar types as bare markers.
+                // Conservatively protect a later CASE; explicit CAST expressions stop the scan below.
+                if (partialBinding || !Boolean.FALSE.equals(((ParameterExpression) item).canBind())) {
+                    continue;
+                }
+            } else if (stableBinding && item.isConstantExpression() && printer.getPlatform().shouldBindLiterals()) {
+                // The inherited partial-binding loop resets these preferences before printing.
+                if (partialBinding || !Boolean.FALSE.equals(((ConstantExpression) item).canBind())) {
+                    continue;
+                }
+            }
+            if (item instanceof FunctionExpression function
+                    && (function.getOperator().getSelector() == ExpressionOperator.Case
+                    || function.getOperator().getSelector() == ExpressionOperator.CaseCondition)) {
+                return containsSimpleCase(item) ? item : null;
+            }
+            // Fields, CASTs, subqueries and unknown SQL shapes already provide a typed receiver.
+            return null;
+        }
+        return null;
+    }
+
+    private boolean containsSimpleCase(Expression expression) {
+        if (expression instanceof FunctionExpression function) {
+            int selector = function.getOperator().getSelector();
+            if (selector == ExpressionOperator.Case && !function.getChildren().get(0).isExpressionBuilder()) {
+                return true;
+            }
+            // JPQL also represents searched CASE as Case with a non-printing builder operand.
+            if (selector == ExpressionOperator.Case || selector == ExpressionOperator.CaseCondition) {
+                for (Expression child : function.getChildren()) {
+                    if (containsSimpleCase(child)) {
+                        return true;
+                    }
+                }
+            }
+        } else if (expression instanceof CompoundExpression compound) {
+            return containsSimpleCase(compound.getFirstChild()) || containsSimpleCase(compound.getSecondChild());
+        }
+        return false;
     }
 
     /**
