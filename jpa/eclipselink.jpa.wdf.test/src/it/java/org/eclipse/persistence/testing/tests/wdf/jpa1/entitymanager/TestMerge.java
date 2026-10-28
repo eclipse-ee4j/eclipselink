@@ -833,7 +833,7 @@ public class TestMerge extends JPA1Base {
             env.beginTransaction(em);
             Timestamp t2 = em.merge(t1);
             verify(t2 != null, "merged timestamp is null");
-            verify(t2.getId() != null && t2.getId() != Long.valueOf(0), "unexpected id: " + t2.getId());
+            verify(t2.getId() != null && t2.getId() != 0L, "unexpected id: " + t2.getId());
             verify(em.contains(t2), "not contained");
             env.commitTransactionAndClear(em);
             verify(!em.contains(t1), "entity manager contains timestamp -> it cannot be detached");

@@ -192,8 +192,12 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
     /** Map of named partitioning policies, keyed by their name. */
     protected Map<String, PartitioningPolicy> partitioningPolicies;
 
-    /** Ensures that only one thread at a time can add/remove descriptors */
-    protected Object descriptorsLock = Boolean.TRUE;
+    /**
+     * Ensures that only one thread at a time can add/remove descriptors.
+     * Must be a distinct per-instance object (never a shared/cached value-based wrapper like Boolean.TRUE).
+     * An empty array is used instead of new Object() because this class is Serializable.
+     */
+    protected Object descriptorsLock = new Object[0];
 
     /** VPD connection settings */
     protected String vpdIdentifier;

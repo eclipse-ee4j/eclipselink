@@ -18,6 +18,7 @@ package org.eclipse.persistence.internal.jpa.metadata.cache;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.eclipse.persistence.descriptors.CacheIndex;
 import org.eclipse.persistence.internal.helper.DatabaseField;
@@ -76,7 +77,7 @@ public class CacheIndexMetadata extends ORMetadata {
     public boolean equals(Object objectToCompare) {
         if (objectToCompare instanceof CacheIndexMetadata) {
             CacheIndexMetadata index = (CacheIndexMetadata) objectToCompare;
-            if (this.updateable != index.getUpdateable()) {
+            if (!Objects.equals(this.updateable, index.getUpdateable())) {
                 return false;
             }
 

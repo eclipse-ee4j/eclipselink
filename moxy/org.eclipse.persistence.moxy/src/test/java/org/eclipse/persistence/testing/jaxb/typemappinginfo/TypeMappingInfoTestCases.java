@@ -25,6 +25,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Objects;
 
 import jakarta.activation.DataHandler;
 import jakarta.xml.bind.JAXBContext;
@@ -531,7 +532,7 @@ public abstract class TypeMappingInfoTestCases extends OXTestCase {
         }
 
         for(int i=0; i<first.length; i++){
-            if (first[i] != second[i]){
+            if (!Objects.equals(first[i], second[i])){
                 return false;
             }
         }

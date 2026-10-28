@@ -178,7 +178,7 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
             inputStream.close();
             jsonToObjectTest(testObject);
 
-            assertTrue(getJSONUnmarshaller().getProperty(UnmarshallerProperties.AUTO_DETECT_MEDIA_TYPE) == Boolean.TRUE);
+            assertTrue(Boolean.TRUE.equals(getJSONUnmarshaller().getProperty(UnmarshallerProperties.AUTO_DETECT_MEDIA_TYPE)));
             if(null != XML_INPUT_FACTORY) {
                 InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
                 XMLStreamReader xmlStreamReader = XML_INPUT_FACTORY.createXMLStreamReader(instream);
@@ -191,7 +191,7 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
                 instream.close();
                 xmlToObjectTest(testObject);
             }
-            assertTrue(getJSONUnmarshaller().getProperty(UnmarshallerProperties.AUTO_DETECT_MEDIA_TYPE)== Boolean.TRUE);
+            assertTrue(Boolean.TRUE.equals(getJSONUnmarshaller().getProperty(UnmarshallerProperties.AUTO_DETECT_MEDIA_TYPE)));
 
         }
     }
