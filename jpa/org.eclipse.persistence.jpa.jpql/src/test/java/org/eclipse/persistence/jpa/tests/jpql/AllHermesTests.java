@@ -38,6 +38,7 @@ import org.junit.runners.Suite.SuiteClasses;
     AllJPQLParserTests.class,
     ValidateJPQLVersionTest.class,
     AllGrammarValidatorTests.class,
+    CaseWithoutElseGrammarTest.class,
     AllHermesTests.HermesDefaultTestSuite.class,
     AllHermesTests.HermesEclipseLinkTestSuite.class
 })
