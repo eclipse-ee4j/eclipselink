@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -41,6 +41,8 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
 import org.eclipse.persistence.mappings.ManyToOneMapping;
 import org.eclipse.persistence.mappings.ObjectReferenceMapping;
 
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JAKARTA_NONNULL;
+
 /**
  * INTERNAL:
  * A many to one relationship accessor.
@@ -70,6 +72,10 @@ public class ManyToOneAccessor extends ObjectAccessor {
      */
     public ManyToOneAccessor(MetadataAnnotation manyToOne, MetadataAnnotatedElement annotatedElement, ClassAccessor classAccessor) {
         super(manyToOne, annotatedElement, classAccessor);
+
+        if (isAnnotationPresent(JAKARTA_NONNULL)) {
+            setOptional(false);
+        }
     }
 
     /**

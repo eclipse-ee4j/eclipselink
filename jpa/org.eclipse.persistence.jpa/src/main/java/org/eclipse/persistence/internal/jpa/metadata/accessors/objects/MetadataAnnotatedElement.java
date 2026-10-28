@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -50,6 +50,7 @@
 package org.eclipse.persistence.internal.jpa.metadata.accessors.objects;
 
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.ECLIPSELINK_OXM_PACKAGE_PREFIX;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JAKARTA_NONNULL;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ACCESS;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_BASIC;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ELEMENT_COLLECTION;
@@ -283,7 +284,8 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
             return 0;
         }
 
-        return m_annotations.size();
+        // Nonnull contributes optionality without declaring a persistence mapping.
+        return m_annotations.size() - (m_annotations.containsKey(JAKARTA_NONNULL) ? 1 : 0);
     }
 
     /**
@@ -493,7 +495,7 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
     public boolean areAnnotationsCompatibleWithTransient(ClassAccessor classAccessor) {
         List<String> annotations = TransientCompatibleAnnotations.getTransientCompatibleAnnotations();
         for (String key: m_annotations.keySet()){
-            if (!key.startsWith(ECLIPSELINK_OXM_PACKAGE_PREFIX) && !annotations.contains(key)){
+            if (!JAKARTA_NONNULL.equals(key) && !key.startsWith(ECLIPSELINK_OXM_PACKAGE_PREFIX) && !annotations.contains(key)){
                 return false;
             }
         }

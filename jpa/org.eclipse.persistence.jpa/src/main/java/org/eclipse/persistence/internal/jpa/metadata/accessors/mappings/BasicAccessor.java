@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -85,6 +85,7 @@ import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JAKARTA_NONNULL;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_BASIC;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_COLUMN;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_FETCH_EAGER;
@@ -148,6 +149,10 @@ public class BasicAccessor extends DirectAccessor {
         if (basic != null) {
             setFetch(basic.getAttributeString("fetch"));
             setOptional(basic.getAttributeBooleanDefaultTrue("optional"));
+        }
+
+        if (isAnnotationPresent(JAKARTA_NONNULL)) {
+            setOptional(false);
         }
 
         // Set the column metadata if one if present.

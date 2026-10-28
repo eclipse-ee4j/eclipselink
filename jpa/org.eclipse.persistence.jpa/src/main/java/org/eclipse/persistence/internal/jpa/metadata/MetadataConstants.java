@@ -41,6 +41,10 @@ package org.eclipse.persistence.internal.jpa.metadata;
  * @since EclipseLink 1.1
  */
 public final class MetadataConstants {
+    /** Jakarta Annotations */
+    public static final String JAKARTA_NONNULL = "jakarta.annotation.Nonnull";
+    public static final String JAKARTA_NONNULL_DESCRIPTOR = "Ljakarta/annotation/Nonnull;";
+
     /** JPA Annotations */
     public static final String JPA_ACCESS = "jakarta.persistence.Access";
     public static final String JPA_ASSOCIATION_OVERRIDE = "jakarta.persistence.AssociationOverride";
