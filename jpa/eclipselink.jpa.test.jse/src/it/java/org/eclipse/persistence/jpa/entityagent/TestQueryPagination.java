@@ -18,6 +18,7 @@ import jakarta.persistence.FlushModeType;
 import jakarta.persistence.LockModeType;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.Query;
+import jakarta.persistence.StatementOrTypedQuery;
 import jakarta.persistence.TransactionRequiredException;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.TypedQueryReference;
@@ -169,6 +170,74 @@ public class TestQueryPagination {
     }
 
     @Test
+    public void entityManagerDirectQueryResetsMaximum() {
+        try (EntityManager em = emf.createEntityManager()) {
+            assertMaximumReset(() -> em.createQuery(QUERY, AgentQueryRecord.class), false, false);
+        }
+    }
+
+    @Test
+    public void entityAgentDirectQueryResetsMaximum() {
+        try (EntityAgent agent = emf.createEntityAgent()) {
+            assertMaximumReset(() -> agent.createQuery(QUERY, AgentQueryRecord.class), false, false);
+        }
+    }
+
+    @Test
+    public void entityManagerNamedQueryResetsMaximum() {
+        try (EntityManager em = emf.createEntityManager()) {
+            assertMaximumReset(() -> em.createNamedQuery(NAMED_QUERY, AgentQueryRecord.class), false, false);
+        }
+    }
+
+    @Test
+    public void entityAgentNamedQueryResetsMaximum() {
+        try (EntityAgent agent = emf.createEntityAgent()) {
+            assertMaximumReset(() -> agent.createNamedQuery(NAMED_QUERY, AgentQueryRecord.class), false, false);
+        }
+    }
+
+    @Test
+    public void entityManagerPresetReferenceResetsMaximum() {
+        TypedQueryReference<AgentQueryRecord> reference = emf.getNamedQueries(AgentQueryRecord.class).get(PRESET_QUERY);
+        try (EntityManager em = emf.createEntityManager()) {
+            assertMaximumReset(() -> em.createQuery(reference), false, true);
+        }
+    }
+
+    @Test
+    public void entityAgentPresetReferenceResetsMaximum() {
+        TypedQueryReference<AgentQueryRecord> reference = emf.getNamedQueries(AgentQueryRecord.class).get(PRESET_QUERY);
+        try (EntityAgent agent = emf.createEntityAgent()) {
+            assertMaximumReset(() -> agent.createQuery(reference), false, true);
+        }
+    }
+
+    @Test
+    public void entityManagerNativeQueryResetsMaximum() {
+        try (EntityManager em = emf.createEntityManager()) {
+            assertMaximumReset(() -> em.createNativeQuery(
+                    "SELECT ID FROM EA_QUERY_RECORD WHERE ID >= ?1 ORDER BY ID"), true, false);
+            assertMaximumReset(() -> em.createNativeQuery(
+                    "SELECT * FROM EA_QUERY_RECORD WHERE ID >= ?1 ORDER BY ID", AgentQueryRecord.class), true, false);
+            assertNativeConversionRetainsMaximumReset(() -> em.createNativeQuery(
+                    "SELECT * FROM EA_QUERY_RECORD ORDER BY ID"));
+        }
+    }
+
+    @Test
+    public void entityAgentNativeQueryResetsMaximum() {
+        try (EntityAgent agent = emf.createEntityAgent()) {
+            assertMaximumReset(() -> agent.createNativeQuery(
+                    "SELECT ID FROM EA_QUERY_RECORD WHERE ID >= ?1 ORDER BY ID"), true, false);
+            assertMaximumReset(() -> agent.createNativeQuery(
+                    "SELECT * FROM EA_QUERY_RECORD WHERE ID >= ?1 ORDER BY ID", AgentQueryRecord.class), true, false);
+            assertNativeConversionRetainsMaximumReset(() -> agent.createNativeQuery(
+                    "SELECT * FROM EA_QUERY_RECORD ORDER BY ID"));
+        }
+    }
+
+    @Test
     public void entityManagerZeroLimitPreservesValidation() {
         TypedQuery<AgentQueryRecord> closed;
         try (EntityManager em = emf.createEntityManager()) {
@@ -292,6 +361,133 @@ public class TestQueryPagination {
                 em.getTransaction().rollback();
             }
         }
+    }
+
+    private void assertMaximumReset(Supplier<? extends Query> createQuery, boolean nativeQuery, boolean preset) {
+        for (boolean bind : List.of(true, false)) {
+            if (nativeQuery) {
+                assertNativeMaximumReset(createQuery, bind);
+                continue;
+            }
+            if (preset) {
+                // Reset before another operation can initialize the inherited maximum.
+                Query unexecuted = createQuery.get().setMaxResults(Integer.MAX_VALUE);
+                configureResetQuery(unexecuted, bind, nativeQuery);
+                assertEquals(1, unexecuted.getFirstResult());
+                assertEquals(Integer.MAX_VALUE, unexecuted.getMaxResults());
+                assertResetIds(unexecuted, List.of(2, 3));
+            }
+
+            Query query = configureResetQuery(createQuery.get(), bind, nativeQuery);
+            Query independent = configureResetQuery(createQuery.get(), bind, nativeQuery);
+            assertResetPage(query, 0, 1, List.of(1));
+            assertResetPage(query, 0, Integer.MAX_VALUE, List.of(1, 2, 3));
+            assertResetPage(query, 0, Integer.MAX_VALUE, List.of(1, 2, 3));
+            assertResetPage(query, 1, 1, List.of(2));
+            query.setMaxResults(Integer.MAX_VALUE);
+            assertEquals(1, query.getFirstResult());
+            assertEquals(Integer.MAX_VALUE, query.getMaxResults());
+            assertResetIds(query, List.of(2, 3));
+            query.setMaxResults(Integer.MAX_VALUE);
+            assertResetIds(query, List.of(2, 3));
+            query.setFirstResult(0);
+            assertResetIds(query, List.of(1, 2, 3));
+            assertResetPage(query, 0, 2, List.of(1, 2));
+            assertResetPage(query, 0, 0, List.of());
+            assertResetPage(query, 0, Integer.MAX_VALUE, List.of(1, 2, 3));
+            assertResetPage(query, 1, 1, List.of(2));
+            assertResetPage(query, 1, Integer.MAX_VALUE, List.of(2, 3));
+
+            assertResetDefaults(independent, preset);
+            assertResetDefaults(configureResetQuery(createQuery.get(), bind, nativeQuery), preset);
+            if (!preset) {
+                Query hinted = configureResetQuery(createQuery.get(), bind, nativeQuery)
+                        .setHint(QueryHints.JDBC_MAX_ROWS, 1);
+                assertResetIds(hinted, List.of(1));
+                query.setMaxResults(Integer.MAX_VALUE);
+                assertResetIds(query, List.of(2, 3));
+                // An untouched wrapper maximum must not erase its native maximum hint.
+                assertResetIds(hinted, List.of(1));
+                hinted.setMaxResults(Integer.MAX_VALUE);
+                assertResetIds(hinted, List.of(1, 2, 3));
+                assertResetDefaults(configureResetQuery(createQuery.get(), bind, nativeQuery), false);
+            }
+        }
+    }
+
+    private void assertNativeMaximumReset(Supplier<? extends Query> createQuery, boolean bind) {
+        Query independent = configureResetQuery(createQuery.get(), bind, true);
+        for (int first : List.of(0, 1)) {
+            // Exercise maximum changes at each offset without changing a prepared native call's offset.
+            Query query = configureResetQuery(createQuery.get(), bind, true).setFirstResult(first);
+            List<Integer> firstRow = first == 0 ? List.of(1) : List.of(2);
+            List<Integer> firstTwo = first == 0 ? List.of(1, 2) : List.of(2, 3);
+            List<Integer> remaining = first == 0 ? List.of(1, 2, 3) : List.of(2, 3);
+            assertResetPage(query, first, 1, firstRow);
+            assertResetPage(query, first, Integer.MAX_VALUE, remaining);
+            assertResetPage(query, first, Integer.MAX_VALUE, remaining);
+            assertResetPage(query, first, 2, firstTwo);
+            assertResetPage(query, first, 0, List.of());
+            assertResetPage(query, first, Integer.MAX_VALUE, remaining);
+            assertResetPage(query, first, 1, firstRow);
+            assertResetPage(query, first, Integer.MAX_VALUE, remaining);
+            assertResetDefaults(independent, false);
+            assertResetDefaults(configureResetQuery(createQuery.get(), bind, true), false);
+        }
+
+        Query hinted = configureResetQuery(createQuery.get(), bind, true).setHint(QueryHints.JDBC_MAX_ROWS, 1);
+        assertResetIds(hinted, List.of(1));
+        Query other = configureResetQuery(createQuery.get(), bind, true);
+        assertResetPage(other, 1, 1, List.of(2));
+        assertResetPage(other, 1, Integer.MAX_VALUE, List.of(2, 3));
+        assertResetIds(hinted, List.of(1));
+        hinted.setMaxResults(Integer.MAX_VALUE);
+        assertResetIds(hinted, List.of(1, 2, 3));
+        assertResetDefaults(configureResetQuery(createQuery.get(), bind, true), false);
+    }
+
+    private void assertNativeConversionRetainsMaximumReset(Supplier<StatementOrTypedQuery> createQuery) {
+        for (boolean mapped : List.of(false, true)) {
+            for (boolean hinted : List.of(false, true)) {
+                StatementOrTypedQuery query = createQuery.get();
+                if (hinted) {
+                    query.setHint(QueryHints.JDBC_MAX_ROWS, 1);
+                }
+                assertEquals(hinted ? 1 : 3, query.getResultList().size());
+                query.setMaxResults(Integer.MAX_VALUE);
+                assertEquals(3, query.getResultList().size());
+                Query converted = mapped ? query.withResultSetMapping(
+                        emf.getResultSetMappings(AgentQueryRecord.class).get("EAQuery.recordMapping"))
+                        : query.ofType(AgentQueryRecord.class);
+                assertEquals(Integer.MAX_VALUE, converted.getMaxResults());
+                assertResetIds(converted, List.of(1, 2, 3));
+            }
+        }
+    }
+
+    private Query configureResetQuery(Query query, boolean bind, boolean nativeQuery) {
+        query.setHint(QueryHints.BIND_PARAMETERS, bind);
+        return nativeQuery ? query.setParameter(1, 1) : query.setParameter("minimum", 1);
+    }
+
+    private void assertResetDefaults(Query query, boolean preset) {
+        assertEquals(preset ? 1 : 0, query.getFirstResult());
+        assertEquals(preset ? 1 : Integer.MAX_VALUE, query.getMaxResults());
+        assertResetIds(query, preset ? List.of(2) : List.of(1, 2, 3));
+    }
+
+    private void assertResetPage(Query query, int first, int maximum, List<Integer> expected) {
+        query.setFirstResult(first).setMaxResults(maximum);
+        assertEquals(first, query.getFirstResult());
+        assertEquals(maximum, query.getMaxResults());
+        assertResetIds(query, expected);
+    }
+
+    private void assertResetIds(Query query, List<Integer> expected) {
+        List<?> rows = query.getResultList();
+        assertEquals("first=" + query.getFirstResult() + ", maximum=" + query.getMaxResults(), expected,
+                rows.stream().map(row -> row instanceof AgentQueryRecord record
+                        ? record.id : ((Number) row).intValue()).toList());
     }
 
     private boolean requireNativeReturning() {
