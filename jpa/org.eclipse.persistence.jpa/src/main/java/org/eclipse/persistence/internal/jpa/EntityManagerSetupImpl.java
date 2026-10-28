@@ -279,12 +279,14 @@ import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GE
 import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_METADATA_SOURCE;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_METADATA_THEN_SCRIPT_SOURCE;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_NONE_ACTION;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_POPULATE_ACTION;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPTS_ACTION;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPTS_CREATE_TARGET;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPTS_DROP_TARGET;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPT_SOURCE;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPT_THEN_METADATA_SOURCE;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_SQL_LOAD_SCRIPT_SOURCE;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_VALIDATE_ACTION;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_VERIFY_ACTION;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_VALIDATION_MODE;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_VALIDATION_MODE_FULL;
@@ -4605,12 +4607,14 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                 }
             } else {
                 // Look for JPA schema generation properties.
+                boolean loadScript = true;
 
                 // Schema generation for the database.
                 if (hasConfigProperty(SCHEMA_GENERATION_DATABASE_ACTION, props)) {
                     String databaseGenerationAction = getConfigPropertyAsString(SCHEMA_GENERATION_DATABASE_ACTION, props).toLowerCase(Locale.ROOT);
                     switch (databaseGenerationAction) {
                         case SCHEMA_GENERATION_NONE_ACTION:
+                            loadScript = false;
                             break;
                         case SCHEMA_GENERATION_CREATE_ACTION:
                             writeDDL(SCHEMA_GENERATION_CREATE_SOURCE, SCHEMA_GENERATION_CREATE_SCRIPT_SOURCE, TableCreationType.CREATE, props, session, classLoader);
@@ -4619,17 +4623,24 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                             writeDDL(SCHEMA_GENERATION_CREATE_SOURCE, SCHEMA_GENERATION_CREATE_SCRIPT_SOURCE, TableCreationType.EXTEND, props, session, classLoader);
                             break;
                         case SCHEMA_GENERATION_DROP_ACTION:
+                            loadScript = false;
                             writeDDL(SCHEMA_GENERATION_DROP_SOURCE, SCHEMA_GENERATION_DROP_SCRIPT_SOURCE, TableCreationType.DROP, props, session, classLoader);
                             break;
                         case SCHEMA_GENERATION_DROP_AND_CREATE_ACTION:
                             writeDDL(SCHEMA_GENERATION_DROP_SOURCE, SCHEMA_GENERATION_DROP_SCRIPT_SOURCE, TableCreationType.DROP, props, session, classLoader);
                             writeDDL(SCHEMA_GENERATION_CREATE_SOURCE, SCHEMA_GENERATION_CREATE_SCRIPT_SOURCE, TableCreationType.CREATE, props, session, classLoader);
                             break;
+                        case SCHEMA_GENERATION_VALIDATE_ACTION:
+                            loadScript = false;
+                            verifySchema(session, props);
+                            break;
                         case SCHEMA_GENERATION_VERIFY_ACTION:
                             verifySchema(session, props);
                             break;
+                        case SCHEMA_GENERATION_POPULATE_ACTION:
+                            break;
                         default:
-                            String validOptions = SCHEMA_GENERATION_CREATE_ACTION + ", " + SCHEMA_GENERATION_DROP_ACTION + ", " +  SCHEMA_GENERATION_DROP_AND_CREATE_ACTION + ", " + PersistenceUnitProperties.CREATE_OR_EXTEND;
+                            String validOptions = SCHEMA_GENERATION_NONE_ACTION + ", " + SCHEMA_GENERATION_CREATE_ACTION + ", " + SCHEMA_GENERATION_DROP_ACTION + ", " + SCHEMA_GENERATION_DROP_AND_CREATE_ACTION + ", " + SCHEMA_GENERATION_VALIDATE_ACTION + ", " + SCHEMA_GENERATION_POPULATE_ACTION + ", " + SCHEMA_GENERATION_VERIFY_ACTION + ", " + PersistenceUnitProperties.CREATE_OR_EXTEND;
                             session.log(SessionLog.WARNING, SessionLog.PROPERTIES, "ddl_generation_unknown_property_value", new Object[] {SCHEMA_GENERATION_DATABASE_ACTION, databaseGenerationAction, persistenceUnitInfo.getPersistenceUnitName(), validOptions});
                     }
                 }
@@ -4658,8 +4669,10 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                     }
                 }
 
-                // Once we've generated any and all DDL, check for load scripts.
-                writeSourceScriptToDatabase(getConfigProperty(SCHEMA_GENERATION_SQL_LOAD_SCRIPT_SOURCE, props), session, classLoader);
+                // Load only after eligible database actions and independent script generation.
+                if (loadScript) {
+                    writeSourceScriptToDatabase(getConfigProperty(SCHEMA_GENERATION_SQL_LOAD_SCRIPT_SOURCE, props), session, classLoader);
+                }
             }
         } else {
             // composite

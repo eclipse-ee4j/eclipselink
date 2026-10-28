@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -2125,9 +2125,11 @@ public final class PersistenceUnitProperties {
      * regard to the database artifacts.</p>
      *
      * <p>The values for this property are {@code none}, {@code create},
-     * {@code drop-and-create}, {@code drop}.</p>
+     * {@code drop-and-create}, {@code drop}, {@code validate}, and {@code populate}.</p>
      *
-     * EclipseLink also supports the {@code create-or-extend-tables} option.
+     * EclipseLink also supports the {@code create-or-extend-tables} and legacy
+     * {@code verify} options. Unlike {@code validate}, {@code verify} also
+     * executes a configured SQL load script after successful validation.
      *
      * <p>If the {@code jakarta.persistence.schema-generation.database.action}
      * property is not specified, no schema generation actions must be taken on
@@ -2340,6 +2342,13 @@ public final class PersistenceUnitProperties {
      * specifies a java.IO.Reader configured for reading of the SQL load script
      * for database initialization or a string designating a file URL for the
      * script.</p>
+     *
+     * <p>For standard database actions, the load script is executed only for
+     * {@code create}, {@code drop-and-create}, and {@code populate}. It is not
+     * resolved or executed for {@code none}, {@code drop}, or {@code validate}.
+     * EclipseLink preserves loading when the database action is unspecified,
+     * although that combination is not portable, and for its legacy
+     * {@code verify} and {@code create-or-extend-tables} actions.</p>
      */
     public static final String SCHEMA_GENERATION_SQL_LOAD_SCRIPT_SOURCE = "jakarta.persistence.sql-load-script-source";
 
@@ -2376,10 +2385,27 @@ public final class PersistenceUnitProperties {
     public static final String SCHEMA_GENERATION_NONE_ACTION = "none";
 
     /**
-     * The parameter value {@code verify}
+     * The parameter value {@code validate}
      * <p>For use with the {@code jakarta.persistence.schema-generation.database.action}
-     * and {@code jakarta.persistence.schema-generation.scripts.action} properties.</p>
-     * <p>Specifies that database tables should be verified.</p>
+     * property only.</p>
+     * <p>Validates database tables without executing a configured SQL load script.</p>
+     */
+    public static final String SCHEMA_GENERATION_VALIDATE_ACTION = "validate";
+
+    /**
+     * The parameter value {@code populate}
+     * <p>For use with the {@code jakarta.persistence.schema-generation.database.action}
+     * property only.</p>
+     * <p>Executes a configured SQL load script without creating or dropping tables.</p>
+     */
+    public static final String SCHEMA_GENERATION_POPULATE_ACTION = "populate";
+
+    /**
+     * The legacy parameter value {@code verify}
+     * <p>For use with the {@code jakarta.persistence.schema-generation.database.action}
+     * property only.</p>
+     * <p>Validates database tables and then executes a configured SQL load script.
+     * Use {@code validate} for standard validation without loading.</p>
      */
     public static final String SCHEMA_GENERATION_VERIFY_ACTION = "verify";
 
