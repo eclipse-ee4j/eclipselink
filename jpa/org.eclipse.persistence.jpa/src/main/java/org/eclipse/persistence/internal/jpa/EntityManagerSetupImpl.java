@@ -4907,6 +4907,10 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
      * not careful.
      */
     protected void writeSourceScriptToDatabase(Object source, DatabaseSessionImpl session, ClassLoader loader) {
+        executeSourceScript(source, session, loader);
+    }
+
+    static void executeSourceScript(Object source, DatabaseSessionImpl session, ClassLoader loader) {
         if (source != null) {
             Reader reader = null;
 

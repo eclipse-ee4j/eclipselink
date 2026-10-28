@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -28,9 +28,11 @@ import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.tools.schemaframework.TableValidationException;
 
 import static java.util.Locale.ROOT;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_GENERATION_SQL_LOAD_SCRIPT_SOURCE;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_VALIDATION_MODE;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_VALIDATION_MODE_FULL;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.SCHEMA_VALIDATION_MODE_SIMPLE;
+import static org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider.getConfigProperty;
 import static org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider.getConfigPropertyAsString;
 
 // Maps EclipseLink core API to jakarta.persistence.SchemaManager
@@ -42,12 +44,15 @@ class SchemaManagerImpl implements SchemaManager {
     // EclipseLink schema manager
     private final org.eclipse.persistence.tools.schemaframework.SchemaManager schemaManager;
 
+    private final DatabaseSessionImpl session;
+
     // Persistence unit properties
     final Map<String, ?> properties;
 
     SchemaManagerImpl(DatabaseSessionImpl session, Map<String, ?> props) {
         this.schemaManager = new org.eclipse.persistence.tools.schemaframework.SchemaManager(session);
         this.properties = props;
+        this.session = session;
     }
 
     @Override
@@ -97,8 +102,12 @@ class SchemaManagerImpl implements SchemaManager {
 
     @Override
     public void populate() {
-        throw new UnsupportedOperationException("Not yet implemented");
-
+        if (session.isSessionBroker()) {
+            throw new UnsupportedOperationException("Population is not supported for composite persistence units");
+        }
+        Object source = getConfigProperty(SCHEMA_GENERATION_SQL_LOAD_SCRIPT_SOURCE, properties);
+        EntityManagerSetupImpl.executeSourceScript(source, session,
+                session.getDatasourcePlatform().getConversionManager().getLoader());
     }
 
 }
