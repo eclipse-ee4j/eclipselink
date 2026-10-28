@@ -25,6 +25,7 @@ import java.util.Objects;
 
 import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.internal.expressions.FunctionExpression;
+import org.eclipse.persistence.internal.expressions.MapEntryExpression;
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
 import org.eclipse.persistence.internal.jpa.metamodel.MetamodelImpl;
 import org.eclipse.persistence.internal.queries.ReportItem;
@@ -62,7 +63,7 @@ final class JPQLCriteriaHelper {
             seed.copyFromQuery(source);
         }
         if (type == null) {
-            type = (Class<T>) resultType(seed);
+            type = (Class<T>) resultType(builder, seed);
         }
         ImportedSelect<T> result = new ImportedSelect<>(builder, type, seed);
         RootImpl root = root(builder, source);
@@ -99,7 +100,7 @@ final class JPQLCriteriaHelper {
             if (!replaceSelection) {
                 List<Selection<?>> selections = new ArrayList<>();
                 for (ReportItem item : report.getItems()) {
-                    selections.add(selection(builder, item));
+                    selections.add(selection(builder, report, item));
                 }
                 result.selection = (SelectionImpl) (selections.size() == 1 ? selections.get(0)
                         : new CompoundSelectionImpl<>(type, selections.toArray(new Selection<?>[0])));
@@ -168,22 +169,15 @@ final class JPQLCriteriaHelper {
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
-    private static Selection<?> selection(CriteriaBuilderImpl builder, ReportItem item) {
+    private static Selection<?> selection(CriteriaBuilderImpl builder, ReportQuery query, ReportItem item) {
         if (item instanceof ConstructorReportItem constructor) {
-            Selection<?>[] arguments = constructor.getReportItems().stream().map(nested -> selection(builder, nested)).toArray(Selection<?>[]::new);
+            Selection<?>[] arguments = constructor.getReportItems().stream().map(nested -> selection(builder, query, nested)).toArray(Selection<?>[]::new);
             return new ConstructorSelectionImpl<>(constructor.getResultType(), arguments);
         }
-        Class<?> type = item.getResultType();
-        if (type == null && item.getDescriptor() != null) {
-            type = item.getDescriptor().getJavaClass();
-        }
-        if (type == null && item.getMapping() != null) {
-            type = item.getMapping().getAttributeClassification();
-        }
-        return new ExpressionImpl(builder.metamodel, type == null ? Object.class : type, item.getAttributeExpression()).alias(item.getName());
+        return new ExpressionImpl(builder.metamodel, resultType(builder, query, item), item.getAttributeExpression()).alias(item.getName());
     }
 
-    private static Class<?> resultType(ReadAllQuery query) {
+    private static Class<?> resultType(CriteriaBuilderImpl builder, ReadAllQuery query) {
         if (query instanceof ReportQuery report) {
             if (report.getResultClass() != null) {
                 return report.getResultClass();
@@ -191,10 +185,32 @@ final class JPQLCriteriaHelper {
             if (report.getItems().size() != 1) {
                 return Object[].class;
             }
-            Class<?> type = report.getItems().get(0).getResultType();
-            return type == null ? Object.class : type;
+            return resultType(builder, report, report.getItems().get(0));
         }
         return query.getReferenceClass();
+    }
+
+    private static Class<?> resultType(CriteriaBuilderImpl builder, ReportQuery query, ReportItem item) {
+        if (item.getResultType() != null) {
+            return item.getResultType();
+        }
+        var descriptor = item.getDescriptor();
+        var mapping = item.getMapping();
+        if (descriptor == null && mapping == null && item.getAttributeExpression() != null
+                && !(item.getAttributeExpression() instanceof MapEntryExpression entry && entry.shouldReturnMapEntry())) {
+            // Resolve domain metadata without preparing SQL or initializing shared report items.
+            var session = ((MetamodelImpl) builder.metamodel).getSession();
+            var expression = item.getAttributeExpression();
+            mapping = expression.getLeafMapping(query, query.getDescriptor(), session);
+            if (expression.isExpressionBuilder() || (mapping != null && mapping.isForeignReferenceMapping())) {
+                descriptor = expression.getLeafDescriptor(query, query.getDescriptor(), session);
+            }
+        }
+        if (descriptor != null) {
+            return descriptor.getJavaClass();
+        }
+        Class<?> type = mapping == null ? null : mapping.getAttributeClassification();
+        return type == null ? Object.class : type;
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
