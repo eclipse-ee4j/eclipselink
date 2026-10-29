@@ -4172,7 +4172,13 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                 for (Object attribute : manType.getDeclaredAttributes()) {
                     try {
                         fieldName = ((Attribute) attribute).getName();
-                        PrivilegedAccessHelper.getDeclaredField(clazz, fieldName, false).set(clazz, attribute);
+                        Field field = PrivilegedAccessHelper.getDeclaredField(clazz, fieldName, false);
+                        Object previous = field.get(null);
+                        field.set(clazz, attribute);
+                        if (previous instanceof AttributeProxyImpl proxy) {
+                            // A caller may retain the lazy proxy that triggered this deployment.
+                            proxy.setAttribute((Attribute) attribute);
+                        }
                     } catch (NoSuchFieldException nsfe) {
                         // Ignore fields missing in canonical model (dclarke bug 346106)
                     } catch (Exception e) {
@@ -4367,7 +4373,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                         AttributeProxyImpl proxy = null;
                         if (assignedAttribute == null){
                             if (SingularAttribute.class.isAssignableFrom(attribute.getType())){
-                                proxy = new SingularAttributeProxyImpl();
+                                proxy = SingularAttributeProxyImpl.create(attribute.getType());
                             } else if (MapAttribute.class.isAssignableFrom(attribute.getType())){
                                 proxy = new MapAttributeProxyImpl();
                             } else if (SetAttribute.class.isAssignableFrom(attribute.getType())){

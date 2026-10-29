@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,12 +23,15 @@ package org.eclipse.persistence.internal.jpa.metamodel;
 
 import java.io.Serial;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 import jakarta.persistence.metamodel.Bindable;
 import jakarta.persistence.metamodel.SingularAttribute;
 import jakarta.persistence.metamodel.Type;
 
 import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
+import org.eclipse.persistence.internal.descriptors.InstanceVariableAttributeAccessor;
+import org.eclipse.persistence.internal.descriptors.MethodAttributeAccessor;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.AggregateMapping;
@@ -91,11 +94,7 @@ public class SingularAttributeImpl<X, T> extends AttributeImpl<X, T> implements 
             if(mapping instanceof ForeignReferenceMapping) {// handles @ManyToOne
                 attributeClass = ((ForeignReferenceMapping)mapping).getReferenceClass();
             } else if (mapping.isAbstractDirectMapping()) { // Also handles the keys of an EmbeddedId
-                attributeClass = mapping.getField().getType();
-                if(null == attributeClass) {
-                    // lookup the attribute on the containing class
-                    attributeClass = managedType.getTypeClassFromAttributeOrMethodLevelAccessor(mapping);
-                }
+                attributeClass = basicAttributeClass(managedType, mapping);
             } else if (mapping.isAggregateObjectMapping()) { // IE: EmbeddedId
                 attributeClass = ((AggregateMapping)mapping).getReferenceClass();
             } else if (mapping.isVariableOneToOneMapping()) { // interfaces are unsupported in the JPA 2.0 spec for the Metamodel API
@@ -125,6 +124,51 @@ public class SingularAttributeImpl<X, T> extends AttributeImpl<X, T> implements 
             AbstractSessionLog.getLog().log(SessionLog.FINEST, SessionLog.METAMODEL, "metamodel_attribute_class_type_is_null", this);
         }
         elementType = (Type<T>) getMetamodel().getType(attributeClass);
+    }
+
+    /** Resolve the domain type before any converter's relational field type. */
+    static Class<?> basicAttributeClass(ManagedTypeImpl<?> managedType, DatabaseMapping mapping) {
+        Class<?> type = mapping.getAttributeClassification();
+        if (type == null) {
+            type = managedType.getTypeClassFromAttributeOrMethodLevelAccessor(mapping);
+            if (type == null && mapping.getField() != null) {
+                type = mapping.getField().getType();
+            }
+        }
+        return type;
+    }
+
+    /** Preserve generic field/property bindings for specialization, without changing public Class metadata. */
+    static java.lang.reflect.Type basicAttributeType(ManagedTypeImpl<?> managedType, DatabaseMapping mapping) {
+        if (mapping.getAttributeAccessor() instanceof MethodAttributeAccessor accessor) {
+            Method method = accessor.getGetMethod();
+            if (method != null) {
+                return method.getGenericReturnType();
+            }
+            String name = accessor.getGetMethodName();
+            if (name != null) {
+                for (Class<?> type = managedType.getJavaType(); type != null; type = type.getSuperclass()) {
+                    try {
+                        return type.getDeclaredMethod(name).getGenericReturnType();
+                    } catch (NoSuchMethodException ignored) {
+                        // A mapped member may be inherited.
+                    }
+                }
+            }
+        } else if (mapping.getAttributeAccessor() instanceof InstanceVariableAttributeAccessor accessor) {
+            Field field = accessor.getAttributeField();
+            if (field != null) {
+                return field.getGenericType();
+            }
+            for (Class<?> type = managedType.getJavaType(); type != null; type = type.getSuperclass()) {
+                try {
+                    return type.getDeclaredField(mapping.getAttributeName()).getGenericType();
+                } catch (NoSuchFieldException ignored) {
+                    // Uninitialized mapped-superclass accessors still have their declared field.
+                }
+            }
+        }
+        return basicAttributeClass(managedType, mapping);
     }
 
     /**
