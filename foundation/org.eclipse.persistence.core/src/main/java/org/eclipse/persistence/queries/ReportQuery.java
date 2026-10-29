@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2026 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -965,6 +965,22 @@ public class ReportQuery extends ReadAllQuery {
      */
     @Override
     public Object executeDatabaseQuery() throws DatabaseException {
+        AbstractSession executionSession = this.session;
+        UnitOfWorkImpl.RefreshOperation operation = beginEagerRefreshOperation();
+        boolean completed = false;
+        try {
+            Object result = executeReportQueryWithRefreshOperation();
+            completed = true;
+            return result;
+        } finally {
+            setSession(executionSession);
+            if (operation != null) {
+                ((UnitOfWorkImpl)executionSession).completeRefreshOperation(operation, completed);
+            }
+        }
+    }
+
+    private Object executeReportQueryWithRefreshOperation() throws DatabaseException {
         // ensure a pessimistic locking query will go down the write connection
        if (isLockQuery() && getSession().isUnitOfWork()) {
             UnitOfWorkImpl unitOfWork = (UnitOfWorkImpl)getSession();

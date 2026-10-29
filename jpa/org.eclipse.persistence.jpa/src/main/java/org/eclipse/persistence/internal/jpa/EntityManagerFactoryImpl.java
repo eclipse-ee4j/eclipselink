@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2026 Contributors to the Eclipse Foundation.
- * Copyright (c) 2011, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -61,6 +61,7 @@ import org.eclipse.persistence.config.ReferenceMode;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.VersionLockingPolicy;
 import org.eclipse.persistence.internal.indirection.IndirectionPolicy;
+import org.eclipse.persistence.internal.jpa.metadata.listeners.EntityListenerRegistry;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
@@ -96,7 +97,18 @@ import static org.eclipse.persistence.internal.jpa.OptionUtils.parseCreateOption
  */
 public class EntityManagerFactoryImpl implements EntityManagerFactory, PersistenceUnitUtil, JpaEntityManagerFactory {
 
-    protected EntityManagerFactoryDelegate delegate;
+    protected volatile EntityManagerFactoryDelegate delegate;
+
+    /** Registrations belong to this factory, including all metadata generations. */
+    private final EntityListenerRegistry entityListenerRegistry = new EntityListenerRegistry();
+
+    EntityListenerRegistry getEntityListenerRegistry() {
+        return entityListenerRegistry;
+    }
+
+    boolean isCurrentDelegate(EntityManagerFactoryDelegate candidate) {
+        return delegate == candidate;
+    }
 
     /**
      * Returns the id of the entity. A generated id is not guaranteed to be
@@ -407,7 +419,7 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
             }
         } catch (RuntimeException ex) {
             if(delegate != null) {
-                delegate.close();
+                delegate.closeForMetadataRefresh();
             } else {
                 newSetupImpl.undeploy();
             }
@@ -988,7 +1000,7 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
 
     @Override
     public <E> EntityListenerRegistration addListener(Class<E> entityType, Class<? extends Annotation> callbackType, Consumer<? super E> listener) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        return delegate.addListener(entityType, callbackType, listener);
     }
 
     @Override

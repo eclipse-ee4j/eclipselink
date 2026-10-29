@@ -84,6 +84,9 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
 
     /** PERF: Cache if any events listener exist. */
     protected boolean hasAnyEventListeners;
+
+    /** Monotonic activation only; no factory or application listener is retained. */
+    private volatile boolean hasProgrammaticEventListeners;
     public static final int PreWriteEvent = 0;
     public static final int PostWriteEvent = 1;
     public static final int PreDeleteEvent = 2;
@@ -272,6 +275,57 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
         }
     }
 
+    /**
+     * INTERNAL: Preserve native cache refresh notifications while the managed
+     * target's JPA callbacks are deferred until after its state is merged.
+     */
+    public void executeRefreshSourceEvent(DescriptorEvent event) {
+        int originalCode = event.getEventCode();
+        try {
+            executeEventInternal(event, true);
+        } finally {
+            event.setEventCode(originalCode);
+        }
+    }
+
+    /**
+     * INTERNAL: Deliver only the completed managed target's JPA phase.
+     */
+    public void executeEntityRefreshEvent(DescriptorEvent event) {
+        int originalCode = event.getEventCode();
+        try {
+            event.getSession().startOperationProfile(SessionProfiler.DescriptorEvent);
+            event.setDescriptor(getDescriptor());
+            if (!"LOCK".equals(getEntityAgentOperation(event))) {
+                notifyEJB30Listeners(event);
+            }
+        } finally {
+            event.setEventCode(originalCode);
+            event.getSession().endOperationProfile(SessionProfiler.DescriptorEvent);
+        }
+    }
+
+    /**
+     * INTERNAL: Keep the native clone notification in its ordinary deferred
+     * position, while the refresh operation owns its separate JPA phase.
+     */
+    public DescriptorEvent createRefreshCloneEvent(DescriptorEvent event) {
+        DescriptorEvent nativeEvent = new NativeRefreshCloneEvent(event.getObject());
+        nativeEvent.setEventCode(event.getEventCode());
+        nativeEvent.setDescriptor(event.getDescriptor());
+        nativeEvent.setSession(event.getSession());
+        nativeEvent.setOriginalObject(event.getOriginalObject());
+        nativeEvent.setQuery(event.getQuery());
+        nativeEvent.setRecord(event.getRecord());
+        return nativeEvent;
+    }
+
+    private static final class NativeRefreshCloneEvent extends DescriptorEvent {
+        private NativeRefreshCloneEvent(Object entity) {
+            super(entity);
+        }
+    }
+
     private Object getEntityAgentOperation(DescriptorEvent event) {
         Object operation = event.getQuery() == null ? null
                 : event.getQuery().getProperty(EntityAgentProperties.OPERATION);
@@ -284,6 +338,10 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
     }
 
     private void executeEventInternal(DescriptorEvent event) throws DescriptorException {
+        executeEventInternal(event, false);
+    }
+
+    private void executeEventInternal(DescriptorEvent event, boolean refreshSource) throws DescriptorException {
         try {
             event.getSession().startOperationProfile(SessionProfiler.DescriptorEvent);
             // CR#3467758, ensure the descriptor is set on the event.
@@ -293,7 +351,7 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
             // Preserve core descriptor notifications without entity callbacks or
             // automatic validation for this internal version write.
             boolean lockWrite = "LOCK".equals(getEntityAgentOperation(event));
-            if (!lockWrite) {
+            if (!lockWrite && !refreshSource && !(event instanceof NativeRefreshCloneEvent)) {
                 int physicalCode = event.getEventCode();
                 try {
                     // Only JPA callbacks and automatic validation use upsert
@@ -597,7 +655,14 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
         // Check listeners in case of collection added to directly as occurs
         // for aggregates that have a clone of the event manager but not the
         // listeners.
-        return hasAnyEventListeners || hasAnyListeners();
+        return hasProgrammaticEventListeners || hasAnyEventListeners || hasAnyListeners();
+    }
+
+    /**
+     * INTERNAL: Enable context callbacks, including for descriptors initialized earlier.
+     */
+    public void enableProgrammaticEventListeners() {
+        this.hasProgrammaticEventListeners = true;
     }
 
     protected boolean hasAnyListeners() {
@@ -759,6 +824,12 @@ public class DescriptorEventManager extends CoreDescriptorEventManager<Descripto
                 DescriptorEventListener listener = entityListenerEventListeners.get(i);
                 notifyListener(listener, event);
             }
+        }
+
+        // Runtime listeners are direct associations, independent of metadata exclusions.
+        DescriptorEventListener contextListener = event.getSession().getEntityListener();
+        if (contextListener != null) {
+            notifyListener(contextListener, event);
         }
 
         // Step 3 - Notify the Entity event listeners. top -> down, unless

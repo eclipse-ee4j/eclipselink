@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -143,6 +143,120 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     public final String CREATION_THREAD_NAME = String.copyValueOf(Thread.currentThread().getName().toCharArray());
     public final long CREATION_THREAD_HASHCODE = Thread.currentThread().hashCode();
     private String creationThreadStackTrace;
+
+    /** An exact-query refresh invocation; unrelated cloning never authorizes it. */
+    private transient RefreshOperation refreshOperation;
+
+    /** Explicit handoff while cloning this refresh's object graph. */
+    private transient RefreshOperation refreshCloneOperation;
+
+    /**
+     * INTERNAL: Own only this invocation's JPA phases, outside the legacy
+     * deferred queue. Native notifications keep their existing queue positions.
+     */
+    public static final class RefreshOperation {
+        private final UnitOfWorkImpl unitOfWork;
+        private final ObjectBuildingQuery query;
+        private final RefreshOperation previous;
+        private final Map<Object, DescriptorEvent> events = new IdentityHashMap<>();
+        private final List<Object> targets = new ArrayList<>();
+        private boolean completed;
+
+        private RefreshOperation(UnitOfWorkImpl unitOfWork, ObjectBuildingQuery query, RefreshOperation previous) {
+            this.unitOfWork = unitOfWork;
+            this.query = query;
+            this.previous = previous;
+        }
+
+        public boolean capturePostClone(DescriptorEvent event) {
+            if (this.completed || event.getSession() != this.unitOfWork
+                    || event.getEventCode() != DescriptorEventManager.PostCloneEvent
+                    || (event.getQuery() != null && event.getQuery() != this.query)
+                    || !event.getDescriptor().isDescriptorTypeNormal()) {
+                return false;
+            }
+            Object target = event.getObject();
+            if (!this.events.containsKey(target)) {
+                this.targets.add(target);
+            }
+            DescriptorEvent phase = new DescriptorEvent(target);
+            phase.setOriginalObject(event.getOriginalObject());
+            phase.setDescriptor(event.getDescriptor());
+            phase.setSession(event.getSession());
+            phase.setRecord(event.getRecord());
+            phase.setEventCode(event.getEventCode());
+            phase.setQuery(this.query);
+            this.events.put(target, phase);
+            return true;
+        }
+
+        public void recordRefresh(Object target, Object original, ClassDescriptor descriptor) {
+            if (this.completed || this.events.containsKey(target) || !descriptor.isDescriptorTypeNormal()
+                    || !descriptor.getEventManager().hasAnyEventListeners()) {
+                return;
+            }
+            DescriptorEvent event = new DescriptorEvent(target);
+            event.setOriginalObject(original);
+            event.setDescriptor(descriptor);
+            event.setSession(this.unitOfWork);
+            event.setQuery(this.query);
+            event.setEventCode(DescriptorEventManager.PostRefreshEvent);
+            this.events.put(target, event);
+            this.targets.add(target);
+        }
+    }
+
+    /** INTERNAL: Borrow only this exact executing query's active invocation. */
+    public RefreshOperation getRefreshOperation(ObjectBuildingQuery query) {
+        return this.refreshOperation != null && this.refreshOperation.query == query && !this.refreshOperation.completed
+                ? this.refreshOperation : null;
+    }
+
+    public RefreshOperation beginRefreshOperation(ObjectBuildingQuery query) {
+        RefreshOperation operation = new RefreshOperation(this, query, this.refreshOperation);
+        this.refreshOperation = operation;
+        return operation;
+    }
+
+    public void completeRefreshOperation(RefreshOperation operation, boolean success) {
+        if (operation.completed) {
+            return;
+        }
+        operation.completed = true;
+        this.refreshOperation = operation.previous;
+        try {
+            if (success) {
+                for (Object target : operation.targets) {
+                    DescriptorEvent event = operation.events.get(target);
+                    event.getDescriptor().getEventManager().executeEntityRefreshEvent(event);
+                }
+            }
+        } finally {
+            operation.events.clear();
+            operation.targets.clear();
+        }
+    }
+
+    /** Capture only a clone explicitly associated with the current cloning tree. */
+    public void deferPostCloneEvent(DescriptorEvent event) {
+        if (this.refreshCloneOperation != null && this.refreshCloneOperation == this.refreshOperation
+                && this.refreshCloneOperation.capturePostClone(event)) {
+            deferEvent(event.getDescriptor().getEventManager().createRefreshCloneEvent(event));
+        } else {
+            deferEvent(event);
+        }
+    }
+
+    @Override
+    public void executeDeferredEvents() {
+        RefreshOperation previous = this.refreshCloneOperation;
+        this.refreshCloneOperation = null;
+        try {
+            super.executeDeferredEvents();
+        } finally {
+            this.refreshCloneOperation = previous;
+        }
+    }
 
     /* Fix made for weak caches to avoid garbage collection of the originals. */
     /* As well as used as lookup in merge algorithm for aggregates and others */
@@ -1048,6 +1162,10 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * as it will be used for locking.
      */
     public Object cloneAndRegisterObject(Object original, CacheKey parentCacheKey, CacheKey unitOfWorkCacheKey, ClassDescriptor descriptor) {
+        return cloneAndRegisterObject(original, parentCacheKey, unitOfWorkCacheKey, descriptor, this.refreshCloneOperation);
+    }
+
+    public Object cloneAndRegisterObject(Object original, CacheKey parentCacheKey, CacheKey unitOfWorkCacheKey, ClassDescriptor descriptor, RefreshOperation operation) {
         ClassDescriptor concreteDescriptor = descriptor;
         // Ensure correct subclass descriptor.
         if (original.getClass() != descriptor.getJavaClass()) {
@@ -1108,8 +1226,14 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
 
             //store this for look up later
             getCloneToOriginals().put(workingClone, original);
-            // just clone it.
-            populateAndRegisterObject(original, workingClone, unitOfWorkCacheKey, parentCacheKey, concreteDescriptor);
+            // Only mapping clone recursion inherits this explicit handoff.
+            RefreshOperation previous = this.refreshCloneOperation;
+            this.refreshCloneOperation = operation;
+            try {
+                populateAndRegisterObject(original, workingClone, unitOfWorkCacheKey, parentCacheKey, concreteDescriptor);
+            } finally {
+                this.refreshCloneOperation = previous;
+            }
 
             //also clone the fetch group reference if applied
             if (concreteDescriptor.hasFetchGroupManager()) {
@@ -3052,6 +3176,28 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         iterator.startIterationOn(startNode);
     }
 
+    /** INTERNAL: The parent-cache lookup can itself clone and register a refresh target. */
+    Object getRefreshTarget(Object primaryKey, ClassDescriptor descriptor, RefreshOperation operation) {
+        RefreshOperation previous = this.refreshCloneOperation;
+        this.refreshCloneOperation = operation;
+        try {
+            return getIdentityMapAccessorInstance().getFromIdentityMap(primaryKey, null, descriptor.getJavaClass(), false, descriptor);
+        } finally {
+            this.refreshCloneOperation = previous;
+        }
+    }
+
+    /** INTERNAL: Associate internal registration with its explicit refresh operation. */
+    Object internalRegisterObject(Object object, ClassDescriptor descriptor, boolean isShallowClone, RefreshOperation operation) {
+        RefreshOperation previous = this.refreshCloneOperation;
+        this.refreshCloneOperation = operation;
+        try {
+            return internalRegisterObject(object, descriptor, isShallowClone);
+        } finally {
+            this.refreshCloneOperation = previous;
+        }
+    }
+
     /**
      * INTERNAL:
      * Register the object with the unit of work.
@@ -3536,6 +3682,21 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * Merge the attributes of the clone into the unit of work copy.
      */
     public Object mergeClone(Object rmiClone, int cascadeDepth, boolean forRefresh) {
+        return mergeClone(rmiClone, cascadeDepth, forRefresh, null);
+    }
+
+    /** Only the exact executing refresh query may authorize managed load phases. */
+    public Object mergeClone(Object rmiClone, int cascadeDepth, boolean forRefresh, ObjectBuildingQuery query) {
+        RefreshOperation previous = this.refreshCloneOperation;
+        this.refreshCloneOperation = null;
+        try {
+            return mergeCloneForQuery(rmiClone, cascadeDepth, forRefresh, query);
+        } finally {
+            this.refreshCloneOperation = previous;
+        }
+    }
+
+    private Object mergeCloneForQuery(Object rmiClone, int cascadeDepth, boolean forRefresh, ObjectBuildingQuery query) {
         if (rmiClone == null) {
             return null;
         }
@@ -3544,23 +3705,26 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         logDebugMessage(rmiClone, "merge_clone");
 
         startOperationProfile(SessionProfiler.Merge);
-        ObjectBuilder builder = getDescriptor(rmiClone).getObjectBuilder();
-        Object implementation = builder.unwrapObject(rmiClone, this);
-
-        MergeManager manager = new MergeManager(this);
-        manager.mergeCloneIntoWorkingCopy();
-        manager.setCascadePolicy(cascadeDepth);
-        manager.setForRefresh(forRefresh);
-
-        Object merged = null;
         try {
-            merged = manager.mergeChanges(implementation, null, this);
-        } catch (RuntimeException exception) {
-            merged = handleException(exception);
-        }
-        endOperationProfile(SessionProfiler.Merge);
+            ObjectBuilder builder = getDescriptor(rmiClone).getObjectBuilder();
+            Object implementation = builder.unwrapObject(rmiClone, this);
 
-        return merged;
+            MergeManager manager = new MergeManager(this);
+            manager.mergeCloneIntoWorkingCopy();
+            manager.setCascadePolicy(cascadeDepth);
+            manager.setForRefresh(forRefresh);
+            if (forRefresh && query != null) {
+                manager.setRefreshOperation(getRefreshOperation(query));
+            }
+
+            try {
+                return manager.mergeChanges(implementation, null, this);
+            } catch (RuntimeException exception) {
+                return handleException(exception);
+            }
+        } finally {
+            endOperationProfile(SessionProfiler.Merge);
+        }
     }
 
     /**
@@ -4067,6 +4231,19 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             return builder.wrapObject(registeredObject, this);
         } else {
             return registeredObject;
+        }
+    }
+
+    /** INTERNAL: A copied or ordinary query cannot inherit a cloning handoff. */
+    public Object registerExistingObject(Object objectToRegister, ClassDescriptor descriptor, Object queryPrimaryKey,
+            boolean isFromSharedCache, ObjectBuildingQuery query) {
+        RefreshOperation previous = this.refreshCloneOperation;
+        this.refreshCloneOperation = this.refreshOperation != null && this.refreshOperation.query == query
+                ? this.refreshOperation : null;
+        try {
+            return registerExistingObject(objectToRegister, descriptor, queryPrimaryKey, isFromSharedCache);
+        } finally {
+            this.refreshCloneOperation = previous;
         }
     }
 

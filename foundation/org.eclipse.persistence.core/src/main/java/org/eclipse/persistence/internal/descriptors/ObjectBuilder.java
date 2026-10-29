@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2026 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -670,7 +670,11 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             } else {
                 event.setEventCode(DescriptorEventManager.PostBuildEvent);
             }
-            descriptorEventManager.executeEvent(event);
+            if (forRefresh && query.isRefreshSource()) {
+                descriptorEventManager.executeRefreshSourceEvent(event);
+            } else {
+                descriptorEventManager.executeEvent(event);
+            }
         }
     }
 
@@ -1049,6 +1053,11 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
         Object clone = unitOfWorkCacheKey.getObject();
         boolean found = clone != null;
         Object original = null;
+        boolean deferRefresh = query.shouldRefreshIdentityMapResult() && query.isRegisteringResults()
+                && !unitOfWork.isClassReadOnly(concreteDescriptor.getJavaClass(), concreteDescriptor);
+        UnitOfWorkImpl.RefreshOperation refreshOperation = null;
+        boolean ownsRefreshOperation = false;
+        boolean refreshComplete = false;
         try {
             // Only check parent cache if not in unit of work, or if a refresh is required.
             if (!found || query.shouldRefreshIdentityMapResult()
@@ -1073,8 +1082,17 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                         return query.registerIndividualResult(original, primaryKey, unitOfWork, null, concreteDescriptor);
                     }
                 } else {
+                    if (deferRefresh) {
+                        refreshOperation = unitOfWork.getRefreshOperation(query);
+                        if (refreshOperation == null) {
+                            refreshOperation = unitOfWork.beginRefreshOperation(query);
+                            ownsRefreshOperation = true;
+                        }
+                    }
                     // PERF: This optimizes the normal case to avoid duplicate cache access.
-                    CacheKey parentCacheKey = (CacheKey)buildObject(true, query, databaseRow, session, primaryKey, preFetchedCacheKey, concreteDescriptor, joinManager);
+                    CacheKey parentCacheKey = deferRefresh
+                            ? buildRefreshSource(query, databaseRow, session, primaryKey, preFetchedCacheKey, concreteDescriptor, joinManager)
+                            : (CacheKey)buildObject(true, query, databaseRow, session, primaryKey, preFetchedCacheKey, concreteDescriptor, joinManager);
                     original = parentCacheKey.getObject();
                     if (query.shouldCacheQueryResults()) {
                         query.cacheResult(original);
@@ -1090,7 +1108,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                         return original;
                     }
                     if (clone == null) {
-                        clone = unitOfWork.cloneAndRegisterObject(original, parentCacheKey, unitOfWorkCacheKey, concreteDescriptor);
+                        clone = unitOfWork.cloneAndRegisterObject(original, parentCacheKey, unitOfWorkCacheKey, concreteDescriptor, refreshOperation);
                         // TODO-dclarke: At this point the clones do not have their fetch-group specified
                         // relationship attributes loaded
                     }
@@ -1106,11 +1124,26 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                 }
             }
             query.postRegisterIndividualResult(clone, original, primaryKey, unitOfWork, joinManager, concreteDescriptor);
+            refreshComplete = true;
         } finally {
             unitOfWorkCacheKey.release();
             query.setSession(unitOfWork);
+            if (ownsRefreshOperation) {
+                unitOfWork.completeRefreshOperation(refreshOperation, refreshComplete);
+            }
         }
         return clone;
+    }
+
+    /**
+     * Suppress this cache source and only explicitly derived relationship
+     * sources until the shared-cache construction completes.
+     */
+    protected CacheKey buildRefreshSource(ObjectBuildingQuery query, AbstractRecord databaseRow, AbstractSession session,
+            Object primaryKey, CacheKey preFetchedCacheKey, ClassDescriptor concreteDescriptor, JoinedAttributeManager joinManager) {
+        try (ObjectBuildingQuery.RefreshSourceScope scope = query.beginRefreshSource()) {
+            return (CacheKey)buildObject(true, query, databaseRow, session, primaryKey, preFetchedCacheKey, concreteDescriptor, joinManager);
+        }
     }
 
     /**
@@ -2385,7 +2418,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                         if (descriptor.getCachePolicy().isSharedIsolation() || !descriptor.shouldIsolateProtectedObjectsInUnitOfWork()) {
                             // using shared isolation and the original is from the shared cache
                             // or using protected isolation and isolated client sessions
-                            return unitOfWork.cloneAndRegisterObject(original, originalCacheKey, unitOfWorkCacheKey, descriptor);
+                            return unitOfWork.cloneAndRegisterObject(original, originalCacheKey, unitOfWorkCacheKey, descriptor, null);
                         }
                     }
                 }
@@ -2443,7 +2476,11 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             if (!unitOfWork.wasTransactionBegunPrematurely() && descriptor.getCachePolicy().isProtectedIsolation() && !isIsolated && !query.shouldStoreBypassCache()) {
                 // we are at this point because we have isolated protected entities to the UnitOfWork
                 // we should ensure that we populate the cache as well.
-                originalCacheKey = (CacheKey) buildObject(true, query, databaseRow, unitOfWork.getParentIdentityMapSession(descriptor, false, true), primaryKey, preFetchedCacheKey, descriptor, joinManager);
+                AbstractSession cacheSession = unitOfWork.getParentIdentityMapSession(descriptor, false, true);
+                originalCacheKey = query.shouldRefreshIdentityMapResult() && query.isRegisteringResults()
+                        && !unitOfWork.isClassReadOnly(descriptor.getJavaClass(), descriptor)
+                        ? buildRefreshSource(query, databaseRow, cacheSession, primaryKey, preFetchedCacheKey, descriptor, joinManager)
+                        : (CacheKey)buildObject(true, query, databaseRow, cacheSession, primaryKey, preFetchedCacheKey, descriptor, joinManager);
             }
             //If we are unable to access the shared cache because of any of the above settings at this point
             // the cachekey will be null so the attribute building will not be able to access the shared cache.
@@ -4417,7 +4454,11 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             event.setOriginalObject(original);
             event.setDescriptor(descriptor);
             event.setEventCode(DescriptorEventManager.PostCloneEvent);
-            cloningSession.deferEvent(event);
+            if (cloningSession.isUnitOfWork()) {
+                ((UnitOfWorkImpl)cloningSession).deferPostCloneEvent(event);
+            } else {
+                cloningSession.deferEvent(event);
+            }
         }
     }
 

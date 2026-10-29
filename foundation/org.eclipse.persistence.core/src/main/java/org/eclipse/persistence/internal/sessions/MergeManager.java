@@ -58,6 +58,13 @@ import java.util.Set;
  */
 public class MergeManager {
 
+    /** Supplied only by the exact-query registration merge, never by legacy merges. */
+    private UnitOfWorkImpl.RefreshOperation refreshOperation;
+
+    void setRefreshOperation(UnitOfWorkImpl.RefreshOperation operation) {
+        this.refreshOperation = operation;
+    }
+
     /** The unit of work merging for. */
     protected AbstractSession session;
 
@@ -581,10 +588,10 @@ public class MergeManager {
             ClassDescriptor descriptor = unitOfWork.getDescriptor(rmiClone.getClass());
             Object primaryKey = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(rmiClone, unitOfWork, true);
             if (primaryKey != null) {
-                registeredObject = unitOfWork.getIdentityMapAccessorInstance().getFromIdentityMap(primaryKey, null, descriptor.getJavaClass(), false, descriptor);
+                registeredObject = unitOfWork.getRefreshTarget(primaryKey, descriptor, this.refreshOperation);
             }
             if (registeredObject == null){
-                return unitOfWork.internalRegisterObject(rmiClone, descriptor, false);
+                return unitOfWork.internalRegisterObject(rmiClone, descriptor, false, this.refreshOperation);
             }
         }else{
             registeredObject = registerObjectForMergeCloneIntoWorkingCopy(rmiClone, shouldForceCascade());
@@ -641,6 +648,9 @@ public class MergeManager {
 
         } finally {
             descriptor.getObjectChangePolicy().enableEventProcessing(registeredObject);
+        }
+        if (this.refreshOperation != null && isForRefresh && shouldMergeCloneIntoWorkingCopy()) {
+            this.refreshOperation.recordRefresh(registeredObject, rmiClone, descriptor);
         }
 
         return registeredObject;

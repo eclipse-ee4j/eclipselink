@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2014, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -41,6 +41,7 @@ import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.config.ReferenceMode;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.DescriptorEvent;
+import org.eclipse.persistence.descriptors.DescriptorEventListener;
 import org.eclipse.persistence.descriptors.DescriptorQueryManager;
 import org.eclipse.persistence.descriptors.TablePerMultitenantPolicy;
 import org.eclipse.persistence.descriptors.invalidation.CacheInvalidationPolicy;
@@ -344,6 +345,12 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
 
     /** Store the query builder used to parse JPQL. */
     transient protected JPAQueryBuilder queryBuilder;
+
+    /** Factory-owned callbacks belong to a context, never to its shared project. */
+    private transient volatile DescriptorEventListener entityListener;
+
+    /** Late descriptor activation requires no factory or listener ownership. */
+    private transient volatile boolean hasProgrammaticEventListeners;
 
     /** Set the Serializer to use by default for serialization. */
     transient protected Serializer serializer;
@@ -2224,6 +2231,40 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      */
     public AbstractSession getParent() {
         return null;
+    }
+
+    /**
+     * INTERNAL: Return the context listener, inheriting it from the owning parent.
+     */
+    public DescriptorEventListener getEntityListener() {
+        DescriptorEventListener listener = this.entityListener;
+        if (listener == null) {
+            AbstractSession parent = getParent();
+            return parent == null ? null : parent.getEntityListener();
+        }
+        return listener;
+    }
+
+    /**
+     * INTERNAL: Bind callbacks to an owned context without changing session properties.
+     */
+    public void setEntityListener(DescriptorEventListener listener) {
+        this.entityListener = listener;
+    }
+
+    /**
+     * INTERNAL: Request event activation before scanning the current descriptors.
+     * Pair with the post-install check to publish descriptor additions before the scan.
+     */
+    public synchronized void enableProgrammaticEventListeners() {
+        this.hasProgrammaticEventListeners = true;
+    }
+
+    /**
+     * INTERNAL: Return whether descriptors added to this session require event activation.
+     */
+    public synchronized boolean hasProgrammaticEventListeners() {
+        return this.hasProgrammaticEventListeners;
     }
 
     /**

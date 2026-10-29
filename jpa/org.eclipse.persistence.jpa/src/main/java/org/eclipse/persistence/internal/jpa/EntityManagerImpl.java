@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2026 Contributors to the Eclipse Foundation.
- * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2024 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -1556,7 +1556,9 @@ public class EntityManagerImpl implements JpaEntityManager {
     @Override
     public Session getSession() {
         if (checkForTransaction(false) == null) {
-            return this.databaseSession.acquireNonSynchronizedUnitOfWork(this.referenceMode);
+            UnitOfWorkImpl context = this.databaseSession.acquireNonSynchronizedUnitOfWork(this.referenceMode);
+            factory.bindEntityListener(context);
+            return context;
         }
         return null;
     }
@@ -1784,9 +1786,11 @@ public class EntityManagerImpl implements JpaEntityManager {
         }
         if (this.databaseSession.isServerSession()) {
             this.readOnlySession = ((ServerSession)this.databaseSession).acquireClientSession(connectionPolicy, properties);
+            factory.bindEntityListener((AbstractSession) this.readOnlySession);
             return this.readOnlySession;
         } else if(this.databaseSession.isBroker()) {
             this.readOnlySession = ((SessionBroker)this.databaseSession).acquireClientSessionBroker(this.connectionPolicies, (Map)this.properties.get(EntityManagerProperties.COMPOSITE_UNIT_PROPERTIES));
+            factory.bindEntityListener((AbstractSession) this.readOnlySession);
             return this.readOnlySession;
         } else {
             // currently this can't happen - the databaseSession is either ServerSession or SessionBroker.
@@ -2346,7 +2350,11 @@ public class EntityManagerImpl implements JpaEntityManager {
                 // currently this can't happen - the databaseSession is either ServerSession or SessionBroker.
                 client = this.databaseSession;
             }
+            if (client != this.databaseSession) {
+                factory.bindEntityListener(client);
+            }
             this.extendedPersistenceContext = client.acquireRepeatableWriteUnitOfWork(this.referenceMode);
+            factory.bindEntityListener(this.extendedPersistenceContext);
             this.extendedPersistenceContext.setResumeUnitOfWorkOnTransactionCompletion(!this.closeOnCommit);
             this.extendedPersistenceContext.setShouldDiscoverNewObjects(this.persistOnCommit);
             this.extendedPersistenceContext.setDiscoverUnregisteredNewObjectsWithoutPersist(this.commitWithoutPersistRules);
