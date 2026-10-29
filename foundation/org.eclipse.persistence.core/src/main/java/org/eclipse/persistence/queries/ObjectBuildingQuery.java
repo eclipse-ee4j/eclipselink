@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -113,6 +113,54 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
      * Default value null - value from printInnerJoinInWhereClause persistence unit property is used*/
     protected Boolean printInnerJoinInWhereClause;
 
+    /** Active cache-source construction; generic query copies are unauthorized. */
+    private transient RefreshSourceToken refreshSource;
+
+    private static final class RefreshSourceToken {
+        private volatile boolean active = true;
+    }
+
+    /**
+     * INTERNAL: Bounded source construction, independent of session/factory
+     * ownership. Closing expires all explicitly derived relationship queries.
+     */
+    public static final class RefreshSourceScope implements AutoCloseable {
+        private ObjectBuildingQuery query;
+        private RefreshSourceToken previous;
+        private RefreshSourceToken token;
+
+        private RefreshSourceScope(ObjectBuildingQuery query) {
+            this.query = query;
+            this.previous = query.refreshSource;
+            this.token = new RefreshSourceToken();
+            query.refreshSource = this.token;
+        }
+
+        @Override
+        public void close() {
+            if (this.query != null) {
+                this.token.active = false;
+                this.query.refreshSource = this.previous;
+                this.query = null;
+                this.previous = null;
+                this.token = null;
+            }
+        }
+    }
+
+    public RefreshSourceScope beginRefreshSource() {
+        return new RefreshSourceScope(this);
+    }
+
+    public boolean isRefreshSource() {
+        return this.refreshSource != null && this.refreshSource.active;
+    }
+
+    /** INTERNAL: Called only for an execution-local relationship query. */
+    public void inheritRefreshSource(ObjectBuildingQuery source) {
+        this.refreshSource = source.isRefreshSource() ? source.refreshSource : null;
+    }
+
     /**
      * INTERNAL:
      * Initialize the state of the query
@@ -130,6 +178,7 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
     public Object clone() {
         ObjectBuildingQuery cloneQuery = (ObjectBuildingQuery) super.clone();
         cloneQuery.isCacheCheckComplete = this.isCacheCheckComplete;
+        cloneQuery.refreshSource = null;
         return cloneQuery;
     }
     /**
@@ -228,6 +277,8 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
     @Override
     protected void prepareCustomQuery(DatabaseQuery customQuery) {
         ((ObjectBuildingQuery)customQuery).isCacheCheckComplete = this.isCacheCheckComplete;
+        // DatabaseQuery calls this only after preparing the final execution clone.
+        ((ObjectBuildingQuery)customQuery).inheritRefreshSource(this);
     }
 
     /**
@@ -467,7 +518,7 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
             //it is from a parent unit of work and this unit of work does not need to know if it is new
             //or not.  It will query the parent unit of work to determine newness.
 
-            clone = unitOfWork.registerExistingObject(result, concreteDescriptor, getQueryPrimaryKey(), true);
+            clone = unitOfWork.registerExistingObject(result, concreteDescriptor, getQueryPrimaryKey(), true, this);
         }
         postRegisterIndividualResult(clone, result, primaryKey, unitOfWork, joinManager, concreteDescriptor);
         return clone;
@@ -481,13 +532,13 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
         if (shouldRefreshIdentityMapResult()) {
 
             if (shouldCascadeAllParts()) {
-                unitOfWork.mergeClone(original, MergeManager.CASCADE_ALL_PARTS, true);
+                unitOfWork.mergeClone(original, MergeManager.CASCADE_ALL_PARTS, true, this);
             } else if (shouldCascadePrivateParts()) {
-                unitOfWork.mergeClone(original, MergeManager.CASCADE_PRIVATE_PARTS, true);
+                unitOfWork.mergeClone(original, MergeManager.CASCADE_PRIVATE_PARTS, true, this);
             } else if (shouldCascadeByMapping()) {
-                unitOfWork.mergeClone(original, MergeManager.CASCADE_BY_MAPPING, true);
+                unitOfWork.mergeClone(original, MergeManager.CASCADE_BY_MAPPING, true, this);
             } else if (!shouldCascadeParts()) {
-                unitOfWork.mergeClone(original, MergeManager.NO_CASCADE, true);
+                unitOfWork.mergeClone(original, MergeManager.NO_CASCADE, true, this);
             }
         }
         //bug 6130550: trigger indirection on the clone where required due to fetch joins on the query

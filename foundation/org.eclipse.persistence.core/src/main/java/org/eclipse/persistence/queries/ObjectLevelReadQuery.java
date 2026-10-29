@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2026 Contributors to the Eclipse Foundation.
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -1236,6 +1236,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             clone.dontAcquireLocks();
             clone.setIsPrepared(false);
             clone.checkPrePrepare(session);
+            clone.inheritRefreshSource(this);
             return clone;
         }
         return this;
@@ -1269,6 +1270,22 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      */
     @Override
     public Object executeDatabaseQuery() throws DatabaseException {
+        AbstractSession executionSession = this.session;
+        UnitOfWorkImpl.RefreshOperation operation = beginEagerRefreshOperation();
+        boolean completed = false;
+        try {
+            Object result = executeDatabaseQueryWithRefreshOperation();
+            completed = true;
+            return result;
+        } finally {
+            setSession(executionSession);
+            if (operation != null) {
+                ((UnitOfWorkImpl)executionSession).completeRefreshOperation(operation, completed);
+            }
+        }
+    }
+
+    private Object executeDatabaseQueryWithRefreshOperation() throws DatabaseException {
         // PERF: If the query has been set to optimize building its result
         // directly from the database result-set then follow an optimized path.
         if (this.isResultSetOptimizedQuery) {
@@ -1324,6 +1341,16 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             }
         }
         return result;
+    }
+
+    /** INTERNAL: Returned native cursors materialize later with row-local ownership. */
+    protected UnitOfWorkImpl.RefreshOperation beginEagerRefreshOperation() {
+        if (this.session instanceof UnitOfWorkImpl unitOfWork && shouldRefreshIdentityMapResult()
+                && isRegisteringResults() && !isReadOnly()
+                && !(this instanceof ReadAllQuery readAll && readAll.getContainerPolicy().isCursorPolicy())) {
+            return unitOfWork.beginRefreshOperation(this);
+        }
+        return null;
     }
 
     /**

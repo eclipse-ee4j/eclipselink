@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
- * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2020 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -668,6 +668,10 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
             // Execute each batch as a separate query so that nested batch relationships are not overwritten by the most
             // recent batch fetched Issue #1998
             ReadQuery batchQueryToExecute = (ReadQuery) batchQuery.clone();
+            if (originalQuery.isRefreshSource() && batchQueryToExecute instanceof ObjectBuildingQuery sourceBatch) {
+                sourceBatch.setIsExecutionClone(true);
+                sourceBatch.inheritRefreshSource(originalQuery);
+            }
             executeBatchQuery(batchQueryToExecute, parentCacheKey, batchedObjects, session, translationRow);
             batchQueryToExecute.setSession(null);
             batchQuery.setSession(null);
@@ -2415,6 +2419,13 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
         }
         targetQuery = prepareHistoricalQuery(targetQuery, sourceQuery, executionSession);
         targetQuery = FetchedLockContext.attachToSelection(targetQuery, sourceQuery);
+        if (sourceQuery.isRefreshSource() && targetQuery instanceof ObjectBuildingQuery) {
+            if (targetQuery == this.selectionQuery) {
+                targetQuery = (ReadQuery)targetQuery.clone();
+            }
+            targetQuery.setIsExecutionClone(true);
+            ((ObjectBuildingQuery)targetQuery).inheritRefreshSource(sourceQuery);
+        }
 
         return this.indirectionPolicy.valueFromQuery(targetQuery, row, executionSession);
     }
@@ -2526,6 +2537,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
             nestedQuery = prepareNestedJoins(null, sourceQuery, executionSession);
             nestedQuery.setSession(executionSession);
             nestedQuery.setPrefetchedCacheKeys(sourceQuery.getPrefetchedCacheKeys());
+            nestedQuery.inheritRefreshSource(sourceQuery);
             return nestedQuery;
         }
         // PERF: Also store the clone of the nested query on the execution query to avoid
@@ -2582,6 +2594,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
             nestedQuery.getBatchFetchPolicy().setDataResults(nestedDataResults);
         }*/
         nestedQuery.setRequiresDeferredLocks(sourceQuery.requiresDeferredLocks());
+        nestedQuery.inheritRefreshSource(sourceQuery);
         return nestedQuery;
     }
 

@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -81,7 +81,9 @@ import org.eclipse.persistence.config.FlushClearCache;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.ReferenceMode;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.DescriptorEventListener;
 import org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitInfo;
+import org.eclipse.persistence.internal.jpa.metadata.listeners.EntityListenerRegistry;
 import org.eclipse.persistence.internal.jpa.querydef.CriteriaBuilderImpl;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -133,7 +135,11 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
     protected EntityManagerSetupImpl setupImpl;
 
     /** Stores if closed has been called. */
-    protected boolean isOpen = true;
+    protected volatile boolean isOpen = true;
+
+    /** Stable factory registrations, with dispatch lifetime local to this delegate. */
+    private final EntityListenerRegistry entityListenerRegistry;
+    private final DescriptorEventListener entityListener;
 
     /** Persistence unit properties from create factory. */
     protected Map<String, Object> properties;
@@ -199,13 +205,20 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
     public EntityManagerFactoryDelegate(AbstractSession databaseSession, JpaEntityManagerFactory owner) {
         this.session = databaseSession;
         this.owner = owner;
+        this.entityListenerRegistry = owner instanceof EntityManagerFactoryImpl factory
+                ? factory.getEntityListenerRegistry() : new EntityListenerRegistry();
+        this.entityListener = entityListenerRegistry.createDispatcher(() -> !isOpen);
         processProperties(databaseSession.getProperties());
+        entityListenerRegistry.trackSession(databaseSession);
     }
 
     public EntityManagerFactoryDelegate(EntityManagerSetupImpl setupImpl, Map<String, Object> properties, JpaEntityManagerFactory owner) {
         this.setupImpl = setupImpl;
         this.owner = owner;
         this.properties = properties;
+        this.entityListenerRegistry = owner instanceof EntityManagerFactoryImpl factory
+                ? factory.getEntityListenerRegistry() : new EntityListenerRegistry();
+        this.entityListener = entityListenerRegistry.createDispatcher(() -> !isOpen);
     }
 
     /**
@@ -216,6 +229,9 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
     public EntityManagerFactoryDelegate(String persistenceUnitName, Map<String, Object> properties, List<ClassDescriptor> descriptors, JpaEntityManagerFactory owner) {
         this.properties = properties;
         this.owner = owner;
+        this.entityListenerRegistry = owner instanceof EntityManagerFactoryImpl factory
+                ? factory.getEntityListenerRegistry() : new EntityListenerRegistry();
+        this.entityListener = entityListenerRegistry.createDispatcher(() -> !isOpen);
 
         SEPersistenceUnitInfo info = new SEPersistenceUnitInfo();
         info.setClassLoader((ClassLoader) properties.get(PersistenceUnitProperties.CLASSLOADER));
@@ -271,12 +287,24 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
                     // properties override server session properties
                     Map propertiesToProcess = EntityManagerFactoryProvider.mergeMaps(properties, tempProperties);
                     processProperties(propertiesToProcess);
+                    entityListenerRegistry.trackSession(tempSession);
                     session = tempSession;
                 }
             }
         }
 
         return session;
+    }
+
+    /** Bind only an owned context; shared server sessions never carry an owner. */
+    void bindEntityListener(AbstractSession context) {
+        context.setEntityListener(entityListener);
+        entityListenerRegistry.trackSession(context);
+        if (context.isBroker()) {
+            for (AbstractSession member : ((SessionBroker) context).getSessionsByName().values()) {
+                bindEntityListener(member);
+            }
+        }
     }
 
     /**
@@ -319,8 +347,20 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
      */
     @Override
     public synchronized void close() {
+        close(!(owner instanceof EntityManagerFactoryImpl factory) || factory.isCurrentDelegate(this));
+    }
+
+    /** A failed replacement must not close the registry of the restored factory. */
+    synchronized void closeForMetadataRefresh() {
+        close(false);
+    }
+
+    private void close(boolean closeRegistry) {
         verifyOpen();
         isOpen = false;
+        if (closeRegistry) {
+            entityListenerRegistry.close();
+        }
         // Do not invalidate the metaModel field
         // (a reopened emf will re-populate the same metaModel)
         // (a new persistence unit will generate a new metaModel)
@@ -1098,8 +1138,9 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
     }
 
     @Override
-    public <E> EntityListenerRegistration addListener(Class<E> entityType, Class<? extends Annotation> callbackType, Consumer<? super E> listener) {
-        throw new UnsupportedOperationException("Not yet implemented");
+    public synchronized <E> EntityListenerRegistration addListener(Class<E> entityType, Class<? extends Annotation> callbackType, Consumer<? super E> listener) {
+        verifyOpen();
+        return entityListenerRegistry.register(entityType, callbackType, listener);
     }
 
     @Override

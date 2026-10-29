@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
- * Copyright (c) 2021, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2021, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -130,6 +130,7 @@ public class EntityAgentImpl implements EntityAgent, QueryExecutionContext {
         }
         this.session = factory.getServerSession().acquireClientSession(properties);
         try {
+            factory.bindEntityListener(session);
             session.setCommitManager(new AgentCommitManager(session));
             session.setProperty(EntityAgentProperties.ENTITY_AGENT, Boolean.TRUE);
             setCacheRetrieveMode(mode(properties.get(QueryHints.CACHE_RETRIEVE_MODE), CacheRetrieveMode.class, CacheRetrieveMode.USE));

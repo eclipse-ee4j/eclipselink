@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2015, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -401,6 +401,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
             this.descriptors.put(descriptor.getJavaClass(), descriptor);
         }
         getProject().addDescriptor(descriptor, this);
+        enableProgrammaticEventListeners(descriptor);
     }
 
     /**
@@ -422,6 +423,9 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
             }
         }
         getProject().addDescriptors(descriptors, this);
+        for (ClassDescriptor descriptor : (Collection<ClassDescriptor>) descriptors) {
+            enableProgrammaticEventListeners(descriptor);
+        }
     }
 
     /**
@@ -436,6 +440,19 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
         this.lastDescriptorAccessed = null;
 
         getProject().addDescriptors(project, this);
+        for (ClassDescriptor descriptor : project.getDescriptors().values()) {
+            enableProgrammaticEventListeners(descriptor);
+        }
+    }
+
+    /**
+     * INTERNAL: Check activation after publication so a concurrent registration scan
+     * cannot miss a newly installed descriptor. Actual callbacks remain context-owned.
+     */
+    private void enableProgrammaticEventListeners(ClassDescriptor descriptor) {
+        if (hasProgrammaticEventListeners() && descriptor.isDescriptorTypeNormal()) {
+            descriptor.getEventManager().enableProgrammaticEventListeners();
+        }
     }
 
     /**

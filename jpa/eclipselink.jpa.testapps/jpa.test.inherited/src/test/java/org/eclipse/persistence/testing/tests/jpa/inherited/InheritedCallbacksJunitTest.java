@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -243,10 +243,11 @@ public class InheritedCallbacksJunitTest extends JUnitTestCase {
         try {
             beginTransaction(em);
             BeerConsumer beerConsumer = em.find(BeerConsumer.class, m_Id);
+            int postLoadCount = beerConsumer.post_load_count;
             em.refresh(beerConsumer);
             commitTransaction(em);
 
-            verifyCalled(0, beerConsumer.post_load_count, "PostLoad");
+            verifyCalled(postLoadCount, beerConsumer.post_load_count, "PostLoad");
         } catch (RuntimeException ex) {
             if (isTransactionActive(em)) {
                 rollbackTransaction(em);
