@@ -287,6 +287,7 @@ public class QueryHintsHandler {
             addHint(new QueryCacheExpiryTimeOfDayHint());
             addHint(new MaintainCacheHint());
             addHint(new PrepareHint());
+            addHint(new CacheConcreteSubclassCallsHint());
             addHint(new CacheStatementHint());
             addHint(new FlushHint());
             addHint(new HintHint());
@@ -1947,6 +1948,26 @@ public class QueryHintsHandler {
         @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             query.setShouldPrepare((Boolean) valueToApply);
+            return query;
+        }
+    }
+
+    protected static class CacheConcreteSubclassCallsHint extends Hint {
+        CacheConcreteSubclassCallsHint() {
+            super(QueryHints.CACHE_CONCRETE_SUBCLASS_CALLS, HintValues.FALSE);
+            valueArray = new Object[][] {
+                {HintValues.FALSE, Boolean.FALSE},
+                {HintValues.TRUE, Boolean.TRUE}
+            };
+        }
+
+        @Override
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
+            if (query.isObjectLevelReadQuery()) {
+                ((ObjectLevelReadQuery) query).setShouldCacheConcreteSubclassCalls((Boolean) valueToApply);
+            } else {
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint", new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
+            }
             return query;
         }
     }
