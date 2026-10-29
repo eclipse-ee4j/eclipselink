@@ -93,7 +93,7 @@ public class PersistenceProvider implements jakarta.persistence.spi.PersistenceP
                     emSetupImpl.predeploy(persistenceUnitInfo, properties);
                     isNew = true;
                 } else {
-                    if (initializer.isPersistenceUnitUniquelyDefinedByName()) {
+                    if (initializer.isPersistenceUnitUniquelyDefinedByName(persistenceUnitInfo)) {
                         uniqueName = persistenceUnitName;
                     } else {
                         uniqueName = initializer.createUniquePersistenceUnitName(persistenceUnitInfo);
