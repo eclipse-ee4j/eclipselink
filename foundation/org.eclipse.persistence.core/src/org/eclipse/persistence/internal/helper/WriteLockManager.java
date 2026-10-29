@@ -29,7 +29,6 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -126,9 +125,7 @@ public class WriteLockManager {
     /*  the first element in this list will be the prevailing thread */
     protected ExposedNodeLinkedList prevailingQueue;
 
-    private final Lock toWaitOnLock = new ReentrantLock();
     private final Lock instancePrevailingQueueLock = new ReentrantLock();
-    private final Condition toWaitOnLockCondition = toWaitOnLock.newCondition();
 
     private static final String ACQUIRE_LOCK_FOR_CLONE_METHOD_NAME = WriteLockManager.class.getName() + ".acquireLocksForClone(...)";
 
@@ -176,17 +173,16 @@ public class WriteLockManager {
                 // using the exact same approach we have been adding to the concurrency manager
                 ConcurrencyUtil.SINGLETON.determineIfReleaseDeferredLockAppearsToBeDeadLocked(toWaitOn, whileStartTimeMillis, lockManager, readLockManager, ALLOW_INTERRUPTED_EXCEPTION_TO_BE_FIRED_UP_TRUE);
 
-                toWaitOnLock.lock();
+                toWaitOn.getInstanceLock().lock();
                 try {
-                    try {
-                        if (toWaitOn.isAcquired()) {//last minute check to insure it is still locked.
-                            toWaitOnLockCondition.await(ConcurrencyUtil.SINGLETON.getAcquireWaitTime(), TimeUnit.MILLISECONDS);// wait for lock on object to be released
-                        }
-                    } catch (InterruptedException ex) {
-                        // Ignore exception thread should continue.
+                    if (toWaitOn.isAcquired()) {//last minute check to insure it is still locked.
+                        toWaitOn.getInstanceLockCondition().await(MAX_WAIT, TimeUnit.MILLISECONDS);// wait for lock on object to be released
                     }
-                } finally {
-                    toWaitOnLock.unlock();
+                } catch (InterruptedException ex) {
+                    // Ignore exception thread should continue.
+                }
+                finally {
+                    toWaitOn.getInstanceLock().unlock();
                 }
                 Object waitObject = toWaitOn.getObject();
                 // Object may be null for loss of identity.
