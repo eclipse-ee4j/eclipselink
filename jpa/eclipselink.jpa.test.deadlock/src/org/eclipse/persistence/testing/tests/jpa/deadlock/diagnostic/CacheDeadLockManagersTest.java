@@ -39,6 +39,7 @@ import org.eclipse.persistence.testing.models.jpa.deadlock.diagnostic.DeadLockDi
 
 import java.util.Map;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 
 public class CacheDeadLockManagersTest extends JUnitTestCase {
 
@@ -57,6 +58,7 @@ public class CacheDeadLockManagersTest extends JUnitTestCase {
         suite.setName("CacheDeadLockDetectionTest");
         suite.addTest(new CacheDeadLockManagersTest("testSetup"));
         suite.addTest(new CacheDeadLockManagersTest("testWriteLockManagerAcquireLocksForClone"));
+        suite.addTest(new CacheDeadLockManagersTest("testAcquireLocksForCloneWakesUpOnRelease"));
         suite.addTest(new CacheDeadLockManagersTest("testAbstractSessionCacheKeyFromTargetSessionForMerge"));
         suite.addTest(new CacheDeadLockManagersTest("testAbstractSessionCacheKeyFromTargetSessionForMergeWithLockedCacheKey"));
         return suite;
@@ -125,6 +127,109 @@ public class CacheDeadLockManagersTest extends JUnitTestCase {
                 if (em.isOpen()) {
                     em.close();
                 }
+            }
+        }
+    }
+
+    /**
+     * {@code WriteLockManager.acquireLocksForClone} must wake up as soon as the thread
+     * holding the {@code CacheKey} releases it.
+     * <p>
+     * The cache key is write-locked by a competing thread, so the cloning thread cannot acquire the
+     * read lock and has to wait inside {@code acquireLocksForClone}. When the competing thread calls
+     * {@code CacheKey.release()} the waiter must return. The previous implementation waited on a
+     * {@code Lock}/{@code Condition} private to the {@code WriteLockManager} instance, which
+     * {@code release()} never signals, so the wakeup was lost. The waiter must instead be signalled
+     * through the CacheKey's own {@code Condition} and return promptly.
+     */
+    public void testAcquireLocksForCloneWakesUpOnRelease() throws Exception {
+        final String PU_NAME = "cachedeadlockdetection-pu";
+
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory(PU_NAME, JUnitTestCaseHelper.getDatabaseProperties());
+        EntityManager em = emf.createEntityManager();
+        AbstractSession serverSession = ((JpaEntityManager)em).getServerSession();
+        // Other tests in this class deliberately leave the singleton tampered (e.g. a negative
+        // maxAllowedSleepTime); restore the defaults so this test is self-contained.
+        ConcurrencyUtil.SINGLETON.setAcquireWaitTime(0);
+        ConcurrencyUtil.SINGLETON.setMaxAllowedSleepTime(40000);
+        // Use a record not touched by the other tests and start from a clean cache so the cache key is
+        // fresh (no read locks leaked by testWriteLockManagerAcquireLocksForClone, which uses id=1).
+        clearCache(PU_NAME);
+        try {
+            Long primaryKey = 5L;
+            Query query = em.createQuery("SELECT c FROM CacheDeadLockDetectionMaster c WHERE c.id = :id");
+            query.setParameter("id", primaryKey);
+            CacheDeadLockDetectionMaster result = (CacheDeadLockDetectionMaster) query.getSingleResult();
+            ClassDescriptor descriptor = serverSession.getDescriptor(CacheDeadLockDetectionMaster.class);
+            CacheKey cacheKey = serverSession.getIdentityMapAccessorInstance().getCacheKeyForObject(result);
+            assertNotNull("Cache key for the master object must be present in the shared cache", cacheKey);
+
+            // A competing thread takes the write lock on the cache key and holds it until released.
+            final Semaphore holding = new Semaphore(0); // released once the lock is held
+            final Semaphore release = new Semaphore(0);  // main thread asks the holder to release
+            Thread holder = new Thread(() -> {
+                cacheKey.acquire();
+                holding.release();
+                try {
+                    release.acquire();
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                } finally {
+                    cacheKey.release();
+                }
+            }, "cachekey-holder");
+            holder.setDaemon(true);
+            holder.start();
+
+            assertTrue("Holder thread failed to acquire the cache key lock", holding.tryAcquire(10, TimeUnit.SECONDS));
+
+            // The waiter calls the real acquireLocksForClone; it cannot read-lock the held key and waits.
+            final Semaphore cloneDone = new Semaphore(0);
+            final Throwable[] cloneFailure = new Throwable[1];
+            Thread waiter = new Thread(() -> {
+                try {
+                    Map lockedObjects = new WriteLockManager().acquireLocksForClone(result, descriptor, cacheKey, serverSession);
+                    // Release the read locks acquired for the clone so they do not leak into the shared
+                    // session; must happen on this thread, as the ReadLockManager is per thread.
+                    for (Object lockedCacheKey : lockedObjects.values()) {
+                        ((CacheKey) lockedCacheKey).releaseReadLock();
+                    }
+                } catch (Throwable t) {
+                    cloneFailure[0] = t;
+                } finally {
+                    cloneDone.release();
+                }
+            }, "clone-waiter");
+            waiter.setDaemon(true);
+            waiter.start();
+
+            // Only release the lock once the waiter is actually parked inside acquireLocksForClone;
+            // releasing earlier would let it read-lock the key without waiting and the test would pass
+            // even with the lost wakeup bug.
+            long deadline = System.currentTimeMillis() + 10000;
+            Thread.State waiterState = waiter.getState();
+            while (waiterState != Thread.State.WAITING && waiterState != Thread.State.TIMED_WAITING) {
+                assertTrue("Clone waiter did not start waiting for the held cache key (state " + waiterState + ")",
+                        waiter.isAlive() && System.currentTimeMillis() < deadline);
+                Thread.sleep(10);
+                waiterState = waiter.getState();
+            }
+            release.release();
+
+            // The waiter must be signalled and return well within this window; asserting with a timeout
+            // makes a missed wakeup fail the test instead of hanging the build.
+            assertTrue("acquireLocksForClone did not wake up after the cache key was released "
+                    + "(lost wakeup regression)", cloneDone.tryAcquire(15, TimeUnit.SECONDS));
+            if (cloneFailure[0] != null) {
+                throw new AssertionError("acquireLocksForClone failed unexpectedly", cloneFailure[0]);
+            }
+            assertEquals("Read locks acquired for the clone were not released", 0, cacheKey.getNumberOfReaders());
+        } finally {
+            if (em.isOpen()) {
+                em.close();
+            }
+            if (emf.isOpen()) {
+                emf.close();
             }
         }
     }
