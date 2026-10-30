@@ -313,6 +313,8 @@ public class MySQLPlatform extends DatabasePlatform {
         addOperator(localTime());
         addOperator(localDateTime());
         addOperator(logOperator());
+        // LENGTH counts bytes in MySQL; the expression contract counts characters.
+        addOperator(ExpressionOperator.simpleFunction(ExpressionOperator.Length, "CHAR_LENGTH"));
         addOperator(ExpressionOperator.simpleTwoArgumentFunction(ExpressionOperator.Atan2, "ATAN2"));
         addOperator(ExpressionOperator.simpleTwoArgumentFunction(ExpressionOperator.Concat, "CONCAT"));
         addOperator(toNumberOperator());
@@ -760,6 +762,57 @@ public class MySQLPlatform extends DatabasePlatform {
 
     @Override
     public void printSQLSelectStatement(DatabaseCall call, ExpressionSQLPrinter printer, SQLSelectStatement statement) {
+        List<?> originalFields = statement.getFields();
+        int originalFieldCount = originalFields.size();
+        List<Expression> additionalFields = new ArrayList<>();
+        List<Expression> originalOrderBy = statement.getOrderByExpressions();
+        List<Expression> orderBy = new ArrayList<>(originalOrderBy);
+        statement.setOrderByExpressions(orderBy);
+        try {
+            // MySQL has no NULLS FIRST/LAST syntax. Rank nulls independently of
+            // the requested value ordering, retaining its ASC/DESC expression.
+            for (int index = 0; index < orderBy.size(); index++) {
+                if (orderBy.get(index) instanceof FunctionExpression ordering) {
+                    int selector = ordering.getOperator().getSelector();
+                    if (selector == ExpressionOperator.NullsFirst || selector == ExpressionOperator.NullsLast) {
+                        Expression sort = ordering.getBaseExpression();
+                        Expression value = sort;
+                        if (sort instanceof FunctionExpression direction) {
+                            int sortSelector = direction.getOperator().getSelector();
+                            if (sortSelector == ExpressionOperator.Ascending || sortSelector == ExpressionOperator.Descending) {
+                                value = direction.getBaseExpression();
+                            }
+                        }
+                        String nullRank = selector == ExpressionOperator.NullsFirst ? "0" : "1";
+                        String valueRank = selector == ExpressionOperator.NullsFirst ? "1" : "0";
+                        String rank = "(CASE WHEN ? IS NULL THEN " + nullRank + " ELSE " + valueRank + " END)";
+                        orderBy.set(index, value.sql(rank + ", ?", List.of(sort)));
+                        if (statement.shouldDistinctBeUsed()) {
+                            // Keep DISTINCT ordering valid even when its value
+                            // is a composed expression in the select list.
+                            additionalFields.add(value.sql(rank, List.of()));
+                        }
+                    }
+                }
+            }
+            statement.getFields().addAll(additionalFields);
+            printSQLSelectStatementWithLimits(call, printer, statement);
+            if (!additionalFields.isEmpty()) {
+                // Rank columns participate only in SQL ordering, not result mapping.
+                call.setFields(call.getFields().subList(0, call.getFields().size() - additionalFields.size()));
+            }
+        } finally {
+            try {
+                while (originalFields.size() > originalFieldCount) {
+                    originalFields.remove(originalFields.size() - 1);
+                }
+            } finally {
+                statement.setOrderByExpressions(originalOrderBy);
+            }
+        }
+    }
+
+    private void printSQLSelectStatementWithLimits(DatabaseCall call, ExpressionSQLPrinter printer, SQLSelectStatement statement) {
         int max = 0;
         if (statement.getQuery() != null) {
             max = statement.getQuery().getMaxRows();

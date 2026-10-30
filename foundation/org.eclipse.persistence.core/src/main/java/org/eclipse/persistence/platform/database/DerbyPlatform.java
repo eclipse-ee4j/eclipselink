@@ -272,6 +272,8 @@ public class DerbyPlatform extends DB2Platform {
         addOperator(derbyPowerOperator());
         addOperator(derbyLeftOperator());
         addOperator(derbyRightOperator());
+        addOperator(derbyLocateOperator(false));
+        addOperator(derbyLocateOperator(true));
 
         addOperator(avgOperator());
         addOperator(sumOperator());
@@ -292,6 +294,29 @@ public class DerbyPlatform extends DB2Platform {
         addOperator(subtractOperator());
         addOperator(multiplyOperator());
         addOperator(divideOperator());
+    }
+
+    private static ExpressionOperator derbyLocateOperator(boolean withStart) {
+        ExpressionOperator operator = withStart ? ExpressionOperator.locate2() : ExpressionOperator.locate();
+        operator.setIsBindingSupported(true);
+        if (withStart) {
+            // Derby treats a null start as one; preserve the null result required by LOCATE.
+            operator.printsAs(List.of("CASE WHEN CAST(",
+                    " AS INTEGER) IS NULL THEN CAST(NULL AS INTEGER) ELSE LOCATE(", ", ", ", ", ") END"));
+            operator.setArgumentIndices(new int[]{2, 1, 0, 2});
+        } else {
+            // Derby infers LOCATE nullability from the search argument alone. Keep nullable
+            // result metadata when a non-null search is applied to a null source, so the
+            // network client reads the null indicator correctly. Evaluate each operand once.
+            operator.printsAs(List.of("CASE WHEN 1 = 1 THEN LOCATE(", ", ", ") ELSE CAST(NULL AS INTEGER) END"));
+            operator.setArgumentIndices(new int[]{1, 0});
+        }
+        return operator;
+    }
+
+    @Override
+    protected boolean usesCodeUnits32ForStringFunctions() {
+        return false;
     }
 
     /**

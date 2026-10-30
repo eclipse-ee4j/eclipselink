@@ -49,6 +49,11 @@ public class DB2MainframePlatform extends DB2Platform {
         addOperator(ExpressionOperator.simpleLogicalNoParens(ExpressionOperator.Concat, "CONCAT"));
     }
 
+    @Override
+    protected boolean usesCodeUnits32ForStringFunctions() {
+        return false;
+    }
+
     /**
      * INTERNAL:
      * Used for pessimistic locking in DB2.

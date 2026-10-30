@@ -457,19 +457,26 @@ public class PostgreSQLPlatform extends DatabasePlatform {
     protected ExpressionOperator operatorLocate2() {
         ExpressionOperator operator = new ExpressionOperator();
         operator.setSelector(ExpressionOperator.Locate2);
-        List<String> v = new ArrayList<>(2);
-        v.add("COALESCE(NULLIF(STRPOS(SUBSTRING(");
+        List<String> v = new ArrayList<>(8);
+        // A missing match is zero, but a null source, pattern or start stays null.
+        v.add("CASE STRPOS(SUBSTRING(");
         v.add(" FROM ");
         v.add("), ");
-        v.add("), 0) - 1 + ");
-        v.add(", 0)");
+        v.add(") WHEN 0 THEN 0 ELSE STRPOS(SUBSTRING(");
+        v.add(" FROM ");
+        v.add("), ");
+        v.add(") - 1 + ");
+        v.add(" END");
         operator.printsAs(v);
         operator.bePrefix();
-        int[] argumentIndices = new int[4];
+        int[] argumentIndices = new int[7];
         argumentIndices[0] = 0;
         argumentIndices[1] = 2;
         argumentIndices[2] = 1;
-        argumentIndices[3] = 2;
+        argumentIndices[3] = 0;
+        argumentIndices[4] = 2;
+        argumentIndices[5] = 1;
+        argumentIndices[6] = 2;
         operator.setArgumentIndices(argumentIndices);
         operator.setNodeClass(RelationExpression.class);
         return operator;
