@@ -33,6 +33,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.MergeManager;
 import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet;
+import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 
@@ -530,6 +531,39 @@ public class WriteLockManager {
 
     /**
      * INTERNAL:
+     * Whether the deferred lock manager lists the cache key as one of the current thread's active locks.
+     * Compared by identity: CacheKey.equals compares primary keys, and the deferred lock manager is shared
+     * by every session on the thread.
+     */
+    private static boolean isActiveLockOf(DeferredLockManager lockManager, CacheKey cacheKey) {
+        if (lockManager == null) {
+            return false;
+        }
+        for (ConcurrencyManager activeLock : lockManager.getActiveLocks()) {
+            if (activeLock == cacheKey) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * INTERNAL:
+     * A merge that transitioned to deferred locks relies on the current thread's deferred lock manager to
+     * release its keys. When that manager is gone, keys appended from here on are released directly by
+     * releaseAllAcquiredLocks. Logged at SEVERE because this state used to orphan cache keys.
+     */
+    private static void logTransitionedMergeWithoutDeferredLockManager(AbstractSession session, String methodName, CacheKey cacheKey) {
+        String cacheKeyDescription = cacheKey == null ? "" : ConcurrencyUtil.SINGLETON.createToStringExplainingOwnedCacheKey(cacheKey);
+        String sessionName = (session == null || session.getName() == null || session.getName().isEmpty()) ? "" : session.getName();
+        Object[] params = new Object[] {methodName, Thread.currentThread().getName(), sessionName, cacheKeyDescription,
+                ConcurrencyUtil.SINGLETON.enrichGenerateThreadDumpForCurrentThread()};
+        String message = TraceLocalization.buildMessage("write_lock_manager_transitioned_merge_without_deferred_lock_manager", params);
+        AbstractSessionLog.getLog().log(SessionLog.SEVERE, SessionLog.CACHE, message, new Object[] {}, false);
+    }
+
+    /**
+     * INTERNAL:
      * This method will be called by a merging thread that is attempting to lock
      * a new object that was not locked previously.  Unlike the other methods
      * within this class this method will lock only this object.
@@ -560,7 +594,10 @@ public class WriteLockManager {
                 if (deferredLockManager != null) {
                     deferredLockManager.getActiveLocks().add(lockedCacheKey);
                 } else {
-                    // Fallback to regular lock tracking if DeferredLockManager not available
+                    // The merge transitioned but this thread's DeferredLockManager is gone (its outermost
+                    // releaseDeferredLock already ran). Track the key on the merge manager; releaseAllAcquiredLocks
+                    // releases such keys with release(), since releaseDeferredLock() ignores them.
+                    logTransitionedMergeWithoutDeferredLockManager(session, "appendLock", lockedCacheKey);
                     mergeManager.getAcquiredLocks().add(lockedCacheKey);
                 }
             }else{
@@ -624,15 +661,26 @@ public class WriteLockManager {
         List<CacheKey> acquiredLocks = mergeManager.getAcquiredLocks();
         Iterator<CacheKey> locks = acquiredLocks.iterator();
         RuntimeException exception = null;
+        final Thread currentThread = Thread.currentThread();
+        final boolean transitioned = mergeManager.isTransitionedToDeferredLocks();
+        final DeferredLockManager lockManager = transitioned ? ConcurrencyManager.getDeferredLockManager(currentThread) : null;
+        if (transitioned && lockManager == null && !acquiredLocks.isEmpty()) {
+            logTransitionedMergeWithoutDeferredLockManager(mergeManager.getSession(), "releaseAllAcquiredLocks", null);
+        }
         while (locks.hasNext()) {
             try {
                 CacheKey cacheKeyToRemove = locks.next();
                 if (cacheKeyToRemove.getObject() == null) {
                     cacheKeyToRemove.removeFromOwningMap();
                 }
-                if (mergeManager.isTransitionedToDeferredLocks()) {
+                if (!transitioned) {
+                    cacheKeyToRemove.release();
+                } else if (isActiveLockOf(lockManager, cacheKeyToRemove)) {
+                    // Tracked by the deferred lock manager: its outermost releaseDeferredLock releases every active lock.
                     cacheKeyToRemove.releaseDeferredLock();
-                } else {
+                } else if (cacheKeyToRemove.isAcquired() && cacheKeyToRemove.getActiveThread() == currentThread) {
+                    // Not tracked (appended after the deferred lock manager was removed): releaseDeferredLock()
+                    // would return without touching it, so release it directly.
                     cacheKeyToRemove.release();
                 }
             } catch (RuntimeException e){
