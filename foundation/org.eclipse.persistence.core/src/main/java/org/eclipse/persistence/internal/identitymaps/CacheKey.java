@@ -251,6 +251,8 @@ public class CacheKey extends ConcurrencyManager implements Cloneable {
                 counter++;
             }
             if (counter == 1000) {
+                // Undo the acquireDeferredLock of the last retry without waiting for the owner we gave up on.
+                this.undoDeferredLock();
                 throw ConcurrencyException.maxTriesLockOnBuildObjectExceded(this.getActiveThread(), Thread.currentThread());
             }
         } else {
