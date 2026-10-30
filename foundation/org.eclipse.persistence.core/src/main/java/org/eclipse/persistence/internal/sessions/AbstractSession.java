@@ -5283,6 +5283,8 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
                    counter++;
                }
                if (counter == 1000) {
+                   // Undo the acquireDeferredLock of the last retry without waiting for the owner we gave up on.
+                   cacheKey.undoDeferredLock();
                    throw ConcurrencyException.maxTriesLockOnBuildObjectExceded(cacheKey.getActiveThread(), Thread.currentThread());
                }
            }

@@ -738,6 +738,32 @@ public class ConcurrencyManager implements Serializable {
     }
 
     /**
+     * INTERNAL:
+     * Undo the deferred acquires of a retry loop that gives up on this lock without ever acquiring it, without
+     * waiting for its owner: every retry added this lock to the thread's deferred locks (nested
+     * releaseDeferredLock calls only decrement the depth), so drop all of those entries, decrement the one
+     * nesting level the loop left behind, and remove the DeferredLockManager when nothing is left.
+     */
+    public void undoDeferredLock() {
+        Thread currentThread = Thread.currentThread();
+        DeferredLockManager lockManager = getDeferredLockManager(currentThread);
+        if (lockManager == null) {
+            return;
+        }
+        // Identity, not equals: CacheKey.equals compares primary keys.
+        Iterator<ConcurrencyManager> deferredLocks = lockManager.getDeferredLocks().iterator();
+        while (deferredLocks.hasNext()) {
+            if (deferredLocks.next() == this) {
+                deferredLocks.remove();
+            }
+        }
+        lockManager.decrementDepth();
+        if (lockManager.getThreadDepth() <= 0) {
+            removeDeferredLockManager(currentThread);
+        }
+    }
+
+    /**
      * Decrement the number of readers. Used to allow concurrent reads.
      */
     public void releaseReadLock() throws ConcurrencyException {
