@@ -1742,6 +1742,25 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             verifyMutexThreadIntegrityBeforeRelease();
             // exception occurred during the commit.
             this.parent.getIdentityMapAccessorInstance().getWriteLockManager().releaseAllAcquiredLocks(this.lastUsedMergeManager);
+
+            // Fix for GitHub issue #2376: Release DeferredLockManager locks
+            // Safety-net cleanup for any DeferredLockManager that survived due to an exception during merge.
+            // We must strip locks already released by releaseAllAcquiredLocks() above to prevent double-release:
+            // transitionToDeferredLocks() duplicates getAcquiredLocks() entries into the DLM's activeLocks
+            // without removing them from getAcquiredLocks(), so both lists can contain the same cache keys.
+            Thread currentThread = Thread.currentThread();
+            org.eclipse.persistence.internal.helper.DeferredLockManager deferredLockManager =
+                    org.eclipse.persistence.internal.helper.ConcurrencyManager.getDeferredLockManager(currentThread);
+            if (deferredLockManager != null) {
+                // Remove any locks that were already released by releaseAllAcquiredLocks() above.
+                deferredLockManager.getActiveLocks().removeAll(this.lastUsedMergeManager.getAcquiredLocks());
+                if (!deferredLockManager.getActiveLocks().isEmpty()) {
+                    // Release only locks that are exclusively tracked by the DLM (appended after transition).
+                    deferredLockManager.releaseActiveLocksOnThread();
+                }
+                org.eclipse.persistence.internal.helper.ConcurrencyManager.removeDeferredLockManager(currentThread);
+            }
+
             this.lastUsedMergeManager = null;
         }
     }

@@ -115,6 +115,7 @@ public class TraceLocalizationResource extends ListResourceBundle {
         { "dead_lock_encountered_on_write", "Thread \"{1}\" encountered deadlock when attempting to lock : {0}.  Entering deadlock avoidance algorithm." },
         { "dead_lock_encountered_on_write_no_cache_key", "Thread \"{2}\" encountered deadlock when attempting to lock object of class: {0} with PK {1}.  Entering deadlock avoidance algorithm." },
         { "concurrency_manager_release_locks_acquired_by_thread_1", "releaseAllLocksAcquiredByThread: Thread \"{0}\"  .The Lock manager is null. This might be an acquire operation. So not possible to lockManager.releaseActiveLocksOnThread(). Cache Key:  \"{1}\"" },
+        { "write_lock_manager_transitioned_merge_without_deferred_lock_manager", "{0}: Thread \"{1}\" (session \"{2}\") is merging with deferred locks but has no DeferredLockManager (its outermost releaseDeferredLock already ran). Cache keys appended from here on are tracked by the merge manager and released directly. Cache key: {3} Stack: {4}" },
         { "concurrency_manager_release_locks_acquired_by_thread_2", "releaseAllLocksAcquiredByThread: Release active locks on Thread \"{0}\"" },
         { "concurrency_manager_build_object_thread_complete_1", "isBuildObjectComplete ExpandedThread NR  {0}: {1} \n" },
         { "concurrency_manager_build_object_thread_complete_2", "\nAll threads in this stack are doing object building and needed to defer on one or more cache keys.\n"
