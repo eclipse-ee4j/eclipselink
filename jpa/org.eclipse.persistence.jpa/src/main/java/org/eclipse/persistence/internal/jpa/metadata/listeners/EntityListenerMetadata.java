@@ -98,10 +98,12 @@ public class EntityListenerMetadata extends ORMetadata implements Cloneable {
     protected EntityListener m_listener;
     private int m_listenerType;
     private String m_className;
+    private String m_postCreate;
     private String m_postDelete;
     private String m_postInsert;
     private String m_postUpsert;
     private String m_preDelete;
+    private String m_preClose;
     private String m_preInsert;
     private String m_preMerge;
     private String m_preUpsert;
@@ -152,6 +154,11 @@ public class EntityListenerMetadata extends ORMetadata implements Cloneable {
         if (objectToCompare instanceof EntityListenerMetadata entityListener) {
 
             if (! valuesMatch(m_className, entityListener.getClassName())) {
+                return false;
+            }
+
+            if (! valuesMatch(m_postCreate, entityListener.getPostCreate())
+                    || ! valuesMatch(m_preClose, entityListener.getPreClose())) {
                 return false;
             }
 
@@ -217,6 +224,8 @@ public class EntityListenerMetadata extends ORMetadata implements Cloneable {
     public int hashCode() {
         int result = super.hashCode();
         result = 31 * result + (m_className != null ? m_className.hashCode() : 0);
+        result = 31 * result + (m_postCreate != null ? m_postCreate.hashCode() : 0);
+        result = 31 * result + (m_preClose != null ? m_preClose.hashCode() : 0);
         result = 31 * result + (m_postDelete != null ? m_postDelete.hashCode() : 0);
         result = 31 * result + (m_postInsert != null ? m_postInsert.hashCode() : 0);
         result = 31 * result + (m_postUpsert != null ? m_postUpsert.hashCode() : 0);
@@ -339,6 +348,11 @@ public class EntityListenerMetadata extends ORMetadata implements Cloneable {
         }
     }
 
+    /** INTERNAL: The qualified name is available without loading the real class. */
+    public String getListenerClassName() {
+        return m_entityListenerClass == null ? getFullyQualifiedClassName(m_className) : m_entityListenerClass.getName();
+    }
+
     /**
      * INTERNAL:
      * Find the method in the list where method.getName() == methodName.
@@ -367,6 +381,21 @@ public class EntityListenerMetadata extends ORMetadata implements Cloneable {
         } else {
             return PrivilegedAccessHelper.getMethods(cls);
         }
+    }
+
+    /** INTERNAL: Freeze the effective XML and annotation callback declarations. */
+    public PersistenceUnitListener getPersistenceUnitListener(boolean annotations) {
+        MetadataClass listenerClass = getMetadataClass(getListenerClassName(), false);
+        if (m_postCreate == null && m_preClose == null
+                && (!annotations || !PersistenceUnitListener.hasCallbackAnnotations(listenerClass))) {
+            return null;
+        }
+        return new PersistenceUnitListener(listenerClass.getName(), annotations, m_postCreate, m_preClose);
+    }
+
+    /** INTERNAL: Used for XML loading. */
+    public String getPostCreate() {
+        return m_postCreate;
     }
 
     /**
@@ -399,6 +428,11 @@ public class EntityListenerMetadata extends ORMetadata implements Cloneable {
      */
     public String getPostUpdate() {
         return m_postUpdate;
+    }
+
+    /** INTERNAL: Used for XML loading. */
+    public String getPreClose() {
+        return m_preClose;
     }
 
     /**
@@ -739,6 +773,11 @@ public class EntityListenerMetadata extends ORMetadata implements Cloneable {
         m_className = className;
     }
 
+    /** INTERNAL: Used for XML loading. */
+    public void setPostCreate(String methodName) {
+        m_postCreate = methodName;
+    }
+
     /**
      * INTERNAL:
      * Set the post load event method on the listener.
@@ -804,6 +843,11 @@ public class EntityListenerMetadata extends ORMetadata implements Cloneable {
      */
     public void setPostUpdate(String postUpdate) {
         m_postUpdate = postUpdate;
+    }
+
+    /** INTERNAL: Used for XML loading. */
+    public void setPreClose(String methodName) {
+        m_preClose = methodName;
     }
 
     /**

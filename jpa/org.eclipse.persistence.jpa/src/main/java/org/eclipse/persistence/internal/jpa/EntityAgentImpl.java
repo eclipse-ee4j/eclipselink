@@ -72,6 +72,7 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.VersionLockingPolicy;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
+import org.eclipse.persistence.internal.jpa.metadata.listeners.PersistenceUnitListenerRegistry;
 import org.eclipse.persistence.internal.jpa.querydef.CommonAbstractCriteriaImpl;
 import org.eclipse.persistence.internal.helper.EntityAgentProperties;
 import org.eclipse.persistence.internal.helper.BasicTypeHelperImpl;
@@ -115,6 +116,33 @@ public class EntityAgentImpl implements EntityAgent, QueryExecutionContext {
     private boolean poisoned;
     private boolean disposed;
     private boolean rollbackCleanupRequired;
+    private PersistenceUnitListenerRegistry persistenceUnitListeners;
+    private boolean lifecycleClosing;
+    private boolean lifecycleCloseNotified;
+    private boolean lifecycleReleased;
+
+    EntityAgentImpl completeCreation(PersistenceUnitListenerRegistry listeners) {
+        if (listeners != null) {
+            try {
+                listeners.retainAgent();
+                persistenceUnitListeners = listeners;
+                listeners.postCreate(EntityAgent.class, this);
+            } catch (RuntimeException | Error failure) {
+                if (open || poisoned) {
+                    cleanup(failure, this::close);
+                }
+                throw failure;
+            }
+        }
+        return this;
+    }
+
+    private void releaseLifecycleOwnership() {
+        if (persistenceUnitListeners != null && !lifecycleReleased && disposed) {
+            lifecycleReleased = true;
+            persistenceUnitListeners.releaseAgent();
+        }
+    }
 
     EntityAgentImpl(EntityManagerFactoryDelegate factory, Map<?, ?> supplied) {
         this.factory = Objects.requireNonNull(factory);
@@ -332,6 +360,7 @@ public class EntityAgentImpl implements EntityAgent, QueryExecutionContext {
                         if (!open) {
                             failure = cleanup(failure, session::release);
                             disposed = failure == null;
+                            failure = cleanup(failure, EntityAgentImpl.this::releaseLifecycleOwnership);
                         }
                         if (failure != null) {
                             poisoned = true;
@@ -1646,45 +1675,58 @@ public class EntityAgentImpl implements EntityAgent, QueryExecutionContext {
 
     @Override
     public void close() {
+        if (lifecycleClosing) {
+            return;
+        }
         if (!open && !poisoned) {
             throw new IllegalStateException("Entity agent is already closed");
         }
-        open = false;
+        lifecycleClosing = true;
         Throwable failure = null;
-        for (QueryImpl query : new ArrayList<>(queries)) {
-            try {
-                query.releaseResources();
-                queries.remove(query);
-            } catch (RuntimeException | Error cleanup) {
-                if (failure == null) { failure = cleanup; } else { suppress(failure, cleanup); }
+        try {
+            if (persistenceUnitListeners != null && !lifecycleCloseNotified) {
+                lifecycleCloseNotified = true;
+                failure = persistenceUnitListeners.preClose(EntityAgent.class, this);
             }
-        }
-        if (joinedTransaction == null && !disposed) {
-            boolean transactionClean = false;
-            try {
-                unwind(0);
-                discardCacheChanges();
-                transactionClean = true;
-            } catch (RuntimeException | Error cleanup) {
-                if (failure == null) { failure = cleanup; } else { suppress(failure, cleanup); }
-            }
-            try {
-                session.getCommitManager().reinitialize();
-                if (transactionClean) {
-                    session.release();
-                    disposed = depth() == 0;
-                    transaction.active = false;
+            open = false;
+            for (QueryImpl query : new ArrayList<>(queries)) {
+                try {
+                    query.releaseResources();
+                    queries.remove(query);
+                } catch (RuntimeException | Error cleanup) {
+                    if (failure == null) { failure = cleanup; } else { suppress(failure, cleanup); }
                 }
-            } catch (RuntimeException | Error cleanup) {
-                if (failure == null) { failure = cleanup; } else { suppress(failure, cleanup); }
             }
+            if (joinedTransaction == null && !disposed) {
+                boolean transactionClean = false;
+                try {
+                    unwind(0);
+                    discardCacheChanges();
+                    transactionClean = true;
+                } catch (RuntimeException | Error cleanup) {
+                    if (failure == null) { failure = cleanup; } else { suppress(failure, cleanup); }
+                }
+                try {
+                    session.getCommitManager().reinitialize();
+                    if (transactionClean) {
+                        session.release();
+                        disposed = depth() == 0;
+                        transaction.active = false;
+                    }
+                } catch (RuntimeException | Error cleanup) {
+                    if (failure == null) { failure = cleanup; } else { suppress(failure, cleanup); }
+                }
+            }
+            failure = cleanup(failure, this::releaseLifecycleOwnership);
+            if (failure != null) {
+                poisoned = true;
+                if (failure instanceof Error error) { throw error; }
+                throw (RuntimeException) failure;
+            }
+            poisoned = false;
+        } finally {
+            lifecycleClosing = false;
         }
-        if (failure != null) {
-            poisoned = true;
-            if (failure instanceof Error error) { throw error; }
-            throw (RuntimeException) failure;
-        }
-        poisoned = false;
     }
 
     private final class AgentTransaction implements EntityTransaction {

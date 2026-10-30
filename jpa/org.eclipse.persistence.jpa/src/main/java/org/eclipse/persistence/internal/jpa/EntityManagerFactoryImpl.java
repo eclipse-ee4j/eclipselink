@@ -62,6 +62,8 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.VersionLockingPolicy;
 import org.eclipse.persistence.internal.indirection.IndirectionPolicy;
 import org.eclipse.persistence.internal.jpa.metadata.listeners.EntityListenerRegistry;
+import org.eclipse.persistence.internal.jpa.metadata.listeners.PersistenceUnitListener;
+import org.eclipse.persistence.internal.jpa.metadata.listeners.PersistenceUnitListenerRegistry;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
@@ -101,6 +103,53 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
 
     /** Registrations belong to this factory, including all metadata generations. */
     private final EntityListenerRegistry entityListenerRegistry = new EntityListenerRegistry();
+
+    private volatile PersistenceUnitListenerRegistry persistenceUnitListeners;
+    private boolean lifecycleCompleted;
+    private boolean lifecycleClosing;
+    private boolean lifecycleCloseNotified;
+
+    PersistenceUnitListenerRegistry getPersistenceUnitListeners() {
+        return persistenceUnitListeners;
+    }
+
+    void releasePersistenceUnitListeners() {
+        if (persistenceUnitListeners != null) {
+            persistenceUnitListeners.releaseFactory();
+        }
+    }
+
+    /**
+     * INTERNAL: Complete only a public factory, after its delegate is available.
+     * Empty listener metadata leaves the normal lazy deployment path unchanged.
+     */
+    @SuppressWarnings("unchecked")
+    public EntityManagerFactoryImpl completeCreation() {
+        if (lifecycleCompleted) {
+            return this;
+        }
+        lifecycleCompleted = true;
+        try {
+            EntityManagerSetupImpl setup = delegate.getSetupImpl();
+            List<PersistenceUnitListener> definitions;
+            if (setup != null) {
+                definitions = setup.getPersistenceUnitListeners();
+            } else {
+                Object retained = delegate.getAbstractSession().getProperty(PersistenceUnitListener.DEFINITIONS_PROPERTY);
+                definitions = retained instanceof List<?> ? (List<PersistenceUnitListener>) retained : List.of();
+            }
+            if (!definitions.isEmpty()) {
+                persistenceUnitListeners = new PersistenceUnitListenerRegistry(definitions, delegate.getAbstractSession());
+                persistenceUnitListeners.postCreate(EntityManagerFactory.class, this);
+            }
+            return this;
+        } catch (RuntimeException | Error failure) {
+            if (isOpen()) {
+                PersistenceUnitListenerRegistry.cleanup(failure, this::close);
+            }
+            throw failure;
+        }
+    }
 
     EntityListenerRegistry getEntityListenerRegistry() {
         return entityListenerRegistry;
@@ -391,7 +440,7 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
      * EntityMangers will continue to function with the old metadata, but new factories will use the new metadata.
      */
     @Override
-    public void refreshMetadata(Map<String, Object> properties){
+    public synchronized void refreshMetadata(Map<String, Object> properties){
         EntityManagerSetupImpl setupImpl = delegate.getSetupImpl();
         if (setupImpl == null){
             throw PersistenceUnitLoadingException.cannotRefreshEntityManagerFactoryCreatedFromSession(delegate.getServerSession().getName());
@@ -465,7 +514,42 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
      */
     @Override
     public synchronized void close() {
-        delegate.close();
+        if (lifecycleClosing) {
+            // Only same-thread callback reentry can reach this branch.
+            return;
+        }
+        EntityManagerFactoryDelegate closingDelegate = delegate;
+        closingDelegate.verifyOpen();
+        lifecycleClosing = true;
+        Throwable failure = null;
+        try {
+            if (persistenceUnitListeners != null && !lifecycleCloseNotified) {
+                lifecycleCloseNotified = true;
+                failure = persistenceUnitListeners.preClose(EntityManagerFactory.class, this);
+            }
+            EntityManagerFactoryDelegate currentDelegate = delegate;
+            failure = PersistenceUnitListenerRegistry.cleanup(failure, currentDelegate::closeFromFactory);
+            // A callback may adopt or explicitly refresh metadata. Dispose the
+            // requested delegate as well, unless the callback already closed it.
+            if (closingDelegate != currentDelegate && closingDelegate.isOpen()) {
+                failure = PersistenceUnitListenerRegistry.cleanup(failure, closingDelegate::closeForMetadataRefresh);
+            }
+            if (persistenceUnitListeners != null) {
+                failure = PersistenceUnitListenerRegistry.cleanup(failure, persistenceUnitListeners::releaseFactory);
+            }
+        } finally {
+            lifecycleClosing = false;
+        }
+        PersistenceUnitListenerRegistry.rethrow(failure);
+    }
+
+    /** Serialize the native delegate's current/retired decision with metadata refresh. */
+    synchronized void close(EntityManagerFactoryDelegate caller) {
+        if (isCurrentDelegate(caller)) {
+            close();
+        } else {
+            caller.closeForMetadataRefresh();
+        }
     }
 
     /**
@@ -502,22 +586,27 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
     }
 
     protected EntityManagerImpl createEntityManagerImpl(Map properties, SynchronizationType syncType) {
-        EntityManagerSetupImpl setupImpl = delegate.getSetupImpl();
+        EntityManagerFactoryDelegate currentDelegate;
+        synchronized (this) {
+            delegate.verifyOpen();
+            EntityManagerSetupImpl setupImpl = delegate.getSetupImpl();
 
-        if (setupImpl != null) {
-            if (setupImpl.isMetadataExpired()) {
-                String sessionName = setupImpl.getSessionName();
-                EntityManagerSetupImpl storedImpl = null;
-                synchronized (EntityManagerFactoryProvider.emSetupImpls){
-                    storedImpl = EntityManagerFactoryProvider.emSetupImpls.get(sessionName);
-                }
-                if (storedImpl != null) {
-                    delegate = new EntityManagerFactoryDelegate(storedImpl, delegate.getProperties(), this);
+            if (setupImpl != null) {
+                if (setupImpl.isMetadataExpired()) {
+                    String sessionName = setupImpl.getSessionName();
+                    EntityManagerSetupImpl storedImpl = null;
+                    synchronized (EntityManagerFactoryProvider.emSetupImpls){
+                        storedImpl = EntityManagerFactoryProvider.emSetupImpls.get(sessionName);
+                    }
+                    if (storedImpl != null) {
+                        delegate = new EntityManagerFactoryDelegate(storedImpl, delegate.getProperties(), this);
+                    }
                 }
             }
+            currentDelegate = delegate;
         }
 
-        return delegate.createEntityManagerImpl(properties, syncType);
+        return currentDelegate.createEntityManagerImpl(properties, syncType);
     }
 
     /**
