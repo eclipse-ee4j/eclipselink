@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -20,7 +20,12 @@ import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.expressions.ListExpressionOperator;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
+import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -100,7 +105,54 @@ public class ArgumentListFunctionExpression extends FunctionExpression {
         ListExpressionOperator realOperator = (ListExpressionOperator) getPlatformOperator(printer.getPlatform());
         operator.copyTo(realOperator);
         realOperator.setIsComplete(true);
-        realOperator.printCollection(this.children, printer);
+        realOperator.printCollection(temporalArguments(printer), printer);
+    }
+
+
+    /**
+     * Derby requires compatible temporal types for COALESCE arguments. Use the
+     * attribute mapping to convert date constants once scalar subqueries have
+     * been prepared. Copy the constants so SQL rendering does not change the
+     * query's expression tree or its application-level values.
+     */
+    private List<Expression> temporalArguments(ExpressionSQLPrinter printer) {
+        if (!printer.getPlatform().isDerby() || this.operator.getSelector() != ExpressionOperator.Coalesce) {
+            return this.children;
+        }
+        AbstractDirectMapping temporalMapping = null;
+        for (Expression child : this.children) {
+            DatabaseMapping mapping = null;
+            if (child.isSubSelectExpression()) {
+                var items = ((SubSelectExpression) child).getSubQuery().getItems();
+                if (items.size() == 1) {
+                    mapping = items.get(0).getMapping();
+                }
+            } else if (child.isQueryKeyExpression()) {
+                mapping = ((QueryKeyExpression) child).getMapping();
+            }
+            if (mapping != null && mapping.isAbstractDirectMapping()
+                    && mapping.getAttributeClassification() != null
+                    && Date.class.isAssignableFrom(mapping.getAttributeClassification())) {
+                temporalMapping = (AbstractDirectMapping) mapping;
+                break;
+            }
+        }
+        List<Expression> arguments = this.children;
+        if (temporalMapping != null) {
+            for (int index = 0; index < this.children.size(); index++) {
+                Expression child = this.children.get(index);
+                if (child.isConstantExpression() && ((ConstantExpression) child).getValue() instanceof Date) {
+                    if (arguments == this.children) {
+                        arguments = new ArrayList<>(this.children);
+                    }
+                    ConstantExpression constant = (ConstantExpression) child.clone();
+                    constant.setValue(temporalMapping.getFieldValue(constant.getValue(), printer.getSession()));
+                    constant.setLocalBase(null);
+                    arguments.set(index, constant);
+                }
+            }
+        }
+        return arguments;
     }
 
 
