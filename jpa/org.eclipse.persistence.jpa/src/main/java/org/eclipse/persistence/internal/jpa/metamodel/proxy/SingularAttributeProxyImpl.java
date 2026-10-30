@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,12 +14,40 @@
 //     tware - initial implementation
 package org.eclipse.persistence.internal.jpa.metamodel.proxy;
 
+import java.io.Serial;
+import java.time.temporal.Temporal;
+
+import jakarta.persistence.metamodel.BooleanAttribute;
+import jakarta.persistence.metamodel.ComparableAttribute;
+import jakarta.persistence.metamodel.NumericAttribute;
 import jakarta.persistence.metamodel.SingularAttribute;
+import jakarta.persistence.metamodel.TemporalAttribute;
+import jakarta.persistence.metamodel.TextAttribute;
 import jakarta.persistence.metamodel.Type;
 
 import org.eclipse.persistence.internal.jpa.metamodel.SingularAttributeImpl;
 
 public class SingularAttributeProxyImpl<X, T> extends AttributeProxyImpl<X, T> implements SingularAttribute<X, T> {
+
+    /** Select a proxy assignable to a canonical field without deploying its factory. */
+    public static SingularAttributeProxyImpl<?, ?> create(Class<?> attributeType) {
+        if (BooleanAttribute.class.isAssignableFrom(attributeType)) {
+            return new BooleanAttributeProxyImpl<>();
+        }
+        if (TextAttribute.class.isAssignableFrom(attributeType)) {
+            return new TextAttributeProxyImpl<>();
+        }
+        if (NumericAttribute.class.isAssignableFrom(attributeType)) {
+            return new NumericAttributeProxyImpl<>();
+        }
+        if (TemporalAttribute.class.isAssignableFrom(attributeType)) {
+            return new TemporalAttributeProxyImpl<>();
+        }
+        if (ComparableAttribute.class.isAssignableFrom(attributeType)) {
+            return new ComparableAttributeProxyImpl<>();
+        }
+        return new SingularAttributeProxyImpl<>();
+    }
 
     @Override
     public jakarta.persistence.metamodel.Bindable.BindableType getBindableType() {
@@ -49,6 +77,36 @@ public class SingularAttributeProxyImpl<X, T> extends AttributeProxyImpl<X, T> i
     @Override
     public Type<T> getType() {
         return ((SingularAttributeImpl<X, T>)getAttribute()).getType();
+    }
+
+    private static final class BooleanAttributeProxyImpl<X> extends SingularAttributeProxyImpl<X, Boolean>
+            implements BooleanAttribute<X> {
+        @Serial
+        private static final long serialVersionUID = 1L;
+    }
+
+    private static final class TextAttributeProxyImpl<X> extends SingularAttributeProxyImpl<X, String>
+            implements TextAttribute<X> {
+        @Serial
+        private static final long serialVersionUID = 1L;
+    }
+
+    private static final class NumericAttributeProxyImpl<X, N extends Number & Comparable<N>>
+            extends SingularAttributeProxyImpl<X, N> implements NumericAttribute<X, N> {
+        @Serial
+        private static final long serialVersionUID = 1L;
+    }
+
+    private static final class TemporalAttributeProxyImpl<X, T extends Temporal & Comparable<? super T>>
+            extends SingularAttributeProxyImpl<X, T> implements TemporalAttribute<X, T> {
+        @Serial
+        private static final long serialVersionUID = 1L;
+    }
+
+    private static final class ComparableAttributeProxyImpl<X, C extends Comparable<? super C>>
+            extends SingularAttributeProxyImpl<X, C> implements ComparableAttribute<X, C> {
+        @Serial
+        private static final long serialVersionUID = 1L;
     }
 
 }

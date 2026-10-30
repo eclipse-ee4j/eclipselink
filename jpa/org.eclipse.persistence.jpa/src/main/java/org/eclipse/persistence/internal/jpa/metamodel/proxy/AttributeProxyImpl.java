@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,18 +38,26 @@ public class AttributeProxyImpl<X, T> implements Attribute<X, T>, Serializable {
     protected Attribute<X, T> attribute = null;
     protected transient Set<WeakReference<EntityManagerFactoryImpl>> factories = new HashSet<>();
 
-    public synchronized Attribute<X, T> getAttribute(){
-        if (attribute == null){
-            for (WeakReference<EntityManagerFactoryImpl> factoryRef: factories){
-                EntityManagerFactoryImpl factory = factoryRef.get();
-                if (factory != null){
-                    factory.getDatabaseSession();
-                } else {
+    public Attribute<X, T> getAttribute(){
+        Set<WeakReference<EntityManagerFactoryImpl>> factoryRefs;
+        synchronized (this) {
+            if (attribute != null) {
+                return attribute;
+            }
+            factoryRefs = new HashSet<>(factories);
+        }
+        // Deployment completes other canonical proxies, so do not hold this proxy's monitor.
+        for (WeakReference<EntityManagerFactoryImpl> factoryRef : factoryRefs) {
+            EntityManagerFactoryImpl factory = factoryRef.get();
+            if (factory != null) {
+                factory.getDatabaseSession();
+            } else {
+                synchronized (this) {
                     factories.remove(factoryRef);
                 }
             }
         }
-        return attribute;
+        return getAttributeInternal();
     }
 
     public synchronized Attribute<X, T> getAttributeInternal(){
