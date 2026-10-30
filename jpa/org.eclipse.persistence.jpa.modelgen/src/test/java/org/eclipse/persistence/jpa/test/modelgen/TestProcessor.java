@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -106,6 +106,62 @@ public class TestProcessor {
         Assert.assertTrue(output.contains("public static volatile EntityGraph<MyEnt> _MyEnt;"));
 
         Assert.assertTrue(output.contains("public static final String CUSTOM_ATTRIBUTE = \"customAttribute\";"));
+    }
+
+    @Test
+    public void testDistributedNamedGraphsRetainOwnerTypedCanonicalFields() throws Exception {
+        TestFO root = new TestFO("org.graphs.GraphRoot", """
+                package org.graphs;
+                import jakarta.persistence.*;
+                @Entity(name = "GraphRootDefault")
+                @NamedEntityGraph
+                @NamedEntityGraph(name = "rootDistinct")
+                @NamedEntityGraph(name = "shared")
+                public class GraphRoot {
+                    @Id int id;
+                    @ManyToOne(fetch = FetchType.LAZY)
+                    @Fetch(graph = "GraphRootDefault", subgraph = "childDistinct")
+                    @Fetch(graph = "rootDistinct", subgraph = "childDistinct")
+                    @Fetch(graph = "shared", subgraph = "shared")
+                    GraphChild child;
+                    static {
+                        if (System.nanoTime() != Long.MIN_VALUE) {
+                            throw new AssertionError("Model generation must not initialize the entity class");
+                        }
+                    }
+                }
+                """);
+        TestFO child = new TestFO("org.graphs.GraphChild", """
+                package org.graphs;
+                import jakarta.persistence.*;
+                @Entity
+                @NamedEntityGraph(name = "childDistinct")
+                @NamedEntityGraph(name = "shared")
+                public class GraphChild {
+                    @Id int id;
+                    @Fetch(graph = "childDistinct")
+                    @Fetch(graph = "shared")
+                    String label;
+                }
+                """);
+        List<String> options = getJavacOptions("-Aeclipselink.logging.level.processor=OFF");
+        options.remove("-proc:only");
+        options.add("-proc:full");
+        Result result = runProject("distributedNamedGraphs", options, Arrays.asList(root, child), PXML32, OXML32);
+        Assert.assertTrue("Source and generated canonical models must compile together", result.success);
+        String rootModel = Files.readString(new File(result.srcOut, "org/graphs/GraphRoot_.java").toPath());
+        String childModel = Files.readString(new File(result.srcOut, "org/graphs/GraphChild_.java").toPath());
+        Assert.assertTrue(rootModel.contains("public static volatile EntityGraph<GraphRoot> _GraphRootDefault;"));
+        Assert.assertTrue(rootModel.contains("public static final String GRAPH_GRAPH_ROOT_DEFAULT = \"GraphRootDefault\";"));
+        Assert.assertTrue(rootModel.contains("public static volatile EntityGraph<GraphRoot> _rootDistinct;"));
+        Assert.assertTrue(rootModel.contains("public static volatile EntityGraph<GraphRoot> _shared;"));
+        Assert.assertTrue(childModel.contains("public static volatile EntityGraph<GraphChild> _childDistinct;"));
+        // The shared name denotes a public root at runtime, but both declarations belong in their owner's metamodel.
+        Assert.assertTrue(childModel.contains("public static volatile EntityGraph<GraphChild> _shared;"));
+        Assert.assertTrue(childModel.contains("public static final String GRAPH_SHARED = \"shared\";"));
+        Assert.assertFalse(childModel.contains("EntityGraph<GraphRoot>"));
+        Assert.assertTrue(new File(result.binOut, "org/graphs/GraphRoot_.class").isFile());
+        Assert.assertTrue(new File(result.binOut, "org/graphs/GraphChild_.class").isFile());
     }
 
     @Test

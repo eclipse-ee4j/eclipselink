@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2023 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -261,6 +261,7 @@ public class ExceptionLocalizationResource extends ListResourceBundle {
                                            { "operation_not_supported", "Calling {0} on a {1} is not supported by the specification."},
                                            { "pu_configured_for_resource_local", "Unable to create an EntityManager with SynchronizationType because PersistenceUnit is configured with resource-local transactions."},
                                            { "getpersistenceunitutil_called_on_closed_emf", "getPersistenceUnitUtil() was called on a closed EntityManagerFactory."},
+                                           { "invalid_named_entity_graph", "Invalid named entity graph [{0}] declared by [{1}]: {2}." },
                                            { "named_entity_graph_exists", "NamedEntityGraph with name {0} found on {1} already exists in this persistence unit."},
                                            { "cannot_get_from_non_correlated_query", "getCorrelationParent() called on a from-clause that was not obtained through correlation." },
                                            { "no_key_in_entity", "Cannot add join of {0} to {1} because the target class is missing an attribute of source type"},

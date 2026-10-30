@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -289,7 +289,7 @@ public class MetadataProject {
     private Map<String, NamedQueryMetadata> m_queries;
 
     // Entity Graph metadata.
-    private Map<String, NamedEntityGraphMetadata> m_entityGraphs;
+    private Map<String, List<NamedEntityGraphMetadata>> m_entityGraphs;
 
     // SQL result set mapping
     private Map<String, SQLResultSetMappingMetadata> m_sqlResultSetMappings;
@@ -673,7 +673,13 @@ public class MetadataProject {
      * INTERNAL: Add the Entity Graph by name.
      */
     public void addNamedEntityGraph(String name, NamedEntityGraphMetadata entityGraphMetadata) {
-        m_entityGraphs.put(name, entityGraphMetadata);
+        List<NamedEntityGraphMetadata> declarations = m_entityGraphs.computeIfAbsent(name, key -> new ArrayList<>());
+        for (NamedEntityGraphMetadata declaration : declarations) {
+            if (declaration.getEntityAccessor() == entityGraphMetadata.getEntityAccessor()) {
+                throw entityGraphMetadata.invalidGraph("more than one declaration on the same entity");
+            }
+        }
+        declarations.add(entityGraphMetadata);
     }
 
     /**
@@ -1261,7 +1267,8 @@ public class MetadataProject {
     public Set<NamedEntityGraphMetadata> getNamedEntityGraphs(MetadataAccessor accessor) {
         return m_entityGraphs.values()
                 .stream()
-                .filter(v -> v.getAccessibleObject() == accessor.getAccessibleObject())
+                .flatMap(Collection::stream)
+                .filter(v -> v.getEntityAccessor() == accessor)
                 .collect(Collectors.toSet());
     }
 
@@ -1681,6 +1688,29 @@ public class MetadataProject {
 
     /**
      * INTERNAL:
+     * Resolve graphs only after all entity and relationship metadata is available.
+     * Canonical preprocessing retains the declarations without entering this stage.
+     */
+    protected void processEntityGraphs() {
+        Map<String, List<NamedEntityGraphMetadata>> declarations = new HashMap<>();
+        m_entityGraphs.forEach((name, graphs) -> declarations.put(name, new ArrayList<>(graphs)));
+        if (getCompositeProcessor() != null) {
+            for (MetadataProject peer : getCompositeProcessor().getPearProjects(this)) {
+                peer.m_entityGraphs.forEach((name, graphs) ->
+                        declarations.computeIfAbsent(name, key -> new ArrayList<>()).addAll(graphs));
+            }
+        }
+        // No public graph is installed until every declaration has been validated.
+        Map<NamedEntityGraphMetadata, AttributeGroup> graphs = NamedEntityGraphMetadata.resolve(declarations);
+        graphs.forEach((declaration, graph) -> {
+            if (declaration.getEntityAccessor().getProject() == this) {
+                addEntityGraph(graph);
+            }
+        });
+    }
+
+    /**
+     * INTERNAL:
      * This method will iterate through all the entities in the PU and check
      * if we should add them to a variable one to one mapping that was either
      * defined (incompletely) or defaulted.
@@ -2023,6 +2053,7 @@ public class MetadataProject {
             processInterfaceAccessors();
 
             processPartitioning();
+            processEntityGraphs();
         }
     }
 

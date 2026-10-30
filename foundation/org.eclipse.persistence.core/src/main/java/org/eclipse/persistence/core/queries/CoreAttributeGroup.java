@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -247,8 +247,8 @@ public class CoreAttributeGroup<
             // super.clone() is shallow, so the clone would otherwise share - and mutate
             // while iterating - this group's own subclass map, as subClasses and items below.
             clone.allsubclasses = new HashMap<>();
-            for (CoreAttributeGroup group : this.allsubclasses.values()){
-                clone.getSubClassGroups().put(group.getType(), group.clone(cloneMap));
+            for (Map.Entry<Object, CoreAttributeGroup> entry : this.allsubclasses.entrySet()){
+                clone.getSubClassGroups().put(entry.getKey(), entry.getValue().clone(cloneMap));
             }
         }
         if (this.superClassGroup != null){
