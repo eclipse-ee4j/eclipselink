@@ -155,6 +155,20 @@
                 <groupId>de.empulse.eclipselink</groupId>
                 <artifactId>staticweave-maven-plugin</artifactId>
                 <executions>
+                    <!-- Weave these fixtures before the generic pass, which skips woven classes. -->
+                    <execution>
+                        <id>weave-default-to-one-fetch-fixtures</id>
+                        <phase>process-test-classes</phase>
+                        <goals>
+                            <goal>weave</goal>
+                        </goals>
+                        <configuration>
+                            <source>${project.build.testOutputDirectory}</source>
+                            <target>${project.build.testOutputDirectory}</target>
+                            <persistenceXMLLocation>META-INF/default-to-one-fetch-weaving/META-INF/persistence.xml</persistenceXMLLocation>
+                            <logLevel>FINE</logLevel>
+                        </configuration>
+                    </execution>
                     <execution>
                         <phase>process-test-classes</phase>
                         <goals>
@@ -184,6 +198,18 @@
                         <version>${junit.version}</version>
                     </dependency>
                 </dependencies>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>get-test-classpath-to-properties</id>
+                        <goals>
+                            <goal>properties</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -220,6 +246,19 @@
                             <includes>
                                 <include>*.Test*</include>
                             </includes>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>test-default-to-one-fetch-agent</id>
+                        <goals>
+                            <goal>integration-test</goal>
+                        </goals>
+                        <configuration>
+                            <skipTests>${test-skip-jpa-jse}</skipTests>
+                            <reportNameSuffix>default-to-one-fetch-agent</reportNameSuffix>
+                            <!-- Premain needs the isolated descriptor before Failsafe installs test properties. -->
+                            <argLine>"-javaagent:${org.eclipse.persistence:org.eclipse.persistence.jpa:jar}" -Declipselink.persistencexml=META-INF/default-to-one-fetch-weaving/META-INF/persistence.xml -Declipselink.test.default-to-one-fetch.agent=true</argLine>
+                            <test>TestDefaultToOneFetch#sameNameLazyThenEagerFactoriesRetainTheirDefaults+sameNameEagerThenLazyFactoriesRetainTheirDefaults+sameNameSameDefaultReusesDeployment+explicitSessionNamePreservesReuseAndCollisionCheck+xmlFactoriesRetainNameBasedReuseWithAgent</test>
                         </configuration>
                     </execution>
                     <execution>

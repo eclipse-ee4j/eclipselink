@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2024, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -12,6 +12,7 @@
 
 package org.eclipse.persistence.internal.jpa.deployment;
 
+import jakarta.persistence.FetchType;
 import jakarta.persistence.SharedCacheMode;
 import jakarta.persistence.ValidationMode;
 import org.eclipse.persistence.config.SystemProperties;
@@ -19,6 +20,9 @@ import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.jpa.exceptions.PersistenceUnitLoadingException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.jpa.jdbc.DataSourceImpl;
+import org.eclipse.persistence.internal.jpa.deployment.xml.parser.PersistenceContentHandler;
+import org.xml.sax.SAXParseException;
+import org.xml.sax.helpers.AttributesImpl;
 import org.eclipse.persistence.jpa.Archive;
 import org.eclipse.persistence.jpa.ArchiveFactory;
 import org.junit.jupiter.api.Assertions;
@@ -420,6 +424,76 @@ class PersistenceUnitProcessorTest {
         Assertions.assertTrue(info.excludeUnlistedClasses());
         Assertions.assertTrue(info.getProperties().isEmpty());
         Assertions.assertEquals(TestArchive.class.getClassLoader(), info.getClassLoader());
+    }
+
+    @Test
+    void testDefaultToOneFetchTypeXml() {
+        List<SEPersistenceUnitInfo> units = readPersistenceXML("""
+                <persistence xmlns="https://jakarta.ee/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                        xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence persistence_4_0.xsd" version="4.0">
+                    <persistence-unit name="lazy">
+                        <default-to-one-fetch-type>  LAZY  </default-to-one-fetch-type>
+                    </persistence-unit>
+                    <persistence-unit name="omitted"/>
+                    <persistence-unit name="eager">
+                        <default-to-one-fetch-type>EAGER</default-to-one-fetch-type>
+                    </persistence-unit>
+                </persistence>""");
+        Assertions.assertEquals(3, units.size());
+        Assertions.assertEquals(FetchType.LAZY, units.get(0).getDefaultToOneFetchType());
+        Assertions.assertEquals(FetchType.EAGER, units.get(1).getDefaultToOneFetchType());
+        Assertions.assertEquals(FetchType.EAGER, units.get(2).getDefaultToOneFetchType());
+    }
+
+    @Test
+    void testDefaultToOneFetchTypeChunkedText() throws Exception {
+        PersistenceContentHandler handler = new PersistenceContentHandler();
+        String namespace = "https://jakarta.ee/xml/ns/persistence";
+        handler.startElement(namespace, "persistence-unit", "", new AttributesImpl());
+        handler.startElement(namespace, "default-to-one-fetch-type", "", new AttributesImpl());
+        handler.characters("  LA".toCharArray(), 0, 4);
+        handler.characters("ZY ".toCharArray(), 0, 3);
+        handler.endElement(namespace, "default-to-one-fetch-type", "");
+        handler.endElement(namespace, "persistence-unit", "");
+        Assertions.assertEquals(FetchType.LAZY, handler.getPersistenceUnits().get(0).getDefaultToOneFetchType());
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"", " ", "lazy", "DEFAULT", "INVALID"})
+    void testInvalidDefaultToOneFetchType(String value) throws Exception {
+        String descriptor = """
+                <persistence xmlns="https://jakarta.ee/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                        xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence persistence_4_0.xsd" version="4.0">
+                    <persistence-unit name="invalid">
+                        <default-to-one-fetch-type>%s</default-to-one-fetch-type>
+                    </persistence-unit>
+                </persistence>""".formatted(value);
+        PersistenceUnitLoadingException exception = Assertions.assertThrows(PersistenceUnitLoadingException.class,
+                () -> readPersistenceXML(descriptor));
+        Assertions.assertNotNull(exception.getInternalException());
+        // Check the content handler as well as the schema-validation boundary.
+        PersistenceContentHandler handler = new PersistenceContentHandler();
+        String namespace = "https://jakarta.ee/xml/ns/persistence";
+        handler.startElement(namespace, "persistence-unit", "", new AttributesImpl());
+        handler.startElement(namespace, "default-to-one-fetch-type", "", new AttributesImpl());
+        handler.characters(value.toCharArray(), 0, value.length());
+        SAXParseException invalid = Assertions.assertThrows(SAXParseException.class,
+                () -> handler.endElement(namespace, "default-to-one-fetch-type", ""));
+        Assertions.assertTrue(invalid.getMessage().contains("Unsupported value"));
+        Assertions.assertTrue(invalid.getMessage().contains("default-to-one-fetch-type"));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"http://java.sun.com/xml/ns/persistence", "http://xmlns.jcp.org/xml/ns/persistence",
+            "https://jakarta.ee/xml/ns/persistence"})
+    void testLegacyDefaultToOneFetchType(String namespace) {
+        String version = namespace.contains("java.sun.com") ? "1.0" : namespace.contains("xmlns.jcp.org") ? "2.2" : "3.2";
+        List<SEPersistenceUnitInfo> units = readPersistenceXML("""
+                <persistence xmlns="%s" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                        xsi:schemaLocation="%s persistence_%s.xsd" version="%s">
+                    <persistence-unit name="legacy"/>
+                </persistence>""".formatted(namespace, namespace, version.replace('.', '_'), version));
+        Assertions.assertEquals(FetchType.EAGER, units.get(0).getDefaultToOneFetchType());
     }
 
     private static final String INVALID_PU_TRANSACTION_TYPE = """

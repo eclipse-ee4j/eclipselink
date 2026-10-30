@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -163,7 +163,7 @@ public abstract class JPAInitializer {
 
     /**
      * Find custom PersistenceUnitInfo in custom persistence unit cache by provided {@link PersistenceConfiguration}.
-     * If no cached instance exists, create and cache a new one.
+     * Reuse a cached instance with the same to-one default, otherwise create a new snapshot.
      *
      * @param configuration configuration of the persistence unit
      * @param rootURL root {@link URL} of the persistence unit
@@ -171,13 +171,13 @@ public abstract class JPAInitializer {
      */
     public SEPersistenceUnitInfo customPersistenceUnitInfo(PersistenceConfiguration configuration, URL rootURL) {
         validateCustomPersistenceUnitName(configuration);
-        SEPersistenceUnitInfo persistenceUnitInfo = customPuInfos.get(configuration.name());
-        if (persistenceUnitInfo != null) {
-            return persistenceUnitInfo;
-        }
-        persistenceUnitInfo = new SEPersistenceUnitInfo(configuration, rootURL);
-        customPuInfos.put(configuration.name(), persistenceUnitInfo);
-        return persistenceUnitInfo;
+        return customPuInfos.compute(configuration.name(), (name, persistenceUnitInfo) -> {
+            if (persistenceUnitInfo != null
+                    && persistenceUnitInfo.getDefaultToOneFetchType() == configuration.defaultToOneFetchType()) {
+                return persistenceUnitInfo;
+            }
+            return new SEPersistenceUnitInfo(configuration, rootURL);
+        });
     }
 
     // Check that custom persistence unit name does not exist in xml configurations.
@@ -278,6 +278,16 @@ public abstract class JPAInitializer {
      */
     public boolean isPersistenceUnitUniquelyDefinedByName() {
         return true;
+    }
+
+    /**
+     * Indicates whether the name uniquely identifies this persistence unit.
+     * Programmatic configurations require their configuration hash even when an
+     * agent has predeployed XML persistence units by name.
+     */
+    public boolean isPersistenceUnitUniquelyDefinedByName(PersistenceUnitInfo puInfo) {
+        return isPersistenceUnitUniquelyDefinedByName()
+                && (!(puInfo instanceof SEPersistenceUnitInfo sePUInfo) || sePUInfo.getConfigHash() == null);
     }
 
     /**

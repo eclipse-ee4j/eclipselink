@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0 which is available at
+    http://www.eclipse.org/legal/epl-2.0,
+    or the Eclipse Distribution License v. 1.0 which is available at
+    http://www.eclipse.org/org/documents/edl-v10.php.
+
+    SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+-->
+<entity-mappings xmlns="https://jakarta.ee/xml/ns/persistence/orm"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence/orm https://jakarta.ee/xml/ns/persistence/orm/orm_4_0.xsd"
+        version="4.0">
+    <mapped-superclass class="org.eclipse.persistence.jpa.fetchdefaults.model.DefaultFetchMappedSuperclass"
+            access="PROPERTY" metadata-complete="true">
+        <attributes>
+            <id name="id"/>
+            <many-to-one name="inheritedTarget">
+                <join-column name="INHERITED_ID"/>
+            </many-to-one>
+        </attributes>
+    </mapped-superclass>
+    <entity class="org.eclipse.persistence.jpa.fetchdefaults.model.DefaultFetchPropertyOwner"
+            access="PROPERTY" metadata-complete="true">
+        <table name="JPA_DTF_PROPERTY"/>
+        <attributes>
+            <many-to-one name="many">
+                <join-column name="MANY_ID"/>
+            </many-to-one>
+            <one-to-one name="one">
+                <join-column name="ONE_ID"/>
+            </one-to-one>
+        </attributes>
+    </entity>
+</entity-mappings>

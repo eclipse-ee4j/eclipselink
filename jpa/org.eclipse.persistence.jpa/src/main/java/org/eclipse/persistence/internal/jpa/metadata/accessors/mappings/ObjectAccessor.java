@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -71,10 +71,14 @@
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_FETCH_EAGER;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_FETCH_LAZY;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ID;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_MAPS_ID;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_PRIMARY_KEY_JOIN_COLUMN;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_PRIMARY_KEY_JOIN_COLUMNS;
+
+import jakarta.persistence.FetchType;
+import jakarta.persistence.spi.PersistenceUnitInfo;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -247,6 +251,12 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
      */
     @Override
     public String getDefaultFetchType() {
+        if ((isManyToOne() || isOneToOne()) && getProject() != null) {
+            PersistenceUnitInfo persistenceUnitInfo = getProject().getPersistenceUnitInfo();
+            if (persistenceUnitInfo != null && persistenceUnitInfo.getDefaultToOneFetchType() == FetchType.LAZY) {
+                return JPA_FETCH_LAZY;
+            }
+        }
         return JPA_FETCH_EAGER;
     }
 
@@ -409,6 +419,18 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
         initXMLObject(m_primaryKeyForeignKey, accessibleObject);
     }
 
+
+    /**
+     * INTERNAL:
+     * Resolve DEFAULT for standard to-one mappings without changing the raw metadata.
+     */
+    @Override
+    public boolean isLazy() {
+        if ((isManyToOne() || isOneToOne()) && FetchType.DEFAULT.name().equals(getFetch())) {
+            return JPA_FETCH_LAZY.equals(getDefaultFetchType());
+        }
+        return super.isLazy();
+    }
 
     /**
      * INTERNAL:

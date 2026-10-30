@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -57,6 +57,7 @@ public class SEPersistenceUnitInfo implements jakarta.persistence.spi.Persistenc
     protected List<String> mappingFiles;
     private List<String> qualifierAnnNames;
     private String scopeAnnName;
+    private FetchType defaultToOneFetchType = FetchType.EAGER;
 
     // names of jars specified in persistence.xml. they are later on used
     // to build jar-file URL.
@@ -112,6 +113,7 @@ public class SEPersistenceUnitInfo implements jakarta.persistence.spi.Persistenc
         }
         cacheMode = configuration.sharedCacheMode();
         validationMode = configuration.validationMode();
+        defaultToOneFetchType = configuration.defaultToOneFetchType();
         persistenceUnitTransactionType = configuration.transactionType();
         mappingFiles = configuration.mappingFiles();
         managedClassNames = configuration.managedClasses()
@@ -137,6 +139,7 @@ public class SEPersistenceUnitInfo implements jakarta.persistence.spi.Persistenc
                                 configuration.nonJtaDataSource(),
                                 configuration.sharedCacheMode(),
                                 configuration.validationMode(),
+                                configuration.defaultToOneFetchType(),
                                 configuration.transactionType(),
                                 configuration.managedClasses(),
                                 configuration.mappingFiles(),
@@ -494,8 +497,14 @@ public class SEPersistenceUnitInfo implements jakarta.persistence.spi.Persistenc
 
     @Override
     public FetchType getDefaultToOneFetchType() {
-        // TODO Auto-generated method stub
-        return null;
+        return defaultToOneFetchType;
+    }
+
+    public void setDefaultToOneFetchType(FetchType defaultToOneFetchType) {
+        if (defaultToOneFetchType != FetchType.LAZY && defaultToOneFetchType != FetchType.EAGER) {
+            throw new IllegalArgumentException("The default to-one fetch type must be LAZY or EAGER");
+        }
+        this.defaultToOneFetchType = defaultToOneFetchType;
     }
 
     @Override
