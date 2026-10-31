@@ -51,8 +51,10 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import jakarta.persistence.EntityListeners;
@@ -79,9 +81,11 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAsmFactory;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataFactory;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataFile;
 import org.eclipse.persistence.internal.jpa.metadata.converters.StructConverterMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.listeners.EntityListenerMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.listeners.JPAEntityListenerHolder;
+import org.eclipse.persistence.internal.jpa.metadata.listeners.PersistenceUnitListener;
 import org.eclipse.persistence.internal.jpa.metadata.queries.NamedNativeQueryMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.NamedQueryMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
@@ -184,6 +188,128 @@ public class MetadataProcessor {
                 listener.setListenerType(JPAEntityListenerHolder.PACKAGE_LISTENER);
                 listener.process(accessor, m_loader, true);
             }
+        }
+    }
+
+    /**
+     * INTERNAL:
+     * Collect persistence-unit callbacks independently of entity descriptors.
+     * XML registrations use the same override rules as ordinary listener metadata.
+     */
+    public List<PersistenceUnitListener> getPersistenceUnitListeners() {
+        boolean annotations = !m_project.isXMLMappingMetadataComplete();
+        Map<String, PersistenceUnitListener> listeners = new LinkedHashMap<>();
+        if (annotations) {
+            for (MetadataClass listenerClass : m_discoveredEntityListeners.values()) {
+                if (PersistenceUnitListener.hasCallbackAnnotations(listenerClass)) {
+                    listeners.put(listenerClass.getName(),
+                            new PersistenceUnitListener(listenerClass.getName(), true, null, null));
+                }
+            }
+        }
+        Map<String, EntityListenerMetadata> xmlListeners = new LinkedHashMap<>();
+        Map<String, Boolean> xmlAnnotations = new HashMap<>();
+        Set<String> entities = new HashSet<>();
+        Set<String> mappedSuperclasses = new HashSet<>();
+        for (XMLEntityMappings mappings : m_project.getEntityMappings()) {
+            MetadataFile file = new MetadataFile(mappings);
+            if (mappings.getPersistenceUnitMetadata() != null) {
+                for (EntityListenerMetadata listener : mappings.getPersistenceUnitMetadata().getDefaultListeners()) {
+                    if (listener.getEntityMappings() == null) {
+                        listener.initXMLObject(file, mappings);
+                    }
+                    addPersistenceUnitListener(listener, annotations, xmlListeners, xmlAnnotations);
+                }
+            }
+            List<MappedSuperclassAccessor> classes = new ArrayList<>(mappings.getEntities());
+            classes.addAll(mappings.getMappedSuperclasses());
+            for (MappedSuperclassAccessor accessor : classes) {
+                Set<String> visited = accessor.isEntityAccessor() ? entities : mappedSuperclasses;
+                if (!visited.add(mappings.getPackageQualifiedClassName(accessor.getClassName()))) {
+                    // XML overrides have been merged into the first accessor.
+                    continue;
+                }
+                for (EntityListenerMetadata listener : accessor.getEntityListeners()) {
+                    if (listener.getEntityMappings() == null) {
+                        listener.initXMLObject(file, mappings);
+                    }
+                    addPersistenceUnitListener(listener, annotations && !accessor.isMetadataComplete(),
+                            xmlListeners, xmlAnnotations);
+                }
+            }
+        }
+        for (Map.Entry<String, EntityListenerMetadata> entry : xmlListeners.entrySet()) {
+            PersistenceUnitListener listener = entry.getValue().getPersistenceUnitListener(xmlAnnotations.get(entry.getKey()));
+            if (listener == null) {
+                listeners.remove(entry.getKey());
+            } else {
+                listeners.put(entry.getKey(), listener);
+            }
+        }
+        return List.copyOf(listeners.values());
+    }
+
+    private void addPersistenceUnitListener(EntityListenerMetadata listener, boolean annotations,
+            Map<String, EntityListenerMetadata> listeners, Map<String, Boolean> annotationSettings) {
+        String name = listener.getListenerClassName();
+        EntityListenerMetadata existing = listeners.get(name);
+        if (existing != null && Objects.equals(listener.getPostCreate(), existing.getPostCreate())
+                && Objects.equals(listener.getPreClose(), existing.getPreClose())) {
+            // A listener referenced by several entities still has one PU definition.
+            // Entity-specific callbacks and exclusion flags do not filter PU events.
+            annotationSettings.put(name, annotations || annotationSettings.get(name));
+        } else if (listener.shouldOverride(existing)) {
+            listeners.put(name, listener);
+            annotationSettings.put(name, annotations);
+        }
+    }
+
+    /**
+     * INTERNAL:
+     * Recreate only lifecycle metadata on a cached-project bootstrap. Do not
+     * rebuild descriptors, queries, converters, or the serialized project.
+     */
+    public List<PersistenceUnitListener> loadPersistenceUnitListeners(boolean throwExceptionOnFail) {
+        loadMappingFiles(throwExceptionOnFail);
+        initializePersistenceUnitMetadata();
+        Map<String, MappedSuperclassAccessor> entities = new HashMap<>();
+        Map<String, MappedSuperclassAccessor> mappedSuperclasses = new HashMap<>();
+        for (XMLEntityMappings mappings : m_project.getEntityMappings()) {
+            mergePersistenceUnitListenerClasses(mappings.getEntities(), mappings, entities);
+            mergePersistenceUnitListenerClasses(mappings.getMappedSuperclasses(), mappings, mappedSuperclasses);
+        }
+        if (!m_project.isXMLMappingMetadataComplete()) {
+            for (String className : PersistenceUnitProcessor.buildClassSet(m_project.getPersistenceUnitInfo(), m_predeployProperties)) {
+                MetadataClass candidate = m_factory.getMetadataClass(className, true);
+                if (candidate != null && candidate.isAnnotationPresent("jakarta.persistence.EntityListener")) {
+                    m_discoveredEntityListeners.put(className, candidate);
+                }
+            }
+        }
+        return getPersistenceUnitListeners();
+    }
+
+    private void mergePersistenceUnitListenerClasses(List<? extends MappedSuperclassAccessor> classes,
+            XMLEntityMappings mappings, Map<String, MappedSuperclassAccessor> merged) {
+        for (MappedSuperclassAccessor accessor : classes) {
+            String name = mappings.getPackageQualifiedClassName(accessor.getClassName());
+            // Initialize and merge metadata only. Registering these accessors would
+            // replace descriptors in the already restored cached project.
+            accessor.initXMLObject(m_factory.getMetadataClass(name, false), mappings);
+            MappedSuperclassAccessor existing = merged.putIfAbsent(name, accessor);
+            if (existing != null) {
+                existing.merge(accessor);
+            }
+        }
+    }
+
+    private void initializePersistenceUnitMetadata() {
+        m_factory = new MetadataAsmFactory(m_project.getLogger(), m_loader);
+        for (XMLEntityMappings entityMappings : m_project.getEntityMappings()) {
+            entityMappings.setLoader(m_loader);
+            entityMappings.setProject(m_project);
+            entityMappings.setMetadataFactory(m_factory);
+            entityMappings.processPersistenceUnitMetadata();
         }
     }
 
@@ -705,24 +831,12 @@ public class MetadataProcessor {
      */
     public void processEntityMappings(PersistenceUnitProcessor.Mode mode) {
         if (mode == PersistenceUnitProcessor.Mode.ALL || mode == PersistenceUnitProcessor.Mode.COMPOSITE_MEMBER_INITIAL) {
-            m_factory = new MetadataAsmFactory(m_project.getLogger(), m_loader);
-
             // 1 - Process persistence unit meta data/defaults defined in ORM XML
             // instance documents in the persistence unit. If multiple conflicting
             // persistence unit meta data is found, this call will throw an
             // exception. The meta data we find here will be applied in the
             // initialize call below.
-            for (XMLEntityMappings entityMappings : m_project.getEntityMappings()) {
-                // Since this our first iteration through the entity mappings list,
-                // set the project and loader references. This is very important
-                // and must be done first!
-                entityMappings.setLoader(m_loader);
-                entityMappings.setProject(m_project);
-                entityMappings.setMetadataFactory(m_factory);
-
-                // Process the persistence unit metadata if defined.
-                entityMappings.processPersistenceUnitMetadata();
-            }
+            initializePersistenceUnitMetadata();
 
             // 2 - Initialize all the persistence unit class with the meta data we
             // processed in step 1.

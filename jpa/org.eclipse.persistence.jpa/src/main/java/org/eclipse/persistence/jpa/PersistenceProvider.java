@@ -145,7 +145,7 @@ public class PersistenceProvider implements jakarta.persistence.spi.PersistenceP
                 if (undeployed) {
                     // after the emSetupImpl has been obtained from emSetupImpls
                     // it has been undeployed by factory.close() in another thread - start all over again.
-                    return (EntityManagerFactoryImpl) createEntityManagerFactory(persistenceUnitName, properties);
+                    return createEntityManagerFactoryImpl(persistenceUnitInfo, properties, requiresConnection);
                 }
             }
 
@@ -182,7 +182,9 @@ public class PersistenceProvider implements jakarta.persistence.spi.PersistenceP
         if (checkForProviderProperty(nonNullProperties)){
             String name = (emName == null) ? "" : emName;
             JPAInitializer initializer = getInitializer(name, nonNullProperties);
-            return createEntityManagerFactoryImpl(initializer.findPersistenceUnitInfo(name, nonNullProperties), nonNullProperties, true);
+            EntityManagerFactoryImpl factory = createEntityManagerFactoryImpl(
+                    initializer.findPersistenceUnitInfo(name, nonNullProperties), nonNullProperties, true);
+            return factory == null ? null : factory.completeCreation();
         }
 
         // Not EclipseLink so return null;
@@ -237,7 +239,7 @@ public class PersistenceProvider implements jakarta.persistence.spi.PersistenceP
         return createEntityManagerFactoryImpl(
                 initializer.customPersistenceUnitInfo(configuration, rootURL),
                 Collections.emptyMap(),
-                true);
+                true).completeCreation();
     }
 
     /**
@@ -397,7 +399,7 @@ public class PersistenceProvider implements jakarta.persistence.spi.PersistenceP
      */
     @Override
     public EntityManagerFactory createContainerEntityManagerFactory(PersistenceUnitInfo info, Map properties) {
-        return createContainerEntityManagerFactoryImpl(info, properties, true);
+        return ((EntityManagerFactoryImpl) createContainerEntityManagerFactoryImpl(info, properties, true)).completeCreation();
     }
 
     protected EntityManagerFactory createContainerEntityManagerFactoryImpl(PersistenceUnitInfo info, Map properties, boolean requiresConnection) {
@@ -454,7 +456,7 @@ public class PersistenceProvider implements jakarta.persistence.spi.PersistenceP
                 if(undeployed) {
                     // after the emSetupImpl has been obtained from emSetupImpls
                     // it has been undeployed by factory.close() in another thread - start all over again.
-                    return createContainerEntityManagerFactory(info, properties);
+                    return createContainerEntityManagerFactoryImpl(info, properties, requiresConnection);
                 }
             }
             if (transformer != null){

@@ -1569,6 +1569,8 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(EntityListenerMetadata.class);
 
+        descriptor.addMapping(getLifecycleCallbackMapping("postCreate", "post-create"));
+        descriptor.addMapping(getLifecycleCallbackMapping("preClose", "pre-close"));
         descriptor.addMapping(getPrePeristMapping());
         descriptor.addMapping(getPostPeristMapping());
         descriptor.addMapping(getPreRemoveMapping());

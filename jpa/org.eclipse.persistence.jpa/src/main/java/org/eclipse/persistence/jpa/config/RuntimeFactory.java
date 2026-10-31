@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -145,7 +145,7 @@ public class RuntimeFactory {
             throw ex;
         }
 
-        return factory;
+        return factory.completeCreation();
 
     }
 

@@ -84,6 +84,8 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.DescriptorEventListener;
 import org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitInfo;
 import org.eclipse.persistence.internal.jpa.metadata.listeners.EntityListenerRegistry;
+import org.eclipse.persistence.internal.jpa.metadata.listeners.PersistenceUnitListener;
+import org.eclipse.persistence.internal.jpa.metadata.listeners.PersistenceUnitListenerRegistry;
 import org.eclipse.persistence.internal.jpa.querydef.CriteriaBuilderImpl;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -346,8 +348,21 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
      * will return <code>false</code>.
      */
     @Override
-    public synchronized void close() {
-        close(!(owner instanceof EntityManagerFactoryImpl factory) || factory.isCurrentDelegate(this));
+    public void close() {
+        if (owner instanceof EntityManagerFactoryImpl factory) {
+            // Enter the public owner before taking the delegate monitor. The
+            // owner also closes this delegate, so the reverse order can deadlock.
+            factory.close(this);
+        } else {
+            synchronized (this) {
+                close(true);
+            }
+        }
+    }
+
+    /** The public owner has already dispatched its lifecycle notification. */
+    synchronized void closeFromFactory() {
+        close(true);
     }
 
     /** A failed replacement must not close the registry of the restored factory. */
@@ -358,8 +373,9 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
     private void close(boolean closeRegistry) {
         verifyOpen();
         isOpen = false;
+        Throwable failure = null;
         if (closeRegistry) {
-            entityListenerRegistry.close();
+            failure = PersistenceUnitListenerRegistry.cleanup(failure, entityListenerRegistry::close);
         }
         // Do not invalidate the metaModel field
         // (a reopened emf will re-populate the same metaModel)
@@ -367,9 +383,10 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
         if (setupImpl != null) {
             // 260511 null check so that closing an EM
             // created from the constructor no longer throws a NPE
-            setupImpl.undeploy();
+            failure = PersistenceUnitListenerRegistry.cleanup(failure, setupImpl::undeploy);
         }
         owner = null;
+        PersistenceUnitListenerRegistry.rethrow(failure);
     }
 
     /**
@@ -420,7 +437,12 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
             throw new IllegalStateException(ExceptionLocalization.buildMessage("pu_configured_for_resource_local"));
         }
 
-        return new EntityManagerImpl(this, (Map<String, Object>) properties, syncType);
+        return new EntityManagerImpl(this, (Map<String, Object>) properties, syncType)
+                .completeCreation(getPersistenceUnitListeners());
+    }
+
+    private PersistenceUnitListenerRegistry getPersistenceUnitListeners() {
+        return owner instanceof EntityManagerFactoryImpl factory ? factory.getPersistenceUnitListeners() : null;
     }
 
 
@@ -445,7 +467,18 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
     @SuppressWarnings("removal")
     protected void finalize() throws Throwable {
         if (isOpen()) {
-            close();
+            EntityManagerFactoryImpl factory = owner instanceof EntityManagerFactoryImpl candidate
+                    && candidate.isCurrentDelegate(this) ? candidate : null;
+            try {
+                synchronized (this) {
+                    // Finalization is silent, including for the current delegate.
+                    close(!(owner instanceof EntityManagerFactoryImpl) || factory != null);
+                }
+            } finally {
+                if (factory != null) {
+                    factory.releasePersistenceUnitListeners();
+                }
+            }
         }
     }
 
@@ -640,6 +673,10 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
     @Override
     @SuppressWarnings("removal")
     public PersistenceUnitTransactionType getTransactionType() {
+        if (setupImpl == null) {
+            return session.hasExternalTransactionController()
+                    ? PersistenceUnitTransactionType.JTA : PersistenceUnitTransactionType.RESOURCE_LOCAL;
+        }
         // Temporary mapping between old and new PersistenceUnitTransactionType
         return switch (setupImpl.getPersistenceUnitInfo().getTransactionType()) {
             case JTA -> PersistenceUnitTransactionType.JTA;
@@ -846,7 +883,11 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
 
     @Override
     public String getName() {
-        return setupImpl.getPersistenceUnitInfo().getPersistenceUnitName();
+        if (setupImpl != null) {
+            return setupImpl.getPersistenceUnitInfo().getPersistenceUnitName();
+        }
+        Object name = session.getProperty(PersistenceUnitListener.NAME_PROPERTY);
+        return name instanceof String persistenceUnitName ? persistenceUnitName : session.getName();
     }
 
     @Override
@@ -1047,13 +1088,13 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
     @Override
     public EntityAgent createEntityAgent(jakarta.persistence.EntityAgent.CreationOption... options) {
         verifyOpen();
-        return new EntityAgentImpl(this, parseAgentCreationOptions(options));
+        return new EntityAgentImpl(this, parseAgentCreationOptions(options)).completeCreation(getPersistenceUnitListeners());
     }
 
     @Override
     public EntityAgent createEntityAgent(Map<?, ?> properties) {
         verifyOpen();
-        return new EntityAgentImpl(this, properties);
+        return new EntityAgentImpl(this, properties).completeCreation(getPersistenceUnitListeners());
     }
 
     /**
@@ -1166,7 +1207,7 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
         if (handlerClass != EntityAgent.class) {
             throw new IllegalArgumentException("Unsupported entity handler type: " + handlerClass.getName());
         }
-        EntityAgentImpl agent = new EntityAgentImpl(this, null);
+        EntityAgentImpl agent = new EntityAgentImpl(this, null).completeCreation(getPersistenceUnitListeners());
         Throwable primary = null;
         try {
             if (getTransactionType() == PersistenceUnitTransactionType.JTA) {

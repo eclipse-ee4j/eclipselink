@@ -112,6 +112,7 @@ import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
 import org.eclipse.persistence.internal.helper.BasicTypeHelperImpl;
 import org.eclipse.persistence.internal.identitymaps.CacheId;
+import org.eclipse.persistence.internal.jpa.metadata.listeners.PersistenceUnitListenerRegistry;
 import org.eclipse.persistence.internal.jpa.querydef.CommonAbstractCriteriaImpl;
 import org.eclipse.persistence.internal.jpa.querydef.CriteriaSelectInternal;
 import org.eclipse.persistence.internal.jpa.transaction.EntityTransactionImpl;
@@ -174,6 +175,27 @@ public class EntityManagerImpl implements JpaEntityManager {
 
     /** Allows transparent transactions across JTA and local transactions. */
     private TransactionWrapperImpl transaction;
+
+    private PersistenceUnitListenerRegistry persistenceUnitListeners;
+    private boolean lifecycleClosing;
+    private boolean lifecycleCloseNotified;
+
+    EntityManagerImpl completeCreation(PersistenceUnitListenerRegistry listeners) {
+        persistenceUnitListeners = listeners;
+        if (listeners != null) {
+            try {
+                listeners.postCreate(EntityManager.class, this);
+            } catch (RuntimeException | Error failure) {
+                if (isOpen) {
+                    // Creation never returned this manager. Its callback may
+                    // already have closed the factory and released the listeners.
+                    PersistenceUnitListenerRegistry.cleanup(failure, () -> closeWithPersistenceUnitListeners(false));
+                }
+                throw failure;
+            }
+        }
+        return this;
+    }
 
     /** Store if this entity manager has been closed. */
     protected boolean isOpen;
@@ -2151,6 +2173,14 @@ public class EntityManagerImpl implements JpaEntityManager {
      */
     @Override
     public void close() {
+        if (lifecycleClosing) {
+            return;
+        }
+        if (persistenceUnitListeners != null) {
+            verifyOpen();
+            closeWithPersistenceUnitListeners(true);
+            return;
+        }
         try {
             verifyOpen();
             closeOpenQueries();
@@ -2187,6 +2217,47 @@ public class EntityManagerImpl implements JpaEntityManager {
             setRollbackOnly();
             throw e;
         }
+    }
+
+    /** Close policy for PU callbacks: failures do not bypass critical resource cleanup. */
+    private void closeWithPersistenceUnitListeners(boolean notify) {
+        lifecycleClosing = true;
+        Throwable failure = null;
+        try {
+            if (notify && !lifecycleCloseNotified) {
+                lifecycleCloseNotified = true;
+                failure = persistenceUnitListeners.preClose(EntityManager.class, this);
+            }
+            for (QueryImpl query : new ArrayList<>(getOpenQueriesSet())) {
+                failure = PersistenceUnitListenerRegistry.cleanup(failure, query::releaseResources);
+            }
+            isOpen = false;
+            factory = null;
+            databaseSession = null;
+            if (extendedPersistenceContext != null) {
+                RepeatableWriteUnitOfWork context = extendedPersistenceContext;
+                failure = PersistenceUnitListenerRegistry.cleanup(failure, () -> {
+                    if (checkForTransaction(false) == null && !context.isSynchronized()) {
+                        Throwable release = PersistenceUnitListenerRegistry.cleanup(null, context::release);
+                        release = PersistenceUnitListenerRegistry.cleanup(release, context.getParent()::release);
+                        PersistenceUnitListenerRegistry.rethrow(release);
+                    } else {
+                        context.setResumeUnitOfWorkOnTransactionCompletion(false);
+                    }
+                });
+                extendedPersistenceContext = null;
+            }
+            if (readOnlySession != null) {
+                failure = PersistenceUnitListenerRegistry.cleanup(failure, readOnlySession::release);
+                readOnlySession = null;
+            }
+            if (failure != null) {
+                failure = PersistenceUnitListenerRegistry.cleanup(failure, this::setRollbackOnly);
+            }
+        } finally {
+            lifecycleClosing = false;
+        }
+        PersistenceUnitListenerRegistry.rethrow(failure);
     }
 
     /**

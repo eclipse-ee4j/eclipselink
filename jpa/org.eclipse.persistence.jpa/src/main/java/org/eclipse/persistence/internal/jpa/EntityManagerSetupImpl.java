@@ -131,6 +131,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -186,6 +187,7 @@ import org.eclipse.persistence.internal.jpa.jdbc.DataSourceImpl;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataHelper;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProcessor;
+import org.eclipse.persistence.internal.jpa.metadata.listeners.PersistenceUnitListener;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAsmFactory;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
@@ -323,6 +325,8 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
     protected String sessionName;
 
     private MetadataProcessor processor = null;
+    // Definition snapshots survive processor disposal; instances belong to each public factory.
+    private List<PersistenceUnitListener> persistenceUnitListeners = List.of();
     /** Holds a reference to the weaver class transformer so it can be cleared after login. */
     private PersistenceWeaver weaver = null;
     protected PersistenceUnitInfo persistenceUnitInfo = null;
@@ -777,6 +781,8 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                             throw persistenceException;
                         }
                         this.session.setProperties(deployProperties);
+                        this.session.setProperty(PersistenceUnitListener.DEFINITIONS_PROPERTY, persistenceUnitListeners);
+                        this.session.setProperty(PersistenceUnitListener.NAME_PROPERTY, persistenceUnitInfo.getPersistenceUnitName());
                         updateSession(deployProperties, classLoaderToUse);
                         if (isValidationOnly(deployProperties, false)) {
                             /*
@@ -2109,9 +2115,28 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                     //moved from deployment:
                     processor.addNamedQueries();
                     processor.addStructConverterNames();
+                    persistenceUnitListeners = processor.getPersistenceUnitListeners();
                 }
             } else {
                 //This means this session is from sessions.xml or a cached project
+
+                if (!shouldBuildProject && !isSessionLoadedFromSessionsXML) {
+                    // The serialized project has no persistence-unit listener metadata.
+                    // Read only the original discovery/XML sources, not descriptor state.
+                    if (isComposite) {
+                        Set<SEPersistenceUnitInfo> members = getCompositeMemberPuInfoSet(persistenceUnitInfo, predeployProperties);
+                        updateCompositeMembersProperties(members, predeployProperties);
+                        Map memberProperties = (Map) getConfigProperty(PersistenceUnitProperties.COMPOSITE_UNIT_PROPERTIES, predeployProperties);
+                        Set<PersistenceUnitListener> memberListeners = new LinkedHashSet<>();
+                        for (SEPersistenceUnitInfo member : members) {
+                            memberListeners.addAll(loadPersistenceUnitListeners(member,
+                                    (Map) memberProperties.get(member.getPersistenceUnitName()), classLoaderToUse));
+                        }
+                        persistenceUnitListeners = List.copyOf(memberListeners);
+                    } else {
+                        persistenceUnitListeners = loadPersistenceUnitListeners(persistenceUnitInfo, predeployProperties, classLoaderToUse);
+                    }
+                }
 
                 // The transformer is capable of altering domain classes to handle a LAZY hint for OneToOne mappings.  It will only
                 // be returned if we we are meant to process these mappings.
@@ -2133,6 +2158,16 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                     this.weaver = TransformerFactory.createTransformerAndModifyProject(session, persistenceClasses, classLoaderToUse, weaveLazy, weaveChangeTracking, weaveFetchGroups, weaveInternal, weaveRest, weaveMappedSuperClass);
                 }
             }
+
+            if (compositeMemberEmSetupImpls != null) {
+                Set<PersistenceUnitListener> memberListeners = new LinkedHashSet<>();
+                for (EntityManagerSetupImpl member : compositeMemberEmSetupImpls) {
+                    memberListeners.addAll(member.getPersistenceUnitListeners());
+                }
+                persistenceUnitListeners = List.copyOf(memberListeners);
+            }
+            session.setProperty(PersistenceUnitListener.DEFINITIONS_PROPERTY, persistenceUnitListeners);
+            session.setProperty(PersistenceUnitListener.NAME_PROPERTY, persistenceUnitInfo.getPersistenceUnitName());
 
             // composite member never has a factory - it is predeployed by the composite.
             if (!isCompositeMember()) {
@@ -2197,6 +2232,22 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
 
     public PersistenceUnitInfo getPersistenceUnitInfo(){
         return persistenceUnitInfo;
+    }
+
+    private List<PersistenceUnitListener> loadPersistenceUnitListeners(PersistenceUnitInfo info, Map properties, ClassLoader loader) {
+        MetadataProcessor previous = processor;
+        processor = new MetadataProcessor(info, session, loader, false, false, false, false, false, properties, null);
+        try {
+            updateMetadataRepository(properties, loader);
+            return processor.loadPersistenceUnitListeners(throwExceptionOnFail);
+        } finally {
+            processor = previous;
+        }
+    }
+
+    /** INTERNAL: Definitions are available before deployment without loading callback classes. */
+    public List<PersistenceUnitListener> getPersistenceUnitListeners() {
+        return persistenceUnitListeners;
     }
 
     public boolean isValidationOnly(Map m) {
