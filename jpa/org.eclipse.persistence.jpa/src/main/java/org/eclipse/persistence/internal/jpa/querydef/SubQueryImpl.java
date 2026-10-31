@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2011, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -779,22 +779,22 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
 
     @Override
     public Predicate exists() {
-        throw new UnsupportedOperationException("Not yet implemented");
+        return queryBuilder.exists(this);
     }
 
     @Override
     public Expression<T> all() {
-        throw new UnsupportedOperationException("Not yet implemented");
+        return queryBuilder.all(this);
     }
 
     @Override
     public Expression<T> some() {
-        throw new UnsupportedOperationException("Not yet implemented");
+        return queryBuilder.some(this);
     }
 
     @Override
     public Expression<T> any() {
-        throw new UnsupportedOperationException("Not yet implemented");
+        return queryBuilder.any(this);
     }
 
 }
