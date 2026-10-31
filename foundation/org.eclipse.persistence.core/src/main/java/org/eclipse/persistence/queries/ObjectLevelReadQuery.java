@@ -971,6 +971,17 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      */
     @Override
     public Object checkEarlyReturn(AbstractSession session, AbstractRecord translationRow) {
+        Object result = checkEarlyReturnWithoutLoading(session, translationRow);
+        // Relationship queries may return an object whose value holder is still being populated.
+        if (result != null && result != InvalidObject.instance && getSourceMapping() == null) {
+            loadResult(result, session);
+        }
+        return result;
+    }
+
+    // Register a cached result in the caller's UnitOfWork before traversing its graph.
+    // Recursive parent-cache checks must not load state into the shared cached object.
+    private Object checkEarlyReturnWithoutLoading(AbstractSession session, AbstractRecord translationRow) {
         // For bug 3136413/2610803 building the selection criteria from an EJBQL string or
         // an example object is done just in time.
         // Also calls checkDescriptor here.
@@ -1004,7 +1015,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         AbstractSession parentSession = unitOfWork.getParentIdentityMapSession(this);
 
         // assert parentSession != unitOfWork;
-        result = checkEarlyReturn(parentSession, translationRow);
+        result = checkEarlyReturnWithoutLoading(parentSession, translationRow);
 
         if (result != null) {
             // Optimization: If find deleted object by exact primary key
@@ -1319,28 +1330,26 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         }
 
         Object result = executeObjectLevelReadQuery();
-        if (result != null) {
-            if (getLoadGroup() != null) {
-                Object resultToLoad  = result;
-                if (this.shouldIncludeData) {
-                    resultToLoad = ((ComplexQueryResult)result).getResult();
-                }
-                session.load(resultToLoad, getLoadGroup(), getDescriptor(), false);
-            } else {
-                FetchGroup executionFetchGroup = getExecutionFetchGroup();
-                if (executionFetchGroup != null) {
-                    LoadGroup lg = executionFetchGroup.toLoadGroupLoadOnly();
-                    if (lg != null) {
-                        Object resultToLoad  = result;
-                        if (this.shouldIncludeData) {
-                            resultToLoad = ((ComplexQueryResult)result).getResult();
-                        }
-                        session.load(resultToLoad, lg, getDescriptor(), true);
-                    }
+        loadResult(result, session);
+        return result;
+    }
+
+    private void loadResult(Object result, AbstractSession executionSession) {
+        if (result == null) {
+            return;
+        }
+        Object resultToLoad = result instanceof ComplexQueryResult complex ? complex.getResult() : result;
+        if (getLoadGroup() != null) {
+            executionSession.load(resultToLoad, getLoadGroup(), getDescriptor(), false);
+        } else {
+            FetchGroup executionFetchGroup = getExecutionFetchGroup();
+            if (executionFetchGroup != null) {
+                LoadGroup group = executionFetchGroup.toLoadGroupLoadOnly();
+                if (group != null) {
+                    executionSession.load(resultToLoad, group, getDescriptor(), true);
                 }
             }
         }
-        return result;
     }
 
     /** INTERNAL: Returned native cursors materialize later with row-local ownership. */

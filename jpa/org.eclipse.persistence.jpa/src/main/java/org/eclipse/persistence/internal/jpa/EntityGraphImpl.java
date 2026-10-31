@@ -473,10 +473,11 @@ public class EntityGraphImpl<X> extends AttributeNodeImpl<X> implements EntityGr
                         type = CoreClassConstants.OBJECT;
                     }
                     if (localDescriptor != null) {
+                        ClassDescriptor branchDescriptor = localDescriptor;
                         if (!type.equals(CoreClassConstants.OBJECT) && localDescriptor.hasInheritance()) {
-                            localDescriptor = localDescriptor.getInheritancePolicy().getDescriptor(type);
+                            branchDescriptor = localDescriptor.getInheritancePolicy().getDescriptor(type);
                         }
-                        node.addSubgraph(newSubgraph(subGroup, localDescriptor, item.getAttributeName()));
+                        node.addSubgraph(newSubgraph(subGroup, branchDescriptor, item.getAttributeName()));
                     } else {
                         node.addSubgraph(new EntityGraphImpl<>(subGroup));
                     }
@@ -494,10 +495,11 @@ public class EntityGraphImpl<X> extends AttributeNodeImpl<X> implements EntityGr
                         type = CoreClassConstants.OBJECT;
                     }
                     if (localDescriptor != null) {
+                        ClassDescriptor branchDescriptor = localDescriptor;
                         if (!type.equals(CoreClassConstants.OBJECT) && localDescriptor.hasInheritance()) {
-                            localDescriptor = localDescriptor.getInheritancePolicy().getDescriptor(type);
+                            branchDescriptor = localDescriptor.getInheritancePolicy().getDescriptor(type);
                         }
-                        node.addKeySubgraph(newSubgraph(subGroup, localDescriptor, item.getAttributeName()));
+                        node.addKeySubgraph(newSubgraph(subGroup, branchDescriptor, item.getAttributeName()));
                     } else {
                         node.addKeySubgraph(new EntityGraphImpl<>(subGroup));
                     }

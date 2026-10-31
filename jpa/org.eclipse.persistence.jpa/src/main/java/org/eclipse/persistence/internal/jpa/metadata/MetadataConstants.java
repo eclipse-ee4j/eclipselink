@@ -77,6 +77,8 @@ public final class MetadataConstants {
     public static final String JPA_ENUMERATED_VALUE = "jakarta.persistence.EnumeratedValue";
     public static final String JPA_EXCLUDE_DEFAULT_LISTENERS = "jakarta.persistence.ExcludeDefaultListeners";
     public static final String JPA_EXCLUDE_SUPERCLASS_LISTENERS = "jakarta.persistence.ExcludeSuperclassListeners";
+    public static final String JPA_FETCH = "jakarta.persistence.Fetch";
+    public static final String JPA_FETCHES = "jakarta.persistence.Fetch$Fetches";
     public static final String JPA_FIELD_RESULT = "jakarta.persistence.FieldResult";
     public static final String JPA_GENERATED_VALUE = "jakarta.persistence.GeneratedValue";
     public static final String JPA_ID = "jakarta.persistence.Id";

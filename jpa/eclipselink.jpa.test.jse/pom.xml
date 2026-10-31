@@ -2,7 +2,7 @@
 <!--
 
     Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
-    Copyright (c) 2019, 2025 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2019, 2026 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -166,6 +166,19 @@
                             <source>${project.build.testOutputDirectory}</source>
                             <target>${project.build.testOutputDirectory}</target>
                             <persistenceXMLLocation>META-INF/default-to-one-fetch-weaving/META-INF/persistence.xml</persistenceXMLLocation>
+                            <logLevel>FINE</logLevel>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>weave-distributed-named-graph-fixtures</id>
+                        <phase>process-test-classes</phase>
+                        <goals>
+                            <goal>weave</goal>
+                        </goals>
+                        <configuration>
+                            <source>${project.build.testOutputDirectory}</source>
+                            <target>${project.build.testOutputDirectory}</target>
+                            <persistenceXMLLocation>META-INF/distributed-named-graphs/weaving/META-INF/persistence.xml</persistenceXMLLocation>
                             <logLevel>FINE</logLevel>
                         </configuration>
                     </execution>
