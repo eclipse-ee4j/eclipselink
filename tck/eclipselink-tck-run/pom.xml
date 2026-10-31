@@ -60,7 +60,7 @@
         <persistence.second.level.caching.supported>true</persistence.second.level.caching.supported>
 
         <!--Dependency versions-->
-        <junit.jupiter.version>5.10.2</junit.jupiter.version>
+        <junit.jupiter.version>6.0.1</junit.jupiter.version>
         <postgresql.jdbc.version>42.7.13</postgresql.jdbc.version>
         <hibernate.validator.version>9.1.4.Final</hibernate.validator.version>
         <jakarta.validation.version>4.0.0-M1</jakarta.validation.version>
@@ -76,9 +76,8 @@
 
         <!--
             Default value for the failsafe "test" parameter of the persistence-tests-1
-            execution. Client2#createEntityManagerFactoryNoBeanValidatorTest needs a
-            classpath without the Bean Validation provider, so it runs separately in
-            persistence-tests-2.
+            execution. The five tests of bootstrap without a Bean Validation provider
+            run separately in persistence-tests-2.
 
             This is a property rather than a <test> element in the execution because an
             explicit <test> would win over the it.test user property, which stops
@@ -86,7 +85,9 @@
             method-level <excludes> is not an option either: failsafe rejects those with
             "Method filter prohibited in includes|excludes parameter".
         -->
-        <it.test>!**/ee/jakarta/tck/persistence/se/entityManagerFactory/Client2#createEntityManagerFactoryNoBeanValidatorTest</it.test>
+        <tck.no.validator.emf.test>**/ee/jakarta/tck/persistence/se/entityManagerFactory/SeEntityManagerFactoryCreateEntityManagerFactoryClient#createEntityManagerFactoryNoBeanValidatorTest</tck.no.validator.emf.test>
+        <tck.no.validator.validation.tests>**/ee/jakarta/tck/persistence/validation/ValidationAutoValidationModeWithSpecifiedValidationClient#autoValidationModeWithNoValidationFactory+autoValidationModeWithNoValidationFactoryEntityAgent+callbackValidationModeWithNoValidationFactory+callbackValidationModeWithNoValidationFactoryEntityAgent</tck.no.validator.validation.tests>
+        <it.test>!${tck.no.validator.emf.test},!${tck.no.validator.validation.tests}</it.test>
     </properties>
 
     <dependencyManagement>
@@ -124,8 +125,8 @@
         </dependency>
 
         <!--
-            The specification API, pinned rather than inherited, so the TCK version and
-            the API version cannot drift apart.
+            The specification API is selected explicitly alongside the TCK, so a
+            provider's transitive milestone dependency cannot replace the snapshot.
         -->
         <dependency>
             <groupId>jakarta.persistence</groupId>
@@ -268,13 +269,6 @@
             </exclusions>
         </dependency>
 
-        <dependency>
-            <groupId>jakarta.tck</groupId>
-            <artifactId>common</artifactId>
-            <version>11.0.3</version>
-            <scope>test</scope>
-        </dependency>
-
         <!--
             PMClientBase builds deployment archives with ShrinkWrap. shrinkwrap-api
             arrives via jakarta.tck:common, but the implementation does not: it is
@@ -294,6 +288,11 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-launcher</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -629,6 +628,12 @@ Full log: ${initdb.log}
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-report-plugin</artifactId>
+                <configuration>
+                    <reportsDirectories>
+                        <reportsDirectory>${project.build.directory}/failsafe-reports/main</reportsDirectory>
+                        <reportsDirectory>${project.build.directory}/failsafe-reports/no-validator</reportsDirectory>
+                    </reportsDirectories>
+                </configuration>
                 <executions>
                     <execution>
                         <id>generate-failsafe-html-report</id>
@@ -718,6 +723,8 @@ Full log: ${initdb.log}
                                     <goal>verify</goal>
                                 </goals>
                                 <configuration>
+                                    <reportsDirectory>${project.build.directory}/failsafe-reports/main</reportsDirectory>
+                                    <summaryFile>${project.build.directory}/failsafe-reports/main/failsafe-summary.xml</summaryFile>
                                     <includes>
                                         <include>**/*Client*.*</include>
                                         <include>**/*JPASigTest*.*</include>
@@ -747,9 +754,11 @@ Full log: ${initdb.log}
                                     <goal>verify</goal>
                                 </goals>
                                 <configuration>
-                                    <test>**/ee/jakarta/tck/persistence/se/entityManagerFactory/Client2#createEntityManagerFactoryNoBeanValidatorTest</test>
+                                    <reportsDirectory>${project.build.directory}/failsafe-reports/no-validator</reportsDirectory>
+                                    <summaryFile>${project.build.directory}/failsafe-reports/no-validator/failsafe-summary.xml</summaryFile>
+                                    <test>${tck.no.validator.emf.test},${tck.no.validator.validation.tests}</test>
                                     <!--
-                                        This test asserts the behaviour when no Bean Validation
+                                        These tests assert the behaviour when no Bean Validation
                                         provider is present, so the provider is taken off the
                                         classpath for this execution only. The GlassFish runner
                                         achieved the same by listing jars by hand.

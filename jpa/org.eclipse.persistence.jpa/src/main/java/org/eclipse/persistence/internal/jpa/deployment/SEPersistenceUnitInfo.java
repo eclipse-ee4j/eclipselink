@@ -29,6 +29,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Properties;
@@ -64,6 +65,7 @@ public class SEPersistenceUnitInfo implements jakarta.persistence.spi.Persistenc
     private final Collection<String> jarFiles = new ArrayList<>();
     protected List<URL> jarFileUrls;
     protected List<String> managedClassNames;
+    protected List<String> managedPackageDescriptors = new ArrayList<>();
     // persistence.xml root URL
     protected URL persistenceUnitRootUrl;
     // PersistenceConfiguration hash of programmatically defined PU, value is null for PU defined in persistence.xml
@@ -103,6 +105,7 @@ public class SEPersistenceUnitInfo implements jakarta.persistence.spi.Persistenc
      * @param rootURL root {@link URL} of the persistence unit
      */
     public SEPersistenceUnitInfo(PersistenceConfiguration configuration, URL rootURL) {
+        schemaVersion = "4.0";
         persistenceUnitName = configuration.name();
         persistenceProviderClassName = configuration.provider();
         if (configuration.jtaDataSource() != null && !configuration.jtaDataSource().isEmpty()) {
@@ -120,6 +123,7 @@ public class SEPersistenceUnitInfo implements jakarta.persistence.spi.Persistenc
                 .stream()
                 .map(Class::getName)
                 .toList();
+        setManagedPackageDescriptors(configuration.managedPackageDescriptors());
         properties = new Properties();
         properties.putAll(configuration.properties());
         if (properties.contains(PersistenceUnitProperties.CLASSLOADER)) {
@@ -142,6 +146,7 @@ public class SEPersistenceUnitInfo implements jakarta.persistence.spi.Persistenc
                                 configuration.defaultToOneFetchType(),
                                 configuration.transactionType(),
                                 configuration.managedClasses(),
+                                new LinkedHashSet<>(configuration.managedPackageDescriptors()),
                                 configuration.mappingFiles(),
                                 configuration.properties());
     }
@@ -509,8 +514,17 @@ public class SEPersistenceUnitInfo implements jakarta.persistence.spi.Persistenc
 
     @Override
     public List<String> getManagedPackageDescriptors() {
-        // TODO Auto-generated method stub
-        return null;
+        return List.copyOf(new LinkedHashSet<>(managedPackageDescriptors));
+    }
+
+    public void setManagedPackageDescriptors(List<String> packageNames) {
+        managedPackageDescriptors = new ArrayList<>(new LinkedHashSet<>(packageNames));
+    }
+
+    public void addManagedPackageDescriptor(String packageName) {
+        if (!managedPackageDescriptors.contains(packageName)) {
+            managedPackageDescriptors.add(packageName);
+        }
     }
 
     @Override
@@ -521,8 +535,9 @@ public class SEPersistenceUnitInfo implements jakarta.persistence.spi.Persistenc
 
     @Override
     public List<String> getAllPackageDescriptors() {
-        // TODO Auto-generated method stub
-        return null;
+        LinkedHashSet<String> packageNames = new LinkedHashSet<>(managedPackageDescriptors);
+        packageNames.addAll(PersistenceUnitProcessor.getDiscoveredPackageDescriptors(this));
+        return List.copyOf(packageNames);
     }
 
     @Override

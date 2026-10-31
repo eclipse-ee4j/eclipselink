@@ -44,20 +44,32 @@ import java.security.PrivilegedActionException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
+import java.util.jar.JarFile;
+import java.util.jar.Manifest;
 
 import jakarta.persistence.spi.PersistenceUnitInfo;
+import jakarta.persistence.spi.Discoverable;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+import org.eclipse.persistence.asm.ASMFactory;
+import org.eclipse.persistence.asm.AnnotationVisitor;
+import org.eclipse.persistence.asm.Attribute;
+import org.eclipse.persistence.asm.ClassReader;
+import org.eclipse.persistence.asm.EclipseLinkClassVisitor;
+import org.eclipse.persistence.asm.FieldVisitor;
+import org.eclipse.persistence.asm.MethodVisitor;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.SystemProperties;
 import org.eclipse.persistence.jpa.exceptions.PersistenceUnitLoadingException;
@@ -148,8 +160,207 @@ public class PersistenceUnitProcessor {
         if (!persistenceUnitInfo.excludeUnlistedClasses()){
             set.addAll(getClassNamesFromURL(persistenceUnitInfo.getPersistenceUnitRootUrl(), loader, properties));
         }
+        if ("4.0".equals(persistenceUnitInfo.getPersistenceXMLSchemaVersion())) {
+            set.removeIf(PersistenceUnitProcessor::isDescriptor);
+        }
         // No longer need to add classes from XML, as temp class loader is only used for sessions.xml.
         return set;
+    }
+
+    /**
+     * Return package membership supplied by the persistence-unit descriptor or
+     * container. A container may supply only the complete list. Do not infer
+     * package membership from its ordinary managed classes.
+     */
+    public static Set<String> getPackageDescriptors(PersistenceUnitInfo persistenceUnitInfo) {
+        Set<String> packageNames = new LinkedHashSet<>();
+        try {
+            List<String> managed = persistenceUnitInfo.getManagedPackageDescriptors();
+            if (managed != null) {
+                packageNames.addAll(managed);
+            }
+        } catch (AbstractMethodError ignored) {
+            // A container compiled against an earlier SPI has no package list.
+        }
+        try {
+            List<String> all = persistenceUnitInfo.getAllPackageDescriptors();
+            if (all != null) {
+                packageNames.addAll(all);
+            }
+        } catch (AbstractMethodError ignored) {
+            // Preserve any explicit list even when the new discovery SPI is absent.
+        }
+        return packageNames;
+    }
+
+    /**
+     * Resolve SE discovery with the effective bootstrap loader and properties.
+     * A supplied subclass may override container discovery, so only the exact
+     * provider-owned implementation is scanned here.
+     */
+    public static Set<String> getPackageDescriptors(PersistenceUnitInfo persistenceUnitInfo,
+                                                     ClassLoader loader, Map properties) {
+        if (persistenceUnitInfo.getClass() == SEPersistenceUnitInfo.class) {
+            Set<String> packageNames = new LinkedHashSet<>(persistenceUnitInfo.getManagedPackageDescriptors());
+            packageNames.addAll(getDiscoveredPackageDescriptors((SEPersistenceUnitInfo) persistenceUnitInfo, loader, properties));
+            return packageNames;
+        }
+        return getPackageDescriptors(persistenceUnitInfo);
+    }
+
+    /**
+     * Discover package descriptors for Java SE bootstrap. Containers provide
+     * their categorized discovery results through PersistenceUnitInfo instead.
+     * Bytecode inspection also finds package annotations with CLASS retention.
+     */
+    static Set<String> getDiscoveredPackageDescriptors(SEPersistenceUnitInfo persistenceUnitInfo) {
+        return getDiscoveredPackageDescriptors(persistenceUnitInfo, persistenceUnitInfo.getClassLoader(),
+                persistenceUnitInfo.getProperties());
+    }
+
+    private static Set<String> getDiscoveredPackageDescriptors(SEPersistenceUnitInfo persistenceUnitInfo,
+                                                               ClassLoader loader, Map properties) {
+        if (loader == null) {
+            loader = Thread.currentThread().getContextClassLoader();
+        }
+        if (loader == null) {
+            loader = PersistenceUnitProcessor.class.getClassLoader();
+        }
+        Set<String> candidates = new LinkedHashSet<>();
+        for (URL url : persistenceUnitInfo.getJarFileUrls()) {
+            candidates.addAll(getPackageDescriptorNamesFromURL(url, loader, properties));
+        }
+        if (!persistenceUnitInfo.excludeUnlistedClasses()
+                && persistenceUnitInfo.getPersistenceUnitRootUrl() != null) {
+            candidates.addAll(getPackageDescriptorNamesFromURL(persistenceUnitInfo.getPersistenceUnitRootUrl(),
+                    loader, properties));
+        }
+        Set<String> packages = new LinkedHashSet<>();
+        Map<String, Boolean> discoverableAnnotations = new HashMap<>();
+        for (String candidate : candidates) {
+            if (candidate.endsWith(".package-info")) {
+                for (String annotation : getClassAnnotations(candidate, loader)) {
+                    Boolean discoverable = discoverableAnnotations.get(annotation);
+                    if (discoverable == null) {
+                        discoverable = getClassAnnotations(annotation, loader)
+                                .contains(Discoverable.class.getName());
+                        discoverableAnnotations.put(annotation, discoverable);
+                    }
+                    if (discoverable) {
+                        packages.add(candidate.substring(0, candidate.length() - ".package-info".length()));
+                        break;
+                    }
+                }
+            }
+        }
+        return packages;
+    }
+
+    private static Set<String> getPackageDescriptorNamesFromURL(URL url, ClassLoader loader, Map properties) {
+        Set<String> names = new LinkedHashSet<>();
+        Archive archive = null;
+        try {
+            archive = getArchiveFactory(loader, properties).createArchive(url, properties);
+            if (archive != null) {
+                Boolean multiRelease = null;
+                for (Iterator<String> entries = archive.getEntries(); entries.hasNext();) {
+                    String entry = entries.next();
+                    if (!entry.endsWith("/package-info.class")) {
+                        continue;
+                    }
+                    if (entry.startsWith("META-INF/versions/")) {
+                        if (multiRelease == null) {
+                            multiRelease = false;
+                            if (!(archive instanceof DirectoryArchive)) {
+                                try (InputStream stream = archive.getEntry(JarFile.MANIFEST_NAME)) {
+                                    if (stream != null) {
+                                        multiRelease = "true".equalsIgnoreCase(new Manifest(stream)
+                                                .getMainAttributes().getValue("Multi-Release"));
+                                    }
+                                }
+                            }
+                        }
+                        if (!multiRelease) {
+                            continue;
+                        }
+                        int versionEnd = entry.indexOf('/', "META-INF/versions/".length());
+                        if (versionEnd < 0) {
+                            continue;
+                        }
+                        try {
+                            String versionName = entry.substring("META-INF/versions/".length(), versionEnd);
+                            int version = Integer.parseInt(versionName);
+                            if (version < 9 || version > Runtime.version().feature()
+                                    || !Integer.toString(version).equals(versionName)) {
+                                continue;
+                            }
+                        } catch (NumberFormatException ignored) {
+                            continue;
+                        }
+                        entry = entry.substring(versionEnd + 1);
+                    }
+                    if (!entry.startsWith("META-INF/")) {
+                        // Read the logical resource through the effective loader below,
+                        // so its multi-release selection supplies the applicable bytes.
+                        names.add(buildClassNameFromEntryString(entry));
+                    }
+                }
+            }
+        } catch (URISyntaxException | IOException exception) {
+            throw PersistenceUnitLoadingException.exceptionSearchingForPersistenceResources(loader, exception);
+        } finally {
+            if (archive != null) {
+                archive.close();
+            }
+        }
+        return names;
+    }
+
+    private static Set<String> getClassAnnotations(String className, ClassLoader loader) {
+        Set<String> annotations = new LinkedHashSet<>();
+        try (InputStream stream = loader.getResourceAsStream(className.replace('.', '/') + ".class")) {
+            if (stream != null) {
+                EclipseLinkClassVisitor visitor = new EclipseLinkClassVisitor() {
+                    @Override
+                    public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
+                        // Only declaration annotations are needed.
+                    }
+
+                    @Override
+                    public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
+                        annotations.add(descriptor.substring(1, descriptor.length() - 1).replace('/', '.'));
+                        return null;
+                    }
+
+                    @Override
+                    public FieldVisitor visitField(int access, String name, String descriptor, String signature, Object value) {
+                        return null;
+                    }
+
+                    @Override
+                    public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
+                        return null;
+                    }
+
+                    @Override
+                    public void visitEnd() {
+                        // No class body is collected.
+                    }
+                };
+                visitor.setCustomClassVisitor(visitor);
+                ASMFactory.createClassReader(stream).accept(visitor, new Attribute[0],
+                        ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
+            }
+        } catch (IOException exception) {
+            throw PersistenceUnitLoadingException.exceptionSearchingForPersistenceResources(loader, exception);
+        }
+        return annotations;
+    }
+
+    /** Return whether a class-file name denotes a descriptor, not an ordinary type. */
+    public static boolean isDescriptor(String className) {
+        return className.equals("package-info") || className.endsWith(".package-info")
+                || className.equals("module-info") || className.endsWith(".module-info");
     }
 
     /**
