@@ -683,6 +683,7 @@ public class PersistenceProvider implements jakarta.persistence.spi.PersistenceP
      * persistence unit, so there is no such transformer: the specification allows {@code null} for
      * exactly this case.
      */
+    @Override
     public ClassTransformer getClientClassTransformer(PersistenceUnitInfo info, Map<?, ?> properties) {
         return null;
     }

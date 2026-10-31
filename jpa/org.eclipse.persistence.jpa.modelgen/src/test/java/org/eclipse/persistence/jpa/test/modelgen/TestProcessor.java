@@ -19,6 +19,12 @@ import jakarta.annotation.Generated;
 import jakarta.persistence.Entity;
 import org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProcessor;
 import org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties;
+import org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitInfo;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
+import org.eclipse.persistence.internal.jpa.modelgen.MetadataMirrorFactory;
+import org.eclipse.persistence.internal.jpa.modelgen.objects.PersistenceUnit;
+import org.eclipse.persistence.internal.jpa.modelgen.objects.PersistenceUnitReader;
+import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -32,10 +38,14 @@ import javax.tools.SimpleJavaFileObject;
 import javax.tools.StandardJavaFileManager;
 import javax.tools.StandardLocation;
 import javax.tools.ToolProvider;
+import javax.annotation.processing.ProcessingEnvironment;
+import java.io.ByteArrayInputStream;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.InputStream;
+import java.lang.reflect.Proxy;
 import java.net.URI;
 import java.net.URL;
 import java.nio.file.FileVisitResult;
@@ -44,14 +54,64 @@ import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class TestProcessor {
 
     public TestProcessor() {}
+
+    @Test
+    public void testPackageDescriptorsInPersistenceXml() {
+        String descriptor = """
+                        <persistence xmlns="https://jakarta.ee/xml/ns/persistence" version="4.0">
+                            <persistence-unit name="packages">
+                                <class>example.Entity</class>
+                                <package-descriptor>example.metadata</package-descriptor>
+                                <package-descriptor>example.metadata</package-descriptor>
+                                <package-descriptor>example.other</package-descriptor>
+                            </persistence-unit>
+                        </persistence>
+                        """;
+        ProcessingEnvironment environment = (ProcessingEnvironment) Proxy.newProxyInstance(
+                getClass().getClassLoader(), new Class<?>[] {ProcessingEnvironment.class},
+                (proxy, method, args) -> {
+                    if (method.getName().equals("getOptions")) {
+                        return Map.of();
+                    }
+                    throw new UnsupportedOperationException(method.getName());
+                });
+        MetadataLogger logger = new MetadataLogger(new DatabaseSessionImpl());
+        AtomicReference<SEPersistenceUnitInfo> parsed = new AtomicReference<>();
+        MetadataMirrorFactory factory = new MetadataMirrorFactory(logger, getClass().getClassLoader()) {
+            @Override
+            public ProcessingEnvironment getProcessingEnvironment() {
+                return environment;
+            }
+
+            @Override
+            public void addPersistenceUnit(SEPersistenceUnitInfo info, PersistenceUnit unit) {
+                parsed.set(info);
+            }
+        };
+        PersistenceUnitReader reader = new PersistenceUnitReader(logger, environment) {
+            @Override
+            protected InputStream getInputStream(String filename, boolean persistenceXml) {
+                return persistenceXml ? new ByteArrayInputStream(descriptor.getBytes(StandardCharsets.UTF_8)) : null;
+            }
+        };
+        reader.initPersistenceUnits(factory);
+        SEPersistenceUnitInfo info = parsed.get();
+        Assert.assertNotNull(info);
+        Assert.assertEquals("4.0", info.getPersistenceXMLSchemaVersion());
+        Assert.assertEquals(List.of("example.Entity"), info.getManagedClassNames());
+        Assert.assertEquals(List.of("example.metadata", "example.other"), info.getManagedPackageDescriptors());
+    }
 
     @BeforeClass
     public static void prepare() throws IOException {

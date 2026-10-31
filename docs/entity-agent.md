@@ -8,7 +8,7 @@
 
 # EntityAgent
 
-EclipseLink implements `EntityAgent` against the Jakarta Persistence **4.0.0-M7 draft API**, with Java 21 or later. An agent executes explicit database operations without a persistence context. Read results are detached: changing an object alone does not schedule an update. Call `insert`, `update`, `delete`, or `upsert` to write its state.
+EclipseLink implements `EntityAgent` against the Jakarta Persistence **4.0.0-SNAPSHOT draft API**, with Java 21 or later. An agent executes explicit database operations without a persistence context. Read results are detached: changing an object alone does not schedule an update. Call `insert`, `update`, `delete`, or `upsert` to write its state.
 
 ```java
 try (EntityAgent agent = factory.createEntityAgent()) {

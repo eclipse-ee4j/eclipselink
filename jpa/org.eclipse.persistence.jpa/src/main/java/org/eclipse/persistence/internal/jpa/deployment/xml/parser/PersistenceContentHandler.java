@@ -44,6 +44,7 @@ public class PersistenceContentHandler implements ContentHandler {
     private static final String ELEMENT_MAPPING_FILE = "mapping-file";
     private static final String ELEMENT_JAR_FILE = "jar-file";
     private static final String ELEMENT_CLASS = "class";
+    private static final String ELEMENT_PACKAGE_DESCRIPTOR = "package-descriptor";
     private static final String ELEMENT_EXCLUDE_UNLISTED_CLASSES = "exclude-unlisted-classes";
     private static final String ELEMENT_CACHING = "shared-cache-mode";
     private static final String ELEMENT_VALIDATION_MODE = "validation-mode";
@@ -153,6 +154,9 @@ public class PersistenceContentHandler implements ContentHandler {
                     break;
                 case ELEMENT_CLASS:
                     persistenceUnitInfo.getManagedClassNames().add(content);
+                    break;
+                case ELEMENT_PACKAGE_DESCRIPTOR:
+                    persistenceUnitInfo.addManagedPackageDescriptor(content);
                     break;
                 case ELEMENT_EXCLUDE_UNLISTED_CLASSES:
                     // default <exclude-unlisted-classes/>  to true as well (an empty content)

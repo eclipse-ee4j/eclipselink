@@ -52,6 +52,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -114,6 +115,7 @@ public class MetadataProcessor {
     protected Set<MetadataProcessor> m_compositeMemberProcessors;
     protected MetadataSource m_metadataSource;
     private final Map<String, MetadataClass> m_discoveredEntityListeners = new HashMap<>();
+    private final Set<String> m_packageDescriptors = new LinkedHashSet<>();
 
     /**
      * INTERNAL:
@@ -174,7 +176,8 @@ public class MetadataProcessor {
                 addModuleStatements(accessor, entityClass.getModule());
             }
             addDefaultAnnotationListeners(accessor, entityClass.getModule().getAnnotation(EntityListeners.class));
-            if (entityClass.getPackage() != null) {
+            if (entityClass.getPackage() != null && (usesLegacyPackageDiscovery()
+                    || m_packageDescriptors.contains(entityClass.getPackageName()))) {
                 addDefaultAnnotationListeners(accessor, entityClass.getPackage().getAnnotation(EntityListeners.class));
             }
         }
@@ -189,6 +192,16 @@ public class MetadataProcessor {
                 listener.process(accessor, m_loader, true);
             }
         }
+    }
+
+    /**
+     * Before 4.0 package metadata was inferred from ordinary managed classes.
+     * Keep that behavior for older descriptors and legacy SPI implementations.
+     */
+    private boolean usesLegacyPackageDiscovery() {
+        String version = m_project.getPersistenceUnitInfo().getPersistenceXMLSchemaVersion();
+        return version == null || version.startsWith("1.") || version.startsWith("2.")
+                || version.startsWith("3.");
     }
 
     /**
@@ -583,8 +596,13 @@ public class MetadataProcessor {
         // Add all the <class> specifications.
         List<String> classNames = new ArrayList<>(persistenceUnitInfo.getManagedClassNames());
 
-        // Package names used by PU entities.
-        Set<String> packageNames = new HashSet<>();
+        // Package descriptors form their own persistence-unit membership set.
+        // An entity's package or an ORM XML package does not register one in 4.0.
+        m_packageDescriptors.clear();
+        m_packageDescriptors.addAll(PersistenceUnitProcessor.getPackageDescriptors(
+                persistenceUnitInfo, m_loader, m_predeployProperties));
+        Set<String> packageNames = new LinkedHashSet<>(m_packageDescriptors);
+        boolean legacyPackageDiscovery = usesLegacyPackageDiscovery();
 
         // Add all the classes from the <jar> specifications.
         for (URL url : persistenceUnitInfo.getJarFileUrls()) {
@@ -615,14 +633,21 @@ public class MetadataProcessor {
                 String className = iterator.next();
                 int dot = className.lastIndexOf('.');
                 String packageName = (dot != -1) ? className.substring(0, dot) : "";
-                packageNames.add(packageName);
+                if (legacyPackageDiscovery) {
+                    packageNames.add(packageName);
+                }
+                if (className.equals("package-info") || className.endsWith(".package-info")
+                        || className.equals("module-info") || className.endsWith(".module-info")) {
+                    // Descriptors must not become ordinary types or enhancement targets.
+                    continue;
+                }
                 MetadataClass candidateClass = m_factory.getMetadataClass(className, unlisted);
                 // JBoss Bug 227630: Do not process a null class whether it was from a
                 // NPE or a CNF, a warning or exception is thrown in loadClass()
                 if (candidateClass != null) {
                     if (!PersistenceUnitProcessor.isEntity(candidateClass)
                             && !PersistenceUnitProcessor.isMappedSuperclass(candidateClass)
-                            && !m_project.hasEntity(candidateClass) && !className.endsWith("package-info")) {
+                            && !m_project.hasEntity(candidateClass)) {
                         new NamedStatementAccessor(candidateClass, m_project).process();
                     }
                     if (candidateClass.isAnnotationPresent("jakarta.persistence.EntityListener")) {
@@ -647,7 +672,8 @@ public class MetadataProcessor {
             }
         }
         for (String packageName : packageNames) {
-            MetadataClass metadataPackageInfo = m_factory.getMetadataClass(packageName + ".package-info", unlisted);
+            String descriptorName = packageName.isEmpty() ? "package-info" : packageName + ".package-info";
+            MetadataClass metadataPackageInfo = m_factory.getMetadataClass(descriptorName, false);
             //Add to the list only existing package-info.class
             if (metadataPackageInfo.getSuperclassName() != null) {
                 m_project.addPackageAccessor(new PackageAccessor(null, metadataPackageInfo, m_project));

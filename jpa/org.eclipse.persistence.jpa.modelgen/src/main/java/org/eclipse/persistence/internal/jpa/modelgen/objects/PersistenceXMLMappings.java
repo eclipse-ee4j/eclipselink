@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -51,6 +51,7 @@ public class PersistenceXMLMappings {
 
         descriptor.setJavaClass(PersistenceXML.class);
         descriptor.setDefaultRootElement("persistence");
+        descriptor.addDirectMapping("version", "@version");
 
         XMLCompositeCollectionMapping puMapping = new XMLCompositeCollectionMapping();
         puMapping.setAttributeName("persistenceUnitInfos");
@@ -85,6 +86,12 @@ public class PersistenceXMLMappings {
         classesMapping.setXPath("class/text()");
         classesMapping.useCollectionClass(ArrayList.class);
         descriptor.addMapping(classesMapping);
+
+        XMLCompositeDirectCollectionMapping packagesMapping = new XMLCompositeDirectCollectionMapping();
+        packagesMapping.setAttributeName("managedPackageDescriptors");
+        packagesMapping.setXPath("package-descriptor/text()");
+        packagesMapping.useCollectionClass(ArrayList.class);
+        descriptor.addMapping(packagesMapping);
 
         XMLCompositeDirectCollectionMapping mappingFilesMapping = new XMLCompositeDirectCollectionMapping();
         mappingFilesMapping.setAttributeName("mappingFiles");

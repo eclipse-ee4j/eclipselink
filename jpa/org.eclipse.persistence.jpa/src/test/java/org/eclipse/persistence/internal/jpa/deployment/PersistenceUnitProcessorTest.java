@@ -427,6 +427,54 @@ class PersistenceUnitProcessorTest {
     }
 
     @Test
+    void testPackageDescriptorsXml() {
+        List<SEPersistenceUnitInfo> units = readPersistenceXML("""
+                <persistence xmlns="https://jakarta.ee/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                        xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence persistence_4_0.xsd" version="4.0">
+                    <persistence-unit name="packages">
+                        <class>example.Model</class>
+                        <package-descriptor> example.listeners </package-descriptor>
+                        <package-descriptor>example.other</package-descriptor>
+                        <package-descriptor>example.listeners</package-descriptor>
+                        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+                    </persistence-unit>
+                    <persistence-unit name="empty"/>
+                </persistence>""");
+        Assertions.assertEquals(List.of("example.Model"), units.getFirst().getManagedClassNames());
+        Assertions.assertEquals(List.of("example.listeners", "example.other"),
+                units.getFirst().getManagedPackageDescriptors());
+        Assertions.assertEquals(units.getFirst().getManagedPackageDescriptors(),
+                units.getFirst().getAllPackageDescriptors());
+        Assertions.assertTrue(units.get(1).getManagedPackageDescriptors().isEmpty());
+    }
+
+    @Test
+    void testPackageDescriptorChunkedText() throws Exception {
+        PersistenceContentHandler handler = new PersistenceContentHandler();
+        String namespace = "https://jakarta.ee/xml/ns/persistence";
+        handler.startElement(namespace, "persistence-unit", "", new AttributesImpl());
+        handler.startElement(namespace, "package-descriptor", "", new AttributesImpl());
+        handler.characters(" example.".toCharArray(), 0, 9);
+        handler.characters("listeners ".toCharArray(), 0, 10);
+        handler.endElement(namespace, "package-descriptor", "");
+        handler.endElement(namespace, "persistence-unit", "");
+        Assertions.assertEquals(List.of("example.listeners"),
+                handler.getPersistenceUnits().getFirst().getManagedPackageDescriptors());
+    }
+
+    @Test
+    void testPackageDescriptorsRequirePersistence40Schema() {
+        String descriptor = """
+                <persistence xmlns="https://jakarta.ee/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                        xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence persistence_3_2.xsd" version="3.2">
+                    <persistence-unit name="legacy">
+                        <package-descriptor>example.listeners</package-descriptor>
+                    </persistence-unit>
+                </persistence>""";
+        Assertions.assertThrows(PersistenceUnitLoadingException.class, () -> readPersistenceXML(descriptor));
+    }
+
+    @Test
     void testDefaultToOneFetchTypeXml() {
         List<SEPersistenceUnitInfo> units = readPersistenceXML("""
                 <persistence xmlns="https://jakarta.ee/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"

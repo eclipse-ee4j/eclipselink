@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,6 +28,7 @@ import org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitInfo;
  */
 public class PersistenceXML {
     private List<SEPersistenceUnitInfo> persistenceUnitInfos = new ArrayList<>();
+    private String version;
 
     /**
      * Default constructor.
@@ -39,6 +40,9 @@ public class PersistenceXML {
      * INTERNAL:
      */
     public List<SEPersistenceUnitInfo> getPersistenceUnitInfos() {
+        for (SEPersistenceUnitInfo info : persistenceUnitInfos) {
+            info.setPersistenceXMLSchemaVersion(version);
+        }
         return persistenceUnitInfos;
     }
 }
