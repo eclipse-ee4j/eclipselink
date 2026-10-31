@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -149,7 +149,7 @@ public class PathImpl<X> extends ExpressionImpl<X> implements Path<X>, Cloneable
 
     @Override
     public <C extends Comparable<? super C>> ComparableExpression<C> get(ComparableAttribute<? super X, C> attribute) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        return new ComparableExpressionImpl<>((ExpressionImpl<C>) get((SingularAttribute<? super X, C>) attribute));
     }
 
     @Override
@@ -159,12 +159,12 @@ public class PathImpl<X> extends ExpressionImpl<X> implements Path<X>, Cloneable
 
     @Override
     public <N extends Number & Comparable<N>> NumericExpression<N> get(NumericAttribute<? super X, N> attribute) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        return new NumericExpressionImpl<>((ExpressionImpl<N>) get((SingularAttribute<? super X, N>) attribute));
     }
 
     @Override
     public TextExpression get(TextAttribute<? super X> attribute) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        return new TextExpressionImpl((ExpressionImpl<String>) get((SingularAttribute<? super X, String>) attribute));
     }
 
     @Override

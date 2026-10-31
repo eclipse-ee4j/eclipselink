@@ -177,6 +177,11 @@ public class DB2ZPlatform extends DB2Platform {
         addOperator(signOperator());
     }
 
+    @Override
+    protected boolean usesCodeUnits32ForStringFunctions() {
+        return false;
+    }
+
     /**
      * Disable binding support.
      * <p>

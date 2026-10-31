@@ -81,6 +81,161 @@ public class SQLServerPlatformTest {
     }
 
     @Test
+    public void testCharacterTrimUsesNativeSyntaxAndPreservesOperands() throws SQLException {
+        DatabaseSessionImpl session = session(14);
+        SQLSelectStatement statement = statement(session);
+        Expression source = statement.getBuilder().getField("NAME");
+        FunctionExpression trim = (FunctionExpression) source.trim('x');
+        List<Expression> originalChildren = new ArrayList<>(trim.getChildren());
+        statement.getFields().clear();
+        statement.addField(trim);
+
+        for (int attempt = 0; attempt < 2; attempt++) {
+            DatabaseCall call = statement.buildCall(session, null);
+            Assert.assertEquals("SELECT TRIM('x' FROM NAME) FROM ITEM", call.getSQLString());
+            Assert.assertSame(source, trim.getBaseExpression());
+            Assert.assertEquals(originalChildren.size(), trim.getChildren().size());
+            for (int index = 0; index < originalChildren.size(); index++) {
+                Assert.assertSame(originalChildren.get(index), trim.getChildren().get(index));
+            }
+        }
+    }
+
+    @Test
+    public void testCharacterTrimParametersRetainSqlBindingOrderAndNulls() throws SQLException {
+        DatabaseSessionImpl session = session(14);
+        session.getPlatform().setShouldBindAllParameters(true);
+        SQLSelectStatement statement = statement(session);
+        ExpressionBuilder builder = statement.getBuilder();
+        Expression source = builder.getParameter("source", String.class);
+        Expression character = builder.getParameter("character", Character.class);
+        statement.getFields().clear();
+        statement.addField(source.trim(character));
+
+        for (int attempt = 0; attempt < 2; attempt++) {
+            DatabaseCall call = statement.buildCall(session, null);
+            Assert.assertEquals("SELECT TRIM(? FROM ?) FROM ITEM", call.getSQLString());
+            Assert.assertEquals(2, call.getParameters().size());
+            Assert.assertEquals("character", ((ParameterExpression) call.getParameters().get(0)).getField().getName());
+            Assert.assertEquals("source", ((ParameterExpression) call.getParameters().get(1)).getField().getName());
+
+            call.setQuery(new ReportQuery());
+            call.prepare(session);
+            for (boolean nullCharacter : List.of(false, true)) {
+                for (boolean nullSource : List.of(false, true)) {
+                    DatabaseRecord values = new DatabaseRecord();
+                    values.put("character", nullCharacter ? null : ']');
+                    values.put("source", nullSource ? null : "]]Ab]]");
+                    DatabaseCall execution = (DatabaseCall) call.clone();
+                    execution.translate(values, null, session);
+                    Assert.assertEquals(2, execution.getParameters().size());
+                    if (nullCharacter) {
+                        Assert.assertEquals("character", ((DatabaseField) execution.getParameters().get(0)).getName());
+                    } else {
+                        Assert.assertEquals("]", String.valueOf(execution.getParameters().get(0)));
+                    }
+                    if (nullSource) {
+                        Assert.assertEquals("source", ((DatabaseField) execution.getParameters().get(1)).getName());
+                    } else {
+                        Assert.assertEquals("]]Ab]]", execution.getParameters().get(1));
+                    }
+                }
+            }
+        }
+    }
+
+    @Test
+    public void testDefaultSpaceTrimKeepsLegacySql() throws SQLException {
+        DatabaseSessionImpl session = session(10);
+        SQLSelectStatement statement = statement(session);
+        statement.getFields().clear();
+        statement.addField(statement.getBuilder().getField("NAME").trim());
+
+        Assert.assertEquals("SELECT RTRIM(LTRIM(NAME)) FROM ITEM", statement.buildCall(session, null).getSQLString());
+    }
+
+    @Test
+    public void testStringLengthAndSubstringRetainTrailingSpaceSqlAndOriginalOperands() throws SQLException {
+        for (int version : List.of(10, 11, 13, 14, 16)) {
+            DatabaseSessionImpl session = session(version);
+            SQLSelectStatement statement = statement(session);
+            Expression source = statement.getBuilder().getField("NAME");
+            FunctionExpression length = (FunctionExpression) source.length();
+            FunctionExpression substring = (FunctionExpression) source.substring(2);
+            List<Expression> lengthChildren = new ArrayList<>(length.getChildren());
+            List<Expression> substringChildren = new ArrayList<>(substring.getChildren());
+            statement.getFields().clear();
+            statement.addField(length);
+            statement.addField(substring);
+            for (int attempt = 0; attempt < 2; attempt++) {
+                DatabaseCall call = statement.buildCall(session, null);
+                Assert.assertEquals("SELECT CASE WHEN NAME IS NULL THEN CAST(NULL AS INTEGER) ELSE "
+                        + "CONVERT(int, LEN(CONVERT(nvarchar(max), NAME) + N'#') - 1) END, "
+                        + "SUBSTRING(NAME,2, CONVERT(int, LEN(CONVERT(nvarchar(max), NAME) + N'#') - 1)) FROM ITEM", call.getSQLString());
+                Assert.assertEquals(lengthChildren, length.getChildren());
+                Assert.assertEquals(substringChildren, substring.getChildren());
+                Assert.assertSame(source, length.getBaseExpression());
+                Assert.assertSame(source, substring.getBaseExpression());
+            }
+        }
+    }
+
+    @Test
+    public void testStringLengthAndSubstringEscapeLiterals() throws SQLException {
+        DatabaseSessionImpl session = session(14);
+        SQLSelectStatement statement = statement(session);
+        Expression source = statement.getBuilder().value("a'  ");
+        statement.getFields().clear();
+        statement.addField(source.length());
+        statement.addField(source.substring(2));
+        Assert.assertEquals("SELECT CASE WHEN 'a''  ' IS NULL THEN CAST(NULL AS INTEGER) ELSE "
+                + "CONVERT(int, LEN(CONVERT(nvarchar(max), 'a''  ') + N'#') - 1) END, "
+                + "SUBSTRING('a''  ',2, CONVERT(int, LEN(CONVERT(nvarchar(max), 'a''  ') + N'#') - 1)) FROM ITEM",
+                statement.buildCall(session, null).getSQLString());
+    }
+
+    @Test
+    public void testStringLengthAndSubstringRetainRepeatedBindingsAndNulls() throws SQLException {
+        for (boolean partial : List.of(false, true)) {
+            DatabaseSessionImpl session = session(14);
+            session.getPlatform().setShouldBindAllParameters(true);
+            session.getPlatform().setShouldBindPartialParameters(partial);
+            SQLSelectStatement statement = statement(session);
+            Expression source = statement.getBuilder().getParameter("source", String.class);
+            Expression start = statement.getBuilder().getParameter("start", Integer.class);
+            statement.getFields().clear();
+            statement.addField(source.length());
+            statement.addField(source.substring(start));
+            DatabaseCall call = statement.buildCall(session, null);
+            Assert.assertEquals("SELECT CASE WHEN ? IS NULL THEN CAST(NULL AS INTEGER) ELSE "
+                    + "CONVERT(int, LEN(CONVERT(nvarchar(max), ?) + N'#') - 1) END, "
+                    + "SUBSTRING(?,?, CONVERT(int, LEN(CONVERT(nvarchar(max), ?) + N'#') - 1)) FROM ITEM", call.getSQLString());
+            Assert.assertEquals(List.of("source", "source", "source", "start", "source"), call.getParameters().stream()
+                    .map(parameter -> ((ParameterExpression) parameter).getField().getName()).toList());
+            call.setQuery(new ReportQuery());
+            call.prepare(session);
+            List<String> values = new ArrayList<>(List.of("a  ", "  ", "", "A\uD83D\uDE00  ", "x".repeat(8000) + "  ", "a  "));
+            values.add(null);
+            for (String value : values) {
+                DatabaseRecord record = new DatabaseRecord();
+                record.put("source", value);
+                record.put("start", 2);
+                DatabaseCall execution = (DatabaseCall) call.clone();
+                execution.translate(record, null, session);
+                Assert.assertEquals(5, execution.getParameters().size());
+                Assert.assertEquals(2, execution.getParameters().get(3));
+                for (int index : new int[]{0, 1, 2, 4}) {
+                    if (value == null) {
+                        Assert.assertEquals("source", ((DatabaseField) execution.getParameters().get(index)).getName());
+                    } else {
+                        Assert.assertEquals(value, execution.getParameters().get(index));
+                    }
+                }
+            }
+        }
+    }
+
+    @Test
     public void testDefaultNullsFirst() throws SQLException {
         assertNullOrdering("", true);
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -326,12 +326,12 @@ public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X>
 
     @Override
     public NumericExpression<Long> count() {
-        throw new UnsupportedOperationException("Not yet implemented");
+        return new NumericExpressionImpl<>((ExpressionImpl<Long>) new CriteriaBuilderImpl(metamodel).count(this));
     }
 
     @Override
     public NumericExpression<Long> countDistinct() {
-        throw new UnsupportedOperationException("Not yet implemented");
+        return new NumericExpressionImpl<>((ExpressionImpl<Long>) new CriteriaBuilderImpl(metamodel).countDistinct(this));
     }
 
 }

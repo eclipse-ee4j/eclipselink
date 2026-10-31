@@ -80,6 +80,9 @@ public class SQLServerPlatform extends DatabasePlatform {
     
     /** MSSQL-specific JDBC type constants */
     private static final int DATETIMEOFFSET_TYPE = -155;
+
+    private static final String STRING_LENGTH_PREFIX = "CONVERT(int, LEN(CONVERT(nvarchar(max), ";
+    private static final String STRING_LENGTH_SUFFIX = ") + N'#') - 1)";
     
     /** Support for sequence objects and OFFSET FETCH NEXT added in SQL Server 2012 */
     private boolean isVersion11OrHigher;
@@ -549,7 +552,7 @@ public class SQLServerPlatform extends DatabasePlatform {
         addOperator(locateOperator());
         addOperator(locate2Operator());
         addOperator(ExpressionOperator.simpleFunction(ExpressionOperator.Ceil, "CEILING"));
-        addOperator(ExpressionOperator.simpleFunction(ExpressionOperator.Length, "LEN"));
+        addOperator(lengthOperator());
         addOperator(modOperator());
         addOperator(ExpressionOperator.simpleAggregate(ExpressionOperator.StandardDeviation, "STDEV", "standardDeviation"));
         addOperator(trimOperator());
@@ -668,22 +671,21 @@ public class SQLServerPlatform extends DatabasePlatform {
 
     /**
      * INTERNAL:
-     * Build Trim operator.
+     * Use native character trimming, available since SQL Server 2017.
      */
     protected static ExpressionOperator trim2Operator() {
         ExpressionOperator exOperator = new ExpressionOperator();
         exOperator.setType(ExpressionOperator.FunctionOperator);
         exOperator.setSelector(ExpressionOperator.Trim2);
-        List<String> v = new ArrayList<>(5);
-        v.add("RTRIM(");
-        v.add(" FROM LTRIM(");
+        List<String> v = new ArrayList<>(3);
+        v.add("TRIM(");
         v.add(" FROM ");
-        v.add("))");
+        v.add(")");
         exOperator.printsAs(v);
-        int[] argumentIndices = new int[3];
+        exOperator.bePrefix();
+        int[] argumentIndices = new int[2];
         argumentIndices[0] = 1;
-        argumentIndices[1] = 1;
-        argumentIndices[2] = 0;
+        argumentIndices[1] = 0;
         exOperator.setArgumentIndices(argumentIndices);
         exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
         return exOperator;
@@ -742,6 +744,20 @@ public class SQLServerPlatform extends DatabasePlatform {
     }
 
     /**
+     * Count trailing spaces using a nonspace sentinel. Convert before appending
+     * so a bounded-width input cannot truncate the sentinel, and retain the
+     * Integer result type even though LEN over nvarchar(max) returns bigint.
+     * Guard null separately because older servers may concatenate it as empty.
+     */
+    protected static ExpressionOperator lengthOperator() {
+        ExpressionOperator result = ExpressionOperator.length();
+        result.printsAs(List.of("CASE WHEN ", " IS NULL THEN CAST(NULL AS INTEGER) ELSE "
+                + STRING_LENGTH_PREFIX, STRING_LENGTH_SUFFIX + " END"));
+        result.setArgumentIndices(new int[]{0, 0});
+        return result;
+    }
+
+    /**
      * Override the default SubstringSingleArg operator.
      */
     protected static ExpressionOperator singleArgumentSubstringOperator() {
@@ -751,8 +767,8 @@ public class SQLServerPlatform extends DatabasePlatform {
         List<String> v = new ArrayList<>();
         v.add("SUBSTRING(");
         v.add(",");
-        v.add(", LEN(");
-        v.add("))");
+        v.add(", " + STRING_LENGTH_PREFIX);
+        v.add(STRING_LENGTH_SUFFIX + ")");
         result.printsAs(v);
         int[] indices = new int[3];
         indices[0] = 0;

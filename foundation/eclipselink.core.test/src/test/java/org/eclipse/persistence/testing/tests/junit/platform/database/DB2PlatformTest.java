@@ -1,0 +1,446 @@
+/*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
+ * http://www.eclipse.org/org/documents/edl-v10.php.
+ *
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ *
+ * These regression tests were generated with assistance from OpenAI Codex.
+ */
+package org.eclipse.persistence.testing.tests.junit.platform.database;
+
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.expressions.ExpressionOperator;
+import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
+import org.eclipse.persistence.internal.expressions.FunctionExpression;
+import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
+import org.eclipse.persistence.platform.database.DB2MainframePlatform;
+import org.eclipse.persistence.platform.database.DB2Platform;
+import org.eclipse.persistence.platform.database.DB2ZPlatform;
+import org.eclipse.persistence.platform.database.DerbyPlatform;
+import org.eclipse.persistence.platform.database.JavaDBPlatform;
+import org.eclipse.persistence.queries.ReportQuery;
+import org.eclipse.persistence.sessions.DatabaseLogin;
+import org.eclipse.persistence.sessions.DatabaseRecord;
+import org.junit.Assert;
+import org.junit.Test;
+
+public class DB2PlatformTest {
+    private static final int[] SELECTORS = {ExpressionOperator.Length, ExpressionOperator.Locate,
+            ExpressionOperator.Locate2, ExpressionOperator.Substring, ExpressionOperator.SubstringSingleArg,
+            ExpressionOperator.Left, ExpressionOperator.Right};
+    private static final String SOURCE = "A'\u00e9\uD83D\uDE00B";
+    private static final String SEARCH = "'\u00e9";
+
+    @Test
+    public void testLuwMappedCharacterOperators() throws SQLException {
+        for (boolean partial : List.of(false, true)) {
+            assertSql(new DB2Platform(), partial, "mapped", false, new String[]{
+                    "CHARACTER_LENGTH(NAME, CODEUNITS32)", "LOCATE('''\u00e9', NAME, CODEUNITS32)",
+                    "LOCATE('''\u00e9', NAME, 2, CODEUNITS32)", "SUBSTRING(NAME, 2, 1, CODEUNITS32)",
+                    "SUBSTRING(NAME, 2, CODEUNITS32)", clampedSql("LEFT", "NAME", "1"),
+                    clampedSql("RIGHT", "NAME", "1")});
+        }
+    }
+
+    @Test
+    public void testLuwLiteralEscaping() throws SQLException {
+        for (boolean partial : List.of(false, true)) {
+            assertSql(new DB2Platform(), partial, "literal", false, new String[]{
+                    "CHARACTER_LENGTH('A''\u00e9\uD83D\uDE00B', CODEUNITS32)",
+                    "LOCATE('''\u00e9', 'A''\u00e9\uD83D\uDE00B', CODEUNITS32)",
+                    "LOCATE('''\u00e9', 'A''\u00e9\uD83D\uDE00B', 2, CODEUNITS32)",
+                    "SUBSTRING('A''\u00e9\uD83D\uDE00B', 2, 1, CODEUNITS32)",
+                    "SUBSTRING('A''\u00e9\uD83D\uDE00B', 2, CODEUNITS32)",
+                    clampedSql("LEFT", "'A''\u00e9\uD83D\uDE00B'", "1"),
+                    clampedSql("RIGHT", "'A''\u00e9\uD83D\uDE00B'", "1")});
+        }
+    }
+
+    @Test
+    public void testLuwParametersRetainBindingOrderAndRebinding() throws SQLException {
+        for (boolean partial : List.of(false, true)) {
+            assertParameterSql(new DB2Platform(), partial, true);
+        }
+    }
+
+    @Test
+    public void testDerbyMappedOperatorsPreserveDialectAndGuardLocateNulls() throws SQLException {
+        for (boolean partial : List.of(false, true)) {
+            assertSql(new DerbyPlatform(), partial, "mapped", false, new String[]{
+                    "LENGTH(NAME)", derbyLocateSql("NAME", "'''\u00e9'"), derbyLocateSql("NAME", "'''\u00e9'", "2"),
+                    "SUBSTR(NAME, 2, 1)", "SUBSTR(NAME, 2)", "SUBSTR(NAME, 1, 1)",
+                    "SUBSTR(NAME, LENGTH(NAME) + 1 - 1, 1)"});
+        }
+    }
+
+    @Test
+    public void testDerbyParameterSqlPreservesBindingsWithLocateNullGuards() throws SQLException {
+        for (boolean partial : List.of(false, true)) {
+            assertParameterSql(new DerbyPlatform(), partial, false);
+        }
+    }
+
+    @Test
+    public void testZosOperatorsAndBindingRemainUnchanged() throws SQLException {
+        assertLegacyMapped(new DB2ZPlatform());
+        for (boolean partial : List.of(false, true)) {
+            assertParameterSql(new DB2ZPlatform(), partial, false);
+        }
+    }
+
+    @Test
+    public void testMainframeOperatorsAndBindingRemainUnchanged() throws SQLException {
+        assertLegacyMapped(new DB2MainframePlatform());
+        for (boolean partial : List.of(false, true)) {
+            assertParameterSql(new DB2MainframePlatform(), partial, false);
+        }
+    }
+
+    @Test
+    public void testLuwOperatorFlagsAndOriginalChildrenArePreserved() throws SQLException {
+        DB2Platform platform = new DB2Platform();
+        for (int selector : SELECTORS) {
+            Prepared prepared = prepare(platform, true, "parameter", true, selector);
+            ExpressionOperator operator = prepared.expression.getPlatformOperator(platform);
+            ExpressionOperator ordinary = ordinaryOperator(selector);
+            Assert.assertEquals(ordinary.isBindingSupported(), operator.isBindingSupported());
+            int arguments = prepared.expression.getChildren().size();
+            if (selector == ExpressionOperator.Left || selector == ExpressionOperator.Right) {
+                Assert.assertArrayEquals(new int[]{0, 1}, ordinary.getArgumentIndices(arguments));
+                Assert.assertArrayEquals(new int[]{0, 1, 0, 0, 1}, operator.getArgumentIndices(arguments));
+            } else {
+                Assert.assertArrayEquals(ordinary.getArgumentIndices(arguments), operator.getArgumentIndices(arguments));
+            }
+            List<Expression> children = new ArrayList<>(prepared.expression.getChildren());
+            for (int iteration = 0; iteration < 2; iteration++) {
+                DatabaseCall execution = execute(prepared, iteration);
+                Assert.assertTrue(execution.getSQLString().contains("CODEUNITS32"));
+                Assert.assertEquals(children.size(), prepared.expression.getChildren().size());
+                for (int index = 0; index < children.size(); index++) {
+                    Assert.assertSame(children.get(index), prepared.expression.getChildren().get(index));
+                }
+            }
+        }
+    }
+
+    @Test
+    public void testInterleavedPlatformInitializationDoesNotChangeOtherInstances() throws SQLException {
+        List<String[]> globalSql = new ArrayList<>();
+        for (int selector : SELECTORS) {
+            ExpressionOperator operator = ExpressionOperator.getInternalOperator(selector);
+            globalSql.add(operator == null ? null : operator.getDatabaseStrings().clone());
+        }
+        List<DB2Platform> platforms = List.of(new DB2Platform(), new DerbyPlatform(), new DB2ZPlatform(),
+                new DB2MainframePlatform(), new DB2Platform());
+        List<List<String>> first = new ArrayList<>();
+        for (DB2Platform platform : platforms) {
+            List<String> sql = new ArrayList<>();
+            for (int selector : SELECTORS) {
+                sql.add(execute(prepare(platform, true, "parameter", true, selector), 0).getSQLString());
+            }
+            first.add(sql);
+        }
+        Assert.assertEquals(first.get(0), first.get(4));
+        for (int p = platforms.size() - 1; p >= 0; p--) {
+            for (int index = 0; index < SELECTORS.length; index++) {
+                Assert.assertEquals(first.get(p).get(index),
+                        execute(prepare(platforms.get(p), true, "parameter", true, SELECTORS[index]), 0).getSQLString());
+                ExpressionOperator operator = ExpressionOperator.getInternalOperator(SELECTORS[index]);
+                if (globalSql.get(index) == null) {
+                    Assert.assertNull(operator);
+                } else {
+                    Assert.assertArrayEquals(globalSql.get(index), operator.getDatabaseStrings());
+                }
+            }
+        }
+        Assert.assertNotSame(platforms.get(0).getOperator(ExpressionOperator.Length),
+                platforms.get(4).getOperator(ExpressionOperator.Length));
+    }
+
+    @Test
+    public void testLuwLeftRightBoundaryBindingAndOperandReuse() throws SQLException {
+        for (boolean partial : List.of(false, true)) {
+            for (int selector : new int[]{ExpressionOperator.Left, ExpressionOperator.Right}) {
+                Prepared prepared = prepare(new DB2Platform(), partial, "parameter", true, selector);
+                List<Expression> children = new ArrayList<>(prepared.expression.getChildren());
+                Assert.assertEquals(2, children.size());
+                String expectedSql = "SELECT " + clampedSql(selector == ExpressionOperator.Left ? "LEFT" : "RIGHT", "?", "?")
+                        + " FROM ITEM";
+                for (String source : new String[]{"", "A\u00e9B", "A\uD83D\uDE00B", "a  ", null, "A\uD83D\uDE00B"}) {
+                    for (Integer length : new Integer[]{1, 8, 0, 2, 3, null, -1, 1}) {
+                        DatabaseRecord values = new DatabaseRecord();
+                        values.put("source", source);
+                        values.put("length", length);
+                        DatabaseCall execution = (DatabaseCall) prepared.call.clone();
+                        execution.translate(values, null, prepared.session);
+                        Assert.assertEquals(expectedSql, execution.getSQLString());
+                        Assert.assertEquals(5, execution.getParameters().size());
+                        int[] indices = {0, 1, 0, 0, 1};
+                        for (int index = 0; index < indices.length; index++) {
+                            Object expected = indices[index] == 0 ? source : length;
+                            Object actual = execution.getParameters().get(index);
+                            if (expected == null) {
+                                Assert.assertEquals(indices[index] == 0 ? "source" : "length", ((DatabaseField) actual).getName());
+                            } else {
+                                Assert.assertEquals(expected, actual);
+                            }
+                        }
+                        Assert.assertEquals(2, prepared.expression.getChildren().size());
+                        Assert.assertSame(children.get(0), prepared.expression.getChildren().get(0));
+                        Assert.assertSame(children.get(1), prepared.expression.getChildren().get(1));
+                    }
+                }
+            }
+        }
+    }
+
+    @Test
+    public void testDerbyLocateRetainsNullBindingsAndOriginalOperands() throws SQLException {
+        for (boolean partial : List.of(false, true)) {
+            for (boolean coalesce : List.of(false, true)) {
+                for (int selector : new int[]{ExpressionOperator.Locate, ExpressionOperator.Locate2}) {
+                    Prepared prepared = prepareMappedLocate(partial, coalesce, selector);
+                    List<Expression> children = new ArrayList<>(prepared.expression.getChildren());
+                    String sourceSql = coalesce ? "COALESCE(NAME, ?)" : "NAME";
+                    String expectedSql = "SELECT " + (selector == ExpressionOperator.Locate
+                            ? derbyLocateSql(sourceSql, "?") : derbyLocateSql(sourceSql, "?", "?")) + " FROM ITEM";
+                    Object[][] values = {{"ababa", "ba", 2}, {null, "ba", 2}, {"ababa", null, 2},
+                            {"ababa", "ba", null}, {null, null, null}, {"ababa", "missing", 2},
+                            {"ababa", "ba", 4}, {"ababa", "ba", -1}, {"ababa", "ba", 2}};
+                    for (Object[] row : values) {
+                        DatabaseRecord parameters = new DatabaseRecord();
+                        parameters.put("source", row[0]);
+                        parameters.put("search", row[1]);
+                        parameters.put("start", row[2]);
+                        DatabaseCall call = (DatabaseCall) prepared.call.clone();
+                        call.translate(parameters, null, prepared.session);
+                        Assert.assertEquals(expectedSql, call.getSQLString());
+                        Assert.assertTrue(call.usesBinding(prepared.session.getPlatform()));
+                        List<String> names = new ArrayList<>();
+                        if (selector == ExpressionOperator.Locate2) {
+                            names.add("start");
+                        }
+                        names.add("search");
+                        if (coalesce) {
+                            names.add("source");
+                        }
+                        if (selector == ExpressionOperator.Locate2) {
+                            names.add("start");
+                        }
+                        Assert.assertEquals(names.size(), call.getParameters().size());
+                        for (int index = 0; index < names.size(); index++) {
+                            Object expected = parameters.get(names.get(index));
+                            Object actual = call.getParameters().get(index);
+                            if (expected == null) {
+                                Assert.assertEquals(names.get(index), ((DatabaseField) actual).getName());
+                            } else {
+                                Assert.assertEquals(expected, actual);
+                            }
+                        }
+                        Assert.assertEquals(children.size(), prepared.expression.getChildren().size());
+                        for (int index = 0; index < children.size(); index++) {
+                            Assert.assertSame(children.get(index), prepared.expression.getChildren().get(index));
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    @Test
+    public void testDerbyLocateBindingOverridesStayLocal() {
+        for (DB2Platform platform : List.of(new DerbyPlatform(), new JavaDBPlatform())) {
+            for (int selector : new int[]{ExpressionOperator.Locate, ExpressionOperator.Locate2}) {
+                ExpressionOperator operator = platform.getOperator(selector);
+                Assert.assertEquals(Boolean.TRUE, operator.isBindingSupported());
+                Assert.assertArrayEquals(selector == ExpressionOperator.Locate ? new int[]{1, 0} : new int[]{2, 1, 0, 2},
+                        operator.getArgumentIndices(selector == ExpressionOperator.Locate ? 2 : 3));
+                Assert.assertNotSame(operator, new DerbyPlatform().getOperator(selector));
+                for (DB2Platform other : List.of(new DB2Platform(), new DB2ZPlatform(), new DB2MainframePlatform())) {
+                    Assert.assertEquals(Boolean.FALSE, other.getOperator(selector).isBindingSupported());
+                }
+            }
+        }
+        Assert.assertEquals(Boolean.FALSE, ExpressionOperator.locate().isBindingSupported());
+        Assert.assertEquals(Boolean.FALSE, ExpressionOperator.locate2().isBindingSupported());
+    }
+
+    private String derbyLocateSql(String source, String search) {
+        return "CASE WHEN 1 = 1 THEN LOCATE(" + search + ", " + source + ") ELSE CAST(NULL AS INTEGER) END";
+    }
+
+    private String derbyLocateSql(String source, String search, String start) {
+        return "CASE WHEN CAST(" + start + " AS INTEGER) IS NULL THEN CAST(NULL AS INTEGER) ELSE LOCATE("
+                + search + ", " + source + ", " + start + ") END";
+    }
+
+    private Prepared prepareMappedLocate(boolean partial, boolean coalesce, int selector) throws SQLException {
+        DerbyPlatform platform = new DerbyPlatform();
+        platform.setShouldBindAllParameters(true);
+        platform.setShouldBindLiterals(true);
+        platform.setShouldBindPartialParameters(partial);
+        DatabaseSessionImpl session = new DatabaseSessionImpl(new DatabaseLogin(platform));
+        ExpressionBuilder builder = new ExpressionBuilder();
+        builder.setSession(session);
+        Expression source = builder.getField("NAME");
+        if (coalesce) {
+            source = builder.coalesce(List.of(source, builder.getParameter("source", String.class)));
+        }
+        Expression search = builder.getParameter("search", String.class);
+        Expression start = builder.getParameter("start", Integer.class);
+        FunctionExpression expression = (FunctionExpression) (selector == ExpressionOperator.Locate
+                ? source.locate(search) : source.locate(search, start));
+        return prepare(session, builder, expression);
+    }
+
+    private String clampedSql(String function, String source, String length) {
+        return function + "(" + source + ", CASE WHEN " + length + " > CHARACTER_LENGTH(" + source
+                + ", CODEUNITS32) THEN CHARACTER_LENGTH(" + source + ", CODEUNITS32) ELSE " + length
+                + " END, CODEUNITS32)";
+    }
+
+    private void assertLegacyMapped(DB2Platform platform) throws SQLException {
+        for (boolean partial : List.of(false, true)) {
+            assertSql(platform, partial, "mapped", false, new String[]{"LENGTH(NAME)",
+                    "LOCATE('''\u00e9', NAME)", "LOCATE('''\u00e9', NAME, 2)", "SUBSTR(NAME, 2, 1)",
+                    "SUBSTR(NAME, 2)", "LEFT(NAME, 1)", "RIGHT(NAME, 1)"});
+        }
+    }
+
+    private void assertSql(DB2Platform platform, boolean partial, String kind, boolean binding, String[] expected)
+            throws SQLException {
+        for (int index = 0; index < SELECTORS.length; index++) {
+            Prepared prepared = prepare(platform, partial, kind, binding, SELECTORS[index]);
+            for (int iteration = 0; iteration < 2; iteration++) {
+                DatabaseCall execution = execute(prepared, iteration);
+                Assert.assertEquals("SELECT " + expected[index] + " FROM ITEM", execution.getSQLString());
+                Assert.assertTrue(execution.getParameters().isEmpty());
+            }
+        }
+    }
+
+    private void assertParameterSql(DB2Platform platform, boolean partial, boolean unicode) throws SQLException {
+        for (int index = 0; index < SELECTORS.length; index++) {
+            int selector = SELECTORS[index];
+            Prepared prepared = prepare(platform, partial, "parameter", true, selector);
+            for (int iteration = 0; iteration < 2; iteration++) {
+                String source = iteration == 0 ? SOURCE : "Other";
+                String search = iteration == 0 ? SEARCH : "th";
+                int start = iteration == 0 ? 2 : 1;
+                int length = iteration == 0 ? 1 : 2;
+                boolean derby = platform instanceof DerbyPlatform;
+                boolean inline = selector == ExpressionOperator.Length || derby && !partial
+                        || platform instanceof DB2ZPlatform && (selector == ExpressionOperator.Locate || selector == ExpressionOperator.Locate2);
+                String s = inline ? quote(source) : "?";
+                String pattern = inline ? quote(search) : "?";
+                String from = inline ? Integer.toString(start) : "?";
+                String size = inline ? Integer.toString(length) : "?";
+                String[] fragments = unicode ? new String[]{"CHARACTER_LENGTH(" + s + ", CODEUNITS32)",
+                        "LOCATE(" + pattern + ", " + s + ", CODEUNITS32)",
+                        "LOCATE(" + pattern + ", " + s + ", " + from + ", CODEUNITS32)",
+                        "SUBSTRING(" + s + ", " + from + ", " + size + ", CODEUNITS32)",
+                        "SUBSTRING(" + s + ", " + from + ", CODEUNITS32)",
+                        clampedSql("LEFT", s, size), clampedSql("RIGHT", s, size)}
+                        : new String[]{"LENGTH(" + s + ")", derby ? derbyLocateSql(s, pattern) : "LOCATE(" + pattern + ", " + s + ")",
+                        derby ? derbyLocateSql(s, pattern, from) : "LOCATE(" + pattern + ", " + s + ", " + from + ")",
+                        "SUBSTR(" + s + ", " + from + ", " + size + ")",
+                        "SUBSTR(" + s + ", " + from + ")", derby ? "SUBSTR(" + s + ", 1, " + size + ")" : "LEFT(" + s + ", " + size + ")",
+                        derby ? "SUBSTR(" + s + ", LENGTH(" + s + ") + 1 - " + size + ", " + size + ")" : "RIGHT(" + s + ", " + size + ")"};
+                List<?> parameters = inline ? List.of() : switch (selector) {
+                    case ExpressionOperator.Locate -> List.of(search, source);
+                    case ExpressionOperator.Locate2 -> derby ? List.of(start, search, source, start) : List.of(search, source, start);
+                    case ExpressionOperator.Substring -> List.of(source, start, length);
+                    case ExpressionOperator.SubstringSingleArg -> List.of(source, start);
+                    case ExpressionOperator.Left -> unicode ? List.of(source, length, source, source, length) : List.of(source, length);
+                    case ExpressionOperator.Right -> unicode ? List.of(source, length, source, source, length)
+                            : derby ? List.of(source, source, length, length) : List.of(source, length);
+                    default -> List.of(source, length);
+                };
+                DatabaseCall execution = execute(prepared, iteration);
+                Assert.assertEquals("SELECT " + fragments[index] + " FROM ITEM", execution.getSQLString());
+                Assert.assertEquals(parameters, execution.getParameters());
+                Assert.assertEquals(!derby || partial, execution.usesBinding(platform));
+            }
+        }
+    }
+
+    private String quote(String value) {
+        return "'" + value.replace("'", "''") + "'";
+    }
+
+    private ExpressionOperator ordinaryOperator(int selector) {
+        return switch (selector) {
+            case ExpressionOperator.Length -> ExpressionOperator.length();
+            case ExpressionOperator.Locate -> ExpressionOperator.locate();
+            case ExpressionOperator.Locate2 -> ExpressionOperator.locate2();
+            case ExpressionOperator.Substring -> ExpressionOperator.substring();
+            case ExpressionOperator.SubstringSingleArg -> ExpressionOperator.substringSingleArg();
+            case ExpressionOperator.Left -> ExpressionOperator.left();
+            default -> ExpressionOperator.right();
+        };
+    }
+
+    private Prepared prepare(DB2Platform platform, boolean partial, String kind, boolean binding, int selector)
+            throws SQLException {
+        platform.setShouldBindAllParameters(binding);
+        platform.setShouldBindLiterals(binding);
+        platform.setShouldBindPartialParameters(partial);
+        DatabaseSessionImpl session = new DatabaseSessionImpl(new DatabaseLogin(platform));
+        ExpressionBuilder builder = new ExpressionBuilder();
+        builder.setSession(session);
+        Expression source = kind.equals("mapped") ? builder.getField("NAME") : kind.equals("literal")
+                ? builder.value(SOURCE) : builder.getParameter("source", String.class);
+        Object search = kind.equals("parameter") ? builder.getParameter("search", String.class) : SEARCH;
+        Object start = kind.equals("parameter") ? builder.getParameter("start", Integer.class) : 2;
+        Object length = kind.equals("parameter") ? builder.getParameter("length", Integer.class) : 1;
+        FunctionExpression expression = (FunctionExpression) switch (selector) {
+            case ExpressionOperator.Length -> source.length();
+            case ExpressionOperator.Locate -> source.locate(search);
+            case ExpressionOperator.Locate2 -> source.locate(search, start);
+            case ExpressionOperator.Substring -> source.substring(start, length);
+            case ExpressionOperator.SubstringSingleArg -> source.substring(start);
+            case ExpressionOperator.Left -> source.left(length);
+            default -> source.right(length);
+        };
+        return prepare(session, builder, expression);
+    }
+
+    private Prepared prepare(DatabaseSessionImpl session, ExpressionBuilder builder, FunctionExpression expression)
+            throws SQLException {
+        SQLSelectStatement statement = new SQLSelectStatement();
+        statement.setBuilder(builder);
+        statement.addField(expression);
+        statement.addTable(new DatabaseTable("ITEM"));
+        statement.computeTablesFromTables();
+        DatabaseCall call = statement.buildCall(session, null);
+        call.setQuery(new ReportQuery());
+        call.prepare(session);
+        return new Prepared(session, call, expression);
+    }
+
+    private DatabaseCall execute(Prepared prepared, int iteration) throws SQLException {
+        DatabaseRecord values = new DatabaseRecord();
+        values.put("source", iteration == 0 ? SOURCE : "Other");
+        values.put("search", iteration == 0 ? SEARCH : "th");
+        values.put("start", iteration == 0 ? 2 : 1);
+        values.put("length", iteration == 0 ? 1 : 2);
+        DatabaseCall execution = (DatabaseCall) prepared.call.clone();
+        execution.translate(values, null, prepared.session);
+        return execution;
+    }
+
+    private record Prepared(DatabaseSessionImpl session, DatabaseCall call, FunctionExpression expression) { }
+}

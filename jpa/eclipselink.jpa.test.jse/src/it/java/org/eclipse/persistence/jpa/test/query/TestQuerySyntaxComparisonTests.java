@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Contributors to the Eclipse Foundation.
+ * Copyright (c) 2025, 2026 Contributors to the Eclipse Foundation.
  * Copyright (c) 2022, 2023 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -11801,15 +11801,14 @@ public class TestQuerySyntaxComparisonTests {
                 exception = e;
             } finally {
                 if(platform.isDB2Z() || platform.isDerby()) {
-                    // DB2 z throws `DB2 SQL Error: SQLCODE=-206, SQLSTATE=42703` because a "NULL" value is being passed
-                    // Derby throws `ERROR 42X01: Syntax error: Encountered "NULL" at line 1, column 50.`
+                    // These platforms require a typed, non-parameter COALESCE operand.
                     Assert.assertNotNull("Expected query '" + _sql.remove(0) + "' to fail", exception);
                 } else {
                     Assert.assertNull(exception);
                     if (platform.isDB2()) {
-                        Assert.assertEquals("SELECT STRVAL2 FROM QUERYSYNTAXENTITY WHERE (COALESCE(?, ?, ?, ?, 12) = INTVAL2)", _sql.remove(0));
+                        Assert.assertEquals("SELECT STRVAL2 FROM QUERYSYNTAXENTITY WHERE (COALESCE(?, ?, ?, 12) = INTVAL2)", _sql.remove(0));
                     } else {
-                        Assert.assertEquals("SELECT STRVAL2 FROM QUERYSYNTAXENTITY WHERE (COALESCE(?, ?, ?, ?, ?) = INTVAL2)", _sql.remove(0));
+                        Assert.assertEquals("SELECT STRVAL2 FROM QUERYSYNTAXENTITY WHERE (COALESCE(?, ?, ?, ?) = INTVAL2)", _sql.remove(0));
                     }
                 }
             }
@@ -11936,10 +11935,10 @@ public class TestQuerySyntaxComparisonTests {
             } finally {
                 if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
                     Assert.assertNull(exception);
-                    Assert.assertEquals("SELECT STRVAL2 FROM QUERYSYNTAXENTITY WHERE (COALESCE(?, ?, ?, ?, 12) = INTVAL2)", _sql2.remove(0));
+                    Assert.assertEquals("SELECT STRVAL2 FROM QUERYSYNTAXENTITY WHERE (COALESCE(?, ?, ?, 12) = INTVAL2)", _sql2.remove(0));
                 } else {
                     Assert.assertNull(exception);
-                    Assert.assertEquals("SELECT STRVAL2 FROM QUERYSYNTAXENTITY WHERE (COALESCE(?, ?, ?, ?, ?) = INTVAL2)", _sql2.remove(0));
+                    Assert.assertEquals("SELECT STRVAL2 FROM QUERYSYNTAXENTITY WHERE (COALESCE(?, ?, ?, ?) = INTVAL2)", _sql2.remove(0));
                 }
             }
         } finally {
@@ -12065,10 +12064,10 @@ public class TestQuerySyntaxComparisonTests {
             } finally {
                 if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
                     Assert.assertNull(exception);
-                    Assert.assertEquals("SELECT STRVAL2 FROM QUERYSYNTAXENTITY WHERE (COALESCE(?, ?, ?, ?, 12) = INTVAL2)", _sql3.remove(0));
+                    Assert.assertEquals("SELECT STRVAL2 FROM QUERYSYNTAXENTITY WHERE (COALESCE(?, ?, ?, 12) = INTVAL2)", _sql3.remove(0));
                 } else {
                     Assert.assertNull(exception);
-                    Assert.assertEquals("SELECT STRVAL2 FROM QUERYSYNTAXENTITY WHERE (COALESCE(?, ?, ?, ?, ?) = INTVAL2)", _sql3.remove(0));
+                    Assert.assertEquals("SELECT STRVAL2 FROM QUERYSYNTAXENTITY WHERE (COALESCE(?, ?, ?, ?) = INTVAL2)", _sql3.remove(0));
                 }
             }
         } finally {

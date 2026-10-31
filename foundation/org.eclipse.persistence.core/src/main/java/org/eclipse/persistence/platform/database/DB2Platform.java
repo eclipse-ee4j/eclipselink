@@ -494,11 +494,43 @@ public class DB2Platform extends DatabasePlatform {
         addOperator(rtrim2Operator());
 
         addOperator(lengthOperator());
+        if (usesCodeUnits32ForStringFunctions()) {
+            addOperator(withCodeUnits32(ExpressionOperator.locate(), "LOCATE"));
+            addOperator(withCodeUnits32(ExpressionOperator.locate2(), "LOCATE"));
+            addOperator(withCodeUnits32(ExpressionOperator.substring(), "SUBSTRING"));
+            addOperator(withCodeUnits32(ExpressionOperator.substringSingleArg(), "SUBSTRING"));
+            addOperator(clampedLeftRightOperator(ExpressionOperator.left(), "LEFT"));
+            addOperator(clampedLeftRightOperator(ExpressionOperator.right(), "RIGHT"));
+        }
         addOperator(nullifOperator());
         addOperator(coalesceOperator());
 
         addOperator(roundOperator());
         addOperator(db2ExtractOperator());
+    }
+
+    /**
+     * Use Unicode character positions consistently for Db2 LUW string functions.
+     * Other Db2 variants and Derby retain their existing function syntax.
+     */
+    protected boolean usesCodeUnits32ForStringFunctions() {
+        return true;
+    }
+
+    private static ExpressionOperator withCodeUnits32(ExpressionOperator operator, String function) {
+        List<String> strings = new ArrayList<>(List.of(operator.getDatabaseStrings()));
+        strings.set(0, function + "(");
+        strings.set(strings.size() - 1, ", CODEUNITS32)");
+        operator.printsAs(strings);
+        return operator;
+    }
+
+    private static ExpressionOperator clampedLeftRightOperator(ExpressionOperator operator, String function) {
+        // Db2 pads overlong LEFT/RIGHT results; retain only characters available in the source.
+        operator.printsAs(List.of(function + "(", ", CASE WHEN ", " > CHARACTER_LENGTH(",
+                ", CODEUNITS32) THEN CHARACTER_LENGTH(", ", CODEUNITS32) ELSE ", " END, CODEUNITS32)"));
+        operator.setArgumentIndices(new int[]{0, 1, 0, 0, 1});
+        return operator;
     }
 
     /**
@@ -1186,6 +1218,9 @@ public class DB2Platform extends DatabasePlatform {
     protected ExpressionOperator lengthOperator() {
         ExpressionOperator operator = disableAllBindingExpression();
         ExpressionOperator.length().copyTo(operator);
+        if (usesCodeUnits32ForStringFunctions()) {
+            withCodeUnits32(operator, "CHARACTER_LENGTH");
+        }
         return operator;
     }
 

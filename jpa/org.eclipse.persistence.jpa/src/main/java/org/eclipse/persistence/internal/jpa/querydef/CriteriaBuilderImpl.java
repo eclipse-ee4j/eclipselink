@@ -64,7 +64,9 @@ import java.time.temporal.Temporal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 import org.eclipse.persistence.expressions.ExpressionBuilder;
@@ -73,6 +75,7 @@ import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.expressions.ArgumentListFunctionExpression;
 import org.eclipse.persistence.internal.expressions.ConstantExpression;
+import org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter;
 import org.eclipse.persistence.internal.expressions.FunctionExpression;
 import org.eclipse.persistence.internal.expressions.SubSelectExpression;
 import org.eclipse.persistence.internal.helper.BasicTypeHelperImpl;
@@ -305,7 +308,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
         if (currentNode(x) == null){
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("OPERATOR_EXPRESSION_IS_CONJUNCTION"));
         }
-        return new ExpressionImpl<>(this.metamodel, x.getJavaType(), currentNode(x).maximum());
+        return new FunctionExpressionImpl<>(this.metamodel, x.getJavaType(), currentNode(x).maximum(), buildList(x), "MAX");
     }
 
     /**
@@ -321,7 +324,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
         if (currentNode(x) == null){
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("OPERATOR_EXPRESSION_IS_CONJUNCTION"));
         }
-        return new ExpressionImpl<>(this.metamodel, x.getJavaType(),currentNode(x).minimum());
+        return new FunctionExpressionImpl<>(this.metamodel, x.getJavaType(), currentNode(x).minimum(), buildList(x), "MIN");
     }
 
     /**
@@ -1309,7 +1312,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     public Expression<Number> quot(Expression<? extends Number> x, Expression<? extends Number> y){
         return new FunctionExpressionImpl<>(
                 this.metamodel,
-                BasicTypeHelperImpl.getInstance().extendedBinaryNumericPromotionClass(x.getJavaType(), y.getClass()),
+                BasicTypeHelperImpl.getInstance().extendedBinaryNumericPromotionClass(x.getJavaType(), y.getJavaType()),
                 ExpressionMath.divide(currentNode(x),currentNode(y)),
                 buildList(x,y),
                 "quot");
@@ -2272,7 +2275,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     public Expression<String> left(Expression<String> expression, Expression<Integer> len) {
         return new FunctionExpressionImpl<>(
                 this.metamodel, CoreClassConstants.STRING,
-                currentNode(expression).left(currentNode(len)), buildList(expression), "left");
+                currentNode(expression).left(currentNode(len)), buildList(expression, len), "left");
     }
 
     @Override
@@ -2286,7 +2289,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     public Expression<String> right(Expression<String> expression, Expression<Integer> len) {
         return new FunctionExpressionImpl<>(
                 this.metamodel, CoreClassConstants.STRING,
-                currentNode(expression).right(currentNode(len)), buildList(expression), "right");
+                currentNode(expression).right(currentNode(len)), buildList(expression, len), "right");
     }
 
     @Override
@@ -2294,7 +2297,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
         return new FunctionExpressionImpl<>(
                 this.metamodel, CoreClassConstants.STRING,
                 currentNode(expression).replace(currentNode(substring), currentNode(replacement)),
-                buildList(expression), "replace");
+                buildList(expression, substring, replacement), "replace");
     }
 
     @Override
@@ -2302,7 +2305,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
         return new FunctionExpressionImpl<>(
                 this.metamodel, CoreClassConstants.STRING,
                 currentNode(expression).replace(substring, currentNode(replacement)),
-                buildList(expression), "replace");
+                buildList(expression, replacement), "replace");
     }
 
     @Override
@@ -2310,7 +2313,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
         return new FunctionExpressionImpl<>(
                 this.metamodel, CoreClassConstants.STRING,
                 currentNode(expression).replace(currentNode(substring), replacement),
-                buildList(expression), "replace");
+                buildList(expression, substring), "replace");
     }
 
     @Override
@@ -2491,12 +2494,15 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      */
     @Override
     public <Y> Expression<Y> coalesce(Expression<? extends Y> x, Expression<? extends Y> y) {
-        ArgumentListFunctionExpression coalesce = currentNode(x).coalesce();
+        ArgumentListFunctionExpression coalesce = new CoalesceExpression(currentNode(x));
         org.eclipse.persistence.expressions.Expression expX = currentNode(x);
-        expX = org.eclipse.persistence.expressions.Expression.from(expX, coalesce);
         coalesce.addChild(expX);
         org.eclipse.persistence.expressions.Expression expY = currentNode(y);
-        expY = org.eclipse.persistence.expressions.Expression.from(expY, coalesce);
+        // Mapped arguments supply conversion context; values and functions retain
+        // independent ancestry because coalesce is based on its first child.
+        if (expY.isDataExpression()) {
+            expY = org.eclipse.persistence.expressions.Expression.from(expY, coalesce);
+        }
         coalesce.addChild(expY);
         return new CoalesceImpl<>(metamodel, x.getJavaType(), coalesce,  buildList(x, y), "coalesce");
     }
@@ -2513,9 +2519,8 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      */
     @Override
     public <Y> Expression<Y> coalesce(Expression<? extends Y> x, Y y) {
-        ArgumentListFunctionExpression coalesce = currentNode(x).coalesce();
+        ArgumentListFunctionExpression coalesce = new CoalesceExpression(currentNode(x));
         org.eclipse.persistence.expressions.Expression expX = currentNode(x);
-        expX = org.eclipse.persistence.expressions.Expression.from(expX, coalesce);
         coalesce.addChild(expX);
         org.eclipse.persistence.expressions.Expression expY = org.eclipse.persistence.expressions.Expression.from(y, new ExpressionBuilder());
         coalesce.addChild(expY);
@@ -2534,7 +2539,9 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      */
     @Override
     public <Y> Expression<Y> nullif(Expression<Y> x, Expression<?> y){
-        return new FunctionExpressionImpl<>(metamodel, x.getJavaType(), currentNode(x).nullIf(currentNode(y)), buildList(x, y), "nullIf");
+        org.eclipse.persistence.expressions.Expression node = isNullLiteral(currentNode(y))
+                ? currentNode(x) : currentNode(x).nullIf(currentNode(y));
+        return new FunctionExpressionImpl<>(metamodel, x.getJavaType(), node, buildList(x, y), "nullIf");
     }
 
     /**
@@ -2549,7 +2556,8 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      */
     @Override
     public <Y> Expression<Y> nullif(Expression<Y> x, Y y){
-        return new FunctionExpressionImpl<>(metamodel, x.getJavaType(), currentNode(x).nullIf(y), buildList(x, internalLiteral(y)), "nullIf");
+        org.eclipse.persistence.expressions.Expression node = y == null ? currentNode(x) : currentNode(x).nullIf(y);
+        return new FunctionExpressionImpl<>(metamodel, x.getJavaType(), node, buildList(x, internalLiteral(y)), "nullIf");
     }
 
     /**
@@ -2560,7 +2568,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     @Override
     @SuppressWarnings("unchecked") // Java type cast
     public <T> Coalesce<T> coalesce() {
-        ArgumentListFunctionExpression coalesce = new ExpressionBuilder().coalesce();
+        ArgumentListFunctionExpression coalesce = new CoalesceExpression(new ExpressionBuilder());
         return new CoalesceImpl<>(metamodel, (Class<? extends T>) Object.class, coalesce, new ArrayList<>());
     }
 
@@ -2649,6 +2657,124 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
         return expression instanceof Predicate predicate ? predicate : isTrue(expression);
     }
 
+    private static boolean isNullLiteral(org.eclipse.persistence.expressions.Expression expression) {
+        return expression instanceof ConstantExpression constant && constant.getValue() == null;
+    }
+
+    /**
+     * Keeps a mutable coalesce node while folding statically null operands. The
+     * Criteria expression retains every original operand for graph traversal.
+     */
+    private static class CoalesceExpression extends ArgumentListFunctionExpression {
+
+        @Serial
+        private static final long serialVersionUID = 1L;
+
+        private ExpressionBuilder contextBuilder;
+
+        CoalesceExpression(org.eclipse.persistence.expressions.Expression base) {
+            setBaseExpression(base);
+            setOperator(getOperator(ExpressionOperator.Coalesce).clone());
+        }
+
+        @Override
+        public synchronized void addChild(org.eclipse.persistence.expressions.Expression argument) {
+            if (isNullLiteral(argument)) {
+                if (getChildren().stream().anyMatch(child -> !isNullLiteral(child))) {
+                    return;
+                }
+            } else {
+                getChildren().removeIf(CriteriaBuilderImpl::isNullLiteral);
+            }
+            super.addChild(argument);
+        }
+
+        @Override
+        public org.eclipse.persistence.expressions.Expression rebuildOn(org.eclipse.persistence.expressions.Expression newBase) {
+            return copyOn(newBase);
+        }
+
+        @Override
+        public org.eclipse.persistence.expressions.Expression cloneUsing(org.eclipse.persistence.expressions.Expression newBase) {
+            return copyOn(newBase);
+        }
+
+        @SuppressWarnings({"rawtypes", "unchecked"})
+        private CoalesceExpression copyOn(org.eclipse.persistence.expressions.Expression newBase) {
+            ExpressionBuilder oldBuilder = getBuilder();
+            Map copies = new IdentityHashMap<>();
+            if (newBase.getBuilder() != oldBuilder) {
+                copies.put(newBase.getBuilder(), newBase.getBuilder());
+            }
+            // Register the effective primary builder first, retaining its derived
+            // paths, fields and tables through the native cloneUsing contract.
+            copies.put(copies, newBase);
+            oldBuilder.copiedVersionFrom(copies);
+            // CASE parameters may refer back to their containing expression.
+            // Copy that graph with one identity map instead of recursively
+            // rebuilding each operand and following those context references.
+            CoalesceExpression copy = (CoalesceExpression) copiedVersionFrom(copies);
+            copy.setOperator(getOperator().clone());
+            copy.contextBuilder = newBase.getBuilder();
+            return copy;
+        }
+
+        @Override
+        protected void postCopyIn(Map<org.eclipse.persistence.expressions.Expression, org.eclipse.persistence.expressions.Expression> copies) {
+            super.postCopyIn(copies);
+            if (contextBuilder != null) {
+                contextBuilder = contextBuilder.copiedVersionFrom(copies).getBuilder();
+            }
+        }
+
+        @Override
+        public ExpressionBuilder getBuilder() {
+            if (contextBuilder != null) {
+                return contextBuilder;
+            }
+            for (org.eclipse.persistence.expressions.Expression child : getChildren()) {
+                ExpressionBuilder candidate = child.getBuilder();
+                if (candidate != null && candidate.getQueryClass() != null && !candidate.wasQueryClassSetInternally()) {
+                    return candidate;
+                }
+            }
+            return super.getBuilder();
+        }
+
+        @Override
+        public org.eclipse.persistence.expressions.Expression twistedForBaseAndContext(
+                org.eclipse.persistence.expressions.Expression newBase,
+                org.eclipse.persistence.expressions.Expression context,
+                org.eclipse.persistence.expressions.Expression oldBase) {
+            if (getChildren().isEmpty()) {
+                return clone();
+            }
+            org.eclipse.persistence.expressions.Expression base = getChildren().get(0)
+                    .twistedForBaseAndContext(newBase, context, oldBase);
+            CoalesceExpression twisted = new CoalesceExpression(base);
+            twisted.setOperator(getOperator().clone());
+            twisted.addChild(base);
+            for (int index = 1; index < getChildren().size(); index++) {
+                twisted.addChild(getChildren().get(index).twistedForBaseAndContext(newBase, context, oldBase));
+            }
+            twisted.setResultType(getResultType());
+            return twisted;
+        }
+
+        @Override
+        public void printSQL(ExpressionSQLPrinter printer) {
+            if (getChildren().size() == 1 && !isNullLiteral(getChildren().get(0))) {
+                // SQL COALESCE requires at least two operands. A sole remaining
+                // expression is the result, including when it evaluates to null.
+                printer.printString("(");
+                getChildren().get(0).printSQL(printer);
+                printer.printString(")");
+            } else {
+                super.printSQL(printer);
+            }
+        }
+    }
+
     /**
      *  Interface used to build coalesce expressions.
      * <p>
@@ -2688,7 +2814,9 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
         @Override
         public Coalesce<X> value(Expression<? extends X> value) {
             org.eclipse.persistence.expressions.Expression exp = currentNode(value);
-            exp = org.eclipse.persistence.expressions.Expression.from(exp, currentNode);
+            if (exp.isDataExpression()) {
+                exp = org.eclipse.persistence.expressions.Expression.from(exp, currentNode);
+            }
             ((FunctionExpression)currentNode).addChild(exp);
             this.expressions.add(value);
             return this;
@@ -3185,17 +3313,17 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
 
     @Override
     public <Y extends Comparable<? super Y>> Predicate between(Y v, Expression<? extends Y> x, Expression<? extends Y> y) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        return between(internalLiteral(v), x, y);
     }
 
     @Override
     public <N extends Number & Comparable<N>> NumericExpression<N> numericLiteral(N value) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        return new NumericExpressionImpl<>((ExpressionImpl<N>) literal(value));
     }
 
     @Override
     public TextExpression stringLiteral(String value) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        return new TextExpressionImpl((ExpressionImpl<String>) literal(value));
     }
 
     @Override
