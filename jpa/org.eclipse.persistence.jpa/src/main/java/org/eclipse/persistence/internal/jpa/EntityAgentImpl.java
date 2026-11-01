@@ -687,15 +687,7 @@ public class EntityAgentImpl implements EntityAgent, QueryExecutionContext {
         if (query instanceof ObjectLevelReadQuery read) {
             // Include basic state without discarding explicitly requested graph
             // traversal. Unrequested relationship holders remain detached below.
-            org.eclipse.persistence.queries.FetchGroup requested = read.getFetchGroup();
-            if (requested != null && read.getLoadGroup() == null) {
-                read.setLoadGroup(requested.toLoadGroupLoadOnly());
-            }
-            read.setShouldUseDefaultFetchGroup(false);
-            if (read.getFetchGroup() != null) {
-                read.setFetchGroup(null);
-                read.setIsPrepared(false);
-            }
+            read.prepareForDetachedRead();
             Map<String, Object> hints = QueryHintsHandler.get(original);
             Object storeMode = hints != null && hints.containsKey(QueryHints.CACHE_STORE_MODE)
                     ? hints.get(QueryHints.CACHE_STORE_MODE) : getCacheStoreMode();
@@ -985,6 +977,12 @@ public class EntityAgentImpl implements EntityAgent, QueryExecutionContext {
         }
     }
 
+    /** Inspect an agent identity reference without resolving or loading it. */
+    static boolean isUnfetchedReference(Object entity) {
+        return entity instanceof org.eclipse.persistence.queries.FetchGroupTracker tracker
+                && tracker._persistence_getFetchGroup() instanceof DetachedReferenceGroup;
+    }
+
     private Object loadAssociation(org.eclipse.persistence.mappings.ForeignReferenceMapping mapping,
             org.eclipse.persistence.internal.sessions.AbstractRecord row, AgentCopyGroup copies) {
         org.eclipse.persistence.queries.ReadQuery query = (org.eclipse.persistence.queries.ReadQuery) mapping.getSelectionQuery().clone();
@@ -999,11 +997,7 @@ public class EntityAgentImpl implements EntityAgent, QueryExecutionContext {
         query.dontMaintainCache();
         query.setQueryResultsCachePolicy(null);
         if (query instanceof ObjectLevelReadQuery read) {
-            org.eclipse.persistence.queries.FetchGroup requested = read.getFetchGroup();
-            if (requested != null && read.getLoadGroup() == null) {
-                read.setLoadGroup(requested.toLoadGroupLoadOnly());
-            }
-            read.setShouldUseDefaultFetchGroup(false);
+            read.prepareForDetachedRead();
             read.dontCheckCache();
             read.setShouldRefreshIdentityMapResult(false);
         }

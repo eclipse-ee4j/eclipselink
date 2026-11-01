@@ -39,6 +39,8 @@ import java.security.PrivilegedActionException;
 import java.sql.Time;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
@@ -48,6 +50,7 @@ import java.util.concurrent.TimeUnit;
 
 import jakarta.persistence.CacheRetrieveMode;
 import jakarta.persistence.CacheStoreMode;
+import jakarta.persistence.FetchType;
 
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.DescriptorException;
@@ -1155,6 +1158,30 @@ public class QueryHintsHandler {
         return graph != null ? graph : session.getProject().getAttributeGroups().get(name);
     }
 
+    private static FetchGroup graphFetchGroup(AttributeGroup graph, boolean includeDefaults) {
+        Map<AttributeGroup, FetchGroup> groups = new IdentityHashMap<>();
+        FetchGroup fetchGroup = graph.toFetchGroup(groups);
+        boolean hasExclusions = false;
+        for (Map.Entry<AttributeGroup, FetchGroup> entry : groups.entrySet()) {
+            Set<String> exclusions = new HashSet<>();
+            entry.getKey().getAttributeOptions().forEach((attribute, options) -> {
+                if (options.get(FetchType.class) == FetchType.LAZY) {
+                    exclusions.add(attribute);
+                }
+            });
+            entry.getValue().setShouldIncludeDefaultAttributes(includeDefaults);
+            entry.getValue().setExcludedAttributes(exclusions);
+            hasExclusions |= !exclusions.isEmpty();
+        }
+        return includeDefaults && !hasExclusions ? null : fetchGroup;
+    }
+
+    private static void applyLoadGraph(AttributeGroup graph, ObjectLevelReadQuery query) {
+        // A normal LoadGroup is additive. The optional fetch-group overlay
+        // suppresses explicitly excluded mappings before eager construction.
+        query.setEntityGraphLoadGroup(graph.toLoadGroup(new IdentityHashMap<>(), false), graphFetchGroup(graph, true));
+    }
+
     protected static class FetchGraphHint extends Hint {
         FetchGraphHint() {
             super(QueryHints.JPA_FETCH_GRAPH, "");
@@ -1167,21 +1194,21 @@ public class QueryHintsHandler {
                     if (valueToApply instanceof String){
                         AttributeGroup eg = namedGraph(valueToApply, activeSession);
                         if (eg != null){
-                            FetchGroup fg = eg.toFetchGroup();
+                            FetchGroup fg = graphFetchGroup(eg, false);
                             fg.setShouldLoadAll(true);
-                            ((ObjectLevelReadQuery)query).setFetchGroup(fg);
+                            ((ObjectLevelReadQuery)query).setEntityGraphFetchGroup(fg);
                         }else{
                             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("no_entity_graph_of_name", new Object[]{valueToApply}));
                         }
                     }else if (valueToApply instanceof EntityGraphImpl){
-                        FetchGroup fg = ((EntityGraphImpl)valueToApply).getAttributeGroup().toFetchGroup();
+                        FetchGroup fg = graphFetchGroup(((EntityGraphImpl)valueToApply).getAttributeGroup(), false);
                         fg.setShouldLoadAll(true);
-                        ((ObjectLevelReadQuery)query).setFetchGroup(fg);
+                        ((ObjectLevelReadQuery)query).setEntityGraphFetchGroup(fg);
                     }else{
                         throw new IllegalArgumentException(ExceptionLocalization.buildMessage("not_usable_passed_to_entitygraph_hint", new Object[]{QueryHints.JPA_FETCH_GRAPH, valueToApply}));
                     }
                 } else {
-                    ((ObjectLevelReadQuery)query).setFetchGroup(null);
+                    ((ObjectLevelReadQuery)query).setEntityGraphFetchGroup(null);
                 }
             } else {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
@@ -1268,17 +1295,17 @@ public class QueryHintsHandler {
                     if (valueToApply instanceof String){
                         AttributeGroup eg = namedGraph(valueToApply, activeSession);
                         if (eg != null){
-                            ((ObjectLevelReadQuery)query).setLoadGroup(eg.toLoadGroup());
+                            applyLoadGraph(eg, (ObjectLevelReadQuery)query);
                         }else{
                             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("no_entity_graph_of_name", new Object[]{valueToApply}));
                         }
                     }else if (valueToApply instanceof EntityGraphImpl){
-                        ((ObjectLevelReadQuery)query).setLoadGroup(((EntityGraphImpl)valueToApply).getAttributeGroup().toLoadGroup());
+                        applyLoadGraph(((EntityGraphImpl)valueToApply).getAttributeGroup(), (ObjectLevelReadQuery)query);
                     }else{
                         throw new IllegalArgumentException(ExceptionLocalization.buildMessage("not_usable_passed_to_entitygraph_hint", new Object[]{QueryHints.JPA_LOAD_GRAPH, valueToApply}));
                     }
                 } else {
-                    ((ObjectLevelReadQuery)query).setFetchGroup(null);
+                    ((ObjectLevelReadQuery)query).setEntityGraphLoadGroup(null, null);
                 }
             } else {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));

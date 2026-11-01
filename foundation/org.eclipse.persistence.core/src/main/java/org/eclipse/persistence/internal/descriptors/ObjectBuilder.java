@@ -933,6 +933,11 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
      * Force instantiation to any eager mappings.
      */
     public void instantiateEagerMappings(Object object, AbstractSession session) {
+        instantiateEagerMappings(object, session, null);
+    }
+
+    /** INTERNAL: Apply query-local eager selection while preserving the object's actual fetched state. */
+    public void instantiateEagerMappings(Object object, AbstractSession session, FetchGroup selection) {
         // Force instantiation to eager mappings.
         if (!this.eagerMappings.isEmpty()) {
             FetchGroup fetchGroup = null;
@@ -943,8 +948,16 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             int size = this.eagerMappings.size();
             for (int index = 0; index < size; index++) {
                 DatabaseMapping mapping = this.eagerMappings.get(index);
-                if (fetchGroup == null || fetchGroup.containsAttributeInternal(mapping.getAttributeName())) {
-                    mapping.instantiateAttribute(object, session);
+                if ((fetchGroup == null || fetchGroup.containsAttributeInternal(mapping.getAttributeName()))
+                        && (selection == null || selection.containsAttributeInternal(mapping.getAttributeName()))) {
+                    if (selection != null && session instanceof UnitOfWorkImpl unitOfWork) {
+                        unitOfWork.withGraphCloneSelection(null, selection.getGroup(mapping.getAttributeName()), () -> {
+                            mapping.instantiateAttribute(object, session);
+                            return null;
+                        });
+                    } else {
+                        mapping.instantiateAttribute(object, session);
+                    }
                 }
             }
         }
@@ -982,7 +995,16 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                 };
                 session.getServerPlatform().launchContainerRunnable(runnable);
             } else {
-                mapping.load(object, item, session, fromFetchGroup);
+                FetchGroup selection = session instanceof UnitOfWorkImpl unitOfWork
+                        ? unitOfWork.getGraphCloneSelection(object) : null;
+                if (selection != null) {
+                    ((UnitOfWorkImpl) session).withGraphCloneSelection(null, selection.getGroup(mapping.getAttributeName()), () -> {
+                        mapping.load(object, item, session, fromFetchGroup);
+                        return null;
+                    });
+                } else {
+                    mapping.load(object, item, session, fromFetchGroup);
+                }
             }
         }
     }
@@ -1107,8 +1129,15 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                     if (!query.isRegisteringResults()) {
                         return original;
                     }
+                    FetchGroup graphSelection = query instanceof ObjectLevelReadQuery read && read.getFetchGroup() != null
+                            && read.getFetchGroup().hasGraphOptions() && !query.shouldRefreshIdentityMapResult()
+                            ? read.getExecutionFetchGroup(concreteDescriptor) : null;
+                    boolean freshGraphClone = clone == null && graphSelection != null;
                     if (clone == null) {
-                        clone = unitOfWork.cloneAndRegisterObject(original, parentCacheKey, unitOfWorkCacheKey, concreteDescriptor, refreshOperation);
+                        Object source = original;
+                        UnitOfWorkImpl.RefreshOperation operation = refreshOperation;
+                        clone = unitOfWork.withGraphCloneSelection(source, graphSelection,
+                                () -> unitOfWork.cloneAndRegisterObject(source, parentCacheKey, unitOfWorkCacheKey, concreteDescriptor, operation));
                         // TODO-dclarke: At this point the clones do not have their fetch-group specified
                         // relationship attributes loaded
                     }
@@ -1116,7 +1145,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                     //fetch group manager control fetch group support
                     if (concreteDescriptor.hasFetchGroupManager()) {
                         //if the object is already registered in uow, but it's partially fetched (fetch group case)
-                        if (concreteDescriptor.getFetchGroupManager().shouldWriteInto(original, clone)) {
+                        if (!freshGraphClone && concreteDescriptor.getFetchGroupManager().shouldWriteInto(original, clone)) {
                             //there might be cases when reverting/refreshing clone is needed.
                             concreteDescriptor.getFetchGroupManager().writePartialIntoClones(original, clone, unitOfWork.getBackupClone(clone, concreteDescriptor), unitOfWork);
                         }
@@ -1235,10 +1264,25 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                 if (isProtected && (cacheKey != null)) {
                     cacheForeignKeyValues(databaseRow, cacheKey, session);
                 }
-                if (shouldMaintainCache && !shouldStoreBypassCache) {
+                boolean detachedGraph = query instanceof ObjectLevelReadQuery read
+                        && read.shouldRetainUnfetchedRelationships();
+                if ((shouldMaintainCache && !shouldStoreBypassCache) || detachedGraph) {
                     // Set the fetch group to the domain object, after built.
                     if ((fetchGroup != null) && concreteDescriptor.hasFetchGroupManager()) {
                         EntityFetchGroup entityFetchGroup = concreteDescriptor.getFetchGroupManager().getEntityFetchGroup(fetchGroup);
+                        if (detachedGraph && entityFetchGroup != null) {
+                            Set<String> fetched = new HashSet<>(entityFetchGroup.getAttributeNames());
+                            for (DatabaseMapping mapping : concreteDescriptor.getMappings()) {
+                                if (!fetched.contains(mapping.getAttributeName())
+                                        && mapping instanceof ForeignReferenceMapping reference && reference.usesIndirection()
+                                        && reference.getIndirectionPolicy().objectIsInstantiated(mapping.getAttributeValueFromObject(domainObject))) {
+                                    // A lifecycle callback may already have accessed the
+                                    // relationship. Preserve that state in the detached copy.
+                                    fetched.add(mapping.getAttributeName());
+                                }
+                            }
+                            entityFetchGroup = concreteDescriptor.getFetchGroupManager().getEntityFetchGroup(fetched);
+                        }
                         if (entityFetchGroup !=null){
                             entityFetchGroup.setOnEntity(domainObject, session);
                         }
@@ -4431,9 +4475,36 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
      * The domainObject sent as parameter is always a copy from the parent of unit of work.
      */
     public void populateAttributesForClone(Object original, CacheKey cacheKey, Object clone, Integer refreshCascade, AbstractSession cloningSession) {
+        populateAttributesForClone(original, cacheKey, clone, refreshCascade, cloningSession, null);
+    }
+
+    /** INTERNAL: Build actual deferred state for graph-excluded relationships in a fresh managed clone. */
+    public void populateAttributesForClone(Object original, CacheKey cacheKey, Object clone, Integer refreshCascade,
+            AbstractSession cloningSession, FetchGroup selection) {
         List<DatabaseMapping> mappings = getCloningMappings();
         int size = mappings.size();
-        if (this.descriptor.hasFetchGroupManager() && this.descriptor.getFetchGroupManager().isPartialObject(original)) {
+        if (selection != null && this.descriptor.hasFetchGroupManager()) {
+            FetchGroupManager manager = this.descriptor.getFetchGroupManager();
+            FetchGroup originalGroup = manager.getObjectFetchGroup(original);
+            Set<String> fetched = new HashSet<>((originalGroup == null
+                    ? manager.createFullFetchGroup() : originalGroup).getAttributeNames());
+            for (DatabaseMapping mapping : mappings) {
+                String attribute = mapping.getAttributeName();
+                if (!manager.isAttributeFetched(original, attribute)) {
+                    continue;
+                }
+                if (!selection.containsAttributeInternal(attribute)
+                        && mapping instanceof ForeignReferenceMapping reference && !reference.usesIndirection()) {
+                    // A shallow copy may still contain the original reference.
+                    // Leave genuinely absent state for the fetch-group accessor.
+                    mapping.setAttributeValueInObject(clone, null);
+                    fetched.remove(attribute);
+                } else {
+                    mapping.buildClone(original, cacheKey, clone, refreshCascade, cloningSession);
+                }
+            }
+            manager.setObjectFetchGroup(clone, manager.getEntityFetchGroup(fetched), cloningSession);
+        } else if (this.descriptor.hasFetchGroupManager() && this.descriptor.getFetchGroupManager().isPartialObject(original)) {
             FetchGroupManager fetchGroupManager = this.descriptor.getFetchGroupManager();
             for (int index = 0; index < size; index++) {
                 DatabaseMapping mapping = mappings.get(index);
