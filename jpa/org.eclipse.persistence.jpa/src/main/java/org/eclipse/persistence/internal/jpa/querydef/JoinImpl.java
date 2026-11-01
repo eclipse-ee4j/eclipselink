@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -115,8 +115,8 @@ public class JoinImpl<Z, X> extends FromImpl<Z, X> implements Join<Z, X>, Fetch<
 
     @Override
     public JoinImpl<Z, X> on(Expression<Boolean> restriction) {
-        on = restriction;
-        org.eclipse.persistence.expressions.Expression onExp = restriction == null ? null : ((ExpressionImpl) restriction).getCurrentNode();
+        on = BooleanExpressionImpl.restriction(restriction);
+        org.eclipse.persistence.expressions.Expression onExp = on == null ? null : ((ExpressionImpl) on).getCurrentNode();
         ((PathImpl) pathParent).getCurrentNode().join(currentNode, onExp);
 
         return this;

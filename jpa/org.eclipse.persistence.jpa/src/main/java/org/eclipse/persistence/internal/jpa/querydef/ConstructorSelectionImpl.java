@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -52,7 +52,7 @@ public class ConstructorSelectionImpl<X> extends CompoundSelectionImpl<X> {
                 item.addItem(((ConstructorSelectionImpl<?>)selection).translate());
             }else{
                 ReportItem reportItem = new ReportItem(item.getName()+item.getReportItems().size(),
-                        ((SelectionImpl<?>)selection).getCurrentNode());
+                        BooleanExpressionImpl.selectionNode(selection));
                 //bug: 297385 - set type here because the selection already knows the type
                 reportItem.setResultType(selection.getJavaType());
                 item.addItem(reportItem);

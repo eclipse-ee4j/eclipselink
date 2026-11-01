@@ -13,6 +13,9 @@
  */
 package org.eclipse.persistence.testing.tests.junit.platform.database;
 
+import java.io.StringWriter;
+import java.lang.reflect.Proxy;
+import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,12 +32,42 @@ import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.platform.database.PostgreSQL10Platform;
 import org.eclipse.persistence.platform.database.PostgreSQLPlatform;
 import org.eclipse.persistence.queries.ReportQuery;
+import org.eclipse.persistence.queries.SQLCall;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.junit.Assert;
 import org.junit.Test;
 
 public class PostgreSQLPlatformTest {
+
+    @Test
+    public void testBooleanLiteralsAreTypedAndOtherRepresentationsArePreserved() {
+        Object[] values = {Boolean.TRUE, Boolean.FALSE, null, 7, 3, "Y", "N"};
+        String[] expected = {"TRUE", "FALSE", "NULL", "7", "3", "'Y'", "'N'"};
+        for (PostgreSQLPlatform platform : platforms()) {
+            for (int index = 0; index < values.length; index++) {
+                StringWriter writer = new StringWriter();
+                platform.appendParameter(new SQLCall(), writer, values[index]);
+                Assert.assertEquals(expected[index], writer.toString());
+            }
+        }
+    }
+
+    @Test
+    public void testBooleanParametersRetainJdbcBooleanBinding() throws Exception {
+        for (PostgreSQLPlatform platform : platforms()) {
+            List<String> calls = new ArrayList<>();
+            PreparedStatement statement = (PreparedStatement) Proxy.newProxyInstance(
+                    getClass().getClassLoader(), new Class<?>[] {PreparedStatement.class},
+                    (proxy, method, args) -> {
+                        calls.add(method.getName() + ":" + args[0] + ":" + args[1]);
+                        return null;
+                    });
+            platform.setParameterValueInDatabaseCall(true, statement, 1, null);
+            platform.setParameterValueInDatabaseCall(false, statement, 2, null);
+            Assert.assertEquals(List.of("setBoolean:1:true", "setBoolean:2:false"), calls);
+        }
+    }
 
     @Test
     public void testLocateFromPreservesNullsAndOriginalOperands() {

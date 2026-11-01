@@ -144,7 +144,7 @@ public class PathImpl<X> extends ExpressionImpl<X> implements Path<X>, Cloneable
 
     @Override
     public BooleanExpression get(BooleanAttribute<? super X> attribute) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        return new BooleanExpressionImpl((ExpressionImpl<Boolean>) get((SingularAttribute<? super X, Boolean>) attribute));
     }
 
     @Override
