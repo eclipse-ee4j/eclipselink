@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -413,6 +413,11 @@ public class DatabaseField implements Cloneable, Serializable, CoreField  {
      */
     public int getSqlType() {
         return sqlType;
+    }
+
+    /** Whether result-set metadata may be cached for subsequent executions. */
+    public boolean shouldCacheSqlType() {
+        return true;
     }
 
     /**

@@ -1815,7 +1815,11 @@ public class EntityAgentImpl implements EntityAgent, QueryExecutionContext {
     @Override
     public <T> TypedQuery<T> createQuery(String text, Class<T> type) {
         verifyOpen();
-        return createQuery(text).ofType(Objects.requireNonNull(type));
+        try {
+            return new EJBQueryImpl<>(Objects.requireNonNull(text), this, Objects.requireNonNull(type));
+        } catch (org.eclipse.persistence.exceptions.JPQLException failure) {
+            throw new IllegalArgumentException(failure.getMessage(), failure);
+        }
     }
 
     @Override
@@ -1854,7 +1858,7 @@ public class EntityAgentImpl implements EntityAgent, QueryExecutionContext {
     @Override
     public <T> TypedQuery<T> createNamedQuery(String name, Class<T> type) {
         verifyOpen();
-        return createNamedQuery(name).ofType(Objects.requireNonNull(type));
+        return new EJBQueryImpl<>(Objects.requireNonNull(name), this, true, Objects.requireNonNull(type));
     }
 
     @Override

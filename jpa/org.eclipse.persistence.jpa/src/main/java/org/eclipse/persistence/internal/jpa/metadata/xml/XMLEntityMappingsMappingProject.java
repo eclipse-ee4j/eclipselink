@@ -2509,6 +2509,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getHintMapping());
         descriptor.addMapping(getLockModeMapping());
         descriptor.addMapping(getNameAttributeMapping());
+        descriptor.addMapping(getResultClassAttributeMapping());
 
         XMLDirectMapping lockScopeMapping = new XMLDirectMapping();
         lockScopeMapping.setAttributeName("m_lockScope");

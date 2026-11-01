@@ -166,6 +166,7 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
 
         if (isNamedQuery) {
             this.queryName = queryDescription;
+            adaptNamedResultClass(resultClass);
         } else {
             if (databaseQuery == null) {
                 AbstractSession session = executionContext.getSession();
@@ -202,15 +203,36 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
         }
         if (isNamedQuery) {
             queryName = queryDescription;
+            adaptNamedResultClass(resultClass);
         } else {
             AbstractSession session = context.getSession();
             databaseQuery = buildEJBQLDatabaseQuery(null, queryDescription, session, null, null,
                     session.getDatasourcePlatform().getConversionManager().getLoader(), resultClass);
         }
         inheritEntityManagerHints();
-        if (isNamedQuery && resultClass != null) {
+        if (isNamedQuery && resultClass != null && !databaseQuery.isJPQLCallQuery()) {
             ofType(resultClass);
         }
+    }
+
+    private void adaptNamedResultClass(Class<?> resultClass) {
+        if (resultClass != null) {
+            DatabaseQuery named = getDatabaseQueryInternal();
+            databaseQuery = JPQLResultClass.adapt(named, resultClass, executionContext.getSession());
+            isShared = databaseQuery == named;
+            initializeFromDatabaseQuery();
+        }
+    }
+
+    @Override
+    protected List<Object> processParameters() {
+        DatabaseQuery original = getDatabaseQueryInternal();
+        DatabaseQuery resolved = JPQLResultClass.resolve(original, executionContext.getSession(), parameterValues, parameterTypes);
+        if (resolved != original) {
+            databaseQuery = resolved;
+            isShared = false;
+        }
+        return super.processParameters();
     }
 
     /**
@@ -272,20 +294,16 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
                 if (readAllQuery.hasJoining() && (readAllQuery.getDistinctState() == DONT_USE_DISTINCT)) {
                     readAllQuery.setShouldFilterDuplicates(false);
                 }
-                if (databaseQuery.isReportQuery()) {
-                    ReportQuery reportQuery = (ReportQuery) databaseQuery;
-                    reportQuery.setResultClass(resultClass);
-                    Class<?> pkClass = reportQuery.getDescriptor().getCMPPolicy().getPKClass();
-                    if (pkClass != null && pkClass == reportQuery.getResultClass() && reportQuery.hasIDFunctionSelectItemOnly()) {
-                        reportQuery.setReturnPKClassInstance();
-                    }
-                }
             } else if (databaseQuery.isModifyQuery()) {
                 // By default, do not batch modify queries, as row count must be returned.
                 ((ModifyQuery)databaseQuery).setIsBatchExecutionSupported(false);
             }
 
             ((JPQLCallQueryMechanism) databaseQuery.getQueryMechanism()).getJPQLCall().setIsParsed(true);
+
+            if (!isCacheable) {
+                databaseQuery = JPQLResultClass.adapt(databaseQuery, resultClass, session);
+            }
 
             // Apply the lock mode.
             if (lockMode != null && !lockMode.name().equals(ObjectLevelReadQuery.NONE)) {
@@ -328,7 +346,7 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
             }
         }
 
-        return databaseQuery;
+        return isCacheable ? JPQLResultClass.adapt(databaseQuery, resultClass, session) : databaseQuery;
     }
 
     /**
@@ -981,6 +999,7 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
             throw new IllegalStateException("A statement does not have a result count");
         }
         List<Object> values = processParameters();
+        original = getDatabaseQueryInternal();
         if (isFlushModeAUTO()) {
             performPreQueryFlush();
         }
@@ -1003,6 +1022,15 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
             // a function, constant or scalar subquery instead of a mapped field.
             List<Object> fields = select.getFields();
             for (int index = 0; index < fields.size(); index++) {
+                if (fields.get(index) instanceof org.eclipse.persistence.internal.expressions.ParameterExpression parameter) {
+                    // A scalar parameter is constant across all rows, including null.
+                    // Replacing it only in the count projection preserves DISTINCT
+                    // equivalence without an untyped parameter in a derived column.
+                    org.eclipse.persistence.internal.expressions.ConstantExpression constant =
+                            (org.eclipse.persistence.internal.expressions.ConstantExpression) parameter.getBuilder().value(1);
+                    constant.setCanBind(false);
+                    fields.set(index, constant);
+                }
                 if (fields.get(index) instanceof Expression expression && !expression.isDataExpression()
                         && !(expression instanceof FunctionExpression function
                                 && function.getOperator().getSelector() == ExpressionOperator.As)) {
@@ -1022,7 +1050,10 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
         DataReadQuery count = new DataReadQuery();
         count.setCall(call);
         count.setArguments(new ArrayList<>(original.getArguments()));
-        count.setArgumentTypes(new ArrayList<>(original.getArgumentTypes()));
+        List<Class<?>> argumentTypes = count.getArgumentTypes();
+        argumentTypes.clear();
+        argumentTypes.addAll(original.getArgumentTypes());
+        count.setArgumentTypeNames(new ArrayList<>(original.getArgumentTypeNames()));
         count.setResultType(DataReadQuery.VALUE);
         count.setProperties(new HashMap<>(original.getProperties()));
         count.setIsPrepared(true);
@@ -1181,6 +1212,10 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
             return mappingQuery.getResultClass();
         }
         if (query instanceof ReportQuery report) {
+            Class<?> declared = JPQLResultClass.declaredResultClass(query);
+            if (declared != null) {
+                return declared;
+            }
             if (report.getResultClass() != null) {
                 return report.getResultClass();
             }

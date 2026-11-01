@@ -1164,8 +1164,12 @@ public abstract class DatabaseCall extends DatasourceCall {
                         // If the value is null, the field is passed as the value so the type can be obtained from the field.
                         if ((translatedValue == null) && (field != null)) {
                             if (!this.query.hasNullableArguments() || !this.query.getNullableArguments().contains(field)) {
-                                DatabaseField fieldFromRow = translationRow.getField(field);
-                                translatedValue = chooseMostSpecificFieldForNullBinding(field, fieldFromRow);
+                                if (parameter instanceof ParameterExpression expression) {
+                                    translatedValue = expression.getNullValueField(translationRow);
+                                } else {
+                                    DatabaseField fieldFromRow = translationRow.getField(field);
+                                    translatedValue = chooseMostSpecificFieldForNullBinding(field, fieldFromRow);
+                                }
                                 // The field from the row is used, as the calls field may not have the type,
                                 // but if the field is missing the calls field may also have the type.
                                 if (translatedValue == null) {
