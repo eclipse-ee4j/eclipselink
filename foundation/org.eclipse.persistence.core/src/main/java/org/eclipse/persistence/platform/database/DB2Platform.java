@@ -65,6 +65,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.time.OffsetDateTime;
 import java.time.OffsetTime;
 import java.util.ArrayList;
@@ -1777,6 +1778,30 @@ public class DB2Platform extends DatabasePlatform {
     @Override
     public boolean allowBindingForSelectClause() {
         return false;
+    }
+
+    @Override
+    public void appendNullParameter(Writer writer, DatabaseField field) throws IOException {
+        // DB2 and Derby require a type for standalone NULL values. The fallback
+        // types only this SQL null; it must not infer a Java type for later bindings.
+        String sqlType = switch (getJDBCType(field)) {
+            case Types.BIT, Types.BOOLEAN, Types.TINYINT, Types.SMALLINT -> "SMALLINT";
+            case Types.INTEGER -> "INTEGER";
+            case Types.BIGINT -> "BIGINT";
+            case Types.REAL, Types.FLOAT -> "REAL";
+            case Types.DOUBLE -> "DOUBLE";
+            case Types.NUMERIC, Types.DECIMAL -> "DECIMAL(31, 10)";
+            case Types.CHAR, Types.NCHAR -> "CHAR(1)";
+            case Types.DATE -> "DATE";
+            case Types.TIME, Types.TIME_WITH_TIMEZONE -> "TIME";
+            case Types.TIMESTAMP, Types.TIMESTAMP_WITH_TIMEZONE -> "TIMESTAMP";
+            case Types.BINARY, Types.VARBINARY, Types.LONGVARBINARY, Types.BLOB -> "BLOB(1)";
+            case Types.CLOB, Types.NCLOB -> "CLOB(1)";
+            default -> "VARCHAR(1)";
+        };
+        writer.write("CAST(NULL AS ");
+        writer.write(sqlType);
+        writer.write(")");
     }
 
     /**

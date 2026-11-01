@@ -43,10 +43,12 @@ import org.eclipse.persistence.sessions.Session;
 
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Array;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.util.AbstractSet;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -85,6 +87,45 @@ public class ReportQueryResult implements Serializable, Map {
     /** If an objectLevel distinct is used then generate unique key for this result */
     // GF_ISSUE_395
     protected StringBuffer key;
+
+    private List<Object> distinctKeySegments;
+    private int previousEntryEnd;
+
+    /** A direct-map ENTRY is a pair of values, not a delimited string or an Association identity. */
+    static final class DistinctEntryKey implements Serializable {
+        private static final long serialVersionUID = 1L;
+        private final Object[] values;
+
+        DistinctEntryKey(Object key, Object value) {
+            this.values = new Object[]{snapshotArray(key), snapshotArray(value)};
+        }
+
+        private static Object snapshotArray(Object value) {
+            if (value == null || !value.getClass().isArray()) {
+                return value;
+            }
+            int length = Array.getLength(value);
+            Object snapshot = Array.newInstance(value.getClass().getComponentType(), length);
+            if (value instanceof Object[] objects) {
+                for (int index = 0; index < length; index++) {
+                    Array.set(snapshot, index, snapshotArray(objects[index]));
+                }
+            } else {
+                System.arraycopy(value, 0, snapshot, 0, length);
+            }
+            return snapshot;
+        }
+
+        @Override
+        public boolean equals(Object object) {
+            return object instanceof DistinctEntryKey other && Arrays.deepEquals(values, other.values);
+        }
+
+        @Override
+        public int hashCode() {
+            return Arrays.deepHashCode(values);
+        }
+    }
 
     /**
      * INTERNAL:
@@ -259,10 +300,44 @@ public class ReportQueryResult implements Serializable, Map {
 
                 value = processItemFromMapping(query, row, mapping, item, itemIndex);
 
+                boolean mapEntry = mapping.isDirectCollectionMapping()
+                        && item.getAttributeExpression() instanceof MapEntryExpression entry
+                        && entry.shouldReturnMapEntry();
+                Object entryKey = null;
+                if (mapEntry) {
+                    DirectCollectionMapping collection = (DirectCollectionMapping) mapping;
+                    List<DatabaseField> keyFields = collection.getContainerPolicy().getAdditionalFieldsForJoin(collection);
+                    int end = itemIndex + collection.getSelectFields().size() + (keyFields == null ? 0 : keyFields.size());
+                    if (end > rowSize) {
+                        throw QueryException.reportQueryResultSizeMismatch(end, rowSize);
+                    }
+                    // Restrict key lookup to this occurrence: another selected entry
+                    // may use the same mapped fields with a different join alias.
+                    AbstractRecord entryRow = new DatabaseRecord(
+                            new NonSynchronizedSubVector<>(row.getFields(), itemIndex, end),
+                            new NonSynchronizedSubVector<>(row.getValues(), itemIndex, end));
+                    entryKey = mapping.getContainerPolicy().buildKey(entryRow, query, null, query.getSession(), true);
+                }
+
                 // GF_ISSUE_395+
                 if (this.key != null) {
+                    if (mapEntry) {
+                        if (distinctKeySegments == null) {
+                            distinctKeySegments = new ArrayList<>();
+                        }
+                        distinctKeySegments.add(this.key.substring(previousEntryEnd));
+                        distinctKeySegments.add(new DistinctEntryKey(entryKey, value));
+                    }
                     this.key.append(value);
                     this.key.append("_");
+                    if (mapEntry) {
+                        this.key.append(entryKey);
+                        this.key.append("_");
+                        previousEntryEnd = this.key.length();
+                    }
+                }
+                if (mapEntry) {
+                    value = new Association(entryKey, value);
                 }
             } else if (descriptor != null) {
                 // Item is for an object result.
@@ -603,6 +678,16 @@ public class ReportQueryResult implements Serializable, Map {
             return this.key.toString();
         }
         return null;
+    }
+
+    /** Preserve legacy scalar keys, separating only the new ENTRY components structurally. */
+    Object getDistinctResultKey() {
+        if (distinctKeySegments == null) {
+            return getResultKey();
+        }
+        List<Object> segments = new ArrayList<>(distinctKeySegments);
+        segments.add(this.key.substring(previousEntryEnd));
+        return List.copyOf(segments);
     }
 
     /**

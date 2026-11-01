@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019, 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -60,13 +60,13 @@ public class TestParameterBinding {
         EntityManager em = forceBindEMF.createEntityManager();
         try {
             //1: Test COALESCE function with positional parameter and typed parameter
-            TypedQuery<GenericEntity> query = em.createQuery("SELECT 1 FROM GenericEntity s "
-                    + "WHERE ABS(COALESCE(s.itemInteger1, ?1)) >= ?2", GenericEntity.class);
+            TypedQuery<Integer> query = em.createQuery("SELECT 1 FROM GenericEntity s "
+                    + "WHERE ABS(COALESCE(s.itemInteger1, ?1)) >= ?2", Integer.class);
             query.setParameter(1, 0);
             query.setParameter(2, 99);
             query.getResultList();
 
-            DatabaseCall call = ((JpaQuery<GenericEntity>)query).getDatabaseQuery().getCall();
+            DatabaseCall call = ((JpaQuery<?>)query).getDatabaseQuery().getCall();
             Assert.assertFalse("Expected query parameter binding to not be set for the DatabaseCall", call.isUsesBindingSet());
 
             DatabasePlatform pl = (DatabasePlatform)forceBindEMF.unwrap(EntityManagerFactoryImpl.class).getDatabaseSession().getDatasourcePlatform();
@@ -91,11 +91,11 @@ public class TestParameterBinding {
         em = forceBindEMF.createEntityManager();
         try {
             //2: Test COALESCE function with literal and typed parameter
-            TypedQuery<GenericEntity> query = em.createQuery("SELECT 1 FROM GenericEntity s "
-                    + "WHERE ABS(COALESCE(s.itemInteger1, 0)) >= 99", GenericEntity.class);
+            TypedQuery<Integer> query = em.createQuery("SELECT 1 FROM GenericEntity s "
+                    + "WHERE ABS(COALESCE(s.itemInteger1, 0)) >= 99", Integer.class);
             query.getResultList();
 
-            DatabaseCall call = ((JpaQuery<GenericEntity>)query).getDatabaseQuery().getCall();
+            DatabaseCall call = ((JpaQuery<?>)query).getDatabaseQuery().getCall();
             Assert.assertFalse("Expected query parameter binding to not be set for the DatabaseCall", call.isUsesBindingSet());
 
             DatabasePlatform pl = (DatabasePlatform)forceBindEMF.unwrap(EntityManagerFactoryImpl.class).getDatabaseSession().getDatasourcePlatform();
@@ -120,14 +120,14 @@ public class TestParameterBinding {
         em = forceBindEMF.createEntityManager();
         try {
             //3: Test COALESCE function with all arguments as parameters
-            TypedQuery<GenericEntity> query = em.createQuery("SELECT 1 FROM GenericEntity s "
-                    + "WHERE ABS(COALESCE(?1, ?2)) >= ?3", GenericEntity.class);
+            TypedQuery<Integer> query = em.createQuery("SELECT 1 FROM GenericEntity s "
+                    + "WHERE ABS(COALESCE(?1, ?2)) >= ?3", Integer.class);
             query.setParameter(1, 1);
             query.setParameter(2, 20);
             query.setParameter(3, 300);
             query.getResultList();
 
-            DatabaseCall call = ((JpaQuery<GenericEntity>)query).getDatabaseQuery().getCall();
+            DatabaseCall call = ((JpaQuery<?>)query).getDatabaseQuery().getCall();
             Assert.assertFalse("Expected query parameter binding to not be set for the DatabaseCall", call.isUsesBindingSet());
 
             DatabasePlatform pl = (DatabasePlatform)forceBindEMF.unwrap(EntityManagerFactoryImpl.class).getDatabaseSession().getDatasourcePlatform();
@@ -176,12 +176,12 @@ public class TestParameterBinding {
         EntityManager em = forceBindEMF.createEntityManager();
         try {
             //1: Test ABS function with parameter
-            TypedQuery<GenericEntity> query = em.createQuery("SELECT 2, COUNT(ABS(?1)) FROM GenericEntity s "
-                    + "WHERE s.itemInteger1 = ABS(?1)", GenericEntity.class);
+            TypedQuery<Object[]> query = em.createQuery("SELECT 2, COUNT(ABS(?1)) FROM GenericEntity s "
+                    + "WHERE s.itemInteger1 = ABS(?1)", Object[].class);
             query.setParameter(1, -3);
             query.getResultList();
 
-            DatabaseCall call = ((JpaQuery<GenericEntity>)query).getDatabaseQuery().getCall();
+            DatabaseCall call = ((JpaQuery<?>)query).getDatabaseQuery().getCall();
             Assert.assertFalse("Expected query parameter binding to not be set for the DatabaseCall", call.isUsesBindingSet());
 
             DatabasePlatform pl = (DatabasePlatform)forceBindEMF.unwrap(EntityManagerFactoryImpl.class).getDatabaseSession().getDatasourcePlatform();
@@ -219,11 +219,11 @@ public class TestParameterBinding {
         em = forceBindEMF.createEntityManager();
         try {
             //2: Test ABS function with literal
-            TypedQuery<GenericEntity> query = em.createQuery("SELECT 2, COUNT(ABS(-3)) FROM GenericEntity s "
-                    + "WHERE s.itemInteger1 = ABS(-3)", GenericEntity.class);
+            TypedQuery<Object[]> query = em.createQuery("SELECT 2, COUNT(ABS(-3)) FROM GenericEntity s "
+                    + "WHERE s.itemInteger1 = ABS(-3)", Object[].class);
             query.getResultList();
 
-            DatabaseCall call = ((JpaQuery<GenericEntity>)query).getDatabaseQuery().getCall();
+            DatabaseCall call = ((JpaQuery<?>)query).getDatabaseQuery().getCall();
             Assert.assertFalse("Expected query parameter binding to not be set for the DatabaseCall", call.isUsesBindingSet());
 
             DatabasePlatform pl = (DatabasePlatform)forceBindEMF.unwrap(EntityManagerFactoryImpl.class).getDatabaseSession().getDatasourcePlatform();
@@ -251,14 +251,14 @@ public class TestParameterBinding {
         EntityManager em = forceBindEMF.createEntityManager();
         try {
             //1: Test string CONCAT with untyped parameter and literal
-            TypedQuery<GenericEntity> query = em.createQuery("SELECT 2 FROM GenericEntity s "
+            TypedQuery<Integer> query = em.createQuery("SELECT 2 FROM GenericEntity s "
                     + "WHERE s.itemString1 = TRIM(CONCAT(?1 , '-'))"
-                    + "AND s.itemString1 = TRIM(CONCAT(?2 , '-'))", GenericEntity.class);
+                    + "AND s.itemString1 = TRIM(CONCAT(?2 , '-'))", Integer.class);
             query.setParameter(1, "1");
             query.setParameter(2, "99");
             query.getResultList();
 
-            DatabaseCall call = ((JpaQuery<GenericEntity>)query).getDatabaseQuery().getCall();
+            DatabaseCall call = ((JpaQuery<?>)query).getDatabaseQuery().getCall();
             Assert.assertFalse("Expected query parameter binding to not be set for the DatabaseCall", call.isUsesBindingSet());
 
             DatabasePlatform pl = (DatabasePlatform)forceBindEMF.unwrap(EntityManagerFactoryImpl.class).getDatabaseSession().getDatasourcePlatform();
@@ -300,14 +300,14 @@ public class TestParameterBinding {
         em = forceBindEMF.createEntityManager();
         try {
             //1: Test string CONCAT with untyped parameter and untyped parameter
-            TypedQuery<GenericEntity> query = em.createQuery("SELECT 2 FROM GenericEntity s "
+            TypedQuery<Integer> query = em.createQuery("SELECT 2 FROM GenericEntity s "
                     + "WHERE s.itemString1 = TRIM(CONCAT(?1 , ?1))"
-                    + "AND s.itemString1 = TRIM(CONCAT(?2 , ?2))", GenericEntity.class);
+                    + "AND s.itemString1 = TRIM(CONCAT(?2 , ?2))", Integer.class);
             query.setParameter(1, "1");
             query.setParameter(2, "99");
             query.getResultList();
 
-            DatabaseCall call = ((JpaQuery<GenericEntity>)query).getDatabaseQuery().getCall();
+            DatabaseCall call = ((JpaQuery<?>)query).getDatabaseQuery().getCall();
             Assert.assertFalse("Expected query parameter binding to not be set for the DatabaseCall", call.isUsesBindingSet());
 
             DatabasePlatform pl = (DatabasePlatform)forceBindEMF.unwrap(EntityManagerFactoryImpl.class).getDatabaseSession().getDatasourcePlatform();
@@ -359,7 +359,7 @@ public class TestParameterBinding {
             query.setParameter(2, 33);
             query.getResultList();
 
-            DatabaseCall call = ((JpaQuery<GenericEntity>)query).getDatabaseQuery().getCall();
+            DatabaseCall call = ((JpaQuery<?>)query).getDatabaseQuery().getCall();
             Assert.assertFalse("Expected query parameter binding to not be set for the DatabaseCall", call.isUsesBindingSet());
 
             DatabasePlatform pl = (DatabasePlatform)forceBindEMF.unwrap(EntityManagerFactoryImpl.class).getDatabaseSession().getDatasourcePlatform();
@@ -388,7 +388,7 @@ public class TestParameterBinding {
                     + "WHERE s.itemString1 = 'Test' AND EXISTS (SELECT 1 FROM GenericEntity e WHERE s.itemInteger1 = 33 )", GenericEntity.class);
             query.getResultList();
 
-            DatabaseCall call = ((JpaQuery<GenericEntity>)query).getDatabaseQuery().getCall();
+            DatabaseCall call = ((JpaQuery<?>)query).getDatabaseQuery().getCall();
             Assert.assertFalse("Expected query parameter binding to not be set for the DatabaseCall", call.isUsesBindingSet());
 
             DatabasePlatform pl = (DatabasePlatform)forceBindEMF.unwrap(EntityManagerFactoryImpl.class).getDatabaseSession().getDatasourcePlatform();
@@ -416,12 +416,12 @@ public class TestParameterBinding {
         EntityManager em = forceBindEMF.createEntityManager();
         try {
             //Test numerical expression with untyped parameters + typed parameters
-            TypedQuery<GenericEntity> query = em.createQuery("SELECT (s.itemInteger1 + ?4) FROM GenericEntity s "
-                    + "WHERE (s.itemInteger1 + ?4) > 1", GenericEntity.class);
+            TypedQuery<Integer> query = em.createQuery("SELECT (s.itemInteger1 + ?4) FROM GenericEntity s "
+                    + "WHERE (s.itemInteger1 + ?4) > 1", Integer.class);
             query.setParameter(4, 2);
             query.getResultList();
 
-            DatabaseCall call = ((JpaQuery<GenericEntity>)query).getDatabaseQuery().getCall();
+            DatabaseCall call = ((JpaQuery<?>)query).getDatabaseQuery().getCall();
             Assert.assertFalse("Expected query parameter binding to not be set for the DatabaseCall", call.isUsesBindingSet());
 
             DatabasePlatform pl = (DatabasePlatform)forceBindEMF.unwrap(EntityManagerFactoryImpl.class).getDatabaseSession().getDatasourcePlatform();
@@ -442,13 +442,13 @@ public class TestParameterBinding {
         em = forceBindEMF.createEntityManager();
         try {
             //Test numerical expression with parameters
-            TypedQuery<GenericEntity> query = em.createQuery("SELECT (?3 + ?4) FROM GenericEntity s "
-                    + "WHERE (?3 + ?4) > 1", GenericEntity.class);
+            TypedQuery<Integer> query = em.createQuery("SELECT (?3 + ?4) FROM GenericEntity s "
+                    + "WHERE (?3 + ?4) > 1", Integer.class);
             query.setParameter(3, 2);
             query.setParameter(4, 2);
             query.getResultList();
 
-            DatabaseCall call = ((JpaQuery<GenericEntity>)query).getDatabaseQuery().getCall();
+            DatabaseCall call = ((JpaQuery<?>)query).getDatabaseQuery().getCall();
             Assert.assertFalse("Expected query parameter binding to not be set for the DatabaseCall", call.isUsesBindingSet());
 
             DatabasePlatform pl = (DatabasePlatform)forceBindEMF.unwrap(EntityManagerFactoryImpl.class).getDatabaseSession().getDatasourcePlatform();
@@ -482,11 +482,11 @@ public class TestParameterBinding {
         em = forceBindEMF.createEntityManager();
         try {
             //Test numerical expression with literals
-            TypedQuery<GenericEntity> query = em.createQuery("SELECT (s.itemInteger1 + 4) FROM GenericEntity s "
-                    + "WHERE ABS(s.itemInteger1 + 4) > 1", GenericEntity.class);
+            TypedQuery<Integer> query = em.createQuery("SELECT (s.itemInteger1 + 4) FROM GenericEntity s "
+                    + "WHERE ABS(s.itemInteger1 + 4) > 1", Integer.class);
             query.getResultList();
 
-            DatabaseCall call = ((JpaQuery<GenericEntity>)query).getDatabaseQuery().getCall();
+            DatabaseCall call = ((JpaQuery<?>)query).getDatabaseQuery().getCall();
             Assert.assertFalse("Expected query parameter binding to not be set for the DatabaseCall", call.isUsesBindingSet());
 
             DatabasePlatform pl = (DatabasePlatform)forceBindEMF.unwrap(EntityManagerFactoryImpl.class).getDatabaseSession().getDatasourcePlatform();
@@ -510,15 +510,15 @@ public class TestParameterBinding {
         EntityManager em = forceBindEMF.createEntityManager();
         try {
             //Test all the operands of an IN predicate
-            TypedQuery<GenericEntity> query = em.createQuery("SELECT 2 FROM GenericEntity s "
-                    + "WHERE ?1 IN (?2, ?3, ?4)", GenericEntity.class);
+            TypedQuery<Integer> query = em.createQuery("SELECT 2 FROM GenericEntity s "
+                    + "WHERE ?1 IN (?2, ?3, ?4)", Integer.class);
             query.setParameter(1, 4);
             query.setParameter(2, 4);
             query.setParameter(3, 5);
             query.setParameter(4, 6);
             query.getResultList();
 
-            DatabaseCall call = ((JpaQuery<GenericEntity>)query).getDatabaseQuery().getCall();
+            DatabaseCall call = ((JpaQuery<?>)query).getDatabaseQuery().getCall();
             Assert.assertFalse("Expected query parameter binding to not be set for the DatabaseCall", call.isUsesBindingSet());
 
             DatabasePlatform pl = (DatabasePlatform)forceBindEMF.unwrap(EntityManagerFactoryImpl.class).getDatabaseSession().getDatasourcePlatform();
@@ -560,13 +560,13 @@ public class TestParameterBinding {
         em = forceBindEMF.createEntityManager();
         try {
             //Test the first and second operands of an IN predicate
-            TypedQuery<GenericEntity> query = em.createQuery("SELECT 2 FROM GenericEntity s "
-                    + "WHERE ?1 IN (?2, 'b', 'c')", GenericEntity.class);
+            TypedQuery<Integer> query = em.createQuery("SELECT 2 FROM GenericEntity s "
+                    + "WHERE ?1 IN (?2, 'b', 'c')", Integer.class);
             query.setParameter(1, "a");
             query.setParameter(2, "a");
             query.getResultList();
 
-            DatabaseCall call = ((JpaQuery<GenericEntity>)query).getDatabaseQuery().getCall();
+            DatabaseCall call = ((JpaQuery<?>)query).getDatabaseQuery().getCall();
             Assert.assertFalse("Expected query parameter binding to not be set for the DatabaseCall", call.isUsesBindingSet());
 
             DatabasePlatform pl = (DatabasePlatform)forceBindEMF.unwrap(EntityManagerFactoryImpl.class).getDatabaseSession().getDatasourcePlatform();
@@ -608,13 +608,13 @@ public class TestParameterBinding {
         em = forceBindEMF.createEntityManager();
         try {
             //Test the first operand of an IN predicate and zero or more operands of the IN list except for the first operand of the IN list
-            TypedQuery<GenericEntity> query = em.createQuery("SELECT 2 FROM GenericEntity s "
-                    + "WHERE ?1 IN (5, ?2, 6)", GenericEntity.class);
+            TypedQuery<Integer> query = em.createQuery("SELECT 2 FROM GenericEntity s "
+                    + "WHERE ?1 IN (5, ?2, 6)", Integer.class);
             query.setParameter(1, 4);
             query.setParameter(2, 4);
             query.getResultList();
 
-            DatabaseCall call = ((JpaQuery<GenericEntity>)query).getDatabaseQuery().getCall();
+            DatabaseCall call = ((JpaQuery<?>)query).getDatabaseQuery().getCall();
             Assert.assertFalse("Expected query parameter binding to not be set for the DatabaseCall", call.isUsesBindingSet());
 
             DatabasePlatform pl = (DatabasePlatform)forceBindEMF.unwrap(EntityManagerFactoryImpl.class).getDatabaseSession().getDatasourcePlatform();
@@ -656,13 +656,13 @@ public class TestParameterBinding {
         em = forceBindEMF.createEntityManager();
         try {
             //Test any or all operands of the IN list of the IN predicate and the first operand of the IN predicate is not an untyped parameter marker
-            TypedQuery<GenericEntity> query = em.createQuery("SELECT 2 FROM GenericEntity s "
-                    + "WHERE s.itemString1 IN (?1, 'b', ?2)", GenericEntity.class);
+            TypedQuery<Integer> query = em.createQuery("SELECT 2 FROM GenericEntity s "
+                    + "WHERE s.itemString1 IN (?1, 'b', ?2)", Integer.class);
             query.setParameter(1, "a");
             query.setParameter(2, "c");
             query.getResultList();
 
-            DatabaseCall call = ((JpaQuery<GenericEntity>)query).getDatabaseQuery().getCall();
+            DatabaseCall call = ((JpaQuery<?>)query).getDatabaseQuery().getCall();
             Assert.assertFalse("Expected query parameter binding to not be set for the DatabaseCall", call.isUsesBindingSet());
 
             DatabasePlatform pl = (DatabasePlatform)forceBindEMF.unwrap(EntityManagerFactoryImpl.class).getDatabaseSession().getDatasourcePlatform();
@@ -692,13 +692,13 @@ public class TestParameterBinding {
             //Test the first operand of a LIKE predicate (the match-expression) is untyped parameter
             // when at least one other operand (the pattern-expression or escape-expression) 
             // is not an untyped parameter marker
-            TypedQuery<GenericEntity> query = em.createQuery("SELECT 1 FROM GenericEntity s "
-                    + "WHERE ?1 LIKE ?2 ESCAPE '_'", GenericEntity.class);
+            TypedQuery<Integer> query = em.createQuery("SELECT 1 FROM GenericEntity s "
+                    + "WHERE ?1 LIKE ?2 ESCAPE '_'", Integer.class);
             query.setParameter(1, "HELLO_WORLD");
             query.setParameter(2, "HELLO%");
             query.getResultList();
 
-            DatabaseCall call = ((JpaQuery<GenericEntity>)query).getDatabaseQuery().getCall();
+            DatabaseCall call = ((JpaQuery<?>)query).getDatabaseQuery().getCall();
             Assert.assertFalse("Expected query parameter binding to not be set for the DatabaseCall", call.isUsesBindingSet());
 
             DatabasePlatform pl = (DatabasePlatform)forceBindEMF.unwrap(EntityManagerFactoryImpl.class).getDatabaseSession().getDatasourcePlatform();
@@ -725,12 +725,12 @@ public class TestParameterBinding {
             //Test the first operand of a LIKE predicate (the match-expression) is untyped parameter
             // when at least one other operand (the pattern-expression or escape-expression) 
             // is not an untyped parameter marker
-            TypedQuery<GenericEntity> query = em.createQuery("SELECT 1 FROM GenericEntity s "
-                    + "WHERE s.itemString1 LIKE ?2", GenericEntity.class);
+            TypedQuery<Integer> query = em.createQuery("SELECT 1 FROM GenericEntity s "
+                    + "WHERE s.itemString1 LIKE ?2", Integer.class);
             query.setParameter(2, "HELLO%");
             query.getResultList();
 
-            DatabaseCall call = ((JpaQuery<GenericEntity>)query).getDatabaseQuery().getCall();
+            DatabaseCall call = ((JpaQuery<?>)query).getDatabaseQuery().getCall();
             Assert.assertFalse("Expected query parameter binding to not be set for the DatabaseCall", call.isUsesBindingSet());
 
             DatabasePlatform pl = (DatabasePlatform)forceBindEMF.unwrap(EntityManagerFactoryImpl.class).getDatabaseSession().getDatasourcePlatform();
@@ -758,12 +758,12 @@ public class TestParameterBinding {
         EntityManager em = forceBindEMF.createEntityManager();
         try {
             //Test untyped parameter is first argument of SUBSTRING
-            TypedQuery<GenericEntity> query = em.createQuery("SELECT 1 FROM GenericEntity s "
-                    + "WHERE TRIM(s.itemString1) = TRIM(SUBSTRING(?1, 1, 5))", GenericEntity.class);
+            TypedQuery<Integer> query = em.createQuery("SELECT 1 FROM GenericEntity s "
+                    + "WHERE TRIM(s.itemString1) = TRIM(SUBSTRING(?1, 1, 5))", Integer.class);
             query.setParameter(1, "HELLO WORLD");
             query.getResultList();
 
-            DatabaseCall call = ((JpaQuery<GenericEntity>)query).getDatabaseQuery().getCall();
+            DatabaseCall call = ((JpaQuery<?>)query).getDatabaseQuery().getCall();
             Assert.assertFalse("Expected query parameter binding to not be set for the DatabaseCall", call.isUsesBindingSet());
 
             DatabasePlatform pl = (DatabasePlatform)forceBindEMF.unwrap(EntityManagerFactoryImpl.class).getDatabaseSession().getDatasourcePlatform();
@@ -788,13 +788,13 @@ public class TestParameterBinding {
         em = forceBindEMF.createEntityManager();
         try {
             //Test untyped parameter is first & second argument of SUBSTRING
-            TypedQuery<GenericEntity> query = em.createQuery("SELECT 1 FROM GenericEntity s "
-                    + "WHERE TRIM(s.itemString1) = TRIM(SUBSTRING(?1, ?2, 5))", GenericEntity.class);
+            TypedQuery<Integer> query = em.createQuery("SELECT 1 FROM GenericEntity s "
+                    + "WHERE TRIM(s.itemString1) = TRIM(SUBSTRING(?1, ?2, 5))", Integer.class);
             query.setParameter(1, "HELLO WORLD");
             query.setParameter(2, 1);
             query.getResultList();
 
-            DatabaseCall call = ((JpaQuery<GenericEntity>)query).getDatabaseQuery().getCall();
+            DatabaseCall call = ((JpaQuery<?>)query).getDatabaseQuery().getCall();
             Assert.assertFalse("Expected query parameter binding to not be set for the DatabaseCall", call.isUsesBindingSet());
 
             DatabasePlatform pl = (DatabasePlatform)forceBindEMF.unwrap(EntityManagerFactoryImpl.class).getDatabaseSession().getDatasourcePlatform();
@@ -819,14 +819,14 @@ public class TestParameterBinding {
         em = forceBindEMF.createEntityManager();
         try {
             //Test untyped parameter is all arguments of SUBSTRING
-            TypedQuery<GenericEntity> query = em.createQuery("SELECT 1 FROM GenericEntity s "
-                    + "WHERE s.itemString1 = SUBSTRING(?1, ?2, ?3)", GenericEntity.class);
+            TypedQuery<Integer> query = em.createQuery("SELECT 1 FROM GenericEntity s "
+                    + "WHERE s.itemString1 = SUBSTRING(?1, ?2, ?3)", Integer.class);
             query.setParameter(1, "HELLO WORLD");
             query.setParameter(2, 1);
             query.setParameter(3, 5);
             query.getResultList();
 
-            DatabaseCall call = ((JpaQuery<GenericEntity>)query).getDatabaseQuery().getCall();
+            DatabaseCall call = ((JpaQuery<?>)query).getDatabaseQuery().getCall();
             Assert.assertFalse("Expected query parameter binding to not be set for the DatabaseCall", call.isUsesBindingSet());
 
             DatabasePlatform pl = (DatabasePlatform)forceBindEMF.unwrap(EntityManagerFactoryImpl.class).getDatabaseSession().getDatasourcePlatform();
@@ -851,8 +851,8 @@ public class TestParameterBinding {
         em = forceBindEMF.createEntityManager();
         try {
             //Test SUBSTRING function with IN expression
-            TypedQuery<GenericEntity> query = em.createQuery("SELECT 1 FROM GenericEntity s "
-                    + "WHERE SUBSTRING(s.itemString1, 1, ?1) NOT IN (?2, ?3, ?4, ?5)", GenericEntity.class);
+            TypedQuery<Integer> query = em.createQuery("SELECT 1 FROM GenericEntity s "
+                    + "WHERE SUBSTRING(s.itemString1, 1, ?1) NOT IN (?2, ?3, ?4, ?5)", Integer.class);
             query.setParameter(1, 5);
             query.setParameter(2, "TEST1");
             query.setParameter(3, "TEST2");
@@ -860,7 +860,7 @@ public class TestParameterBinding {
             query.setParameter(5, "TEST3");
             query.getResultList();
 
-            DatabaseCall call = ((JpaQuery<GenericEntity>)query).getDatabaseQuery().getCall();
+            DatabaseCall call = ((JpaQuery<?>)query).getDatabaseQuery().getCall();
             Assert.assertFalse("Expected query parameter binding to not be set for the DatabaseCall", call.isUsesBindingSet());
 
             DatabasePlatform pl = (DatabasePlatform)forceBindEMF.unwrap(EntityManagerFactoryImpl.class).getDatabaseSession().getDatasourcePlatform();

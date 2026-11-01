@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2026 Contributors to the Eclipse Foundation.
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2025 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -62,6 +62,7 @@ import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
 import org.eclipse.persistence.internal.expressions.SQLStatement;
+import org.eclipse.persistence.internal.expressions.ParameterExpression;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.EntityAgentProperties;
@@ -1992,7 +1993,21 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
         AbstractRecord row = new DatabaseRecord(argumentsSize);
         for (int index = 0; index < argumentsSize; index++) {
             DatabaseField argumentField = argumentFields.get(index);
-            row.put(argumentField, argumentValues.get(index));
+            Object value = argumentValues.get(index);
+            if (value instanceof ParameterExpression.TypedNull typedNull) {
+                // Binding types belong to this execution, while every logical row
+                // consumer (routing, redirectors, caches) must still observe null.
+                argumentField = argumentField.clone();
+                if (typedNull.type() != Object.class) {
+                    if (argumentField.getType() != typedNull.type()) {
+                        argumentField.setSqlType(DatabaseField.NULL_SQL_TYPE);
+                    }
+                    argumentField.setType(typedNull.type());
+                    argumentField.setTypeName(typedNull.type().getName());
+                }
+                value = null;
+            }
+            row.put(argumentField, value);
             promoteArgumentFieldMetadata(row, argumentField);
         }
 

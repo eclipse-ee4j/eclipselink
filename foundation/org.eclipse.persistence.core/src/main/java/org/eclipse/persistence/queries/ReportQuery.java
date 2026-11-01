@@ -132,6 +132,41 @@ public class ReportQuery extends ReadAllQuery {
 
     /**
      * INTERNAL:
+     * Describe the materialized result independently of a named query's registry identity.
+     * Resolved signatures distinguish overloads selected by execution-local binding types.
+     */
+    public Object getResultCacheShape() {
+        return new ResultCacheShape(getClass(), resultClass, returnChoice, resultItemShapes(items));
+    }
+
+    private static List<ResultItemShape> resultItemShapes(List<ReportItem> items) {
+        List<ResultItemShape> shapes = new ArrayList<>(items.size());
+        for (ReportItem item : items) {
+            if (item instanceof ConstructorReportItem constructor) {
+                Class<?>[] types = constructor.getConstructor() != null
+                        ? constructor.getConstructor().getParameterTypes() : constructor.getConstructorArgTypes();
+                List<Class<?>> signature = types == null ? List.of()
+                        : java.util.Collections.unmodifiableList(new ArrayList<>(java.util.Arrays.asList(types)));
+                shapes.add(new ResultItemShape(item.getResultType(), signature, resultItemShapes(constructor.getReportItems())));
+            } else {
+                shapes.add(new ResultItemShape(item.getResultType(), List.of(), List.of()));
+            }
+        }
+        return List.copyOf(shapes);
+    }
+
+    private record ResultCacheShape(Class<?> queryClass, Class<?> resultClass, int returnChoice,
+            List<ResultItemShape> items) implements java.io.Serializable {
+        private static final long serialVersionUID = 1L;
+    }
+
+    private record ResultItemShape(Class<?> resultType, List<Class<?>> constructorTypes,
+            List<ResultItemShape> items) implements java.io.Serializable {
+        private static final long serialVersionUID = 1L;
+    }
+
+    /**
+     * INTERNAL:
      * The builder should be provided.
      */
     public ReportQuery() {
@@ -659,10 +694,10 @@ public class ReportQuery extends ReadAllQuery {
         ReportQueryResult reportQueryResult = new ReportQueryResult(this, row, toManyJoinData);
         //GF_ISSUE_395
         if (this.returnedKeys != null){
-            if (this.returnedKeys.contains(reportQueryResult.getResultKey())){
+            if (this.returnedKeys.contains(reportQueryResult.getDistinctResultKey())){
                 return ResultStatus.IGNORED; //distinguish between null values and thrown away duplicates
             } else {
-                this.returnedKeys.add(reportQueryResult.getResultKey());
+                this.returnedKeys.add(reportQueryResult.getDistinctResultKey());
             }
         }
         //end GF_ISSUE_395
@@ -722,7 +757,7 @@ public class ReportQuery extends ReadAllQuery {
     }
 
     private Object convertSingleQueryResult(Object queryResult) {
-        if (this.getResultClass() != null) {
+        if (this.getResultClass() != null && !this.getResultClass().isInstance(queryResult)) {
             return session.getPlatform().convertObject(queryResult, this.getResultClass());
         } else {
             return queryResult;
@@ -800,13 +835,7 @@ public class ReportQuery extends ReadAllQuery {
         cloneQuery.items = new ArrayList<>(this.items.size());
 
         for (ReportItem item : this.items) {
-            ReportItem newItem = (ReportItem)item.clone();
-            if (item.getJoinedAttributeManagerInternal() != null){
-                JoinedAttributeManager manager = item.getJoinedAttributeManager().clone();
-                manager.setBaseQuery(cloneQuery);
-                newItem.setJoinedAttributeManager(manager);
-            }
-            cloneQuery.addItem(newItem);
+            cloneQuery.addItem(cloneReportItem(item, cloneQuery));
         }
 
         if (this.groupByExpressions != null) {
@@ -814,6 +843,31 @@ public class ReportQuery extends ReadAllQuery {
         }
 
         return cloneQuery;
+    }
+
+    /** Copy mutable constructor metadata and bind every joined item to its new owner. */
+    private static ReportItem cloneReportItem(ReportItem item, ReportQuery owner) {
+        ReportItem copy = (ReportItem) item.clone();
+        if (item.getJoinedAttributeManagerInternal() != null) {
+            JoinedAttributeManager manager = item.getJoinedAttributeManager().clone();
+            manager.setBaseQuery(owner);
+            copy.setJoinedAttributeManager(manager);
+        }
+        if (item instanceof ConstructorReportItem constructorItem) {
+            ConstructorReportItem constructorCopy = (ConstructorReportItem) copy;
+            List<ReportItem> children = new ArrayList<>(constructorItem.getReportItems().size());
+            for (ReportItem child : constructorItem.getReportItems()) {
+                children.add(cloneReportItem(child, owner));
+            }
+            constructorCopy.setReportItems(children);
+            if (constructorItem.getConstructorArgTypes() != null) {
+                constructorCopy.setConstructorArgTypes(constructorItem.getConstructorArgTypes().clone());
+            }
+            if (constructorItem.getConstructorMappings() != null) {
+                constructorCopy.setConstructorMappings(new ArrayList<>(constructorItem.getConstructorMappings()));
+            }
+        }
+        return copy;
     }
 
     /**

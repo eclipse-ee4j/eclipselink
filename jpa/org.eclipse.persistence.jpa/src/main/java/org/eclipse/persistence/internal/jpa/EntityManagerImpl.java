@@ -1351,7 +1351,7 @@ public class EntityManagerImpl implements JpaEntityManager {
      */
     @Override
     public StatementOrTypedQuery createNamedQuery(String name) {
-        return createNamedQueryInternal(name, null);
+        return createNamedQueryInternal(name, null, null);
     }
 
     /**
@@ -1367,7 +1367,7 @@ public class EntityManagerImpl implements JpaEntityManager {
      */
     @Override
     public <T> TypedQuery<T> createNamedQuery(String name, Class<T> resultClass) {
-        return createNamedQueryInternal(name, null);
+        return createNamedQueryInternal(name, Objects.requireNonNull(resultClass), null);
     }
 
     @Override
@@ -1377,7 +1377,7 @@ public class EntityManagerImpl implements JpaEntityManager {
         DatabaseQuery template = AugmentedQueryReference.executable(typedQueryReference, factory.getAbstractSession());
         TypedQuery<T> query;
         if (template == null) {
-            query = createNamedQueryInternal(typedQueryReference.getName(), null);
+            query = createNamedQueryInternal(typedQueryReference.getName(), typedQueryReference.getResultType(), null);
         } else {
             EJBQueryImpl<T> executable = new EJBQueryImpl<>(template, this);
             executable.initializeFromDatabaseQuery();
@@ -1404,10 +1404,10 @@ public class EntityManagerImpl implements JpaEntityManager {
      * @return the new {@link TypedQuery} instance
      * @param <T> the query result type
      */
-    private <T> JpaQuery<T> createNamedQueryInternal(String name, Map<String,Object> hints) {
+    private <T> JpaQuery<T> createNamedQueryInternal(String name, Class<?> resultClass, Map<String,Object> hints) {
         try {
             verifyOpen();
-            EJBQueryImpl<T> query = new EJBQueryImpl<>(name, this, true);
+            EJBQueryImpl<T> query = new EJBQueryImpl<>(name, this, true, resultClass);
             query.getDatabaseQueryInternal();
             if (hints != null) {
                 hints.forEach(query::setHint);
