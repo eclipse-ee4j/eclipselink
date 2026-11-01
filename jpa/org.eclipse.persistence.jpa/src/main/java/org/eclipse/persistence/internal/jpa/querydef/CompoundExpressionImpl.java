@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,6 +15,7 @@
 //
 package org.eclipse.persistence.internal.jpa.querydef;
 
+import jakarta.persistence.criteria.BooleanExpression;
 import jakarta.persistence.criteria.ComparableExpression;
 import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Nulls;
@@ -138,33 +139,33 @@ public class CompoundExpressionImpl extends FunctionExpressionImpl<Boolean> impl
     }
 
     @Override
-    public Predicate nullif(Boolean y) {
-        throw new UnsupportedOperationException("Not yet implemented");
+    public BooleanExpression nullif(Boolean y) {
+        return new BooleanExpressionImpl(this).nullif(y);
     }
 
     @Override
-    public Predicate nullif(Expression<? extends Boolean> y) {
-        throw new UnsupportedOperationException("Not yet implemented");
+    public BooleanExpression nullif(Expression<? extends Boolean> y) {
+        return new BooleanExpressionImpl(this).nullif(y);
     }
 
     @Override
-    public Predicate coalesce(Boolean y) {
-        throw new UnsupportedOperationException("Not yet implemented");
+    public BooleanExpression coalesce(Boolean y) {
+        return new BooleanExpressionImpl(this).coalesce(y);
     }
 
     @Override
-    public Predicate coalesce(Expression<? extends Boolean> y) {
-        throw new UnsupportedOperationException("Not yet implemented");
+    public BooleanExpression coalesce(Expression<? extends Boolean> y) {
+        return new BooleanExpressionImpl(this).coalesce(y);
     }
 
     @Override
     public Predicate and(Expression<Boolean> y) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        return new CriteriaBuilderImpl(metamodel).and(this, y);
     }
 
     @Override
     public Predicate or(Expression<Boolean> y) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        return new CriteriaBuilderImpl(metamodel).or(this, y);
     }
 
     @Override

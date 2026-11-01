@@ -100,23 +100,13 @@ public class PostgreSQLPlatform extends DatabasePlatform {
     }
 
     /**
-     * Appends a Boolean value. Refer to :
-     * http://www.postgresql.org/docs/8.0/static/datatype-boolean.html In
-     * PostgreSQL the following are the values that are value for a boolean
-     * field Valid literal values for the "true" state are: TRUE, 't', 'true',
-     * 'y', 'yes', '1' Valid literal values for the false" state are : FALSE,
-     * 'f', 'false', 'n', 'no', '0'
-     * <p>
-     * To be consistent with the other data platforms we are using the values
-     * '1' and '0' for true and false states of a boolean field.
+     * Append a typed SQL Boolean literal. Quoted values such as '1' and '0'
+     * can be converted when compared directly with a Boolean column, but are
+     * inferred as text in expressions such as CASE and COALESCE.
      */
     @Override
     protected void appendBoolean(Boolean bool, Writer writer) throws IOException {
-        if (bool) {
-            writer.write("\'1\'");
-        } else {
-            writer.write("\'0\'");
-        }
+        writer.write(bool ? "TRUE" : "FALSE");
     }
 
     /**

@@ -154,7 +154,7 @@ public abstract class CommonAbstractCriteriaImpl<T> implements CommonAbstractCri
      */
     public CommonAbstractCriteria where(Expression<Boolean> restriction) {
         findRootAndParameters(restriction);
-        this.where = restriction;
+        this.where = BooleanExpressionImpl.restriction(restriction);
         return this;
     }
 

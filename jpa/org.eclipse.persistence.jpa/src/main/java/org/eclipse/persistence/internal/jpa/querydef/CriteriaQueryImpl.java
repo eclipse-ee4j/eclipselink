@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2021, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -25,6 +25,7 @@ import jakarta.persistence.criteria.BooleanExpression;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.Selection;
 import jakarta.persistence.metamodel.Metamodel;
@@ -518,7 +519,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
             if (toReportQuery) {
                 raq = createReportQuery(this.queryType);
                 for (SelectionImpl<?> nested : selectionItems) {
-                    ((ReportQuery) raq).addAttribute(nested.getAlias(), nested.getCurrentNode(), nested.getJavaType());
+                    ((ReportQuery) raq).addAttribute(nested.getAlias(), BooleanExpressionImpl.selectionNode(nested), nested.getJavaType());
                 }
             } else {
                 raq = new ReadAllQuery(this.queryType);
@@ -529,7 +530,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
             for (SelectionImpl<?> selection : selectionItems) {
                 raq.addPartialAttribute((selection).currentNode);
             }
-            raq.setExpressionBuilder(((InternalSelection) this.selection.getCompoundSelectionItems().get(0)).getCurrentNode().getBuilder());
+            raq.setExpressionBuilder(BooleanExpressionImpl.selectionNode(this.selection.getCompoundSelectionItems().get(0)).getBuilder());
             query = raq;
         } else {
             ReportQuery reportQuery = null;
@@ -546,7 +547,11 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
                     reportQuery = new ReportQuery();
                     reportQuery.setShouldReturnWithoutReportQueryResult(true);
                 }
-                reportQuery.setExpressionBuilder(((InternalSelection) this.selection.getCompoundSelectionItems().get(0)).getCurrentNode().getBuilder());
+                org.eclipse.persistence.expressions.Expression firstSelection =
+                        BooleanExpressionImpl.selectionNode(this.selection.getCompoundSelectionItems().get(0));
+                if (firstSelection != null) {
+                    reportQuery.setExpressionBuilder(firstSelection.getBuilder());
+                }
                 for (Selection nested : this.selection.getCompoundSelectionItems()) {
                     if (((SelectionImpl) nested).isConstructor()) {
                         reportQuery.addConstructorReportItem(((ConstructorSelectionImpl) nested).translate());
@@ -562,7 +567,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
                             reportQuery.addAttribute(nested.getAlias(), collectionExpression.getCurrentNode().count(), CoreClassConstants.INTEGER);
                             reportQuery.addGrouping(fromExpression.getCurrentNode());
                         } else {
-                            reportQuery.addAttribute(nested.getAlias(), ((SelectionImpl) nested).getCurrentNode(), nested.getJavaType());
+                            reportQuery.addAttribute(nested.getAlias(), BooleanExpressionImpl.selectionNode(nested), nested.getJavaType());
                         }
                     }
                 }
@@ -578,8 +583,9 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
             // Check all the SELECTION items next
             if(queryClazz == null && this.selection != null) {
                 for(Selection<?> s : this.selection.getCompoundSelectionItems()) {
-                    if(((InternalSelection) s).getCurrentNode() != null ) {
-                        builder = ((InternalSelection) s).getCurrentNode().getBuilder();
+                    org.eclipse.persistence.expressions.Expression selectionNode = BooleanExpressionImpl.selectionNode(s);
+                    if(selectionNode != null) {
+                        builder = selectionNode.getBuilder();
                         queryClazz = builder.getQueryClass();
                         if(queryClazz != null) {
                             break;
@@ -655,7 +661,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
                     }
                     query.setExpressionBuilder(selection.getCurrentNode().getBuilder());
                 } else {
-                    query = createReportQueryWithSelection(this.selection.getCurrentNode().getBuilder().getQueryClass());
+                    query = createReportQueryWithSelection(BooleanExpressionImpl.selectionNode(this.selection).getBuilder().getQueryClass());
                 }
             }
         } else if (this.queryResult.equals(ResultType.ENTITY)) {
@@ -714,16 +720,17 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
                     reportQuery.addAttribute(this.selection.getAlias(), collectionExpression.getCurrentNode().count(), CoreClassConstants.INTEGER);
                     reportQuery.addGrouping(fromExpression.getCurrentNode());
                 }else{
-                    reportQuery.addAttribute(this.selection.getAlias(), this.selection.getCurrentNode(), this.selection.getJavaType());
+                    reportQuery.addAttribute(this.selection.getAlias(), BooleanExpressionImpl.selectionNode(this.selection), this.selection.getJavaType());
 
                 }}else{
                 if (selection.isFrom()) {
                     reportQuery.addItem(selection.getAlias(), selection.getCurrentNode(), ((FromImpl) selection).findJoinFetches());
                 } else {
-                    reportQuery.addAttribute(selection.getAlias(), selection.getCurrentNode(), selection.getJavaType());
+                    reportQuery.addAttribute(selection.getAlias(), BooleanExpressionImpl.selectionNode(selection), selection.getJavaType());
                 }}
-                reportQuery.setReferenceClass(this.selection.getCurrentNode().getBuilder().getQueryClass());
-                reportQuery.setExpressionBuilder(this.selection.getCurrentNode().getBuilder());
+                org.eclipse.persistence.expressions.Expression selectionNode = BooleanExpressionImpl.selectionNode(this.selection);
+                reportQuery.setReferenceClass(selectionNode.getBuilder().getQueryClass());
+                reportQuery.setExpressionBuilder(selectionNode.getBuilder());
             }
             query = reportQuery;
             if (this.groupBy != null && !this.groupBy.isEmpty()) {
@@ -774,7 +781,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
             if (selection.isFrom()) {
                 query.addItem(selection.getAlias(), selection.getCurrentNode(), ((FromImpl<?, ?>) selection).findJoinFetches());
             } else {
-                query.addAttribute(selection.getAlias(), selection.getCurrentNode(), selection.getJavaType());
+                query.addAttribute(selection.getAlias(), BooleanExpressionImpl.selectionNode(selection), selection.getJavaType());
             }
         } else {
             FromImpl<?, ?> root = ((FromImpl<?, ?>) roots.iterator().next());
@@ -791,7 +798,10 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
         if (selection == null) {
             throw new IllegalStateException("Called createReportQueryWithSelection with no selection set");
         }
-        if (!selection.isCompoundSelection() && ((InternalExpression) selection).isCompoundExpression()) {
+        if (selection instanceof Predicate) {
+            query.addAttribute(selection.getAlias(), BooleanExpressionImpl.selectionNode(selection), selection.getJavaType());
+            query.setShouldReturnSingleAttribute(true);
+        } else if (!selection.isCompoundSelection() && ((InternalExpression) selection).isCompoundExpression()) {
             // noinspection StringEquality - using String constants so instances will match
             if (((FunctionExpressionImpl<?>) selection).getOperation() == CriteriaBuilderImpl.SIZE) {
                 // Selecting size not all databases support sub-select in select clause so convert to count/groupby

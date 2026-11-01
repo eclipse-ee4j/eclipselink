@@ -1269,10 +1269,14 @@ public class DB2Platform extends DatabasePlatform {
                 for (int i = 0; i < items.size(); i++) {
                     final int index = indices[i];
                     Expression item = items.get(index);
-                    boolean shouldBind = true;
+                    boolean shouldBind = !(item.isParameterExpression()
+                            && Boolean.FALSE.equals(((ParameterExpression) item).canBind()))
+                            && !(item.isConstantExpression()
+                            && Boolean.FALSE.equals(((ConstantExpression) item).canBind()));
 
-                    // If the item isn't a Constant/Parameter, this will suffice and the rest should bind
-                    if(!item.isValueExpression()) {
+                    // An explicitly inline value already supplies a known type.
+                    // Do not re-enable binding requested off by the expression.
+                    if(!shouldBind || !item.isValueExpression()) {
                         allBind = false;
                     }
 
@@ -1313,10 +1317,14 @@ public class DB2Platform extends DatabasePlatform {
                 for (int i = 0; i < items.size(); i++) {
                     Expression item = items.get(i);
 
-                    boolean shouldBind = true;
+                    boolean shouldBind = !(item.isParameterExpression()
+                            && Boolean.FALSE.equals(((ParameterExpression) item).canBind()))
+                            && !(item.isConstantExpression()
+                            && Boolean.FALSE.equals(((ConstantExpression) item).canBind()));
 
-                    // If the item isn't a Constant/Parameter, this will suffice and the rest should bind
-                    if(!item.isValueExpression()) {
+                    // An explicitly inline value already supplies a known type.
+                    // Do not re-enable binding requested off by the expression.
+                    if(!shouldBind || !item.isValueExpression()) {
                         allBind = false;
                     }
 

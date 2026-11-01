@@ -589,6 +589,9 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      */
     @Override
     public Predicate not(Expression<Boolean> restriction) {
+        if (restriction instanceof BooleanExpressionImpl value) {
+            return value.not();
+        }
         if (((InternalExpression) restriction).isPredicate()) {
             return ((Predicate) restriction).not();
         }
@@ -3333,7 +3336,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
 
     @Override
     public BooleanExpression booleanLiteral(boolean value) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        return new BooleanExpressionImpl((ExpressionImpl<Boolean>) literal(value));
     }
 
     @Override

@@ -13,6 +13,7 @@
  */
 package org.eclipse.persistence.testing.tests.junit.platform.database;
 
+import java.io.StringWriter;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +22,10 @@ import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
+import org.eclipse.persistence.internal.expressions.ConstantExpression;
+import org.eclipse.persistence.internal.expressions.ExpressionJavaPrinter;
 import org.eclipse.persistence.internal.expressions.FunctionExpression;
+import org.eclipse.persistence.internal.expressions.ParameterExpression;
 import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
@@ -276,6 +280,85 @@ public class DB2PlatformTest {
         }
         Assert.assertEquals(Boolean.FALSE, ExpressionOperator.locate().isBindingSupported());
         Assert.assertEquals(Boolean.FALSE, ExpressionOperator.locate2().isBindingSupported());
+    }
+
+    @Test
+    public void testCoalescePreservesExplicitInlineValuesAndRemainingBindings() throws SQLException {
+        for (DB2Platform platform : List.of(new DB2Platform(), new DerbyPlatform(),
+                new DB2ZPlatform(), new DB2MainframePlatform())) {
+            platform.setShouldBindAllParameters(true);
+            platform.setShouldBindLiterals(true);
+            platform.setShouldBindPartialParameters(true);
+            for (boolean parameter : List.of(false, true)) {
+                for (String placement : List.of("first", "last", "mapped")) {
+                    DatabaseSessionImpl session = new DatabaseSessionImpl(new DatabaseLogin(platform));
+                    ExpressionBuilder builder = new ExpressionBuilder();
+                    builder.setSession(session);
+                    Expression inline = inlineCoalesceValue(builder, parameter);
+                    Expression bound = builder.getParameter("bound", Integer.class);
+                    List<Expression> arguments = switch (placement) {
+                        case "first" -> List.of(inline, bound);
+                        case "last" -> List.of(bound, inline);
+                        default -> List.of(builder.getField("FLAG"), inline, bound);
+                    };
+                    Prepared prepared = prepare(session, builder, builder.coalesce(arguments));
+                    DatabaseRecord values = new DatabaseRecord();
+                    values.put("inline", 0);
+                    values.put("bound", 7);
+                    DatabaseCall execution = (DatabaseCall) prepared.call.clone();
+                    execution.translate(values, null, session);
+                    String expected = switch (placement) {
+                        case "first" -> "COALESCE(0, ?)";
+                        case "last" -> "COALESCE(?, 0)";
+                        default -> "COALESCE(FLAG, 0, ?)";
+                    };
+                    Assert.assertEquals("SELECT " + expected + " FROM ITEM", execution.getSQLString());
+                    Assert.assertEquals(List.of(7), execution.getParameters());
+                    Assert.assertEquals(Boolean.FALSE, parameter ? ((ParameterExpression) inline).canBind()
+                            : ((ConstantExpression) inline).canBind());
+                }
+            }
+        }
+    }
+
+    @Test
+    public void testCoalesceJavaPrintingPreservesExplicitInlineValues() {
+        for (DB2Platform platform : List.of(new DB2Platform(), new DerbyPlatform(),
+                new DB2ZPlatform(), new DB2MainframePlatform())) {
+            platform.setShouldBindLiterals(true);
+            platform.setShouldBindPartialParameters(true);
+            ExpressionOperator operator = platform.getOperator(ExpressionOperator.Coalesce);
+            // Supply Java separators, since the standard COALESCE operator only
+            // defines SQL syntax. Exercise the platform's Java printing path.
+            operator.printsJavaAs(List.of(", "));
+            for (boolean parameter : List.of(false, true)) {
+                ExpressionBuilder builder = new ExpressionBuilder();
+                Expression inline = inlineCoalesceValue(builder, parameter);
+                ParameterExpression bound = (ParameterExpression) builder.getParameter("bound", Integer.class);
+                Expression field = builder.getField("FLAG");
+                bound.setLocalBase(field);
+                if (parameter) {
+                    inline.setLocalBase(field);
+                }
+                StringWriter writer = new StringWriter();
+                operator.printJavaCollection(List.of(inline, bound), new ExpressionJavaPrinter("builder", writer, platform));
+                Assert.assertFalse(writer.toString().isEmpty());
+                Assert.assertEquals(Boolean.FALSE, parameter ? ((ParameterExpression) inline).canBind()
+                        : ((ConstantExpression) inline).canBind());
+                Assert.assertEquals(Boolean.TRUE, bound.canBind());
+            }
+        }
+    }
+
+    private Expression inlineCoalesceValue(ExpressionBuilder builder, boolean parameter) {
+        if (parameter) {
+            ParameterExpression value = (ParameterExpression) builder.getParameter("inline", Integer.class);
+            value.setCanBind(false);
+            return value;
+        }
+        ConstantExpression value = (ConstantExpression) builder.value(0);
+        value.setCanBind(false);
+        return value;
     }
 
     private String derbyLocateSql(String source, String search) {
