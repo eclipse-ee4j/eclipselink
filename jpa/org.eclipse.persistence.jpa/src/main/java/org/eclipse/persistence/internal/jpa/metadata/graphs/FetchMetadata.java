@@ -24,8 +24,9 @@ import jakarta.persistence.FetchType;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataConstants;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.MappingAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
+import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 
-/** INTERNAL: One named contribution from an effective persistent attribute. */
+/** INTERNAL: One fetch declaration on an effective persistent attribute. */
 public final class FetchMetadata {
     private final MappingAccessor mapping;
     private final String graph;
@@ -69,6 +70,22 @@ public final class FetchMetadata {
             }
         }
         return declarations;
+    }
+
+    /** Return the type override for the default fetch plan, excluding named graphs. */
+    public static FetchType getUnqualifiedFetchType(MappingAccessor mapping) {
+        FetchType type = null;
+        for (FetchMetadata declaration : collect(mapping)) {
+            if (declaration.graph.isEmpty()) {
+                if (type != null) {
+                    throw new IllegalStateException(ExceptionLocalization.buildMessage(
+                            "multiple_unqualified_fetch_annotations",
+                            new Object[] {mapping.getClassAccessor().getJavaClassName(), mapping.getAttributeName()}));
+                }
+                type = (FetchType) declaration.options.get(FetchType.class);
+            }
+        }
+        return type;
     }
 
     public String getGraph() {

@@ -330,11 +330,11 @@ public class TestDistributedNamedEntityGraphs {
     }
 
     @Test
-    public void plainLazyMappingsAndGraphlessFetchStayUnchanged() throws Exception {
+    public void plainFindHonorsUnqualifiedFetchWithoutActivatingNamedGraphs() throws Exception {
         try (EntityManager manager = fixture.createEntityManager()) {
             DistributedGraphRoot plain = manager.find(DistributedGraphRoot.class, 1);
             assertLazy(plain, "child");
-            assertLazy(plain, "omitted");
+            assertTrue(fixture.getPersistenceUnitUtil().isLoaded(plain, "omitted"));
             assertFalse(fixture.getPersistenceUnitUtil().isLoaded(plain, "children"));
             assertTrue(fixture.getPersistenceUnitUtil().isLoaded(plain, "eager"));
             assertEquals("child", plain.getChild().getLabel());
@@ -351,14 +351,18 @@ public class TestDistributedNamedEntityGraphs {
                 EntityGraph<DistributedGraphRoot> graph = manager.getEntityGraph(DistributedGraphRoot.class, "DngRoot");
                 DistributedGraphRoot root = manager.find(DistributedGraphRoot.class, 1, Map.of(hint, graph));
                 assertFetchedPath(root);
-                assertLazy(root, "omitted");
                 if (hint.endsWith("loadgraph")) {
+                    assertTrue(fixture.getPersistenceUnitUtil().isLoaded(root, "omitted"));
                     assertTrue(fixture.getPersistenceUnitUtil().isLoaded(root, "eager"));
+                } else {
+                    assertUnloaded(root, "omitted");
                 }
             }
         }
         try (EntityManager manager = fixture.createEntityManager()) {
-            assertFetchedPath(manager.find(manager.getEntityGraph(DistributedGraphRoot.class, "DngRoot"), 1));
+            DistributedGraphRoot root = manager.find(manager.getEntityGraph(DistributedGraphRoot.class, "DngRoot"), 1);
+            assertFetchedPath(root);
+            assertTrue(fixture.getPersistenceUnitUtil().isLoaded(root, "omitted"));
         }
     }
 
@@ -857,11 +861,16 @@ public class TestDistributedNamedEntityGraphs {
     }
 
     private static void assertLazy(Object owner, String attribute) throws Exception {
-        assertFalse("Cold mapping must remain lazy: " + attribute, fixture.getPersistenceUnitUtil().isLoaded(owner, attribute));
         ForeignReferenceMapping mapping = (ForeignReferenceMapping) session(fixture).getDescriptor(owner.getClass())
                 .getMappingForAttributeName(attribute);
         assertTrue("Named Fetch must not change mapping defaults", mapping.isLazy());
         assertTrue(mapping.usesIndirection());
+        assertUnloaded(owner, attribute);
+    }
+
+    private static void assertUnloaded(Object owner, String attribute) throws Exception {
+        assertFalse("Attribute must remain unloaded: " + attribute,
+                fixture.getPersistenceUnitUtil().isLoaded(owner, attribute));
         Field field = holderField(owner.getClass(), attribute);
         field.setAccessible(true);
         Object holder = field.get(owner);

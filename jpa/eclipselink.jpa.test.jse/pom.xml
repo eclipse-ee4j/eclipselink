@@ -183,6 +183,19 @@
                         </configuration>
                     </execution>
                     <execution>
+                        <id>weave-unqualified-fetch-overrides-fixtures</id>
+                        <phase>process-test-classes</phase>
+                        <goals>
+                            <goal>weave</goal>
+                        </goals>
+                        <configuration>
+                            <source>${project.build.testOutputDirectory}</source>
+                            <target>${project.build.testOutputDirectory}</target>
+                            <persistenceXMLLocation>META-INF/unqualified-fetch-overrides/weaving/META-INF/persistence.xml</persistenceXMLLocation>
+                            <logLevel>FINE</logLevel>
+                        </configuration>
+                    </execution>
+                    <execution>
                         <phase>process-test-classes</phase>
                         <goals>
                             <goal>weave</goal>

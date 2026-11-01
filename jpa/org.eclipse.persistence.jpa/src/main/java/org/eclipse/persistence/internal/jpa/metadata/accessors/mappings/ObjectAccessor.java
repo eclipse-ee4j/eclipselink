@@ -426,7 +426,7 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
      */
     @Override
     public boolean isLazy() {
-        if ((isManyToOne() || isOneToOne()) && FetchType.DEFAULT.name().equals(getFetch())) {
+        if ((isManyToOne() || isOneToOne()) && FetchType.DEFAULT.name().equals(getEffectiveFetchType(getFetch()))) {
             return JPA_FETCH_LAZY.equals(getDefaultFetchType());
         }
         return super.isLazy();
