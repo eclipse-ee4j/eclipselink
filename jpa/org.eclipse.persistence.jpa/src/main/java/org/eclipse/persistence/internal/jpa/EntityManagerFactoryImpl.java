@@ -339,9 +339,9 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
     /**
      * Check whether a named attribute on a given entity with a given mapping
      * has been loaded.
-     * This method will check the value holder or indirect collection for LAZY
-     * ForeignReferenceMappings to see if has been instantiated and otherwise
-     * check the fetch group.
+     * Check indirection even for an EAGER mapping, since an entity graph may
+     * suppress its default eager loading. An agent identity reference remains
+     * unfetched until explicitly resolved.
      *
      * @param entity entity instance containing the attribute
      * @param attributeName name of attribute whose load state is to be determined
@@ -350,11 +350,20 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
      *         or {@code false} otherwise.
      */
     public static boolean isLoaded(Object entity, String attributeName, DatabaseMapping mapping) {
-        if (mapping.isForeignReferenceMapping()) {
-            if (mapping.isLazy()) {
-                Object value = mapping.getAttributeValueFromObject(entity);
-                IndirectionPolicy policy = ((ForeignReferenceMapping) mapping).getIndirectionPolicy();
-                return policy.objectIsInstantiated(value);
+        // The woven accessor may fetch a missing attribute, including its
+        // value holder. Inspect the partial-object state before invoking it.
+        if (entity instanceof FetchGroupTracker tracker && !tracker._persistence_isAttributeFetched(attributeName)) {
+            return false;
+        }
+        if (mapping instanceof ForeignReferenceMapping reference && reference.usesIndirection()) {
+            Object value = mapping.getAttributeValueFromObject(entity);
+            IndirectionPolicy policy = reference.getIndirectionPolicy();
+            if (!policy.objectIsInstantiated(value)) {
+                return false;
+            }
+            if (mapping.isObjectReferenceMapping()
+                    && EntityAgentImpl.isUnfetchedReference(policy.getRealAttributeValueFromObject(entity, value))) {
+                return false;
             }
         }
 

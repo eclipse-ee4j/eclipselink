@@ -33,6 +33,9 @@
         <class>org.eclipse.persistence.jpa.namedgraphs.model.CyclicGraphRoot</class>
         <class>org.eclipse.persistence.jpa.namedgraphs.model.DuplicateGraphRoot</class>
         <class>org.eclipse.persistence.jpa.namedgraphs.model.UnrelatedGraphRoot</class>
+        <class>org.eclipse.persistence.jpa.graphfetchoptions.model.GraphFetchRoot</class>
+        <class>org.eclipse.persistence.jpa.graphfetchoptions.model.GraphFetchChild</class>
+        <class>org.eclipse.persistence.jpa.graphfetchoptions.model.GraphFetchDetail</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <properties>
             <property name="eclipselink.weaving.eager" value="true"/>

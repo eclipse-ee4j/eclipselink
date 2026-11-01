@@ -315,7 +315,15 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
         }else{
             attributeValue = getAttributeValueFromObject(original);
         }
-        attributeValue = this.indirectionPolicy.cloneAttribute(attributeValue, original, cacheKey, clone, refreshCascade, cloningSession, false); // building clone from an original not a row.
+        FetchGroup selection = cloningSession instanceof UnitOfWorkImpl unitOfWork
+                ? unitOfWork.getGraphCloneSelection(original) : null;
+        if (selection != null) {
+            Object value = attributeValue;
+            attributeValue = ((UnitOfWorkImpl) cloningSession).withGraphCloneSelection(null, selection.getGroup(getAttributeName()),
+                    () -> this.indirectionPolicy.cloneAttribute(value, original, cacheKey, clone, refreshCascade, cloningSession, false));
+        } else {
+            attributeValue = this.indirectionPolicy.cloneAttribute(attributeValue, original, cacheKey, clone, refreshCascade, cloningSession, false); // building clone from an original not a row.
+        }
         //GFBug#404 - fix moved to ObjectBuildingQuery.registerIndividualResult
         setAttributeValueInObject(clone, attributeValue);
     }
@@ -761,9 +769,14 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
                     FetchGroup targetFetchGroup = sourceFG.getGroup(getAttributeName());
                     if (targetFetchGroup != null) {
                         nestedQuery.setFetchGroup(targetFetchGroup);
-                        nestedQuery.prepareFetchGroup();
                     }
                 }
+            }
+            if (baseQuery instanceof ObjectLevelReadQuery source && source.shouldRetainUnfetchedRelationships()) {
+                nestedQuery.prepareForDetachedRead();
+                nestedQuery.dontCheckCache();
+                nestedQuery.setProperty(EntityAgentProperties.ENTITY_AGENT, Boolean.TRUE);
+                nestedQuery.setProperty(EntityAgentProperties.READ_CONTEXT, source.getProperty(EntityAgentProperties.READ_CONTEXT));
             }
 
             List<Expression> nestedJoins = extractNestedNonAggregateExpressions(joinManager.getJoinedAttributeExpressions(), nestedQuery.getExpressionBuilder(), false);
@@ -773,11 +786,16 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
                 nestedQuery.getJoinedAttributeManager().setJoinedAttributeExpressions_(nestedJoins);
                 // the next line sets isToManyJoinQuery flag
                 nestedQuery.getJoinedAttributeManager().prepareJoinExpressions(session);
-                nestedQuery.getJoinedAttributeManager().computeJoiningMappingQueries(session);
-                nestedQuery.getJoinedAttributeManager().computeJoiningMappingIndexes(true, session, 0);
             } else if (nestedQuery.hasJoining()) {
                 // Clear any mapping level joins.
                 nestedQuery.setJoinedAttributeManager(null);
+            }
+            // Explicit nested joins must be visible before graph exclusions
+            // and detached FK requirements determine the selected fields.
+            nestedQuery.prepareFetchGroup();
+            if (!nestedJoins.isEmpty()) {
+                nestedQuery.getJoinedAttributeManager().computeJoiningMappingQueries(session);
+                nestedQuery.getJoinedAttributeManager().computeJoiningMappingIndexes(true, session, 0);
             }
             // Configure nested locking clause.
             if (baseQuery.isLockQuery()) {
@@ -1017,6 +1035,13 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
                     batchQuery.setFetchGroup(targetFetchGroup);
                 }
             }
+        }
+        if (query.shouldRetainUnfetchedRelationships()) {
+            batchQuery.prepareForDetachedRead();
+            batchQuery.dontMaintainCache();
+            batchQuery.dontCheckCache();
+            batchQuery.setProperty(EntityAgentProperties.ENTITY_AGENT, Boolean.TRUE);
+            batchQuery.setProperty(EntityAgentProperties.READ_CONTEXT, query.getProperty(EntityAgentProperties.READ_CONTEXT));
         }
 
         if (batchQuery.shouldPrepare()) {
@@ -2406,15 +2431,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
             targetQuery.dontMaintainCache();
             if (targetQuery instanceof ObjectLevelReadQuery read) {
                 read.dontCheckCache();
-                FetchGroup requested = read.getFetchGroup();
-                if (requested != null && read.getLoadGroup() == null) {
-                    read.setLoadGroup(requested.toLoadGroupLoadOnly());
-                }
-                read.setShouldUseDefaultFetchGroup(false);
-                if (read.getFetchGroup() != null) {
-                    read.setFetchGroup(null);
-                    read.setIsPrepared(false);
-                }
+                read.prepareForDetachedRead();
             }
         }
         targetQuery = prepareHistoricalQuery(targetQuery, sourceQuery, executionSession);

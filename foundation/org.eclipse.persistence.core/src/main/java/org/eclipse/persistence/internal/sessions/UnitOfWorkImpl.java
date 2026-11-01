@@ -85,6 +85,7 @@ import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.DeleteObjectQuery;
 import org.eclipse.persistence.queries.DoesExistQuery;
 import org.eclipse.persistence.queries.InMemoryQueryIndirectionPolicy;
+import org.eclipse.persistence.queries.FetchGroup;
 import org.eclipse.persistence.queries.ModifyAllQuery;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
@@ -106,6 +107,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
@@ -149,6 +151,41 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
 
     /** Explicit handoff while cloning this refresh's object graph. */
     private transient RefreshOperation refreshCloneOperation;
+
+    /** Query-local selection, scoped to an original or one relationship operation. */
+    private transient GraphCloneContext graphCloneContext;
+
+    private static class GraphCloneContext {
+        final Object original;
+        final FetchGroup selection;
+        Object clone;
+
+        GraphCloneContext(Object original, FetchGroup selection) {
+            this.original = original;
+            this.selection = selection;
+        }
+    }
+
+    /** INTERNAL: Scope selection to one construction or relationship traversal. */
+    public <T> T withGraphCloneSelection(Object original, FetchGroup selection, Supplier<T> action) {
+        GraphCloneContext previous = this.graphCloneContext;
+        this.graphCloneContext = selection == null ? null : new GraphCloneContext(original, selection);
+        try {
+            return action.get();
+        } finally {
+            this.graphCloneContext = previous;
+        }
+    }
+
+    /** INTERNAL: A null owner is used only inside an explicit relationship traversal. */
+    public FetchGroup getGraphCloneSelection(Object original) {
+        GraphCloneContext context = this.graphCloneContext;
+        if (context == null || context.original != null && context.original != original) {
+            return null;
+        }
+        ClassDescriptor descriptor = getDescriptor(original);
+        return descriptor.hasInheritance() ? (FetchGroup) context.selection.findGroup(descriptor) : context.selection;
+    }
 
     /**
      * INTERNAL: Own only this invocation's JPA phases, outside the legacy
@@ -226,10 +263,13 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         this.refreshOperation = operation.previous;
         try {
             if (success) {
-                for (Object target : operation.targets) {
-                    DescriptorEvent event = operation.events.get(target);
-                    event.getDescriptor().getEventManager().executeEntityRefreshEvent(event);
-                }
+                withGraphCloneSelection(null, null, () -> {
+                    for (Object target : operation.targets) {
+                        DescriptorEvent event = operation.events.get(target);
+                        event.getDescriptor().getEventManager().executeEntityRefreshEvent(event);
+                    }
+                    return null;
+                });
             }
         } finally {
             operation.events.clear();
@@ -250,11 +290,14 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     @Override
     public void executeDeferredEvents() {
         RefreshOperation previous = this.refreshCloneOperation;
+        GraphCloneContext previousGraph = this.graphCloneContext;
         this.refreshCloneOperation = null;
+        this.graphCloneContext = null;
         try {
             super.executeDeferredEvents();
         } finally {
             this.refreshCloneOperation = previous;
+            this.graphCloneContext = previousGraph;
         }
     }
 
@@ -1166,6 +1209,8 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     }
 
     public Object cloneAndRegisterObject(Object original, CacheKey parentCacheKey, CacheKey unitOfWorkCacheKey, ClassDescriptor descriptor, RefreshOperation operation) {
+        GraphCloneContext graphContext = this.graphCloneContext;
+        FetchGroup graphSelection = getGraphCloneSelection(original);
         ClassDescriptor concreteDescriptor = descriptor;
         // Ensure correct subclass descriptor.
         if (original.getClass() != descriptor.getJavaClass()) {
@@ -1236,7 +1281,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             }
 
             //also clone the fetch group reference if applied
-            if (concreteDescriptor.hasFetchGroupManager()) {
+            if (graphSelection == null && concreteDescriptor.hasFetchGroupManager()) {
                 concreteDescriptor.getFetchGroupManager().copyFetchGroupInto(original, workingClone, this);
             }
         } finally {
@@ -1259,7 +1304,10 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                 }
             }
         }
-        concreteDescriptor.getObjectBuilder().instantiateEagerMappings(workingClone, this);
+        concreteDescriptor.getObjectBuilder().instantiateEagerMappings(workingClone, this, graphSelection);
+        if (graphSelection != null) {
+            graphContext.clone = workingClone;
+        }
         return workingClone;
     }
 
@@ -4002,7 +4050,8 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         changePolicy.dissableEventProcessing(workingClone);
 
         ObjectBuilder builder = descriptor.getObjectBuilder();
-        builder.populateAttributesForClone(original, parentCacheKey, workingClone, null, this);
+        FetchGroup graphSelection = getGraphCloneSelection(original);
+        builder.populateAttributesForClone(original, parentCacheKey, workingClone, null, this, graphSelection);
         Object backupClone = changePolicy.buildBackupClone(workingClone, builder, this);
         // PERF: Avoid put if no backup clone.
         if (workingClone != backupClone) {
@@ -4238,12 +4287,17 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     public Object registerExistingObject(Object objectToRegister, ClassDescriptor descriptor, Object queryPrimaryKey,
             boolean isFromSharedCache, ObjectBuildingQuery query) {
         RefreshOperation previous = this.refreshCloneOperation;
+        GraphCloneContext previousGraph = this.graphCloneContext;
+        this.graphCloneContext = query instanceof ObjectLevelReadQuery read && read.getFetchGroup() != null
+                && read.getFetchGroup().hasGraphOptions() && !query.shouldRefreshIdentityMapResult()
+                ? new GraphCloneContext(objectToRegister, read.getExecutionFetchGroup(descriptor)) : null;
         this.refreshCloneOperation = this.refreshOperation != null && this.refreshOperation.query == query
                 ? this.refreshOperation : null;
         try {
             return registerExistingObject(objectToRegister, descriptor, queryPrimaryKey, isFromSharedCache);
         } finally {
             this.refreshCloneOperation = previous;
+            this.graphCloneContext = previousGraph;
         }
     }
 
@@ -4346,7 +4400,10 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             //fetch group manager control fetch group support
             if (descriptor.hasFetchGroupManager()) {
                 //if the object is already registered in uow, but it's partially fetched (fetch group case)
-                if (descriptor.getFetchGroupManager().shouldWriteInto(objectToRegister, registeredObject)) {
+                boolean freshGraphClone = this.graphCloneContext != null
+                        && (this.graphCloneContext.original == null || this.graphCloneContext.original == objectToRegister)
+                        && this.graphCloneContext.clone == registeredObject;
+                if (!freshGraphClone && descriptor.getFetchGroupManager().shouldWriteInto(objectToRegister, registeredObject)) {
                     //there might be cases when reverting/refreshing clone is needed.
                     descriptor.getFetchGroupManager().writePartialIntoClones(objectToRegister, registeredObject, this.getBackupClone(registeredObject, descriptor), this);
                 }
