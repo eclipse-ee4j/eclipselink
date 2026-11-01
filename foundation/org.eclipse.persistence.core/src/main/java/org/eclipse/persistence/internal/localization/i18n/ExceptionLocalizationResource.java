@@ -262,6 +262,7 @@ public class ExceptionLocalizationResource extends ListResourceBundle {
                                            { "pu_configured_for_resource_local", "Unable to create an EntityManager with SynchronizationType because PersistenceUnit is configured with resource-local transactions."},
                                            { "getpersistenceunitutil_called_on_closed_emf", "getPersistenceUnitUtil() was called on a closed EntityManagerFactory."},
                                            { "invalid_named_entity_graph", "Invalid named entity graph [{0}] declared by [{1}]: {2}." },
+                                           { "multiple_unqualified_fetch_annotations", "Attribute [{1}] of class [{0}] declares more than one @Fetch annotation without a graph." },
                                            { "named_entity_graph_exists", "NamedEntityGraph with name {0} found on {1} already exists in this persistence unit."},
                                            { "cannot_get_from_non_correlated_query", "getCorrelationParent() called on a from-clause that was not obtained through correlation." },
                                            { "no_key_in_entity", "Cannot add join of {0} to {1} because the target class is missing an attribute of source type"},

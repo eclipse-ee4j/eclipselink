@@ -108,6 +108,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import jakarta.persistence.FetchType;
+
 import org.eclipse.persistence.annotations.Convert;
 import org.eclipse.persistence.annotations.JoinFetchType;
 import org.eclipse.persistence.annotations.Properties;
@@ -151,6 +153,7 @@ import org.eclipse.persistence.internal.jpa.metadata.converters.SerializedMetada
 import org.eclipse.persistence.internal.jpa.metadata.converters.TemporalMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.UUIDMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.XMLMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.graphs.FetchMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.mappings.MapKeyMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 import org.eclipse.persistence.internal.mappings.converters.AttributeNamePrefix;
@@ -211,6 +214,8 @@ public abstract class MappingAccessor extends MetadataAccessor {
     private DatabaseMapping m_overrideMapping;
     private Map<String, PropertyMetadata> m_properties = new HashMap<>();
     private String m_attributeType;
+    private boolean m_fetchOverrideInitialized;
+    private String m_fetchOverride;
     protected ColumnMetadata m_field;
 
     /**
@@ -610,6 +615,23 @@ public abstract class MappingAccessor extends MetadataAccessor {
      */
     protected String getDefaultFetchType() {
         return JPA_FETCH_EAGER;
+    }
+
+    /**
+     * INTERNAL:
+     * Apply an unqualified Fetch annotation before resolving mapping defaults.
+     * An XML mapping replaces the annotation mapping, including its defaults.
+     * Cache only the annotation override so the persistence-unit default remains
+     * associated with the accessor's current metadata context.
+     */
+    protected String getEffectiveFetchType(String mappingFetchType) {
+        if (!m_fetchOverrideInitialized) {
+            FetchType override = loadedFromXML() ? null : FetchMetadata.getUnqualifiedFetchType(this);
+            m_fetchOverride = override == null ? null : override.name();
+            m_fetchOverrideInitialized = true;
+        }
+        String fetchType = m_fetchOverride == null ? mappingFetchType : m_fetchOverride;
+        return fetchType == null ? getDefaultFetchType() : fetchType;
     }
 
     /**
@@ -1167,7 +1189,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * Init an xml mapping accessor with its necessary components.
      */
     public void initXMLMappingAccessor(ClassAccessor classAccessor) {
-        m_classAccessor = classAccessor;
+        setClassAccessor(classAccessor);
         setEntityMappings(classAccessor.getEntityMappings());
         initXMLAccessor(classAccessor.getDescriptor(), classAccessor.getProject());
     }
@@ -1178,6 +1200,8 @@ public abstract class MappingAccessor extends MetadataAccessor {
     @Override
     public void initXMLObject(MetadataAccessibleObject accessibleObject, XMLEntityMappings entityMappings) {
         super.initXMLObject(accessibleObject, entityMappings);
+        m_fetchOverrideInitialized = false;
+        m_fetchOverride = null;
 
         initXMLObject(m_field, accessibleObject);
     }
@@ -2149,6 +2173,8 @@ public abstract class MappingAccessor extends MetadataAccessor {
      */
     public void setClassAccessor(ClassAccessor classAccessor) {
         m_classAccessor = classAccessor;
+        m_fetchOverrideInitialized = false;
+        m_fetchOverride = null;
     }
 
     /**
