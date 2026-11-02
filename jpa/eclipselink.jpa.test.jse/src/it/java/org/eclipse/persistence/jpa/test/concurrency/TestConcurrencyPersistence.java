@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2018, 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -104,7 +104,7 @@ public class TestConcurrencyPersistence {
                     final EntityManager em = emf.createEntityManager();
                     try {
                         // Executing the Query
-                        em.createNamedQuery("CONCURR_CASE_QUERY", Integer.class).setParameter("id", 1).getSingleResult();
+                        em.createNamedQuery("CONCURR_CASE_QUERY", Boolean.class).setParameter("id", 1).getSingleResult();
                     } catch (Exception e) {
                         error.incrementAndGet();
                         System.out.println(e.getMessage());

@@ -73,7 +73,15 @@ public class EntityManagerTest extends JUnitTestCase {
             query.setLockMode(LockModeType.OPTIMISTIC);
             Employee emp = (Employee)query.getSingleResult();
             commitTransaction(em);
-            assertEquals(LockModeType.NONE, em.getLockMode(emp));
+            if (isOnServer() && isJTA()) {
+                // The transaction-scoped persistence context ended with the transaction, so emp is detached
+                try {
+                    em.getLockMode(emp);
+                    fail("IllegalArgumentException not thrown for getLockMode() of an entity detached by the commit.");
+                } catch (IllegalArgumentException e) {}
+            } else {
+                assertEquals(LockModeType.NONE, em.getLockMode(emp));
+            }
             clearCache();
             try{
                 em.find(Employee.class, emp.getId(), LockModeType.OPTIMISTIC);

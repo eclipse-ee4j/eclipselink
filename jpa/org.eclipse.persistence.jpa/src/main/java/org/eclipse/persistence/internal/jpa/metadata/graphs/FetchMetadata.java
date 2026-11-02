@@ -55,7 +55,8 @@ public final class FetchMetadata {
     /** Read through the owning accessor so metadata-complete remains effective. */
     public static List<FetchMetadata> collect(MappingAccessor mapping) {
         List<FetchMetadata> declarations = new ArrayList<>();
-        if (!mapping.isTransient()) {
+        // An accessor without an accessible object, such as an uninitialized XML accessor, has no annotations
+        if (!mapping.isTransient() && mapping.getAccessibleObject() != null) {
             MetadataAnnotation fetch = mapping.getAccessibleObject().getAnnotation(
                     MetadataConstants.JPA_FETCH, mapping.getClassAccessor());
             if (fetch != null) {

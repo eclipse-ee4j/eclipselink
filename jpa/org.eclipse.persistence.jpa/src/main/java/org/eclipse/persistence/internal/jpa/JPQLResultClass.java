@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.internal.expressions.ConstantExpression;
 import org.eclipse.persistence.internal.expressions.FunctionExpression;
 import org.eclipse.persistence.internal.expressions.MapEntryExpression;
@@ -39,6 +38,24 @@ import org.eclipse.persistence.queries.ConstructorReportItem;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReportQuery;
+
+import static org.eclipse.persistence.expressions.ExpressionOperator.Abs;
+import static org.eclipse.persistence.expressions.ExpressionOperator.Add;
+import static org.eclipse.persistence.expressions.ExpressionOperator.Case;
+import static org.eclipse.persistence.expressions.ExpressionOperator.CaseCondition;
+import static org.eclipse.persistence.expressions.ExpressionOperator.Cast;
+import static org.eclipse.persistence.expressions.ExpressionOperator.Ceil;
+import static org.eclipse.persistence.expressions.ExpressionOperator.Coalesce;
+import static org.eclipse.persistence.expressions.ExpressionOperator.Divide;
+import static org.eclipse.persistence.expressions.ExpressionOperator.Floor;
+import static org.eclipse.persistence.expressions.ExpressionOperator.Maximum;
+import static org.eclipse.persistence.expressions.ExpressionOperator.Minimum;
+import static org.eclipse.persistence.expressions.ExpressionOperator.Multiply;
+import static org.eclipse.persistence.expressions.ExpressionOperator.Negate;
+import static org.eclipse.persistence.expressions.ExpressionOperator.NullIf;
+import static org.eclipse.persistence.expressions.ExpressionOperator.Round;
+import static org.eclipse.persistence.expressions.ExpressionOperator.Subtract;
+import static org.eclipse.persistence.expressions.ExpressionOperator.Sum;
 
 /** Adapts a JPQL selection without changing its cached or named template. */
 final class JPQLResultClass {
@@ -111,25 +128,41 @@ final class JPQLResultClass {
         if (!parameters.isEmpty()) {
             query.setProperty(PARAMETERS, new ParameterTypes(resultClass, Map.copyOf(parameters)));
         }
-        if (items.size() == 1 && (resultClass == Object.class
-                || types[0] != null && resultClass.isAssignableFrom(types[0])
-                || isUnknownScalar(items.get(0), query)
-                    && (ConversionManager.getDefaultManager().getDataTypesConvertedTo(boxed(resultClass)) != null
-                        || ADDITIONAL_SCALAR_TYPES.contains(resultClass)))) {
+
+        if (
+            items.size() == 1 &&
+
+            (
+                resultClass == Object.class ||
+                types[0] != null && resultClass.isAssignableFrom(types[0]) ||
+
+                // A mapping without a resolvable attribute type (e.g. a raw element collection) cannot be shown incompatible.
+                types[0] == null && items.get(0).getMapping() != null || isUnknownScalar(items.get(0), query) &&
+
+                (
+                    ConversionManager.getDefaultManager().getDataTypesConvertedTo(boxed(resultClass)) != null ||
+                    ADDITIONAL_SCALAR_TYPES.contains(resultClass)
+                )
+
+            )) {
             query.returnSingleAttribute();
             return query;
         }
+
         if (resultClass == Object[].class) {
             query.setReturnType(ReportQuery.ShouldReturnArray);
             return query;
         }
+
         if (resultClass == Tuple.class) {
             // Tuple has its own result packaging; it is never a constructor target.
             return query;
         }
+
         if (!parameters.isEmpty()) {
             return query;
         }
+
         construct(query, types);
         return query;
     }
@@ -195,6 +228,7 @@ final class JPQLResultClass {
         if (original instanceof ReportQuery report) {
             return (ReportQuery) report.clone();
         }
+
         ObjectLevelReadQuery entityQuery = (ObjectLevelReadQuery) original.clone();
         ReportQuery report = new ReportQuery();
         report.copyFromQuery(entityQuery);
@@ -233,12 +267,15 @@ final class JPQLResultClass {
             }
             return boxed(mapping.getAttributeClassification());
         }
+
         if (item.getDescriptor() != null) {
             return item.getDescriptor().getJavaClass();
         }
+
         if (item.getAttributeExpression() instanceof ConstantExpression constant && constant.getValue() != null) {
             return constant.getValue().getClass();
         }
+
         if (item.getAttributeExpression() instanceof ParameterExpression parameter) {
             if (parameter.getType() instanceof Class<?> type && type != Object.class) {
                 return boxed(type);
@@ -250,6 +287,7 @@ final class JPQLResultClass {
             }
             return null;
         }
+
         return isUnknownScalar(item, query) ? null : item.getResultType();
     }
 
@@ -259,16 +297,17 @@ final class JPQLResultClass {
                 || item.getResultType() != null && item.getResultType() != Object.class) {
             return false;
         }
+
         if (item.getResultType() == null && item.getAttributeExpression() instanceof FunctionExpression function) {
             // The report builder leaves only genuinely unresolved scalar results untyped.
             // Declared Object and incompatible known operands retain Object metadata.
             return switch (function.getOperator().getSelector()) {
-                case 0, ExpressionOperator.Cast, ExpressionOperator.Case, ExpressionOperator.CaseCondition,
-                     ExpressionOperator.Coalesce, ExpressionOperator.NullIf, ExpressionOperator.Add,
-                     ExpressionOperator.Subtract, ExpressionOperator.Multiply, ExpressionOperator.Divide,
-                     ExpressionOperator.Negate, ExpressionOperator.Abs, ExpressionOperator.Ceil,
-                     ExpressionOperator.Floor, ExpressionOperator.Round, ExpressionOperator.Minimum,
-                     ExpressionOperator.Maximum, ExpressionOperator.Sum -> true;
+                case 0, Cast, Case, CaseCondition,
+                     Coalesce, NullIf, Add,
+                     Subtract, Multiply, Divide,
+                     Negate, Abs, Ceil,
+                     Floor, Round, Minimum,
+                     Maximum, Sum -> true;
                 default -> false;
             };
         }
@@ -280,6 +319,7 @@ final class JPQLResultClass {
         if (resultClass.isInterface() || Modifier.isAbstract(resultClass.getModifiers())) {
             throw new IllegalArgumentException("JPQL constructor result must be a nonabstract class: " + resultClass.getName());
         }
+
         Constructor<?> constructor;
         try {
             constructor = PrivilegedAccessHelper.callDoPrivilegedWithException(() -> matchingConstructor(resultClass, types));
@@ -287,6 +327,7 @@ final class JPQLResultClass {
             throw new IllegalArgumentException("No matching JPQL result constructor for " + resultClass.getName()
                     + Arrays.toString(types), failure);
         }
+
         ConstructorReportItem item = new ConstructorReportItem("result");
         item.setResultType(resultClass);
         item.setConstructor(constructor);
@@ -304,6 +345,7 @@ final class JPQLResultClass {
                 throw new NoSuchMethodException("Unresolved JPQL select-item type");
             }
         }
+
         return PrivilegedAccessHelper.getDeclaredConstructorFor(resultClass, types, true);
     }
 

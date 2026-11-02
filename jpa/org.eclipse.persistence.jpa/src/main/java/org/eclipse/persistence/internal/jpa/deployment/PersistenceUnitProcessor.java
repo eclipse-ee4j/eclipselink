@@ -34,6 +34,7 @@ import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JP
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.UndeclaredThrowableException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -52,6 +53,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
+import java.util.function.Supplier;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
@@ -174,23 +176,34 @@ public class PersistenceUnitProcessor {
      */
     public static Set<String> getPackageDescriptors(PersistenceUnitInfo persistenceUnitInfo) {
         Set<String> packageNames = new LinkedHashSet<>();
-        try {
-            List<String> managed = persistenceUnitInfo.getManagedPackageDescriptors();
-            if (managed != null) {
-                packageNames.addAll(managed);
-            }
-        } catch (AbstractMethodError ignored) {
-            // A container compiled against an earlier SPI has no package list.
+        List<String> managed = getDescriptorsIfSupported(persistenceUnitInfo::getManagedPackageDescriptors);
+        if (managed != null) {
+            packageNames.addAll(managed);
         }
-        try {
-            List<String> all = persistenceUnitInfo.getAllPackageDescriptors();
-            if (all != null) {
-                packageNames.addAll(all);
-            }
-        } catch (AbstractMethodError ignored) {
-            // Preserve any explicit list even when the new discovery SPI is absent.
+        // Preserve any explicit list even when the new discovery SPI is absent.
+        List<String> all = getDescriptorsIfSupported(persistenceUnitInfo::getAllPackageDescriptors);
+        if (all != null) {
+            packageNames.addAll(all);
         }
         return packageNames;
+    }
+
+    /**
+     * Call a 4.0 descriptor method of a container's PersistenceUnitInfo. A container
+     * written for an earlier SPI has no such list: a compiled class lacks the method,
+     * and a proxy, like Spring's, fails to find it on the object it delegates to.
+     */
+    private static List<String> getDescriptorsIfSupported(Supplier<List<String>> descriptors) {
+        try {
+            return descriptors.get();
+        } catch (AbstractMethodError ignored) {
+            return null;
+        } catch (UndeclaredThrowableException exception) {
+            if (exception.getCause() instanceof NoSuchMethodException) {
+                return null;
+            }
+            throw exception;
+        }
     }
 
     /**
