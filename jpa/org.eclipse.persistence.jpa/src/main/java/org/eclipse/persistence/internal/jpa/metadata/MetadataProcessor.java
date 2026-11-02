@@ -372,10 +372,10 @@ public class MetadataProcessor {
         return annotation;
     }
 
-    private static class NamedStatementAccessor extends MetadataAccessor {
+    private static class NamedQueryAccessor extends MetadataAccessor {
         private boolean processed;
 
-        NamedStatementAccessor(MetadataClass type, MetadataProject project) {
+        NamedQueryAccessor(MetadataClass type, MetadataProject project) {
             super(null, type, new MetadataDescriptor(type), project);
         }
 
@@ -396,25 +396,27 @@ public class MetadataProcessor {
 
         @Override
         public void process() {
-            addStatements(MetadataConstants.JPA_NAMED_STATEMENT, MetadataConstants.JPA_NAMED_STATEMENTS, false);
-            addStatements(MetadataConstants.JPA_NAMED_NATIVE_STATEMENT, MetadataConstants.JPA_NAMED_NATIVE_STATEMENTS, true);
+            addQueries(MetadataConstants.JPA_NAMED_QUERY, MetadataConstants.JPA_NAMED_QUERIES, false);
+            addQueries(MetadataConstants.JPA_NAMED_NATIVE_QUERY, MetadataConstants.JPA_NAMED_NATIVE_QUERIES, true);
+            addQueries(MetadataConstants.JPA_NAMED_STATEMENT, MetadataConstants.JPA_NAMED_STATEMENTS, false);
+            addQueries(MetadataConstants.JPA_NAMED_NATIVE_STATEMENT, MetadataConstants.JPA_NAMED_NATIVE_STATEMENTS, true);
             processed = true;
         }
 
-        private void addStatements(String single, String multiple, boolean nativeSql) {
+        private void addQueries(String single, String multiple, boolean nativeSql) {
             MetadataAnnotation annotation = getAnnotation(single);
             if (annotation != null) {
-                addStatement(annotation, nativeSql);
+                addQuery(annotation, nativeSql);
             }
             MetadataAnnotation container = getAnnotation(multiple);
             if (container != null) {
                 for (Object item : container.getAttributeArray("value")) {
-                    addStatement((MetadataAnnotation) item, nativeSql);
+                    addQuery((MetadataAnnotation) item, nativeSql);
                 }
             }
         }
 
-        private void addStatement(MetadataAnnotation annotation, boolean nativeSql) {
+        private void addQuery(MetadataAnnotation annotation, boolean nativeSql) {
             getProject().addQuery(nativeSql ? new NamedNativeQueryMetadata(annotation, this)
                     : new NamedQueryMetadata(annotation, this));
         }
@@ -645,10 +647,14 @@ public class MetadataProcessor {
                 // JBoss Bug 227630: Do not process a null class whether it was from a
                 // NPE or a CNF, a warning or exception is thrown in loadClass()
                 if (candidateClass != null) {
-                    if (!PersistenceUnitProcessor.isEntity(candidateClass)
+                    MappedSuperclassAccessor mappedSuperclass = m_project.getMappedSuperclassAccessor(className);
+                    EmbeddableAccessor embeddable = m_project.getEmbeddableAccessor(className);
+                    if ((mappedSuperclass == null || !mappedSuperclass.ignoreAnnotations())
+                            && (embeddable == null || !embeddable.ignoreAnnotations())
+                            && !PersistenceUnitProcessor.isEntity(candidateClass)
                             && !PersistenceUnitProcessor.isMappedSuperclass(candidateClass)
                             && !m_project.hasEntity(candidateClass)) {
-                        new NamedStatementAccessor(candidateClass, m_project).process();
+                        new NamedQueryAccessor(candidateClass, m_project).process();
                     }
                     if (candidateClass.isAnnotationPresent("jakarta.persistence.EntityListener")) {
                         m_discoveredEntityListeners.put(className, candidateClass);
@@ -677,7 +683,7 @@ public class MetadataProcessor {
             //Add to the list only existing package-info.class
             if (metadataPackageInfo.getSuperclassName() != null) {
                 m_project.addPackageAccessor(new PackageAccessor(null, metadataPackageInfo, m_project));
-                new NamedStatementAccessor(metadataPackageInfo, m_project).process();
+                new NamedQueryAccessor(metadataPackageInfo, m_project).process();
             }
         }
     }

@@ -16,6 +16,7 @@
         <class>org.eclipse.persistence.jpa.packagedescriptors.model.PackageModels$Record</class>
         <class>org.eclipse.persistence.jpa.packagedescriptors.model.PackageModels$DiscoveredListener</class>
         <package-descriptor>org.eclipse.persistence.jpa.packagedescriptors.model</package-descriptor>
+        <package-descriptor>org.eclipse.persistence.jpa.packagedescriptors.metadata</package-descriptor>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
     </persistence-unit>
 </persistence>
