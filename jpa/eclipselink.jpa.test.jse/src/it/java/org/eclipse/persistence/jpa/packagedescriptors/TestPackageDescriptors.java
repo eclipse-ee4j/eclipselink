@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.lang.module.ModuleFinder;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Proxy;
 import java.net.URL;
@@ -24,21 +25,27 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.UUID;
 import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
+import javax.tools.ToolProvider;
 
 import jakarta.persistence.EntityAgent;
+import jakarta.persistence.EntityHandler;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.LockModeType;
 import jakarta.persistence.Persistence;
 import jakarta.persistence.PersistenceConfiguration;
 import jakarta.persistence.PersistenceUnitTransactionType;
+import jakarta.persistence.QueryFlushMode;
 import jakarta.persistence.spi.PersistenceUnitInfo;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
@@ -77,6 +84,7 @@ import static org.junit.Assert.assertTrue;
 public class TestPackageDescriptors {
     private static final String MODEL_PACKAGE = Record.class.getPackageName();
     private static final String METADATA_PACKAGE = "org.eclipse.persistence.jpa.packagedescriptors.metadata";
+    private static final String QUERIES_PACKAGE = "org.eclipse.persistence.jpa.packagedescriptors.queries";
     private static final List<String> PACKAGE_EVENTS = List.of(
             "package-first-pre", "package-second-pre", "declared-pre", "entity-pre");
     private static final List<String> ALL_EVENTS = List.of(
@@ -109,6 +117,7 @@ public class TestPackageDescriptors {
             verifyInsert(factory, false, ALL_EVENTS);
             verifyInsert(factory, true, ALL_EVENTS);
             assertEquals(1, DiscoveredListener.FACTORIES.get());
+            verifyRecordQueries(factory, "packageDescriptorFind", "packageDescriptorNative");
         }
     }
 
@@ -228,6 +237,9 @@ public class TestPackageDescriptors {
                     assertEquals(1, agent.createNamedStatement("packageDescriptorRename")
                             .setParameter("value", "renamed").setParameter("id", 13).execute());
                     assertEquals("renamed", agent.get(Record.class, 13).value);
+                    assertEquals(1, agent.createNamedStatement("packageDescriptorNativeRename")
+                            .setParameter(1, "native-renamed").setParameter(2, 13).execute());
+                    assertEquals("native-renamed", agent.get(Record.class, 13).value);
                 } finally {
                     agent.getTransaction().rollback();
                 }
@@ -332,6 +344,460 @@ public class TestPackageDescriptors {
         }
     }
 
+    @Test
+    public void packageQueriesExecuteForBothHandlersWithTheirMetadata() {
+        try (Unit unit = new Unit(Record.class)) {
+            unit.packages(METADATA_PACKAGE);
+            EntityManagerFactory factory = unit.create();
+            verifyRecordQueries(factory, "packageDescriptorFind", "packageDescriptorNative");
+            try (EntityManager manager = factory.createEntityManager()) {
+                var query = manager.createNamedQuery("packageDescriptorFind");
+                assertEquals(QueryFlushMode.NO_FLUSH, query.getQueryFlushMode());
+                assertEquals("7", String.valueOf(query.getHints().get("eclipselink.jdbc.fetch-size")));
+            }
+            assertEquals(1, factory.getMetamodel().getEntities().size());
+        }
+    }
+
+    @Test
+    public void containerAnnotationsPreserveInlineMappingsAndStatements() {
+        try (Unit unit = new Unit(Record.class)) {
+            unit.packages(QUERIES_PACKAGE);
+            EntityManagerFactory factory = unit.create();
+            verifyRecordQueries(factory, "packageContainerFind", "packageContainerNative");
+            verifyScalarQueries(factory, "packageContainerValues", "packageContainerColumns");
+            verifyStatements(factory, "packageContainer");
+        }
+    }
+
+    @Test
+    public void repeatedPackageAnnotationsRegisterQueriesAndStatements() {
+        try (Unit unit = new Unit(Record.class)) {
+            unit.packages(QUERIES_PACKAGE + ".repeated");
+            EntityManagerFactory factory = unit.create();
+            verifyRecordQueries(factory, "packageRepeatedFind", "packageRepeatedNative");
+            verifyScalarQueries(factory, "packageRepeatedValues", "packageRepeatedColumns");
+            verifyStatements(factory, "packageRepeated");
+        }
+    }
+
+    @Test
+    public void repeatedHolderQueriesDoNotInitializeOrEnrollTheirDeclaringClass() {
+        try (Unit unit = new Unit(Record.class, QueryFixtures.Holder.class)) {
+            EntityManagerFactory factory = unit.create();
+            verifyRecordQueries(factory, "holderFind", "holderNative");
+            verifyScalarQueries(factory, "holderValues", "holderColumns");
+            verifyStatements(factory, "holder");
+            assertEquals(1, factory.getMetamodel().getEntities().size());
+            assertThrows(IllegalArgumentException.class, () -> factory.getMetamodel().entity(QueryFixtures.Holder.class));
+        }
+    }
+
+    @Test
+    public void identicalQueriesRetainOneRegistration() {
+        try (Unit unit = new Unit(Record.class, QueryFixtures.FirstDuplicate.class, QueryFixtures.SecondDuplicate.class)) {
+            EntityManagerFactory factory = unit.create();
+            assertTrue(factory.getNamedQueries(Record.class).containsKey("duplicateQuery"));
+            try (EntityManager manager = factory.createEntityManager()) {
+                assertTrue(manager.createNamedQuery("duplicateQuery").getResultList().isEmpty());
+            }
+        }
+    }
+
+    @Test
+    public void conflictingDeclarationsKeepTheExistingDuplicateError() throws Exception {
+        try (StatementModule module = new StatementModule(); Unit unit = new Unit(Record.class, module.conflictingHolder)) {
+            unit.info.setClassLoader(module.loader);
+            unit.info.setNewTempClassLoader(module.loader);
+            unit.packages(METADATA_PACKAGE);
+            RuntimeException failure = assertThrows(RuntimeException.class, () -> unit.create().createEntityManager());
+            assertTrue(failure.toString(), exceptionText(failure).contains("packageDescriptorFind"));
+            assertTrue(exceptionText(failure).contains("Conflicting annotations with the same name"));
+        }
+    }
+
+    @Test
+    public void entityAndMappedSuperclassKeepTheirExistingQueryProducer() {
+        try (Unit unit = new Unit(QueryFixtures.AnnotatedEntity.class, QueryFixtures.AnnotatedSuperclass.class)) {
+            try (EntityManager manager = unit.create().createEntityManager()) {
+                assertTrue(manager.createNamedQuery("entityQuery").getResultList().isEmpty());
+                assertTrue(manager.createNamedQuery("superclassQuery").getResultList().isEmpty());
+            }
+        }
+    }
+
+    @Test
+    public void xmlCompleteSuperclassesSuppressAnnotationsForEntityDescendants() {
+        try (Unit unit = new Unit(QueryFixtures.XmlEntity.class, QueryFixtures.XmlSuperclass.class)) {
+            unit.info.setMappingFileNames(List.of("META-INF/package-descriptors/query-superclass.xml"));
+            EntityManagerFactory factory = unit.create();
+            verifyEmptyQueries(factory, "xmlSuperclassQuery");
+            verifyMissingSuperclassQueries(factory);
+        }
+    }
+
+    @Test
+    public void xmlEnabledSuperclassesRetainQueriesWithEntityDescendants() {
+        insertQueryRecord();
+        for (String mapping : List.of("incomplete", "false")) {
+            try (Unit unit = new Unit(Record.class, QueryFixtures.XmlSuperclass.class, QueryFixtures.XmlEntity.class)) {
+                unit.info.setMappingFileNames(List.of("META-INF/package-descriptors/query-standalone-superclass-" + mapping + ".xml",
+                        "META-INF/package-descriptors/query-superclass-descendant.xml"));
+                EntityManagerFactory factory = unit.create();
+                verifyStatements(factory, "xmlSuperclass");
+                verifySuperclassQueries(factory);
+                assertEquals(2, factory.getMetamodel().getEntities().size());
+            }
+        }
+    }
+
+    @Test
+    public void xmlDefinitionsOverrideSuperclassAnnotationsWithEntityDescendants() {
+        insertQueryRecord();
+        try (Unit unit = new Unit(Record.class, QueryFixtures.XmlSuperclass.class, QueryFixtures.XmlEntity.class)) {
+            unit.info.setMappingFileNames(List.of("META-INF/package-descriptors/query-standalone-superclass-false.xml",
+                    "META-INF/package-descriptors/query-superclass-descendant.xml",
+                    "META-INF/package-descriptors/query-superclass-override.xml"));
+            EntityManagerFactory factory = unit.create();
+            verifyEmptyQueries(factory, "xmlSuperclassAnnotation", "xmlSuperclassNative");
+            verifyStatements(factory, "xmlSuperclass");
+        }
+    }
+
+    @Test
+    public void xmlStandaloneSuperclassesRetainAllQueryAnnotationFamilies() {
+        insertQueryRecord();
+        for (String mapping : List.of("incomplete", "false")) {
+            try (Unit unit = new Unit(Record.class, QueryFixtures.XmlSuperclass.class)) {
+                unit.info.setMappingFileNames(List.of("META-INF/package-descriptors/query-standalone-superclass-" + mapping + ".xml"));
+                EntityManagerFactory factory = unit.create();
+                // No mapped entity descends from this superclass: its legacy
+                // statements must not depend on a descendant processing it.
+                verifyStatements(factory, "xmlSuperclass");
+                verifySuperclassQueries(factory);
+            }
+        }
+    }
+
+    @Test
+    public void xmlCompleteStandaloneSuperclassesSuppressAllQueryAnnotationFamilies() {
+        try (Unit unit = new Unit(Record.class, QueryFixtures.XmlSuperclass.class)) {
+            unit.info.setMappingFileNames(List.of("META-INF/package-descriptors/query-standalone-superclass-complete.xml"));
+            EntityManagerFactory factory = unit.create();
+            verifyRecordQueries(factory, "xmlStandaloneQuery");
+            verifyMissingSuperclassQueries(factory);
+        }
+    }
+
+    @Test
+    public void xmlQueryDefinitionsOverridePackageAnnotations() {
+        insertQueryRecord();
+        try (Unit unit = new Unit(Record.class)) {
+            unit.packages(METADATA_PACKAGE);
+            unit.info.setMappingFileNames(List.of("META-INF/package-descriptors/query-override.xml"));
+            verifyEmptyQueries(unit.create(), "packageDescriptorFind", "packageDescriptorNative");
+        }
+    }
+
+    @Test
+    public void globalMetadataCompleteKeepsXmlQueriesAndSuppressesDescriptorAndHolderQueries() {
+        try (Unit unit = new Unit(Record.class, QueryFixtures.Holder.class)) {
+            unit.packages(METADATA_PACKAGE);
+            unit.info.setMappingFileNames(List.of("META-INF/package-descriptors/query-complete.xml"));
+            EntityManagerFactory factory = unit.create();
+            verifyEmptyQueries(factory, "xmlOnlyQuery");
+            try (EntityManager manager = factory.createEntityManager()) {
+                for (String name : List.of("packageDescriptorFind", "packageDescriptorNative", "holderFind", "holderNative")) {
+                    assertThrows(name, IllegalArgumentException.class, () -> manager.createNamedQuery(name));
+                }
+            }
+        }
+    }
+
+    @Test
+    public void sameNamedFactoriesKeepSeparateQueryMembership() {
+        String name = "package-query-isolation-" + UUID.randomUUID();
+        try (EntityManagerFactory absent = configuration(name).createEntityManagerFactory();
+                EntityManagerFactory present = configuration(name).managedPackageDescriptor(METADATA_PACKAGE)
+                        .createEntityManagerFactory()) {
+            verifyRecordQueries(present, "packageDescriptorFind", "packageDescriptorNative");
+            try (EntityManager manager = absent.createEntityManager()) {
+                assertThrows(IllegalArgumentException.class, () -> manager.createNamedQuery("packageDescriptorFind"));
+            }
+        }
+    }
+
+    @Test
+    public void cachedProjectRetainsPackageQueries() {
+        try (Unit unit = new Unit(Record.class)) {
+            unit.packages(METADATA_PACKAGE);
+            MemoryCache cache = new MemoryCache();
+            unit.properties.put(PersistenceUnitProperties.PROJECT_CACHE, cache);
+            EntityManagerFactory first = unit.create();
+            verifyEmptyQueries(first, "packageDescriptorFind", "packageDescriptorNative");
+            first.close();
+            verifyRecordQueries(unit.create(), "packageDescriptorFind", "packageDescriptorNative");
+            assertEquals(1, cache.hits);
+        }
+    }
+
+    @Test
+    public void discoveredAndExcludedDescriptorsRespectQueryMembership() throws Exception {
+        try (Archive archive = new Archive(METADATA_PACKAGE)) {
+            try (Unit root = new Unit(Record.class)) {
+                root.info.setPersistenceUnitRootUrl(archive.url());
+                root.info.setExcludeUnlistedClasses(false);
+                verifyEmptyQueries(root.create(), "packageDescriptorFind", "packageDescriptorNative");
+            }
+            try (Unit jar = new Unit(Record.class)) {
+                jar.info.setJarFileUrls(List.of(archive.url()));
+                jar.packages(METADATA_PACKAGE);
+                verifyEmptyQueries(jar.create(), "packageDescriptorFind", "packageDescriptorNative");
+            }
+            try (Unit excluded = new Unit(Record.class)) {
+                excluded.info.setPersistenceUnitRootUrl(archive.url());
+                try (EntityManager manager = excluded.create().createEntityManager()) {
+                    assertThrows(IllegalArgumentException.class, () -> manager.createNamedQuery("packageDescriptorFind"));
+                }
+            }
+        }
+    }
+
+    @Test
+    public void containerCompleteDescriptorListContributesQueries() throws Exception {
+        try (Unit unit = new Unit(Record.class)) {
+            unit.info.setPersistenceUnitRootUrl(new URL("file:/__unavailable_query_descriptor_root__/"));
+            unit.properties.put(SystemProperties.ARCHIVE_FACTORY, ContainerArchiveFactory.class.getName());
+            PersistenceUnitInfo supplied = (PersistenceUnitInfo) Proxy.newProxyInstance(
+                    getClass().getClassLoader(), new Class<?>[] {PersistenceUnitInfo.class}, (proxy, method, args) -> {
+                        if (method.getName().equals("getAllPackageDescriptors")) {
+                            return List.of(METADATA_PACKAGE);
+                        }
+                        try {
+                            return method.invoke(unit.info, args);
+                        } catch (InvocationTargetException failure) {
+                            throw failure.getCause();
+                        }
+                    });
+            try (EntityManagerFactory factory = new PersistenceProvider()
+                    .createContainerEntityManagerFactory(supplied, unit.properties)) {
+                verifyRecordQueries(factory, "packageDescriptorFind", "packageDescriptorNative");
+            }
+        }
+    }
+
+    @Test
+    public void ordinaryHolderPreservesMappingsLocksGraphsAndHints() {
+        insertQueryRecord();
+        try (Unit unit = new Unit(QueryFixtures.RichEntity.class, QueryFixtures.RichHolder.class)) {
+            EntityManagerFactory factory = unit.create();
+            for (boolean useAgent : List.of(false, true)) {
+                try (EntityHandler handler = useAgent ? factory.createEntityAgent() : factory.createEntityManager()) {
+                    assertEquals(41, ((QueryFixtures.RichEntity) handler.createNamedQuery("holderMapping").getSingleResult()).id);
+                    assertEquals("original", ((QueryFixtures.Value) handler.createNamedQuery("holderConstructor").getSingleResult()).value());
+                    var query = handler.createNamedQuery("holderLocked");
+                    assertEquals(QueryFlushMode.NO_FLUSH, query.getQueryFlushMode());
+                    assertEquals(LockModeType.PESSIMISTIC_READ, query.getLockMode());
+                    assertEquals("EXTENDED", String.valueOf(query.getHints().get("jakarta.persistence.lock.scope")));
+                    assertTrue(query.getHints().containsKey("jakarta.persistence.loadgraph"));
+                    assertEquals("9", String.valueOf(query.getHints().get("eclipselink.jdbc.fetch-size")));
+                    assertEquals(QueryFlushMode.NO_FLUSH, handler.createNamedQuery("holderMapping").getQueryFlushMode());
+                    handler.getTransaction().begin();
+                    try {
+                        assertEquals(41, ((QueryFixtures.RichEntity) query.getSingleResult()).id);
+                    } finally {
+                        handler.getTransaction().rollback();
+                    }
+                }
+            }
+        }
+    }
+
+    @Test
+    public void identicalExplicitAndOmittedDefaultsRetainOneRegistration() {
+        insertQueryRecord();
+        try (Unit unit = new Unit(Record.class, QueryFixtures.FirstDuplicate.class, QueryFixtures.SecondDuplicate.class,
+                QueryFixtures.FirstExplicitDuplicate.class, QueryFixtures.SecondExplicitDuplicate.class)) {
+            EntityManagerFactory factory = unit.create();
+            try (EntityManager manager = factory.createEntityManager(); EntityAgent agent = factory.createEntityAgent()) {
+                for (String name : List.of("duplicateQuery", "explicitDefaultQuery")) {
+                    assertEquals(41, ((Record) manager.createNamedQuery(name).getSingleResult()).id);
+                    assertEquals(41, ((Record) agent.createNamedQuery(name).getSingleResult()).id);
+                }
+                for (String name : List.of("duplicateNative", "explicitDefaultNative")) {
+                    assertEquals(41L, manager.createNamedQuery(name).getSingleResult());
+                    assertEquals(41L, agent.createNamedQuery(name).getSingleResult());
+                }
+            }
+        }
+    }
+
+    @Test
+    public void cachedModuleStatementsSurviveMissingOrMalformedDescriptorResources() throws Exception {
+        insertQueryRecord();
+        for (String resource : List.of("readable", "missing", "malformed")) {
+            try (StatementModule module = new StatementModule(); Unit unit = module.unit()) {
+                Path descriptor = module.directory.resolve("classes/module-info.class");
+                if (resource.equals("missing")) {
+                    Files.delete(descriptor);
+                } else if (resource.equals("malformed")) {
+                    Files.write(descriptor, new byte[] {0, 1, 2, 3});
+                }
+                EntityManagerFactory factory = unit.create();
+                for (boolean useAgent : List.of(false, true)) {
+                    try (EntityHandler handler = useAgent ? factory.createEntityAgent() : factory.createEntityManager()) {
+                        for (String name : List.of("moduleRename", "moduleNativeRename")) {
+                            assertEquals("5", String.valueOf(handler.createNamedStatement(name).getHints().get("eclipselink.jdbc.timeout")));
+                        }
+                    }
+                }
+                verifyStatements(factory, "module");
+                assertEquals(2, factory.getMetamodel().getEntities().size());
+            }
+        }
+    }
+
+    @Test
+    public void xmlIncompleteEmbeddablesRetainAllQueryAnnotationFamilies() {
+        insertQueryRecord();
+        for (String mapping : List.of("incomplete", "false")) {
+            try (Unit unit = new Unit(Record.class, QueryFixtures.EmbeddableHolder.class)) {
+                unit.info.setMappingFileNames(List.of("META-INF/package-descriptors/query-embeddable-" + mapping + ".xml"));
+                EntityManagerFactory factory = unit.create();
+                try (EntityManager manager = factory.createEntityManager(); EntityAgent agent = factory.createEntityAgent()) {
+                    for (String name : List.of("embeddableFind", "embeddableNative", "xmlEmbeddableQuery")) {
+                        assertEquals(41, ((Record) manager.createNamedQuery(name).getSingleResult()).id);
+                        assertEquals(41, ((Record) agent.createNamedQuery(name).getSingleResult()).id);
+                    }
+                }
+                verifyStatements(factory, "embeddable");
+            }
+        }
+    }
+
+    @Test
+    public void xmlCompleteEmbeddablesSuppressAllQueryAnnotationFamilies() {
+        try (Unit unit = new Unit(Record.class, QueryFixtures.EmbeddableHolder.class)) {
+            unit.info.setMappingFileNames(List.of("META-INF/package-descriptors/query-embeddable-complete.xml"));
+            EntityManagerFactory factory = unit.create();
+            verifyRecordQueries(factory, "xmlEmbeddableQuery");
+            for (boolean useAgent : List.of(false, true)) {
+                try (EntityHandler handler = useAgent ? factory.createEntityAgent() : factory.createEntityManager()) {
+                    for (String name : List.of("embeddableFind", "embeddableNative")) {
+                        assertThrows(name, IllegalArgumentException.class, () -> handler.createNamedQuery(name));
+                    }
+                    for (String name : List.of("embeddableRename", "embeddableDelete", "embeddableNativeRename", "embeddableNativeDelete")) {
+                        assertThrows(name, IllegalArgumentException.class, () -> handler.createNamedStatement(name));
+                    }
+                }
+            }
+        }
+    }
+
+    @Test
+    public void xmlCompleteEmbeddablesCannotConflictWithEnabledQueryDeclarations() throws Exception {
+        try (StatementModule module = new StatementModule();
+                Unit unit = new Unit(Record.class, QueryFixtures.EmbeddableHolder.class, module.conflictingEmbeddable)) {
+            unit.info.setClassLoader(module.loader);
+            unit.info.setNewTempClassLoader(module.loader);
+            unit.info.setMappingFileNames(List.of("META-INF/package-descriptors/query-embeddable-conflict.xml"));
+            EntityManagerFactory factory = unit.create();
+            verifyRecordQueries(factory, "embeddableFind", "embeddableNative", "xmlEmbeddableQuery");
+            verifyStatements(factory, "embeddable");
+        }
+    }
+
+    private void insertQueryRecord() {
+        fixture.runInTransaction(manager -> manager.persist(new Record(41)));
+    }
+
+    private void verifyRecordQueries(EntityManagerFactory factory, String... names) {
+        insertQueryRecord();
+        try (EntityManager manager = factory.createEntityManager(); EntityAgent agent = factory.createEntityAgent()) {
+            for (String name : names) {
+                assertEquals(name, 41, ((Record) manager.createNamedQuery(name).getSingleResult()).id);
+                assertEquals(name, 41, ((Record) agent.createNamedQuery(name).getSingleResult()).id);
+            }
+        }
+    }
+
+    private static void verifyScalarQueries(EntityManagerFactory factory, String values, String columns) {
+        try (EntityManager manager = factory.createEntityManager(); EntityAgent agent = factory.createEntityAgent()) {
+            assertEquals("original", manager.createNamedQuery(values).getSingleResult());
+            assertEquals("original", agent.createNamedQuery(values).getSingleResult());
+            assertEquals(41L, manager.createNamedQuery(columns).getSingleResult());
+            assertEquals(41L, agent.createNamedQuery(columns).getSingleResult());
+        }
+    }
+
+    private static void verifyEmptyQueries(EntityManagerFactory factory, String... names) {
+        try (EntityManager manager = factory.createEntityManager(); EntityAgent agent = factory.createEntityAgent()) {
+            for (String name : names) {
+                assertTrue(name, manager.createNamedQuery(name).getResultList().isEmpty());
+                assertTrue(name, agent.createNamedQuery(name).getResultList().isEmpty());
+            }
+        }
+    }
+
+    private static void verifySuperclassQueries(EntityManagerFactory factory) {
+        for (boolean useAgent : List.of(false, true)) {
+            try (EntityHandler handler = useAgent ? factory.createEntityAgent() : factory.createEntityManager()) {
+                for (String name : List.of("xmlSuperclassAnnotation", "xmlSuperclassNative", "xmlStandaloneQuery")) {
+                    assertTrue(factory.getNamedQueries(Record.class).containsKey(name));
+                    assertEquals(41, ((Record) handler.createNamedQuery(name).getSingleResult()).id);
+                }
+            }
+        }
+    }
+
+    private static void verifyMissingSuperclassQueries(EntityManagerFactory factory) {
+        for (boolean useAgent : List.of(false, true)) {
+            try (EntityHandler handler = useAgent ? factory.createEntityAgent() : factory.createEntityManager()) {
+                for (String name : List.of("xmlSuperclassAnnotation", "xmlSuperclassNative")) {
+                    assertThrows(name, IllegalArgumentException.class, () -> handler.createNamedQuery(name));
+                }
+                for (String name : List.of("xmlSuperclassRename", "xmlSuperclassDelete", "xmlSuperclassNativeRename", "xmlSuperclassNativeDelete")) {
+                    assertThrows(name, IllegalArgumentException.class, () -> handler.createNamedStatement(name));
+                }
+            }
+        }
+    }
+
+    private static void verifyStatements(EntityManagerFactory factory, String prefix) {
+        for (boolean useAgent : List.of(false, true)) {
+            for (boolean nativeSql : List.of(false, true)) {
+                try (EntityHandler handler = useAgent ? factory.createEntityAgent() : factory.createEntityManager()) {
+                    handler.getTransaction().begin();
+                    try {
+                        var rename = handler.createNamedStatement(prefix + (nativeSql ? "NativeRename" : "Rename"));
+                        var delete = handler.createNamedStatement(prefix + (nativeSql ? "NativeDelete" : "Delete"));
+                        if (nativeSql) {
+                            rename.setParameter(1, "changed").setParameter(2, 41);
+                            delete.setParameter(1, 41);
+                        } else {
+                            rename.setParameter("value", "changed").setParameter("id", 41);
+                            delete.setParameter("id", 41);
+                        }
+                        assertEquals(1, rename.execute());
+                        assertEquals("changed", handler.createNativeQuery("select ROW_VALUE from JPA_PD_RECORD where ROW_ID = 41").getSingleResult());
+                        assertEquals(1, delete.execute());
+                        assertTrue(handler.createNativeQuery("select ROW_VALUE from JPA_PD_RECORD where ROW_ID = 41").getResultList().isEmpty());
+                    } finally {
+                        handler.getTransaction().rollback();
+                    }
+                }
+            }
+        }
+    }
+
+    private static String exceptionText(Throwable failure) {
+        StringBuilder text = new StringBuilder();
+        for (Throwable cause = failure; cause != null; cause = cause.getCause()) {
+            text.append(cause).append('\n');
+        }
+        return text.toString();
+    }
+
     private static void verifyGeneratedIdentity(EntityManagerFactory factory) {
         try (EntityManager manager = factory.createEntityManager()) {
             manager.getTransaction().begin();
@@ -432,6 +898,113 @@ public class TestPackageDescriptors {
             for (EntityManagerFactory factory : factories.reversed()) {
                 if (factory.isOpen()) {
                     factory.close();
+                }
+            }
+        }
+    }
+
+    /** A real module using the existing API class loader, without a second API module. */
+    private static final class StatementModule implements AutoCloseable {
+        final Path directory;
+        final ClassLoader loader;
+        final Class<?> record;
+        final Class<?> other;
+        final Class<?> conflictingHolder;
+        final Class<?> conflictingEmbeddable;
+
+        StatementModule() throws Exception {
+            directory = Files.createTempDirectory("named-statement-module-");
+            try {
+                Path source = Files.createDirectories(directory.resolve("source/descriptor/fixture"));
+                Path output = Files.createDirectories(directory.resolve("classes"));
+                Path moduleInfo = directory.resolve("source/module-info.java");
+                Files.writeString(moduleInfo, """
+                        @jakarta.persistence.NamedStatement(name="moduleRename",
+                            statement="update ModuleRecord r set r.value = :value where r.id = :id",
+                            hints=@jakarta.persistence.QueryHint(name="eclipselink.jdbc.timeout", value="5"))
+                        @jakarta.persistence.NamedStatement(name="moduleDelete", statement="delete from ModuleRecord r where r.id = :id")
+                        @jakarta.persistence.NamedNativeStatement(name="moduleNativeRename",
+                            statement="update JPA_PD_RECORD set ROW_VALUE = ? where ROW_ID = ?",
+                            hints=@jakarta.persistence.QueryHint(name="eclipselink.jdbc.timeout", value="5"))
+                        @jakarta.persistence.NamedNativeStatement(name="moduleNativeDelete", statement="delete from JPA_PD_RECORD where ROW_ID = ?")
+                        open module descriptor.fixture { exports descriptor.fixture; }
+                        """);
+                Path entity = source.resolve("ModuleRecord.java");
+                Files.writeString(entity, """
+                        package descriptor.fixture;
+                        @jakarta.persistence.Entity(name="ModuleRecord")
+                        @jakarta.persistence.Table(name="JPA_PD_RECORD")
+                        public class ModuleRecord {
+                            @jakarta.persistence.Id @jakarta.persistence.Column(name="ROW_ID") public int id;
+                            @jakarta.persistence.Column(name="ROW_VALUE") public String value;
+                        }
+                        """);
+                Path secondEntity = source.resolve("Other.java");
+                Files.writeString(secondEntity, """
+                        package descriptor.fixture;
+                        @jakarta.persistence.Entity(name="ModuleOther")
+                        @jakarta.persistence.Table(name="JPA_PD_RECORD")
+                        public class Other {
+                            @jakarta.persistence.Id @jakarta.persistence.Column(name="ROW_ID") public int id;
+                        }
+                        """);
+                Path embeddable = source.resolve("ConflictingEmbeddable.java");
+                Files.writeString(embeddable, """
+                        package descriptor.fixture;
+                        @jakarta.persistence.Embeddable
+                        @jakarta.persistence.NamedQuery(name="embeddableFind", query="select r from PackageDescriptorRecord r where r.id < 0")
+                        @jakarta.persistence.NamedNativeQuery(name="embeddableNative", query="select ROW_ID from JPA_PD_RECORD where ROW_ID < 0")
+                        @jakarta.persistence.NamedStatement(name="embeddableRename", statement="delete from PackageDescriptorRecord r")
+                        @jakarta.persistence.NamedNativeStatement(name="embeddableNativeRename", statement="delete from JPA_PD_RECORD")
+                        public class ConflictingEmbeddable { public String value; }
+                        """);
+                Path conflict = source.resolve("ConflictingHolder.java");
+                Files.writeString(conflict, """
+                        package descriptor.fixture;
+                        @jakarta.persistence.NamedQuery(name="packageDescriptorFind",
+                            query="select r from PackageDescriptorRecord r where r.id < 0")
+                        public class ConflictingHolder {}
+                        """);
+                String classpath = Path.of(Persistence.class.getProtectionDomain().getCodeSource().getLocation().toURI()).toString();
+                ByteArrayOutputStream diagnostics = new ByteArrayOutputStream();
+                int status = ToolProvider.getSystemJavaCompiler().run(null, diagnostics, diagnostics,
+                        "-proc:none", "--class-path", classpath, "--add-reads", "descriptor.fixture=ALL-UNNAMED",
+                        "-d", output.toString(), moduleInfo.toString(), entity.toString(), secondEntity.toString(), embeddable.toString(), conflict.toString());
+                assertEquals(diagnostics.toString(), 0, status);
+                var configuration = ModuleLayer.boot().configuration().resolve(ModuleFinder.of(output), ModuleFinder.of(),
+                        Set.of("descriptor.fixture"));
+                var controller = ModuleLayer.defineModulesWithOneLoader(configuration, List.of(ModuleLayer.boot()),
+                        TestPackageDescriptors.class.getClassLoader());
+                Module module = controller.layer().findModule("descriptor.fixture").orElseThrow();
+                controller.addReads(module, Persistence.class.getModule());
+                loader = controller.layer().findLoader("descriptor.fixture");
+                record = Class.forName("descriptor.fixture.ModuleRecord", false, loader);
+                other = Class.forName("descriptor.fixture.Other", false, loader);
+                conflictingHolder = Class.forName("descriptor.fixture.ConflictingHolder", false, loader);
+                assertTrue(record.getModule().isNamed());
+                assertEquals("descriptor.fixture", record.getModule().getName());
+                conflictingEmbeddable = Class.forName("descriptor.fixture.ConflictingEmbeddable", false, loader);
+                // Populate the JDK cache before the test changes descriptor bytes.
+                assertEquals(2, module.getAnnotationsByType(jakarta.persistence.NamedStatement.class).length);
+                assertEquals(2, module.getAnnotationsByType(jakarta.persistence.NamedNativeStatement.class).length);
+            } catch (Throwable failure) {
+                close();
+                throw failure;
+            }
+        }
+
+        Unit unit() {
+            Unit unit = new Unit(record, other);
+            unit.info.setClassLoader(loader);
+            unit.info.setNewTempClassLoader(loader);
+            return unit;
+        }
+
+        @Override
+        public void close() throws IOException {
+            try (var paths = Files.walk(directory)) {
+                for (Path path : paths.sorted(Comparator.reverseOrder()).toList()) {
+                    Files.delete(path);
                 }
             }
         }

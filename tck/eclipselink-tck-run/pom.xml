@@ -291,6 +291,12 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>jakarta.tck</groupId>
+            <artifactId>sigtest-maven-plugin</artifactId>
+            <version>2.6</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.junit.platform</groupId>
             <artifactId>junit-platform-launcher</artifactId>
             <scope>test</scope>
@@ -339,6 +345,13 @@
             <plugin>
                 <artifactId>maven-dependency-plugin</artifactId>
                 <executions>
+                    <execution>
+                        <id>resolve-signature-classpath</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>properties</goal>
+                        </goals>
+                    </execution>
                     <!--
                         Only the JDBC driver needs copying, and only because the forked
                         Ant process that loads the DDL cannot see Maven's classpath.
@@ -413,6 +426,30 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
                 <executions>
+                    <execution>
+                        <id>prepare-signature-jdk-classes</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <delete dir="${project.build.directory}/sigtest-jdk-classes"/>
+                            </target>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>remove-signature-jdk-classes</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <delete dir="${project.build.directory}/sigtest-jdk-classes"/>
+                            </target>
+                        </configuration>
+                    </execution>
                     <execution>
                         <id>initdb</id>
                         <phase>pre-integration-test</phase>
@@ -621,6 +658,8 @@ Full log: ${initdb.log}
                         <Insert_Jpa_Purchase_Order>INSERT INTO PURCHASE_ORDER(ID, TOTAL, DESCRIPTION) VALUES(?, ?, null)</Insert_Jpa_Purchase_Order>
                         <Select_Jpa_Purchase_Order>SELECT ID, TOTAL FROM PURCHASE_ORDER WHERE ID=?</Select_Jpa_Purchase_Order>
                         <jdbc.db>${jdbc.db}</jdbc.db>
+                        <sigTestClasspath>${jakarta.persistence:jakarta.persistence-api:jar}${path.separator}${jakarta.annotation:jakarta.annotation-api:jar}${path.separator}${project.build.directory}/sigtest-jdk-classes/java.base${path.separator}${project.build.directory}/sigtest-jdk-classes/java.rmi${path.separator}${project.build.directory}/sigtest-jdk-classes/java.sql${path.separator}${project.build.directory}/sigtest-jdk-classes/java.naming</sigTestClasspath>
+                        <jimage.dir>${project.build.directory}/sigtest-jdk-classes</jimage.dir>
                     </systemPropertyVariables>
                 </configuration>
             </plugin>
