@@ -32,6 +32,7 @@
 package org.eclipse.persistence.internal.jpa;
 
 import java.security.AccessController;
+import java.sql.Connection;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -245,6 +246,11 @@ public class EntityManagerFactoryProvider {
      * @param properties User specified properties for the persistence unit
      */
     protected static void login(DatabaseSessionImpl session, Map properties, boolean requiresConnection) {
+        Object schemaConnection = getConfigProperty(PersistenceUnitProperties.SCHEMA_GENERATION_CONNECTION, properties);
+        if (!requiresConnection && schemaConnection != null) {
+            session.setDatasourceAndInitialize((Connection) schemaConnection);
+            return;
+        }
         String databaseGenerationAction = getConfigPropertyAsString(PersistenceUnitProperties.SCHEMA_GENERATION_DATABASE_ACTION, properties);
 
         // Avoid an actual connection if we don't need one. If the user provides

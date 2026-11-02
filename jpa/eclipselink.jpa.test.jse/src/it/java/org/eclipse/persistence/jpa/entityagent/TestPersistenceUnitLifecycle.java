@@ -12,6 +12,7 @@
 package org.eclipse.persistence.jpa.entityagent;
 
 import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -49,6 +50,7 @@ import jakarta.persistence.PersistenceUnitTransactionType;
 import jakarta.persistence.PostCreate;
 import jakarta.persistence.PreClose;
 import jakarta.persistence.PreInsert;
+import jakarta.persistence.SchemaManagementAction;
 import jakarta.persistence.SynchronizationType;
 import jakarta.persistence.ValidationMode;
 import jakarta.transaction.TransactionManager;
@@ -945,6 +947,26 @@ public class TestPersistenceUnitLifecycle {
             unit.properties.put("jakarta.persistence.schema-generation.database.action", "none");
             new PersistenceProvider().generateSchema(unit.info, unit.properties);
             assertTrue(unit.trace.events.isEmpty());
+        }
+    }
+
+    @Test
+    public void configurationSchemaExportDoesNotManufacturePublicFactoryEvents() {
+        try (Unit unit = new Unit(Listener.class, Record.class)) {
+            Map<String, Object> values = properties();
+            values.remove(PersistenceUnitProperties.DDL_GENERATION);
+            StringWriter script = new StringWriter();
+            PersistenceConfiguration configuration = new PersistenceConfiguration(unit.name)
+                    .managedClass(Listener.class).managedClass(Record.class)
+                    .transactionType(PersistenceUnitTransactionType.RESOURCE_LOCAL)
+                    .validationMode(ValidationMode.NONE).properties(values)
+                    .schemaManagementScriptsAction(SchemaManagementAction.CREATE)
+                    .property(PersistenceUnitProperties.SCHEMA_GENERATION_DATABASE_ACTION, "none")
+                    .property(PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPTS_CREATE_TARGET, script)
+                    .property(PersistenceUnitProperties.DEPLOY_ON_STARTUP, "false");
+            configuration.exportSchema();
+            assertTrue("Schema export must actually deploy the entity metadata", script.toString().contains("CREATE TABLE"));
+            assertTrue("Temporary schema factory must not emit public lifecycle events", unit.trace.events.isEmpty());
         }
     }
 

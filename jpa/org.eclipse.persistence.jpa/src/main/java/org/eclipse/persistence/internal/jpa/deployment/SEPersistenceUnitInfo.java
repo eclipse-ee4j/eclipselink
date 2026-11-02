@@ -19,6 +19,7 @@ package org.eclipse.persistence.internal.jpa.deployment;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.PersistenceConfiguration;
 import jakarta.persistence.PersistenceUnitTransactionType;
+import jakarta.persistence.SchemaManagementAction;
 import jakarta.persistence.SharedCacheMode;
 import jakarta.persistence.ValidationMode;
 import jakarta.persistence.spi.ClassTransformer;
@@ -31,6 +32,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Properties;
 
@@ -118,7 +120,7 @@ public class SEPersistenceUnitInfo implements jakarta.persistence.spi.Persistenc
         validationMode = configuration.validationMode();
         defaultToOneFetchType = configuration.defaultToOneFetchType();
         persistenceUnitTransactionType = configuration.transactionType();
-        mappingFiles = configuration.mappingFiles();
+        mappingFiles = new ArrayList<>(configuration.mappingFiles());
         managedClassNames = configuration.managedClasses()
                 .stream()
                 .map(Class::getName)
@@ -126,17 +128,28 @@ public class SEPersistenceUnitInfo implements jakarta.persistence.spi.Persistenc
         setManagedPackageDescriptors(configuration.managedPackageDescriptors());
         properties = new Properties();
         properties.putAll(configuration.properties());
-        if (properties.contains(PersistenceUnitProperties.CLASSLOADER)) {
+        addSchemaAction(properties, PersistenceUnitProperties.SCHEMA_GENERATION_DATABASE_ACTION,
+                configuration.schemaManagementDatabaseAction());
+        addSchemaAction(properties, PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPTS_ACTION,
+                configuration.schemaManagementScriptsAction());
+        if (properties.containsKey(PersistenceUnitProperties.CLASSLOADER)) {
             realClassLoader = (ClassLoader) properties.get(PersistenceUnitProperties.CLASSLOADER);
         } else {
             realClassLoader = Thread.currentThread().getContextClassLoader();
         }
         persistenceUnitRootUrl = rootURL;
-        configHash = Integer.toString(persistenceConfigurationHashCode(configuration));
+        configHash = Integer.toString(persistenceConfigurationHashCode(configuration, properties));
+    }
+
+    private static void addSchemaAction(Properties properties, String name, SchemaManagementAction action) {
+        // NONE is also the API default. Preserve absent-property system fallback and load-script behavior.
+        if (action != SchemaManagementAction.NONE) {
+            properties.putIfAbsent(name, action.name().toLowerCase(Locale.ROOT).replace('_', '-'));
+        }
     }
 
     // TODO: Remove when fixed by implementing hashCode in jakarta.persistence API
-    private static int persistenceConfigurationHashCode(PersistenceConfiguration configuration) {
+    private static int persistenceConfigurationHashCode(PersistenceConfiguration configuration, Properties properties) {
         return Objects.hash(configuration.name(),
                                 configuration.provider(),
                                 configuration.jtaDataSource(),
@@ -148,7 +161,7 @@ public class SEPersistenceUnitInfo implements jakarta.persistence.spi.Persistenc
                                 configuration.managedClasses(),
                                 new LinkedHashSet<>(configuration.managedPackageDescriptors()),
                                 configuration.mappingFiles(),
-                                configuration.properties());
+                                properties);
     }
 
     /**

@@ -21,10 +21,13 @@ import jakarta.persistence.spi.PersistenceUnitInfo;
 import jakarta.persistence.spi.ProviderUtil;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider;
+import org.eclipse.persistence.internal.jpa.deployment.JPAInitializer;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class PersistenceProviderTest {
 
@@ -224,6 +227,42 @@ public class PersistenceProviderTest {
         configuration.properties(properties);
         boolean result = PersistenceProvider.isProviderEclipseLink(configuration);
         assertFalse(result);
+    }
+
+    @Test
+    void schemaProviderRejectionDoesNotInitializeThePersistenceUnit() {
+        PersistenceProvider provider = new PersistenceProvider() {
+            @Override
+            public JPAInitializer getInitializer(String name, Map properties) {
+                throw new AssertionError("A rejected provider must not discover or reserve the unit");
+            }
+        };
+        assertFalse(provider.generateSchema(new PersistenceConfiguration("rejected-schema")
+                .provider(Unsupported.class.getName())));
+        assertFalse(provider.generateSchema(new PersistenceConfiguration("rejected-schema")
+                .provider(PersistenceProvider.class.getName())
+                .property(PersistenceUnitProperties.PROVIDER, Unsupported.class)));
+    }
+
+    @Test
+    void schemaProviderSelectionRetainsAliasesAndPropertyPrecedence() {
+        RuntimeException accepted = new IllegalStateException("Selected provider reached initialization");
+        PersistenceProvider provider = new PersistenceProvider() {
+            @Override
+            public JPAInitializer getInitializer(String name, Map properties) {
+                throw accepted;
+            }
+        };
+        for (PersistenceConfiguration configuration : java.util.List.of(
+                new PersistenceConfiguration("schema-provider"),
+                new PersistenceConfiguration("schema-provider").provider(PersistenceProvider.class.getName()),
+                new PersistenceConfiguration("schema-provider").provider(EntityManagerFactoryProvider.class.getName()),
+                new PersistenceConfiguration("schema-provider").provider(Unsupported.class.getName())
+                        .property(PersistenceUnitProperties.PROVIDER, PersistenceProvider.class),
+                new PersistenceConfiguration("schema-provider").provider(Unsupported.class.getName())
+                        .property(PersistenceUnitProperties.PROVIDER, EntityManagerFactoryProvider.class.getName()))) {
+            assertSame(accepted, assertThrows(IllegalStateException.class, () -> provider.generateSchema(configuration)));
+        }
     }
 
     // PersistenceProvider that shall fail the check

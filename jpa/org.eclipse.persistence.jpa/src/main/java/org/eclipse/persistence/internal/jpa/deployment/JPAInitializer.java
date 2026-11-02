@@ -180,6 +180,17 @@ public abstract class JPAInitializer {
         });
     }
 
+    /**
+     * Snapshot an explicit schema request without reusing a previous request's actions or targets.
+     * Reserve the custom name while retaining any snapshot already used for factory creation.
+     */
+    public SEPersistenceUnitInfo schemaGenerationPersistenceUnitInfo(PersistenceConfiguration configuration, URL rootURL) {
+        validateCustomPersistenceUnitName(configuration);
+        SEPersistenceUnitInfo persistenceUnitInfo = new SEPersistenceUnitInfo(configuration, rootURL);
+        customPuInfos.putIfAbsent(configuration.name(), persistenceUnitInfo);
+        return persistenceUnitInfo;
+    }
+
     // Check that custom persistence unit name does not exist in xml configurations.
     private void validateCustomPersistenceUnitName(PersistenceConfiguration configuration) {
         if (findPersistenceUnitInfoImpl(configuration.name(), Collections.emptyMap()) != null) {

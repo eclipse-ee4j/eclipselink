@@ -125,6 +125,7 @@ import java.nio.charset.StandardCharsets;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.security.PrivilegedActionException;
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -207,6 +208,7 @@ import org.eclipse.persistence.internal.localization.LoggingLocalization;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.SecurableObjectHolder;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sequencing.Sequencing;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.internal.sessions.PropertiesHandler;
 import org.eclipse.persistence.internal.sessions.remote.RemoteConnection;
@@ -329,6 +331,8 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
     private List<PersistenceUnitListener> persistenceUnitListeners = List.of();
     /** Holds a reference to the weaver class transformer so it can be cleared after login. */
     private PersistenceWeaver weaver = null;
+    // Supplied-connection schema requests own a disposable setup rather than an ordinary factory setup.
+    private boolean isDisposableSchemaGeneration;
     protected PersistenceUnitInfo persistenceUnitInfo = null;
     // count a number of open factories that use this object.
     protected int factoryCount = 0;
@@ -802,7 +806,12 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                                 updateTunerDeploy(deployProperties, classLoaderToUse);
                                 updateFreeMemory(deployProperties);
                                 if (this.isSessionLoadedFromSessionsXML) {
-                                    getDatabaseSession().login();
+                                    Object schemaConnection = getConfigProperty(PersistenceUnitProperties.SCHEMA_GENERATION_CONNECTION, deployProperties);
+                                    if (!requiresConnection && schemaConnection != null) {
+                                        getDatabaseSession().setDatasourceAndInitialize((Connection) schemaConnection, true);
+                                    } else {
+                                        getDatabaseSession().login();
+                                    }
                                 } else {
                                     login(getDatabaseSession(), deployProperties, requiresConnection);
                                 }
@@ -849,7 +858,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                             }
 
                             // Generate the DDL using the correct connection.
-                            writeDDL(deployProperties, getDatabaseSession(deployProperties), classLoaderToUse);
+                            writeDDL(deployProperties, classLoaderToUse);
                         }
                     }
                     // Initialize platform specific identity sequences plus connect accessor to DB (in case of remote disconnected session).
@@ -874,7 +883,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                     // ee.jakarta.tck.persistence.se.schemaGeneration.annotations.discriminatorColumn.Client now
                     // implicitly tests for this.
 
-                    writeDDL(deployProperties, getDatabaseSession(deployProperties), classLoaderToUse);
+                    writeDDL(deployProperties, classLoaderToUse);
                 }
                 // 266912: Initialize the Metamodel, a login should have already occurred.
                 try {
@@ -884,10 +893,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                 }
             }
             // Clear the weaver's reference to meta-data information, as it is held by the class loader and will never gc.
-            if (this.weaver != null) {
-                this.weaver.clear();
-                this.weaver = null;
-            }
+            clearWeaver();
 
             return this.session;
         } catch (Throwable exception) {
@@ -917,6 +923,13 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             throw persistenceEx;
         } finally {
             this.session.log(SessionLog.FINEST, SessionLog.JPA, "deploy_end", new Object[]{getPersistenceUnitInfo().getPersistenceUnitName(), this.session.getName(), this.state, this.factoryCount});
+        }
+    }
+
+    private void clearWeaver() {
+        if (this.weaver != null) {
+            this.weaver.clear();
+            this.weaver = null;
         }
     }
 
@@ -1507,11 +1520,54 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             // A connection was provided. Build a database session using that
             // connection and use the same log level set on the original
             // database session.
-            DatabaseSessionImpl newDatabaseSession = new DatabaseSessionImpl();
-            newDatabaseSession.setAccessor(new DatabaseAccessor(connection));
-            newDatabaseSession.setLogLevel(databaseSession.getLogLevel());
-            newDatabaseSession.setProject(databaseSession.getProject().clone());
-            return newDatabaseSession;
+            return new SchemaGenerationSession(databaseSession, connection);
+        }
+    }
+
+    /** A borrowed SQL accessor with the sequence metadata already prepared for schema generation. */
+    private static final class SchemaGenerationSession extends DatabaseSessionImpl {
+        private final Sequencing schemaSequencing;
+
+        private SchemaGenerationSession(DatabaseSessionImpl source, Object connection) {
+            schemaSequencing = source.getSequencing();
+            setLogLevel(source.getLogLevel());
+            setProject(source.getProject().clone());
+            setAccessor(new SchemaGenerationAccessor(connection, this));
+        }
+
+        @Override
+        public Sequencing getSequencing() {
+            // SchemaManager reads the acquisition policy; do not reconnect shared Sequence objects.
+            return schemaSequencing;
+        }
+    }
+
+    /** The schema request owns statements, but never the supplied connection or its transaction. */
+    private static final class SchemaGenerationAccessor extends DatabaseAccessor implements AutoCloseable {
+        private final DatabaseSessionImpl schemaSession;
+
+        private SchemaGenerationAccessor(Object connection, DatabaseSessionImpl schemaSession) {
+            super(connection);
+            this.schemaSession = schemaSession;
+            this.login = schemaSession.getDatasourceLogin();
+            setDatasourcePlatform((DatasourcePlatform) this.login.getDatasourcePlatform());
+            // A pooled caller connection must not be released by decrementCallCount().
+            this.usesExternalConnectionPooling = false;
+        }
+
+        @Override
+        public void closeDatasourceConnection() {
+            // Only the caller may close this connection.
+        }
+
+        @Override
+        protected void reconnect(AbstractSession session) {
+            throw DatabaseException.databaseAccessorNotConnected();
+        }
+
+        @Override
+        public void close() {
+            disconnect(schemaSession);
         }
     }
 
@@ -3267,11 +3323,22 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                 }
             }
         } finally {
-            session.log(SessionLog.FINEST, SessionLog.JPA, "undeploy_end", new Object[]{getPersistenceUnitInfo().getPersistenceUnitName(), session.getName(), state, factoryCount});
-            if(state == STATE_UNDEPLOYED) {
-                session = null;
+            try {
+                session.log(SessionLog.FINEST, SessionLog.JPA, "undeploy_end", new Object[]{getPersistenceUnitInfo().getPersistenceUnitName(), session.getName(), state, factoryCount});
+            } finally {
+                if (state == STATE_UNDEPLOYED) {
+                    if (isDisposableSchemaGeneration) {
+                        clearWeaver();
+                    }
+                    session = null;
+                }
             }
         }
+    }
+
+    /** Mark a fresh setup whose lifetime belongs only to one supplied-connection schema request. */
+    public void setIsDisposableSchemaGeneration(boolean disposableSchemaGeneration) {
+        this.isDisposableSchemaGeneration = disposableSchemaGeneration;
     }
 
     /**
@@ -4648,6 +4715,14 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
      * INTERNAL:
      * Generate the DDL per the properties specified.
      */
+    private void writeDDL(Map<String, ?> props, ClassLoader classLoader) {
+        DatabaseSessionImpl schemaSession = getDatabaseSession(props);
+        try (SchemaGenerationAccessor accessor = schemaSession != getDatabaseSession()
+                && schemaSession.getAccessor() instanceof SchemaGenerationAccessor borrowed ? borrowed : null) {
+            writeDDL(props, schemaSession, classLoader);
+        }
+    }
+
     public void writeDDL(Map<String, ?> props, DatabaseSessionImpl session, ClassLoader classLoader) {
         if (this.compositeMemberEmSetupImpls == null) {
             // Generate the DDL if we find either EclipseLink or JPA DDL generation properties.

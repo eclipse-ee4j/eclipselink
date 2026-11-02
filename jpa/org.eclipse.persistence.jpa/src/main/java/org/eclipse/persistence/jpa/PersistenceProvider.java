@@ -39,6 +39,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.UUID;
 
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.PersistenceConfiguration;
@@ -100,7 +101,15 @@ public class PersistenceProvider implements jakarta.persistence.spi.PersistenceP
                     }
 
                     sessionName = EntityManagerSetupImpl.getOrBuildSessionName(properties, persistenceUnitInfo, uniqueName);
-                    synchronized (EntityManagerFactoryProvider.emSetupImpls) {
+                    if (usesSchemaConnection(persistenceUnitInfo, properties, requiresConnection)) {
+                        // A borrowed connection initializes metadata, not an ordinary factory's pools.
+                        emSetupImpl = initializer.callPredeploy((SEPersistenceUnitInfo) persistenceUnitInfo,
+                                properties, uniqueName, sessionName);
+                        emSetupImpl.setIsDisposableSchemaGeneration(true);
+                        emSetupImpl.changeSessionName(sessionName + "-schema-" + UUID.randomUUID());
+                        emSetupImpl.predeploy(emSetupImpl.getPersistenceUnitInfo(), properties);
+                        isNew = true;
+                    } else synchronized (EntityManagerFactoryProvider.emSetupImpls) {
                         emSetupImpl = EntityManagerFactoryProvider.getEntityManagerSetupImpl(sessionName);
 
                         if (emSetupImpl == null) {
@@ -176,6 +185,12 @@ public class PersistenceProvider implements jakarta.persistence.spi.PersistenceP
         return null;
     }
 
+    private static boolean usesSchemaConnection(PersistenceUnitInfo info, Map properties, boolean requiresConnection) {
+        return !requiresConnection && EntityManagerFactoryProvider.hasConfigProperty(
+                PersistenceUnitProperties.SCHEMA_GENERATION_CONNECTION,
+                EntityManagerFactoryProvider.mergeMaps(properties, info.getProperties()));
+    }
+
     @Override
     public EntityManagerFactory createEntityManagerFactory(String emName, Map<?, ?> properties) {
         Map<?, ?> nonNullProperties = (properties == null) ? new HashMap<>() : properties;
@@ -191,7 +206,6 @@ public class PersistenceProvider implements jakarta.persistence.spi.PersistenceP
         return null;
     }
 
-    // Never call this method from this class because of stack frames removal.
     @Override
     public EntityManagerFactory createEntityManagerFactory(PersistenceConfiguration configuration) {
         // Check whether persistence provider is set and matches EclipseLink known classes
@@ -200,7 +214,13 @@ public class PersistenceProvider implements jakarta.persistence.spi.PersistenceP
         }
 
         JPAInitializer initializer = getInitializer(configuration.name(), configuration.properties());
+        return createEntityManagerFactoryImpl(
+                initializer.customPersistenceUnitInfo(configuration, configurationRootURL(configuration)),
+                Collections.emptyMap(),
+                true).completeCreation();
+    }
 
+    private static URL configurationRootURL(PersistenceConfiguration configuration) {
         // Root URL from method caller
         StackWalker stackWalker = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE);
         StackWalker.StackFrame frame = stackWalker.walk(stream -> stream
@@ -236,10 +256,7 @@ public class PersistenceProvider implements jakarta.persistence.spi.PersistenceP
                     ExceptionLocalization.buildMessage("custom_pu_create_error_no_caller",
                                                        new String[] {configuration.name()}));
         }
-        return createEntityManagerFactoryImpl(
-                initializer.customPersistenceUnitInfo(configuration, rootURL),
-                Collections.emptyMap(),
-                true).completeCreation();
+        return rootURL;
     }
 
     /**
@@ -423,7 +440,14 @@ public class PersistenceProvider implements jakarta.persistence.spi.PersistenceP
                                                                                   info.getPersistenceUnitName(),
                                                                                   null);
             String sessionName = EntityManagerSetupImpl.getOrBuildSessionName(nonNullProperties, info, uniqueName);
-            synchronized (EntityManagerFactoryProvider.emSetupImpls) {
+            if (usesSchemaConnection(info, nonNullProperties, requiresConnection)) {
+                emSetupImpl = new EntityManagerSetupImpl(uniqueName, sessionName);
+                emSetupImpl.setIsInContainerMode(true);
+                transformer = emSetupImpl.predeploy(info, nonNullProperties);
+                emSetupImpl.setIsDisposableSchemaGeneration(true);
+                emSetupImpl.changeSessionName(sessionName + "-schema-" + UUID.randomUUID());
+                isNew = true;
+            } else synchronized (EntityManagerFactoryProvider.emSetupImpls) {
                 emSetupImpl = EntityManagerFactoryProvider.getEntityManagerSetupImpl(sessionName);
                 if (emSetupImpl == null){
                     emSetupImpl = new EntityManagerSetupImpl(uniqueName, sessionName);
@@ -625,8 +649,17 @@ public class PersistenceProvider implements jakarta.persistence.spi.PersistenceP
 
     @Override
     public boolean generateSchema(PersistenceConfiguration configuration) {
-        // TODO Auto-generated method stub
-        return false;
+        if (!isProviderEclipseLink(configuration)) {
+            return false;
+        }
+        JPAInitializer initializer = getInitializer(configuration.name(), configuration.properties());
+        SEPersistenceUnitInfo info = initializer.schemaGenerationPersistenceUnitInfo(
+                configuration, configurationRootURL(configuration));
+        try (EntityManagerFactoryImpl factory = createEntityManagerFactoryImpl(info, Collections.emptyMap(), false)) {
+            // Explicit export must also deploy when ordinary factory startup was configured as lazy.
+            factory.getDatabaseSession();
+        }
+        return true;
     }
 
     /**
