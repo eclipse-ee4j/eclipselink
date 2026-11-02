@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -401,7 +401,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             em.clear();
             clearCache();
 
-            List<Eater> rabbits = em.createQuery("select this from Rabbit this", Eater.class).getResultList();
+            List<Rabbit> rabbits = em.createQuery("select this from Rabbit this", Rabbit.class).getResultList();
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -338,8 +338,8 @@ public class AdvancedMultiTenant123JunitTest extends AdvancedMultiTenantJunitBas
 
             // Try a multiple select
             try {
-                TypedQuery<MafiaFamily> query = em.createQuery("SELECT m.address, m.family FROM Mafioso m WHERE m.address.city = 'Ottawa' AND m.family.name LIKE 'Galore'", MafiaFamily.class);
-                List<MafiaFamily> results = query.getResultList();
+                TypedQuery<Object[]> query = em.createQuery("SELECT m.address, m.family FROM Mafioso m WHERE m.address.city = 'Ottawa' AND m.family.name LIKE 'Galore'", Object[].class);
+                List<Object[]> results = query.getResultList();
                 int size = results.size();
                 assertEquals("Incorrect number of results returned [" + size + "], expected [6]", 6, size);
             } catch (Exception e) {

@@ -27,6 +27,7 @@ import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.OneToOneMapping;
 import org.eclipse.persistence.queries.DatabaseQuery;
 
 import java.io.BufferedWriter;
@@ -383,6 +384,18 @@ public class ParameterExpression extends BaseExpression {
             if (mappedField != null && (mappedField.getType() != null
                     || mappedField.getSqlType() != DatabaseField.NULL_SQL_TYPE)) {
                 return mappedField.clone();
+            }
+        }
+        if (localBase instanceof QueryKeyExpression key && key.getMapping() instanceof OneToOneMapping reference
+                && reference.getSourceToTargetKeyFields().size() == 1) {
+            // A relationship's foreign key carries no type of its own; its target key does.
+            Map.Entry<DatabaseField, DatabaseField> keyFields = reference.getSourceToTargetKeyFields().entrySet().iterator().next();
+            DatabaseField targetField = keyFields.getValue();
+            if (targetField.getType() != null || targetField.getSqlType() != DatabaseField.NULL_SQL_TYPE) {
+                DatabaseField foreignKey = keyFields.getKey().clone();
+                foreignKey.setType(targetField.getType());
+                foreignKey.setSqlType(targetField.getSqlType());
+                return foreignKey;
             }
         }
         DatabaseField nullField = field.clone();
