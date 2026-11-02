@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -1029,8 +1029,11 @@ public abstract class DatasourceCall implements Call {
                         case TRANSLATION:
                             value = null;
                             // Parameter expressions are used for nesting and correct mapping conversion of the value.
-                            if (parameter instanceof ParameterExpression) {
-                                value = ((ParameterExpression)parameter).getValue(translationRow, getQuery(), session);
+                            if (parameter instanceof ParameterExpression expression) {
+                                value = expression.getValue(translationRow, getQuery(), session);
+                                if (value == null) {
+                                    value = expression.getNullValueField(translationRow);
+                                }
                             } else {
                                 field = (DatabaseField)parameter;
                                 value = translationRow.get(field);
@@ -1212,9 +1215,13 @@ public abstract class DatasourceCall implements Call {
 
                         break;
                     case TRANSLATION:
-                        if (parameterValue instanceof ParameterExpression) {
-                            field = ((ParameterExpression) parameterValue).getField();
-                            translatedValue = ((ParameterExpression) parameterValue).getValue(translationRow, query, session);
+                        if (parameterValue instanceof ParameterExpression expression) {
+                            field = expression.getField();
+                            translatedValue = expression.getValue(translationRow, query, session);
+                            if (translatedValue == null
+                                    && (!query.hasNullableArguments() || !query.getNullableArguments().contains(field))) {
+                                translatedValue = expression.getNullValueField(translationRow);
+                            }
                         } else {
                             field = (DatabaseField)parameterValue;
                             translatedValue = translationRow.get(field);
@@ -1436,7 +1443,7 @@ public abstract class DatasourceCall implements Call {
                         }
                         writer.write(")");
                     //handle null passed into ...IN (?) as a parameter
-                    } else if (parameter instanceof DatabaseField && translationRow.get(parameter) == null){
+                    } else if (parameter instanceof DatabaseField && translationRow.get(parameter) == null) {
                         parametersValues.add(null);
                         writer.write("(?)");
                     } else {

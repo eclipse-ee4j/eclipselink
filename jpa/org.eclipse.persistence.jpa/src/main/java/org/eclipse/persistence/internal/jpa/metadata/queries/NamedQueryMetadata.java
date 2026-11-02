@@ -271,7 +271,11 @@ public class NamedQueryMetadata extends ORMetadata {
      */
     public void process(AbstractSession session) {
         try {
-            addJPAQuery(new JPAQuery(getName(), getQuery(), getLockMode(), processQueryHints(session)), session);
+            JPAQuery query = new JPAQuery(getName(), getQuery(), getLockMode(), processQueryHints(session));
+            if (getResultClass() != null && !getResultClass().isVoid()) {
+                query.setResultClassName(getJavaClassName(getResultClass()));
+            }
+            addJPAQuery(query, session);
         } catch (Exception exception) {
             throw ValidationException.errorProcessingNamedQuery(getClass(), getName(), exception);
         }

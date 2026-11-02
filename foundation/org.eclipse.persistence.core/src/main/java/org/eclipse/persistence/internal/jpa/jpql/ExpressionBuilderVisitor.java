@@ -621,16 +621,25 @@ final class ExpressionBuilderVisitor extends JPQLFunctionsAbstractBuilder implem
                 queryExpression = queryExpression.caseStatement(visitor.whenClauses, elseExpression);
             }
 
-            // An implicit default has no field type and must remain a literal SQL NULL.
-            if (!expression.hasElseExpression()) {
-                elseExpression.setLocalBase(queryContext.getBaseExpression().getBuilder());
+            // CASE result nulls have no independent JDBC type. Keep them literal after
+            // caseStatement has assigned local bases, just like an omitted ELSE.
+            for (Expression result : visitor.whenClauses.values()) {
+                keepCaseNullLiteral(result);
             }
+            keepCaseNullLiteral(elseExpression);
 
             // Set the expression type
             type[0] = queryContext.typeResolver().compareCollectionEquivalentTypes(visitor.types);
         }
         finally {
             visitor.dispose();
+        }
+    }
+
+    private void keepCaseNullLiteral(Expression expression) {
+        if (expression instanceof ConstantExpression constant && constant.getValue() == null) {
+            constant.setCanBind(false);
+            constant.setLocalBase(queryContext.getBaseExpression().getBuilder());
         }
     }
 

@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2026 Contributors to the Eclipse Foundation.
- * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -1336,7 +1336,9 @@ public class DatabaseAccessor extends DatasourceAccessor {
             int type = field.sqlType;
             if (type == NULL_SQL_TYPE) {
                 type = metaData.getColumnType(columnNumber);
-                field.setSqlType(type);
+                if (field.shouldCacheSqlType()) {
+                    field.setSqlType(type);
+                }
             }
 
             if (optimizeData) {

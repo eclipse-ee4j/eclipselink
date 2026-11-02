@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2026 Contributors to the Eclipse Foundation.
- * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -30,12 +30,14 @@ import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.databaseaccess.DatasourceCall;
+import org.eclipse.persistence.internal.expressions.MapEntryExpression;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.EntityAgentProperties;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
+import org.eclipse.persistence.mappings.DirectCollectionMapping;
 import org.eclipse.persistence.queries.ConstructorReportItem;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.DeleteAllQuery;
@@ -682,6 +684,12 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
                         } else {
                             if (item.getMapping() != null && item.getMapping().isAggregateObjectMapping()) {
                                 itemOffset += item.getMapping().getFields().size(); // Aggregate object may consist out of 1..n fields
+                            } else if (item.getMapping() != null && item.getMapping().isDirectCollectionMapping()
+                                    && item.getAttributeExpression() instanceof MapEntryExpression entry
+                                    && entry.shouldReturnMapEntry()) {
+                                DirectCollectionMapping collection = (DirectCollectionMapping) item.getMapping();
+                                List<DatabaseField> keyFields = collection.getContainerPolicy().getAdditionalFieldsForJoin(collection);
+                                itemOffset += collection.getSelectFields().size() + (keyFields == null ? 0 : keyFields.size());
                             } else {
                                 ++itemOffset; //only a single attribute can be selected
                             }

@@ -44,6 +44,24 @@ public class ParameterExpression extends BaseExpression {
     public record ConvertedValue(Object value) implements java.io.Serializable {
     }
 
+    /** An execution-local null binding type; the expression's Java type is unchanged. */
+    public record TypedNull(Class<?> type) implements java.io.Serializable {
+    }
+
+    /** A selected parameter may expose a different JDBC type on its next execution. */
+    private static final class ResultField extends DatabaseField {
+        private static final long serialVersionUID = 1L;
+
+        private ResultField() {
+            super("*");
+        }
+
+        @Override
+        public boolean shouldCacheSqlType() {
+            return false;
+        }
+    }
+
     /** The parameter field or name. */
     protected DatabaseField field;
 
@@ -358,6 +376,36 @@ public class ParameterExpression extends BaseExpression {
         return value;
     }
 
+    /** Preserve relational or explicit type information when a parameter is null. */
+    public DatabaseField getNullValueField(AbstractRecord translationRow) {
+        if (localBase instanceof DataExpression data) {
+            DatabaseField mappedField = data.getField();
+            if (mappedField != null && (mappedField.getType() != null
+                    || mappedField.getSqlType() != DatabaseField.NULL_SQL_TYPE)) {
+                return mappedField.clone();
+            }
+        }
+        DatabaseField nullField = field.clone();
+        DatabaseField rowField = translationRow == null ? null : translationRow.getField(field);
+        if (rowField != null) {
+            // Duplicate argument names may have promoted metadata on the row.
+            if (rowField.getType() != null && rowField.getType() != Object.class) {
+                if (nullField.getType() != rowField.getType()) {
+                    nullField.setSqlType(rowField.getSqlType());
+                }
+                nullField.setType(rowField.getType());
+                nullField.setTypeName(rowField.getType().getName());
+            }
+            if (nullField.getSqlType() == DatabaseField.NULL_SQL_TYPE) {
+                nullField.setSqlType(rowField.getSqlType());
+            }
+        }
+        if ((nullField.getType() == null || nullField.getType() == Object.class) && type instanceof Class<?> javaType) {
+            nullField.setType(javaType);
+        }
+        return nullField;
+    }
+
     private boolean directionUp = true;
 
     private Object getParentNodeValue(Class<?> parentNodeClass, QueryKeyExpression queryKeyExpression, Object inputValue) {
@@ -630,7 +678,7 @@ public class ParameterExpression extends BaseExpression {
         }
 
         // This field is a parameter value, so any name can be used.
-        newFields.add(new DatabaseField("*"));
+        newFields.add(new ResultField());
         printSQL(printer);
     }
 

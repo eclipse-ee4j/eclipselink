@@ -842,6 +842,8 @@ public class QueryImpl {
                     DatabaseField field = new DatabaseField(parameterName);
                     field.setType(parameterType);
                     parameterValue = field;
+                } else if (parameterValue == null && parameterType != null) {
+                    parameterValue = new org.eclipse.persistence.internal.expressions.ParameterExpression.TypedNull(parameterType);
                 }
 
                 if (expressionArgument && parameterConverters.containsKey(parameterName)) {
