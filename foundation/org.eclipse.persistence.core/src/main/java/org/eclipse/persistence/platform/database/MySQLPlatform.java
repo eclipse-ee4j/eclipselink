@@ -533,6 +533,20 @@ public class MySQLPlatform extends DatabasePlatform {
         }
 
         @Override
+        protected void printWeekSQL(final Expression first, Expression second, final ExpressionSQLPrinter printer) {
+            printer.printString("WEEK(");
+            first.printSQL(printer);
+            printer.printString(", 3)");
+        }
+
+        @Override
+        protected void printWeekJava(final Expression first, Expression second, final ExpressionJavaPrinter printer) {
+            printer.printString("WEEK(");
+            first.printJava(printer);
+            printer.printString(", 3)");
+        }
+
+        @Override
         protected void printSecondSQL(final Expression first, Expression second, final ExpressionSQLPrinter printer) {
             printer.printString(SECOND_STRINGS[0]);
             first.printSQL(printer);
@@ -1024,6 +1038,28 @@ public class MySQLPlatform extends DatabasePlatform {
     @Override
     public boolean shouldPrintOutputTokenAtStart() {
         return true;
+    }
+
+    @Override
+    public void printExpressionTypeContext(Expression value, Class<?> type,
+            ExpressionTypeContext context, ExpressionSQLPrinter printer) {
+        if (context == ExpressionTypeContext.TEMPORAL_RESULT) {
+            if (value instanceof FunctionExpression function && function.getOperator().getSelector() == ExpressionOperator.NullIf) {
+                // MySQL's native NULLIF can lose fractions when consumed as a temporal value.
+                List<Expression> arguments = function.getChildren();
+                printer.printString("CASE WHEN ");
+                arguments.get(0).printSQL(printer);
+                printer.printString(" = ");
+                arguments.get(1).printSQL(printer);
+                printer.printString(" THEN NULL ELSE ");
+                arguments.get(0).printSQL(printer);
+                printer.printString(" END");
+            } else {
+                printTemporalTypeContext(value, type, printer);
+            }
+        } else {
+            super.printExpressionTypeContext(value, type, context, printer);
+        }
     }
 
     @Override

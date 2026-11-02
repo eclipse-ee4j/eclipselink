@@ -782,8 +782,10 @@ public class OraclePlatform extends DatabasePlatform {
         private static final String[] WEEK_STRINGS = new String[] {"TO_NUMBER(TO_CHAR(", ", 'IW'))"};
         // DATE emulation: TRUNC(:first)
         private static final String[] DATE_STRINGS = new String[] {"TRUNC(", ")"};
-        // TIME emulation: TO_TIMESTAMP(:first) (Oracle DB doesn't have any conversion function into TIME so whole TIMESTAMP is returned and result is converted to time in EclipseLink/Java)
-        private static final String[] TIME_STRINGS = new String[] {"TO_TIMESTAMP(", ")"};
+        // TIME emulation: retain the fractional clock on the LocalTime epoch carrier, independently of NLS date formats.
+        private static final String[] TIME_STRINGS = new String[] {
+                "(TIMESTAMP '1970-01-01 00:00:00' + TO_DSINTERVAL(TO_CHAR(CAST(",
+                " AS TIMESTAMP(9)), '\"0 \"HH24:MI:SS.FF9')))"};
 
         private OracleExtractOperator() {
             super();

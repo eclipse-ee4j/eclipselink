@@ -154,7 +154,7 @@ public class PathImpl<X> extends ExpressionImpl<X> implements Path<X>, Cloneable
 
     @Override
     public <T extends Temporal & Comparable<? super T>> TemporalExpression<T> get(TemporalAttribute<? super X, T> attribute) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        return new TemporalExpressionImpl<>((ExpressionImpl<T>) get((SingularAttribute<? super X, T>) attribute));
     }
 
     @Override
