@@ -34,6 +34,7 @@
 package org.eclipse.persistence.internal.sessions;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
+import org.eclipse.persistence.config.TargetDatabase;
 import org.eclipse.persistence.internal.helper.PropertiesUtils;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.partitioning.PartitioningPolicy;
@@ -76,6 +77,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Vector;
 
 /**
@@ -200,6 +202,42 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
 
     /**
      * INTERNAL:
+     * Initialize schema metadata using a caller-owned connection without acquiring
+     * a connection from the normal login or taking ownership of the supplied one.
+     */
+    public void setDatasourceAndInitialize(Connection connection) throws DatabaseException {
+        setDatasourceAndInitialize(connection, false);
+    }
+
+    /**
+     * INTERNAL:
+     * Initialize against a borrowed connection, optionally retaining a platform
+     * already selected by native session configuration instead of detecting it.
+     */
+    public void setDatasourceAndInitialize(Connection connection, boolean preservePlatform) throws DatabaseException {
+        Objects.requireNonNull(connection, "connection");
+        preConnectDatasource();
+        Object targetDatabase = getProperty(PersistenceUnitProperties.TARGET_DATABASE);
+        if (!preservePlatform && (targetDatabase == null || TargetDatabase.Auto.equals(targetDatabase))) {
+            setOrDetectDatasource(true, connection);
+        }
+        try {
+            getPlatform().initializeConnectionData(connection);
+        } catch (SQLException exception) {
+            throw DatabaseException.sqlException(exception, this, false);
+        }
+        // Schema metadata needs sequence definitions, but must not start a separate connection pool.
+        boolean separateConnection = getSequencingControl().shouldUseSeparateConnection();
+        getSequencingControl().setShouldUseSeparateConnection(false);
+        try {
+            postConnectDatasource();
+        } finally {
+            getSequencingControl().setShouldUseSeparateConnection(separateConnection);
+        }
+    }
+
+    /**
+     * INTERNAL:
      * Will set the platform from specified schema generation properties or
      * by detecting it through the connection (if one is available).
      * Any connection that is open for detection is closed before this method
@@ -208,6 +246,10 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
      * @param throwException - set to true if the caller cares to throw exceptions, false to swallow them.
      */
     protected void setOrDetectDatasource(boolean throwException) {
+        setOrDetectDatasource(throwException, null);
+    }
+
+    private void setOrDetectDatasource(boolean throwException, Connection suppliedConnection) {
         String vendorName = null;
         String minorVersion = null;
         String majorVersion = null;
@@ -220,9 +262,11 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
             minorVersion = (String) getProperties().get(PersistenceUnitProperties.SCHEMA_DATABASE_MINOR_VERSION);
             majorVersion = (String) getProperties().get(PersistenceUnitProperties.SCHEMA_DATABASE_MAJOR_VERSION);
         } else {
-            Connection conn = null;
+            Connection conn = suppliedConnection;
             try {
-                conn = (Connection) getReadLogin().connectToDatasource(null, this);
+                if (conn == null) {
+                    conn = (Connection) getReadLogin().connectToDatasource(null, this);
+                }
                 DatabaseMetaData dmd = conn.getMetaData();
                 vendorName = dmd.getDatabaseProductName();
                 minorVersion = dmd.getDatabaseProductVersion();
@@ -239,7 +283,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
                     throw dbEx;
                 }
             } finally {
-                if (conn != null) {
+                if (conn != null && suppliedConnection == null) {
                     try {
                         conn.close();
                     } catch (SQLException ex) {

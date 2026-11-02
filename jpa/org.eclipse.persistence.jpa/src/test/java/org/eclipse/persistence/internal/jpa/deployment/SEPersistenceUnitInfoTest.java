@@ -14,15 +14,19 @@ package org.eclipse.persistence.internal.jpa.deployment;
 
 import jakarta.persistence.FetchType;
 import jakarta.persistence.PersistenceConfiguration;
+import jakarta.persistence.SchemaManagementAction;
+import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -162,6 +166,67 @@ class SEPersistenceUnitInfoTest {
     void omittedAndExplicitEagerHaveSameIdentity() {
         assertEquals(info(new PersistenceConfiguration("defaults")).getConfigHash(),
                 info(new PersistenceConfiguration("defaults").defaultToOneFetchType(FetchType.EAGER)).getConfigHash());
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = SchemaManagementAction.class, names = "NONE", mode = EnumSource.Mode.EXCLUDE)
+    void schemaActionsAreSnapshottedAsStandardProperties(SchemaManagementAction action) {
+        PersistenceConfiguration configuration = new PersistenceConfiguration("schema-actions")
+                .schemaManagementDatabaseAction(action).schemaManagementScriptsAction(action);
+        SEPersistenceUnitInfo first = info(configuration);
+        String token = action.name().toLowerCase(Locale.ROOT).replace('_', '-');
+        assertEquals(token, first.getProperties().get(PersistenceUnitProperties.SCHEMA_GENERATION_DATABASE_ACTION));
+        assertEquals(token, first.getProperties().get(PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPTS_ACTION));
+        assertTrue(configuration.properties().isEmpty(), "Normalizing actions must not modify the caller");
+        assertEquals(first.getConfigHash(), info(new PersistenceConfiguration("schema-actions")
+                .property(PersistenceUnitProperties.SCHEMA_GENERATION_DATABASE_ACTION, token)
+                .property(PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPTS_ACTION, token)).getConfigHash());
+        configuration.schemaManagementDatabaseAction(SchemaManagementAction.NONE);
+        assertEquals(token, first.getProperties().get(PersistenceUnitProperties.SCHEMA_GENERATION_DATABASE_ACTION));
+        assertNotEquals(first.getConfigHash(), info(configuration).getConfigHash());
+    }
+
+    @Test
+    void explicitSchemaPropertiesOverrideActionFieldsAndTheirIdentity() {
+        PersistenceConfiguration configuration = new PersistenceConfiguration("schema-actions")
+                .schemaManagementDatabaseAction(SchemaManagementAction.CREATE)
+                .schemaManagementScriptsAction(SchemaManagementAction.DROP)
+                .property(PersistenceUnitProperties.SCHEMA_GENERATION_DATABASE_ACTION, "none")
+                .property(PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPTS_ACTION, "create");
+        SEPersistenceUnitInfo first = info(configuration);
+        assertEquals("none", first.getProperties().get(PersistenceUnitProperties.SCHEMA_GENERATION_DATABASE_ACTION));
+        assertEquals("create", first.getProperties().get(PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPTS_ACTION));
+        configuration.schemaManagementDatabaseAction(SchemaManagementAction.POPULATE)
+                .schemaManagementScriptsAction(SchemaManagementAction.VALIDATE);
+        assertEquals(first.getConfigHash(), info(configuration).getConfigHash());
+    }
+
+    @Test
+    void defaultNonePreservesAbsentPropertiesAndExplicitNoneRemainsDistinct() {
+        SEPersistenceUnitInfo defaults = info(new PersistenceConfiguration("schema-actions"));
+        SEPersistenceUnitInfo explicitDefaults = info(new PersistenceConfiguration("schema-actions")
+                .schemaManagementDatabaseAction(SchemaManagementAction.NONE)
+                .schemaManagementScriptsAction(SchemaManagementAction.NONE));
+        assertTrue(defaults.getProperties().isEmpty());
+        assertTrue(explicitDefaults.getProperties().isEmpty());
+        assertEquals(defaults.getConfigHash(), explicitDefaults.getConfigHash());
+        SEPersistenceUnitInfo explicitProperty = info(new PersistenceConfiguration("schema-actions")
+                .property(PersistenceUnitProperties.SCHEMA_GENERATION_DATABASE_ACTION, "none"));
+        assertEquals("none", explicitProperty.getProperties().get(PersistenceUnitProperties.SCHEMA_GENERATION_DATABASE_ACTION));
+        assertNotEquals(defaults.getConfigHash(), explicitProperty.getConfigHash());
+    }
+
+    @Test
+    void configuredLoaderAndMappingFilesBelongToTheSnapshot() {
+        ClassLoader loader = new ClassLoader(getClass().getClassLoader()) { };
+        PersistenceConfiguration configuration = new PersistenceConfiguration("schema-mapping")
+                .mappingFile("first.xml").property(PersistenceUnitProperties.CLASSLOADER, loader);
+        SEPersistenceUnitInfo first = info(configuration);
+        configuration.mappingFile("second.xml");
+        assertSame(loader, first.getClassLoader());
+        assertEquals(List.of("first.xml"), first.getMappingFileNames());
+        assertEquals(List.of("first.xml", "second.xml"), info(configuration).getMappingFileNames());
+        assertNotEquals(first.getConfigHash(), info(configuration).getConfigHash());
     }
 
     private static SEPersistenceUnitInfo info(PersistenceConfiguration configuration) {

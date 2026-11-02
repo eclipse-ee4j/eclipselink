@@ -330,15 +330,10 @@ public class SchemaManager {
                 if (! createdTableNames.contains(tableDefinition.getFullName())) {
                     createdTableNames.add(tableDefinition.getFullName());
 
-                    // Check if it exists on the database. NOTE: when writing to scripts only with
-                    // no connection, this of course will always return false hence the need for
-                    // the createdSequenceTableNames collection above.
-                    boolean exists = checkTableExists(tableDefinition);
-
                     if (createTables) {
-                        // Don't create it if it already exists on the database.
-                        // In all all other cases, write it out.
-                        if ((shouldWriteToDatabase() && ! exists) || ! shouldWriteToDatabase()) {
+                        // Script generation must not query the database or affect a caller's transaction.
+                        // Actual database creation still checks whether the table already exists.
+                        if (!shouldWriteToDatabase() || !checkTableExists(tableDefinition)) {
                             createObject(tableDefinition);
                         }
                     } else {
