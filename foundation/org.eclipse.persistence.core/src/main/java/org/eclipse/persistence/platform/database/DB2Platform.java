@@ -2197,4 +2197,10 @@ public class DB2Platform extends DatabasePlatform {
         return true;
     }
 
+
+    @Override
+    public boolean supportsSubSelectInOrderBy(boolean distinct) {
+        return false;
+    }
+
 }

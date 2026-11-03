@@ -799,21 +799,23 @@ public class MySQLPlatform extends DatabasePlatform {
                         }
                         String nullRank = selector == ExpressionOperator.NullsFirst ? "0" : "1";
                         String valueRank = selector == ExpressionOperator.NullsFirst ? "1" : "0";
-                        String rank = "(CASE WHEN ? IS NULL THEN " + nullRank + " ELSE " + valueRank + " END)";
-                        orderBy.set(index, value.sql(rank + ", ?", List.of(sort)));
+                        Expression rank = value.sql("(CASE WHEN ? IS NULL THEN " + nullRank
+                                + " ELSE " + valueRank + " END)", List.of());
+                        orderBy.set(index, rank);
+                        orderBy.add(++index, sort);
                         if (statement.shouldDistinctBeUsed()) {
-                            // Keep DISTINCT ordering valid even when its value
-                            // is a composed expression in the select list.
-                            additionalFields.add(value.sql(rank, List.of()));
+                            // Keep the same scalar rank in the projection and ordering.
+                            additionalFields.add(rank);
                         }
                     }
                 }
             }
             statement.getFields().addAll(additionalFields);
             printSQLSelectStatementWithLimits(call, printer, statement);
-            if (!additionalFields.isEmpty()) {
-                // Rank columns participate only in SQL ordering, not result mapping.
-                call.setFields(call.getFields().subList(0, call.getFields().size() - additionalFields.size()));
+            int additionalFieldCount = statement.getFields().size() - originalFieldCount;
+            if (additionalFieldCount > 0) {
+                // Every appended rank/sort key is scalar; original entity selections may expand.
+                call.setFields(call.getFields().subList(0, call.getFields().size() - additionalFieldCount));
             }
         } finally {
             try {
@@ -1065,6 +1067,12 @@ public class MySQLPlatform extends DatabasePlatform {
     @Override
     public boolean supportsFractionalTime() {
         return isFractionalTimeSupported;
+    }
+
+
+    @Override
+    public boolean supportsSubSelectInOrderBy(boolean distinct) {
+        return !distinct;
     }
 
 }

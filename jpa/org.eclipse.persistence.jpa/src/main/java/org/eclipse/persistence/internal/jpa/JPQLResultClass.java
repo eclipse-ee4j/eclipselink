@@ -253,11 +253,20 @@ final class JPQLResultClass {
         return isUnknownScalar(item, query) ? null : item.getResultType();
     }
 
-    /** Unknown SQL function results retain built-in scalar conversion, not DTO inference. */
+    /** Unknown scalar results retain built-in conversion, not DTO inference. */
     private static boolean isUnknownScalar(ReportItem item, ReportQuery query) {
-        if (item.isConstructorItem() || item.getMapping() != null || item.getDescriptor() != null
-                || item.getResultType() != null && item.getResultType() != Object.class) {
+        if (item.isConstructorItem() || item.getDescriptor() != null || item.getResultType() != null) {
             return false;
+        }
+        DatabaseMapping mapping = item.getMapping();
+        if (mapping != null) {
+            if (!mapping.isDirectCollectionMapping()) {
+                return false;
+            }
+            if (item.getAttributeExpression() instanceof MapEntryExpression entry) {
+                return !entry.shouldReturnMapEntry() && mapping.getContainerPolicy().getKeyType() == null;
+            }
+            return mapping.getAttributeClassification() == null;
         }
         if (item.getResultType() == null && item.getAttributeExpression() instanceof FunctionExpression function) {
             // The report builder leaves only genuinely unresolved scalar results untyped.

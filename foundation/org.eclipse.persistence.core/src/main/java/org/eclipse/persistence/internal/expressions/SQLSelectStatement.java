@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -102,6 +102,9 @@ public class SQLSelectStatement extends SQLStatement {
 
     /** Order by clause for read all queries. */
     protected List<Expression> orderByExpressions;
+
+    /** Physical SQL positions of projected subquery sort keys, recomputed when fields print. */
+    private transient Map<Expression, Integer> orderBySelectPositions;
 
     /** Group by clause for report queries. */
     protected List<Expression> groupByExpressions;
@@ -507,7 +510,7 @@ public class SQLSelectStatement extends SQLStatement {
                         }
                         if (platform.supportsNestingOuterJoins()) {
                             writer.write(")");
-                            printOnClause(sourceToRelationJoin, printer, platform);
+                            printOnClause(sourceToRelationJoin.and(additionalOnExpression), printer, platform);
                         }
                     }
                 }
@@ -761,6 +764,14 @@ public class SQLSelectStatement extends SQLStatement {
 
         for (Iterator<Expression> expressionsEnum = getOrderByExpressions().iterator(); expressionsEnum.hasNext();) {
             Expression expression = expressionsEnum.next();
+            if (orderBySelectPositions != null) {
+                Integer position = orderBySelectPositions.get(orderByValue(expression));
+                if (position != null) {
+                    ConstantExpression ordinal = new ConstantExpression(position, getBuilder());
+                    ordinal.setCanBind(false);
+                    expression = replaceOrderByValue(expression, ordinal);
+                }
+            }
 
             /*
              *  Allow the platform to indicate if they support parameter expressions in the ORDER BY clause
@@ -1826,6 +1837,7 @@ public class SQLSelectStatement extends SQLStatement {
     public void printSQLOrderByClause(ExpressionSQLPrinter printer) throws IOException {
         if (hasOrderByExpressions()) {
             appendOrderClauseToWriter(printer);
+            printer.getPlatform().printSQLOrderByClauseTail(printer, this);
         }
     }
 
@@ -2213,6 +2225,7 @@ public class SQLSelectStatement extends SQLStatement {
      */
     protected List<DatabaseField> writeFieldsIn(ExpressionSQLPrinter printer) {
         this.lastTable = null;
+        prepareSubqueryOrderByFields(printer.getPlatform());
 
         List<DatabaseField> newFields = new ArrayList<>();
 
@@ -2220,7 +2233,15 @@ public class SQLSelectStatement extends SQLStatement {
             // Fields can be null placeholders for fetch groups.
             if (next != null) {
                 if (next instanceof Expression) {
+                    int position = newFields.size() + 1;
                     writeFieldsFromExpression(printer, (Expression)next, newFields);
+                    if (orderBySelectPositions != null && newFields.size() == position) {
+                        for (Map.Entry<Expression, Integer> entry : orderBySelectPositions.entrySet()) {
+                            if (entry.getValue() == null && entry.getKey().equals(next)) {
+                                entry.setValue(position);
+                            }
+                        }
+                    }
                 } else {
                     writeField(printer, (DatabaseField)next);
                     newFields.add((DatabaseField) next);
@@ -2228,6 +2249,58 @@ public class SQLSelectStatement extends SQLStatement {
             }
         }
         return newFields;
+    }
+
+    private void prepareSubqueryOrderByFields(DatabasePlatform platform) {
+        orderBySelectPositions = null;
+        if (platform.supportsSubSelectInOrderBy(shouldDistinctBeUsed()) || !hasOrderByExpressions()) {
+            return;
+        }
+        for (Expression ordering : getOrderByExpressions()) {
+            Expression value = orderByValue(ordering);
+            ExpressionIterator<Boolean> subqueries = new ExpressionIterator<>() {
+                @Override
+                public void iterate(Expression expression) {
+                    if (expression.isSubSelectExpression()) {
+                        setResult(true);
+                    }
+                }
+            };
+            subqueries.iterateOn(value);
+            if (!Boolean.TRUE.equals(subqueries.getResult())) {
+                continue;
+            }
+            if (orderBySelectPositions == null) {
+                orderBySelectPositions = new IdentityHashMap<>();
+            }
+            orderBySelectPositions.put(value, null);
+            boolean selected = false;
+            for (Object field : getFields()) {
+                if (field instanceof Expression && value.equals(field)) {
+                    selected = true;
+                    break;
+                }
+            }
+            if (!selected) {
+                // This SQL-only field does not add a ReportItem or alter the public selection.
+                addField(value);
+            }
+        }
+    }
+
+    private static Expression orderByValue(Expression expression) {
+        while (expression.isFunctionExpression() && expression.getOperator().isOrderOperator()) {
+            expression = ((FunctionExpression) expression).getBaseExpression();
+        }
+        return expression;
+    }
+
+    private static Expression replaceOrderByValue(Expression ordering, Expression value) {
+        if (ordering.isFunctionExpression() && ordering.getOperator().isOrderOperator()) {
+            Expression base = replaceOrderByValue(((FunctionExpression) ordering).getBaseExpression(), value);
+            return base.performOperator(ordering.getOperator(), List.of());
+        }
+        return value;
     }
 
     /**

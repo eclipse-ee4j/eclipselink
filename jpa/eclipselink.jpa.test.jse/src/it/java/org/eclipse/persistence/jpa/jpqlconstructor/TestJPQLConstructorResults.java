@@ -47,11 +47,13 @@ import org.eclipse.persistence.jpa.jpqlconstructor.model.Book;
 import org.eclipse.persistence.jpa.jpqlconstructor.model.CodeConverter;
 import org.eclipse.persistence.jpa.jpqlconstructor.model.Edition;
 import org.eclipse.persistence.jpa.jpqlconstructor.model.ObjectConverter;
+import org.eclipse.persistence.jpa.jpqlconstructor.model.RawCollectionOwner;
 import org.eclipse.persistence.jpa.jpqlconstructor.model.Results;
 import org.eclipse.persistence.jpa.test.framework.DDLGen;
 import org.eclipse.persistence.jpa.test.framework.Emf;
 import org.eclipse.persistence.jpa.test.framework.EmfRunner;
 import org.eclipse.persistence.jpa.test.framework.Property;
+import org.eclipse.persistence.mappings.DirectCollectionMapping;
 import org.eclipse.persistence.queries.ConstructorReportItem;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.sessions.serializers.JavaSerializer;
@@ -84,12 +86,13 @@ public class TestJPQLConstructorResults {
             new Results.Summary(2, "Beta"), new Results.Summary(3, "Gamma"));
 
     @Emf(name = "jpql-constructor-results", createTables = DDLGen.DROP_CREATE,
-            classes = {Book.class, Author.class, Edition.class, CodeConverter.class, ObjectConverter.class},
+            classes = {Book.class, Author.class, Edition.class, CodeConverter.class, ObjectConverter.class, RawCollectionOwner.class},
             mappingFiles = "META-INF/jpql-constructor-results/orm.xml",
             properties = @Property(name = "jakarta.persistence.validation.mode", value = "NONE"))
     private EntityManagerFactory emf;
 
     @Before
+    @SuppressWarnings("unchecked")
     public void seed() {
         cleanup();
         emf.runInTransaction(em -> {
@@ -99,6 +102,10 @@ public class TestJPQLConstructorResults {
             em.persist(new Book(1, "Alpha", null, 2, author));
             em.persist(new Book(2, "Beta", "Second", 4, author));
             em.persist(new Book(3, "Gamma", "Third", 6, author));
+            RawCollectionOwner raw = new RawCollectionOwner(1);
+            raw.getElements().addAll(List.of("Alpha", "Beta"));
+            em.persist(raw);
+            em.persist(new RawCollectionOwner(2));
         });
     }
 
@@ -106,6 +113,8 @@ public class TestJPQLConstructorResults {
     public void cleanup() {
         Results.BOOK_OBSERVER.remove();
         emf.runInTransaction(em -> {
+            em.createNativeQuery("delete from JPA_ICR_RAW_ELEMENT").executeUpdate();
+            em.createStatement("delete from ICRRawCollectionOwner").execute();
             em.createStatement("delete from ICREdition").execute();
             em.createStatement("delete from ICRBook").execute();
             em.createStatement("delete from ICRAuthor").execute();
@@ -861,6 +870,49 @@ public class TestJPQLConstructorResults {
                     "select entry(s) from ICRBook b join b.scores s where b.id = 1", Results.EntryResult.class).getSingleResult();
             assertEquals("rating", entry.value().getKey());
             assertEquals(2, entry.value().getValue());
+        });
+    }
+
+    @Test
+    public void rawCollectionElementsRetainScalarResultsWithoutDeclaredElementTypes() {
+        AbstractSession session = emf.unwrap(JpaEntityManagerFactory.class).getServerSession();
+        DirectCollectionMapping elements = (DirectCollectionMapping) session.getDescriptor(RawCollectionOwner.class)
+                .getMappingForAttributeName("elements");
+        assertNull(elements.getAttributeClassification());
+        withHandlers(handler -> {
+            TypedQuery<String> query = handler.createQuery(
+                    "select e from ICRRawCollectionOwner o join o.elements e where o.id = :id order by e", String.class);
+            assertTrue(query.setParameter("id", 2).getResultList().isEmpty());
+            List<String> result = query.setParameter("id", 1).getResultList();
+            assertEquals(List.of("Alpha", "Beta"), result);
+            result.forEach(value -> assertEquals(String.class, value.getClass()));
+            assertTrue(query.setParameter("id", 2).getResultList().isEmpty());
+            assertEquals(List.of("Alpha", "Beta"), query.setParameter("id", 1).getResultList());
+        });
+    }
+
+    @Test
+    public void rawNamedScalarQueriesKeepIndependentParameterBindings() {
+        withHandlers(handler -> {
+            TypedQuery<String> populated = handler.createNamedQuery("ICR.rawElements", String.class).setParameter("id", 1);
+            TypedQuery<String> empty = handler.createNamedQuery("ICR.rawElements", String.class).setParameter("id", 2);
+            assertTrue(empty.getResultList().isEmpty());
+            assertEquals(List.of("Alpha", "Beta"), populated.getResultList());
+            assertEquals(List.of("Alpha", "Beta"), empty.setParameter("id", 1).getResultList());
+            assertTrue(populated.setParameter("id", 2).getResultList().isEmpty());
+            assertEquals(List.of("Alpha", "Beta"), empty.getResultList());
+        });
+    }
+
+    @Test
+    public void rawCollectionMetadataDoesNotInferDtoConstructorsFromRows() {
+        withHandlers(handler -> {
+            for (int id : List.of(1, 2)) {
+                String elements = " from ICRRawCollectionOwner o join o.elements e where o.id = " + id;
+                assertThrows(IllegalArgumentException.class, () -> handler.createQuery("select e" + elements, Results.Text.class));
+                assertThrows(IllegalArgumentException.class, () -> handler.createQuery("select e" + elements, Results.ObjectValue.class));
+                assertThrows(IllegalArgumentException.class, () -> handler.createQuery("select o.id, e" + elements, Results.Summary.class));
+            }
         });
     }
 

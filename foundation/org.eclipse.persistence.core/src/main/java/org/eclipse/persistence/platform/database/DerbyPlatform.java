@@ -981,6 +981,56 @@ public class DerbyPlatform extends DB2Platform {
      */
     @Override
     public void printSQLSelectStatement(DatabaseCall call, ExpressionSQLPrinter printer, SQLSelectStatement statement) {
+        if (!statement.shouldDistinctBeUsed() || statement.getOrderByExpressions().stream().noneMatch(expression ->
+                expression.isFunctionExpression() && (expression.getOperator().getSelector() == ExpressionOperator.NullsFirst
+                        || expression.getOperator().getSelector() == ExpressionOperator.NullsLast))) {
+            printSQLSelectStatementWithLimits(call, printer, statement);
+            return;
+        }
+        List<?> originalFields = statement.getFields();
+        int originalFieldCount = originalFields.size();
+        List<Expression> originalOrderBy = statement.getOrderByExpressions();
+        List<Expression> orderBy = new ArrayList<>(originalOrderBy);
+        statement.setOrderByExpressions(orderBy);
+        try {
+            // Derby DISTINCT ordering ignores explicit null precedence. Rank the complete value.
+            for (int index = 0; index < orderBy.size(); index++) {
+                if (orderBy.get(index) instanceof FunctionExpression ordering) {
+                    int selector = ordering.getOperator().getSelector();
+                    if (selector == ExpressionOperator.NullsFirst || selector == ExpressionOperator.NullsLast) {
+                        Expression sort = ordering.getBaseExpression();
+                        Expression value = sort;
+                        if (sort instanceof FunctionExpression direction) {
+                            int sortSelector = direction.getOperator().getSelector();
+                            if (sortSelector == ExpressionOperator.Ascending || sortSelector == ExpressionOperator.Descending) {
+                                value = direction.getBaseExpression();
+                            }
+                        }
+                        String nullRank = selector == ExpressionOperator.NullsFirst ? "0" : "1";
+                        String valueRank = selector == ExpressionOperator.NullsFirst ? "1" : "0";
+                        Expression rank = value.sql("(CASE WHEN ? IS NULL THEN " + nullRank
+                                + " ELSE " + valueRank + " END)", List.of());
+                        orderBy.set(index, rank);
+                        orderBy.add(++index, sort);
+                        statement.addField(rank);
+                    }
+                }
+            }
+            printSQLSelectStatementWithLimits(call, printer, statement);
+            int additionalFieldCount = statement.getFields().size() - originalFieldCount;
+            call.setFields(call.getFields().subList(0, call.getFields().size() - additionalFieldCount));
+        } finally {
+            try {
+                while (originalFields.size() > originalFieldCount) {
+                    originalFields.remove(originalFields.size() - 1);
+                }
+            } finally {
+                statement.setOrderByExpressions(originalOrderBy);
+            }
+        }
+    }
+
+    private void printSQLSelectStatementWithLimits(DatabaseCall call, ExpressionSQLPrinter printer, SQLSelectStatement statement) {
         int max = 0;
         int firstRow = 0;
 
@@ -1199,4 +1249,10 @@ public class DerbyPlatform extends DB2Platform {
     public boolean supportsFractionalTime() {
         return false;
     }
+
+    @Override
+    public boolean supportsSubSelectInOrderBy(boolean distinct) {
+        return !distinct;
+    }
+
 }

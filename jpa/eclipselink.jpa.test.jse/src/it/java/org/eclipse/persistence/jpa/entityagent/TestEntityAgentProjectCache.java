@@ -343,6 +343,9 @@ public class TestEntityAgentProjectCache {
             info.setNewTempClassLoader(TestEntityAgentProjectCache.class.getClassLoader());
             info.setPersistenceUnitRootUrl(TestEntityAgentProjectCache.class.getProtectionDomain().getCodeSource().getLocation());
             info.setManagedClassNames(classes.stream().map(Class::getName).toList());
+            if (classes.contains(AgentDiscoveryRecord.class)) {
+                info.setManagedPackageDescriptors(List.of(AgentDiscoveryRecord.class.getPackageName()));
+            }
             if (classes.contains(AgentXmlCallbackRecord.class)) {
                 info.setMappingFileNames(List.of("META-INF/entityagent-callbacks.xml"));
             } else if (classes.contains(AgentNamedOptionsRecord.class)) {

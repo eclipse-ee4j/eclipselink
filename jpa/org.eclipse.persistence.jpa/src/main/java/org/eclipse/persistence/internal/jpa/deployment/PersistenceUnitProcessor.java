@@ -34,6 +34,8 @@ import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JP
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Modifier;
+import java.lang.reflect.Proxy;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -175,22 +177,51 @@ public class PersistenceUnitProcessor {
     public static Set<String> getPackageDescriptors(PersistenceUnitInfo persistenceUnitInfo) {
         Set<String> packageNames = new LinkedHashSet<>();
         try {
-            List<String> managed = persistenceUnitInfo.getManagedPackageDescriptors();
-            if (managed != null) {
-                packageNames.addAll(managed);
+            if (hasPackageDescriptorMethod(persistenceUnitInfo, "getManagedPackageDescriptors")) {
+                List<String> managed = persistenceUnitInfo.getManagedPackageDescriptors();
+                if (managed != null) {
+                    packageNames.addAll(managed);
+                }
             }
         } catch (AbstractMethodError ignored) {
             // A container compiled against an earlier SPI has no package list.
         }
         try {
-            List<String> all = persistenceUnitInfo.getAllPackageDescriptors();
-            if (all != null) {
-                packageNames.addAll(all);
+            if (hasPackageDescriptorMethod(persistenceUnitInfo, "getAllPackageDescriptors")) {
+                List<String> all = persistenceUnitInfo.getAllPackageDescriptors();
+                if (all != null) {
+                    packageNames.addAll(all);
+                }
             }
         } catch (AbstractMethodError ignored) {
             // Preserve any explicit list even when the new discovery SPI is absent.
         }
         return packageNames;
+    }
+
+    /**
+     * Spring's smart persistence-unit proxy resolves SPI methods on its enclosing
+     * public class. Older versions of that class lack the package-descriptor
+     * methods. Probe only this known adapter; failures from actual SPI calls or
+     * other proxies must remain visible.
+     */
+    private static boolean hasPackageDescriptorMethod(PersistenceUnitInfo persistenceUnitInfo, String methodName) {
+        if (Proxy.isProxyClass(persistenceUnitInfo.getClass())) {
+            Class<?> handler = Proxy.getInvocationHandler(persistenceUnitInfo).getClass();
+            if (handler.getName().equals(
+                    "org.springframework.orm.jpa.persistenceunit.SpringPersistenceUnitInfo$SmartPersistenceUnitInfoInvocationHandler")) {
+                Class<?> delegate = handler.getEnclosingClass();
+                if (delegate != null && Modifier.isPublic(delegate.getModifiers())
+                        && delegate.getName().equals("org.springframework.orm.jpa.persistenceunit.SpringPersistenceUnitInfo")) {
+                    try {
+                        delegate.getMethod(methodName);
+                    } catch (NoSuchMethodException absent) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
     }
 
     /**

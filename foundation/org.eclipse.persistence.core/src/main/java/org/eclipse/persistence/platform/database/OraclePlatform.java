@@ -1427,4 +1427,10 @@ public class OraclePlatform extends DatabasePlatform {
         return uuidQuery;
     }
 
+
+    @Override
+    public boolean supportsSubSelectInOrderBy(boolean distinct) {
+        return !distinct;
+    }
+
 }

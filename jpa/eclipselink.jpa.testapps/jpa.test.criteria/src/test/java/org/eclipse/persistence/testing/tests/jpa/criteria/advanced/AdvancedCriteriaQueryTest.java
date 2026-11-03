@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -216,14 +216,20 @@ public class AdvancedCriteriaQueryTest extends JUnitTestCase {
         EntityManager em = createEntityManager();
         beginTransaction(em);
         try {
-            em.createQuery("select p.teamLeader from Project p where p.name = 'Sales Reporting'").getResultList();
+            List<Employee> expected = em.createQuery("select p.teamLeader from Project p where p.name = 'Sales Reporting'", Employee.class).getResultList();
+            assertEquals("Sales Reporting must have one leader.", 1, expected.size());
+            assertEquals("John", expected.get(0).getFirstName());
+            assertEquals("Way", expected.get(0).getLastName());
             Metamodel mm = em.getMetamodel();
             CriteriaBuilder qbuilder = em.getCriteriaBuilder();
             CriteriaQuery<Employee> cquery = qbuilder.createQuery(Employee.class);
             Root<Project> spouse = cquery.from(Project.class);
             cquery.where(qbuilder.equal(spouse.get("name"), "Sales Reporting")).select(spouse.get("teamLeader"));
             TypedQuery<Employee> tquery = em.createQuery(cquery);
-            assertTrue("Did not find the correct leaders of Project Swirly Dirly.", tquery.getResultList().size() > 1);
+            List<Employee> actual = tquery.getResultList();
+            assertEquals("Incorrect leader count for Sales Reporting.", expected.size(), actual.size());
+            assertEquals("Incorrect leaders for Sales Reporting.",
+                    expected.stream().map(Employee::getId).toList(), actual.stream().map(Employee::getId).toList());
         } finally {
             rollbackTransaction(em);
             closeEntityManager(em);

@@ -1761,6 +1761,11 @@ public class DatabasePlatform extends DatasourcePlatform implements DDLPlatform 
         return true;
     }
 
+    /** Whether subquery-containing sort keys may be printed directly in ORDER BY. */
+    public boolean supportsSubSelectInOrderBy(boolean distinct) {
+        return true;
+    }
+
     /**
      * Internal: This gets called on each batch statement execution
      * Needs to be implemented so that it returns the number of rows successfully modified
@@ -3053,6 +3058,13 @@ public class DatabasePlatform extends DatasourcePlatform implements DDLPlatform 
      */
     public void printSQLSelectStatement(DatabaseCall call, ExpressionSQLPrinter printer, SQLSelectStatement statement){
         call.setFields(statement.printSQL(printer));
+    }
+
+    /**
+     * INTERNAL:
+     * Print platform syntax following the semantic ORDER BY terms, before locking and union clauses.
+     */
+    public void printSQLOrderByClauseTail(ExpressionSQLPrinter printer, SQLSelectStatement statement) throws IOException {
     }
 
     /**

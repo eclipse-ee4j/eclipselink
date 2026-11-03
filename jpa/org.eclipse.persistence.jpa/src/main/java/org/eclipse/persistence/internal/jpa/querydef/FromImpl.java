@@ -313,7 +313,7 @@ public class FromImpl<Z, X> extends PathImpl<X> implements jakarta.persistence.c
         return new PluralExpressionImpl<>(
                 metamodel,
                 collection.getJavaType(),
-                currentNode.anyOf(collection.getName()));
+                currentNode.anyOf(collection.getName()), this, collection.getName(), collection.getElementType().getJavaType());
     }
 
     @Override
@@ -323,7 +323,7 @@ public class FromImpl<Z, X> extends PathImpl<X> implements jakarta.persistence.c
         return new PluralExpressionImpl<>(
                 metamodel,
                 (Class<M>) (Class<?>) map.getJavaType(),
-                currentNode.anyOf(map.getName()));
+                currentNode.anyOf(map.getName()), this, map.getName(), map.getElementType().getJavaType());
     }
 
     /**
