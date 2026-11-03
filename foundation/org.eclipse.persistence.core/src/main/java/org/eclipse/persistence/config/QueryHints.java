@@ -491,6 +491,22 @@ public final class QueryHints {
     public static final String PREPARE = "eclipselink.prepare";
 
     /**
+     * "eclipselink.query.cache-concrete-subclass-calls"
+     * <p>Configures the query to not cache the prepared call used to read a concrete
+     * subclass for an inheritance query.
+     * By default, this call is cached and reused on every execution of a shared
+     * (e.g. named) query, to avoid the cost of rebuilding it every time.
+     * A cached call can retain a reference to whichever unit of work first triggered
+     * its build, which for a long-lived shared query can pin that unit of work (and
+     * everything it references) in memory indefinitely. Disabling this rebuilds the
+     * call on every execution instead, trading that memory retention for extra CPU cost.
+     * Valid values are:  HintValues.FALSE, HintValues.TRUE,
+     * "" could be used instead of default value HintValues.FALSE
+     * @see org.eclipse.persistence.queries.ObjectLevelReadQuery#setShouldCacheConcreteSubclassCalls(boolean)
+     */
+    public static final String CACHE_CONCRETE_SUBCLASS_CALLS = "eclipselink.query.cache-concrete-subclass-calls";
+
+    /**
      * "eclipselink.jdbc.cache-statement"
      * <p>Configures if the query will cache its JDBC statement.
      * This allows queries to use parameterized SQL with statement caching.
