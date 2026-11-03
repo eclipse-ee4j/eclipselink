@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
  * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019, 2026 IBM Corporation. All rights reserved.
  *
@@ -260,16 +261,24 @@ public class ReportQueryResult implements Serializable, Map {
                 if (itemIndex + size > rowSize) {
                     throw QueryException.reportQueryResultSizeMismatch(itemIndex + size, rowSize);
                 }
+                // An aggregate is built from its own fields only. Its fields are indexed relative to the owning descriptor,
+                // so in a longer sub-row they could resolve to the fields of a following item mapped to the same columns
+                // (e.g. the same embeddable selected through different identification variables).
+                int subRowEnd = rowSize;
+                if (mapping != null && mapping.isAggregateObjectMapping() && !item.hasJoining()) {
+                    // Same width as used for the item offset in DatasourceCallQueryMechanism.computeAndSetItemOffset.
+                    subRowEnd = Math.min(itemIndex + mapping.getFields().size(), rowSize);
+                }
                 AbstractRecord subRow = row;
-                // Check if at the start of the row, then avoid building a subRow.
-                if (itemIndex > 0) {
+                // Check if the sub-row is the whole row, then avoid building a subRow.
+                if (itemIndex > 0 || subRowEnd < rowSize) {
                     BatchFetchPolicy batchFetchPolicy = query.getBatchFetchPolicy();
                     if (batchFetchPolicy != null && batchFetchPolicy.isIN()) {
 
                         List<AbstractRecord> subRows = new ArrayList<>(toManyData.size());
                         for (AbstractRecord parentRow : (Vector<AbstractRecord>) toManyData) {
-                            Vector<DatabaseField> trimedParentFields = new NonSynchronizedSubVector<>(parentRow.getFields(), itemIndex, rowSize);
-                            Vector trimedParentValues = new NonSynchronizedSubVector<>(parentRow.getValues(), itemIndex, rowSize);
+                            Vector<DatabaseField> trimedParentFields = new NonSynchronizedSubVector<>(parentRow.getFields(), itemIndex, subRowEnd);
+                            Vector trimedParentValues = new NonSynchronizedSubVector<>(parentRow.getValues(), itemIndex, subRowEnd);
                             subRows.add(new DatabaseRecord(trimedParentFields, trimedParentValues));
                         }
 
@@ -279,8 +288,8 @@ public class ReportQueryResult implements Serializable, Map {
 
                         subRow = subRows.get(toManyData.indexOf(row));
                     } else {
-                        Vector<DatabaseField> trimedFields = new NonSynchronizedSubVector<>(row.getFields(), itemIndex, rowSize);
-                        Vector trimedValues = new NonSynchronizedSubVector(row.getValues(), itemIndex, rowSize);
+                        Vector<DatabaseField> trimedFields = new NonSynchronizedSubVector<>(row.getFields(), itemIndex, subRowEnd);
+                        Vector trimedValues = new NonSynchronizedSubVector(row.getValues(), itemIndex, subRowEnd);
                         subRow = new DatabaseRecord(trimedFields, trimedValues);
                     }
                 }
