@@ -16,6 +16,7 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderColumn;
 
 import java.util.List;
 
@@ -23,5 +24,6 @@ import java.util.List;
 public record RecordAggregateContainer(
         @OneToMany(cascade = CascadeType.ALL)
         @JoinColumn(name = "parent_id")
+        @OrderColumn(name = "child_index")
         List<RecordAggregateChildEntity> children) {
 }
