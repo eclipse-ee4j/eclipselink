@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -240,6 +240,14 @@ public class SubSelectExpression extends BaseExpression {
             } else if (clonedQuery.getExpressionBuilder() != null) {
                 // Must clone the expression builder.
                 clonedQuery.setExpressionBuilder((ExpressionBuilder)clonedQuery.getExpressionBuilder().copiedVersionFrom(alreadyDone));
+            }
+            if (clonedQuery.hasNonFetchJoinedAttributeExpressions()) {
+                List<Expression> joins = clonedQuery.getNonFetchJoinAttributeExpressions();
+                List<Expression> copiedJoins = new ArrayList<>(joins.size());
+                for (Expression join : joins) {
+                    copiedJoins.add(join.copiedVersionFrom(alreadyDone));
+                }
+                clonedQuery.setNonFetchJoinAttributeExpressions(copiedJoins);
             }
             // Must also clone report items, group by, having, order by.
             clonedQuery.copyReportItems(alreadyDone);

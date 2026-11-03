@@ -96,38 +96,22 @@ public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X>
 
     @Override
     public Predicate equalTo(Expression<?> value) {
-        return new CompoundExpressionImpl(
-                metamodel,
-                currentNode.equal(currentNode(value)),
-                List.of(this, value),
-                "equals");
+        return new CriteriaBuilderImpl(metamodel).equal(this, value);
     }
 
     @Override
     public Predicate equalTo(Object value) {
-        return new CompoundExpressionImpl(
-                metamodel,
-                currentNode.equal(value),
-                List.of(this, createLiteral(value, metamodel)),
-                "equals");
+        return new CriteriaBuilderImpl(metamodel).equal(this, value);
     }
 
     @Override
     public Predicate notEqualTo(Expression<?> value) {
-        return new CompoundExpressionImpl(
-                metamodel,
-                currentNode.notEqual(currentNode(value)),
-                List.of(this, value),
-                "not equal");
+        return new CriteriaBuilderImpl(metamodel).notEqual(this, value);
     }
 
     @Override
     public Predicate notEqualTo(Object value) {
-        return new CompoundExpressionImpl(
-                metamodel,
-                currentNode.notEqual(value),
-                List.of(this, createLiteral(value, metamodel)),
-                "not equal");
+        return new CriteriaBuilderImpl(metamodel).notEqual(this, value);
     }
 
     @Override
@@ -311,7 +295,7 @@ public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X>
 
     @Override
     public <R> SimpleCase<X, R> selectCase(Class<R> type) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        return new CriteriaBuilderImpl(metamodel).selectCase(this, type);
     }
 
     @Override

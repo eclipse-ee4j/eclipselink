@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,9 +28,15 @@ import org.eclipse.persistence.queries.ReportQueryResult;
 public class TupleImpl implements Tuple, Serializable{
     protected List<? super Selection<?>> selections;
     protected ReportQueryResult rqr;
+    private final List<TupleElement<?>> elements;
 
     public TupleImpl(List<? super Selection<?>> selections,ReportQueryResult rqr){
+        this(selections, TupleQuery.snapshotElements(selections), rqr);
+    }
+
+    TupleImpl(List<? super Selection<?>> selections, List<TupleElement<?>> elements, ReportQueryResult rqr) {
         this.selections = selections;
+        this.elements = elements;
         this.rqr = rqr;
     }
 
@@ -45,6 +51,9 @@ public class TupleImpl implements Tuple, Serializable{
     @Override
     public <X> X get(TupleElement<X> tupleElement){
         int index = this.selections.indexOf(tupleElement);
+        if (index == -1) {
+            index = elements.indexOf(tupleElement);
+        }
         if (index==-1) {
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
                     "jpa_criteriaapi_no_corresponding_element_in_result", new Object[]{tupleElement}));
@@ -143,7 +152,7 @@ public class TupleImpl implements Tuple, Serializable{
      */
     @Override
     public List<TupleElement<?>> getElements(){
-        return (List<TupleElement<?>>) this.selections;
+        return elements;
     }
 
 }

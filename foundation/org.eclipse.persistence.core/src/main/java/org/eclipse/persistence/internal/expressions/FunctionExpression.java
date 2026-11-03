@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -656,9 +656,12 @@ public class FunctionExpression extends BaseExpression {
             newChildren.add(this.children.get(index).twistedForBaseAndContext(newBase, context, oldBase));
         }
 
-        // Aply the function to the twisted old base.
+        // Apply the function to the twisted old base.
         Expression oldBaseExp = this.children.get(0);
-        return oldBaseExp.twistedForBaseAndContext(newBase, context, oldBase).performOperator(this.operator, newChildren);
+        FunctionExpression twisted = (FunctionExpression) oldBaseExp.twistedForBaseAndContext(newBase, context, oldBase)
+                .performOperator(this.operator, newChildren);
+        twisted.setResultType(this.getResultType());
+        return twisted;
     }
 
     /**
@@ -732,7 +735,8 @@ public class FunctionExpression extends BaseExpression {
 
             // If the result type is set, use it.
             field.setSqlType(DatabaseField.NULL_SQL_TYPE);
-            //we also cache the JDBC type now so reset it as well.
+            // Function metadata may vary with the bindings of each execution.
+            field.setShouldCacheSqlType(false);
             if (hasResultType()) {
                 field.setType(getResultType());
             } else {
@@ -751,6 +755,7 @@ public class FunctionExpression extends BaseExpression {
             DatabaseField field = new DatabaseField("*");
             // If the result type is set, use it.
             field.setSqlType(DatabaseField.NULL_SQL_TYPE);
+            field.setShouldCacheSqlType(false);
             field.setType(getResultType());
             newFields.add(field);
         }
