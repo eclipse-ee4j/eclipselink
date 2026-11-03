@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2015, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -256,7 +256,7 @@ public class TestTimestampVersionLocking {
 
             em.getTransaction().begin();
 
-            Query query = em.createNamedQuery("updateActiveEcallAvailableFlag", EcallRegistration.class);
+            Query query = em.createNamedQuery("updateActiveEcallAvailableFlag");
             query.setParameter("flag", flag1);
             query.setParameter("pk", pk1);
 
@@ -286,7 +286,7 @@ public class TestTimestampVersionLocking {
 
             em.getTransaction().begin();
 
-            Query query = em.createNamedQuery("updateActiveEcallAvailableFlag", EcallRegistration.class);
+            Query query = em.createNamedQuery("updateActiveEcallAvailableFlag");
             query.setParameter("flag", flag2);
             query.setParameter("pk", pk2);
 
@@ -377,7 +377,7 @@ public class TestTimestampVersionLocking {
 
             em.getTransaction().begin();
 
-            Query query = em.createNamedQuery("updateActiveEcallAvailableFlag", EcallRegistration.class);
+            Query query = em.createNamedQuery("updateActiveEcallAvailableFlag");
             query.setParameter("flag", flag1);
             query.setParameter("pk", pk1);
 

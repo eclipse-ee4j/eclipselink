@@ -26,6 +26,7 @@ import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.internal.jpa.EntityManagerSetupImpl;
 import org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitInfo;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotatedElement;
 import org.eclipse.persistence.internal.weaving.PersistenceWeaved;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.sessions.server.ServerSession;
@@ -44,7 +45,7 @@ class DefaultToOneFetchTypeTest {
     @MethodSource("standardMappings")
     void standardToOnePolicyAndIndirectionAgree(String kind, FetchType defaultFetch, String declaredFetch) {
         ObjectAccessor accessor = kind.equals("many-to-one") ? new ManyToOneAccessor() : new OneToOneAccessor();
-        accessor.setProject(project(unit(defaultFetch), false));
+        initialize(accessor, project(unit(defaultFetch), false));
         accessor.setFetch(declaredFetch);
         boolean lazy = "LAZY".equals(declaredFetch)
                 || ((declaredFetch == null || "DEFAULT".equals(declaredFetch)) && defaultFetch == FetchType.LAZY);
@@ -62,7 +63,7 @@ class DefaultToOneFetchTypeTest {
     @Test
     void metadataWithoutPersistenceUnitKeepsEagerFallback() {
         for (ObjectAccessor accessor : new ObjectAccessor[] {new ManyToOneAccessor(), new OneToOneAccessor()}) {
-            accessor.setProject(project(null, false));
+            initialize(accessor, project(null, false));
             assertFalse(accessor.isLazy());
             accessor.setFetch("DEFAULT");
             assertFalse(accessor.isLazy());
@@ -73,7 +74,7 @@ class DefaultToOneFetchTypeTest {
     @Test
     void eagerWeavingEnablesIndirectionWithoutChangingFetchPolicy() {
         OneToOneAccessor accessor = new OneToOneAccessor();
-        accessor.setProject(project(unit(FetchType.EAGER), true));
+        initialize(accessor, project(unit(FetchType.EAGER), true));
         assertFalse(accessor.isLazy());
         assertTrue(accessor.usesIndirection());
     }
@@ -81,7 +82,7 @@ class DefaultToOneFetchTypeTest {
     @Test
     void variableToOneRetainsItsOwnDefault() {
         VariableOneToOneAccessor accessor = new VariableOneToOneAccessor();
-        accessor.setProject(project(unit(FetchType.LAZY), false));
+        initialize(accessor, project(unit(FetchType.LAZY), false));
         assertEquals("EAGER", accessor.getDefaultFetchType());
         assertFalse(accessor.isLazy());
         assertFalse(accessor.usesIndirection());
@@ -94,15 +95,15 @@ class DefaultToOneFetchTypeTest {
         for (FetchType policy : new FetchType[] {FetchType.LAZY, FetchType.EAGER}) {
             MetadataProject project = project(unit(policy), false);
             for (RelationshipAccessor accessor : new RelationshipAccessor[] {new OneToManyAccessor(), new ManyToManyAccessor()}) {
-                accessor.setProject(project);
+                initialize(accessor, project);
                 assertTrue(accessor.isLazy());
                 assertTrue(accessor.usesIndirection());
             }
             BasicAccessor basic = new BasicAccessor();
-            basic.setProject(project);
+            initialize(basic, project);
             assertFalse(basic.usesIndirection());
             ElementCollectionAccessor elements = new ElementCollectionAccessor();
-            elements.setProject(project);
+            initialize(elements, project);
             assertTrue(elements.usesIndirection());
         }
     }
@@ -179,6 +180,12 @@ class DefaultToOneFetchTypeTest {
                 return policy;
             }
         };
+    }
+
+    private static void initialize(MappingAccessor accessor, MetadataProject project) {
+        accessor.setProject(project);
+        // Synthetic mappings have no annotations, but still use the normal annotation lookup.
+        accessor.setAccessibleObject(new MetadataAnnotatedElement(null));
     }
 
     private static MetadataProject project(PersistenceUnitInfo unit, boolean eagerWeaving) {

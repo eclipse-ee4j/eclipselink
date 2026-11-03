@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2023, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -53,22 +53,31 @@ public class SchemaManagerTruncateOnExistingTest extends AbstractSchemaManager {
                 em.persist(TYPES[i]);
             }
         });
+        long teamCount = emf.callInTransaction(
+                em -> em.createQuery("SELECT count(t) FROM Team t", Long.class).getSingleResult());
+        long trainerCount = emf.callInTransaction(
+                em -> em.createQuery("SELECT count(t) FROM Trainer t", Long.class).getSingleResult());
+        long typeCount = emf.callInTransaction(
+                em -> em.createQuery("SELECT count(t) FROM Type t", Long.class).getSingleResult());
+        assertEquals((long) TEAMS.length - 1, teamCount);
+        assertEquals((long) TRAINERS.length - 1, trainerCount);
+        assertEquals((long) TYPES.length - 1, typeCount);
         // Truncate the schema
         SchemaManager schemaManager = emf.getSchemaManager();
         schemaManager.truncate();
         // Verify that tables still exist but are empty
         // - Team count shall be 0
-        int teamCount = emf.callInTransaction(
-                em -> em.createQuery("SELECT count(t) FROM Team t", Integer.class).getFirstResult());
-        assertEquals(teamCount, 0);
+        teamCount = emf.callInTransaction(
+                em -> em.createQuery("SELECT count(t) FROM Team t", Long.class).getSingleResult());
+        assertEquals(0L, teamCount);
         // - Trainer count shall be 0
-        int trainerCount = emf.callInTransaction(
-                em -> em.createQuery("SELECT count(t) FROM Trainer t", Integer.class).getFirstResult());
-        assertEquals(trainerCount, 0);
+        trainerCount = emf.callInTransaction(
+                em -> em.createQuery("SELECT count(t) FROM Trainer t", Long.class).getSingleResult());
+        assertEquals(0L, trainerCount);
         // - Type count shall be 0
-        int typeCount = emf.callInTransaction(
-                em -> em.createQuery("SELECT count(t) FROM Type t", Integer.class).getFirstResult());
-        assertEquals(typeCount, 0);
+        typeCount = emf.callInTransaction(
+                em -> em.createQuery("SELECT count(t) FROM Type t", Long.class).getSingleResult());
+        assertEquals(0L, typeCount);
     }
 
 }

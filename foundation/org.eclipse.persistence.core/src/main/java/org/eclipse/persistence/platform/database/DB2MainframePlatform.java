@@ -93,4 +93,10 @@ public class DB2MainframePlatform extends DB2Platform {
         }
         return super.getTableCreationSuffix();
     }
+
+    @Override
+    public boolean supportsSubSelectInOrderBy(boolean distinct) {
+        return true;
+    }
+
 }

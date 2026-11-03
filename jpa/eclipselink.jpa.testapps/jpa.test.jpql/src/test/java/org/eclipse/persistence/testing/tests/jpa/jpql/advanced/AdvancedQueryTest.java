@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -1962,10 +1962,10 @@ public class AdvancedQueryTest extends JUnitTestCase {
         clearCache();
         EntityManager em = createEntityManager();
         try {
-            TypedQuery<Employee> query = em.createQuery("Select a from Address a where exists (Select e from Employee e where e.address = a and e.gender = :g1)", Employee.class);
-            query.setParameter("g1", Gender.Female);
-            query.getResultList();
-            query = em.createQuery("Select e from Employee e where e.gender = :g1 or e.gender = :g2", Employee.class);
+            TypedQuery<Address> addressQuery = em.createQuery("Select a from Address a where exists (Select e from Employee e where e.address = a and e.gender = :g1)", Address.class);
+            addressQuery.setParameter("g1", Gender.Female);
+            addressQuery.getResultList();
+            TypedQuery<Employee> query = em.createQuery("Select e from Employee e where e.gender = :g1 or e.gender = :g2", Employee.class);
             query.setHint(QueryHints.BATCH_SIZE, batchSize);
             query.setHint(QueryHints.BATCH_TYPE, BatchFetchType.IN);
             query.setHint(QueryHints.BATCH, "e.address");

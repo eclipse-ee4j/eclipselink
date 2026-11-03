@@ -29,6 +29,7 @@ import jakarta.persistence.metamodel.SingularAttribute;
 import java.io.Serial;
 import java.util.List;
 
+import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.UpdateAllQuery;
 
@@ -54,7 +55,7 @@ public class CriteriaUpdateImpl<T> extends CommonAbstractCriteriaImpl<T> impleme
     public CriteriaUpdateImpl(Metamodel metamodel, CriteriaBuilderImpl queryBuilder, Class<T> resultType) {
         super(metamodel, queryBuilder, resultType);
         // initialize the query.
-        query = new UpdateAllQuery(queryType);
+        query = new UpdateAllQuery(queryType, new ExpressionBuilder(queryType));
         query.setShouldDeferExecutionInUOW(false);
     }
 

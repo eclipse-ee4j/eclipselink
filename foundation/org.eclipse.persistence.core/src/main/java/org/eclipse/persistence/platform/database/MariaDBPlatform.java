@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2025, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -95,4 +95,10 @@ public class MariaDBPlatform extends MySQLPlatform {
     public String getDropDatabaseSchemaString(String schema) {
         return "DROP SCHEMA IF EXISTS " + schema;
     }
+
+    @Override
+    public boolean supportsSubSelectInOrderBy(boolean distinct) {
+        return true;
+    }
+
 }

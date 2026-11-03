@@ -57,6 +57,7 @@ import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.jpa.metamodel.MetamodelImpl;
 import org.eclipse.persistence.internal.jpa.metamodel.TypeImpl;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
+import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.queries.ReportItem;
 import org.eclipse.persistence.queries.ConstructorReportItem;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
@@ -695,7 +696,12 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
         } else if (this.queryResult.equals(ResultType.ENTITY)) {
             boolean nonRootSelection = this.selection != null && (!this.selection.isRoot());
             if (nonRootSelection) {
-                query = createReportQueryWithItem(this.queryType);
+                ExpressionBuilder sourceBuilder = BooleanExpressionImpl.selectionNode(this.selection).getBuilder();
+                Class<?> sourceClass = sourceBuilder.getQueryClass();
+                query = createReportQueryWithItem(sourceClass != null ? sourceClass : this.queryType);
+                if (sourceClass != null) {
+                    query.setExpressionBuilder(sourceBuilder);
+                }
                 ((ReportQuery) query).setShouldReturnSingleAttribute(true);
             } else {
                 // Tested by testUnionAllWithNoSelection
@@ -955,15 +961,21 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
     /** Detach the completed query while preserving shared roots and parameter occurrences. */
     private static void snapshotExpressions(ReadAllQuery query) {
         Map<org.eclipse.persistence.expressions.Expression, org.eclipse.persistence.expressions.Expression> copies = new IdentityHashMap<>();
-        query.setExpressionBuilder((ExpressionBuilder) query.getExpressionBuilder().copiedVersionFrom(copies));
+        ExpressionBuilder builder = (ExpressionBuilder) query.getExpressionBuilder().copiedVersionFrom(copies);
         if (query.getSelectionCriteria() != null) {
             query.setSelectionCriteria(query.getSelectionCriteria().copiedVersionFrom(copies));
         }
+        // Setting the criteria can replace an uninitialized report builder with its WHERE root.
+        query.setExpressionBuilder(builder);
         query.setOrderByExpressions(copyExpressions(query.getOrderByExpressions(), copies));
         query.setNonFetchJoinAttributeExpressions(copyExpressions(query.getNonFetchJoinAttributeExpressions(), copies));
         query.setPartialAttributeExpressions(copyExpressions(query.getPartialAttributeExpressions(), copies));
         if (query.hasJoining()) {
-            query.setJoinedAttributeExpressions(copyExpressions(query.getJoinedAttributeExpressions(), copies));
+            JoinedAttributeManager original = query.getJoinedAttributeManager();
+            JoinedAttributeManager joined = new JoinedAttributeManager(original.getDescriptor(), builder, query);
+            joined.setJoinedAttributeExpressions_(copyExpressions(original.getJoinedAttributeExpressions(), copies));
+            joined.setShouldFilterDuplicates(original.shouldFilterDuplicates());
+            query.setJoinedAttributeManager(joined);
         }
         if (query instanceof ReportQuery report) {
             snapshotReportItems(report.getItems(), copies);

@@ -15,11 +15,15 @@ package org.eclipse.persistence.internal.jpa.deployment;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.PersistenceConfiguration;
 import jakarta.persistence.SchemaManagementAction;
+import jakarta.persistence.spi.PersistenceUnitInfo;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Proxy;
+import java.lang.reflect.UndeclaredThrowableException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -139,6 +143,155 @@ class SEPersistenceUnitInfoTest {
             }
         };
         assertThrows(IllegalStateException.class, () -> PersistenceUnitProcessor.getPackageDescriptors(container));
+    }
+
+    @Test
+    void oldXmlVersionsDoNotDisableModernPackageLists() {
+        for (String version : List.of("2.2", "3.1")) {
+            SEPersistenceUnitInfo ordinary = new SEPersistenceUnitInfo();
+            ordinary.setPersistenceXMLSchemaVersion(version);
+            ordinary.setExcludeUnlistedClasses(true);
+            ordinary.addManagedPackageDescriptor("example.explicit");
+            assertEquals(java.util.Set.of("example.explicit"), PersistenceUnitProcessor.getPackageDescriptors(ordinary));
+            assertEquals(java.util.Set.of("example.explicit"), PersistenceUnitProcessor.getPackageDescriptors(
+                    ordinary, null, java.util.Map.of()));
+
+            SEPersistenceUnitInfo container = new SEPersistenceUnitInfo() {
+                @Override
+                public List<String> getAllPackageDescriptors() {
+                    return List.of("example.explicit", "example.container");
+                }
+            };
+            container.setPersistenceXMLSchemaVersion(version);
+            container.addManagedPackageDescriptor("example.explicit");
+            assertEquals(List.of("example.explicit", "example.container"),
+                    List.copyOf(PersistenceUnitProcessor.getPackageDescriptors(container)));
+            assertEquals(List.of("example.explicit", "example.container"),
+                    List.copyOf(PersistenceUnitProcessor.getPackageDescriptors(container, null, java.util.Map.of())));
+        }
+    }
+
+    @Test
+    void modernProxyPackageListsAreHonoredWithOldXmlVersion() {
+        List<String> calls = new ArrayList<>();
+        PersistenceUnitInfo container = (PersistenceUnitInfo) Proxy.newProxyInstance(
+                getClass().getClassLoader(), new Class<?>[] {PersistenceUnitInfo.class}, (proxy, method, arguments) -> {
+                    switch (method.getName()) {
+                        case "getPersistenceXMLSchemaVersion":
+                            return "2.2";
+                        case "getManagedPackageDescriptors":
+                            calls.add(method.getName());
+                            return List.of("example.explicit", "example.shared");
+                        case "getAllPackageDescriptors":
+                            calls.add(method.getName());
+                            return List.of("example.shared", "example.discovered");
+                        default:
+                            throw new AssertionError("Unexpected SPI method: " + method.getName());
+                    }
+                });
+        assertEquals("2.2", container.getPersistenceXMLSchemaVersion());
+        assertEquals(List.of("example.explicit", "example.shared", "example.discovered"),
+                List.copyOf(PersistenceUnitProcessor.getPackageDescriptors(container)));
+        assertEquals(List.of("example.explicit", "example.shared", "example.discovered"),
+                List.copyOf(PersistenceUnitProcessor.getPackageDescriptors(container, null, java.util.Map.of())));
+        assertEquals(List.of("getManagedPackageDescriptors", "getAllPackageDescriptors",
+                "getManagedPackageDescriptors", "getAllPackageDescriptors"), calls);
+    }
+
+    @Test
+    void proxyPackageListsRemainIndependentWhenOneGetterIsNullOrAbsent() {
+        for (String unavailable : List.of("getManagedPackageDescriptors", "getAllPackageDescriptors")) {
+            for (boolean absentSpi : List.of(false, true)) {
+                PersistenceUnitInfo container = (PersistenceUnitInfo) Proxy.newProxyInstance(
+                        getClass().getClassLoader(), new Class<?>[] {PersistenceUnitInfo.class}, (proxy, method, arguments) -> {
+                            if (method.getName().equals("getPersistenceXMLSchemaVersion")) {
+                                return "2.2";
+                            }
+                            if (method.getName().equals(unavailable)) {
+                                if (absentSpi) {
+                                    throw new AbstractMethodError("Earlier container SPI: " + unavailable);
+                                }
+                                return null;
+                            }
+                            if (method.getName().equals("getManagedPackageDescriptors")
+                                    || method.getName().equals("getAllPackageDescriptors")) {
+                                return List.of("example.available", "example.available");
+                            }
+                            throw new AssertionError("Unexpected SPI method: " + method.getName());
+                        });
+                assertEquals(java.util.Set.of("example.available"), PersistenceUnitProcessor.getPackageDescriptors(container));
+                assertEquals(java.util.Set.of("example.available"), PersistenceUnitProcessor.getPackageDescriptors(
+                        container, null, java.util.Map.of()));
+            }
+        }
+    }
+
+    @Test
+    void unrecognizedProxyMissingMethodFailuresRetainTheirIdentity() {
+        for (String failingGetter : List.of("getManagedPackageDescriptors", "getAllPackageDescriptors")) {
+            NoSuchMethodException missing = new NoSuchMethodException(failingGetter);
+            InvocationTargetException delegated = new InvocationTargetException(missing);
+            for (Exception failure : List.of(missing, delegated)) {
+                PersistenceUnitInfo container = (PersistenceUnitInfo) Proxy.newProxyInstance(
+                        getClass().getClassLoader(), new Class<?>[] {PersistenceUnitInfo.class}, (proxy, method, arguments) -> {
+                            if (method.getName().equals("getPersistenceXMLSchemaVersion")) {
+                                return "2.2";
+                            }
+                            if (method.getName().equals(failingGetter)) {
+                                throw failure;
+                            }
+                            return List.of("example.available");
+                        });
+                UndeclaredThrowableException direct = assertThrows(UndeclaredThrowableException.class,
+                        () -> PersistenceUnitProcessor.getPackageDescriptors(container));
+                assertSame(failure, direct.getUndeclaredThrowable());
+                UndeclaredThrowableException bootstrap = assertThrows(UndeclaredThrowableException.class,
+                        () -> PersistenceUnitProcessor.getPackageDescriptors(container, null, java.util.Map.of()));
+                assertSame(failure, bootstrap.getUndeclaredThrowable());
+                assertSame(missing, delegated.getTargetException());
+            }
+        }
+    }
+
+    @Test
+    void containerAndProxyDiscoveryFailuresRetainTheirIdentity() {
+        for (String failingGetter : List.of("getManagedPackageDescriptors", "getAllPackageDescriptors")) {
+            IllegalStateException failure = new IllegalStateException("Container discovery failed: " + failingGetter);
+            SEPersistenceUnitInfo ordinary = new SEPersistenceUnitInfo() {
+                @Override
+                public List<String> getManagedPackageDescriptors() {
+                    if (failingGetter.equals("getManagedPackageDescriptors")) {
+                        throw failure;
+                    }
+                    return List.of("example.explicit");
+                }
+
+                @Override
+                public List<String> getAllPackageDescriptors() {
+                    if (failingGetter.equals("getAllPackageDescriptors")) {
+                        throw failure;
+                    }
+                    return List.of("example.container");
+                }
+            };
+            ordinary.setPersistenceXMLSchemaVersion("2.2");
+            PersistenceUnitInfo proxyContainer = (PersistenceUnitInfo) Proxy.newProxyInstance(
+                    getClass().getClassLoader(), new Class<?>[] {PersistenceUnitInfo.class}, (proxy, method, arguments) -> {
+                        if (method.getName().equals("getPersistenceXMLSchemaVersion")) {
+                            return "2.2";
+                        }
+                        if (method.getName().equals(failingGetter)) {
+                            throw failure;
+                        }
+                        return List.of("example.available");
+                    });
+            for (PersistenceUnitInfo container : List.of(ordinary, proxyContainer)) {
+                assertSame(failure, assertThrows(IllegalStateException.class,
+                        () -> PersistenceUnitProcessor.getPackageDescriptors(container)));
+                assertSame(failure, assertThrows(IllegalStateException.class,
+                        () -> PersistenceUnitProcessor.getPackageDescriptors(container, null, java.util.Map.of())));
+            }
+        }
     }
 
     @Test
