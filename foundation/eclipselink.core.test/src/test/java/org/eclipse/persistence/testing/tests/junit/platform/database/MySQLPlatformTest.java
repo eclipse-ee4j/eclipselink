@@ -42,6 +42,92 @@ import org.junit.Test;
 public class MySQLPlatformTest {
 
     @Test
+    public void testIsoWeekAndScalarTypeContextForInheritedPlatforms() {
+        for (var platform : List.of(new MySQLPlatform(), new org.eclipse.persistence.platform.database.MariaDBPlatform(),
+                new MySQLPlatform() {
+                    @Override
+                    public boolean supportsFractionalTime() {
+                        return true;
+                    }
+                }, new org.eclipse.persistence.platform.database.MariaDBPlatform() {
+                    @Override
+                    public boolean supportsFractionalTime() {
+                        return true;
+                    }
+                })) {
+            org.eclipse.persistence.internal.expressions.LiteralExpression value =
+                    new org.eclipse.persistence.internal.expressions.LiteralExpression("STAMP", null) {
+                        @Override
+                        public void printJava(org.eclipse.persistence.internal.expressions.ExpressionJavaPrinter printer) {
+                            printer.printString("STAMP");
+                        }
+                    };
+            Expression field = new org.eclipse.persistence.internal.expressions.LiteralExpression("WEEK", null);
+            ExpressionOperator operator = platform.getOperator(ExpressionOperator.Extract);
+            java.io.StringWriter sql = new java.io.StringWriter();
+            org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter printer =
+                    new org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter(
+                            new DatabaseSessionImpl(new DatabaseLogin(platform)), null,
+                            new org.eclipse.persistence.queries.SQLCall(), false, null);
+            printer.setWriter(sql);
+            operator.printDuo(value, field, printer);
+            Assert.assertEquals("WEEK(STAMP, 3)", sql.toString());
+            sql.getBuffer().setLength(0);
+            operator.printCollection(List.of(value, field), printer);
+            Assert.assertEquals("WEEK(STAMP, 3)", sql.toString());
+            java.io.StringWriter java = new java.io.StringWriter();
+            operator.printJavaCollection(List.of(value, field),
+                    new org.eclipse.persistence.internal.expressions.ExpressionJavaPrinter("builder", java, platform));
+            Assert.assertEquals("WEEK(STAMP, 3)", java.toString());
+            sql.getBuffer().setLength(0);
+            platform.printExpressionTypeContext(value, java.time.LocalDateTime.class,
+                    org.eclipse.persistence.internal.databaseaccess.DatabasePlatform.ExpressionTypeContext.TEMPORAL_RESULT, printer);
+            Assert.assertEquals(platform.supportsFractionalTime() ? "CAST(STAMP AS DATETIME(6))"
+                    : "CAST(STAMP AS DATETIME)", sql.toString());
+            for (Class<?> type : List.of(java.time.LocalDate.class, java.time.LocalTime.class, java.time.LocalDateTime.class)) {
+                sql.getBuffer().setLength(0);
+                platform.printExpressionTypeContext(value.nullIf(new LiteralExpression("OTHER", null)), type,
+                        org.eclipse.persistence.internal.databaseaccess.DatabasePlatform.ExpressionTypeContext.TEMPORAL_RESULT, printer);
+                Assert.assertEquals("CASE WHEN STAMP = OTHER THEN NULL ELSE STAMP END", sql.toString());
+            }
+            DatabaseSessionImpl session = new DatabaseSessionImpl(new DatabaseLogin(platform));
+            ExpressionBuilder builder = new ExpressionBuilder();
+            builder.setSession(session);
+            var call = new org.eclipse.persistence.queries.SQLCall();
+            ExpressionSQLPrinter bound = new ExpressionSQLPrinter(session, null, call, false, null);
+            java.io.StringWriter boundSql = new java.io.StringWriter();
+            bound.setWriter(boundSql);
+            platform.printExpressionTypeContext(builder.getParameter("first", java.time.LocalDateTime.class)
+                            .nullIf(builder.getParameter("second", java.time.LocalDateTime.class)), java.time.LocalDateTime.class,
+                    org.eclipse.persistence.internal.databaseaccess.DatabasePlatform.ExpressionTypeContext.TEMPORAL_RESULT, bound);
+            Assert.assertEquals("CASE WHEN ? = ? THEN NULL ELSE ? END", boundSql.toString());
+            Assert.assertEquals(3, call.getParameters().size());
+            Assert.assertEquals(call.getParameters().get(0), call.getParameters().get(2));
+            Assert.assertNotEquals(call.getParameters().get(0), call.getParameters().get(1));
+            call = new org.eclipse.persistence.queries.SQLCall();
+            bound = new ExpressionSQLPrinter(session, null, call, false, null);
+            boundSql.getBuffer().setLength(0);
+            bound.setWriter(boundSql);
+            platform.printExpressionTypeContext(builder.coalesce(List.of(
+                            builder.getParameter("first", java.time.LocalDateTime.class),
+                            builder.getParameter("second", java.time.LocalDateTime.class))), java.time.LocalDateTime.class,
+                    org.eclipse.persistence.internal.databaseaccess.DatabasePlatform.ExpressionTypeContext.TEMPORAL_RESULT, bound);
+            Assert.assertEquals(platform.supportsFractionalTime() ? "CAST(COALESCE(?, ?) AS DATETIME(6))"
+                    : "CAST(COALESCE(?, ?) AS DATETIME)", boundSql.toString());
+            Assert.assertEquals(List.of("first", "second"), call.getParameters().stream()
+                    .map(parameter -> ((ParameterExpression) parameter).getField().getName()).toList());
+            call = new org.eclipse.persistence.queries.SQLCall();
+            bound = new ExpressionSQLPrinter(session, null, call, false, null);
+            boundSql.getBuffer().setLength(0);
+            bound.setWriter(boundSql);
+            builder.getParameter("text", String.class).nullIf(builder.getParameter("other", String.class)).printSQL(bound);
+            Assert.assertEquals("NULLIF(?, ?)", boundSql.toString());
+            Assert.assertEquals(List.of("text", "other"), call.getParameters().stream()
+                    .map(parameter -> ((ParameterExpression) parameter).getField().getName()).toList());
+        }
+    }
+
+    @Test
     public void testLengthCountsCharacters() {
         DatabaseSessionImpl session = session(new MySQLPlatform());
         SQLSelectStatement statement = statement(session);

@@ -7881,11 +7881,11 @@ public class TestQuerySyntaxComparisonTests {
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
             if(platform.isDB2Z() || platform.isDerby()) {
-                Assert.assertEquals("SELECT CASE WHEN EXISTS (SELECT t1.INTVAL2 FROM QUERYSYNTAXENTITY t1 WHERE (t1.STRVAL1 = 'HELLO')) THEN 1 ELSE 0 END  FROM QUERYSYNTAXENTITY t0", _sql.remove(0));
+                Assert.assertEquals("SELECT (CASE WHEN EXISTS (SELECT t1.INTVAL2 FROM QUERYSYNTAXENTITY t1 WHERE (t1.STRVAL1 = 'HELLO')) THEN 1 ELSE 0 END ) FROM QUERYSYNTAXENTITY t0", _sql.remove(0));
             } else if(platform.isDB2()) {
-                Assert.assertEquals("SELECT CASE WHEN EXISTS (SELECT t1.INTVAL2 FROM QUERYSYNTAXENTITY t1 WHERE (t1.STRVAL1 = ?)) THEN 1 ELSE 0 END  FROM QUERYSYNTAXENTITY t0", _sql.remove(0));
+                Assert.assertEquals("SELECT (CASE WHEN EXISTS (SELECT t1.INTVAL2 FROM QUERYSYNTAXENTITY t1 WHERE (t1.STRVAL1 = ?)) THEN 1 ELSE 0 END ) FROM QUERYSYNTAXENTITY t0", _sql.remove(0));
             }else {
-                Assert.assertEquals("SELECT CASE WHEN EXISTS (SELECT t1.INTVAL2 FROM QUERYSYNTAXENTITY t1 WHERE (t1.STRVAL1 = ?)) THEN ? ELSE ? END  FROM QUERYSYNTAXENTITY t0", _sql.remove(0));
+                Assert.assertEquals("SELECT (CASE WHEN EXISTS (SELECT t1.INTVAL2 FROM QUERYSYNTAXENTITY t1 WHERE (t1.STRVAL1 = ?)) THEN ? ELSE ? END ) FROM QUERYSYNTAXENTITY t0", _sql.remove(0));
             }
 
             CriteriaBuilder cb2 = em.getCriteriaBuilder();
@@ -7907,11 +7907,11 @@ public class TestQuerySyntaxComparisonTests {
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
             if(platform.isDB2Z() || platform.isDerby()) {
-                Assert.assertEquals("SELECT CASE WHEN EXISTS (SELECT t1.INTVAL2 FROM QUERYSYNTAXENTITY t1 WHERE (t1.STRVAL1 = 'HELLO')) THEN 1 ELSE 0 END  FROM QUERYSYNTAXENTITY t0", _sql.remove(0));
+                Assert.assertEquals("SELECT (CASE WHEN EXISTS (SELECT t1.INTVAL2 FROM QUERYSYNTAXENTITY t1 WHERE (t1.STRVAL1 = 'HELLO')) THEN 1 ELSE 0 END ) FROM QUERYSYNTAXENTITY t0", _sql.remove(0));
             } else if(platform.isDB2()) {
-                Assert.assertEquals("SELECT CASE WHEN EXISTS (SELECT t1.INTVAL2 FROM QUERYSYNTAXENTITY t1 WHERE (t1.STRVAL1 = ?)) THEN 1 ELSE 0 END  FROM QUERYSYNTAXENTITY t0", _sql.remove(0));
+                Assert.assertEquals("SELECT (CASE WHEN EXISTS (SELECT t1.INTVAL2 FROM QUERYSYNTAXENTITY t1 WHERE (t1.STRVAL1 = ?)) THEN 1 ELSE 0 END ) FROM QUERYSYNTAXENTITY t0", _sql.remove(0));
             } else {
-                Assert.assertEquals("SELECT CASE WHEN EXISTS (SELECT t1.INTVAL2 FROM QUERYSYNTAXENTITY t1 WHERE (t1.STRVAL1 = ?)) THEN ? ELSE ? END  FROM QUERYSYNTAXENTITY t0", _sql.remove(0));
+                Assert.assertEquals("SELECT (CASE WHEN EXISTS (SELECT t1.INTVAL2 FROM QUERYSYNTAXENTITY t1 WHERE (t1.STRVAL1 = ?)) THEN ? ELSE ? END ) FROM QUERYSYNTAXENTITY t0", _sql.remove(0));
             }
         } finally {
             if (em.getTransaction().isActive()) {
@@ -7981,9 +7981,9 @@ public class TestQuerySyntaxComparisonTests {
             query.getResultList();
             Assert.assertEquals(1, _sql2.size());
             if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
-                Assert.assertEquals("SELECT CASE WHEN EXISTS (SELECT t1.INTVAL2 FROM QUERYSYNTAXENTITY t1 WHERE (t1.STRVAL1 = ?)) THEN 1 ELSE 0 END  FROM QUERYSYNTAXENTITY t0", _sql2.remove(0));
+                Assert.assertEquals("SELECT (CASE WHEN EXISTS (SELECT t1.INTVAL2 FROM QUERYSYNTAXENTITY t1 WHERE (t1.STRVAL1 = ?)) THEN 1 ELSE 0 END ) FROM QUERYSYNTAXENTITY t0", _sql2.remove(0));
             } else {
-                Assert.assertEquals("SELECT CASE WHEN EXISTS (SELECT t1.INTVAL2 FROM QUERYSYNTAXENTITY t1 WHERE (t1.STRVAL1 = ?)) THEN ? ELSE ? END  FROM QUERYSYNTAXENTITY t0", _sql2.remove(0));
+                Assert.assertEquals("SELECT (CASE WHEN EXISTS (SELECT t1.INTVAL2 FROM QUERYSYNTAXENTITY t1 WHERE (t1.STRVAL1 = ?)) THEN ? ELSE ? END ) FROM QUERYSYNTAXENTITY t0", _sql2.remove(0));
             }
 
             CriteriaBuilder cb2 = em.getCriteriaBuilder();
@@ -8005,9 +8005,9 @@ public class TestQuerySyntaxComparisonTests {
             query.getResultList();
             Assert.assertEquals(1, _sql2.size());
             if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
-                Assert.assertEquals("SELECT CASE WHEN EXISTS (SELECT t1.INTVAL2 FROM QUERYSYNTAXENTITY t1 WHERE (t1.STRVAL1 = ?)) THEN 1 ELSE 0 END  FROM QUERYSYNTAXENTITY t0", _sql2.remove(0));
+                Assert.assertEquals("SELECT (CASE WHEN EXISTS (SELECT t1.INTVAL2 FROM QUERYSYNTAXENTITY t1 WHERE (t1.STRVAL1 = ?)) THEN 1 ELSE 0 END ) FROM QUERYSYNTAXENTITY t0", _sql2.remove(0));
             } else {
-                Assert.assertEquals("SELECT CASE WHEN EXISTS (SELECT t1.INTVAL2 FROM QUERYSYNTAXENTITY t1 WHERE (t1.STRVAL1 = ?)) THEN ? ELSE ? END  FROM QUERYSYNTAXENTITY t0", _sql2.remove(0));
+                Assert.assertEquals("SELECT (CASE WHEN EXISTS (SELECT t1.INTVAL2 FROM QUERYSYNTAXENTITY t1 WHERE (t1.STRVAL1 = ?)) THEN ? ELSE ? END ) FROM QUERYSYNTAXENTITY t0", _sql2.remove(0));
             }
         } finally {
             if (em.getTransaction().isActive()) {
@@ -8077,9 +8077,9 @@ public class TestQuerySyntaxComparisonTests {
             query.getResultList();
             Assert.assertEquals(1, _sql3.size());
             if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
-                Assert.assertEquals("SELECT CASE WHEN EXISTS (SELECT t1.INTVAL2 FROM QUERYSYNTAXENTITY t1 WHERE (t1.STRVAL1 = ?)) THEN 1 ELSE 0 END  FROM QUERYSYNTAXENTITY t0", _sql3.remove(0));
+                Assert.assertEquals("SELECT (CASE WHEN EXISTS (SELECT t1.INTVAL2 FROM QUERYSYNTAXENTITY t1 WHERE (t1.STRVAL1 = ?)) THEN 1 ELSE 0 END ) FROM QUERYSYNTAXENTITY t0", _sql3.remove(0));
             } else {
-                Assert.assertEquals("SELECT CASE WHEN EXISTS (SELECT t1.INTVAL2 FROM QUERYSYNTAXENTITY t1 WHERE (t1.STRVAL1 = ?)) THEN ? ELSE ? END  FROM QUERYSYNTAXENTITY t0", _sql3.remove(0));
+                Assert.assertEquals("SELECT (CASE WHEN EXISTS (SELECT t1.INTVAL2 FROM QUERYSYNTAXENTITY t1 WHERE (t1.STRVAL1 = ?)) THEN ? ELSE ? END ) FROM QUERYSYNTAXENTITY t0", _sql3.remove(0));
             }
 
             CriteriaBuilder cb2 = em.getCriteriaBuilder();
@@ -8101,9 +8101,9 @@ public class TestQuerySyntaxComparisonTests {
             query.getResultList();
             Assert.assertEquals(1, _sql3.size());
             if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
-                Assert.assertEquals("SELECT CASE WHEN EXISTS (SELECT t1.INTVAL2 FROM QUERYSYNTAXENTITY t1 WHERE (t1.STRVAL1 = ?)) THEN 1 ELSE 0 END  FROM QUERYSYNTAXENTITY t0", _sql3.remove(0));
+                Assert.assertEquals("SELECT (CASE WHEN EXISTS (SELECT t1.INTVAL2 FROM QUERYSYNTAXENTITY t1 WHERE (t1.STRVAL1 = ?)) THEN 1 ELSE 0 END ) FROM QUERYSYNTAXENTITY t0", _sql3.remove(0));
             } else {
-                Assert.assertEquals("SELECT CASE WHEN EXISTS (SELECT t1.INTVAL2 FROM QUERYSYNTAXENTITY t1 WHERE (t1.STRVAL1 = ?)) THEN ? ELSE ? END  FROM QUERYSYNTAXENTITY t0", _sql3.remove(0));
+                Assert.assertEquals("SELECT (CASE WHEN EXISTS (SELECT t1.INTVAL2 FROM QUERYSYNTAXENTITY t1 WHERE (t1.STRVAL1 = ?)) THEN ? ELSE ? END ) FROM QUERYSYNTAXENTITY t0", _sql3.remove(0));
             }
         } finally {
             if (em.getTransaction().isActive()) {
@@ -8410,11 +8410,11 @@ public class TestQuerySyntaxComparisonTests {
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
             if(platform.isDB2Z() || platform.isDerby()) {
-                Assert.assertEquals("SELECT CASE WHEN NOT (EXISTS (SELECT t1.INTVAL2 FROM QUERYSYNTAXENTITY t1 WHERE (t1.STRVAL1 = 'HELLO'))) THEN 1 ELSE 0 END  FROM QUERYSYNTAXENTITY t0", _sql.remove(0));
+                Assert.assertEquals("SELECT (CASE WHEN NOT (EXISTS (SELECT t1.INTVAL2 FROM QUERYSYNTAXENTITY t1 WHERE (t1.STRVAL1 = 'HELLO'))) THEN 1 ELSE 0 END ) FROM QUERYSYNTAXENTITY t0", _sql.remove(0));
             } else if(platform.isDB2()) {
-                Assert.assertEquals("SELECT CASE WHEN NOT (EXISTS (SELECT t1.INTVAL2 FROM QUERYSYNTAXENTITY t1 WHERE (t1.STRVAL1 = ?))) THEN 1 ELSE 0 END  FROM QUERYSYNTAXENTITY t0", _sql.remove(0));
+                Assert.assertEquals("SELECT (CASE WHEN NOT (EXISTS (SELECT t1.INTVAL2 FROM QUERYSYNTAXENTITY t1 WHERE (t1.STRVAL1 = ?))) THEN 1 ELSE 0 END ) FROM QUERYSYNTAXENTITY t0", _sql.remove(0));
             } else {
-                Assert.assertEquals("SELECT CASE WHEN NOT (EXISTS (SELECT t1.INTVAL2 FROM QUERYSYNTAXENTITY t1 WHERE (t1.STRVAL1 = ?))) THEN ? ELSE ? END  FROM QUERYSYNTAXENTITY t0", _sql.remove(0));
+                Assert.assertEquals("SELECT (CASE WHEN NOT (EXISTS (SELECT t1.INTVAL2 FROM QUERYSYNTAXENTITY t1 WHERE (t1.STRVAL1 = ?))) THEN ? ELSE ? END ) FROM QUERYSYNTAXENTITY t0", _sql.remove(0));
             }
 
             CriteriaBuilder cb2 = em.getCriteriaBuilder();
@@ -8436,11 +8436,11 @@ public class TestQuerySyntaxComparisonTests {
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
             if(platform.isDB2Z() || platform.isDerby()) {
-                Assert.assertEquals("SELECT CASE WHEN NOT (EXISTS (SELECT t1.INTVAL2 FROM QUERYSYNTAXENTITY t1 WHERE (t1.STRVAL1 = 'HELLO'))) THEN 1 ELSE 0 END  FROM QUERYSYNTAXENTITY t0", _sql.remove(0));
+                Assert.assertEquals("SELECT (CASE WHEN NOT (EXISTS (SELECT t1.INTVAL2 FROM QUERYSYNTAXENTITY t1 WHERE (t1.STRVAL1 = 'HELLO'))) THEN 1 ELSE 0 END ) FROM QUERYSYNTAXENTITY t0", _sql.remove(0));
             } else if(platform.isDB2()) {
-                Assert.assertEquals("SELECT CASE WHEN NOT (EXISTS (SELECT t1.INTVAL2 FROM QUERYSYNTAXENTITY t1 WHERE (t1.STRVAL1 = ?))) THEN 1 ELSE 0 END  FROM QUERYSYNTAXENTITY t0", _sql.remove(0));
+                Assert.assertEquals("SELECT (CASE WHEN NOT (EXISTS (SELECT t1.INTVAL2 FROM QUERYSYNTAXENTITY t1 WHERE (t1.STRVAL1 = ?))) THEN 1 ELSE 0 END ) FROM QUERYSYNTAXENTITY t0", _sql.remove(0));
             } else {
-                Assert.assertEquals("SELECT CASE WHEN NOT (EXISTS (SELECT t1.INTVAL2 FROM QUERYSYNTAXENTITY t1 WHERE (t1.STRVAL1 = ?))) THEN ? ELSE ? END  FROM QUERYSYNTAXENTITY t0", _sql.remove(0));
+                Assert.assertEquals("SELECT (CASE WHEN NOT (EXISTS (SELECT t1.INTVAL2 FROM QUERYSYNTAXENTITY t1 WHERE (t1.STRVAL1 = ?))) THEN ? ELSE ? END ) FROM QUERYSYNTAXENTITY t0", _sql.remove(0));
             }
         } finally {
             if (em.getTransaction().isActive()) {
@@ -8511,9 +8511,9 @@ public class TestQuerySyntaxComparisonTests {
             query.getResultList();
             Assert.assertEquals(1, _sql2.size());
             if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
-                Assert.assertEquals("SELECT CASE WHEN NOT (EXISTS (SELECT t1.INTVAL2 FROM QUERYSYNTAXENTITY t1 WHERE (t1.STRVAL1 = ?))) THEN 1 ELSE 0 END  FROM QUERYSYNTAXENTITY t0", _sql2.remove(0));
+                Assert.assertEquals("SELECT (CASE WHEN NOT (EXISTS (SELECT t1.INTVAL2 FROM QUERYSYNTAXENTITY t1 WHERE (t1.STRVAL1 = ?))) THEN 1 ELSE 0 END ) FROM QUERYSYNTAXENTITY t0", _sql2.remove(0));
             } else {
-                Assert.assertEquals("SELECT CASE WHEN NOT (EXISTS (SELECT t1.INTVAL2 FROM QUERYSYNTAXENTITY t1 WHERE (t1.STRVAL1 = ?))) THEN ? ELSE ? END  FROM QUERYSYNTAXENTITY t0", _sql2.remove(0));
+                Assert.assertEquals("SELECT (CASE WHEN NOT (EXISTS (SELECT t1.INTVAL2 FROM QUERYSYNTAXENTITY t1 WHERE (t1.STRVAL1 = ?))) THEN ? ELSE ? END ) FROM QUERYSYNTAXENTITY t0", _sql2.remove(0));
             }
 
             CriteriaBuilder cb2 = em.getCriteriaBuilder();
@@ -8535,9 +8535,9 @@ public class TestQuerySyntaxComparisonTests {
             query.getResultList();
             Assert.assertEquals(1, _sql2.size());
             if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
-                Assert.assertEquals("SELECT CASE WHEN NOT (EXISTS (SELECT t1.INTVAL2 FROM QUERYSYNTAXENTITY t1 WHERE (t1.STRVAL1 = ?))) THEN 1 ELSE 0 END  FROM QUERYSYNTAXENTITY t0", _sql2.remove(0));
+                Assert.assertEquals("SELECT (CASE WHEN NOT (EXISTS (SELECT t1.INTVAL2 FROM QUERYSYNTAXENTITY t1 WHERE (t1.STRVAL1 = ?))) THEN 1 ELSE 0 END ) FROM QUERYSYNTAXENTITY t0", _sql2.remove(0));
             } else {
-                Assert.assertEquals("SELECT CASE WHEN NOT (EXISTS (SELECT t1.INTVAL2 FROM QUERYSYNTAXENTITY t1 WHERE (t1.STRVAL1 = ?))) THEN ? ELSE ? END  FROM QUERYSYNTAXENTITY t0", _sql2.remove(0));
+                Assert.assertEquals("SELECT (CASE WHEN NOT (EXISTS (SELECT t1.INTVAL2 FROM QUERYSYNTAXENTITY t1 WHERE (t1.STRVAL1 = ?))) THEN ? ELSE ? END ) FROM QUERYSYNTAXENTITY t0", _sql2.remove(0));
             }
         } finally {
             if (em.getTransaction().isActive()) {
@@ -8608,9 +8608,9 @@ public class TestQuerySyntaxComparisonTests {
             query.getResultList();
             Assert.assertEquals(1, _sql3.size());
             if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
-                Assert.assertEquals("SELECT CASE WHEN NOT (EXISTS (SELECT t1.INTVAL2 FROM QUERYSYNTAXENTITY t1 WHERE (t1.STRVAL1 = ?))) THEN 1 ELSE 0 END  FROM QUERYSYNTAXENTITY t0", _sql3.remove(0));
+                Assert.assertEquals("SELECT (CASE WHEN NOT (EXISTS (SELECT t1.INTVAL2 FROM QUERYSYNTAXENTITY t1 WHERE (t1.STRVAL1 = ?))) THEN 1 ELSE 0 END ) FROM QUERYSYNTAXENTITY t0", _sql3.remove(0));
             } else {
-                Assert.assertEquals("SELECT CASE WHEN NOT (EXISTS (SELECT t1.INTVAL2 FROM QUERYSYNTAXENTITY t1 WHERE (t1.STRVAL1 = ?))) THEN ? ELSE ? END  FROM QUERYSYNTAXENTITY t0", _sql3.remove(0));
+                Assert.assertEquals("SELECT (CASE WHEN NOT (EXISTS (SELECT t1.INTVAL2 FROM QUERYSYNTAXENTITY t1 WHERE (t1.STRVAL1 = ?))) THEN ? ELSE ? END ) FROM QUERYSYNTAXENTITY t0", _sql3.remove(0));
             }
 
             CriteriaBuilder cb2 = em.getCriteriaBuilder();
@@ -8632,9 +8632,9 @@ public class TestQuerySyntaxComparisonTests {
             query.getResultList();
             Assert.assertEquals(1, _sql3.size());
             if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
-                Assert.assertEquals("SELECT CASE WHEN NOT (EXISTS (SELECT t1.INTVAL2 FROM QUERYSYNTAXENTITY t1 WHERE (t1.STRVAL1 = ?))) THEN 1 ELSE 0 END  FROM QUERYSYNTAXENTITY t0", _sql3.remove(0));
+                Assert.assertEquals("SELECT (CASE WHEN NOT (EXISTS (SELECT t1.INTVAL2 FROM QUERYSYNTAXENTITY t1 WHERE (t1.STRVAL1 = ?))) THEN 1 ELSE 0 END ) FROM QUERYSYNTAXENTITY t0", _sql3.remove(0));
             } else {
-                Assert.assertEquals("SELECT CASE WHEN NOT (EXISTS (SELECT t1.INTVAL2 FROM QUERYSYNTAXENTITY t1 WHERE (t1.STRVAL1 = ?))) THEN ? ELSE ? END  FROM QUERYSYNTAXENTITY t0", _sql3.remove(0));
+                Assert.assertEquals("SELECT (CASE WHEN NOT (EXISTS (SELECT t1.INTVAL2 FROM QUERYSYNTAXENTITY t1 WHERE (t1.STRVAL1 = ?))) THEN ? ELSE ? END ) FROM QUERYSYNTAXENTITY t0", _sql3.remove(0));
             }
         } finally {
             if (em.getTransaction().isActive()) {

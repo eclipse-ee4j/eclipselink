@@ -38,6 +38,10 @@ import org.eclipse.persistence.platform.database.DatabasePlatform;
 import org.eclipse.persistence.platform.database.H2Platform;
 import org.eclipse.persistence.queries.SQLCall;
 import org.eclipse.persistence.sessions.DatabaseLogin;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.sessions.Project;
+import org.eclipse.persistence.tools.schemaframework.DefaultTableGenerator;
+import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -71,7 +75,7 @@ public class H2TemporalPlatformTest {
 
     @Test
     public void testOtherExtractionFieldsRetainTheirSql() {
-        for (String part : List.of("YEAR", "QUARTER", "MONTH", "WEEK", "DAY", "HOUR", "MINUTE", "SECOND")) {
+        for (String part : List.of("YEAR", "QUARTER", "MONTH", "DAY", "HOUR", "MINUTE")) {
             Assert.assertEquals("SELECT EXTRACT(" + part + " FROM STAMP) FROM TEMPORAL_SAMPLE", select(part));
         }
     }
@@ -91,7 +95,7 @@ public class H2TemporalPlatformTest {
             Assert.assertEquals(duo.toString(), collection.toString());
             Assert.assertEquals("CAST(" + operand + (part.equalsIgnoreCase("DATE") ? " AS DATE)" : " AS TIME(9))"), duo.toString());
         }
-        for (String part : List.of("YEAR", "QUARTER", "MONTH", "WEEK", "DAY", "HOUR", "MINUTE", "SECOND")) {
+        for (String part : List.of("YEAR", "QUARTER", "MONTH", "DAY", "HOUR", "MINUTE")) {
             List<Expression> arguments = List.of(first, new LiteralExpression(part, null));
             StringWriter expected = new StringWriter();
             new ExtractOperator().printJavaCollection(arguments, new ExpressionJavaPrinter("builder", expected, platform));
@@ -114,6 +118,102 @@ public class H2TemporalPlatformTest {
                     () -> operator.printJavaDuo(first, second, new ExpressionJavaPrinter("builder", new StringWriter(), platform))).getMessage());
             Assert.assertEquals("Unknown EXTRACT function datetime_field: INVALID", Assert.assertThrows(IllegalArgumentException.class,
                     () -> operator.printJavaCollection(List.of(first, second), new ExpressionJavaPrinter("builder", new StringWriter(), platform))).getMessage());
+        }
+    }
+
+    @Test
+    public void testExtractWeekUsesIsoWeek() {
+        assertExtractPrinters("WEEK", "EXTRACT(ISO_WEEK FROM STAMP)");
+    }
+
+    @Test
+    public void testExtractSecondIncludesNanoseconds() {
+        assertExtractPrinters("SECOND", "(EXTRACT(SECOND FROM STAMP) + EXTRACT(NANOSECOND FROM STAMP) / 1000000000.0)");
+    }
+
+    private void assertExtractPrinters(String part, String expected) {
+        for (String field : List.of(part, part.toLowerCase(java.util.Locale.ROOT))) {
+            ExpressionOperator operator = platform.getOperator(ExpressionOperator.Extract);
+            Expression value = new LiteralExpression("STAMP", null) {
+                @Override
+                public void printJava(ExpressionJavaPrinter printer) {
+                    printer.printString("STAMP");
+                }
+            };
+            Expression second = new LiteralExpression(field, null);
+            StringWriter sqlDuo = new StringWriter();
+            operator.printDuo(value, second, printer(sqlDuo));
+            Assert.assertEquals(expected, sqlDuo.toString());
+            StringWriter sqlCollection = new StringWriter();
+            operator.printCollection(List.of(value, second), printer(sqlCollection));
+            Assert.assertEquals(expected, sqlCollection.toString());
+            StringWriter javaDuo = new StringWriter();
+            operator.printJavaDuo(value, second, new ExpressionJavaPrinter("builder", javaDuo, platform));
+            Assert.assertEquals(expected, javaDuo.toString());
+            StringWriter javaCollection = new StringWriter();
+            operator.printJavaCollection(List.of(value, second), new ExpressionJavaPrinter("builder", javaCollection, platform));
+            Assert.assertEquals(expected, javaCollection.toString());
+        }
+    }
+
+    @Test
+    public void testTemporalValueContextRetainsNanosecondPrecision() {
+        for (Class<?> type : List.of(LocalTime.class, LocalDateTime.class)) {
+            StringWriter sql = new StringWriter();
+            platform.printExpressionTypeContext(new org.eclipse.persistence.expressions.ExpressionBuilder().getParameter("value", type), type,
+                    org.eclipse.persistence.internal.databaseaccess.DatabasePlatform.ExpressionTypeContext.TEMPORAL_VALUE,
+                    printer(sql));
+            Assert.assertEquals(type == LocalTime.class ? "CAST(? AS TIME(9))"
+                    : "CAST(? AS TIMESTAMP(9))", sql.toString());
+        }
+    }
+
+    @Test
+    public void testSecondPrecisionReachesTemporalDdl() throws Exception {
+        for (Class<?> type : List.of(LocalTime.class, java.sql.Time.class, java.time.OffsetTime.class,
+                LocalDateTime.class, java.sql.Timestamp.class, java.time.OffsetDateTime.class,
+                java.time.Instant.class, java.util.Date.class, java.util.Calendar.class)) {
+            for (int precision : new int[] {-1, 0, 3, 9}) {
+                DatabaseField field = new DatabaseField("TEMPORAL_VALUE");
+                field.setType(type);
+                field.setSecondPrecision(precision);
+                FieldDefinition definition = new TemporalFieldGenerator(new Project(new DatabaseLogin(platform))).field(field);
+                FieldDefinition.DatabaseType databaseType = platform.getDatabaseType(type);
+                StringWriter sql = new StringWriter();
+                platform.printFieldTypeSize(sql, definition, databaseType);
+                String expected = databaseType.name() + (precision < 0
+                        ? ("TIMESTAMP".equals(databaseType.name()) ? "(9)" : "") : "(" + precision + ")");
+                Assert.assertEquals(type.getName() + " precision=" + precision, expected, sql.toString());
+            }
+        }
+    }
+
+    @Test
+    public void testManualTemporalFieldDefinitionsRetainLegacySizing() throws Exception {
+        for (Class<?> type : List.of(LocalTime.class, java.sql.Time.class, java.time.OffsetTime.class,
+                LocalDateTime.class, java.sql.Timestamp.class, java.time.OffsetDateTime.class,
+                java.time.Instant.class, java.util.Date.class, java.util.Calendar.class)) {
+            for (int size : new int[] {0, 3, 9}) {
+                FieldDefinition definition = new FieldDefinition("TEMPORAL_VALUE", type);
+                definition.setSize(size);
+                FieldDefinition.DatabaseType databaseType = platform.getDatabaseType(type);
+                StringWriter sql = new StringWriter();
+                platform.printFieldTypeSize(sql, definition, databaseType);
+                boolean legacy = type == java.sql.Time.class || type == java.sql.Timestamp.class
+                        || type == java.util.Date.class || type == java.util.Calendar.class;
+                Assert.assertEquals(type.getName() + " size=" + size,
+                        databaseType.name() + (size == 0 || legacy ? "" : "(" + size + ")"), sql.toString());
+            }
+        }
+    }
+
+    private static class TemporalFieldGenerator extends DefaultTableGenerator {
+        private TemporalFieldGenerator(Project project) {
+            super(project);
+        }
+
+        private FieldDefinition field(DatabaseField field) {
+            return getFieldDefFromDBField(field);
         }
     }
 

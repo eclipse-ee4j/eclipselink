@@ -58,7 +58,6 @@ import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.OffsetTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
@@ -1129,57 +1128,29 @@ public class SQLServerPlatform extends DatabasePlatform {
                         String nullValue    = (selector == ExpressionOperator.NullsFirst) ? "0" : "1";
                         String nonNullValue = (selector == ExpressionOperator.NullsFirst) ? "1" : "0";
                         // Use bare fieldExpr in the CASE predicate; keep sortExpr (with ASC/DESC) as the second term
-                        String caseSql = "(CASE WHEN ? IS NULL THEN " + nullValue + " ELSE " + nonNullValue + " END), ?";
-                        orderBy.set(i, fieldExpr.sql(caseSql, Arrays.asList(sortExpr)));
+                        Expression rank = fieldExpr.sql("(CASE WHEN ? IS NULL THEN " + nullValue
+                                + " ELSE " + nonNullValue + " END)", List.of());
+                        orderBy.set(i, rank);
+                        orderBy.add(++i, sortExpr);
                         if (statement.shouldDistinctBeUsed()) {
-                            // SQL Server requires every DISTINCT ordering expression in the projection.
-                            additionalFields.add(fieldExpr.sql("(CASE WHEN ? IS NULL THEN " + nullValue
-                                    + " ELSE " + nonNullValue + " END)", List.of()));
+                            // Keep the same scalar rank in the projection and ordering.
+                            additionalFields.add(rank);
                         }
                     }
                 }
             }
 
             statement.getFields().addAll(additionalFields);
-            ReadQuery query = statement.getQuery();
-            if (query == null || !isVersion11OrHigher || !shouldUseRownumFiltering()) {
-                printSQLSelectStatement(call, printer, statement, additionalFields.size());
-                return;
-            }
-
-            int max = Math.max(0, query.getMaxRows());
-            int first = Math.max(0, query.getFirstResult());
-
-            if (max == 0 && first == 0) {
-                printSQLSelectStatement(call, printer, statement, additionalFields.size());
-                return;
-            }
-
-            // OFFSET + FETCH NEXT requires ORDER BY, so add an ordering if there are none
-            // this SQL will satisfy the query parser without actually changing the ordering of the rows
-            if (orderBy.isEmpty()) {
+            // OFFSET/FETCH requires ORDER BY even when the query has no requested ordering.
+            if (shouldPrintOffsetFetch(statement) && orderBy.isEmpty()) {
                 orderBy.add(statement.getBuilder().literal("ROW_NUMBER() OVER (ORDER BY (SELECT null))"));
             }
-
-            // decide exact syntax to use, depending on whether a limit is specified (could just have an offset)
-            String offsetFetchSql;
-            List<?> offsetFetchArgs;
-            if (max == 0) {
-                offsetFetchSql = "? OFFSET ? ROWS";
-                offsetFetchArgs = Arrays.asList(statement.getBuilder().getParameter(DatabaseCall.FIRSTRESULT_FIELD));
-            } else {
-                offsetFetchSql = "? OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
-                offsetFetchArgs = Arrays.asList(statement.getBuilder().getParameter(DatabaseCall.FIRSTRESULT_FIELD),
-                        statement.getBuilder().getParameter(DatabaseCall.MAXROW_FIELD));
+            super.printSQLSelectStatement(call, printer, statement);
+            int additionalFieldCount = statement.getFields().size() - originalFieldCount;
+            if (additionalFieldCount > 0) {
+                // Every appended rank/sort key is scalar; original entity selections may expand.
+                call.setFields(call.getFields().subList(0, call.getFields().size() - additionalFieldCount));
             }
-
-            // append to the last ORDER BY clause
-            orderBy.add(orderBy.remove(orderBy.size() - 1).sql(offsetFetchSql, offsetFetchArgs));
-
-            printSQLSelectStatement(call, printer, statement, additionalFields.size());
-
-            call.setIgnoreFirstRowSetting(true);
-            call.setIgnoreMaxResultsSetting(true);
         } finally {
             // Preserve both lists and their elements for reuse, including failed rendering.
             try {
@@ -1192,14 +1163,27 @@ public class SQLServerPlatform extends DatabasePlatform {
         }
     }
 
-    private void printSQLSelectStatement(DatabaseCall call, ExpressionSQLPrinter printer,
-                                         SQLSelectStatement statement, int additionalFieldCount) {
-        super.printSQLSelectStatement(call, printer, statement);
-        if (additionalFieldCount > 0) {
-            // Synthetic rank columns affect SQL ordering only, never the requested result shape.
-            // Use the rendered count because an entity expression may expand to several columns.
-            call.setFields(call.getFields().subList(0, call.getFields().size() - additionalFieldCount));
+    private boolean shouldPrintOffsetFetch(SQLSelectStatement statement) {
+        ReadQuery query = statement.getQuery();
+        return query != null && isVersion11OrHigher && shouldUseRownumFiltering()
+                && (query.getMaxRows() > 0 || query.getFirstResult() > 0);
+    }
+
+    @Override
+    public void printSQLOrderByClauseTail(ExpressionSQLPrinter printer, SQLSelectStatement statement) throws IOException {
+        if (!shouldPrintOffsetFetch(statement)) {
+            return;
         }
+        printer.getWriter().write(" OFFSET ");
+        statement.getBuilder().getParameter(DatabaseCall.FIRSTRESULT_FIELD).printSQL(printer);
+        printer.getWriter().write(" ROWS");
+        if (statement.getQuery().getMaxRows() > 0) {
+            printer.getWriter().write(" FETCH NEXT ");
+            statement.getBuilder().getParameter(DatabaseCall.MAXROW_FIELD).printSQL(printer);
+            printer.getWriter().write(" ROWS ONLY");
+        }
+        printer.getCall().setIgnoreFirstRowSetting(true);
+        printer.getCall().setIgnoreMaxResultsSetting(true);
     }
 
     @Override
@@ -1252,6 +1236,12 @@ public class SQLServerPlatform extends DatabasePlatform {
         }
 
         super.setParameterValueInDatabaseCall(parameter, statement, name, session);
+    }
+
+
+    @Override
+    public boolean supportsSubSelectInOrderBy(boolean distinct) {
+        return !distinct;
     }
 
 }

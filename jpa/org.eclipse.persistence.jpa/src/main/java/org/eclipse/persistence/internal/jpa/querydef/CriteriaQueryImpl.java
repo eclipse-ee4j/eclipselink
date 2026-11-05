@@ -24,6 +24,10 @@ import jakarta.persistence.Tuple;
 import jakarta.persistence.criteria.BooleanExpression;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.From;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.ParameterExpression;
+import jakarta.persistence.criteria.Subquery;
 import jakarta.persistence.criteria.Order;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
@@ -35,9 +39,15 @@ import java.io.Serial;
 import java.lang.reflect.Constructor;
 import java.security.AccessController;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.persistence.expressions.ExpressionBuilder;
@@ -47,6 +57,9 @@ import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.jpa.metamodel.MetamodelImpl;
 import org.eclipse.persistence.internal.jpa.metamodel.TypeImpl;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
+import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
+import org.eclipse.persistence.internal.queries.ReportItem;
+import org.eclipse.persistence.queries.ConstructorReportItem;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedGetConstructorFor;
 import org.eclipse.persistence.queries.DatabaseQuery;
@@ -379,39 +392,55 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
      *
      */
     public void populateAndSetConstructorSelection(ConstructorSelectionImpl<T> constructorSelection, Class<T> class1, Selection<?>... selections) throws IllegalArgumentException{
-        Class<?>[] constructorArgs = new Class<?>[selections.length];
-        int count = 0;
-        for (Selection<?> select : selections) {
-            if(select instanceof ConstructorSelectionImpl) {
-                @SuppressWarnings("unchecked")
-                ConstructorSelectionImpl<T> constructorSelect = (ConstructorSelectionImpl<T>)select;
-                @SuppressWarnings("unchecked")
-                Selection<? extends T>[] selectArray = constructorSelect.getCompoundSelectionItems().toArray(new Selection[0]);
-                populateAndSetConstructorSelection(constructorSelect, (Class<T>) constructorSelect.getJavaType(), selectArray);
-            }
-            constructorArgs[count++] = select.getJavaType();
+        if (constructorSelection == null) {
+            constructorSelection = new ConstructorSelectionImpl<>(class1, selections);
         }
+        populateConstructorSelection(constructorSelection);
+        this.queryResult = ResultType.CONSTRUCTOR;
+        this.selection = constructorSelection;
+    }
 
-        Constructor<? extends T> constructor = null;
+    private void populateConstructorSelection(ConstructorSelectionImpl<?> selection) {
+        for (Selection<?> child : selection.getCompoundSelectionItems()) {
+            if (child instanceof ConstructorSelectionImpl<?> nested) {
+                populateConstructorSelection(nested);
+            }
+        }
+        resolveConstructorSelection(selection);
+    }
+
+    private <X> void resolveConstructorSelection(ConstructorSelectionImpl<X> selection) {
+        Class<?>[] constructorArgs = selection.getCompoundSelectionItems().stream()
+                .map(Selection::getJavaType).toArray(Class<?>[]::new);
         try {
+            Constructor<? extends X> constructor;
             // TODO: Remove AccessController.doPrivileged
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                constructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor<>(class1, constructorArgs, false));
+                constructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor<>(selection.getJavaType(), constructorArgs, false));
             } else {
-                constructor = PrivilegedAccessHelper.getConstructorFor(class1, constructorArgs, false);
+                constructor = PrivilegedAccessHelper.getConstructorFor(selection.getJavaType(), constructorArgs, false);
             }
-            if (constructorSelection == null){
-                constructorSelection = new ConstructorSelectionImpl<>(class1, selections);
-            }
-            this.queryResult = ResultType.CONSTRUCTOR;
-            constructorSelection.setConstructor(constructor);
-            constructorSelection.setConstructorArgTypes(constructorArgs);
-            this.selection = constructorSelection;
-        } catch (Exception e){
-            //PrivilegedActionException and NoSuchMethodException are possible
+            selection.setConstructor(constructor);
+            selection.setConstructorArgTypes(constructorArgs);
+        } catch (Exception e) {
+            // PrivilegedActionException and NoSuchMethodException are possible.
             Object[] params = new Object[1];
             params[0] = this.queryType;
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("criteria_no_constructor_found", params), e);
+        }
+    }
+
+    private void refreshConstructorSelections(Selection<?> selection) {
+        if (selection == null || !selection.isCompoundSelection()) {
+            return;
+        }
+        selection.getCompoundSelectionItems().forEach(this::refreshConstructorSelections);
+        if (selection instanceof ConstructorSelectionImpl<?> constructor && constructor.constructor != null) {
+            Class<?>[] currentTypes = constructor.getCompoundSelectionItems().stream()
+                    .map(Selection::getJavaType).toArray(Class<?>[]::new);
+            if (!Arrays.equals(constructor.constructorArgTypes, currentTypes)) {
+                resolveConstructorSelection(constructor);
+            }
         }
     }
 
@@ -667,7 +696,12 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
         } else if (this.queryResult.equals(ResultType.ENTITY)) {
             boolean nonRootSelection = this.selection != null && (!this.selection.isRoot());
             if (nonRootSelection) {
-                query = createReportQueryWithItem(this.queryType);
+                ExpressionBuilder sourceBuilder = BooleanExpressionImpl.selectionNode(this.selection).getBuilder();
+                Class<?> sourceClass = sourceBuilder.getQueryClass();
+                query = createReportQueryWithItem(sourceClass != null ? sourceClass : this.queryType);
+                if (sourceClass != null) {
+                    query.setExpressionBuilder(sourceBuilder);
+                }
                 ((ReportQuery) query).setShouldReturnSingleAttribute(true);
             } else {
                 // Tested by testUnionAllWithNoSelection
@@ -834,6 +868,8 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
     }
 
     private ReadAllQuery translate(boolean toReportQuery) {
+        discoverCurrentParameters();
+        refreshConstructorSelections(selection);
         ReadAllQuery query = (ReadAllQuery) translate(getDatabaseQuery(toReportQuery));
 
         for (Iterator<Root<?>> iterator = this.getRoots().iterator(); iterator.hasNext();) {
@@ -867,7 +903,156 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
             }
         }
 
+        snapshotExpressions(query);
         return query;
+    }
+
+    // CASE/subquery mutation can add handles after initial selection discovery. Revisit the
+    // current graph; snapshotParameters then retains only handles present in the copied query.
+    private void discoverCurrentParameters() {
+        Set<Selection<?>> visited = Collections.newSetFromMap(new IdentityHashMap<>());
+        discoverParameters(selection, visited);
+        discoverParameters(where, visited);
+        discoverParameters(havingClause, visited);
+        if (groupBy != null) {
+            groupBy.forEach(expression -> discoverParameters(expression, visited));
+        }
+        if (orderBy != null) {
+            orderBy.forEach(order -> discoverParameters(order.getExpression(), visited));
+        }
+        for (Root<?> root : new ArrayList<>(roots)) {
+            discoverJoinParameters(root, visited);
+        }
+    }
+
+    private void discoverJoinParameters(From<?, ?> from, Set<Selection<?>> visited) {
+        for (Join<?, ?> join : from.getJoins()) {
+            discoverParameters(join.getOn(), visited);
+            discoverJoinParameters(join, visited);
+        }
+    }
+
+    private void discoverParameters(Selection<?> selection, Set<Selection<?>> visited) {
+        if (selection == null || !visited.add(selection)) {
+            return;
+        }
+        if (selection instanceof ParameterExpression<?> parameter) {
+            addParameter(parameter);
+        }
+        if (selection instanceof Subquery<?> subquery) {
+            discoverParameters(subquery.getSelection(), visited);
+            discoverParameters(subquery.getRestriction(), visited);
+            discoverParameters(subquery.getGroupRestriction(), visited);
+            subquery.getGroupList().forEach(expression -> discoverParameters(expression, visited));
+            subquery.getRoots().forEach(root -> discoverJoinParameters(root, visited));
+        } else if (selection instanceof FunctionExpressionImpl<?> function) {
+            function.getChildExpressions().forEach(expression -> discoverParameters(expression, visited));
+            if (function instanceof CriteriaBuilderImpl.CaseImpl<?> searched) {
+                discoverParameters(searched.getElseExpression(), visited);
+            } else if (function instanceof CriteriaBuilderImpl.SimpleCaseImpl<?, ?> simple) {
+                discoverParameters(simple.getExpression(), visited);
+                discoverParameters(simple.getElseExpression(), visited);
+            }
+        } else if (selection.isCompoundSelection()) {
+            selection.getCompoundSelectionItems().forEach(item -> discoverParameters(item, visited));
+        }
+    }
+
+    /** Detach the completed query while preserving shared roots and parameter occurrences. */
+    private static void snapshotExpressions(ReadAllQuery query) {
+        // Each parameter occurrence gets its own copy. Platforms record per-occurrence
+        // binding decisions on the node (e.g. DB2/Derby partial binding of "? + ?"),
+        // which must not leak into other clauses that use the same parameter.
+        // The originals stay registered as keys for snapshotParameters.
+        Map<org.eclipse.persistence.expressions.Expression, org.eclipse.persistence.expressions.Expression> copies = new IdentityHashMap<>() {
+            @Override
+            public org.eclipse.persistence.expressions.Expression get(Object key) {
+                if (key instanceof org.eclipse.persistence.internal.expressions.ParameterExpression) {
+                    return null;
+                }
+                return super.get(key);
+            }
+        };
+        ExpressionBuilder builder = (ExpressionBuilder) query.getExpressionBuilder().copiedVersionFrom(copies);
+        if (query.getSelectionCriteria() != null) {
+            query.setSelectionCriteria(query.getSelectionCriteria().copiedVersionFrom(copies));
+        }
+        // Setting the criteria can replace an uninitialized report builder with its WHERE root.
+        query.setExpressionBuilder(builder);
+        query.setOrderByExpressions(copyExpressions(query.getOrderByExpressions(), copies));
+        query.setNonFetchJoinAttributeExpressions(copyExpressions(query.getNonFetchJoinAttributeExpressions(), copies));
+        query.setPartialAttributeExpressions(copyExpressions(query.getPartialAttributeExpressions(), copies));
+        if (query.hasJoining()) {
+            JoinedAttributeManager original = query.getJoinedAttributeManager();
+            JoinedAttributeManager joined = new JoinedAttributeManager(original.getDescriptor(), builder, query);
+            joined.setJoinedAttributeExpressions_(copyExpressions(original.getJoinedAttributeExpressions(), copies));
+            joined.setShouldFilterDuplicates(original.shouldFilterDuplicates());
+            query.setJoinedAttributeManager(joined);
+        }
+        if (query instanceof ReportQuery report) {
+            snapshotReportItems(report.getItems(), copies);
+            report.setGroupByExpressions(copyExpressions(report.getGroupByExpressions(), copies));
+            if (report.getHavingExpression() != null) {
+                report.setHavingExpression(report.getHavingExpression().copiedVersionFrom(copies));
+            }
+        }
+        snapshotParameters(query, copies);
+    }
+
+    @SuppressWarnings("unchecked")
+    private static void snapshotParameters(ReadAllQuery query,
+            Map<org.eclipse.persistence.expressions.Expression, org.eclipse.persistence.expressions.Expression> copies) {
+        Set<String> active = new HashSet<>();
+        for (org.eclipse.persistence.expressions.Expression expression : copies.keySet()) {
+            if (expression instanceof org.eclipse.persistence.internal.expressions.ParameterExpression parameter) {
+                active.add(parameter.getField().getName());
+            }
+        }
+        Map<String, ParameterExpression<?>> original = (Map<String, ParameterExpression<?>>)
+                query.getProperty(ParameterExpressionImpl.QUERY_PARAMETERS_PROPERTY);
+        Map<String, ParameterExpression<?>> parameters = new HashMap<>();
+        List<String> names = new ArrayList<>();
+        List<Class<?>> types = new ArrayList<>();
+        for (String name : query.getArguments()) {
+            if (active.contains(name)) {
+                ParameterExpression<?> parameter = original.get(name);
+                parameters.put(name, parameter);
+                names.add(name);
+                types.add(parameter.getJavaType());
+            }
+        }
+        query.setArguments(names);
+        query.setArgumentTypes(types);
+        query.setProperty(ParameterExpressionImpl.QUERY_PARAMETERS_PROPERTY, Map.copyOf(parameters));
+    }
+
+    private static List<org.eclipse.persistence.expressions.Expression> copyExpressions(
+            List<org.eclipse.persistence.expressions.Expression> expressions,
+            Map<org.eclipse.persistence.expressions.Expression, org.eclipse.persistence.expressions.Expression> copies) {
+        if (expressions == null) {
+            return null;
+        }
+        List<org.eclipse.persistence.expressions.Expression> result = new ArrayList<>(expressions.size());
+        for (org.eclipse.persistence.expressions.Expression expression : expressions) {
+            result.add(expression.copiedVersionFrom(copies));
+        }
+        return result;
+    }
+
+    private static void snapshotReportItems(List<ReportItem> items,
+            Map<org.eclipse.persistence.expressions.Expression, org.eclipse.persistence.expressions.Expression> copies) {
+        for (ReportItem item : items) {
+            if (item.getAttributeExpression() != null) {
+                item.setAttributeExpression(item.getAttributeExpression().copiedVersionFrom(copies));
+            }
+            if (item.hasJoining()) {
+                item.getJoinedAttributeManager().setJoinedAttributeExpressions_(
+                        copyExpressions(item.getJoinedAttributeManager().getJoinedAttributeExpressions(), copies));
+            }
+            if (item instanceof ConstructorReportItem constructor) {
+                snapshotReportItems(constructor.getReportItems(), copies);
+            }
+        }
     }
 
     /**

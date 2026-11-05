@@ -1,7 +1,8 @@
 # Derby CASE expressions inside COALESCE
 
 EclipseLink protects generated Derby `COALESCE` expressions whose first typed
-argument is a simple `CASE`, or a searched `CASE` containing a simple `CASE`.
+argument contains a simple `CASE`, including inside a searched `CASE`, a scalar
+function, a type-context wrapper or an explicit `CAST`.
 Derby may evaluate that argument twice and fail while reusing the cached CASE
 operand. For example:
 
@@ -27,11 +28,14 @@ Leading bare parameters and bound literals are skipped only while binding is
 stable. Automatic parameter-cast modes do not guarantee that every parameter is
 cast, so a later CASE is conservatively protected in these modes too. A parameter
 that does receive an implicit CAST may therefore receive the same harmless prefix
-and conservative nullability metadata. Explicit CAST expressions, fields, unbound
-literals, subqueries, nested COALESCE and unknown function wrappers stop this search.
-Ordinary COALESCE and searched-only CASE are unchanged. CASE traversal is confined
-to CASE trees and their condition expressions; it does not traverse query roots or
-relationship metadata. With dynamic SQL, a leading value can
+and conservative nullability metadata. A typed leading CAST without a contained
+simple CASE, fields and unbound literals stop this search. The detector traverses
+ordinary scalar-function and CASE children and their condition expressions; the
+entire original wrapped receiver supplies the unreachable typed branch. Aggregate
+and unclassified non-scalar operators, subqueries and nested COALESCE are boundaries;
+nested COALESCE protects its own receiver. It does not traverse query roots or
+relationship metadata, or infer function semantics from SQL names. Ordinary
+COALESCE and searched-only CASE are unchanged. With dynamic SQL, a leading value can
 already provide the typed receiver and retains its existing rendering.
 
 Native investigation covers Derby 10.15.2.0, 10.16.1.1 and 10.17.1.0 on JDK 21

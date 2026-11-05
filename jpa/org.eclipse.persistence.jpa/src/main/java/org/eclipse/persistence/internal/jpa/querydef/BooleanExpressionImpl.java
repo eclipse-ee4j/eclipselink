@@ -170,12 +170,10 @@ public class BooleanExpressionImpl extends ComparableExpressionImpl<Boolean> imp
                         ? typedNullableValue(scalar, builder).getCurrentNode() : scalar.getCurrentNode();
             }
             // Constants do not carry a typed database field, and a function may
-            // fold to a constant. A wrapper that prints no parentheses preserves
-            // the scalar value, and the SQL of existing Boolean CASE and function
-            // selections, while retaining Boolean result typing for JDBC extraction.
-            // Only actual predicates need a CASE conversion; constant junctions are literals.
-            FunctionExpression result = (FunctionExpression) ExpressionOperator
-                    .simpleFunctionNoParentheses(0, "").expressionFor(node);
+            // fold to a constant. Parentheses preserve the scalar value while
+            // retaining Boolean result typing for JDBC extraction. Only actual
+            // predicates need a CASE conversion; constant junctions are literals.
+            FunctionExpression result = (FunctionExpression) node.getFunction("");
             result.setResultType(Boolean.class);
             return result;
         }

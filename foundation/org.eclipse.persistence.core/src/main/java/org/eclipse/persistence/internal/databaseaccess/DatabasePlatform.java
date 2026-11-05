@@ -1761,6 +1761,11 @@ public class DatabasePlatform extends DatasourcePlatform implements DDLPlatform 
         return true;
     }
 
+    /** Whether subquery-containing sort keys may be printed directly in ORDER BY. */
+    public boolean supportsSubSelectInOrderBy(boolean distinct) {
+        return true;
+    }
+
     /**
      * Internal: This gets called on each batch statement execution
      * Needs to be implemented so that it returns the number of rows successfully modified
@@ -2234,6 +2239,62 @@ public class DatabasePlatform extends DatasourcePlatform implements DDLPlatform 
         }
 
         return nBoundParameters;
+    }
+
+    /** INTERNAL: SQL context required by specialized scalar Criteria expressions. */
+    public enum ExpressionTypeContext {
+        TEMPORAL_VALUE, TEMPORAL_RESULT, CASE_VALUE
+    }
+
+    /**
+     * INTERNAL: Supply parser context for standalone temporal values. Ordinary CASE
+     * values retain their existing binding context; platforms may require a native
+     * result representation for a particular context.
+     */
+    public void printExpressionTypeContext(Expression value, Class<?> type,
+            ExpressionTypeContext context, ExpressionSQLPrinter printer) {
+        if (context != ExpressionTypeContext.TEMPORAL_RESULT && value.isValueExpression()
+                && (type == java.time.LocalDate.class || type == java.time.LocalTime.class
+                || type == java.time.LocalDateTime.class) && !hasRelationalTemporalContext(value, type)) {
+            printTemporalTypeContext(value, type, printer);
+        } else {
+            value.printSQL(printer);
+        }
+    }
+
+    /** Preserve the original mapped conversion when a temporal value represents another SQL type. */
+    protected boolean hasRelationalTemporalContext(Expression value, Class<?> type) {
+        Expression base = value instanceof org.eclipse.persistence.internal.expressions.ParameterExpression parameter
+                ? parameter.getLocalBase() : value instanceof org.eclipse.persistence.internal.expressions.ConstantExpression constant
+                ? constant.getLocalBase() : null;
+        if (base instanceof org.eclipse.persistence.internal.expressions.QueryKeyExpression queryKey
+                && queryKey.getMapping() instanceof org.eclipse.persistence.mappings.foundation.AbstractDirectMapping mapping) {
+            if (mapping.hasConverter()) {
+                return true;
+            }
+            FieldDefinition.DatabaseType mappedType = getDatabaseType(mapping.getFieldClassification(queryKey.getField()));
+            FieldDefinition.DatabaseType temporalType = getDatabaseType(type);
+            return mappedType == null || temporalType == null || !mappedType.name().equals(temporalType.name());
+        }
+        return false;
+    }
+
+    /** INTERNAL: Only the three standard local temporal types use this CAST path. */
+    protected void printTemporalTypeContext(Expression value, Class<?> type, ExpressionSQLPrinter printer) {
+        FieldDefinition.DatabaseType nativeType = getDatabaseType(type);
+        String sqlType = nativeType.name();
+        // Native fractional temporal types (for example DATETIME(6)) require their precision.
+        if (nativeType.requireSize()) {
+            sqlType += "(" + nativeType.defaultSize() + ")";
+        }
+        printExpressionCast(value, sqlType, printer);
+    }
+
+    /** INTERNAL: Render an expression with a platform-selected scalar SQL type. */
+    protected void printExpressionCast(Expression value, String sqlType, ExpressionSQLPrinter printer) {
+        printer.printString("CAST(");
+        value.printSQL(printer);
+        printer.printString(" AS " + sqlType + ")");
     }
 
     /** INTERNAL: Render a null parameter when this occurrence cannot use binding. */
@@ -2997,6 +3058,13 @@ public class DatabasePlatform extends DatasourcePlatform implements DDLPlatform 
      */
     public void printSQLSelectStatement(DatabaseCall call, ExpressionSQLPrinter printer, SQLSelectStatement statement){
         call.setFields(statement.printSQL(printer));
+    }
+
+    /**
+     * INTERNAL:
+     * Print platform syntax following the semantic ORDER BY terms, before locking and union clauses.
+     */
+    public void printSQLOrderByClauseTail(ExpressionSQLPrinter printer, SQLSelectStatement statement) throws IOException {
     }
 
     /**

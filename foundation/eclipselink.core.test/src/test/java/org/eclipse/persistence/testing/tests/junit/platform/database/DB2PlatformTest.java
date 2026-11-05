@@ -21,6 +21,7 @@ import java.sql.SQLException;
 import java.sql.PreparedStatement;
 import java.sql.SQLXML;
 import java.sql.Types;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -30,8 +31,10 @@ import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
+import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform.ExpressionTypeContext;
 import org.eclipse.persistence.internal.expressions.ConstantExpression;
 import org.eclipse.persistence.internal.expressions.ExpressionJavaPrinter;
+import org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter;
 import org.eclipse.persistence.internal.expressions.FunctionExpression;
 import org.eclipse.persistence.internal.expressions.ParameterExpression;
 import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
@@ -45,6 +48,7 @@ import org.eclipse.persistence.platform.database.DerbyPlatform;
 import org.eclipse.persistence.platform.database.JavaDBPlatform;
 import org.eclipse.persistence.platform.database.PostgreSQLPlatform;
 import org.eclipse.persistence.queries.ReportQuery;
+import org.eclipse.persistence.queries.SQLCall;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.junit.Assert;
@@ -56,6 +60,222 @@ public class DB2PlatformTest {
             ExpressionOperator.Left, ExpressionOperator.Right};
     private static final String SOURCE = "A'\u00e9\uD83D\uDE00B";
     private static final String SEARCH = "'\u00e9";
+
+    private static class TemporalResultField extends DatabaseField {
+        private static final long serialVersionUID = 1L;
+
+        TemporalResultField() {
+            super("CLOCK", "OWNER");
+        }
+    }
+
+    @Test
+    public void testNativeTimePromotionPreservesDerivedCarrierAndRepeatedBindings() {
+        for (DB2Platform platform : List.of(new DB2Platform(), new DB2ZPlatform(), new DB2MainframePlatform())) {
+            DatabaseSessionImpl session = new DatabaseSessionImpl(new DatabaseLogin(platform));
+            ExpressionBuilder builder = new ExpressionBuilder();
+            builder.setSession(session);
+            Expression nativeTime = builder.getParameter("stamp", java.time.LocalDateTime.class).extract("TIME");
+            SQLCall call = new SQLCall();
+            StringWriter sql = new StringWriter();
+            ExpressionSQLPrinter printer = new ExpressionSQLPrinter(session, null, call, false, null);
+            printer.setWriter(sql);
+            platform.printExpressionTypeContext(nativeTime, LocalTime.class, ExpressionTypeContext.TEMPORAL_VALUE, printer);
+            Assert.assertEquals("TIMESTAMP(DATE('1970-01-01'), TIME(?))", sql.toString());
+            Assert.assertEquals(1, call.getParameters().size());
+            Expression carrier = builder.getParameter("clock", LocalTime.class);
+            FunctionExpression unknown = new FunctionExpression();
+            ExpressionOperator opaque = new ExpressionOperator();
+            opaque.setType(ExpressionOperator.FunctionOperator);
+            opaque.bePrefix();
+            opaque.printsAs(List.of("(", ")"));
+            unknown.setOperator(opaque);
+            unknown.setBaseExpression(carrier);
+            unknown.addChild(carrier);
+            unknown.setResultType(LocalTime.class);
+            sql.getBuffer().setLength(0);
+            platform.printExpressionTypeContext(unknown, LocalTime.class, ExpressionTypeContext.TEMPORAL_VALUE, printer);
+            Assert.assertEquals("(?)", sql.toString());
+            Assert.assertSame(carrier, call.getParameters().getLast());
+            Assert.assertEquals(2, call.getParameters().size());
+            for (Expression aggregate : List.of(nativeTime.minimum(), nativeTime.maximum())) {
+                sql.getBuffer().setLength(0);
+                platform.printExpressionTypeContext(aggregate, LocalTime.class, ExpressionTypeContext.TEMPORAL_VALUE, printer);
+                String operation = ((FunctionExpression) aggregate).getOperator().getSelector() == ExpressionOperator.Minimum ? "MIN" : "MAX";
+                Assert.assertEquals("TIMESTAMP(DATE('1970-01-01'), " + operation + "(TIME(?)))", sql.toString());
+                Assert.assertSame(((FunctionExpression) nativeTime).getChildren().getFirst(), call.getParameters().getLast());
+            }
+            for (Expression aggregate : List.of(unknown.minimum(), unknown.maximum())) {
+                sql.getBuffer().setLength(0);
+                platform.printExpressionTypeContext(aggregate, LocalTime.class, ExpressionTypeContext.TEMPORAL_VALUE, printer);
+                Assert.assertFalse(sql.toString().contains("TIMESTAMP(DATE"));
+                Assert.assertSame(carrier, call.getParameters().getLast());
+            }
+        }
+    }
+
+    @Test
+    public void testFunctionOutputCachePolicyPreservesFieldCloneAndSerialization() throws SQLException {
+        DatabaseSessionImpl session = new DatabaseSessionImpl(new DatabaseLogin(new DB2Platform()));
+        ExpressionBuilder builder = new ExpressionBuilder();
+        builder.setSession(session);
+        DatabaseField source = new TemporalResultField();
+        source.setType(LocalTime.class);
+        source.setSqlType(Types.TIME);
+        source.setLength(31);
+        source.setSecondPrecision(9);
+        source.setUseDelimiters(true);
+        Assert.assertTrue(source.shouldCacheSqlType());
+        DatabaseField result = prepareCall(session, builder, builder.getField(source).minimum()).getFields().getFirst();
+        Assert.assertEquals(source.getClass(), result.getClass());
+        Assert.assertEquals(source.getTable(), result.getTable());
+        Assert.assertEquals(source.getLength(), result.getLength());
+        Assert.assertEquals(source.getSecondPrecision(), result.getSecondPrecision());
+        Assert.assertEquals(source.shouldUseDelimiters(), result.shouldUseDelimiters());
+        Assert.assertTrue(source.shouldCacheSqlType());
+        Assert.assertFalse(result.shouldCacheSqlType());
+        DatabaseField clone = result.clone();
+        clone.setShouldCacheSqlType(true);
+        Assert.assertTrue(clone.shouldCacheSqlType());
+        Assert.assertFalse(result.shouldCacheSqlType());
+        for (DatabaseField field : List.of(source, result, clone)) {
+            DatabaseField restored = (DatabaseField) org.eclipse.persistence.sessions.serializers.JavaSerializer.instance.deserialize(
+                    org.eclipse.persistence.sessions.serializers.JavaSerializer.instance.serialize(field, session), session);
+            Assert.assertEquals(field.getClass(), restored.getClass());
+            Assert.assertEquals(field.shouldCacheSqlType(), restored.shouldCacheSqlType());
+            Assert.assertEquals(field.getSecondPrecision(), restored.getSecondPrecision());
+        }
+    }
+
+    @Test
+    public void testComplexFunctionResultFieldsRefreshJdbcTypesAcrossNullBindings() throws SQLException {
+        var platform = new org.eclipse.persistence.platform.database.DatabasePlatform();
+        DatabaseSessionImpl session = new DatabaseSessionImpl(new DatabaseLogin(platform));
+        ExpressionBuilder builder = new ExpressionBuilder();
+        builder.setSession(session);
+        FunctionExpression typed = (FunctionExpression) builder.coalesce(List.of(builder.getParameter("time", LocalTime.class), builder.value(null)));
+        typed.setResultType(LocalTime.class);
+        FunctionExpression ordinary = (FunctionExpression) builder.coalesce(List.of(builder.getParameter("value", Object.class), builder.value(null)));
+        DatabaseAccessor accessor = new DatabaseAccessor();
+        for (FunctionExpression function : List.of(typed, ordinary)) {
+            DatabaseField field = prepareCall(session, builder, function).getFields().getFirst();
+            Assert.assertFalse(field.shouldCacheSqlType());
+            Assert.assertFalse(field.clone().shouldCacheSqlType());
+            DatabaseField restored = (DatabaseField) org.eclipse.persistence.sessions.serializers.JavaSerializer.instance.deserialize(
+                    org.eclipse.persistence.sessions.serializers.JavaSerializer.instance.serialize(field, session), session);
+            Assert.assertFalse(restored.shouldCacheSqlType());
+            int[] type = {Types.VARCHAR};
+            Object[] value = {null};
+            AtomicInteger reads = new AtomicInteger();
+            ResultSet results = results(value);
+            ResultSetMetaData metadata = metadata(type, reads);
+            Assert.assertNull(accessor.getObject(results, field, metadata, 1, platform, true, session));
+            type[0] = Types.TIMESTAMP;
+            java.sql.Timestamp timestamp = java.sql.Timestamp.valueOf("1970-01-01 12:34:56.123456789");
+            value[0] = timestamp;
+            Assert.assertEquals(function == typed ? timestamp.toLocalDateTime().toLocalTime() : timestamp,
+                    accessor.getObject(results, field, metadata, 1, platform, true, session));
+            type[0] = Types.VARCHAR;
+            value[0] = null;
+            Assert.assertNull(accessor.getObject(results, field, metadata, 1, platform, true, session));
+            Assert.assertEquals(3, reads.get());
+            Assert.assertEquals(DatabaseField.NULL_SQL_TYPE, field.getSqlType());
+        }
+        DatabaseField mapped = new DatabaseField("MAPPED_TIME");
+        mapped.setType(LocalTime.class);
+        mapped.setSqlType(Types.TIME);
+        DatabaseField result = prepareCall(session, builder, builder.getField(mapped).minimum()).getFields().getFirst();
+        Assert.assertNotSame(mapped, result);
+        Assert.assertFalse(result.shouldCacheSqlType());
+        Assert.assertTrue(mapped.shouldCacheSqlType());
+        Assert.assertEquals(LocalTime.class, result.getType());
+        Assert.assertEquals(Types.TIME, mapped.getSqlType());
+    }
+
+    @Test
+    public void testLocalTimeValueContextRetainsExistingCarrierAndParameterIdentity() {
+        for (DB2Platform platform : List.of(new DB2Platform(), new DB2ZPlatform(), new DB2MainframePlatform(),
+                new DerbyPlatform(), new JavaDBPlatform())) {
+            DatabaseSessionImpl session = new DatabaseSessionImpl(new DatabaseLogin(platform));
+            ExpressionBuilder builder = new ExpressionBuilder();
+            builder.setSession(session);
+            ParameterExpression parameter = (ParameterExpression) builder.getParameter("time", LocalTime.class);
+            SQLCall call = new SQLCall();
+            StringWriter sql = new StringWriter();
+            ExpressionSQLPrinter printer = new ExpressionSQLPrinter(session, null, call, false, null);
+            printer.setWriter(sql);
+            platform.printExpressionTypeContext(parameter, LocalTime.class, ExpressionTypeContext.TEMPORAL_VALUE, printer);
+            Assert.assertEquals(platform.getClass().getSimpleName(),
+                    platform.isDerby() ? "CAST(? AS TIME)" : "CAST(? AS TIMESTAMP(9))", sql.toString());
+            Assert.assertEquals(1, call.getParameters().size());
+            Assert.assertSame(parameter, call.getParameters().getFirst());
+            Assert.assertEquals(LocalTime.class, parameter.getType());
+            Assert.assertNull(parameter.getField().getType());
+            Assert.assertSame(builder, parameter.getBuilder());
+            sql.getBuffer().setLength(0);
+            platform.printExpressionTypeContext(parameter, LocalTime.class, ExpressionTypeContext.CASE_VALUE, printer);
+            Assert.assertEquals(platform.isDerby() ? "CAST(? AS TIME)" : "CAST(? AS TIMESTAMP(9))", sql.toString());
+            Assert.assertSame(parameter, call.getParameters().getLast());
+            sql.getBuffer().setLength(0);
+            platform.printExpressionTypeContext(parameter, LocalTime.class, ExpressionTypeContext.TEMPORAL_RESULT, printer);
+            Assert.assertEquals("?", sql.toString());
+            if (!platform.isDerby()) {
+                ConstantExpression nil = new ConstantExpression(null, builder);
+                for (boolean binding : List.of(false, true)) {
+                    platform.setShouldBindAllParameters(binding);
+                    platform.setShouldBindLiterals(binding);
+                    SQLCall nullCall = new SQLCall();
+                    ExpressionSQLPrinter nullPrinter = new ExpressionSQLPrinter(session, null, nullCall, false, null);
+                    sql.getBuffer().setLength(0);
+                    nullPrinter.setWriter(sql);
+                    platform.printExpressionTypeContext(nil, LocalTime.class, ExpressionTypeContext.CASE_VALUE, nullPrinter);
+                    Assert.assertEquals(binding ? "CAST(? AS TIMESTAMP(9))" : "CAST(CAST(NULL AS TIMESTAMP) AS TIMESTAMP(9))", sql.toString());
+                    if (binding) {
+                        Assert.assertEquals(java.time.LocalDateTime.class,
+                                ((DatabaseField) nullCall.getParameters().getFirst()).getType());
+                    } else {
+                        Assert.assertTrue(nullCall.getParameters().isEmpty());
+                    }
+                    Assert.assertNull(nil.getValue());
+                    Assert.assertSame(builder, nil.getBuilder());
+                }
+            }
+        }
+    }
+
+    @Test
+    public void testIsoWeekAndScalarTypeContextForInheritedPlatforms() {
+        for (var platform : List.of(new DB2Platform(), new DB2ZPlatform(), new DB2MainframePlatform())) {
+            org.eclipse.persistence.internal.expressions.LiteralExpression value =
+                    new org.eclipse.persistence.internal.expressions.LiteralExpression("STAMP", null) {
+                        @Override
+                        public void printJava(org.eclipse.persistence.internal.expressions.ExpressionJavaPrinter printer) {
+                            printer.printString("STAMP");
+                        }
+                    };
+            Expression field = new org.eclipse.persistence.internal.expressions.LiteralExpression("WEEK", null);
+            ExpressionOperator operator = platform.getOperator(ExpressionOperator.Extract);
+            java.io.StringWriter sql = new java.io.StringWriter();
+            org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter printer =
+                    new org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter(
+                            new DatabaseSessionImpl(new DatabaseLogin(platform)), null,
+                            new org.eclipse.persistence.queries.SQLCall(), false, null);
+            printer.setWriter(sql);
+            operator.printDuo(value, field, printer);
+            Assert.assertEquals("WEEK_ISO(STAMP)", sql.toString());
+            sql.getBuffer().setLength(0);
+            operator.printCollection(List.of(value, field), printer);
+            Assert.assertEquals("WEEK_ISO(STAMP)", sql.toString());
+            java.io.StringWriter java = new java.io.StringWriter();
+            operator.printJavaCollection(List.of(value, field),
+                    new org.eclipse.persistence.internal.expressions.ExpressionJavaPrinter("builder", java, platform));
+            Assert.assertEquals("WEEK_ISO(STAMP)", java.toString());
+            sql.getBuffer().setLength(0);
+            platform.printExpressionTypeContext(value, String.class,
+                    org.eclipse.persistence.internal.databaseaccess.DatabasePlatform.ExpressionTypeContext.CASE_VALUE, printer);
+            Assert.assertEquals("CAST(STAMP AS VARCHAR(" + platform.getCastSizeForVarcharParameter() + "))", sql.toString());
+        }
+    }
 
     @Test
     public void testLuwMappedCharacterOperators() throws SQLException {
@@ -657,7 +877,7 @@ public class DB2PlatformTest {
 
     private ResultSet results(Object[] value) {
         return (ResultSet) Proxy.newProxyInstance(getClass().getClassLoader(), new Class<?>[]{ResultSet.class}, (proxy, method, args) -> switch (method.getName()) {
-            case "getObject" -> value[0];
+            case "getObject", "getTimestamp" -> value[0];
             case "getString" -> value[0] == null ? null : value[0].toString();
             case "wasNull" -> value[0] == null;
             default -> throw new UnsupportedOperationException(method.getName());

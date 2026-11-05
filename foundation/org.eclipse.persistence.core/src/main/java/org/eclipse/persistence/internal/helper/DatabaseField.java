@@ -84,6 +84,9 @@ public class DatabaseField implements Cloneable, Serializable, CoreField  {
      */
     public int sqlType;
 
+    /** Default false also preserves caching for fields from older serialized streams. */
+    private boolean sqlTypeCachingDisabled;
+
     /**
      * Store normal index of field in result set to optimize performance.
      * PERF: Allow direct variable access from getIndicatingNoEntry.
@@ -417,7 +420,12 @@ public class DatabaseField implements Cloneable, Serializable, CoreField  {
 
     /** Whether result-set metadata may be cached for subsequent executions. */
     public boolean shouldCacheSqlType() {
-        return true;
+        return !sqlTypeCachingDisabled;
+    }
+
+    /** Whether result-set metadata may be cached for subsequent executions. */
+    public void setShouldCacheSqlType(boolean shouldCacheSqlType) {
+        sqlTypeCachingDisabled = !shouldCacheSqlType;
     }
 
     /**

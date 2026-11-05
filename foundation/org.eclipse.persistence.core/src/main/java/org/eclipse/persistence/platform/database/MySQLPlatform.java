@@ -533,6 +533,20 @@ public class MySQLPlatform extends DatabasePlatform {
         }
 
         @Override
+        protected void printWeekSQL(final Expression first, Expression second, final ExpressionSQLPrinter printer) {
+            printer.printString("WEEK(");
+            first.printSQL(printer);
+            printer.printString(", 3)");
+        }
+
+        @Override
+        protected void printWeekJava(final Expression first, Expression second, final ExpressionJavaPrinter printer) {
+            printer.printString("WEEK(");
+            first.printJava(printer);
+            printer.printString(", 3)");
+        }
+
+        @Override
         protected void printSecondSQL(final Expression first, Expression second, final ExpressionSQLPrinter printer) {
             printer.printString(SECOND_STRINGS[0]);
             first.printSQL(printer);
@@ -785,21 +799,23 @@ public class MySQLPlatform extends DatabasePlatform {
                         }
                         String nullRank = selector == ExpressionOperator.NullsFirst ? "0" : "1";
                         String valueRank = selector == ExpressionOperator.NullsFirst ? "1" : "0";
-                        String rank = "(CASE WHEN ? IS NULL THEN " + nullRank + " ELSE " + valueRank + " END)";
-                        orderBy.set(index, value.sql(rank + ", ?", List.of(sort)));
+                        Expression rank = value.sql("(CASE WHEN ? IS NULL THEN " + nullRank
+                                + " ELSE " + valueRank + " END)", List.of());
+                        orderBy.set(index, rank);
+                        orderBy.add(++index, sort);
                         if (statement.shouldDistinctBeUsed()) {
-                            // Keep DISTINCT ordering valid even when its value
-                            // is a composed expression in the select list.
-                            additionalFields.add(value.sql(rank, List.of()));
+                            // Keep the same scalar rank in the projection and ordering.
+                            additionalFields.add(rank);
                         }
                     }
                 }
             }
             statement.getFields().addAll(additionalFields);
             printSQLSelectStatementWithLimits(call, printer, statement);
-            if (!additionalFields.isEmpty()) {
-                // Rank columns participate only in SQL ordering, not result mapping.
-                call.setFields(call.getFields().subList(0, call.getFields().size() - additionalFields.size()));
+            int additionalFieldCount = statement.getFields().size() - originalFieldCount;
+            if (additionalFieldCount > 0) {
+                // Every appended rank/sort key is scalar; original entity selections may expand.
+                call.setFields(call.getFields().subList(0, call.getFields().size() - additionalFieldCount));
             }
         } finally {
             try {
@@ -1027,8 +1043,36 @@ public class MySQLPlatform extends DatabasePlatform {
     }
 
     @Override
+    public void printExpressionTypeContext(Expression value, Class<?> type,
+            ExpressionTypeContext context, ExpressionSQLPrinter printer) {
+        if (context == ExpressionTypeContext.TEMPORAL_RESULT) {
+            if (value instanceof FunctionExpression function && function.getOperator().getSelector() == ExpressionOperator.NullIf) {
+                // MySQL's native NULLIF can lose fractions when consumed as a temporal value.
+                List<Expression> arguments = function.getChildren();
+                printer.printString("CASE WHEN ");
+                arguments.get(0).printSQL(printer);
+                printer.printString(" = ");
+                arguments.get(1).printSQL(printer);
+                printer.printString(" THEN NULL ELSE ");
+                arguments.get(0).printSQL(printer);
+                printer.printString(" END");
+            } else {
+                printTemporalTypeContext(value, type, printer);
+            }
+        } else {
+            super.printExpressionTypeContext(value, type, context, printer);
+        }
+    }
+
+    @Override
     public boolean supportsFractionalTime() {
         return isFractionalTimeSupported;
+    }
+
+
+    @Override
+    public boolean supportsSubSelectInOrderBy(boolean distinct) {
+        return !distinct;
     }
 
 }

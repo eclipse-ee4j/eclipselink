@@ -342,6 +342,13 @@ public class AdvancedMultiTenant123JunitTest extends AdvancedMultiTenantJunitBas
                 List<Object[]> results = query.getResultList();
                 int size = results.size();
                 assertEquals("Incorrect number of results returned [" + size + "], expected [6]", 6, size);
+                for (Object[] result : results) {
+                    assertEquals(2, result.length);
+                    assertTrue(result[0] instanceof Address);
+                    assertTrue(result[1] instanceof MafiaFamily);
+                    assertEquals("Ottawa", ((Address) result[0]).getCity());
+                    assertEquals("Galore", ((MafiaFamily) result[1]).getName());
+                }
             } catch (Exception e) {
                 fail("Exception encountered on mulitple select statement (with tenant discriminator columns): " + e);
             }

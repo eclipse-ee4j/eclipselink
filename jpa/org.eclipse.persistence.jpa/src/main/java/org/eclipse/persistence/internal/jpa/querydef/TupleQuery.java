@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -12,9 +12,13 @@
 
 package org.eclipse.persistence.internal.jpa.querydef;
 
+import java.io.Serial;
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
+import jakarta.persistence.TupleElement;
 import jakarta.persistence.criteria.Selection;
 
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
@@ -35,9 +39,11 @@ import org.eclipse.persistence.queries.ReportQueryResult;
 public class TupleQuery extends ReportQuery {
 
     protected List<? super Selection<?>> selections;
+    private final List<TupleElement<?>> elements;
     public TupleQuery(List<? super Selection<?>> selections){
         super();
-        this.selections = selections;
+        this.selections = List.copyOf(selections);
+        this.elements = snapshotElements(selections);
     }
 
     /**
@@ -46,6 +52,37 @@ public class TupleQuery extends ReportQuery {
      */
     @Override
     public Object buildObject(AbstractRecord row, Vector toManyJoinData) {
-        return new TupleImpl(this.selections, new ReportQueryResult(this, row, toManyJoinData));
+        return new TupleImpl(this.selections, this.elements, new ReportQueryResult(this, row, toManyJoinData));
     }
+    static List<TupleElement<?>> snapshotElements(List<? super Selection<?>> selections) {
+        List<TupleElement<?>> elements = new ArrayList<>(selections.size());
+        for (Object selection : selections) {
+            TupleElement<?> element = (TupleElement<?>) selection;
+            elements.add(new Element<>(element.getJavaType(), element.getAlias()));
+        }
+        return List.copyOf(elements);
+    }
+
+    private static final class Element<X> implements TupleElement<X>, Serializable {
+        @Serial
+        private static final long serialVersionUID = 1L;
+        private final Class<? extends X> type;
+        private final String alias;
+
+        private Element(Class<? extends X> type, String alias) {
+            this.type = type;
+            this.alias = alias;
+        }
+
+        @Override
+        public Class<? extends X> getJavaType() {
+            return type;
+        }
+
+        @Override
+        public String getAlias() {
+            return alias;
+        }
+    }
+
 }
