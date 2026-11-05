@@ -54,7 +54,7 @@
         <jakarta.persistence.jdbc.password>cts1</jakarta.persistence.jdbc.password>
         <jdbc.db>postgresql</jdbc.db>
 
-        <jpa.provider.implementation.specific.properties>eclipselink.logging.level=OFF${jpa.provider.implementation.specific.additional.properties}</jpa.provider.implementation.specific.properties>
+        <jpa.provider.implementation.specific.properties>eclipselink.logging.level=OFF:eclipselink.weaving=static${jpa.provider.implementation.specific.additional.properties}</jpa.provider.implementation.specific.properties>
         <jpa.provider.implementation.specific.additional.properties/>
         <db.supports.sequence>true</db.supports.sequence>
         <persistence.second.level.caching.supported>true</persistence.second.level.caching.supported>
@@ -305,11 +305,12 @@
 
     <build>
         <!--
-            No test resources are needed: PMClientBase.createDeploymentJar builds the
-            persistence unit at runtime from the TCK's own template, writes it into a
-            ShrinkWrap jar as META-INF/persistence.xml and pushes that jar onto the
-            thread context classloader. A persistence.xml placed here would be visible
-            on the parent classloader at the same time and would compete with it.
+            PMClientBase.createDeploymentJar builds each persistence unit at runtime
+            from the TCK's own template, writes it into a ShrinkWrap jar as
+            META-INF/persistence.xml and pushes that jar onto the thread context
+            classloader. A classpath-root META-INF/persistence.xml in test resources
+            would be visible on the parent classloader at the same time and would
+            compete with it. The build-only descriptor is nested under weaving.
         -->
         <pluginManagement>
             <plugins>
@@ -342,6 +343,13 @@
         </pluginManagement>
 
         <plugins>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.16.0</version>
+                <configuration>
+                    <release>21</release>
+                </configuration>
+            </plugin>
             <plugin>
                 <artifactId>maven-dependency-plugin</artifactId>
                 <executions>
@@ -426,6 +434,96 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
                 <executions>
+                    <execution>
+                        <id>weave-tck-fetch-fixtures</id>
+                        <phase>process-test-classes</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <!--
+                                    These fixtures exercise runtime fetch policies. Other TCK
+                                    models include intentionally invalid metadata and cannot be
+                                    combined into a single weaving persistence unit.
+                                -->
+                                <patternset id="tck.weaving.classes">
+                                    <include name="ee/jakarta/tck/persistence/jpa40/fetchdefaults/DefaultFetchBook.class"/>
+                                    <include name="ee/jakarta/tck/persistence/jpa40/fetchdefaults/DefaultFetchCover.class"/>
+                                    <include name="ee/jakarta/tck/persistence/jpa40/fetchdefaults/DefaultFetchPublisher.class"/>
+                                    <include name="ee/jakarta/tck/persistence/jpa40/namedgraph/GraphRoot.class"/>
+                                    <include name="ee/jakarta/tck/persistence/jpa40/namedgraph/GraphChild.class"/>
+                                    <include name="ee/jakarta/tck/persistence/jpa40/namedgraph/SpecialGraphChild.class"/>
+                                    <include name="ee/jakarta/tck/persistence/jpa40/namedgraph/GraphDetail.class"/>
+                                    <include name="ee/jakarta/tck/persistence/jpa40/namedgraph/SameNameGraphRoot.class"/>
+                                    <include name="ee/jakarta/tck/persistence/jpa40/namedgraph/SameNameGraphChild.class"/>
+                                    <include name="ee/jakarta/tck/persistence/jpa40/namedgraph/SameNameGraphDetail.class"/>
+                                    <include name="ee/jakarta/tck/persistence/jpa40/fetchoption/FetchOptionBook.class"/>
+                                    <include name="ee/jakarta/tck/persistence/jpa40/fetchoption/FetchOptionPublisher.class"/>
+                                </patternset>
+                                <property name="tck.weaving.directory" location="${project.build.directory}/tck-weaving"/>
+                                <delete dir="${tck.weaving.directory}"/>
+                                <delete>
+                                    <fileset dir="${project.build.testOutputDirectory}" erroronmissingdir="false">
+                                        <patternset refid="tck.weaving.classes"/>
+                                    </fileset>
+                                </delete>
+                                <mkdir dir="${tck.weaving.directory}/unwoven"/>
+                                <mkdir dir="${tck.weaving.directory}/woven"/>
+                                <unzip src="${jakarta.persistence:persistence-tck-spec-tests:jar}"
+                                       dest="${tck.weaving.directory}/unwoven">
+                                    <patternset refid="tck.weaving.classes"/>
+                                </unzip>
+                                <fail message="The selected TCK artifact must contain all 12 fetch fixtures listed in this runner. Rebuild the current API/TCK snapshot.">
+                                    <condition>
+                                        <not>
+                                            <resourcecount count="12">
+                                                <fileset dir="${tck.weaving.directory}/unwoven" includes="**/*.class"/>
+                                            </resourcecount>
+                                        </not>
+                                    </condition>
+                                </fail>
+                                <!--
+                                    Start with fresh input even without clean. Raw staging must
+                                    precede the test classpath because the weaver loads classes
+                                    parent-first. Read the build-only descriptor from source so
+                                    weaving also works when test-resource processing is skipped.
+                                    Its nested resource copy is outside runtime META-INF discovery.
+                                -->
+                                <java classname="org.eclipse.persistence.tools.weaving.jpa.StaticWeave"
+                                      fork="true" failonerror="true">
+                                    <classpath>
+                                        <pathelement location="${tck.weaving.directory}/unwoven"/>
+                                        <path refid="maven.test.classpath"/>
+                                    </classpath>
+                                    <arg value="-persistenceinfo"/>
+                                    <arg value="${project.basedir}/src/test/resources/weaving"/>
+                                    <arg value="${tck.weaving.directory}/unwoven"/>
+                                    <arg value="${tck.weaving.directory}/woven"/>
+                                </java>
+                                <fail message="Static weaving did not produce all 12 TCK fetch fixtures.">
+                                    <condition>
+                                        <not>
+                                            <resourcecount count="12">
+                                                <fileset dir="${tck.weaving.directory}/woven" includes="**/*.class"/>
+                                            </resourcecount>
+                                        </not>
+                                    </condition>
+                                </fail>
+                                <!--
+                                    Failsafe loads test output before dependency artifacts. Keep
+                                    the original TCK JAR intact and scan it for the unchanged
+                                    tests; only the enhanced fixtures come from this overlay.
+                                    TckWeavingPreflight verifies them in each actual test JVM.
+                                -->
+                                <copy todir="${project.build.testOutputDirectory}">
+                                    <fileset dir="${tck.weaving.directory}/woven">
+                                        <patternset refid="tck.weaving.classes"/>
+                                    </fileset>
+                                </copy>
+                            </target>
+                        </configuration>
+                    </execution>
                     <execution>
                         <id>prepare-signature-jdk-classes</id>
                         <phase>pre-integration-test</phase>

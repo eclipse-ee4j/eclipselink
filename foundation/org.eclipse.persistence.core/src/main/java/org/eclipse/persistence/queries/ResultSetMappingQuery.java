@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,6 +37,7 @@ import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 
@@ -521,10 +522,18 @@ public class ResultSetMappingQuery extends ObjectBuildingQuery {
      * PUBLIC: This will be the SQLResultSetMapping that is used by this query to process the database results
      */
     public List<SQLResultSetMapping> getSQLResultSetMappings() {
+        return getSQLResultSetMappings(getSession());
+    }
+
+    /**
+     * INTERNAL: Resolve named mappings without assigning an execution session to shared query metadata.
+     * Directly supplied mappings take precedence over the recorded mapping names.
+     */
+    public List<SQLResultSetMapping> getSQLResultSetMappings(AbstractSession session) {
         if (this.resultSetMappings.isEmpty()) {
             ArrayList<SQLResultSetMapping> list = new ArrayList<>();
             for (String resultSetMappingName : this.resultSetMappingNames) {
-                list.add(getSession().getProject().getSQLResultSetMapping(resultSetMappingName));
+                list.add(session.getProject().getSQLResultSetMapping(resultSetMappingName));
             }
 
             return list;

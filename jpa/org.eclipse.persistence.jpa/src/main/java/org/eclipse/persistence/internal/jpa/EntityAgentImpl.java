@@ -83,6 +83,7 @@ import org.eclipse.persistence.queries.AttributeGroup;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.DeleteObjectQuery;
 import org.eclipse.persistence.queries.InsertObjectQuery;
+import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.eclipse.persistence.queries.ObjectLevelModifyQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReadObjectQuery;
@@ -684,17 +685,20 @@ public class EntityAgentImpl implements EntityAgent, QueryExecutionContext {
             readQuery.setQueryResultsCachePolicy(null);
         }
         boolean refresh = false;
+        if (query instanceof ObjectBuildingQuery read) {
+            CacheStoreMode storeMode = (CacheStoreMode) QueryImpl.queryCacheMode(original, QueryHints.CACHE_STORE_MODE);
+            if (storeMode == null) {
+                storeMode = getCacheStoreMode();
+            }
+            refresh = read.shouldRefreshIdentityMapResult() || storeMode == CacheStoreMode.REFRESH;
+            // Return an uncached copy. A separate callback-free refresh populates
+            // the shared cache only after this transaction has committed.
+            read.setShouldRefreshIdentityMapResult(false);
+        }
         if (query instanceof ObjectLevelReadQuery read) {
             // Include basic state without discarding explicitly requested graph
             // traversal. Unrequested relationship holders remain detached below.
             read.prepareForDetachedRead();
-            Map<String, Object> hints = QueryHintsHandler.get(original);
-            Object storeMode = hints != null && hints.containsKey(QueryHints.CACHE_STORE_MODE)
-                    ? hints.get(QueryHints.CACHE_STORE_MODE) : getCacheStoreMode();
-            refresh = read.shouldRefreshIdentityMapResult() || mode(storeMode, CacheStoreMode.class, CacheStoreMode.USE) == CacheStoreMode.REFRESH;
-            // Return an uncached copy. A separate callback-free refresh populates
-            // the shared cache only after this transaction has committed.
-            read.setShouldRefreshIdentityMapResult(false);
             read.dontCheckCache();
             if (lock != LockModeType.NONE) {
                 if (read.setLockModeType(lock.name(), session)) {
