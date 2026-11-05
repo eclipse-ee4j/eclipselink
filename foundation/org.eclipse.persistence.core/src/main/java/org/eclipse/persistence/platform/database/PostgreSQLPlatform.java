@@ -854,4 +854,10 @@ public class PostgreSQLPlatform extends DatabasePlatform {
         return true;
     }
 
+    /** INTERNAL: DISTINCT parameterized subquery sort keys must use their selected column. */
+    @Override
+    public boolean supportsSubSelectInOrderBy(boolean distinct) {
+        return !distinct;
+    }
+
 }

@@ -122,13 +122,42 @@ public class H2Platform extends DatabasePlatform {
         fieldTypeMapping.put(java.sql.Clob.class, new FieldDefinition.DatabaseType("CLOB", false));
 
         fieldTypeMapping.put(java.sql.Date.class, new FieldDefinition.DatabaseType("DATE", false));
-        fieldTypeMapping.put(java.sql.Timestamp.class, new FieldDefinition.DatabaseType("TIMESTAMP", false));
-        fieldTypeMapping.put(java.sql.Time.class, new FieldDefinition.DatabaseType("TIME", false));
-        fieldTypeMapping.put(java.util.Calendar.class, new FieldDefinition.DatabaseType("TIMESTAMP", false));
-        fieldTypeMapping.put(java.util.Date.class, new FieldDefinition.DatabaseType("TIMESTAMP", false));
+        fieldTypeMapping.put(java.sql.Timestamp.class, new FieldDefinition.DatabaseType("TIMESTAMP", true));
+        fieldTypeMapping.put(java.sql.Time.class, new FieldDefinition.DatabaseType("TIME", true));
+        fieldTypeMapping.put(java.util.Calendar.class, new FieldDefinition.DatabaseType("TIMESTAMP", true));
+        fieldTypeMapping.put(java.util.Date.class, new FieldDefinition.DatabaseType("TIMESTAMP", true));
         fieldTypeMapping.put(java.util.UUID.class, new FieldDefinition.DatabaseType("BINARY", 16));
 
         return fieldTypeMapping;
+    }
+
+    @Override
+    public boolean supportsFractionalTime() {
+        return true;
+    }
+
+    @Override
+    public void printFieldTypeSize(Writer writer, FieldDefinition field,
+                                   FieldDefinition.DatabaseType databaseType) throws IOException {
+        // Metadata distinguishes an explicit zero from an unspecified precision.
+        // Unspecified timestamps use H2's maximum precision; TIME retains its default zero.
+        DatabaseField databaseField = field.getDatabaseField();
+        Class<?> type = field.getType();
+        if (databaseField == null && (type == java.sql.Time.class || type == java.sql.Timestamp.class
+                || type == java.util.Date.class || type == java.util.Calendar.class)) {
+            // Legacy manual definitions ignored sizes before metadata precision was supported.
+            writer.write(databaseType.name());
+            return;
+        }
+        if (databaseField != null && ("TIME".equals(databaseType.name()) || "TIMESTAMP".equals(databaseType.name()))) {
+            int precision = databaseField.getSecondPrecision();
+            if (precision == 0 || (precision < 0 && "TIMESTAMP".equals(databaseType.name()) && field.getSize() == 0)) {
+                writer.write(databaseType.name());
+                writer.write(precision == 0 ? "(0)" : "(9)");
+                return;
+            }
+        }
+        super.printFieldTypeSize(writer, field, databaseType);
     }
 
     @Override
@@ -368,6 +397,17 @@ public class H2Platform extends DatabasePlatform {
         super.setParameterValueInDatabaseCall(parameter, statement, name, session);
     }
 
+    @Override
+    protected void printTemporalTypeContext(Expression value, Class<?> type, ExpressionSQLPrinter printer) {
+        if (type == LocalTime.class) {
+            printExpressionCast(value, "TIME(9)", printer);
+        } else if (type == java.time.LocalDateTime.class) {
+            printExpressionCast(value, "TIMESTAMP(9)", printer);
+        } else {
+            super.printTemporalTypeContext(value, type, printer);
+        }
+    }
+
     // H2 does not accept EXTRACT(DATE FROM ...) or EXTRACT(TIME FROM ...) because
     // DATE and TIME are not valid single-field datetime specifiers in H2's EXTRACT().
     // We emulate them with CAST(col AS DATE) and CAST(col AS TIME(9)) instead.
@@ -381,6 +421,38 @@ public class H2Platform extends DatabasePlatform {
 
         private H2ExtractOperator() {
             super();
+        }
+
+        @Override
+        protected void printWeekSQL(final Expression first, Expression second, final ExpressionSQLPrinter printer) {
+            printer.printString("EXTRACT(ISO_WEEK FROM ");
+            first.printSQL(printer);
+            printer.printString(")");
+        }
+
+        @Override
+        protected void printWeekJava(final Expression first, Expression second, final ExpressionJavaPrinter printer) {
+            printer.printString("EXTRACT(ISO_WEEK FROM ");
+            first.printJava(printer);
+            printer.printString(")");
+        }
+
+        @Override
+        protected void printSecondSQL(final Expression first, Expression second, final ExpressionSQLPrinter printer) {
+            printer.printString("(EXTRACT(SECOND FROM ");
+            first.printSQL(printer);
+            printer.printString(") + EXTRACT(NANOSECOND FROM ");
+            first.printSQL(printer);
+            printer.printString(") / 1000000000.0)");
+        }
+
+        @Override
+        protected void printSecondJava(final Expression first, Expression second, final ExpressionJavaPrinter printer) {
+            printer.printString("(EXTRACT(SECOND FROM ");
+            first.printJava(printer);
+            printer.printString(") + EXTRACT(NANOSECOND FROM ");
+            first.printJava(printer);
+            printer.printString(") / 1000000000.0)");
         }
 
         @Override

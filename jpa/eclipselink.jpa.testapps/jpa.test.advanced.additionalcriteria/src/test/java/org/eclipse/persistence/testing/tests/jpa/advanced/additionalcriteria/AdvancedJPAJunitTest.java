@@ -391,6 +391,10 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             rabbit.setName("Bugs");
             em.persist(rabbit);
 
+            Rabbit unmatchedRabbit = new Rabbit();
+            unmatchedRabbit.setName("No matching foot");
+            em.persist(unmatchedRabbit);
+
             RabbitFoot rabbitFoot = new RabbitFoot();
             rabbitFoot.setCaption("Caption of Bugs");
             rabbitFoot.setRabbitId(rabbit.getId());
@@ -402,6 +406,11 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             clearCache();
 
             List<Rabbit> rabbits = em.createQuery("select this from Rabbit this", Rabbit.class).getResultList();
+            Rabbit matchedRabbit = rabbits.stream().filter(result -> result.getId() == rabbit.getId()).findFirst().orElse(null);
+            assertNotNull("The Rabbit with a matching foot must be selected", matchedRabbit);
+            assertEquals("Bugs", matchedRabbit.getName());
+            assertTrue("The Rabbit without a matching foot must be excluded",
+                    rabbits.stream().noneMatch(result -> result.getId() == unmatchedRabbit.getId()));
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);

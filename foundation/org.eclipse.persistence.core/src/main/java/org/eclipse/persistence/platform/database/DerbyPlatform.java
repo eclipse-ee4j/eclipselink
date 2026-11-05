@@ -377,12 +377,10 @@ public class DerbyPlatform extends DB2Platform {
                     continue;
                 }
             }
-            if (item instanceof FunctionExpression function
-                    && (function.getOperator().getSelector() == ExpressionOperator.Case
-                    || function.getOperator().getSelector() == ExpressionOperator.CaseCondition)) {
+            if (item instanceof FunctionExpression) {
                 return containsSimpleCase(item) ? item : null;
             }
-            // Fields, CASTs, subqueries and unknown SQL shapes already provide a typed receiver.
+            // Fields, subqueries and other typed receivers stop the scan.
             return null;
         }
         return null;
@@ -394,8 +392,11 @@ public class DerbyPlatform extends DB2Platform {
             if (selector == ExpressionOperator.Case && !function.getChildren().get(0).isExpressionBuilder()) {
                 return true;
             }
-            // JPQL also represents searched CASE as Case with a non-printing builder operand.
-            if (selector == ExpressionOperator.Case || selector == ExpressionOperator.CaseCondition) {
+            // Scalar wrappers may hide the CASE while retaining its evaluation.
+            // Nested COALESCE protects its own receiver; aggregates and non-scalar
+            // operators must not pull that protection across evaluation boundaries.
+            if (selector != ExpressionOperator.Coalesce && (function.getOperator().isFunctionOperator()
+                    || selector == ExpressionOperator.Case || selector == ExpressionOperator.CaseCondition)) {
                 for (Expression child : function.getChildren()) {
                     if (containsSimpleCase(child)) {
                         return true;
@@ -564,18 +565,33 @@ public class DerbyPlatform extends DB2Platform {
 
     // Derby does not suport native EXTRACT at all. There are specific functions for most of the date/time parts.
     // QUARTER part needs to be calculated from MONTH value.
-    // SECOND does not return fraction part and there is no fraction specific function available.
+    // SECOND retains the fractional part supported by Derby.
     private static final class DerbyExtractOperator extends ExtractOperator {
 
         // QUARTER emulation: ((MONTH(:first)+2)/3)
         private static final String[] QUARTER_STRINGS = new String[] {"((MONTH(", ")+2)/3)"};
-        // WEEK emulation: based on https://www.sqlservercentral.com/articles/a-simple-formula-to-calculate-the-iso-week-number
-        private static final String[] WEEK_STRINGS = new String[] {
-                "(({FN TIMESTAMPDIFF(sql_tsi_day,DATE(CHAR(YEAR(",
-                "),4)||'-01-01'),{FN TIMESTAMPADD(sql_tsi_day,{FN TIMESTAMPDIFF(sql_tsi_day,{d '1753-01-01'},",
-                ")}/7*7,{d '1753-01-04'})})}+7)/7)"
-        };
-        // SECOND emulation: CAST(SECOND(:first) AS FLOAT)
+        // Calendar arithmetic avoids TIMESTAMPDIFF's elapsed-time/DST behavior.
+        // Each @ is printed independently so repeated parameters keep their normal binding metadata.
+        private static final String[] WEEK_PARTS = isoWeek().split("@", -1);
+
+        private static String daysInYear(String year) {
+            return "(CASE WHEN MOD(" + year + ",4)=0 AND (MOD(" + year
+                    + ",100)<>0 OR MOD(" + year + ",400)=0) THEN 366 ELSE 365 END)";
+        }
+
+        private static String isoWeek() {
+            String year = "YEAR(@)";
+            String previousYear = "(" + year + "-1)";
+            String ordinal = "((367*MONTH(@)-362)/12+DAY(@)-(CASE WHEN MONTH(@)<=2 THEN 0 WHEN "
+                    + daysInYear(year) + "=366 THEN 1 ELSE 2 END))";
+            String weekday = "MOD(" + previousYear + "+" + previousYear + "/4-" + previousYear
+                    + "/100+" + previousYear + "/400+" + ordinal + "-1,7)";
+            String thursday = "(" + ordinal + "+3-" + weekday + ")";
+            return "((CASE WHEN " + thursday + "<1 THEN " + thursday + "+" + daysInYear(previousYear)
+                    + " WHEN " + thursday + ">" + daysInYear(year) + " THEN " + thursday + "-"
+                    + daysInYear(year) + " ELSE " + thursday + " END+6)/7)";
+        }
+        // SECOND retains Derby's fractional seconds and supplies a floating-point result.
         private static final String[] SECOND_STRINGS = new String[] {"CAST(SECOND(", ") AS FLOAT)"};
         // DATE emulation: DATE(:first)
         private static final String[] DATE_STRINGS = new String[] {"DATE(", ")"};
@@ -628,20 +644,20 @@ public class DerbyPlatform extends DB2Platform {
 
         @Override
         protected void printWeekSQL(final Expression first, Expression second, final ExpressionSQLPrinter printer) {
-            printer.printString(WEEK_STRINGS[0]);
-            first.printSQL(printer);
-            printer.printString(WEEK_STRINGS[1]);
-            first.printSQL(printer);
-            printer.printString(WEEK_STRINGS[2]);
+            printer.printString(WEEK_PARTS[0]);
+            for (int i = 1; i < WEEK_PARTS.length; i++) {
+                first.printSQL(printer);
+                printer.printString(WEEK_PARTS[i]);
+            }
         }
 
         @Override
         protected void printWeekJava(final Expression first, Expression second, final ExpressionJavaPrinter printer) {
-            printer.printString(WEEK_STRINGS[0]);
-            first.printJava(printer);
-            printer.printString(WEEK_STRINGS[1]);
-            first.printJava(printer);
-            printer.printString(WEEK_STRINGS[2]);
+            printer.printString(WEEK_PARTS[0]);
+            for (int i = 1; i < WEEK_PARTS.length; i++) {
+                first.printJava(printer);
+                printer.printString(WEEK_PARTS[i]);
+            }
         }
 
         @Override
@@ -965,6 +981,56 @@ public class DerbyPlatform extends DB2Platform {
      */
     @Override
     public void printSQLSelectStatement(DatabaseCall call, ExpressionSQLPrinter printer, SQLSelectStatement statement) {
+        if (!statement.shouldDistinctBeUsed() || statement.getOrderByExpressions().stream().noneMatch(expression ->
+                expression.isFunctionExpression() && (expression.getOperator().getSelector() == ExpressionOperator.NullsFirst
+                        || expression.getOperator().getSelector() == ExpressionOperator.NullsLast))) {
+            printSQLSelectStatementWithLimits(call, printer, statement);
+            return;
+        }
+        List<?> originalFields = statement.getFields();
+        int originalFieldCount = originalFields.size();
+        List<Expression> originalOrderBy = statement.getOrderByExpressions();
+        List<Expression> orderBy = new ArrayList<>(originalOrderBy);
+        statement.setOrderByExpressions(orderBy);
+        try {
+            // Derby DISTINCT ordering ignores explicit null precedence. Rank the complete value.
+            for (int index = 0; index < orderBy.size(); index++) {
+                if (orderBy.get(index) instanceof FunctionExpression ordering) {
+                    int selector = ordering.getOperator().getSelector();
+                    if (selector == ExpressionOperator.NullsFirst || selector == ExpressionOperator.NullsLast) {
+                        Expression sort = ordering.getBaseExpression();
+                        Expression value = sort;
+                        if (sort instanceof FunctionExpression direction) {
+                            int sortSelector = direction.getOperator().getSelector();
+                            if (sortSelector == ExpressionOperator.Ascending || sortSelector == ExpressionOperator.Descending) {
+                                value = direction.getBaseExpression();
+                            }
+                        }
+                        String nullRank = selector == ExpressionOperator.NullsFirst ? "0" : "1";
+                        String valueRank = selector == ExpressionOperator.NullsFirst ? "1" : "0";
+                        Expression rank = value.sql("(CASE WHEN ? IS NULL THEN " + nullRank
+                                + " ELSE " + valueRank + " END)", List.of());
+                        orderBy.set(index, rank);
+                        orderBy.add(++index, sort);
+                        statement.addField(rank);
+                    }
+                }
+            }
+            printSQLSelectStatementWithLimits(call, printer, statement);
+            int additionalFieldCount = statement.getFields().size() - originalFieldCount;
+            call.setFields(call.getFields().subList(0, call.getFields().size() - additionalFieldCount));
+        } finally {
+            try {
+                while (originalFields.size() > originalFieldCount) {
+                    originalFields.remove(originalFields.size() - 1);
+                }
+            } finally {
+                statement.setOrderByExpressions(originalOrderBy);
+            }
+        }
+    }
+
+    private void printSQLSelectStatementWithLimits(DatabaseCall call, ExpressionSQLPrinter printer, SQLSelectStatement statement) {
         int max = 0;
         int firstRow = 0;
 
@@ -1183,4 +1249,10 @@ public class DerbyPlatform extends DB2Platform {
     public boolean supportsFractionalTime() {
         return false;
     }
+
+    @Override
+    public boolean supportsSubSelectInOrderBy(boolean distinct) {
+        return !distinct;
+    }
+
 }

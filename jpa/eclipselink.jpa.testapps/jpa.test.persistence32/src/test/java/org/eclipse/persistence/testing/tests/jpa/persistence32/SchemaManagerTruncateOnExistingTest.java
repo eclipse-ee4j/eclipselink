@@ -53,22 +53,31 @@ public class SchemaManagerTruncateOnExistingTest extends AbstractSchemaManager {
                 em.persist(TYPES[i]);
             }
         });
+        long teamCount = emf.callInTransaction(
+                em -> em.createQuery("SELECT count(t) FROM Team t", Long.class).getSingleResult());
+        long trainerCount = emf.callInTransaction(
+                em -> em.createQuery("SELECT count(t) FROM Trainer t", Long.class).getSingleResult());
+        long typeCount = emf.callInTransaction(
+                em -> em.createQuery("SELECT count(t) FROM Type t", Long.class).getSingleResult());
+        assertEquals((long) TEAMS.length - 1, teamCount);
+        assertEquals((long) TRAINERS.length - 1, trainerCount);
+        assertEquals((long) TYPES.length - 1, typeCount);
         // Truncate the schema
         SchemaManager schemaManager = emf.getSchemaManager();
         schemaManager.truncate();
         // Verify that tables still exist but are empty
         // - Team count shall be 0
-        long teamCount = emf.callInTransaction(
+        teamCount = emf.callInTransaction(
                 em -> em.createQuery("SELECT count(t) FROM Team t", Long.class).getSingleResult());
-        assertEquals(teamCount, 0);
+        assertEquals(0L, teamCount);
         // - Trainer count shall be 0
-        long trainerCount = emf.callInTransaction(
+        trainerCount = emf.callInTransaction(
                 em -> em.createQuery("SELECT count(t) FROM Trainer t", Long.class).getSingleResult());
-        assertEquals(trainerCount, 0);
+        assertEquals(0L, trainerCount);
         // - Type count shall be 0
-        long typeCount = emf.callInTransaction(
+        typeCount = emf.callInTransaction(
                 em -> em.createQuery("SELECT count(t) FROM Type t", Long.class).getSingleResult());
-        assertEquals(typeCount, 0);
+        assertEquals(0L, typeCount);
     }
 
 }

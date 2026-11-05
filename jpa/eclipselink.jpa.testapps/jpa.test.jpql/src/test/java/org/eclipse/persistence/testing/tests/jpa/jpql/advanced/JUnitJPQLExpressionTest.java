@@ -111,7 +111,7 @@ public class JUnitJPQLExpressionTest extends JUnitTestCase {
                 + " WHERE NOT EXISTS (SELECT c FROM Company c WHERE c.originCountry MEMBER OF continent.countries)";
             List<Continent> result = em.createQuery(jpql, Continent.class).getResultList();
             Assert.assertEquals(1, result.size());
-            Continent continent = (Continent) result.get(0);
+            Continent continent = result.get(0);
             Assert.assertEquals("North America", continent.getId());
 
         } catch (Exception e) {
@@ -140,7 +140,7 @@ public class JUnitJPQLExpressionTest extends JUnitTestCase {
                 + " WHERE NOT EXISTS (SELECT c FROM ProductionCompany c WHERE c.originCountry MEMBER OF continent.countries)";
             List<Continent> result = em.createQuery(jpql, Continent.class).getResultList();
             Assert.assertEquals(1, result.size());
-            Continent continent = (Continent) result.get(0);
+            Continent continent = result.get(0);
             Assert.assertEquals("Europe", continent.getId());
 
         } catch (Exception e) {
@@ -170,7 +170,7 @@ public class JUnitJPQLExpressionTest extends JUnitTestCase {
                 + " WHERE NOT EXISTS (SELECT c FROM CarProductionCompany c WHERE c.originCountry MEMBER OF continent.countries)";
             List<Continent> result = em.createQuery(jpql, Continent.class).getResultList();
             Assert.assertEquals(1, result.size());
-            Continent continent = (Continent) result.get(0);
+            Continent continent = result.get(0);
             Assert.assertEquals("North America", continent.getId());
 
         } catch (Exception e) {

@@ -1264,4 +1264,10 @@ public class DB2ZPlatform extends DB2Platform {
         //Didn't work, fall back. This most likely still won't work, but the driver exception from there will be helpful.
         return super.getParameterValueFromDatabaseCall(statement, name, session);
     }
+
+    @Override
+    public boolean supportsSubSelectInOrderBy(boolean distinct) {
+        return true;
+    }
+
 }
