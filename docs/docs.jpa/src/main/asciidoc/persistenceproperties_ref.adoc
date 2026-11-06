@@ -6279,7 +6279,7 @@ link:#CHDCHGGF[Example 5-58] shows how to use this parameter in the
 
 [source,oac_no_warn]
 ----
-<paramter name="eclipselink.logging.parameters" value="false"/>
+<parameter name="eclipselink.logging.parameters" value="false"/>
 ----
 
 [[sthref1031]]
