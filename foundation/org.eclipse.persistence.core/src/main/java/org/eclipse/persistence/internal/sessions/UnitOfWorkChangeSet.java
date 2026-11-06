@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -65,6 +66,9 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
     /** Stores unit of work before it is serialized. */
     protected transient AbstractSession session;
 
+    /** Temporary inspections must not transfer ownership of live change records. */
+    private transient boolean preserveSourceRecords;
+
     /**
      * INTERNAL:
      * Create a ChangeSet
@@ -78,6 +82,22 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
      */
     public UnitOfWorkChangeSet(AbstractSession session) {
         this.session = session;
+    }
+
+    /**
+     * Create a calculation destination that can preserve incoming live records.
+     * Ordinary commit and merge destinations retain their existing behavior.
+     */
+    UnitOfWorkChangeSet(AbstractSession session, boolean preserveSourceRecords) {
+        this(session);
+        this.preserveSourceRecords = preserveSourceRecords;
+    }
+
+    /**
+     * Return whether merges must leave source records and deferred state intact.
+     */
+    boolean shouldPreserveSourceRecords() {
+        return preserveSourceRecords;
     }
 
     /**
@@ -241,7 +261,11 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
                 tofind.getClassType(this.session);
                 tofind.setDescriptor(this.session.getDescriptor(tofind.getClassType()));
             }
-            localChangeSet = new ObjectChangeSet(tofind.getId(), tofind.getDescriptor(), tofind.getUnitOfWorkClone(), this, tofind.isNew());
+            if (preserveSourceRecords && tofind.isAggregate()) {
+                localChangeSet = new AggregateObjectChangeSet(tofind.getId(), tofind.getDescriptor(), tofind.getUnitOfWorkClone(), this, tofind.isNew());
+            } else {
+                localChangeSet = new ObjectChangeSet(tofind.getId(), tofind.getDescriptor(), tofind.getUnitOfWorkClone(), this, tofind.isNew());
+            }
             this.addObjectChangeSetForIdentity(localChangeSet, localChangeSet.getUnitOfWorkClone());
         }
         return localChangeSet;
