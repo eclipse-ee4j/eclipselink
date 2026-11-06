@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
  * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -54,6 +55,9 @@ public class UnitOfWorkTestSuite extends TestSuite {
 
     @Override
     public void addTests() {
+        addTest(new EarlyTransactionBatchValueHolderTest());
+        addTest(new EarlyTransactionBatchValueHolderTest(false, false));
+        addTest(new EarlyTransactionBatchValueHolderTest(true, true));
         addTest(new MergeCloneWithReferencesWithNullTest());
         addTest(new MergeCloneWithReferencesTransparentIndirectionTest());
         //bug 4518570
