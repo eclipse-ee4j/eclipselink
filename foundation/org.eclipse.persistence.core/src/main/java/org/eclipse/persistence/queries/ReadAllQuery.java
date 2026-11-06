@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
  * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -303,6 +304,18 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
         // Don't use setters as that will trigger unprepare.
         cloneQuery.containerPolicy = containerPolicy.clone(cloneQuery);
         return cloneQuery;
+    }
+
+    @Override
+    protected void copyExpressions(Map<Expression, Expression> alreadyDone) {
+        super.copyExpressions(alreadyDone);
+        if (startWithExpression != null) {
+            startWithExpression = startWithExpression.copiedVersionFrom(alreadyDone);
+        }
+        if (connectByExpression != null) {
+            connectByExpression = connectByExpression.copiedVersionFrom(alreadyDone);
+        }
+        orderSiblingsByExpressions = copyExpressions(orderSiblingsByExpressions, alreadyDone);
     }
 
     /**

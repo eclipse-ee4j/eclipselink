@@ -835,8 +835,10 @@ public class QueryImpl {
         DatabaseQuery query = getDatabaseQueryInternal();
         if (this.isShared) {
             // Clone to allow setting of hints or other properties without
-            // corrupting original query.
-            query = (DatabaseQuery) databaseQuery.clone();
+            // corrupting original query. Fetch hints also modify the expression graph.
+            query = query.isObjectLevelReadQuery()
+                    ? (DatabaseQuery) ((ObjectLevelReadQuery) query).deepClone()
+                    : (DatabaseQuery) query.clone();
             setDatabaseQuery(query);
             this.isShared = false;
         }

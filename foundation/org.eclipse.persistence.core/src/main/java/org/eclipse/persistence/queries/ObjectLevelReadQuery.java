@@ -69,6 +69,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -616,21 +617,64 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
 
     /**
      * INTERNAL:
-     * Clone the query, including its selection criteria.
+     * Clone the query, including its expression graph. Expressions shared within
+     * the query must remain shared within the copy, but not with the original.
      * <p>
-     * Normally selection criteria are not cloned here as they are cloned
-     * later on during prepare.
+     * Ordinary query clones defer expression copying until preparation.
      */
     @Override
     public Object deepClone() {
         ObjectLevelReadQuery clone = (ObjectLevelReadQuery)clone();
-        if (getSelectionCriteria() != null) {
-            clone.setSelectionCriteria(getSelectionCriteria().clone());
-        }
-        if (defaultBuilder != null) {
-            clone.defaultBuilder = (ExpressionBuilder)defaultBuilder.clone();
-        }
+        clone.copyExpressions(new IdentityHashMap<>());
         return clone;
+    }
+
+    /**
+     * Copy the expression graph of a cloned query without invalidating its
+     * prepared calls. Subclasses must use the same map for their expressions.
+     */
+    protected void copyExpressions(Map<Expression, Expression> alreadyDone) {
+        if (defaultBuilder != null) {
+            defaultBuilder = (ExpressionBuilder)defaultBuilder.copiedVersionFrom(alreadyDone);
+        }
+        if (getSelectionCriteria() != null) {
+            // The mechanism has already been cloned. Avoid the query setter,
+            // which would discard prepared SQL even for a non-SQL hint.
+            ((ExpressionQueryMechanism)getQueryMechanism()).setSelectionCriteria(
+                    getSelectionCriteria().copiedVersionFrom(alreadyDone));
+        }
+        orderByExpressions = copyExpressions(orderByExpressions, alreadyDone);
+        nonFetchJoinAttributeExpressions = copyExpressions(nonFetchJoinAttributeExpressions, alreadyDone);
+        partialAttributeExpressions = copyExpressions(partialAttributeExpressions, alreadyDone);
+        unionExpressions = copyExpressions(unionExpressions, alreadyDone);
+        if (additionalFields != null) {
+            additionalFields = new ArrayList<>(additionalFields);
+            for (int i = 0; i < additionalFields.size(); i++) {
+                if (additionalFields.get(i) instanceof Expression expression) {
+                    additionalFields.set(i, expression.copiedVersionFrom(alreadyDone));
+                }
+            }
+        }
+        if (joinedAttributeManager != null) {
+            joinedAttributeManager.copyExpressions(alreadyDone);
+        }
+        if (batchFetchPolicy != null && batchFetchPolicy.hasAttributes()) {
+            batchFetchPolicy.setAttributeExpressions(copyExpressions(batchFetchPolicy.getAttributeExpressions(), alreadyDone));
+        }
+    }
+
+    /**
+     * Copy an expression list while retaining identities across the query graph.
+     */
+    protected static List<Expression> copyExpressions(List<Expression> expressions, Map<Expression, Expression> alreadyDone) {
+        if (expressions == null) {
+            return null;
+        }
+        List<Expression> copies = new ArrayList<>(expressions.size());
+        for (Expression expression : expressions) {
+            copies.add(expression.copiedVersionFrom(alreadyDone));
+        }
+        return copies;
     }
 
     /**
