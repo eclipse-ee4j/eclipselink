@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,6 +35,17 @@ public class DirectMapChangeRecord extends DeferrableChangeRecord {
 
     public DirectMapChangeRecord(ObjectChangeSet owner) {
         this.owner = owner;
+    }
+
+    @Override
+    protected void copyMutableState(UnitOfWorkChangeSet mergeTo, UnitOfWorkChangeSet mergeFrom) {
+        super.copyMutableState(mergeTo, mergeFrom);
+        if (addObjectsList != null) {
+            addObjectsList = new HashMap(addObjectsList);
+        }
+        if (removeObjectsList != null) {
+            removeObjectsList = new HashMap(removeObjectsList);
+        }
     }
 
     /**
