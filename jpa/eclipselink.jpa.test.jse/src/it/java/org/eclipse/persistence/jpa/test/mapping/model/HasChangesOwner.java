@@ -57,6 +57,13 @@ public class HasChangesOwner {
     }
 
     /**
+     * Replace the collection to exercise deferred change calculation.
+     */
+    public void setTargets(List<HasChangesTarget> targets) {
+        this.targets = targets;
+    }
+
+    /**
      * Add a relationship on both ends, as required by the reporter's sequence.
      */
     public void addTarget(HasChangesTarget target) {

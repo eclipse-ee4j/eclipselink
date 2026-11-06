@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -96,6 +97,69 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
      */
     public CollectionChangeRecord(ObjectChangeSet owner) {
         this.owner = owner;
+    }
+
+    @Override
+    protected void copyMutableState(UnitOfWorkChangeSet mergeTo, UnitOfWorkChangeSet mergeFrom) {
+        super.copyMutableState(mergeTo, mergeFrom);
+        if (addObjectList != null) {
+            addObjectList = new IdentityHashMap<>(addObjectList);
+        }
+        if (removeObjectList != null) {
+            removeObjectList = new IdentityHashMap<>(removeObjectList);
+        }
+        if (orderedAddObjects != null) {
+            orderedAddObjects = new ArrayList<>(orderedAddObjects);
+        }
+        if (orderedAddObjectIndices != null) {
+            orderedAddObjectIndices = new IdentityHashMap<>(orderedAddObjectIndices);
+        }
+        if (orderedRemoveObjects != null) {
+            orderedRemoveObjects = new HashMap<>(orderedRemoveObjects);
+        }
+        if (orderedRemoveObjectIndices != null) {
+            orderedRemoveObjectIndices = new ArrayList<>(orderedRemoveObjectIndices);
+        }
+        if (addOverFlow != null) {
+            addOverFlow = copyChangeSetList(addOverFlow, mergeTo, mergeFrom);
+        }
+        if (orderedChangeObjectList != null) {
+            List<OrderedChangeObject> copies = new ArrayList<>(orderedChangeObjectList.size());
+            for (OrderedChangeObject change : orderedChangeObjectList) {
+                copies.add(new OrderedChangeObject(change.getChangeType(), change.getIndex(),
+                        mergeTo.findOrIntegrateObjectChangeSet(change.getChangeSet(), mergeFrom), change.getAddedOrRemovedObject()));
+            }
+            orderedChangeObjectList = copies;
+        }
+    }
+
+    /**
+     * Copy a list of change-set references using the destination's canonical identities.
+     */
+    private static List<ObjectChangeSet> copyChangeSetList(List<ObjectChangeSet> changes, UnitOfWorkChangeSet mergeTo, UnitOfWorkChangeSet mergeFrom) {
+        List<ObjectChangeSet> copies = new ArrayList<>(changes.size());
+        for (ObjectChangeSet change : changes) {
+            copies.add(mergeTo.findOrIntegrateObjectChangeSet(change, mergeFrom));
+        }
+        return copies;
+    }
+
+    /**
+     * Copy EIS entries, which may be change sets or simple application values.
+     */
+    protected static List<Object> copyMixedChangeSetList(List<?> entries, UnitOfWorkChangeSet mergeTo, UnitOfWorkChangeSet mergeFrom) {
+        if (entries == null) {
+            return null;
+        }
+        List<Object> copies = new ArrayList<>(entries.size());
+        for (Object entry : entries) {
+            if (entry instanceof ObjectChangeSet change) {
+                entry = change.isAggregate() ? mergeTo.mergeObjectChanges(change, mergeFrom)
+                        : mergeTo.findOrIntegrateObjectChangeSet(change, mergeFrom);
+            }
+            copies.add(entry);
+        }
+        return copies;
     }
 
     /**

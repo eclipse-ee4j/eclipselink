@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,6 +35,14 @@ public class EISCollectionChangeRecord extends CollectionChangeRecord implements
 
     /** The stuff whose Map keys have changed. */
     private List changedMapKeys; //either ObjectChangeSet or String (simple type)
+
+    @Override
+    protected void copyMutableState(UnitOfWorkChangeSet mergeTo, UnitOfWorkChangeSet mergeFrom) {
+        super.copyMutableState(mergeTo, mergeFrom);
+        adds = copyMixedChangeSetList(adds, mergeTo, mergeFrom);
+        removes = copyMixedChangeSetList(removes, mergeTo, mergeFrom);
+        changedMapKeys = copyMixedChangeSetList(changedMapKeys, mergeTo, mergeFrom);
+    }
 
     /**
      * Construct a ChangeRecord that can be used to represent the changes to

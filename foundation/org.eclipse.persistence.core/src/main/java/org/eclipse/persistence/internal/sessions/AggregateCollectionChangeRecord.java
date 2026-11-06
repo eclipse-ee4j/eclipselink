@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,6 +41,18 @@ public class AggregateCollectionChangeRecord extends CollectionChangeRecord impl
     public AggregateCollectionChangeRecord(ObjectChangeSet owner) {
         super();
         this.owner = owner;
+    }
+
+    @Override
+    protected void copyMutableState(UnitOfWorkChangeSet mergeTo, UnitOfWorkChangeSet mergeFrom) {
+        super.copyMutableState(mergeTo, mergeFrom);
+        if (changedValues != null) {
+            List<ObjectChangeSet> copies = new ArrayList<>(changedValues.size());
+            for (ObjectChangeSet change : changedValues) {
+                copies.add(mergeTo.mergeObjectChanges(change, mergeFrom));
+            }
+            changedValues = copies;
+        }
     }
 
     /**

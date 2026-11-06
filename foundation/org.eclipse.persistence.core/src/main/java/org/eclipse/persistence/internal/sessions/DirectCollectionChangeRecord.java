@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,6 +18,7 @@ package org.eclipse.persistence.internal.sessions;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
@@ -73,6 +75,34 @@ public class DirectCollectionChangeRecord extends DeferrableChangeRecord impleme
      */
     public DirectCollectionChangeRecord(ObjectChangeSet owner) {
         this.owner = owner;
+    }
+
+    @Override
+    protected void copyMutableState(UnitOfWorkChangeSet mergeTo, UnitOfWorkChangeSet mergeFrom) {
+        super.copyMutableState(mergeTo, mergeFrom);
+        if (addObjectMap != null) {
+            addObjectMap = new HashMap(addObjectMap);
+        }
+        if (removeObjectMap != null) {
+            removeObjectMap = new HashMap(removeObjectMap);
+        }
+        if (commitAddMap != null) {
+            commitAddMap = new HashMap(commitAddMap);
+        }
+        if (changedIndexes != null) {
+            Map<Object, Set[]> copies = new HashMap<>();
+            for (Object entryObject : changedIndexes.entrySet()) {
+                Map.Entry entry = (Map.Entry)entryObject;
+                Set[] indexes = ((Set[])entry.getValue()).clone();
+                for (int i = 0; i < indexes.length; i++) {
+                    if (indexes[i] != null) {
+                        indexes[i] = new HashSet(indexes[i]);
+                    }
+                }
+                copies.put(entry.getKey(), indexes);
+            }
+            changedIndexes = copies;
+        }
     }
 
     /**
