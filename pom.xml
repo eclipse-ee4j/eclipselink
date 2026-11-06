@@ -383,6 +383,26 @@
                     <groupId>org.eclipse.persistence</groupId>
                     <artifactId>eclipselink-testbuild-plugin</artifactId>
                     <version>1.1.2</version>
+                    <dependencies>
+                        <!-- Ubuntu 26.04 support: flapdoodle-oss/de.flapdoodle.embed.mongo#571 -->
+                        <dependency>
+                            <groupId>de.flapdoodle.embed</groupId>
+                            <artifactId>de.flapdoodle.embed.mongo</artifactId>
+                            <version>4.33.0</version>
+                        </dependency>
+                        <!-- Align the process library explicitly pinned by the build plugin. -->
+                        <dependency>
+                            <groupId>de.flapdoodle.embed</groupId>
+                            <artifactId>de.flapdoodle.embed.process</artifactId>
+                            <version>4.18.0</version>
+                        </dependency>
+                        <!-- Match Commons Compress used when extracting MongoDB archives. -->
+                        <dependency>
+                            <groupId>commons-io</groupId>
+                            <artifactId>commons-io</artifactId>
+                            <version>2.20.0</version>
+                        </dependency>
+                    </dependencies>
                 </plugin>
                 <plugin>
                     <groupId>org.carlspring.maven</groupId>
