@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
  * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
@@ -49,6 +50,8 @@ public class BatchFetchPolicy implements Serializable, Cloneable {
     protected List<String> attributes;
     /** Stores temporary list of rows from parent batch query per batched mapping. */
     protected transient Map<Object, List<AbstractRecord>> dataResults;
+    /** Complete rows in each mapping's layout, independent of batch consumption. */
+    private transient Map<DatabaseMapping, List<AbstractRecord>> mappingDataResults;
     /** Stores temporary map of batched objects (this queries results). */
     protected transient Map<Object, Object> batchObjects;
 
@@ -246,9 +249,42 @@ public class BatchFetchPolicy implements Serializable, Cloneable {
      * This is used for IN batching in batches.
      */
     public void addDataResults(AbstractRecord row) {
-        for (List<AbstractRecord> results : this.dataResults.values()) {
-            results.add(row);
+        for (Map.Entry<Object, List<AbstractRecord>> entry : this.dataResults.entrySet()) {
+            // Report mappings receive their trimmed rows when the report item is built.
+            if (this.mappingDataResults == null || !this.mappingDataResults.containsKey(entry.getKey())) {
+                entry.getValue().add(row);
+            }
         }
+    }
+
+    /**
+     * INTERNAL:
+     * Supply complete rows in a mapping-specific layout, before any batch consumes them.
+     * Cursor results append newly built rows; materialized results replace the full list.
+     * Keep separate list containers so cursor additions and remaining-row updates cannot
+     * modify the complete rows needed by another UnitOfWork.
+     */
+    public void setAllDataResults(DatabaseMapping mapping, List<AbstractRecord> rows, boolean append) {
+        if (this.mappingDataResults == null) {
+            this.mappingDataResults = new HashMap<>();
+        }
+        List<AbstractRecord> allRows = this.mappingDataResults.get(mapping);
+        if (append && allRows != null) {
+            allRows.addAll(rows);
+            this.dataResults.get(mapping).addAll(rows);
+        } else {
+            this.mappingDataResults.put(mapping, new ArrayList<>(rows));
+            this.dataResults.put(mapping, new ArrayList<>(rows));
+        }
+    }
+
+    /**
+     * INTERNAL:
+     * Return all source rows, including consumed batches, in the mapping's row layout.
+     */
+    public List<AbstractRecord> getAllDataResults(DatabaseMapping mapping) {
+        List<AbstractRecord> rows = this.mappingDataResults == null ? null : this.mappingDataResults.get(mapping);
+        return rows == null ? getAllDataResults() : rows;
     }
 
     /**
@@ -282,6 +318,7 @@ public class BatchFetchPolicy implements Serializable, Cloneable {
     public void setDataResults(List<AbstractRecord> rows) {
         this.dataResults = new HashMap<>();
         this.dataResults.put(this, rows);
+        this.mappingDataResults = null;
     }
 
     /**
@@ -309,6 +346,7 @@ public class BatchFetchPolicy implements Serializable, Cloneable {
      */
     public void setDataResults(Map<Object, List<AbstractRecord>> dataResults) {
         this.dataResults = dataResults;
+        this.mappingDataResults = null;
     }
 
     /**
