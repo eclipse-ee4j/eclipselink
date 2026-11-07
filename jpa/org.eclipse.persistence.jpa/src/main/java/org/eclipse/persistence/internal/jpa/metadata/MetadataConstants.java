@@ -59,6 +59,9 @@ public final class MetadataConstants {
     public static final String JPA_COLLECTION_TABLE = "jakarta.persistence.CollectionTable";
     public static final String JPA_COLUMN = "jakarta.persistence.Column";
     public static final String JPA_COLUMN_RESULT = "jakarta.persistence.ColumnResult";
+    public static final String JPA_COLUMN_RESULTS = "jakarta.persistence.ColumnResult$ColumnResults";
+    public static final String JPA_CONSTRUCTOR_RESULT = "jakarta.persistence.ConstructorResult";
+    public static final String JPA_CONSTRUCTOR_RESULTS = "jakarta.persistence.ConstructorResult$ConstructorResults";
     public static final String JPA_CONVERT = "jakarta.persistence.Convert";
     public static final String JPA_CONVERTS = "jakarta.persistence.Converts";
     public static final String JPA_CONVERTER = "jakarta.persistence.Converter";
@@ -73,6 +76,7 @@ public final class MetadataConstants {
     public static final String JPA_ENTITY_GRAPHS = "jakarta.persistence.NamedEntityGraphs";
     public static final String JPA_ENTITY_LISTENERS = "jakarta.persistence.EntityListeners";
     public static final String JPA_ENTITY_RESULT = "jakarta.persistence.EntityResult";
+    public static final String JPA_ENTITY_RESULTS = "jakarta.persistence.EntityResult$EntityResults";
     public static final String JPA_ENUMERATED = "jakarta.persistence.Enumerated";
     public static final String JPA_ENUMERATED_VALUE = "jakarta.persistence.EnumeratedValue";
     public static final String JPA_EXCLUDE_DEFAULT_LISTENERS = "jakarta.persistence.ExcludeDefaultListeners";
@@ -103,6 +107,8 @@ public final class MetadataConstants {
     public static final String JPA_NAMED_NATIVE_QUERIES = "jakarta.persistence.NamedNativeQueries";
     public static final String JPA_NAMED_NATIVE_STATEMENT = "jakarta.persistence.NamedNativeStatement";
     public static final String JPA_NAMED_NATIVE_STATEMENTS = "jakarta.persistence.NamedNativeStatements";
+    public static final String JPA_NATIVE_QUERY = "jakarta.persistence.query.NativeQuery";
+    public static final String JPA_QUERY_OPTIONS = "jakarta.persistence.query.QueryOptions";
     public static final String JPA_NAMED_STATEMENT = "jakarta.persistence.NamedStatement";
     public static final String JPA_NAMED_STATEMENTS = "jakarta.persistence.NamedStatements";
     public static final String JPA_NAMED_QUERY = "jakarta.persistence.NamedQuery";

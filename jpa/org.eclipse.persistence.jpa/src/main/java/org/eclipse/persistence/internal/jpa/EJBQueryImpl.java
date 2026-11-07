@@ -65,6 +65,7 @@ import org.eclipse.persistence.internal.expressions.FunctionExpression;
 import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.helper.GenericTypes;
+import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.jpa.querydef.ParameterExpressionImpl;
 import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
 import org.eclipse.persistence.internal.queries.ReportItem;
@@ -76,10 +77,14 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.queries.ExpressionQueryMechanism;
 import org.eclipse.persistence.jpa.JpaQuery;
 import org.eclipse.persistence.queries.Cursor;
+import org.eclipse.persistence.queries.ColumnResult;
+import org.eclipse.persistence.queries.ConstructorResult;
 import org.eclipse.persistence.queries.DataReadQuery;
 import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.EntityResult;
 import org.eclipse.persistence.queries.JPAQueryBuilder;
 import org.eclipse.persistence.queries.ModifyQuery;
+import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReadObjectQuery;
@@ -92,6 +97,7 @@ import org.eclipse.persistence.sessions.DatabaseRecord;
 
 import static org.eclipse.persistence.config.QueryHints.CACHE_RETRIEVE_MODE;
 import static org.eclipse.persistence.config.QueryHints.CACHE_STORE_MODE;
+import static org.eclipse.persistence.config.QueryHints.MAINTAIN_CACHE;
 import static org.eclipse.persistence.config.QueryHints.QUERY_TIMEOUT;
 import static org.eclipse.persistence.config.QueryHints.QUERY_TIMEOUT_UNIT;
 import static org.eclipse.persistence.config.QueryHints.PESSIMISTIC_LOCK_SCOPE;
@@ -120,8 +126,6 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
      */
     public EJBQueryImpl(DatabaseQuery query, EntityManagerImpl entityManager) {
         super(query, entityManager);
-        // Inherit applicable hints from EntityManager
-        inheritEntityManagerHints();
     }
 
     /**
@@ -166,6 +170,7 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
 
         if (isNamedQuery) {
             this.queryName = queryDescription;
+            getDatabaseQueryInternal();
             adaptNamedResultClass(resultClass);
         } else {
             if (databaseQuery == null) {
@@ -173,14 +178,10 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
                 databaseQuery = buildEJBQLDatabaseQuery(null, queryDescription, executionContext.getSession(), null, null, session.getDatasourcePlatform().getConversionManager().getLoader(), resultClass);
             }
         }
-
-        // Inherit applicable hints from EntityManager
-        inheritEntityManagerHints();
     }
 
     EJBQueryImpl(DatabaseQuery query, QueryExecutionContext context) {
         super(query, context);
-        inheritEntityManagerHints();
     }
 
     EJBQueryImpl(String jpql, QueryExecutionContext context) {
@@ -203,13 +204,13 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
         }
         if (isNamedQuery) {
             queryName = queryDescription;
+            getDatabaseQueryInternal();
             adaptNamedResultClass(resultClass);
         } else {
             AbstractSession session = context.getSession();
             databaseQuery = buildEJBQLDatabaseQuery(null, queryDescription, session, null, null,
                     session.getDatasourcePlatform().getConversionManager().getLoader(), resultClass);
         }
-        inheritEntityManagerHints();
         if (isNamedQuery && resultClass != null && !databaseQuery.isJPQLCallQuery()) {
             ofType(resultClass);
         }
@@ -218,10 +219,78 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
     private void adaptNamedResultClass(Class<?> resultClass) {
         if (resultClass != null) {
             DatabaseQuery named = getDatabaseQueryInternal();
-            databaseQuery = JPQLResultClass.adapt(named, resultClass, executionContext.getSession());
+            if (named.getEJBQLString() == null && named.isUserDefined() && named.isReadQuery()) {
+                AbstractSession session = executionContext.getSession();
+                List<SQLResultSetMapping> mappings = named instanceof ResultSetMappingQuery mapped
+                        ? mapped.getSQLResultSetMappings(session) : List.of();
+                if (!mappings.isEmpty()) {
+                    ResultSetMappingQuery mapped = (ResultSetMappingQuery) named;
+                    Class<?> actualType = mapped.getResultClass();
+                    if (mappings.size() == 1 && mappings.getFirst() != null) {
+                        var results = mappings.getFirst().getResults();
+                        if (results.size() > 1) {
+                            actualType = Object[].class;
+                        } else if (results.size() == 1) {
+                            actualType = switch (results.getFirst()) {
+                                case ConstructorResult constructor -> constructor.getTargetClass();
+                                case EntityResult entity -> entity.getEntityClass();
+                                case ColumnResult column -> column.getColumn().getType();
+                                default -> actualType;
+                            };
+                        }
+                    }
+                    if (actualType != null) {
+                        actualType = ConversionManager.getObjectClass(actualType);
+                        if (!ConversionManager.getObjectClass(resultClass).isAssignableFrom(actualType)) {
+                            throw new IllegalArgumentException("Query result type " + actualType.getName()
+                                    + " is not assignable to " + resultClass.getName());
+                        }
+                    }
+                    // Explicit mappings determine row construction, including aliases,
+                    // argument order and entity locks. A compatible factory type does not replace them.
+                    databaseQuery = (DatabaseQuery) named.clone();
+                    ((ResultSetMappingQuery) databaseQuery).setResultClass(actualType);
+                } else {
+                    databaseQuery = buildSQLDatabaseQuery(resultClass, named.getSQLString(), session.getLoader(), session);
+                    copyNativeQuerySettings(named, databaseQuery);
+                }
+            } else {
+                databaseQuery = JPQLResultClass.adapt(named, resultClass, executionContext.getSession());
+            }
             isShared = databaseQuery == named;
             initializeFromDatabaseQuery();
         }
+    }
+
+    /** Retain invocation settings while keeping the newly constructed native result identity. */
+    private static void copyNativeQuerySettings(DatabaseQuery source, DatabaseQuery target) {
+        var descriptor = target.getDescriptor();
+        Class<?> referenceClass = target.getReferenceClass();
+        boolean targetMaintainsCache = target.shouldMaintainCache();
+        target.copyFromQuery(source);
+        if (source.isDataReadQuery() && !source.shouldMaintainCache()
+                && (QueryHintsHandler.get(source) == null || !QueryHintsHandler.get(source).containsKey(MAINTAIN_CACHE))) {
+            // Native result rebuilding retains the target's baseline for an unhinted scalar source.
+            target.setShouldMaintainCache(targetMaintainsCache);
+        }
+        QueryHintsHandler.completeCacheState(source, target);
+        target.setDescriptor(descriptor);
+        if (target instanceof ObjectBuildingQuery building) {
+            building.setReferenceClass(referenceClass);
+        }
+        target.removeProperty(ResultSetMappingTranslator.NAMED_MAPPING_PREPARED_PROPERTY);
+        target.removeProperty(ResultSetMappingTranslator.MAPPING_LOCK_PROPERTY);
+        target.setArguments(new ArrayList<>(source.getArguments()));
+        target.setArgumentTypes(new ArrayList<>(source.getArgumentTypes()));
+        target.setArgumentTypeNames(new ArrayList<>(source.getArgumentTypeNames()));
+        target.setArgumentValues(new ArrayList<>(source.getArgumentValues()));
+        target.setNullableArguments(source.getNullableArguments().stream()
+                .map(field -> field.clone()).collect(java.util.stream.Collectors.toCollection(ArrayList::new)));
+        target.setName(source.getName());
+        if (source instanceof ReadQuery readSource && target instanceof ReadQuery readTarget) {
+            readTarget.setInternalMax(readSource.getInternalMax());
+        }
+        target.setIsPrepared(false);
     }
 
     @Override
@@ -490,7 +559,9 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
     // Based on EntityManagerImpl#getQueryHints(Object,OperationType)
     @Override
     public CacheRetrieveMode getCacheRetrieveMode() {
-        return FindOptionUtils.getCacheRetrieveMode(executionContext.getSession(), getDatabaseQuery().getProperties());
+        Object mode = getEffectiveCacheMode(CACHE_RETRIEVE_MODE);
+        return mode == CacheRetrieveMode.BYPASS || CacheRetrieveMode.BYPASS.name().equals(mode)
+                ? CacheRetrieveMode.BYPASS : CacheRetrieveMode.USE;
     }
 
     @Override
@@ -507,7 +578,12 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
 
     @Override
     public CacheStoreMode getCacheStoreMode() {
-        return FindOptionUtils.getCacheStoreMode(executionContext.getSession(), getDatabaseQuery().getProperties());
+        Object mode = getEffectiveCacheMode(CACHE_STORE_MODE);
+        if (mode == CacheStoreMode.BYPASS || CacheStoreMode.BYPASS.name().equals(mode)) {
+            return CacheStoreMode.BYPASS;
+        }
+        return mode == CacheStoreMode.REFRESH || CacheStoreMode.REFRESH.name().equals(mode)
+                ? CacheStoreMode.REFRESH : CacheStoreMode.USE;
     }
 
     @Override
@@ -525,10 +601,15 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
     @Override
     public Integer getTimeout() {
         executionContext.verifyOpen();
-        if (getDatabaseQuery().getProperty(QUERY_TIMEOUT) == null) {
+        DatabaseQuery query = getDatabaseQueryInternal();
+        Map<String, Object> hints = QueryHintsHandler.get(query);
+        if (hints != null && hints.containsKey(QUERY_TIMEOUT)) {
+            return (int) query.getQueryTimeoutUnit().toMillis(query.getQueryTimeout());
+        }
+        if (query.getProperty(QUERY_TIMEOUT) == null) {
             return null;
         }
-        return FindOptionUtils.getTimeout(executionContext.getSession(), getDatabaseQuery().getProperties());
+        return FindOptionUtils.getTimeout(executionContext.getSession(), query.getProperties());
     }
 
     @Override
@@ -542,40 +623,12 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
         setHint(QUERY_TIMEOUT, timeout == null ? 0 : timeout);
         if (timeout == null) {
             getDatabaseQuery().getProperties().remove(QUERY_TIMEOUT);
+            QueryHintsHandler.get(getDatabaseQueryInternal()).remove(QUERY_TIMEOUT);
             options.remove(Timeout.class);
         } else {
             recordOption(Timeout.milliseconds(timeout));
         }
         return this;
-    }
-
-    /**
-     * Inherit applicable query hints from the EntityManager.
-     * EntityManager-level settings to newly created queries.
-     */
-    protected void inheritEntityManagerHints() {
-        if (executionContext.getProperties() == null) {
-            return;
-        }
-
-        DatabaseQuery dbQuery = getDatabaseQuery();
-        if (dbQuery == null) {
-            return;
-        }
-
-        Map<String, Object> emProperties = executionContext.getProperties();
-
-        // CACHE_RETRIEVE_MODE only applies to ObjectLevelReadQuery (SELECT queries)
-        if (dbQuery.isObjectLevelReadQuery() && emProperties.containsKey(CACHE_RETRIEVE_MODE)) {
-            setHint(CACHE_RETRIEVE_MODE, emProperties.get(CACHE_RETRIEVE_MODE));
-        }
-
-        // CACHE_STORE_MODE applies to all query types:
-        // - For ObjectLevelReadQuery: controls whether results are stored in cache after reading
-        // - For ModifyQuery: controls whether cache is invalidated after UPDATE/DELETE
-        if (emProperties.containsKey(CACHE_STORE_MODE)) {
-            setHint(CACHE_STORE_MODE, emProperties.get(CACHE_STORE_MODE));
-        }
     }
 
     /**
@@ -1188,14 +1241,15 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
             throw new IllegalStateException("A statement cannot be used as a typed query");
         }
         if (query.getEJBQLString() == null && query.isUserDefined() && query.isDataReadQuery()) {
-            DatabaseQuery typed = buildSQLDatabaseQuery(resultType, query.getSQLString(), QueryHintsHandler.get(query),
+            DatabaseQuery typed = buildSQLDatabaseQuery(resultType, query.getSQLString(), QueryHintsHandler.getNonCacheHints(query),
                     executionContext.getSession().getLoader(), executionContext.getSession());
-            typed.setProperties(new HashMap<>(query.getProperties()));
+            copyNativeQuerySettings(query, typed);
             databaseQuery = typed;
             isShared = false;
         } else {
             Class<?> actualType = queryResultType(query);
-            if (actualType != null && !resultType.isAssignableFrom(actualType)) {
+            if (actualType != null && !ConversionManager.getObjectClass(resultType)
+                    .isAssignableFrom(ConversionManager.getObjectClass(actualType))) {
                 throw new IllegalArgumentException("Query result type " + actualType.getName()
                         + " is not assignable to " + resultType.getName());
             }
@@ -1263,8 +1317,8 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
             throw new IllegalStateException("A result set mapping requires a native SQL query");
         }
         DatabaseQuery mapped = buildSQLDatabaseQuery(ResultSetMappingTranslator.toEclipseLinkMapping(mapping, executionContext),
-                query.getSQLString(), QueryHintsHandler.get(query), executionContext.getSession().getLoader(), executionContext.getSession());
-        mapped.setProperties(new HashMap<>(query.getProperties()));
+                query.getSQLString(), QueryHintsHandler.getNonCacheHints(query), executionContext.getSession().getLoader(), executionContext.getSession());
+        copyNativeQuerySettings(query, mapped);
         mapped.setProperty(ResultSetMappingTranslator.MAPPING_LOCK_PROPERTY,
                 ResultSetMappingTranslator.mappingRequiresTransaction(mapping));
         databaseQuery = mapped;

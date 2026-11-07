@@ -121,8 +121,7 @@ public class EntityResultMetadata extends ORMetadata {
 
     @Override
     public int hashCode() {
-        int result = super.hashCode();
-        result = 31 * result + (m_entityClass != null ? m_entityClass.hashCode() : 0);
+        int result = m_entityClass != null ? m_entityClass.hashCode() : 0;
         result = 31 * result + (m_fieldResults != null ? m_fieldResults.hashCode() : 0);
         result = 31 * result + (m_discriminatorColumn != null ? m_discriminatorColumn.hashCode() : 0);
         result = 31 * result + (m_lockMode != null ? m_lockMode.hashCode() : 0);

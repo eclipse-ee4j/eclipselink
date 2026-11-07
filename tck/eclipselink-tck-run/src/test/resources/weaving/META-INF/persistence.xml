@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Copyright (c) 2026 Contributors to the Eclipse Foundation.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+-->
+<persistence xmlns="https://jakarta.ee/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence https://jakarta.ee/xml/ns/persistence/persistence_3_2.xsd"
+             version="3.2">
+    <!-- Build-only units. The TCK supplies its own persistence units at runtime. -->
+    <persistence-unit name="tck-fetch-defaults-and-graphs-weaving" transaction-type="RESOURCE_LOCAL">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <class>ee.jakarta.tck.persistence.jpa40.fetchdefaults.DefaultFetchBook</class>
+        <class>ee.jakarta.tck.persistence.jpa40.fetchdefaults.DefaultFetchCover</class>
+        <class>ee.jakarta.tck.persistence.jpa40.fetchdefaults.DefaultFetchPublisher</class>
+        <class>ee.jakarta.tck.persistence.jpa40.namedgraph.GraphRoot</class>
+        <class>ee.jakarta.tck.persistence.jpa40.namedgraph.GraphChild</class>
+        <class>ee.jakarta.tck.persistence.jpa40.namedgraph.SpecialGraphChild</class>
+        <class>ee.jakarta.tck.persistence.jpa40.namedgraph.GraphDetail</class>
+        <class>ee.jakarta.tck.persistence.jpa40.namedgraph.SameNameGraphRoot</class>
+        <class>ee.jakarta.tck.persistence.jpa40.namedgraph.SameNameGraphChild</class>
+        <class>ee.jakarta.tck.persistence.jpa40.namedgraph.SameNameGraphDetail</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <properties>
+            <!-- Runtime fetch policies may make an initially eager relationship lazy. -->
+            <property name="eclipselink.weaving.eager" value="true"/>
+        </properties>
+    </persistence-unit>
+    <persistence-unit name="tck-fetch-options-weaving" transaction-type="RESOURCE_LOCAL">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <class>ee.jakarta.tck.persistence.jpa40.fetchoption.FetchOptionBook</class>
+        <class>ee.jakarta.tck.persistence.jpa40.fetchoption.FetchOptionPublisher</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <properties>
+            <property name="eclipselink.weaving.eager" value="true"/>
+        </properties>
+    </persistence-unit>
+</persistence>

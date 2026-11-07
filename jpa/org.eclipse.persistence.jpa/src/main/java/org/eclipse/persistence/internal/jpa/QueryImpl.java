@@ -32,6 +32,8 @@
 package org.eclipse.persistence.internal.jpa;
 
 import jakarta.persistence.AttributeConverter;
+import jakarta.persistence.CacheRetrieveMode;
+import jakarta.persistence.CacheStoreMode;
 import jakarta.persistence.FlushModeType;
 import jakarta.persistence.LockModeType;
 import jakarta.persistence.LockTimeoutException;
@@ -53,6 +55,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
@@ -63,6 +66,8 @@ import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.jpa.querydef.ParameterExpressionImpl;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
+import org.eclipse.persistence.internal.queries.ReportItem;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.jpa.JpaEntityManager;
@@ -81,6 +86,7 @@ import org.eclipse.persistence.queries.ModifyQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReadQuery;
+import org.eclipse.persistence.queries.ReportQuery;
 import org.eclipse.persistence.queries.StoredProcedureCall;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.sessions.Session;
@@ -193,7 +199,7 @@ public class QueryImpl {
      * named query from every being prepared.
      */
     protected void setAsSQLModifyQuery() {
-        if (getDatabaseQueryInternal().isDataReadQuery()) {
+        if (getDatabaseQueryInternal().isDataReadQuery() || getDatabaseQueryInternal().isResultSetMappingQuery()) {
             setAsDataModifyQuery();
         }
     }
@@ -222,14 +228,15 @@ public class QueryImpl {
      * @return the results of the query execution
      */
     protected Object executeReadQuery() {
-        prepareNamedResultSetMappingLocks();
+        prepareNamedResultSetMappings();
         List<Object> parameterValues = processParameters();
         if (Boolean.TRUE.equals(getDatabaseQueryInternal().getProperty(ResultSetMappingTranslator.MAPPING_LOCK_PROPERTY))) {
             executionContext.requireTransaction();
         }
         if (executionContext.isEntityAgent()) {
             final LockModeType executionLockMode = lockMode;
-            DatabaseQuery executable = getDatabaseQueryInternal();
+            DatabaseQuery executable = applyHandlerCacheModes(getDatabaseQueryInternal(), parameterValues,
+                    executionContext.getSession());
             if (executable.isReportQuery() || executable instanceof ResultSetMappingQuery) {
                 // Owner-specific materialization state belongs only to this execution,
                 // never to a query later registered as shared named metadata.
@@ -276,7 +283,7 @@ public class QueryImpl {
         // passed to doesConform causes it to throw
         // QueryException.cannotConformExpression -
         // and true otherwise.
-        boolean shouldResetConformResultsInUnitOfWork = false;
+        ObjectLevelReadQuery conformingQuery = null;
         DatabaseQuery query = getDatabaseQueryInternal();
         boolean isObjectLevelReadQuery = query.isObjectLevelReadQuery();
         if (isFlushModeAUTO() && (!isObjectLevelReadQuery || !((ObjectLevelReadQuery)query).isReadOnly())) {
@@ -286,7 +293,7 @@ public class QueryImpl {
                     cloneSharedQuery();
                     query = getDatabaseQueryInternal();
                     ((ObjectLevelReadQuery)query).setCacheUsage(ObjectLevelReadQuery.UseDescriptorSetting);
-                    shouldResetConformResultsInUnitOfWork = true;
+                    conformingQuery = (ObjectLevelReadQuery) query;
                 }
             }
         }
@@ -313,6 +320,7 @@ public class QueryImpl {
 
         Session session = getActiveSession();
         try {
+            query = applyHandlerCacheModes(query, parameterValues, (AbstractSession) session);
             // in case it's a user-defined query
             if (query.isUserDefined()) {
                 // and there is an active transaction
@@ -335,7 +343,7 @@ public class QueryImpl {
                 query = (DatabaseQuery) query.clone();
                 query.setProperty(ResultSetMappingTranslator.EXECUTION_CONTEXT_PROPERTY, executionContext);
             }
-            Object result = session.executeQuery(query, parameterValues);
+            Object result = executeReadQueryWithHandlerCacheModes(query, parameterValues, (AbstractSession) session);
             if (query instanceof ObjectLevelReadQuery objectQuery && objectQuery.getLoadGroup() != null) {
                 // A primary-key cache hit may return before the core query's load phase.
                 // Apply this query's graph to the managed result in the same session.
@@ -350,41 +358,38 @@ public class QueryImpl {
         } finally {
             this.lockMode = null;
 
-            if (shouldResetConformResultsInUnitOfWork) {
-                ((ObjectLevelReadQuery)query).conformResultsInUnitOfWork();
+            if (conformingQuery != null) {
+                conformingQuery.conformResultsInUnitOfWork();
             }
         }
     }
 
-    /** Retain locks declared by named SQL mappings on both handler implementations. */
-    private void prepareNamedResultSetMappingLocks() {
+    /** Retain entity argument ownership and locks declared by named SQL mappings. */
+    private void prepareNamedResultSetMappings() {
         DatabaseQuery query = getDatabaseQueryInternal();
         if (!(query instanceof ResultSetMappingQuery mapped)
-                || Boolean.TRUE.equals(query.getProperty(ResultSetMappingTranslator.MAPPING_LOCK_PROPERTY))) {
+                || Boolean.TRUE.equals(query.getProperty(ResultSetMappingTranslator.NAMED_MAPPING_PREPARED_PROPERTY))) {
             return;
         }
-        List<SQLResultSetMapping> mappings = new ArrayList<>();
-        if (mapped.getSQLResultSetMappingNames().isEmpty()) {
-            mappings.addAll(mapped.getSQLResultSetMappings());
-        } else {
-            for (String name : mapped.getSQLResultSetMappingNames()) {
-                mappings.add(executionContext.getSession().getProject().getSQLResultSetMapping(name));
-            }
-        }
-        if (mappings.stream().noneMatch(ResultSetMappingTranslator::mappingRequiresTransaction)) {
+        List<SQLResultSetMapping> mappings = mapped.getSQLResultSetMappings(executionContext.getSession());
+        if (mappings.stream().noneMatch(ResultSetMappingTranslator::mappingRequiresPreparation)) {
             return;
         }
-        executionContext.requireTransaction();
+        boolean requiresTransaction = mappings.stream().anyMatch(ResultSetMappingTranslator::mappingRequiresTransaction);
+        if (requiresTransaction) {
+            executionContext.requireTransaction();
+        }
         cloneSharedQuery();
         List<SQLResultSetMapping> translated = new ArrayList<>(mappings.size());
         for (SQLResultSetMapping mapping : mappings) {
-            translated.add(ResultSetMappingTranslator.mappingRequiresTransaction(mapping)
+            translated.add(ResultSetMappingTranslator.mappingRequiresPreparation(mapping)
                     ? ResultSetMappingTranslator.toEclipseLinkMapping(
                             ResultSetMappingTranslator.toJakartaMapping(mapping, executionContext.getSession()), executionContext)
                     : mapping);
         }
         ((ResultSetMappingQuery) getDatabaseQueryInternal()).setSQLResultSetMappings(translated);
-        getDatabaseQueryInternal().setProperty(ResultSetMappingTranslator.MAPPING_LOCK_PROPERTY, Boolean.TRUE);
+        getDatabaseQueryInternal().setProperty(ResultSetMappingTranslator.MAPPING_LOCK_PROPERTY, requiresTransaction);
+        getDatabaseQueryInternal().setProperty(ResultSetMappingTranslator.NAMED_MAPPING_PREPARED_PROPERTY, Boolean.TRUE);
     }
 
     /**
@@ -412,7 +417,8 @@ public class QueryImpl {
             if (isFlushModeAUTO()) {
                 performPreQueryFlush();
             }
-            Integer changedRows = (Integer) executionContext.executeQuery(databaseQuery, parameterValues, null);
+            Integer changedRows = (Integer) executionContext.executeQuery(
+                    applyHandlerCacheModes(databaseQuery, parameterValues, executionContext.getSession()), parameterValues, null);
             return changedRows;
         } catch (PersistenceException | IllegalStateException exception) {
             setRollbackOnly();
@@ -434,6 +440,116 @@ public class QueryImpl {
         executionContext.verifyOpen();
         cloneSharedQuery();
         return getDatabaseQueryInternal();
+    }
+
+    /** Apply live handler defaults only to the execution copy, below explicit query options. */
+    private DatabaseQuery applyHandlerCacheModes(DatabaseQuery query, List<Object> parameterValues, AbstractSession session) {
+        Map<String, Object> properties = executionContext.getProperties();
+        Object retrieveMode = queryCacheMode(query, QueryHints.CACHE_RETRIEVE_MODE) == null
+                ? cacheMode(properties, QueryHints.CACHE_RETRIEVE_MODE) : null;
+        Object storeMode = queryCacheMode(query, QueryHints.CACHE_STORE_MODE) == null
+                ? cacheMode(properties, QueryHints.CACHE_STORE_MODE) : null;
+        if (retrieveMode == null && storeMode == null) {
+            return query;
+        }
+
+        boolean reusePreparation = false;
+        if (!executionContext.isEntityAgent() && query instanceof ReportQuery report && report.shouldCacheQueryResults()) {
+            // Prepare the retained query, so the next execution can reuse its results cache.
+            AbstractRecord row = query.rowFromArguments(parameterValues, session);
+            if (query.shouldPrepare(row, session)) {
+                query.checkPrepare(session, row);
+                reusePreparation = query.isPrepared();
+            }
+        }
+
+        DatabaseQuery executable = (DatabaseQuery) query.clone();
+        List<ReportItem> reportItems = reusePreparation ? ((ReportQuery) executable).getItems() : null;
+        if (retrieveMode != null) {
+            QueryHintsHandler.apply(QueryHints.CACHE_RETRIEVE_MODE, retrieveMode, executable, session.getLoader(), session);
+        }
+        if (storeMode != null) {
+            QueryHintsHandler.apply(QueryHints.CACHE_STORE_MODE, storeMode, executable, session.getLoader(), session);
+        }
+
+        if (query instanceof ObjectLevelReadQuery original
+                && original.shouldRefreshIdentityMapResult() != ((ObjectLevelReadQuery) executable).shouldRefreshIdentityMapResult()) {
+            // Refresh changes must pass normal preparation validation, including ReadAllQuery.
+            executable.setIsPrepared(false);
+        } else if (reusePreparation) {
+            // ReportQuery.clone() invalidates preparation while copying its owned report items.
+            executable.prepareFromQuery(query);
+            ((ReportQuery) executable).setItems(reportItems);
+            executable.setIsPrepared(true);
+            // Core execution still owns the final clone of shared prepared SQL and expression state.
+            executable.setIsExecutionClone(false);
+        }
+        return executable;
+    }
+
+    /** Keep an anonymous report's cache identity while applying invocation-local runtime flags. */
+    private Object executeReadQueryWithHandlerCacheModes(DatabaseQuery executable, List<Object> arguments, AbstractSession session) {
+        DatabaseQuery retained = getDatabaseQueryInternal();
+        if (!(retained instanceof ReportQuery report) || !report.shouldCacheQueryResults() || retained == executable
+                || (report.getName() != null && !report.getName().isEmpty())) {
+            return session.executeQuery(executable, arguments);
+        }
+        ReportQuery overlay = (ReportQuery) executable;
+        if (report.shouldRetrieveBypassCache() == overlay.shouldRetrieveBypassCache()
+                && report.shouldStoreBypassCache() == overlay.shouldStoreBypassCache()
+                && report.shouldRefreshIdentityMapResult() == overlay.shouldRefreshIdentityMapResult()
+                && !report.isExecutionClone()) {
+            return session.executeQuery(report, arguments);
+        }
+
+        cloneSharedQuery();
+        report = (ReportQuery) getDatabaseQueryInternal();
+        boolean retrieveBypass = report.shouldRetrieveBypassCache();
+        boolean storeBypass = report.shouldStoreBypassCache();
+        boolean refresh = report.shouldRefreshIdentityMapResult();
+        boolean executionClone = report.isExecutionClone();
+        boolean refreshChanged = refresh != overlay.shouldRefreshIdentityMapResult();
+        try {
+            report.setShouldRetrieveBypassCache(overlay.shouldRetrieveBypassCache());
+            report.setShouldStoreBypassCache(overlay.shouldStoreBypassCache());
+            report.setShouldRefreshIdentityMapResult(overlay.shouldRefreshIdentityMapResult());
+            report.setIsExecutionClone(false);
+            if (refreshChanged) {
+                report.setIsPrepared(false);
+            }
+            return session.executeQuery(report, arguments);
+        } finally {
+            report.setShouldRetrieveBypassCache(retrieveBypass);
+            report.setShouldStoreBypassCache(storeBypass);
+            report.setShouldRefreshIdentityMapResult(refresh);
+            report.setIsExecutionClone(executionClone);
+            if (refreshChanged) {
+                report.setIsPrepared(false);
+            }
+        }
+    }
+
+    /** The same precedence used for execution, without storing inherited defaults as query hints. */
+    protected Object getEffectiveCacheMode(String name) {
+        Object explicit = queryCacheMode(getDatabaseQueryInternal(), name);
+        return explicit == null ? cacheMode(executionContext.getProperties(), name) : explicit;
+    }
+
+    /** Accepted semantic state; the raw hint map may contain older aliases or ignored values. */
+    static Object queryCacheMode(DatabaseQuery query, String name) {
+        Object value = query.getProperty(name);
+        return name.equals(QueryHints.CACHE_RETRIEVE_MODE)
+                ? value instanceof CacheRetrieveMode ? value : null
+                : value instanceof CacheStoreMode ? value : null;
+    }
+
+    private static Object cacheMode(Map<?, ?> properties, String name) {
+        if (properties == null) {
+            return null;
+        }
+        Object value = properties.get(name);
+        return value != null ? value : properties.get(name.equals(QueryHints.CACHE_RETRIEVE_MODE)
+                ? "jakarta.persistence.cacheRetrieveMode" : "jakarta.persistence.cacheStoreMode");
     }
 
     /**
@@ -620,7 +736,7 @@ public class QueryImpl {
             }
             return query.isReadObjectQuery() ? null : new ArrayList<>(0);
         }
-        prepareNamedResultSetMappingLocks();
+        prepareNamedResultSetMappings();
         processParameters();
         query = getDatabaseQueryInternal();
         if (Boolean.TRUE.equals(query.getProperty(ResultSetMappingTranslator.MAPPING_LOCK_PROPERTY))) {
@@ -811,11 +927,12 @@ public class QueryImpl {
         DatabaseQuery query = getDatabaseQueryInternal();
 
         List<String> arguments = query.getArguments();
-        if (arguments.isEmpty()) {
+        if (arguments.isEmpty() && !parameterValues.isEmpty()) {
             // This occurs for native queries, as the query does not know of its arguments.
             // This may have issues, it is better if the query set its arguments
             // when parsing the SQL.
-
+            cloneSharedQuery();
+            query = getDatabaseQueryInternal();
             arguments = new ArrayList<>(parameterValues.keySet());
             query.setArguments(arguments);
         }

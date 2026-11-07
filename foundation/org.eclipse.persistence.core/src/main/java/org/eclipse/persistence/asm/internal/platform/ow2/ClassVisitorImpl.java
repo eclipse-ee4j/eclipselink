@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2023, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -42,6 +42,19 @@ public class ClassVisitorImpl extends org.eclipse.persistence.asm.ClassVisitor {
 
         public void visitSuper(int version, int access, String name, String signature, String superName, String[] interfaces) {
             super.visit(version, access, name, signature, superName, interfaces);
+        }
+
+        @Override
+        public void visitInnerClass(String name, String outerName, String innerName, int access) {
+            if (customClassVisitor == null) {
+                super.visitInnerClass(name, outerName, innerName, access);
+            } else {
+                customClassVisitor.visitInnerClass(name, outerName, innerName, access);
+            }
+        }
+
+        public void visitInnerClassSuper(String name, String outerName, String innerName, int access) {
+            super.visitInnerClass(name, outerName, innerName, access);
         }
 
         @Override
@@ -119,6 +132,16 @@ public class ClassVisitorImpl extends org.eclipse.persistence.asm.ClassVisitor {
     @Override
     public void visitSuper(int version, int access, String name, String signature, String superName, String[] interfaces) {
         this.ow2ClassVisitor.visitSuper(version, access, name, signature, superName, interfaces);
+    }
+
+    @Override
+    public void visitInnerClass(String name, String outerName, String innerName, int access) {
+        this.ow2ClassVisitor.visitInnerClass(name, outerName, innerName, access);
+    }
+
+    @Override
+    public void visitInnerClassSuper(String name, String outerName, String innerName, int access) {
+        this.ow2ClassVisitor.visitInnerClassSuper(name, outerName, innerName, access);
     }
 
     @Override

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -67,6 +67,7 @@ import java.util.Map;
 
 import org.eclipse.persistence.annotations.Cache;
 import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.jpa.metadata.queries.NativeQueryMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
@@ -459,6 +460,8 @@ public class EmbeddableAccessor extends ClassAccessor {
      */
     @Override
     protected void processMappedSuperclassMetadata(MappedSuperclassAccessor mappedSuperclass) {
+        NativeQueryMetadata.process(mappedSuperclass.getJavaClass(), mappedSuperclass);
+
         // Process the attribute override metadata.
         mappedSuperclass.processAttributeOverrides();
 

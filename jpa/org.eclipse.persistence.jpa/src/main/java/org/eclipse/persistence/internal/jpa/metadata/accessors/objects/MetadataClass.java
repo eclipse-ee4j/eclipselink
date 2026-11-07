@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -70,6 +70,10 @@ public class MetadataClass extends MetadataAnnotatedElement {
 
     protected MetadataClass m_superclass;
     protected String m_superclassName;
+
+    /** Member-class identity from the class file, separate from the binary loading name. */
+    private String m_enclosingClassName;
+    private String m_memberClassName;
 
     /**
      * Create the metadata class with the class name.
@@ -230,6 +234,12 @@ public class MetadataClass extends MetadataAnnotatedElement {
         }
 
         return m_factory.implementsInterface(this, className);
+    }
+
+    /** INTERNAL: The fully qualified source name used by method-declared named queries. */
+    public String getCanonicalName() {
+        return m_enclosingClassName == null ? getName()
+                : m_factory.getMetadataClass(m_enclosingClassName, true).getCanonicalName() + "." + m_memberClassName;
     }
 
     /**
@@ -574,6 +584,14 @@ public class MetadataClass extends MetadataAnnotatedElement {
      */
     public boolean isVoid() {
         return getName().equals(void.class.getName()) || getName().equals(Void.class.getName());
+    }
+
+    /**
+     * INTERNAL:
+     */
+    public void setEnclosingClass(String enclosingClassName, String memberClassName) {
+        m_enclosingClassName = enclosingClassName;
+        m_memberClassName = memberClassName;
     }
 
     /**

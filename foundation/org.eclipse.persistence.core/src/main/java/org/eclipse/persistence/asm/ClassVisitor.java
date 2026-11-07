@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2023, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,6 +40,15 @@ public abstract class ClassVisitor {
 
     public void visitSuper(int version, int access, String name, String signature, String superName, String[] interfaces) {
         this.cv.visitSuper(version, access, name, signature, superName, interfaces);
+    }
+
+    /** Forward unhandled member-class entries without redispatching to the custom visitor. */
+    public void visitInnerClass(String name, String outerName, String innerName, int access) {
+        this.cv.visitInnerClassSuper(name, outerName, innerName, access);
+    }
+
+    public void visitInnerClassSuper(String name, String outerName, String innerName, int access) {
+        this.cv.visitInnerClassSuper(name, outerName, innerName, access);
     }
 
     public AnnotationVisitor visitAnnotation(final String descriptor, final boolean visible) {

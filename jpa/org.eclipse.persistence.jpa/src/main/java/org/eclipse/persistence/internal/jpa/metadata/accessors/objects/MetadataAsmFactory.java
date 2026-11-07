@@ -264,6 +264,13 @@ public class MetadataAsmFactory extends MetadataFactory {
         }
 
         @Override
+        public void visitInnerClass(String name, String outerName, String innerName, int access) {
+            if (outerName != null && innerName != null && toClassName(name).equals(this.classMetadata.getName())) {
+                this.classMetadata.setEnclosingClass(toClassName(outerName), innerName);
+            }
+        }
+
+        @Override
         public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
             this.processedMemeber = true;
             if (this.classMetadata.isLazy()) {
@@ -496,6 +503,9 @@ public class MetadataAsmFactory extends MetadataFactory {
             this.method.setModifiers(access);
 
             this.method.setGenericType(processDescription(desc, true));
+            if (desc != null) {
+                this.method.setGenericReturnSignature(desc.substring(desc.indexOf(')') + 1));
+            }
 
             List<String> argumentNames = processDescription(signature, false);
             if (argumentNames != null && !argumentNames.isEmpty()) {
