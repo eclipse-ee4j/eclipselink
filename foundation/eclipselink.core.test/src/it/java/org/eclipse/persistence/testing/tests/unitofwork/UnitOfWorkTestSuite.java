@@ -55,9 +55,9 @@ public class UnitOfWorkTestSuite extends TestSuite {
 
     @Override
     public void addTests() {
-        addTest(new EarlyTransactionBatchValueHolderTest());
-        addTest(new EarlyTransactionBatchValueHolderTest(false, false));
-        addTest(new EarlyTransactionBatchValueHolderTest(true, true));
+        for (EarlyTransactionBatchValueHolderTest test : EarlyTransactionBatchValueHolderTest.testCases()) {
+            addTest(test);
+        }
         addTest(new MergeCloneWithReferencesWithNullTest());
         addTest(new MergeCloneWithReferencesTransparentIndirectionTest());
         //bug 4518570
