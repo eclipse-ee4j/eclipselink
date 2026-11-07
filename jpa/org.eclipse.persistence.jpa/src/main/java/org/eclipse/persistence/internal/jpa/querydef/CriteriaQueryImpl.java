@@ -960,7 +960,19 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
 
     /** Detach the completed query while preserving shared roots and parameter occurrences. */
     private static void snapshotExpressions(ReadAllQuery query) {
-        Map<org.eclipse.persistence.expressions.Expression, org.eclipse.persistence.expressions.Expression> copies = new IdentityHashMap<>();
+        // Each parameter occurrence gets its own copy. Platforms record per-occurrence
+        // binding decisions on the node (e.g. DB2/Derby partial binding of "? + ?"),
+        // which must not leak into other clauses that use the same parameter.
+        // The originals stay registered as keys for snapshotParameters.
+        Map<org.eclipse.persistence.expressions.Expression, org.eclipse.persistence.expressions.Expression> copies = new IdentityHashMap<>() {
+            @Override
+            public org.eclipse.persistence.expressions.Expression get(Object key) {
+                if (key instanceof org.eclipse.persistence.internal.expressions.ParameterExpression) {
+                    return null;
+                }
+                return super.get(key);
+            }
+        };
         ExpressionBuilder builder = (ExpressionBuilder) query.getExpressionBuilder().copiedVersionFrom(copies);
         if (query.getSelectionCriteria() != null) {
             query.setSelectionCriteria(query.getSelectionCriteria().copiedVersionFrom(copies));

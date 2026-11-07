@@ -11,6 +11,13 @@
  */
 package org.eclipse.persistence.jpa.entityagent;
 
+import jakarta.persistence.EntityAgent;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.Persistence;
+import jakarta.persistence.PersistenceUnitTransactionType;
+import jakarta.persistence.TransactionRequiredException;
+
 import java.io.ObjectOutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -26,31 +33,24 @@ import java.util.UUID;
 
 import javax.sql.DataSource;
 
-import jakarta.persistence.EntityAgent;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.Persistence;
-import jakarta.persistence.PersistenceUnitTransactionType;
-import jakarta.persistence.TransactionRequiredException;
-
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitInfo;
 import org.eclipse.persistence.jpa.JpaEntityManagerFactory;
 import org.eclipse.persistence.jpa.PersistenceProvider;
 import org.eclipse.persistence.jpa.entityagent.model.AgentCallbackRecord;
 import org.eclipse.persistence.jpa.entityagent.model.AgentNamedOptionsRecord;
-import org.eclipse.persistence.jpa.entityagent.model.AgentQueryGroup;
 import org.eclipse.persistence.jpa.entityagent.model.AgentQueryCodeConverter;
+import org.eclipse.persistence.jpa.entityagent.model.AgentQueryGroup;
 import org.eclipse.persistence.jpa.entityagent.model.AgentQueryRecord;
 import org.eclipse.persistence.jpa.entityagent.model.AgentXmlCallbackRecord;
-import org.eclipse.persistence.jpa.entityagent.model.callbacks.AgentDiscoveryRecord;
-import org.eclipse.persistence.jpa.entityagent.model.callbacks.AgentDiscoveryExcludedRecord;
 import org.eclipse.persistence.jpa.entityagent.model.callbacks.AgentDiscoveredCallbackListener;
+import org.eclipse.persistence.jpa.entityagent.model.callbacks.AgentDiscoveryExcludedRecord;
+import org.eclipse.persistence.jpa.entityagent.model.callbacks.AgentDiscoveryRecord;
 import org.eclipse.persistence.jpa.metadata.FileBasedProjectCache;
 import org.eclipse.persistence.jpa.metadata.ProjectCache;
 import org.eclipse.persistence.jpa.test.framework.EmfRunner;
-import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.logging.DefaultSessionLog;
+import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.server.ServerSession;
 import org.junit.Test;
@@ -334,25 +334,33 @@ public class TestEntityAgentProjectCache {
         }
 
         private EntityManagerFactory factory(Object cache, boolean createTables) {
-            SEPersistenceUnitInfo info = new SEPersistenceUnitInfo();
-            info.setPersistenceUnitName("project-cache-unit-" + UUID.randomUUID());
-            info.setPersistenceProviderClassName(PersistenceProvider.class.getName());
-            info.setPersistenceXMLSchemaVersion("4.0");
-            info.setTransactionType(PersistenceUnitTransactionType.RESOURCE_LOCAL);
-            info.setClassLoader(TestEntityAgentProjectCache.class.getClassLoader());
-            info.setNewTempClassLoader(TestEntityAgentProjectCache.class.getClassLoader());
-            info.setPersistenceUnitRootUrl(TestEntityAgentProjectCache.class.getProtectionDomain().getCodeSource().getLocation());
-            info.setManagedClassNames(classes.stream().map(Class::getName).toList());
+            SEPersistenceUnitInfo persistenceUnitInfo = new SEPersistenceUnitInfo();
+
+            persistenceUnitInfo.setPersistenceUnitName("project-cache-unit-" + UUID.randomUUID());
+            persistenceUnitInfo.setPersistenceProviderClassName(PersistenceProvider.class.getName());
+            persistenceUnitInfo.setPersistenceXMLSchemaVersion("4.0");
+            persistenceUnitInfo.setTransactionType(PersistenceUnitTransactionType.RESOURCE_LOCAL);
+            persistenceUnitInfo.setClassLoader(TestEntityAgentProjectCache.class.getClassLoader());
+            persistenceUnitInfo.setNewTempClassLoader(TestEntityAgentProjectCache.class.getClassLoader());
+            persistenceUnitInfo.setPersistenceUnitRootUrl(TestEntityAgentProjectCache.class.getProtectionDomain().getCodeSource().getLocation());
+            persistenceUnitInfo.setManagedClassNames(classes.stream().map(Class::getName).toList());
+
+            // In Jakarta Persistence 4.0, A unit set to version 4.0+ and no class scanning, will
+            // not automatically include the package descriptor of any listed classes. For the tests below we do want to
+            // test the package declared listeners for AgentDiscoveryRecord, so if that class is used we add
+            // the package explicitly here.
             if (classes.contains(AgentDiscoveryRecord.class)) {
-                info.setManagedPackageDescriptors(List.of(AgentDiscoveryRecord.class.getPackageName()));
+                persistenceUnitInfo.setManagedPackageDescriptors(List.of(AgentDiscoveryRecord.class.getPackageName()));
             }
+
             if (classes.contains(AgentXmlCallbackRecord.class)) {
-                info.setMappingFileNames(List.of("META-INF/entityagent-callbacks.xml"));
+                persistenceUnitInfo.setMappingFileNames(List.of("META-INF/entityagent-callbacks.xml"));
             } else if (classes.contains(AgentNamedOptionsRecord.class)) {
-                info.setMappingFileNames(List.of("META-INF/entityagent-named-options.xml"));
+                persistenceUnitInfo.setMappingFileNames(List.of("META-INF/entityagent-named-options.xml"));
             }
-            info.setExcludeUnlistedClasses(true);
-            info.setNonJtaDataSource(dataSource);
+            persistenceUnitInfo.setExcludeUnlistedClasses(true);
+            persistenceUnitInfo.setNonJtaDataSource(dataSource);
+
             Properties properties = new Properties();
             properties.setProperty("jakarta.persistence.jdbc.url", url);
             properties.setProperty("jakarta.persistence.jdbc.driver", "org.h2.Driver");
@@ -364,11 +372,13 @@ public class TestEntityAgentProjectCache {
             properties.setProperty("eclipselink.logging.level", "OFF");
             properties.setProperty("eclipselink.cache.shared.default", "false");
             properties.setProperty("eclipselink.ddl-generation", createTables ? "create-tables" : "none");
-            info.setProperties(properties);
+            persistenceUnitInfo.setProperties(properties);
+
             Map<String, Object> overrides = new HashMap<>(cacheProperties());
-            overrides.put(PersistenceUnitProperties.ECLIPSELINK_SE_PUINFO, info);
+            overrides.put(PersistenceUnitProperties.ECLIPSELINK_SE_PUINFO, persistenceUnitInfo);
             overrides.put(PersistenceUnitProperties.PROJECT_CACHE, cache);
-            EntityManagerFactory factory = Persistence.createEntityManagerFactory(info.getPersistenceUnitName(), overrides);
+
+            EntityManagerFactory factory = Persistence.createEntityManagerFactory(persistenceUnitInfo.getPersistenceUnitName(), overrides);
             server(factory);
             return factory;
         }

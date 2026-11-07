@@ -31,7 +31,7 @@
 
     <properties>
         <!--Jakarta APIs-->
-        <persistence.api.version>4.0.0-SNAPSHOT</persistence.api.version>
+        <persistence.api.version>4.0.0-M7</persistence.api.version>
         
         <annotation.version>3.0.0</annotation.version>
         <activation-api.version>2.2.0-M2</activation-api.version>
@@ -82,7 +82,7 @@
         <weld-se.version>7.0.0.Final</weld-se.version>
         <expressly.version>6.0.0</expressly.version>
         <jersey.version> 5.0.0-M1</jersey.version>
-        <glassfish.version>9.0.0-SNAPSHOT</glassfish.version>
+        <glassfish.version>9.0.0-M3</glassfish.version>
         <!--GlassFish remote EJB client needs the gmbal implementation, gf-client-module brings only gmbal-api-only-->
         <gmbal.version>4.1.2</gmbal.version>
         <jmh.version>1.37</jmh.version>
