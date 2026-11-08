@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Copyright (c) 2026 Oracle and/or its affiliates. All rights reserved.
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0 which is available at
+    http://www.eclipse.org/legal/epl-2.0, or the Eclipse Distribution License
+    v. 1.0 which is available at http://www.eclipse.org/org/documents/edl-v10.php.
+    SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+-->
+<entity-mappings xmlns="https://jakarta.ee/xml/ns/persistence/orm" version="4.0">
+    <named-native-query name="methodNative.xmlMapped" result-set-mapping="methodNative.xmlReordered">
+        <query>SELECT TITLE AS BOOK_TITLE, ID AS BOOK_ID FROM JPA_METHOD_NATIVE_BOOK ORDER BY ID</query>
+    </named-native-query>
+    <sql-result-set-mapping name="methodNative.xmlReordered">
+        <constructor-result target-class="org.eclipse.persistence.jpa.test.query.methodnative.MethodNativeResults$Summary">
+            <column name="BOOK_ID" class="java.lang.Integer"/>
+            <column name="BOOK_TITLE" class="java.lang.String"/>
+        </constructor-result>
+    </sql-result-set-mapping>
+</entity-mappings>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2023, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -105,6 +105,16 @@ public class ClassWriterImpl extends org.eclipse.persistence.asm.ClassWriter {
     @Override
     public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
         return new AnnotationVisitorImpl(ow2ClassWriter.visitAnnotation(descriptor, visible));
+    }
+
+    @Override
+    public void visitInnerClass(String name, String outerName, String innerName, int access) {
+        ow2ClassWriter.visitInnerClass(name, outerName, innerName, access);
+    }
+
+    @Override
+    public void visitInnerClassSuper(String name, String outerName, String innerName, int access) {
+        ow2ClassWriter.visitInnerClass(name, outerName, innerName, access);
     }
 
     @Override

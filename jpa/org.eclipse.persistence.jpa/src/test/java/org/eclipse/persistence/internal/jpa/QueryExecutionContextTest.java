@@ -341,7 +341,9 @@ class QueryExecutionContextTest {
     }
 
     static final class TestContext implements QueryExecutionContext {
-        final AbstractSession session = new DatabaseSessionImpl(new DatabaseLogin());
+        final AbstractSession session;
+        final boolean agent;
+        final Map<String, Object> properties = new HashMap<>();
         boolean open = true;
         boolean active;
         int executions;
@@ -351,6 +353,16 @@ class QueryExecutionContextTest {
         RuntimeException failure;
         Object result;
         final Set<QueryImpl> resources = Collections.newSetFromMap(new IdentityHashMap<>());
+
+        TestContext() {
+            this(new DatabaseSessionImpl(new DatabaseLogin()), true);
+        }
+
+        TestContext(AbstractSession session, boolean agent) {
+            this.session = session;
+            this.agent = agent;
+        }
+
         @Override public void verifyOpen() { if (!open) throw new IllegalStateException("closed"); }
         @Override public void verifyOpenWithSetRollbackOnly() { verifyOpen(); }
         @Override public AbstractSession getSession() { return session; }
@@ -361,10 +373,10 @@ class QueryExecutionContextTest {
         @Override public boolean shouldFlush() { return false; }
         @Override public void flush() { flushes++; }
         @Override public void setRollbackOnly() { rollbackMarks++; }
-        @Override public Map<String, Object> getProperties() { return Map.of(); }
+        @Override public Map<String, Object> getProperties() { return properties; }
         @Override public void registerQuery(QueryImpl query) { resources.add(query); }
         @Override public void unregisterQuery(QueryImpl query) { resources.remove(query); }
-        @Override public boolean isEntityAgent() { return true; }
+        @Override public boolean isEntityAgent() { return agent; }
         @Override public void lockResult(Object entity, LockModeType mode) { requireTransaction(); }
         @Override public Object executeQuery(DatabaseQuery query, List<Object> values, LockModeType lockMode) {
             verifyOpen();

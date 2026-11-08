@@ -34,6 +34,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.helper.EntityAgentProperties;
@@ -54,6 +55,7 @@ import org.eclipse.persistence.sessions.DatabaseRecord;
 /** Translates the programmatic result mapping using the existing row materializer. */
 public final class ResultSetMappingTranslator {
     static final String MAPPING_LOCK_PROPERTY = EntityAgentProperties.MAPPING_LOCK;
+    static final String NAMED_MAPPING_PREPARED_PROPERTY = "eclipselink.result-mapping.named-prepared";
     static final String EXECUTION_CONTEXT_PROPERTY = "eclipselink.result-mapping.execution-context";
     private static final String TRANSLATED_MAPPING_NAME = "jakarta.persistence.sql.ResultSetMapping";
 
@@ -97,8 +99,9 @@ public final class ResultSetMappingTranslator {
             return ResultSetMapping.column(column.getColumn().getName(), type);
         }
         if (result instanceof ConstructorResult constructor) {
-            MappingElement<?>[] arguments = constructor.getColumnResults().stream()
-                    .map(column -> toMappingElement(column, session)).toArray(MappingElement<?>[]::new);
+            MappingElement<?>[] arguments = Stream.concat(constructor.getColumnResults().stream(),
+                            constructor.getEntityResults().stream())
+                    .map(argument -> toMappingElement(argument, session)).toArray(MappingElement<?>[]::new);
             return ResultSetMapping.constructor(constructor.getTargetClass(), arguments);
         }
         if (result instanceof EntityResult entity) {
@@ -145,7 +148,15 @@ public final class ResultSetMappingTranslator {
 
     static boolean mappingRequiresTransaction(SQLResultSetMapping mapping) {
         return mapping != null && mapping.getResults().stream().anyMatch(result ->
-                result instanceof EntityResult entity && !"NONE".equals(entity.getLockMode()));
+                result instanceof EntityResult entity && !"NONE".equals(entity.getLockMode())
+                        || result instanceof ConstructorResult constructor && constructor.getEntityResults().stream()
+                                .anyMatch(entity -> !"NONE".equals(entity.getLockMode())));
+    }
+
+    /** Entity arguments must be prepared by the live query owner before DTO construction. */
+    static boolean mappingRequiresPreparation(SQLResultSetMapping mapping) {
+        return mappingRequiresTransaction(mapping) || mapping != null && mapping.getResults().stream().anyMatch(result ->
+                result instanceof ConstructorResult constructor && !constructor.getEntityResults().isEmpty());
     }
 
     static SQLResultSetMapping forResultClass(Class<?> resultClass, QueryExecutionContext context) {

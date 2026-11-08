@@ -88,6 +88,7 @@ import org.eclipse.persistence.internal.jpa.metadata.listeners.EntityListenerMet
 import org.eclipse.persistence.internal.jpa.metadata.listeners.JPAEntityListenerHolder;
 import org.eclipse.persistence.internal.jpa.metadata.listeners.PersistenceUnitListener;
 import org.eclipse.persistence.internal.jpa.metadata.queries.NamedNativeQueryMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.queries.NativeQueryMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.NamedQueryMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappingsReader;
@@ -400,6 +401,7 @@ public class MetadataProcessor {
             addQueries(MetadataConstants.JPA_NAMED_NATIVE_QUERY, MetadataConstants.JPA_NAMED_NATIVE_QUERIES, true);
             addQueries(MetadataConstants.JPA_NAMED_STATEMENT, MetadataConstants.JPA_NAMED_STATEMENTS, false);
             addQueries(MetadataConstants.JPA_NAMED_NATIVE_STATEMENT, MetadataConstants.JPA_NAMED_NATIVE_STATEMENTS, true);
+            NativeQueryMetadata.process((MetadataClass) getAccessibleObject(), this);
             processed = true;
         }
 

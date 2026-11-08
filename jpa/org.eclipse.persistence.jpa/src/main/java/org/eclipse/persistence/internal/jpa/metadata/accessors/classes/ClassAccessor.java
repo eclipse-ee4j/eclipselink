@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -105,6 +105,7 @@ import org.eclipse.persistence.annotations.VariableOneToOne;
 import org.eclipse.persistence.exceptions.ValidationException;
 
 import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.jpa.metadata.queries.NativeQueryMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.PropertyMetadata;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.ElementCollectionAccessor;
@@ -1271,6 +1272,8 @@ public abstract class ClassAccessor extends MetadataAccessor {
      */
     @Override
     public void process() {
+        NativeQueryMetadata.process(getJavaClass(), this);
+
         // Process the attribute override metadata.
         processAttributeOverrides();
 
