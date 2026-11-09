@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
  * Copyright (c) 2015, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -30,7 +31,7 @@ import org.junit.Test;
 /**
  * @author Marcel Valovy - marcelv3612@gmail.com
  */
-public class AdvancedProcessorTest {
+public class AdvancedProcessorTestCase {
 
     private AdvancedProcessor processor;
     private MutableComputableTask<Integer, Integer> computableTask;
@@ -64,6 +65,7 @@ public class AdvancedProcessorTest {
         fieldOnMemoizer.setAccessible(false);
     }
 
+    @Test
     public void testExpire() throws Exception {
 
         Assert.assertEquals(processor.compute(computableTask.setArg(5), 5), (Integer) 10);
