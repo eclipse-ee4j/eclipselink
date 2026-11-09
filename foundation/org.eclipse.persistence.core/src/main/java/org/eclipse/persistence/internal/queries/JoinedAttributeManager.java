@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
  * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -164,6 +165,39 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
      */
     public void addJoinedMapping(String attributeName) {
         addJoinedMappingExpression(this.baseExpressionBuilder.get(attributeName));
+    }
+
+    /**
+     * INTERNAL:
+     * Detach the expressions of a cloned manager using the query's copy map.
+     */
+    public void copyExpressions(Map<Expression, Expression> alreadyDone) {
+        if (baseExpressionBuilder != null) {
+            baseExpressionBuilder = (ExpressionBuilder)baseExpressionBuilder.copiedVersionFrom(alreadyDone);
+        }
+        if (lastJoinedAttributeBaseExpression != null) {
+            lastJoinedAttributeBaseExpression = lastJoinedAttributeBaseExpression.copiedVersionFrom(alreadyDone);
+        }
+        joinedAttributeExpressions = copyExpressions(joinedAttributeExpressions, alreadyDone);
+        joinedMappingExpressions = copyExpressions(joinedMappingExpressions, alreadyDone);
+        joinedAttributes = copyExpressions(joinedAttributes, alreadyDone);
+        orderByExpressions = copyExpressions(orderByExpressions, alreadyDone);
+        additionalFieldExpressions = copyExpressions(additionalFieldExpressions, alreadyDone);
+    }
+
+    /**
+     * Copy an expression list using the query's shared copy map, preserving null
+     * for an uninitialized list.
+     */
+    private static List<Expression> copyExpressions(List<Expression> expressions, Map<Expression, Expression> alreadyDone) {
+        if (expressions == null) {
+            return null;
+        }
+        List<Expression> copies = new ArrayList<>(expressions.size());
+        for (Expression expression : expressions) {
+            copies.add(expression.copiedVersionFrom(alreadyDone));
+        }
+        return copies;
     }
 
     /**

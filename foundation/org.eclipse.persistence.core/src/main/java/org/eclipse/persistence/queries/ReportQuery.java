@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
  * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2026 IBM Corporation. All rights reserved.
  *
@@ -806,7 +807,8 @@ public class ReportQuery extends ReadAllQuery {
                 manager.setBaseQuery(cloneQuery);
                 newItem.setJoinedAttributeManager(manager);
             }
-            cloneQuery.addItem(newItem);
+            // Copying items must not invalidate the clone's prepared calls.
+            cloneQuery.items.add(newItem);
         }
 
         if (this.groupByExpressions != null) {
@@ -814,6 +816,43 @@ public class ReportQuery extends ReadAllQuery {
         }
 
         return cloneQuery;
+    }
+
+    @Override
+    protected void copyExpressions(Map<Expression, Expression> alreadyDone) {
+        super.copyExpressions(alreadyDone);
+        items = copyItemExpressions(items, alreadyDone);
+        groupByExpressions = copyExpressions(groupByExpressions, alreadyDone);
+        if (havingExpression != null) {
+            havingExpression = havingExpression.copiedVersionFrom(alreadyDone);
+        }
+    }
+
+    /**
+     * Copy report items and nested constructor arguments using the query's
+     * shared expression map while retaining prepared result metadata.
+     */
+    private List<ReportItem> copyItemExpressions(List<ReportItem> originalItems, Map<Expression, Expression> alreadyDone) {
+        List<ReportItem> copies = new ArrayList<>(originalItems.size());
+        for (ReportItem original : originalItems) {
+            // Keep prepared result metadata, including constructor information.
+            ReportItem copy = (ReportItem)original.clone();
+            if (original.getAttributeExpression() != null) {
+                copy.setAttributeExpression(original.getAttributeExpression().copiedVersionFrom(alreadyDone));
+            }
+            if (original.getJoinedAttributeManagerInternal() != null) {
+                JoinedAttributeManager manager = original.getJoinedAttributeManagerInternal().clone();
+                manager.setBaseQuery(this);
+                manager.copyExpressions(alreadyDone);
+                copy.setJoinedAttributeManager(manager);
+            }
+            if (original.isConstructorItem()) {
+                ConstructorReportItem constructor = (ConstructorReportItem)copy;
+                constructor.setReportItems(copyItemExpressions(constructor.getReportItems(), alreadyDone));
+            }
+            copies.add(copy);
+        }
+        return copies;
     }
 
     /**
