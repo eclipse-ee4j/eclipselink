@@ -270,7 +270,7 @@ public class RemoteCommandManager implements org.eclipse.persistence.sessions.co
             if (serializer == null) {
                 serializer = JavaSerializer.instance;
             }
-            command = (Command)serializer.deserialize(commandBytes, (AbstractSession)getCommandProcessor());
+            command = (Command)JavaSerializer.deserializeRemote(serializer, commandBytes, (AbstractSession)getCommandProcessor());
         } finally {
             this.commandProcessor.endOperationProfile(SessionProfiler.CacheCoordinationSerialize);
         }
