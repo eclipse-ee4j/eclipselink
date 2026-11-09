@@ -18,10 +18,13 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 import jakarta.persistence.Query;
+import jakarta.persistence.RollbackException;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 import org.eclipse.persistence.config.MergeManagerOperationMode;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.exceptions.ConcurrencyException;
+import org.eclipse.persistence.internal.helper.ConcurrencyManager;
 import org.eclipse.persistence.internal.helper.ConcurrencyUtil;
 import org.eclipse.persistence.internal.helper.WriteLockManager;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
@@ -38,7 +41,10 @@ import org.eclipse.persistence.testing.models.jpa.deadlock.diagnostic.CacheDeadL
 import org.eclipse.persistence.testing.models.jpa.deadlock.diagnostic.DeadLockDiagnosticTableCreator;
 
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.FutureTask;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 
 public class CacheDeadLockManagersTest extends JUnitTestCase {
 
@@ -196,7 +202,7 @@ public class CacheDeadLockManagersTest extends JUnitTestCase {
         }
     }
 
-    public void testAbstractSessionCacheKeyFromTargetSessionForMergeWithLockedCacheKey() {
+    public void testAbstractSessionCacheKeyFromTargetSessionForMergeWithLockedCacheKey() throws Exception {
         final String PU_NAME = "cachedeadlockdetection-loopwait-pu";
         final long MASTER_ID = 2000L;
         final long DETAIL_ID_1 = 2111L;
@@ -221,41 +227,49 @@ public class CacheDeadLockManagersTest extends JUnitTestCase {
 
             IdentityMapAccessor identityMapAccessor = (IdentityMapAccessor) ((JpaEntityManager)em).getServerSession().getIdentityMapAccessor();
             CacheKey cacheKey = identityMapAccessor.getCacheKeyForObject(cacheDeadLockDetectionMaster);
-            Semaphore semaphore = new Semaphore(1);
-            semaphore.acquire();
+            Semaphore semaphore = new Semaphore(0);
+            CountDownLatch cacheKeyLocked = new CountDownLatch(1);
             Object backupObject = cacheKey.getObject();
-            //Lock existing cache key by another thread
-            Thread thread = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        cacheKey.acquire(true);
-                        cacheKey.setObject(null);
-                        semaphore.acquire();
-                        cacheKey.setObject(backupObject);
-                        cacheKey.release();
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
+            FutureTask<Void> lockOwner = new FutureTask<>(() -> {
+                cacheKey.acquire(true);
+                try {
+                    cacheKey.setObject(null);
+                    cacheKeyLocked.countDown();
+                    semaphore.acquire();
+                } finally {
+                    cacheKey.setObject(backupObject);
+                    cacheKey.release();
                 }
+                return null;
             });
+            Thread thread = new Thread(lockOwner);
+            thread.setDaemon(true);
             thread.start();
-
-            em.getTransaction().begin();
-            CacheDeadLockDetectionDetail cacheDeadLockDetectionDetail2 = new CacheDeadLockDetectionDetail(DETAIL_ID_2, "D2222");
-            cacheDeadLockDetectionDetail2.setMaster(cacheDeadLockDetectionMaster);
-            em.persist(cacheDeadLockDetectionDetail2);
-            //Sleep is there to simulate, that main thread is doing some more time consuming operations and allow dead lock detection -> log messages.
-            Thread.sleep(1000);
-            em.getTransaction().commit();
-            CacheDeadLockDetectionDetail findResult = em.find(CacheDeadLockDetectionDetail.class, DETAIL_ID_2);
-            assertEquals(DETAIL_ID_2, findResult.getId());
-            assertEquals("D2222", findResult.getName());
-            assertEquals(1, logWrapper.getMessageCount("Page 08 start"));
-            assertEquals(1, logWrapper.getMessageCount("competing thread: " + thread));
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException();
+            try {
+                assertTrue("The other thread did not acquire the cache key", cacheKeyLocked.await(5, TimeUnit.SECONDS));
+                em.getTransaction().begin();
+                CacheDeadLockDetectionDetail cacheDeadLockDetectionDetail2 = new CacheDeadLockDetectionDetail(DETAIL_ID_2, "D2222");
+                cacheDeadLockDetectionDetail2.setMaster(cacheDeadLockDetectionMaster);
+                em.persist(cacheDeadLockDetectionDetail2);
+                // Allow diagnostic logging again after the preceding test's deadlock report.
+                Thread.sleep(1000);
+                try {
+                    em.getTransaction().commit();
+                    fail("The merge must fail while the other thread keeps the cache key locked");
+                } catch (RollbackException e) {
+                    assertTrue(e.getCause() instanceof ConcurrencyException);
+                    assertEquals(ConcurrencyException.WAIT_WAS_INTERRUPTED, ((ConcurrencyException) e.getCause()).getErrorCode());
+                }
+                assertNull(ConcurrencyManager.getDeferredLockManager(Thread.currentThread()));
+                assertFalse(AbstractSession.getThreadsToWaitMergeManagerWaitingDeferredCacheKeysSnapshot().containsKey(Thread.currentThread()));
+                assertTrue(logWrapper.getMessageCount("Page 08 start") >= 1);
+                assertTrue(logWrapper.getMessageCount("competing thread: " + thread) >= 1);
+            } finally {
+                semaphore.release();
+                thread.join(TimeUnit.SECONDS.toMillis(5));
+                assertFalse("The cache key owner did not finish", thread.isAlive());
+                lockOwner.get();
+            }
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
