@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -45,6 +46,30 @@ public abstract class DeferrableChangeRecord extends ChangeRecord {
 
     protected DeferrableChangeRecord(ObjectChangeSet owner) {
         this.owner = owner;
+    }
+
+    @Override
+    protected void copyMutableState(UnitOfWorkChangeSet mergeTo, UnitOfWorkChangeSet mergeFrom) {
+        super.copyMutableState(mergeTo, mergeFrom);
+        originalCollection = copyCollection(originalCollection, mergeTo.getSession());
+        latestCollection = copyCollection(latestCollection, mergeTo.getSession());
+    }
+
+    /**
+     * Copy a collection container while retaining its elements and map keys.
+     * The new container has no association with the entity's change listener.
+     */
+    private Object copyCollection(Object collection, AbstractSession session) {
+        if (collection == null) {
+            return null;
+        }
+        ContainerPolicy policy = mapping.getContainerPolicy();
+        Object copy = policy.containerInstance(policy.sizeFor(collection));
+        for (Object iterator = policy.iteratorFor(collection); policy.hasNext(iterator);) {
+            Object value = policy.next(iterator, session);
+            policy.addInto(policy.keyFromIterator(iterator), value, copy, session);
+        }
+        return copy;
     }
 
     /**

@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -2158,7 +2159,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     @Override
     public org.eclipse.persistence.sessions.changesets.UnitOfWorkChangeSet getCurrentChanges() {
         Map allObjects = collectAndPrepareObjectsForNestedMerge();
-        return calculateChanges(allObjects, new UnitOfWorkChangeSet(this), false, false);
+        return calculateChanges(allObjects, new UnitOfWorkChangeSet(this, true), false, false);
     }
 
     /**
@@ -2976,7 +2977,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             return true;
         }
         Map allObjects = new IdentityHashMap(getCloneMapping());
-        UnitOfWorkChangeSet changeSet = calculateChanges(allObjects, new UnitOfWorkChangeSet(this), false, false);
+        UnitOfWorkChangeSet changeSet = calculateChanges(allObjects, new UnitOfWorkChangeSet(this, true), false, false);
         return changeSet.hasChanges();
     }
 
