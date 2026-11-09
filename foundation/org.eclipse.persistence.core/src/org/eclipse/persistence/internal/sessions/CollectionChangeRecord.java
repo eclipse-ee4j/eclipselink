@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation.
  * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -25,6 +26,7 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.changetracking.CollectionChangeEvent;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
+import org.eclipse.persistence.logging.SessionLog;
 
 /**
  * <p>
@@ -146,9 +148,67 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
 
         for (Integer index : indicesToRemove) {
             Object object = objectChanges.get(index);
-            ObjectChangeSet change = session.getDescriptor(object.getClass()).getObjectBuilder().createObjectChangeSet(object, changeSet, session);
+
+            if (object == null) {
+                // Null in the backup list indicates a cluster cache desync: an object added via a
+                // JPA lifecycle callback (@PrePersist/@PreUpdate) after the changeset was already
+                // built was replicated to other cluster nodes without a valid cache key (→ null).
+                if (session.shouldLog(SessionLog.WARNING, SessionLog.TRANSACTION)) {
+                    session.log(SessionLog.WARNING, SessionLog.TRANSACTION,
+                            "addOrderedRemoveChange: null object at index [{0}] of [{1}] indices to remove." +
+                                    " Owner entity: [{2}] id=[{3}]." +
+                                    " Collection attribute: [{4}]." +
+                                    " Collection element type (inferred from non-null entries): [{5}]." +
+                                    " Probable cause: a @PrePersist/@PreUpdate JPA lifecycle callback modified this" +
+                                    " collection after the changeset was built; the unpersisted element was replicated" +
+                                    " to other cluster nodes without a valid cache key (stored as null). Skipping entry.",
+                            new Object[]{
+                                    index,
+                                    indicesToRemove.size(),
+                                    this.owner != null ? this.owner.getClassName() : "unknown",
+                                    this.owner != null ? this.owner.getId() : "unknown",
+                                    this.mapping != null ? this.mapping.getAttributeName() : "unknown",
+                                    inferElementTypeFromMap(objectChanges)
+                            });
+                }
+                continue;
+            }
+
+            ClassDescriptor descriptor = session.getDescriptor(object.getClass());
+
+            if (descriptor == null) {
+                if (session.shouldLog(SessionLog.WARNING, SessionLog.TRANSACTION)) {
+                    session.log(SessionLog.WARNING, SessionLog.TRANSACTION,
+                            "addOrderedRemoveChange: no descriptor registered for class [{0}] at index [{1}]." +
+                                    " Owner entity: [{2}] id=[{3}]." +
+                                    " Collection attribute: [{4}]. Skipping entry.",
+                            new Object[]{
+                                    object.getClass().getName(),
+                                    index,
+                                    this.owner != null ? this.owner.getClassName() : "unknown",
+                                    this.owner != null ? this.owner.getId() : "unknown",
+                                    this.mapping != null ? this.mapping.getAttributeName() : "unknown"
+                            });
+                }
+                continue;
+            }
+
+            ObjectChangeSet change = descriptor.getObjectBuilder().createObjectChangeSet(object, changeSet, session);
             getOrderedRemoveObjects().put(index, change);
         }
+    }
+
+    /**
+     * Returns the class name of the first non-null value in the map, used to infer
+     * the collection element type when the null-guard log fires and this.mapping is unavailable.
+     */
+    private String inferElementTypeFromMap(Map objectChanges) {
+        for (Object value : objectChanges.values()) {
+            if (value != null) {
+                return value.getClass().getName();
+            }
+        }
+        return "unknown (all entries null)";
     }
 
     /**
