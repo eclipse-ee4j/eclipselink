@@ -136,6 +136,16 @@ public class BeanValidationTableCreator extends TableCreator {
         fieldState.setIsIdentity(false);
         table.addField(fieldState);
 
+        FieldDefinition fieldPhone = new FieldDefinition();
+        fieldPhone.setName("PHONE");
+        fieldPhone.setTypeName("VARCHAR");
+        fieldPhone.setSize(40);
+        fieldPhone.setShouldAllowNull(true);
+        fieldPhone.setIsPrimaryKey(false);
+        fieldPhone.setUnique(false);
+        fieldPhone.setIsIdentity(false);
+        table.addField(fieldPhone);
+
         return table;
     }
 
