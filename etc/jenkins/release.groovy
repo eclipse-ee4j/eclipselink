@@ -61,7 +61,7 @@ spec:
         cpu: "1"
       requests:
         memory: "2Gi"
-        cpu: "500m"
+        cpu: "100m"
   - name: el-build
     resources:
       limits:
@@ -69,7 +69,7 @@ spec:
         cpu: "2"
       requests:
         memory: "4Gi"
-        cpu: "1.5"
+        cpu: "750m"
     image: rfelcman/el-build:2.0.3
     volumeMounts:
     - name: tools
@@ -148,17 +148,6 @@ spec:
         }
     }
     post {
-        always {
-            sshagent([SSH_CREDENTIALS_ID]) {
-                container('el-build') {
-                    sh """
-                            cd ${WORKSPACE}/boms/parent/target/central-publishing/
-                            ls -al
-                        """
-                    archiveArtifacts allowEmptyArchive: true, artifacts: 'boms/parent/target/central-publishing/**/*.zip', onlyIfSuccessful: false
-                }
-            }
-        }
         // Send a mail on unsuccessful and fixed builds
         unsuccessful { // means unstable || failure || aborted
             emailext subject: 'Build $BUILD_STATUS $PROJECT_NAME #$BUILD_NUMBER failed!',

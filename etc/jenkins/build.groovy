@@ -11,17 +11,17 @@
 //
 
 // Job input parameters (passed from Properties Content field from Jenkins job):
-//  GIT_REPOSITORY_URL          - Git repository location (URL)
-//  GIT_BRANCH                  - Git branch
 //  BUILD_RESULTS_TARGET_DIR    - Location in the projects-storage.eclipse.org server for nightly builds (jar files and test results)
 //  CONTINUOUS_BUILD            - false - full nightly build with LRG and server tests and nightly build publish
 //                                true - continuous build with SRG tests without publishing nightly build results
+//
+// Sources are checked out by the implicit Declarative "Checkout SCM" stage (repository and branch come from the job's
+// Pipeline SCM configuration). Do not define GIT_BRANCH in the job: the git plugin overwrites it with "origin/<branch>".
 
 
 pipeline {
     agent {
         kubernetes {
-            label 'el-master-agent-pod'
             yaml """
 apiVersion: v1
 kind: Pod
@@ -33,7 +33,7 @@ spec:
       claimName: tools-claim-jiro-eclipselink
   - name: volume-known-hosts
     configMap:
-      name: known-hosts      
+      name: known-hosts
   - name: settings-xml
     secret:
       secretName: m2-secret-dir
@@ -62,8 +62,8 @@ spec:
         memory: "4Gi"
         cpu: "2"
       requests:
-        memory: "4Gi"
-        cpu: "1"
+        memory: "3Gi"
+        cpu: "500m"
     volumeMounts:
     - name: volume-known-hosts
       mountPath: /home/jenkins/.ssh    
@@ -74,7 +74,7 @@ spec:
         cpu: "6"
       requests:
         memory: "12Gi"
-        cpu: "5.5"
+        cpu: "5"
     image: rfelcman/el-build:2.0.3
     volumeMounts:
     - name: tools
@@ -99,6 +99,9 @@ spec:
 """
         }
     }
+    options {
+        disableConcurrentBuilds()
+    }
     environment {
         LANG = 'en_US.UTF-8'
     }
@@ -111,7 +114,6 @@ spec:
         stage('Init') {
             steps {
                 container('el-build') {
-                    git branch: '${GIT_BRANCH}', url: '${GIT_REPOSITORY_URL}'
                     sh """
                         etc/jenkins/init.sh
                     """
@@ -212,8 +214,8 @@ spec:
             script {
                 //Multiple Jenkins junit plugin calls due java.nio.channels.ClosedChannelException in new/cloud Eclipse.org build infrastructure if it's called once
                 //Retry is there to try (in case of crash) junit test upload again.
-                retryCount = 5
-                junitReportFiles = [
+                def retryCount = 5
+                def junitReportFiles = [
                         'bundles/**/target/surefire-reports/*.xml,bundles/**/target/failsafe-reports/*.xml',
                         'dbws/**/target/surefire-reports/*.xml,dbws/**/target/failsafe-reports/*.xml',
                         'foundation/**/target/surefire-reports/*.xml,foundation/**/target/failsafe-reports/*.xml',
