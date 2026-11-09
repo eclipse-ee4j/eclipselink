@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
  * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -1819,6 +1820,65 @@ public abstract class AbstractSemanticValidatorTest extends AbstractValidatorTes
     public final void test_ValidQuery_05() throws Exception {
 
         String jpqlQuery = "SELECT r FROM Employee r OUTER JOIN r.phoneNumbers c WHERE c.phoneNumber = :major AND c.area = :name AND r.working = true";
+        List<JPQLQueryProblem> problems = validate(jpqlQuery);
+        testHasNoProblems(problems);
+    }
+
+    // Covers https://github.com/eclipse-ee4j/eclipselink/issues/2758
+    // Navigations and fully qualified enum constants in UPDATE and DELETE queries that do not declare
+    // an identification variable
+    @Test
+    public final void test_ValidQuery_06() throws Exception {
+
+        String jpqlQuery = "DELETE FROM Employee WHERE managerEmployee.phoneNumbers IS EMPTY";
+        List<JPQLQueryProblem> problems = validate(jpqlQuery);
+        testHasNoProblems(problems);
+    }
+
+    @Test
+    public final void test_ValidQuery_07() throws Exception {
+
+        String jpqlQuery = "UPDATE Employee SET name = 'JPQL' WHERE managerEmployee.phoneNumbers IS EMPTY";
+        List<JPQLQueryProblem> problems = validate(jpqlQuery);
+        testHasNoProblems(problems);
+    }
+
+    @Test
+    public final void test_ValidQuery_08() throws Exception {
+
+        String jpqlQuery = "DELETE FROM Employee WHERE address.city = 'Cary'";
+        List<JPQLQueryProblem> problems = validate(jpqlQuery);
+        testHasNoProblems(problems);
+    }
+
+    @Test
+    public final void test_ValidQuery_09() throws Exception {
+
+        String jpqlQuery = "UPDATE Employee SET name = 'JPQL' WHERE embeddedAddress.city = 'Cary'";
+        List<JPQLQueryProblem> problems = validate(jpqlQuery);
+        testHasNoProblems(problems);
+    }
+
+    @Test
+    public final void test_ValidQuery_10() throws Exception {
+
+        String jpqlQuery = "UPDATE Product SET shelfLife.soldDate = CURRENT_DATE WHERE shelfLife IS NOT NULL AND shelfLife.soldDate <> CURRENT_DATE";
+        List<JPQLQueryProblem> problems = validate(jpqlQuery);
+        testHasNoProblems(problems);
+    }
+
+    @Test
+    public final void test_ValidQuery_11() throws Exception {
+
+        String jpqlQuery = "UPDATE Product SET enumType = jpql.query.EnumType.NAME WHERE enumType = jpql.query.EnumType.FIRST_NAME";
+        List<JPQLQueryProblem> problems = validate(jpqlQuery);
+        testHasNoProblems(problems);
+    }
+
+    @Test
+    public final void test_ValidQuery_12() throws Exception {
+
+        String jpqlQuery = "DELETE FROM Product WHERE enumType IN (jpql.query.EnumType.FIRST_NAME, jpql.query.EnumType.LAST_NAME)";
         List<JPQLQueryProblem> problems = validate(jpqlQuery);
         testHasNoProblems(problems);
     }
