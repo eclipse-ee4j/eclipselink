@@ -96,7 +96,7 @@
         <!--JDBC Drivers-->
         <h2.version>2.5.252</h2.version>
         <mysql.version>26.7.0</mysql.version>
-        <mariadb.version>3.5.10</mariadb.version>
+        <mariadb.version>3.5.11</mariadb.version>
         <derby.version>10.17.1.0</derby.version>
         <db2.version>12.1.5.0</db2.version>
         <mssql.version>13.6.0.jre11</mssql.version>
