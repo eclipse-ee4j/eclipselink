@@ -27,7 +27,9 @@ concurrency:
 jobs:
   build_test_job:
     name: Test on JDK ${{ matrix.java_version }}
-    runs-on: ubuntu-latest
+    # Pinned: embedded MongoDB (flapdoodle, via eclipselink-testbuild-plugin) has no package for Ubuntu 26.04,
+    # which ubuntu-latest resolves to since November 2026.
+    runs-on: ubuntu-24.04
 
     strategy:
       matrix:
